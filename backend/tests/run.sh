@@ -47,6 +47,8 @@ function check_bun_installed() {
 }
 
 function ensure_postgres_is_running() {
+  cd "${base_dir}/.."
+
   if ! docker compose ps | grep -q postgres; then
     echo "Starting PostgreSQL..."
     POSTGRESQL_DATABASE=${postgresql_database} docker compose up -d postgres
@@ -61,6 +63,8 @@ EOF
 }
 
 function prepare_test_environment() {
+  cd "${base_dir}/.."
+
   echo "Preparing test environment..."
 
   # stop hasura
@@ -94,6 +98,8 @@ EOF
 }
 
 function run_tests() {
+  cd "${base_dir}"
+  
   echo "Starting tests..."
   echo ""
   echo -e "${YELLOW}INFO${NC} Hasura will stay connected to the test database."
@@ -117,6 +123,7 @@ done
 check_bun_installed
 ensure_postgres_is_running
 
+cd "${base_dir}/.."
 if ! docker compose exec hasura bash -c '[[ "${PG_DATABASE_URL}" == */test ]]' \
   || [ ! -d "${base_dir}/node_modules" ] \
   || [ "$quick" -eq 0 ]; then

@@ -14,18 +14,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Debug PWD
-        run: pwd
-      
-      - name: Debug LS
-        run: ls -la
-
       - name: Start PostgreSQL container
-        run: docker-compose -f backend/docker-compose.yml up -d postgres
+        run: docker-compose -f backend/docker-compose.yaml up -d postgres
 
       - name: Wait for PostgreSQL to start
         run: >-
-          docker-compose -f backend/docker-compose.yml exec -T postgres 
+          docker-compose -f backend/docker-compose.yaml exec -T postgres 
           bash -c 
           'while ! pg_isready -h localhost -p 5432 -U postgres; 
           do sleep 1; 

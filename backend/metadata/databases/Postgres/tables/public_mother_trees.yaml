@@ -1,0 +1,73 @@
+table:
+  name: mother_trees
+  schema: public
+object_relationships:
+  - name: crossing
+    using:
+      foreign_key_constraint_on: crossing_id
+  - name: pollen
+    using:
+      foreign_key_constraint_on: pollen_id
+  - name: tree
+    using:
+      foreign_key_constraint_on: tree_id
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - crossing_id
+        - date_fruits_harvested
+        - date_impregnated
+        - name
+        - note
+        - numb_flowers
+        - numb_fruits
+        - numb_seeds
+        - planned
+        - pollen_id
+        - tree_id
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - planned
+        - name
+        - date_fruits_harvested
+        - date_impregnated
+        - crossing_id
+        - id
+        - numb_flowers
+        - numb_fruits
+        - numb_seeds
+        - pollen_id
+        - tree_id
+        - note
+        - created
+        - modified
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - crossing_id
+        - date_fruits_harvested
+        - date_impregnated
+        - name
+        - note
+        - numb_flowers
+        - numb_fruits
+        - numb_seeds
+        - planned
+        - pollen_id
+        - tree_id
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

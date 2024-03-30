@@ -1,0 +1,36 @@
+version: '3.6'
+services:
+
+  postgres:
+    image: bitnami/postgresql:16
+    environment:
+      POSTGRESQL_PASSWORD: postgres
+      POSTGRESQL_DATABASE: "${POSTGRESQL_DATABASE:-postgres}"
+    volumes:
+      - db_data:/bitnami/postgresql
+    ports:
+      - "0.0.0.0:5432:5432"
+
+  hasura:
+    image: hasura/graphql-engine:v2.37.1
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:postgres@postgres:5432/${POSTGRESQL_DATABASE:-postgres}
+      PG_DATABASE_URL: postgres://postgres:postgres@postgres:5432/${POSTGRESQL_DATABASE:-postgres}
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      ## enable debugging mode. It is recommended to disable this in production
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      ## run console offline (i.e load console assets from server instead of CDN)
+      HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
+      ## don't infer function permissions from entity
+      HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS: "false"
+    env_file:
+      - ./.env
+
+volumes:
+  db_data:
+  

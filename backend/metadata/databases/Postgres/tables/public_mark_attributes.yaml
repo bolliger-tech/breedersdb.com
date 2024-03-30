@@ -1,0 +1,70 @@
+table:
+  name: mark_attributes
+  schema: public
+object_relationships:
+  - name: mark_attribute_data_types
+    using:
+      foreign_key_constraint_on: data_type
+  - name: mark_types
+    using:
+      foreign_key_constraint_on: mark_type
+array_relationships:
+  - name: mark_form_fields
+    using:
+      foreign_key_constraint_on:
+        column: mark_attribute_id
+        table:
+          name: mark_form_fields
+          schema: public
+  - name: mark_values
+    using:
+      foreign_key_constraint_on:
+        column: mark_attribute_id
+        table:
+          name: mark_values
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - data_type
+        - disabled
+        - mark_type
+        - name
+        - description
+        - validation_rule
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - created
+        - data_type
+        - disabled
+        - id
+        - mark_type
+        - modified
+        - name
+        - description
+        - validation_rule
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - data_type
+        - disabled
+        - mark_type
+        - name
+        - description
+        - validation_rule
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

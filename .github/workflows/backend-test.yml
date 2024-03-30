@@ -1,0 +1,25 @@
+name: Backend Test
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Create .env file
+        run: |
+          echo "HASURA_GRAPHQL_ADMIN_SECRET=$(openssl rand -hex 16)" >> .env
+          echo "HASURA_GRAPHQL_JWT_SECRET='{\"audience\":\"breedersDB\",\"type\":\"HS256\",\"key\":\"$(openssl rand -hex 16)\"}'" >> .env
+
+      - name: Install bun
+        run: curl -fsSL https://bun.sh/install | bash
+
+      - name: Run backend tests
+        run: ./backend/tests/run.sh

@@ -1,0 +1,309 @@
+@startuml
+title Database Schema
+hide circle
+skinparam linetype ortho
+
+entity "**crossings**" #ffff0012 ##888800 {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(8) //
+  ""mother_cultivar_id"": //integer [FK]//
+  ""father_cultivar_id"": //integer [FK]//
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**cultivars**" #ffff0012 ##888800 {
+  + ""id"": //integer [PK]//
+  --
+  *""lot_id"": //integer [FK]//
+  *""name_segment"": //character varying(45) //
+  *""name"": //character varying(58)  : Set by triggers.//
+  ""common_name"": //text //
+  ""acronym"": //character varying(10) //
+  ""breeder"": //text //
+  ""registration"": //text //
+  ""description"": //text //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**graftings**" #0000ff12 ##000088 {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**lots**" #ffff0012 ##888800 {
+  + ""id"": //integer [PK]//
+  --
+  *""crossing_id"": //integer [FK]//
+  *""name_segment"": //character varying(3) //
+  *""name"": //character varying(12)  : Set by triggers.//
+  ""date_sowed"": //date //
+  ""numb_seeds_sowed"": //integer //
+  ""numb_sprouts_grown"": //integer //
+  ""seed_tray"": //text //
+  ""date_planted"": //date //
+  ""numb_sprouts_planted"": //integer //
+  ""patch"": //text //
+  ""note"": //text //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**mark_attribute_data_types**" #00ff0012 ##008800 {
+  + ""enum"": //text [PK]//
+  --
+}
+
+entity "**mark_attributes**" #00ff0012 ##008800 {
+  ""- validation_rule"":\n""    JSONB: {min: int, max: int, step: int}"" for ""INTEGER"",\n""           {min: float|int, max: float|int, step: float|int}"" for ""FLOAT""\n""    NULL"" for other data types.\n""- data_type"": Can&#39;t be changed once ""mark_values"" for this ""mark_attribute"" exist.
+  ..
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  ""validation_rule"": //jsonb //
+  *""data_type"": //character varying(12) [FK]//
+  ""description"": //text //
+  *""mark_type"": //character varying(12) [FK]//
+  *""disabled"": //boolean //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**mark_form_fields**" #00ff0012 ##008800 {
+  + ""id"": //integer [PK]//
+  --
+  *""priority"": //integer //
+  *""mark_form_id"": //integer [FK]//
+  *""mark_attribute_id"": //integer [FK]//
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**mark_forms**" #00ff0012 ##008800 {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  ""description"": //text //
+  *""disabled"": //boolean //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**mark_types**" #00ff0012 ##008800 {
+  + ""enum"": //text [PK]//
+  --
+}
+
+entity "**mark_values**" #00ff0012 ##008800 {
+  ""- text_value"" is trimmed.\n""- integer_value"" and ""float_value"" are checked against the\n""  ""corresponding ""mark_attribute.validation_rule"".\n""  ""The checking is performed on insert and update of the value\n""  ""but not revalidated if the ""validation_rule"" changes.
+  ..
+  + ""id"": //integer [PK]//
+  --
+  *""mark_attribute_id"": //integer [FK]//
+  *""mark_id"": //integer [FK]//
+  ""integer_value"": //integer //
+  ""float_value"": //double precision //
+  ""text_value"": //text //
+  ""boolean_value"": //boolean //
+  ""date_value"": //date //
+  ""note"": //text //
+  *""exceptional_mark"": //boolean //
+  ""offline_id"": //uuid //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**marks**" #00ff0012 ##008800 {
+  + ""id"": //integer [PK]//
+  --
+  *""author"": //character varying(45) //
+  *""date_marked"": //date //
+  *""mark_form_id"": //integer [FK]//
+  ""tree_id"": //integer [FK]//
+  ""cultivar_id"": //integer [FK]//
+  ""lot_id"": //integer [FK]//
+  ""geo_location"": //geography(Point,4326)  : SRID:4326//
+  ""geo_location_accuracy"": //double precision  : Meters//
+  ""offline_id"": //uuid //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**materialized_view_refreshes**" {
+  + ""id"": //integer [PK]//
+  --
+  *""view_name"": //text //
+  ""last_change"": //timestamp with time zone //
+  ""last_check"": //timestamp with time zone //
+}
+
+entity "**mother_trees**" #0000ff06 {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  *""planned"": //boolean //
+  ""date_impregnated"": //date //
+  ""date_fruits_harvested"": //date //
+  ""numb_flowers"": //integer //
+  ""numb_fruits"": //integer //
+  ""numb_seeds"": //integer //
+  ""note"": //text //
+  *""tree_id"": //integer [FK]//
+  ""pollen_id"": //integer [FK]//
+  *""crossing_id"": //integer [FK]//
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**orchards**" #0000ff12 ##000088 {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  *""disabled"": //boolean //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**plant_rows**" #0000ff12 ##000088 {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  *""orchard_id"": //integer [FK]//
+  ""note"": //text //
+  ""date_created"": //date //
+  ""date_eliminated"": //date //
+  *""disabled"": //boolean  : Derived from date_eliminated.//
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**pollen**" #0000ff06 {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  ""date_harvested"": //date //
+  ""note"": //text //
+  *""cultivar_id"": //integer [FK]//
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**queries**" {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  *""my_query"": //jsonb //
+  ""description"": //text //
+  *""query_group_id"": //integer [FK]//
+  ""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**query_groups**" {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  ""version"": //character varying(10) //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**rootstocks**" #0000ff12 ##000088 {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**trees**" #0000ff12 ##000088 {
+  + ""id"": //integer [PK]//
+  --
+  *""publicid"": //character varying(9) //
+  *""cultivar_id"": //integer [FK]//
+  *""cultivar_name"": //character varying(58)  : Set by triggers.//
+  ""plant_row_id"": //integer [FK]//
+  ""serial_in_plant_row"": //integer //
+  ""distance_plant_row_start"": //double precision  : Meters//
+  ""geo_location"": //geography(Point,4326)  : SRID:4326//
+  ""geo_location_accuracy"": //double precision  : Meters//
+  ""date_grafted"": //date //
+  ""date_planted"": //date //
+  ""date_eliminated"": //date //
+  ""date_labeled"": //date //
+  *""genuine_seedling"": //boolean //
+  ""note"": //text //
+  ""rootstock_id"": //integer [FK]//
+  ""grafting_id"": //integer [FK]//
+  *""disabled"": //boolean  : Derived from date_eliminated.//
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+"**crossings**"   }--  "**cultivars**"
+
+"**crossings**"   }--  "**cultivars**"
+
+"**cultivars**"   }--  "**lots**"
+
+"**lots**"   }--  "**crossings**"
+
+"**mark_attributes**"   }--  "**mark_attribute_data_types**"
+
+"**mark_attributes**"   }--  "**mark_types**"
+
+"**mark_form_fields**"   }--  "**mark_attributes**"
+
+"**mark_form_fields**"   }--  "**mark_forms**"
+
+"**mark_values**"   }--  "**mark_attributes**"
+
+"**mark_values**"   }--  "**marks**"
+
+"**marks**"   }--  "**cultivars**"
+
+"**marks**"   }--  "**lots**"
+
+"**marks**"   }--  "**mark_forms**"
+
+"**marks**"   }--  "**trees**"
+
+"**mother_trees**"   }--  "**crossings**"
+
+"**mother_trees**"   }--  "**pollen**"
+
+"**mother_trees**"   }--  "**trees**"
+
+"**plant_rows**"   }--  "**orchards**"
+
+"**pollen**"   }--  "**cultivars**"
+
+"**queries**"   }--  "**query_groups**"
+
+"**trees**"   }--  "**cultivars**"
+
+"**trees**"   }--  "**graftings**"
+
+"**trees**"   }--  "**plant_rows**"
+
+"**trees**"   }--  "**rootstocks**"
+
+note top of "**marks**"
+  The materialized view ""marks_view"" is used to query the marks. Call 
+  ""refresh_marks_view()"" to update it.
+
+  The ""marks_view"" adds statistical data from ""trees"" to ""cultivars"".
+  See the ""stats_source"" column. 
+  
+  If querying statistical data of cultivars, you must apply the following 
+  algorithm to obtain the correct data: For every ""attribute_id"", check 
+  the ""stats_source"" of the rows. If there are different sources, apply the 
+  following priority: ""TREES_AND_CULTIVARS"" > ""CULTIVARS"" > ""TREES"".
+end note
+
+@enduml

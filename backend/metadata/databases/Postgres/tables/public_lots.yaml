@@ -1,0 +1,89 @@
+table:
+  name: lots
+  schema: public
+object_relationships:
+  - name: crossing
+    using:
+      foreign_key_constraint_on: crossing_id
+array_relationships:
+  - name: marks
+    using:
+      foreign_key_constraint_on:
+        column: lot_id
+        table:
+          name: marks
+          schema: public
+  - name: marks_views
+    using:
+      manual_configuration:
+        column_mapping:
+          id: lot_id
+        insertion_order: null
+        remote_table:
+          name: marks_view
+          schema: public
+  - name: cultivars
+    using:
+      foreign_key_constraint_on:
+        column: lot_id
+        table:
+          name: cultivars
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - name_segment
+        - crossing_id
+        - date_planted
+        - date_sowed
+        - note
+        - numb_seeds_sowed
+        - numb_sprouts_grown
+        - numb_sprouts_planted
+        - patch
+        - seed_tray
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - name_segment
+        - date_planted
+        - date_sowed
+        - crossing_id
+        - id
+        - numb_seeds_sowed
+        - numb_sprouts_grown
+        - numb_sprouts_planted
+        - note
+        - patch
+        - seed_tray
+        - created
+        - modified
+        - name
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - name_segment
+        - crossing_id
+        - date_planted
+        - date_sowed
+        - note
+        - numb_seeds_sowed
+        - numb_sprouts_grown
+        - numb_sprouts_planted
+        - patch
+        - seed_tray
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

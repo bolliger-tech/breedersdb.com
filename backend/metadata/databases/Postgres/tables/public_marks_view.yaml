@@ -1,0 +1,78 @@
+table:
+  name: marks_view
+  schema: public
+object_relationships:
+  - name: lot
+    using:
+      manual_configuration:
+        column_mapping:
+          lot_id: id
+        insertion_order: null
+        remote_table:
+          name: lots
+          schema: public
+  - name: mark_attribute
+    using:
+      manual_configuration:
+        column_mapping:
+          mark_attribute_id: id
+        insertion_order: null
+        remote_table:
+          name: mark_attributes
+          schema: public
+  - name: tree
+    using:
+      manual_configuration:
+        column_mapping:
+          tree_id: id
+        insertion_order: null
+        remote_table:
+          name: trees
+          schema: public
+  - name: cultivar
+    using:
+      manual_configuration:
+        column_mapping:
+          combined_cultivar_id: id
+        insertion_order: null
+        remote_table:
+          name: cultivars
+          schema: public
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - all_true
+        - any_true
+        - boolean_value
+        - exceptional_mark
+        - author
+        - data_type
+        - mark_type
+        - name
+        - date_marked
+        - date_max
+        - date_min
+        - date_value
+        - avg
+        - float_value
+        - geo_location_accuracy
+        - max
+        - median
+        - min
+        - stddev
+        - combined_cultivar_id
+        - count
+        - id
+        - integer_value
+        - lot_id
+        - mark_attribute_id
+        - tree_id
+        - note
+        - stats_source
+        - text_value
+        - created
+        - modified
+        - geo_location
+      filter: {}
+    comment: ""

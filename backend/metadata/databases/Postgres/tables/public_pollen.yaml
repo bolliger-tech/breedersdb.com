@@ -1,0 +1,54 @@
+table:
+  name: pollen
+  schema: public
+object_relationships:
+  - name: cultivar
+    using:
+      foreign_key_constraint_on: cultivar_id
+array_relationships:
+  - name: mother_trees
+    using:
+      foreign_key_constraint_on:
+        column: pollen_id
+        table:
+          name: mother_trees
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - date_harvested
+        - name
+        - note
+        - cultivar_id
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - name
+        - date_harvested
+        - id
+        - cultivar_id
+        - note
+        - created
+        - modified
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - date_harvested
+        - name
+        - note
+        - cultivar_id
+      filter: {}
+      check: null
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

@@ -1,0 +1,44 @@
+table:
+  name: query_groups
+  schema: public
+array_relationships:
+  - name: queries
+    using:
+      foreign_key_constraint_on:
+        column: query_group_id
+        table:
+          name: queries
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - name
+        - version
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - name
+        - version
+        - id
+        - created
+        - modified
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - name
+        - version
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

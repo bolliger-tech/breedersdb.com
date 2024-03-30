@@ -1,0 +1,67 @@
+name: Generate Database UML
+
+on:
+  push:
+    paths:
+      - "backend/migrations/**"
+
+jobs:
+  generate-uml:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Start PostgreSQL container
+        run: docker-compose -f backend/docker-compose.yml up -d postgres
+
+      - name: Wait for PostgreSQL to start
+        run: >-
+          docker-compose -f backend/docker-compose.yml exec -T postgres 
+          bash -c 
+          'while ! pg_isready -h localhost -p 5432 -U postgres; 
+          do sleep 1; 
+          done'
+
+      - name: Generate UML
+        run: backend/docs/generate-uml.sh
+      
+      - name: Check for changes in UML files
+        id: check_changes
+        run: |
+          if [[ -n $(git diff --name-only ${{ github.base_ref }}...${{ github.head_ref }} backend/docs/database.puml backend/docs/database-light.svg backend/docs/database-dark.svg) ]];
+          then
+          echo "::set-output name=changes::true"
+          else
+          echo "::set-output name=changes::false"
+          fi
+
+      - name: Get branch name on pull request
+        run: echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+        if: github.event_name == 'pull_request'
+
+      - name: Get branch name on push
+        run: echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+        if: github.event_name == 'push'
+      
+      - name: Get branch name on workflow dispatch
+        run: echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+        if: github.event_name == 'workflow_dispatch'
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update-database-uml
+          branch-suffix: short-commit-hash
+          base: ${{ env.BRANCH_NAME }}
+          title: "Update database UML"
+          body: |
+            Updates the database UML files.
+
+            PR was automatically created by the database-uml workflow.
+          commit-message: "Update database UML"
+          reviewers: ${{ github.actor }}
+          delete-branch: true

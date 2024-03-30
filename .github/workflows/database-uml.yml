@@ -14,6 +14,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Debug PWD
+        run: pwd
+      
+      - name: Debug LS
+        run: ls -la
+
       - name: Start PostgreSQL container
         run: docker-compose -f backend/docker-compose.yml up -d postgres
 

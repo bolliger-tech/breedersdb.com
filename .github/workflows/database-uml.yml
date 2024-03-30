@@ -3,7 +3,8 @@ name: Generate Database UML
 on:
   push:
     paths:
-      - "backend/migrations/**"
+      - 'backend/migrations/**'
+      - '.github/workflows/database-uml.yml'
 
 jobs:
   generate-uml:

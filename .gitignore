@@ -1,21 +1,3 @@
-/config/app_local.php
-/config/Migrations/schema-dump-*.lock
-/tmp
-/logs
+/migrate
+.env
 node_modules
-/npm-debug.log
-/backup
-/webroot/v1/dev
-/webroot/v1/dist
-/webroot/v2/dist
-/storage
-/upgrade
-vendor
-deploy.conf
-import-live-data.sh
-report_errors.sh
-.phpunit.result.cache
-translate.sh
-
-# dont check in .mo files. cake throws an error if you do provide them!
-*.mo

@@ -13,6 +13,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      
+      - name: Create .env file
+        run: |
+          echo "HASURA_GRAPHQL_ADMIN_SECRET=$(openssl rand -hex 16)" >> backend/.env
+          echo "HASURA_GRAPHQL_JWT_SECRET='{\"audience\":\"breedersDB\",\"type\":\"HS256\",\"key\":\"$(openssl rand -hex 16)\"}'" >> backend/.env
 
       - name: Start PostgreSQL container
         run: docker-compose -f backend/docker-compose.yaml up -d postgres

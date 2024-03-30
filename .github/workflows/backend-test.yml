@@ -16,8 +16,8 @@ jobs:
       
       - name: Create .env file
         run: |
-          echo "HASURA_GRAPHQL_ADMIN_SECRET=$(openssl rand -hex 16)" >> .env
-          echo "HASURA_GRAPHQL_JWT_SECRET='{\"audience\":\"breedersDB\",\"type\":\"HS256\",\"key\":\"$(openssl rand -hex 16)\"}'" >> .env
+          echo "HASURA_GRAPHQL_ADMIN_SECRET=$(openssl rand -hex 16)" >> backend/.env
+          echo "HASURA_GRAPHQL_JWT_SECRET='{\"audience\":\"breedersDB\",\"type\":\"HS256\",\"key\":\"$(openssl rand -hex 16)\"}'" >> backend/.env
 
       - name: Install bun
         uses: oven-sh/setup-bun@v1

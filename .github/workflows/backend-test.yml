@@ -19,10 +19,7 @@ jobs:
           echo "HASURA_GRAPHQL_JWT_SECRET='{\"audience\":\"breedersDB\",\"type\":\"HS256\",\"key\":\"$(openssl rand -hex 16)\"}'" >> .env
 
       - name: Install bun
-        run: curl -fsSL https://bun.sh/install | bash
-      
-      - name: Reload .bashrc
-        run: source ~/.bashrc
+        uses: oven-sh/setup-bun@v1
 
       - name: Install dependencies
         run: bun install

@@ -11,21 +11,21 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Start PostgreSQL container
-        run: docker-compose -f ${{ github.workspace }}/backend/docker-compose.yml up -d postgres
+        run: docker-compose -f backend/docker-compose.yml up -d postgres
 
       - name: Wait for PostgreSQL to start
         run: >-
-          docker-compose -f ${{ github.workspace }}/backend/docker-compose.yml exec -T postgres 
+          docker-compose -f backend/docker-compose.yml exec -T postgres 
           bash -c 
           'while ! pg_isready -h localhost -p 5432 -U postgres; 
           do sleep 1; 
           done'
 
       - name: Generate UML
-        run: ${{ github.workspace }}/backend/docs/generate-uml.sh
+        run: ./backend/docs/generate-uml.sh
       
       - name: Check for changes in UML files
         id: check_changes

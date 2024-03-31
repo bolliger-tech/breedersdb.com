@@ -2,8 +2,6 @@ FROM golang:1.22
 
 WORKDIR /app
 
-RUN go install github.com/achiku/planter@latest
-
 RUN git clone https://github.com/cyrillbolliger/planter.git .
 RUN go build -o /usr/local/bin/planter
 RUN rm -rf * .git*

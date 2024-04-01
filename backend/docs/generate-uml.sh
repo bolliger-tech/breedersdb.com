@@ -26,26 +26,6 @@ sed -i -E 's/entity "\*\*(marks|mark_values|mark_form_fields|mark_attributes|mar
 echo "Unescape formattings..."
 sed -i -E 's/&#34;&#34;/""/g' "$base_dir/database.puml" # unescape text formatting (monospace)
 
-echo "Injecting notes..."
-sed -i '/@enduml/d' "$base_dir/database.puml"
-cat <<EOF >> "$base_dir/database.puml"
-
-note top of "**marks**"
-  The materialized view ""marks_view"" is used to query the marks. Call 
-  ""refresh_marks_view()"" to update it.
-
-  The ""marks_view"" adds statistical data from ""trees"" to ""cultivars"".
-  See the ""stats_source"" column. 
-  
-  If querying statistical data of cultivars, you must apply the following 
-  algorithm to obtain the correct data: For every ""attribute_id"", check 
-  the ""stats_source"" of the rows. If there are different sources, apply 
-  the following priority: ""TREES_AND_CULTIVARS"" > ""CULTIVARS"" > ""TREES"".
-end note
-
-@enduml
-EOF
-
 # Wait for the file to be available to docker container
 sleep 1
 

@@ -5,6 +5,10 @@ on:
     paths:
       - 'backend/**'
       - '.github/workflows/backend-test.yml'
+  pull_request:
+    branches:
+      - main
+      - v3
 
 jobs:
   test:

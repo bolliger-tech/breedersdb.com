@@ -5,6 +5,10 @@ on:
     # paths:
     #   - 'backend/migrations/**'
     #   - '.github/workflows/database-uml.yml'
+  pull_request:
+    branches:
+      - main
+      - v3
 
 jobs:
   generate-uml:

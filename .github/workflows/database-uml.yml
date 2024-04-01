@@ -43,9 +43,9 @@ jobs:
       
       - name: Apply migrations
         run: |
-          hasura metadata apply
-          hasura migrate apply --all-databases
-          hasura metadata apply
+          hasura --skip-update-check --project backend metadata apply
+          hasura --skip-update-check --project backend migrate apply --all-databases
+          hasura --skip-update-check --project backend metadata apply
 
       - name: Generate UML
         run: ./backend/docs/generate-uml.sh

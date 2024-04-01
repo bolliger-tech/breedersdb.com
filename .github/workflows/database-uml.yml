@@ -24,13 +24,10 @@ jobs:
           echo "HASURA_GRAPHQL_ADMIN_SECRET=$(openssl rand -hex 16)" >> backend/.env
           echo "HASURA_GRAPHQL_JWT_SECRET='{\"audience\":\"breedersDB\",\"type\":\"HS256\",\"key\":\"$(openssl rand -hex 16)\"}'" >> backend/.env
 
-      - name: Start containers
-        run: docker compose -f backend/docker-compose.yaml up -d
+      - name: Start PostgreSQL
+        run: docker compose -f backend/docker-compose.yaml up -d postgres
 
-      - name: Install Hasura-CLI
-        run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
-
-      - name: Wait for PostgreSQL to start
+      - name: Wait for PostgreSQL to be ready
         run: >-
           docker compose -f backend/docker-compose.yaml exec -T postgres 
           bash -c 
@@ -38,7 +35,13 @@ jobs:
           do sleep 1; 
           done'
       
-      - name: Wait for Hasura to start
+      - name: Start Hasura
+        run: docker compose -f backend/docker-compose.yaml up -d hasura
+
+      - name: Install Hasura-CLI
+        run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
+      
+      - name: Wait for Hasura to be ready
         run: while ! curl -s http://localhost:8080/healthz; do sleep 1; done
       
       - name: Apply migrations

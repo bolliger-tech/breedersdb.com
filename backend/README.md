@@ -7,7 +7,7 @@ GraphQL API for BreederDB, built with [Hasura](https://hasura.io/docs/latest).
 1. Install:
 
    - [Docker](https://www.docker.com/) with [Docker
-     Compose](https://docs.docker.com/compose/)
+     Compose V2](https://docs.docker.com/compose/)
    - [Hasura CLI](https://hasura.io/docs/latest/hasura-cli/install-hasura-cli/)
    - [bun.sh](https://bun.sh/) (optional, for running tests)
 
@@ -24,6 +24,7 @@ GraphQL API for BreederDB, built with [Hasura](https://hasura.io/docs/latest).
 
    ```bash
    docker-compose up -d
+   hasura metadata apply
    hasura migrate apply
    hasura metadata apply
    ```
@@ -41,5 +42,12 @@ Test the GraphQL API with [bun.sh](https://bun.sh/)'s test runner
 created / cleared by the test script.
 
 ```bash
+# regular test run
 ./tests/run.sh
+
+# reuse the test database
+./tests/run.sh --quick
+
+# help
+./tests/run.sh --help
 ```

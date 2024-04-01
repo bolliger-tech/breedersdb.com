@@ -13,7 +13,6 @@ on:
 jobs:
   generate-uml:
     runs-on: ubuntu-latest
-    container: ubuntu
     timeout-minutes: 10
 
     steps:

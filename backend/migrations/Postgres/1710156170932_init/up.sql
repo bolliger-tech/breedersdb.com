@@ -901,77 +901,10 @@ create index on materialized_view_refreshes (view_name);
 create index on materialized_view_refreshes (last_check);
 create unique index on materialized_view_refreshes (view_name, last_change);
 
+drop materialized view if exists marks_view;
 create materialized view marks_view as
-with tree_cultivar as (select id, cultivar_id from trees),
-     marks_with_combined_cultivar_id as (select marks.id,
-                                                marks.tree_id,
-                                                marks.cultivar_id,
-                                                marks.lot_id,
-                                                coalesce(marks.cultivar_id, tree_cultivar.cultivar_id) as combined_cultivar_id,
-                                                marks.created,
-                                                marks.modified,
-                                                marks.author,
-                                                marks.date_marked,
-                                                marks.geo_location,
-                                                marks.geo_location_accuracy
-                                         from marks
-                                                  left join tree_cultivar on marks.tree_id = tree_cultivar.id),
-     individual_stats as (select mark_attribute_id,
-                                 tree_id,
-                                 lot_id,
-                                 count(*)                                                     as count,
-                                 min(coalesce(integer_value, float_value))                    as min,
-                                 min(date_value)                                              as date_min,
-                                 max(coalesce(integer_value, float_value))                    as max,
-                                 max(date_value)                                              as date_max,
-                                 avg(coalesce(integer_value, float_value))                    as avg,
-                                 stddev_pop(coalesce(integer_value, float_value))             as stddev,
-                                 percentile_cont(0.5)
-                                 within group (order by coalesce(integer_value, float_value)) as median,
-                                 bool_or(boolean_value)                                       as any_true,
-                                 bool_and(boolean_value)                                      as all_true,
-                                 case
-                                     when tree_id is not null then 'TREES'
-                                     when lot_id is not null then 'LOTS'
-                                     end                                                      as stats_source
-                          from mark_values
-                                   join marks_with_combined_cultivar_id
-                                        on mark_values.mark_id = marks_with_combined_cultivar_id.id
-                          where marks_with_combined_cultivar_id.cultivar_id is null
-                          group by mark_attribute_id, tree_id, lot_id),
-     combined_stats as (select mark_attribute_id,
-                               combined_cultivar_id,
-                               count(*)                                                     as count,
-                               min(coalesce(integer_value, float_value))                    as min,
-                               min(date_value)                                              as date_min,
-                               max(coalesce(integer_value, float_value))                    as max,
-                               max(date_value)                                              as date_max,
-                               avg(coalesce(integer_value, float_value))                    as avg,
-                               stddev_pop(coalesce(integer_value, float_value))             as stddev,
-                               percentile_cont(0.5)
-                               within group (order by coalesce(integer_value, float_value)) as median,
-                               bool_or(boolean_value)                                       as any_true,
-                               bool_and(boolean_value)                                      as all_true,
-                               case
-                                   when count(tree_id) > 0 and count(cultivar_id) > 0 then 'TREES_AND_CULTIVARS'
-                                   when count(tree_id) > 0 then 'TREES'
-                                   when count(cultivar_id) > 0 then 'CULTIVARS'
-                                   end                                                      as stats_source
-                        from mark_values
-                                 join marks_with_combined_cultivar_id
-                                      on mark_values.mark_id = marks_with_combined_cultivar_id.id
-                        where combined_cultivar_id is not null
-                        group by mark_attribute_id, combined_cultivar_id)
+with tree_cultivar as (select id, cultivar_id from trees)
 select mark_values.id,
-       marks_with_combined_cultivar_id.created,
-       marks_with_combined_cultivar_id.modified,
-       marks_with_combined_cultivar_id.author,
-       marks_with_combined_cultivar_id.date_marked,
-       marks_with_combined_cultivar_id.tree_id,
-       marks_with_combined_cultivar_id.combined_cultivar_id,
-       marks_with_combined_cultivar_id.lot_id,
-       marks_with_combined_cultivar_id.geo_location,
-       marks_with_combined_cultivar_id.geo_location_accuracy,
        mark_values.integer_value,
        mark_values.float_value,
        mark_values.text_value,
@@ -979,70 +912,49 @@ select mark_values.id,
        mark_values.date_value,
        mark_values.note,
        mark_values.exceptional_mark,
-       coalesce(individual_stats.count, combined_stats.count)::int                as count,
-       coalesce(individual_stats.min, combined_stats.min)::double precision       as min,
-       coalesce(individual_stats.date_min, combined_stats.date_min)               as date_min,
-       coalesce(individual_stats.max, combined_stats.max)::double precision       as max,
-       coalesce(individual_stats.date_max, combined_stats.date_max)               as date_max,
-       coalesce(individual_stats.avg, combined_stats.avg)::double precision       as avg,
-       coalesce(individual_stats.stddev, combined_stats.stddev)::double precision as stddev,
-       coalesce(individual_stats.median, combined_stats.median)::double precision as median,
-       coalesce(individual_stats.any_true, combined_stats.any_true)               as any_true,
-       coalesce(individual_stats.all_true, combined_stats.all_true)               as all_true,
-       coalesce(individual_stats.stats_source, combined_stats.stats_source)       as stats_source,
-       mark_attributes.name,
-       mark_attributes.id                                                         as mark_attribute_id,
+       mark_attributes.name                                   as mark_attribute_name,
+       mark_attributes.id                                     as mark_attribute_id,
        mark_attributes.data_type,
-       mark_attributes.mark_type
-from marks_with_combined_cultivar_id
-         join mark_values on marks_with_combined_cultivar_id.id = mark_values.mark_id
-         join mark_attributes on mark_values.mark_attribute_id = mark_attributes.id
-         left join individual_stats
-                   on mark_values.mark_attribute_id = individual_stats.mark_attribute_id
-                       and coalesce(marks_with_combined_cultivar_id.tree_id, 0) =
-                           coalesce(individual_stats.tree_id, 0)
-                       and coalesce(marks_with_combined_cultivar_id.lot_id, 0) =
-                           coalesce(individual_stats.lot_id, 0)
-         left join combined_stats
-                   on mark_values.mark_attribute_id = combined_stats.mark_attribute_id
-                       and marks_with_combined_cultivar_id.combined_cultivar_id is not null
-                       and marks_with_combined_cultivar_id.combined_cultivar_id =
-                           combined_stats.combined_cultivar_id;
+       mark_attributes.mark_type,
+       marks.id                                               as mark_id,
+       marks.tree_id,
+       marks.cultivar_id,
+       marks.lot_id,
+       coalesce(marks.cultivar_id, tree_cultivar.cultivar_id) as combined_cultivar_id,
+       marks.created,
+       marks.modified,
+       marks.author,
+       marks.date_marked,
+       marks.geo_location,
+       marks.geo_location_accuracy
+from mark_values
+         inner join marks on marks.id = mark_values.mark_id
+         inner join mark_attributes on mark_values.mark_attribute_id = mark_attributes.id
+         left join tree_cultivar on marks.tree_id = tree_cultivar.id;
 
-comment on materialized view marks_view is 'Statistical values on cultivars include marks of trees. See `stats_source` column.\n\n'
-    'If the data comes from cultivars only, the `stats_source` is set to "CULTIVARS", for trees and cultivars to "TREES_AND_CULTIVARS".\n'
-    'and for trees only to "TREES".';
 
 create unique index on marks_view (id);
-create index on marks_view (created);
-create index on marks_view (author);
-create index on marks_view (date_marked);
-create index on marks_view using gin (author gin_trgm_ops);
-create index on marks_view (tree_id);
-create index on marks_view (combined_cultivar_id);
-create index on marks_view (lot_id);
 create index on marks_view (integer_value);
 create index on marks_view (float_value);
 create index on marks_view (text_value);
 create index on marks_view using gin (text_value gin_trgm_ops);
 create index on marks_view (boolean_value);
 create index on marks_view (date_value);
-create index on marks_view (count);
-create index on marks_view (min);
-create index on marks_view (date_min);
-create index on marks_view (max);
-create index on marks_view (date_max);
-create index on marks_view (avg);
-create index on marks_view (stddev);
-create index on marks_view (median);
-create index on marks_view (any_true);
-create index on marks_view (all_true);
 create index on marks_view (exceptional_mark);
-create index on marks_view (name);
-create index on marks_view using gin (name gin_trgm_ops);
+create index on marks_view (mark_attribute_name);
+create index on marks_view using gin (mark_attribute_name gin_trgm_ops);
 create index on marks_view (mark_attribute_id);
 create index on marks_view (data_type);
 create index on marks_view (mark_type);
+create index on marks_view (mark_id);
+create index on marks_view (tree_id);
+create index on marks_view (cultivar_id);
+create index on marks_view (lot_id);
+create index on marks_view (combined_cultivar_id);
+create index on marks_view (created);
+create index on marks_view (author);
+create index on marks_view using gin (author gin_trgm_ops);
+create index on marks_view (date_marked);
 
 create or replace function marks_last_changed() returns timestamp with time zone as
 $$

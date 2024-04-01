@@ -1,1 +1,5 @@
-{ "dependencies": { "jose": "^5.2.3" } }
+{
+  "dependencies": {
+    "jose": "^5.2.3"
+  }
+}

@@ -36,7 +36,7 @@ See [database.md](./docs/database.md).
 
 ## Tests
 
-Test the GraphQL API with [bun.sh](https://bun.sh/)'s test runner 
+Test the GraphQL API with [bun.sh](https://bun.sh/)'s test runner
 ([jest](https://jestjs.io/) compatible). Uses a separate test database, which is
 created / cleared by the test script.
 

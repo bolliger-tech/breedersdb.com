@@ -1,6 +1,6 @@
-import { test, expect, afterEach } from "bun:test";
-import { post } from "../fetch";
-import { iso8601dateRegex } from "../utils";
+import { test, expect, afterEach } from 'bun:test';
+import { post } from '../fetch';
+import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertMarks(
@@ -113,28 +113,28 @@ afterEach(async () => {
   });
 });
 
-test("insert", async () => {
+test('insert', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: "00000001",
-      cultivar_name_segment: "001",
-      lot_name_segment: "24A",
-      crossing_name: "Cross1",
+      publicid: '00000001',
+      cultivar_name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      author: "Author 1",
-      date_marked: "2021-01-01",
-      mark_form_name: "Mark Form 1",
+      author: 'Author 1',
+      date_marked: '2021-01-01',
+      mark_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
       cultivar_id: null,
       lot_id: null,
       geo_location: {
-        type: "Point",
+        type: 'Point',
         coordinates: [7.470518977340019, 47.13866030575061],
       },
       geo_location_accuracy: 7.1,
@@ -142,14 +142,14 @@ test("insert", async () => {
   });
 
   expect(resp.data.insert_marks_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_marks_one.author).toBe("Author 1");
-  expect(resp.data.insert_marks_one.date_marked).toBe("2021-01-01");
-  expect(resp.data.insert_marks_one.mark_form.name).toBe("Mark Form 1");
-  expect(resp.data.insert_marks_one.tree.publicid).toBe("00000001");
+  expect(resp.data.insert_marks_one.author).toBe('Author 1');
+  expect(resp.data.insert_marks_one.date_marked).toBe('2021-01-01');
+  expect(resp.data.insert_marks_one.mark_form.name).toBe('Mark Form 1');
+  expect(resp.data.insert_marks_one.tree.publicid).toBe('00000001');
   expect(resp.data.insert_marks_one.cultivar).toBeNull();
   expect(resp.data.insert_marks_one.lot).toBeNull();
   expect(resp.data.insert_marks_one.geo_location).toMatchObject({
-    type: "Point",
+    type: 'Point',
     coordinates: [7.470518977340019, 47.13866030575061],
   });
   expect(resp.data.insert_marks_one.geo_location_accuracy).toBe(7.1);
@@ -157,23 +157,23 @@ test("insert", async () => {
   expect(resp.data.insert_marks_one.modified).toBeNull();
 });
 
-test("author is required", async () => {
+test('author is required', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: "00000001",
-      cultivar_name_segment: "001",
-      lot_name_segment: "24A",
-      crossing_name: "Cross1",
+      publicid: '00000001',
+      cultivar_name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      author: "",
-      date_marked: "2021-01-01",
-      mark_form_name: "Mark Form 1",
+      author: '',
+      date_marked: '2021-01-01',
+      mark_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
     },
   });
@@ -181,23 +181,23 @@ test("author is required", async () => {
   expect(resp.errors[0].message).toMatch(/Check constraint violation/);
 });
 
-test("date_marked is required", async () => {
+test('date_marked is required', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: "00000001",
-      cultivar_name_segment: "001",
-      lot_name_segment: "24A",
-      crossing_name: "Cross1",
+      publicid: '00000001',
+      cultivar_name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      author: "",
+      author: '',
       date_marked: null,
-      mark_form_name: "Mark Form 1",
+      mark_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
     },
   });
@@ -205,129 +205,129 @@ test("date_marked is required", async () => {
   expect(resp.errors[0].message).toBe("unexpected null value for type 'date'");
 });
 
-test("has mark object", async () => {
+test('has mark object', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: "00000001",
-      cultivar_name_segment: "001",
-      lot_name_segment: "24A",
-      crossing_name: "Cross1",
+      publicid: '00000001',
+      cultivar_name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      author: "Author 1",
-      date_marked: "2021-01-01",
-      mark_form_name: "Mark Form 1",
+      author: 'Author 1',
+      date_marked: '2021-01-01',
+      mark_form_name: 'Mark Form 1',
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    "A mark must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them."
+    'A mark must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.',
   );
 });
 
-test("has exclusively one tree", async () => {
+test('has exclusively one tree', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: "00000001",
-      cultivar_name_segment: "001",
-      lot_name_segment: "24A",
-      crossing_name: "Cross1",
+      publicid: '00000001',
+      cultivar_name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      author: "Author 1",
-      date_marked: "2021-01-01",
-      mark_form_name: "Mark Form 1",
+      author: 'Author 1',
+      date_marked: '2021-01-01',
+      mark_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
       cultivar_id: tree.data.insert_trees_one.cultivar.id,
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    "A mark must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them."
+    'A mark must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.',
   );
 });
 
-test("has exclusively one cultivar", async () => {
+test('has exclusively one cultivar', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: "00000001",
-      cultivar_name_segment: "001",
-      lot_name_segment: "24A",
-      crossing_name: "Cross1",
+      publicid: '00000001',
+      cultivar_name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      author: "Author 1",
-      date_marked: "2021-01-01",
-      mark_form_name: "Mark Form 1",
+      author: 'Author 1',
+      date_marked: '2021-01-01',
+      mark_form_name: 'Mark Form 1',
       cultivar_id: tree.data.insert_trees_one.cultivar.id,
       lot_id: tree.data.insert_trees_one.cultivar.lot.id,
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    "A mark must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them."
+    'A mark must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.',
   );
 });
 
-test("has exclusively one lot", async () => {
+test('has exclusively one lot', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: "00000001",
-      cultivar_name_segment: "001",
-      lot_name_segment: "24A",
-      crossing_name: "Cross1",
+      publicid: '00000001',
+      cultivar_name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      author: "Author 1",
-      date_marked: "2021-01-01",
-      mark_form_name: "Mark Form 1",
+      author: 'Author 1',
+      date_marked: '2021-01-01',
+      mark_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
       lot_id: tree.data.insert_trees_one.cultivar.lot.id,
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    "A mark must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them."
+    'A mark must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.',
   );
 });
 
-test("modified", async () => {
+test('modified', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: "00000001",
-      cultivar_name_segment: "001",
-      lot_name_segment: "24A",
-      crossing_name: "Cross1",
+      publicid: '00000001',
+      cultivar_name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      author: "Author 1",
-      date_marked: "2021-01-01",
-      mark_form_name: "Mark Form 1",
+      author: 'Author 1',
+      date_marked: '2021-01-01',
+      mark_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
     },
   });
@@ -342,7 +342,7 @@ test("modified", async () => {
         }
       }
     `,
-    variables: { id: resp.data.insert_marks_one.id, author: "Author 999" },
+    variables: { id: resp.data.insert_marks_one.id, author: 'Author 999' },
   });
 
   expect(updated.data.update_marks_by_pk.modified).toMatch(iso8601dateRegex);

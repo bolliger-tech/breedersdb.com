@@ -1,11 +1,11 @@
-import * as jose from "jose";
+import * as jose from 'jose';
 
 let cached_jwt = null;
 
 async function generate_jwt() {
   const hasura_jwt_config = process.env.HASURA_GRAPHQL_JWT_SECRET;
   if (!hasura_jwt_config) {
-    console.error("HASURA_GRAPHQL_JWT_SECRET is not set");
+    console.error('HASURA_GRAPHQL_JWT_SECRET is not set');
     process.exit(1);
   }
 
@@ -13,7 +13,7 @@ async function generate_jwt() {
   try {
     config = JSON.parse(hasura_jwt_config);
   } catch (e) {
-    console.error("HASURA_GRAPHQL_JWT_SECRET is not a valid JSON");
+    console.error('HASURA_GRAPHQL_JWT_SECRET is not a valid JSON');
     process.exit(1);
   }
 
@@ -33,13 +33,13 @@ async function generate_jwt() {
   }
 
   const claims = {
-    sub: "0",
-    name: "Test Runner",
+    sub: '0',
+    name: 'Test Runner',
     aud: config.audience,
-    "https://hasura.io/jwt/claims": {
-      "x-hasura-allowed-roles": ["user"],
-      "x-hasura-default-role": "user",
-      "x-hasura-user-id": "0",
+    'https://hasura.io/jwt/claims': {
+      'x-hasura-allowed-roles': ['user'],
+      'x-hasura-default-role': 'user',
+      'x-hasura-user-id': '0',
     },
   };
 
@@ -47,15 +47,15 @@ async function generate_jwt() {
   const jwt = await new jose.SignJWT(claims)
     .setProtectedHeader({ alg: config.type })
     .setIssuedAt()
-    .setIssuer("github.com/bolliger.tech/breedersdb.com/backend/tests/auth.js")
-    .setExpirationTime("1 hour")
+    .setIssuer('github.com/bolliger.tech/breedersdb.com/backend/tests/auth.js')
+    .setExpirationTime('1 hour')
     .sign(encodedSecret);
 
   return jwt;
 }
 
 export default async function get_hasura_jwt() {
-  if (! cached_jwt) {
+  if (!cached_jwt) {
     cached_jwt = generate_jwt();
   }
 

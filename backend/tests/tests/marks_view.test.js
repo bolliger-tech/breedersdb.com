@@ -1,6 +1,6 @@
-import { test, expect, afterEach, describe } from "bun:test";
-import { post } from "../fetch";
-import { iso8601dateRegex } from "../utils";
+import { test, expect, afterEach, describe } from 'bun:test';
+import { post } from '../fetch';
+import { iso8601dateRegex } from '../utils';
 
 const marksViewFields = /* GraphQL */ `
   fragment MarksViewFields on marks_view {
@@ -270,30 +270,30 @@ async function insert_mark_value_with_associated_data({
   is_lot = false,
   is_cultivar = false,
   is_tree = false,
-  crossing_name = "Cross1",
-  lot_name_segment = "24A",
-  cultivar_name_segment = "001",
-  tree_publicid = "00000001",
-  mark_form_name = "Form 1",
-  mark_attribute_name = "Attribute 1",
-  mark_attribute_data_type = "INTEGER",
+  crossing_name = 'Cross1',
+  lot_name_segment = '24A',
+  cultivar_name_segment = '001',
+  tree_publicid = '00000001',
+  mark_form_name = 'Form 1',
+  mark_attribute_name = 'Attribute 1',
+  mark_attribute_data_type = 'INTEGER',
   mark_attribute_validation_rule = { min: 0, max: 100, step: 1 },
-  mark_attribute_mark_type = "OBSERVATION",
-  mark_author = "Author 1",
-  mark_date_marked = "2021-01-01",
-  mark_geo_location = { type: "Point", coordinates: [1, 2] },
+  mark_attribute_mark_type = 'OBSERVATION',
+  mark_author = 'Author 1',
+  mark_date_marked = '2021-01-01',
+  mark_geo_location = { type: 'Point', coordinates: [1, 2] },
   mark_geo_location_accuracy = 1,
   integer_value = 42,
   float_value = 42.42,
-  text_value = "Text 1",
+  text_value = 'Text 1',
   boolean_value = true,
-  date_value = "2021-01-01",
-  note = "Note 1",
+  date_value = '2021-01-01',
+  note = 'Note 1',
   exceptional_mark = false,
 }) {
   const objects = (is_lot ? 1 : 0) + (is_cultivar ? 1 : 0) + (is_tree ? 1 : 0);
   if (objects !== 1) {
-    throw new Error("Exactly one of lot, cultivar, tree must be true");
+    throw new Error('Exactly one of lot, cultivar, tree must be true');
   }
 
   const lot = await post({
@@ -331,7 +331,7 @@ async function insert_mark_value_with_associated_data({
     query: insertMarkAttribute,
     variables: {
       name: mark_attribute_name,
-      validation_rule: ["INTEGER", "FLOAT"].includes(mark_attribute_data_type)
+      validation_rule: ['INTEGER', 'FLOAT'].includes(mark_attribute_data_type)
         ? mark_attribute_validation_rule
         : null,
       data_type: mark_attribute_data_type,
@@ -359,12 +359,12 @@ async function insert_mark_value_with_associated_data({
       mark_attribute_id: attribute.data.insert_mark_attributes_one.id,
       mark_id: mark.data.insert_marks_one.id,
       integer_value:
-        mark_attribute_data_type === "INTEGER" ? integer_value : null,
-      float_value: mark_attribute_data_type === "FLOAT" ? float_value : null,
-      text_value: mark_attribute_data_type === "TEXT" ? text_value : null,
+        mark_attribute_data_type === 'INTEGER' ? integer_value : null,
+      float_value: mark_attribute_data_type === 'FLOAT' ? float_value : null,
+      text_value: mark_attribute_data_type === 'TEXT' ? text_value : null,
       boolean_value:
-        mark_attribute_data_type === "BOOLEAN" ? boolean_value : null,
-      date_value: mark_attribute_data_type === "DATE" ? date_value : null,
+        mark_attribute_data_type === 'BOOLEAN' ? boolean_value : null,
+      date_value: mark_attribute_data_type === 'DATE' ? date_value : null,
       note,
       exceptional_mark,
     },
@@ -381,7 +381,7 @@ async function insert_mark_value_with_associated_data({
   };
 }
 
-test("view contains new value after update", async () => {
+test('view contains new value after update', async () => {
   const { value_id } = await insert_mark_value_with_associated_data({
     is_lot: true,
   });
@@ -394,20 +394,20 @@ test("view contains new value after update", async () => {
   expect(data.marks_view[0].id).toBe(value_id);
 });
 
-describe("non aggregated values are correct", async () => {
-  test("common columns", async () => {
+describe('non aggregated values are correct', async () => {
+  test('common columns', async () => {
     const { attribute_id, value_id } =
       await insert_mark_value_with_associated_data({
         is_lot: true,
-        mark_attribute_name: "Attribute 1",
-        mark_attribute_data_type: "INTEGER",
-        mark_attribute_mark_type: "OBSERVATION",
-        author: "Author 1",
-        date_marked: "2021-01-01",
-        geo_location: { type: "Point", coordinates: [1, 2] },
+        mark_attribute_name: 'Attribute 1',
+        mark_attribute_data_type: 'INTEGER',
+        mark_attribute_mark_type: 'OBSERVATION',
+        author: 'Author 1',
+        date_marked: '2021-01-01',
+        geo_location: { type: 'Point', coordinates: [1, 2] },
         geo_location_accuracy: 1,
         integer_value: 42,
-        note: "Note 1",
+        note: 'Note 1',
         exceptional_mark: true,
       });
 
@@ -417,21 +417,21 @@ describe("non aggregated values are correct", async () => {
 
     expect(data.marks_view).toHaveLength(1);
     expect(data.marks_view[0].id).toBe(value_id);
-    expect(data.marks_view[0].author).toBe("Author 1");
-    expect(data.marks_view[0].date_marked).toBe("2021-01-01");
-    expect(data.marks_view[0].mark_attribute_name).toBe("Attribute 1");
+    expect(data.marks_view[0].author).toBe('Author 1');
+    expect(data.marks_view[0].date_marked).toBe('2021-01-01');
+    expect(data.marks_view[0].mark_attribute_name).toBe('Attribute 1');
     expect(data.marks_view[0].mark_attribute.id).toBe(attribute_id);
-    expect(data.marks_view[0].data_type).toBe("INTEGER");
-    expect(data.marks_view[0].note).toBe("Note 1");
+    expect(data.marks_view[0].data_type).toBe('INTEGER');
+    expect(data.marks_view[0].note).toBe('Note 1');
     expect(data.marks_view[0].geo_location.coordinates).toEqual([1, 2]);
     expect(data.marks_view[0].geo_location_accuracy).toBe(1);
     expect(data.marks_view[0].exceptional_mark).toBe(true);
-    expect(data.marks_view[0].mark_type).toBe("OBSERVATION");
+    expect(data.marks_view[0].mark_type).toBe('OBSERVATION');
     expect(data.marks_view[0].created).toMatch(iso8601dateRegex);
     expect(data.marks_view[0].modified).toBeNull();
   });
 
-  test("mark: lot", async () => {
+  test('mark: lot', async () => {
     const { lot_id, value_id } = await insert_mark_value_with_associated_data({
       is_lot: true,
     });
@@ -447,7 +447,7 @@ describe("non aggregated values are correct", async () => {
     expect(data.marks_view[0].tree).toBeNull();
   });
 
-  test("mark: cultivar", async () => {
+  test('mark: cultivar', async () => {
     const { cultivar_id, value_id } =
       await insert_mark_value_with_associated_data({
         is_cultivar: true,
@@ -464,7 +464,7 @@ describe("non aggregated values are correct", async () => {
     expect(data.marks_view[0].tree).toBeNull();
   });
 
-  test("mark: tree", async () => {
+  test('mark: tree', async () => {
     const { tree_id, cultivar_id, value_id } =
       await insert_mark_value_with_associated_data({
         is_tree: true,
@@ -482,7 +482,7 @@ describe("non aggregated values are correct", async () => {
   });
 });
 
-test("cultivar contains marks of trees", async () => {
+test('cultivar contains marks of trees', async () => {
   const { cultivar_id, tree_id, value_id, attribute_id } =
     await insert_mark_value_with_associated_data({
       is_tree: true,
@@ -504,7 +504,7 @@ test("cultivar contains marks of trees", async () => {
   expect(data.marks_view[0].tree.id).toBe(tree_id);
 });
 
-test("trees do not contain cultivar marks", async () => {
+test('trees do not contain cultivar marks', async () => {
   const { tree_id, value_id, attribute_id } =
     await insert_mark_value_with_associated_data({
       is_cultivar: true,

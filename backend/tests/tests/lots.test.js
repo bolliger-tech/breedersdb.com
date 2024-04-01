@@ -1,6 +1,6 @@
-import { test, expect, afterEach } from "bun:test";
-import { post } from "../fetch";
-import { iso8601dateRegex } from "../utils";
+import { test, expect, afterEach } from 'bun:test';
+import { post } from '../fetch';
+import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertLot(
@@ -69,54 +69,54 @@ afterEach(async () => {
   });
 });
 
-test("insert", async () => {
-  const date = "2024-03-21";
+test('insert', async () => {
+  const date = '2024-03-21';
   const resp = await post({
     query: insertMutation,
     variables: {
-      crossing_name: "Abcd",
-      name_segment: "24A",
+      crossing_name: 'Abcd',
+      name_segment: '24A',
       date_sowed: date,
       numb_seeds_sowed: 100,
       numb_sprouts_grown: 90,
-      seed_tray: "A1",
+      seed_tray: 'A1',
       date_planted: date,
       numb_sprouts_planted: 80,
-      patch: "Patch1",
-      note: "This is a note",
+      patch: 'Patch1',
+      note: 'This is a note',
     },
   });
 
   expect(resp.data.insert_crossings_one.lots[0].id).toBeGreaterThan(0);
-  expect(resp.data.insert_crossings_one.lots[0].name_segment).toBe("24A");
-  expect(resp.data.insert_crossings_one.lots[0].name).toBe("Abcd.24A");
+  expect(resp.data.insert_crossings_one.lots[0].name_segment).toBe('24A');
+  expect(resp.data.insert_crossings_one.lots[0].name).toBe('Abcd.24A');
   expect(resp.data.insert_crossings_one.lots[0].date_sowed).toBe(date);
   expect(resp.data.insert_crossings_one.lots[0].numb_seeds_sowed).toBe(100);
   expect(resp.data.insert_crossings_one.lots[0].numb_sprouts_grown).toBe(90);
-  expect(resp.data.insert_crossings_one.lots[0].seed_tray).toBe("A1");
+  expect(resp.data.insert_crossings_one.lots[0].seed_tray).toBe('A1');
   expect(resp.data.insert_crossings_one.lots[0].date_planted).toBe(date);
   expect(resp.data.insert_crossings_one.lots[0].numb_sprouts_planted).toBe(80);
-  expect(resp.data.insert_crossings_one.lots[0].patch).toBe("Patch1");
-  expect(resp.data.insert_crossings_one.lots[0].note).toBe("This is a note");
+  expect(resp.data.insert_crossings_one.lots[0].patch).toBe('Patch1');
+  expect(resp.data.insert_crossings_one.lots[0].note).toBe('This is a note');
   expect(resp.data.insert_crossings_one.lots[0].created).toMatch(
-    iso8601dateRegex
+    iso8601dateRegex,
   );
   expect(resp.data.insert_crossings_one.lots[0].modified).toBeNull();
 });
 
-test("crossing_name is unique", async () => {
+test('crossing_name is unique', async () => {
   const resp1 = await post({
     query: insertMutation,
     variables: {
-      crossing_name: "Abcd",
-      name_segment: "24A",
+      crossing_name: 'Abcd',
+      name_segment: '24A',
     },
   });
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      crossing_name: "Abcd",
-      name_segment: "24A",
+      crossing_name: 'Abcd',
+      name_segment: '24A',
     },
   });
 
@@ -124,24 +124,24 @@ test("crossing_name is unique", async () => {
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
 
-test("name_segment is required", async () => {
+test('name_segment is required', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      crossing_name: "Abcd",
-      name_segment: "",
+      crossing_name: 'Abcd',
+      name_segment: '',
     },
   });
 
   expect(resp.errors[0].message).toMatch(/Check constraint violation/);
 });
 
-test("updated name crossing", async () => {
+test('updated name crossing', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      crossing_name: "Abcd",
-      name_segment: "24A",
+      crossing_name: 'Abcd',
+      name_segment: '24A',
     },
   });
 
@@ -157,19 +157,19 @@ test("updated name crossing", async () => {
     }`,
     variables: {
       id: resp.data.insert_crossings_one.id,
-      name: "Efgh",
+      name: 'Efgh',
     },
   });
 
-  expect(updated.data.update_crossings_by_pk.lots[0].name).toBe("Efgh.24A");
+  expect(updated.data.update_crossings_by_pk.lots[0].name).toBe('Efgh.24A');
 });
 
-test("updated name lot", async () => {
+test('updated name lot', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      crossing_name: "Abcd",
-      name_segment: "24A",
+      crossing_name: 'Abcd',
+      name_segment: '24A',
     },
   });
 
@@ -182,19 +182,19 @@ test("updated name lot", async () => {
     }`,
     variables: {
       id: resp.data.insert_crossings_one.lots[0].id,
-      name_segment: "24Z",
+      name_segment: '24Z',
     },
   });
 
-  expect(updated.data.update_lots_by_pk.name).toBe("Abcd.24Z");
+  expect(updated.data.update_lots_by_pk.name).toBe('Abcd.24Z');
 });
 
-test("modified", async () => {
+test('modified', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      crossing_name: "Abcd",
-      name_segment: "24A",
+      crossing_name: 'Abcd',
+      name_segment: '24A',
     },
   });
 
@@ -213,7 +213,7 @@ test("modified", async () => {
     `,
     variables: {
       id: resp.data.insert_crossings_one.lots[0].id,
-      name_segment: "24Z",
+      name_segment: '24Z',
     },
   });
 

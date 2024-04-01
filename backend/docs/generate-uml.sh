@@ -9,7 +9,8 @@ PG_DATABASE_URL="${PG_DATABASE_URL:-postgres://postgres:postgres@host.docker.int
 base_dir=$(dirname $(realpath $0))
 
 echo "Generating PlantUML diagram..."
-docker run --rm -v "$base_dir":/app $(docker build -q -f "$base_dir/planter.Dockerfile" "$base_dir") \
+docker run --add-host=host.docker.internal:host-gateway --rm -v \
+  "$base_dir":/app $(docker build -q -f "$base_dir/planter.Dockerfile" "$base_dir") \
   planter \
   --output=/app/database.puml \
   --title="Database Schema" \

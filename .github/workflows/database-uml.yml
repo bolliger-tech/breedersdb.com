@@ -2,9 +2,9 @@ name: Generate Database UML
 
 on:
   push:
-    # paths:
-    #   - 'backend/migrations/**'
-    #   - '.github/workflows/database-uml.yml'
+    paths:
+      - 'backend/migrations/**'
+      - '.github/workflows/database-uml.yml'
   pull_request:
     branches:
       - main

@@ -39,10 +39,7 @@ jobs:
           done'
       
       - name: Wait for Hasura to start
-        run: |
-          while ! curl -s -o /dev/null http://localhost:8080/healthz; do
-          sleep 1
-          done
+        run: while ! curl -s http://localhost:8080/healthz; do sleep 1; done
       
       - name: Apply migrations
         run: |

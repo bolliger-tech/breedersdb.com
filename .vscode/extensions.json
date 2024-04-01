@@ -2,7 +2,7 @@
   "recommendations": [
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "editorconfig.editorconfig",
+    "editorconfig.editorconfig"
   ],
   "unwantedRecommendations": [
     "hookyqr.beautify",

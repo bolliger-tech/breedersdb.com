@@ -26,14 +26,14 @@ jobs:
           echo "HASURA_GRAPHQL_JWT_SECRET='{\"audience\":\"breedersDB\",\"type\":\"HS256\",\"key\":\"$(openssl rand -hex 16)\"}'" >> backend/.env
 
       - name: Start containers
-        run: docker-compose -f backend/docker-compose.yaml up -d
+        run: docker compose -f backend/docker-compose.yaml up -d
 
       - name: Install Hasura-CLI
         run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
 
       - name: Wait for PostgreSQL to start
         run: >-
-          docker-compose -f backend/docker-compose.yaml exec -T postgres 
+          docker compose -f backend/docker-compose.yaml exec -T postgres 
           bash -c 
           'while ! pg_isready -h localhost -p 5432 -U postgres; 
           do sleep 1; 

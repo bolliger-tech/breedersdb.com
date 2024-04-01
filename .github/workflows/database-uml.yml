@@ -39,11 +39,10 @@ jobs:
           done'
       
       - name: Wait for Hasura to start
-        run: while ! curl -s http://127.0.0.1:8080/healthz; do sleep 1; done
+        run: while ! curl -s http://localhost:8080/healthz; do sleep 1; done
       
       - name: Apply migrations
         run: |
-          export HASURA_GRAPHQL_ENDPOINT=http://127.0.0.1:8080
           hasura metadata apply
           hasura migrate apply --all-databases
           hasura metadata apply

@@ -14,7 +14,7 @@ services:
   hasura:
     image: hasura/graphql-engine:v2.37.1
     ports:
-      - "8080:8080"
+      - "0.0.0.0:8080:8080"
     depends_on:
       - postgres
     environment:

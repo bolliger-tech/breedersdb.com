@@ -9,7 +9,8 @@ PG_DATABASE_URL="${PG_DATABASE_URL:-postgres://postgres:postgres@host.docker.int
 base_dir=$(dirname $(realpath $0))
 
 echo "Generating PlantUML diagram..."
-docker run --rm -v "$base_dir":/app $(docker build -q -f "$base_dir/planter.Dockerfile" "$base_dir") \
+docker run --add-host=host.docker.internal:host-gateway --rm -v \
+  "$base_dir":/app $(docker build -q -f "$base_dir/planter.Dockerfile" "$base_dir") \
   planter \
   --output=/app/database.puml \
   --title="Database Schema" \
@@ -24,26 +25,6 @@ sed -i -E 's/entity "\*\*(marks|mark_values|mark_form_fields|mark_attributes|mar
 
 echo "Unescape formattings..."
 sed -i -E 's/&#34;&#34;/""/g' "$base_dir/database.puml" # unescape text formatting (monospace)
-
-echo "Injecting notes..."
-sed -i '/@enduml/d' "$base_dir/database.puml"
-cat <<EOF >> "$base_dir/database.puml"
-
-note top of "**marks**"
-  The materialized view ""marks_view"" is used to query the marks. Call 
-  ""refresh_marks_view()"" to update it.
-
-  The ""marks_view"" adds statistical data from ""trees"" to ""cultivars"".
-  See the ""stats_source"" column. 
-  
-  If querying statistical data of cultivars, you must apply the following 
-  algorithm to obtain the correct data: For every ""attribute_id"", check 
-  the ""stats_source"" of the rows. If there are different sources, apply 
-  the following priority: ""TREES_AND_CULTIVARS"" > ""CULTIVARS"" > ""TREES"".
-end note
-
-@enduml
-EOF
 
 # Wait for the file to be available to docker container
 sleep 1

@@ -1,6 +1,6 @@
-import { test, expect, afterEach } from "bun:test";
-import { post } from "../fetch";
-import { iso8601dateRegex } from "../utils";
+import { test, expect, afterEach } from 'bun:test';
+import { post } from '../fetch';
+import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertMotherTree(
@@ -179,75 +179,75 @@ afterEach(async () => {
   });
 });
 
-test("insert", async () => {
+test('insert', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      crossing_name: "C1",
-      lot_name_segment: "24A",
-      cultivar_name_segment: "001",
-      publicid: "00000001",
+      crossing_name: 'C1',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      publicid: '00000001',
     },
   });
 
   const pollen = await post({
     query: insertPollenMutation,
     variables: {
-      name: "Pollen 1",
-      crossing_name: "C2",
-      lot_name_segment: "24A",
-      cultivar_name_segment: "001",
+      name: 'Pollen 1',
+      crossing_name: 'C2',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: "Mother tree 1",
+      name: 'Mother tree 1',
       planned: true,
-      date_impregnated: "2021-01-02",
-      date_fruits_harvested: "2021-01-03",
+      date_impregnated: '2021-01-02',
+      date_fruits_harvested: '2021-01-03',
       numb_flowers: 2,
       numb_fruits: 3,
       numb_seeds: 4,
-      note: "Note",
+      note: 'Note',
       tree_id: tree.data.insert_trees_one.id,
       pollen_id: pollen.data.insert_pollen_one.id,
-      crossing_name: "C3",
+      crossing_name: 'C3',
       crossing_mother_cultivar_id: tree.data.insert_trees_one.cultivar.id,
       crossing_father_cultivar_id: pollen.data.insert_pollen_one.cultivar.id,
     },
   });
 
   expect(resp.data.insert_mother_trees_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mother_trees_one.name).toBe("Mother tree 1");
+  expect(resp.data.insert_mother_trees_one.name).toBe('Mother tree 1');
   expect(resp.data.insert_mother_trees_one.planned).toBe(true);
-  expect(resp.data.insert_mother_trees_one.date_impregnated).toBe("2021-01-02");
+  expect(resp.data.insert_mother_trees_one.date_impregnated).toBe('2021-01-02');
   expect(resp.data.insert_mother_trees_one.date_fruits_harvested).toBe(
-    "2021-01-03"
+    '2021-01-03',
   );
   expect(resp.data.insert_mother_trees_one.numb_flowers).toBe(2);
   expect(resp.data.insert_mother_trees_one.numb_fruits).toBe(3);
   expect(resp.data.insert_mother_trees_one.numb_seeds).toBe(4);
-  expect(resp.data.insert_mother_trees_one.note).toBe("Note");
+  expect(resp.data.insert_mother_trees_one.note).toBe('Note');
   expect(resp.data.insert_mother_trees_one.tree.id).toBe(
-    tree.data.insert_trees_one.id
+    tree.data.insert_trees_one.id,
   );
   expect(resp.data.insert_mother_trees_one.pollen.id).toBe(
-    pollen.data.insert_pollen_one.id
+    pollen.data.insert_pollen_one.id,
   );
-  expect(resp.data.insert_mother_trees_one.crossing.name).toBe("C3");
+  expect(resp.data.insert_mother_trees_one.crossing.name).toBe('C3');
   expect(resp.data.insert_mother_trees_one.crossing.mother_cultivar.id).toBe(
-    tree.data.insert_trees_one.cultivar.id
+    tree.data.insert_trees_one.cultivar.id,
   );
   expect(resp.data.insert_mother_trees_one.crossing.father_cultivar.id).toBe(
-    pollen.data.insert_pollen_one.cultivar.id
+    pollen.data.insert_pollen_one.cultivar.id,
   );
   expect(resp.data.insert_mother_trees_one.created).toMatch(iso8601dateRegex);
   expect(resp.data.insert_mother_trees_one.modified).toBeNull();
 });
 
-test("insert with contradicting tree cultivar", async () => {
+test('insert with contradicting tree cultivar', async () => {
   const cultivar = await post({
     query: /* GraphQL */ `
       mutation InsertCultivar($name_segment: String!) {
@@ -265,43 +265,43 @@ test("insert with contradicting tree cultivar", async () => {
       }
     `,
     variables: {
-      name_segment: "002",
+      name_segment: '002',
     },
   });
 
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      crossing_name: "C1",
-      lot_name_segment: "24A",
-      cultivar_name_segment: "001",
-      publicid: "00000001",
+      crossing_name: 'C1',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      publicid: '00000001',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: "Mother tree 1",
+      name: 'Mother tree 1',
       planned: true,
-      date_impregnated: "2021-01-02",
-      date_fruits_harvested: "2021-01-03",
+      date_impregnated: '2021-01-02',
+      date_fruits_harvested: '2021-01-03',
       numb_flowers: 2,
       numb_fruits: 3,
       numb_seeds: 4,
-      note: "Note",
+      note: 'Note',
       tree_id: tree.data.insert_trees_one.id,
-      crossing_name: "C2",
+      crossing_name: 'C2',
       crossing_mother_cultivar_id: cultivar.data.insert_cultivars_one.id,
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toMatch(
-    /The cultivar of the mother tree must match the mother cultivar of the crossing./
+    /The cultivar of the mother tree must match the mother cultivar of the crossing./,
   );
 });
 
-test("insert with contradicting pollen cultivar", async () => {
+test('insert with contradicting pollen cultivar', async () => {
   const cultivar = await post({
     query: /* GraphQL */ `
       mutation InsertCultivar($name_segment: String!) {
@@ -319,72 +319,72 @@ test("insert with contradicting pollen cultivar", async () => {
       }
     `,
     variables: {
-      name_segment: "002",
+      name_segment: '002',
     },
   });
 
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      crossing_name: "C1",
-      lot_name_segment: "24A",
-      cultivar_name_segment: "001",
-      publicid: "00000001",
+      crossing_name: 'C1',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      publicid: '00000001',
     },
   });
 
   const pollen = await post({
     query: insertPollenMutation,
     variables: {
-      name: "Pollen 1",
-      crossing_name: "C2",
-      lot_name_segment: "24A",
-      cultivar_name_segment: "001",
+      name: 'Pollen 1',
+      crossing_name: 'C2',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: "Mother tree 1",
+      name: 'Mother tree 1',
       planned: true,
-      date_impregnated: "2021-01-02",
-      date_fruits_harvested: "2021-01-03",
+      date_impregnated: '2021-01-02',
+      date_fruits_harvested: '2021-01-03',
       numb_flowers: 2,
       numb_fruits: 3,
       numb_seeds: 4,
-      note: "Note",
+      note: 'Note',
       tree_id: tree.data.insert_trees_one.id,
       pollen_id: pollen.data.insert_pollen_one.id,
-      crossing_name: "C3",
+      crossing_name: 'C3',
       crossing_mother_cultivar_id: tree.data.insert_trees_one.cultivar.id,
       crossing_father_cultivar_id: cultivar.data.insert_cultivars_one.id,
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toMatch(
-    /The cultivar of the pollen must match the father cultivar of the crossing./
+    /The cultivar of the pollen must match the father cultivar of the crossing./,
   );
 });
 
-test("insert name is unique", async () => {
+test('insert name is unique', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      crossing_name: "C1",
-      lot_name_segment: "24A",
-      cultivar_name_segment: "001",
-      publicid: "00000001",
+      crossing_name: 'C1',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      publicid: '00000001',
     },
   });
 
   const resp1 = await post({
     query: insertMutation,
     variables: {
-      name: "Mother tree 1",
+      name: 'Mother tree 1',
       planned: true,
       tree_id: tree.data.insert_trees_one.id,
-      crossing_name: "C2",
+      crossing_name: 'C2',
       crossing_mother_cultivar_id: tree.data.insert_trees_one.cultivar.id,
     },
   });
@@ -392,10 +392,10 @@ test("insert name is unique", async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: "Mother tree 1",
+      name: 'Mother tree 1',
       planned: true,
       tree_id: tree.data.insert_trees_one.id,
-      crossing_name: "C2",
+      crossing_name: 'C2',
       crossing_mother_cultivar_id: tree.data.insert_trees_one.cultivar.id,
     },
   });
@@ -404,24 +404,24 @@ test("insert name is unique", async () => {
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
 
-test("insert name is required", async () => {
+test('insert name is required', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      crossing_name: "C1",
-      lot_name_segment: "24A",
-      cultivar_name_segment: "001",
-      publicid: "00000001",
+      crossing_name: 'C1',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      publicid: '00000001',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: "",
+      name: '',
       planned: true,
       tree_id: tree.data.insert_trees_one.id,
-      crossing_name: "C2",
+      crossing_name: 'C2',
       crossing_mother_cultivar_id: tree.data.insert_trees_one.cultivar.id,
     },
   });
@@ -429,24 +429,24 @@ test("insert name is required", async () => {
   expect(resp.errors[0].message).toMatch(/Check constraint violation/);
 });
 
-test("modified", async () => {
+test('modified', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      crossing_name: "C1",
-      lot_name_segment: "24A",
-      cultivar_name_segment: "001",
-      publicid: "00000001",
+      crossing_name: 'C1',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      publicid: '00000001',
     },
   });
 
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: "Mother tree 1",
+      name: 'Mother tree 1',
       planned: false,
       tree_id: tree.data.insert_trees_one.id,
-      crossing_name: "C2",
+      crossing_name: 'C2',
       crossing_mother_cultivar_id: tree.data.insert_trees_one.cultivar.id,
     },
   });
@@ -466,11 +466,11 @@ test("modified", async () => {
     `,
     variables: {
       id: resp.data.insert_mother_trees_one.id,
-      name: "Mother tree 999",
+      name: 'Mother tree 999',
     },
   });
 
   expect(updated.data.update_mother_trees_by_pk.modified).toMatch(
-    iso8601dateRegex
+    iso8601dateRegex,
   );
 });

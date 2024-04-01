@@ -5,42 +5,61 @@ on:
     paths:
       - 'backend/migrations/**'
       - '.github/workflows/database-uml.yml'
+  pull_request:
+    branches:
+      - main
+      - v3
 
 jobs:
   generate-uml:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
       - name: Create .env file
         run: |
           echo "HASURA_GRAPHQL_ADMIN_SECRET=$(openssl rand -hex 16)" >> backend/.env
           echo "HASURA_GRAPHQL_JWT_SECRET='{\"audience\":\"breedersDB\",\"type\":\"HS256\",\"key\":\"$(openssl rand -hex 16)\"}'" >> backend/.env
 
-      - name: Start PostgreSQL container
-        run: docker-compose -f backend/docker-compose.yaml up -d postgres
+      - name: Start PostgreSQL
+        run: docker compose -f backend/docker-compose.yaml up -d postgres
 
-      - name: Wait for PostgreSQL to start
+      - name: Wait for PostgreSQL to be ready
         run: >-
-          docker-compose -f backend/docker-compose.yaml exec -T postgres 
+          docker compose -f backend/docker-compose.yaml exec -T postgres 
           bash -c 
           'while ! pg_isready -h localhost -p 5432 -U postgres; 
           do sleep 1; 
           done'
 
+      - name: Start Hasura
+        run: docker compose -f backend/docker-compose.yaml up -d hasura
+
+      - name: Install Hasura-CLI
+        run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
+
+      - name: Wait for Hasura to be ready
+        run: while ! curl -s http://localhost:8080/healthz; do sleep 1; done
+
+      - name: Apply migrations
+        run: |
+          hasura --skip-update-check --project backend metadata apply
+          hasura --skip-update-check --project backend migrate apply --all-databases
+          hasura --skip-update-check --project backend metadata apply
+
       - name: Generate UML
         run: ./backend/docs/generate-uml.sh
-      
+
       - name: Check for changes in UML files
-        id: check_changes
         run: |
-          if [[ -n $(git diff --name-only ${{ github.base_ref }}...${{ github.head_ref }} backend/docs/database.puml backend/docs/database-light.svg backend/docs/database-dark.svg) ]];
+          if [[ -n $(git diff --name-only backend/docs/database.puml backend/docs/database-light.svg backend/docs/database-dark.svg) ]];
           then
-          echo "::set-output name=changes::true"
+          echo "HAS_CHANGES=true" >> $GITHUB_ENV
           else
-          echo "::set-output name=changes::false"
+          echo "HAS_CHANGES=" >> $GITHUB_ENV
           fi
 
       - name: Get branch name on pull request
@@ -50,24 +69,22 @@ jobs:
       - name: Get branch name on push
         run: echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
         if: github.event_name == 'push'
-      
+
       - name: Get branch name on workflow dispatch
         run: echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
         if: github.event_name == 'workflow_dispatch'
 
       - name: Create Pull Request
-        if: steps.check_changes.outputs.changes == 'true'
-        uses: peter-evans/create-pull-request@v4
+        if: ${{ env.HAS_CHANGES }}
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update-database-uml
-          branch-suffix: short-commit-hash
-          base: ${{ env.BRANCH_NAME }}
-          title: "Update database UML"
+          branch: ${{ env.BRANCH_NAME }}-DB-UML
+          title: 'Update database UML'
           body: |
             Updates the database UML files.
 
             PR was automatically created by the database-uml workflow.
-          commit-message: "Update database UML"
+          commit-message: 'Update database UML'
           reviewers: ${{ github.actor }}
           delete-branch: true

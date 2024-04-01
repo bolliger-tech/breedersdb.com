@@ -1,6 +1,6 @@
-import { test, expect, afterEach } from "bun:test";
-import { post } from "../fetch";
-import { iso8601dateRegex } from "../utils";
+import { test, expect, afterEach } from 'bun:test';
+import { post } from '../fetch';
+import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertMarkFormField(
@@ -62,34 +62,34 @@ afterEach(async () => {
   });
 });
 
-test("insert", async () => {
+test('insert', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
       priority: 1,
-      mark_form_name: "Mark Form 1",
-      mark_attribute_name: "Mark Attribute 1",
+      mark_form_name: 'Mark Form 1',
+      mark_attribute_name: 'Mark Attribute 1',
       mark_attribute_validation_rule: { max: 9, min: 1, step: 1 },
-      mark_attribute_data_type: "INTEGER",
-      mark_attribute_mark_type: "OBSERVATION",
+      mark_attribute_data_type: 'INTEGER',
+      mark_attribute_mark_type: 'OBSERVATION',
     },
   });
 
   expect(resp.data.insert_mark_form_fields_one.id).toBeGreaterThan(0);
   expect(resp.data.insert_mark_form_fields_one.priority).toBe(1);
   expect(resp.data.insert_mark_form_fields_one.mark_form.name).toBe(
-    "Mark Form 1"
+    'Mark Form 1',
   );
   expect(resp.data.insert_mark_form_fields_one.mark_attribute.name).toBe(
-    "Mark Attribute 1"
+    'Mark Attribute 1',
   );
   expect(resp.data.insert_mark_form_fields_one.created).toMatch(
-    iso8601dateRegex
+    iso8601dateRegex,
   );
   expect(resp.data.insert_mark_form_fields_one.modified).toBeNull();
 });
 
-test("priority is unique per form", async () => {
+test('priority is unique per form', async () => {
   const form = await post({
     query: /* GraphQL */ `
       mutation InsertMarkForm {
@@ -166,16 +166,16 @@ test("priority is unique per form", async () => {
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
 
-test("modified", async () => {
+test('modified', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
       priority: 1,
-      mark_form_name: "Mark Form 1",
-      mark_attribute_name: "Mark Attribute 1",
+      mark_form_name: 'Mark Form 1',
+      mark_attribute_name: 'Mark Attribute 1',
       mark_attribute_validation_rule: { max: 9, min: 1, step: 1 },
-      mark_attribute_data_type: "INTEGER",
-      mark_attribute_mark_type: "OBSERVATION",
+      mark_attribute_data_type: 'INTEGER',
+      mark_attribute_mark_type: 'OBSERVATION',
     },
   });
 
@@ -199,6 +199,6 @@ test("modified", async () => {
   });
 
   expect(updated.data.update_mark_form_fields_by_pk.modified).toMatch(
-    iso8601dateRegex
+    iso8601dateRegex,
   );
 });

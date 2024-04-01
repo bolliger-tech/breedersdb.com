@@ -1,6 +1,6 @@
-import { test, expect, afterEach } from "bun:test";
-import { post } from "../fetch";
-import { iso8601dateRegex } from "../utils";
+import { test, expect, afterEach } from 'bun:test';
+import { post } from '../fetch';
+import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertGrafting($name: String) {
@@ -25,31 +25,31 @@ afterEach(async () => {
   });
 });
 
-test("insert", async () => {
+test('insert', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: "Grafting 1",
+      name: 'Grafting 1',
     },
   });
 
   expect(resp.data.insert_graftings_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_graftings_one.name).toBe("Grafting 1");
+  expect(resp.data.insert_graftings_one.name).toBe('Grafting 1');
   expect(resp.data.insert_graftings_one.created).toMatch(iso8601dateRegex);
   expect(resp.data.insert_graftings_one.modified).toBeNull();
 });
 
-test("name is unique", async () => {
+test('name is unique', async () => {
   const resp1 = await post({
     query: insertMutation,
     variables: {
-      name: "Grafting 1",
+      name: 'Grafting 1',
     },
   });
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: "Grafting 1",
+      name: 'Grafting 1',
     },
   });
 
@@ -57,22 +57,22 @@ test("name is unique", async () => {
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
 
-test("name is required", async () => {
+test('name is required', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: "",
+      name: '',
     },
   });
 
   expect(resp.errors[0].message).toMatch(/Check constraint violation/);
 });
 
-test("modified", async () => {
+test('modified', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: "Grafting 1",
+      name: 'Grafting 1',
     },
   });
 
@@ -86,10 +86,10 @@ test("modified", async () => {
         }
       }
     `,
-    variables: { id: resp.data.insert_graftings_one.id, name: "Grafting 999" },
+    variables: { id: resp.data.insert_graftings_one.id, name: 'Grafting 999' },
   });
 
   expect(updated.data.update_graftings_by_pk.modified).toMatch(
-    iso8601dateRegex
+    iso8601dateRegex,
   );
 });

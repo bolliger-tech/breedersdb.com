@@ -1,4 +1,5 @@
 - "!include public_crossings.yaml"
+- "!include public_cultivars.yaml"
 - "!include public_graftings.yaml"
 - "!include public_lots.yaml"
 - "!include public_mark_attribute_data_types.yaml"
@@ -18,4 +19,3 @@
 - "!include public_query_groups.yaml"
 - "!include public_rootstocks.yaml"
 - "!include public_trees.yaml"
-- "!include public_cultivars.yaml"

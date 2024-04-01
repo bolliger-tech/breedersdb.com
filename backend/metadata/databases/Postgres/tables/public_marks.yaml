@@ -2,6 +2,9 @@ table:
   name: marks
   schema: public
 object_relationships:
+  - name: cultivar
+    using:
+      foreign_key_constraint_on: cultivar_id
   - name: lot
     using:
       foreign_key_constraint_on: lot_id
@@ -11,9 +14,6 @@ object_relationships:
   - name: tree
     using:
       foreign_key_constraint_on: tree_id
-  - name: cultivar
-    using:
-      foreign_key_constraint_on: cultivar_id
 array_relationships:
   - name: mark_values
     using:

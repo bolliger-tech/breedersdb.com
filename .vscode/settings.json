@@ -1,4 +1,20 @@
 {
   "graphql-config.dotEnvPath": "backend/.env",
   "editor.formatOnSave": true,
+  "spellright.language": [
+    "en"
+  ],
+  "spellright.documentTypes": [
+    "javascript",
+    "typescript",
+    "markdown",
+    "plaintext",
+    "jsonc",
+    "vue",
+    "html",
+    "css",
+    "graphql",
+    "yaml",
+    "dockerfile",
+  ],
 }

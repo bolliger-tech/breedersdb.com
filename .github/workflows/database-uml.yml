@@ -10,10 +10,6 @@ on:
       - main
       - v3
 
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
   generate-uml:
     runs-on: ubuntu-latest

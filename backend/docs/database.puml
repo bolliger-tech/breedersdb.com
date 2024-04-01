@@ -292,18 +292,4 @@ entity "**trees**" #0000ff12 ##000088 {
 "**trees**"   }--  "**plant_rows**"
 
 "**trees**"   }--  "**rootstocks**"
-
-note top of "**marks**"
-  The materialized view ""marks_view"" is used to query the marks. Call 
-  ""refresh_marks_view()"" to update it.
-
-  The ""marks_view"" adds statistical data from ""trees"" to ""cultivars"".
-  See the ""stats_source"" column. 
-  
-  If querying statistical data of cultivars, you must apply the following 
-  algorithm to obtain the correct data: For every ""attribute_id"", check 
-  the ""stats_source"" of the rows. If there are different sources, apply the 
-  following priority: ""TREES_AND_CULTIVARS"" > ""CULTIVARS"" > ""TREES"".
-end note
-
 @enduml

@@ -60,12 +60,10 @@ jobs:
 
       - name: Create Pull Request
         if: ${{ env.HAS_CHANGES }}
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update-database-uml
-          branch-suffix: short-commit-hash
-          base: ${{ env.BRANCH_NAME }}
+          branch: ${{ env.BRANCH_NAME }}-DB-UML
           title: "Update database UML"
           body: |
             Updates the database UML files.

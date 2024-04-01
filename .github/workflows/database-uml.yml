@@ -38,13 +38,12 @@ jobs:
         run: ./backend/docs/generate-uml.sh
       
       - name: Check for changes in UML files
-        id: check_changes
         run: |
-          if [[ -n $(git diff --name-only ${{ github.base_ref }}...${{ github.head_ref }} backend/docs/database.puml backend/docs/database-light.svg backend/docs/database-dark.svg) ]];
+          if [[ -n $(git diff --name-only backend/docs/database.puml backend/docs/database-light.svg backend/docs/database-dark.svg) ]];
           then
-          echo "::set-output name=changes::true"
+          echo "HAS_CHANGES=true" >> $GITHUB_ENV
           else
-          echo "::set-output name=changes::false"
+          echo "HAS_CHANGES=" >> $GITHUB_ENV
           fi
 
       - name: Get branch name on pull request
@@ -60,7 +59,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
 
       - name: Create Pull Request
-        if: steps.check_changes.outputs.changes == 'true'
+        if: ${{ env.HAS_CHANGES }}
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

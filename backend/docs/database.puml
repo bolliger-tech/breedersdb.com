@@ -19,11 +19,11 @@ entity "**cultivars**" #ffff0012 ##888800 {
   *""lot_id"": //integer [FK]//
   *""name_segment"": //character varying(45) //
   *""name"": //character varying(58)  : Set by triggers.//
-  ""common_name"": //text //
+  ""common_name"": //character varying(255) //
   ""acronym"": //character varying(10) //
-  ""breeder"": //text //
-  ""registration"": //text //
-  ""description"": //text //
+  ""breeder"": //character varying(255) //
+  ""registration"": //character varying(255) //
+  ""description"": //character varying(2047) //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
 }
@@ -45,11 +45,11 @@ entity "**lots**" #ffff0012 ##888800 {
   ""date_sowed"": //date //
   ""numb_seeds_sowed"": //integer //
   ""numb_sprouts_grown"": //integer //
-  ""seed_tray"": //text //
+  ""seed_tray"": //character varying(255) //
   ""date_planted"": //date //
   ""numb_sprouts_planted"": //integer //
-  ""patch"": //text //
-  ""note"": //text //
+  ""patch"": //character varying(255) //
+  ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
 }
@@ -67,7 +67,7 @@ entity "**mark_attributes**" #00ff0012 ##008800 {
   *""name"": //character varying(45) //
   ""validation_rule"": //jsonb //
   *""data_type"": //character varying(12) [FK]//
-  ""description"": //text //
+  ""description"": //character varying(255) //
   *""mark_type"": //character varying(12) [FK]//
   *""disabled"": //boolean //
   *""created"": //timestamp with time zone //
@@ -88,7 +88,7 @@ entity "**mark_forms**" #00ff0012 ##008800 {
   + ""id"": //integer [PK]//
   --
   *""name"": //character varying(45) //
-  ""description"": //text //
+  ""description"": //character varying(255) //
   *""disabled"": //boolean //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
@@ -108,10 +108,10 @@ entity "**mark_values**" #00ff0012 ##008800 {
   *""mark_id"": //integer [FK]//
   ""integer_value"": //integer //
   ""float_value"": //double precision //
-  ""text_value"": //text //
+  ""text_value"": //character varying(2047) //
   ""boolean_value"": //boolean //
   ""date_value"": //date //
-  ""note"": //text //
+  ""note"": //character varying(2047) //
   *""exceptional_mark"": //boolean //
   ""offline_id"": //uuid //
   *""created"": //timestamp with time zone //
@@ -137,7 +137,7 @@ entity "**marks**" #00ff0012 ##008800 {
 entity "**materialized_view_refreshes**" {
   + ""id"": //integer [PK]//
   --
-  *""view_name"": //text //
+  *""view_name"": //character varying(63) //
   ""last_change"": //timestamp with time zone //
   ""last_check"": //timestamp with time zone //
 }
@@ -152,7 +152,7 @@ entity "**mother_trees**" #0000ff06 {
   ""numb_flowers"": //integer //
   ""numb_fruits"": //integer //
   ""numb_seeds"": //integer //
-  ""note"": //text //
+  ""note"": //character varying(2047) //
   *""tree_id"": //integer [FK]//
   ""pollen_id"": //integer [FK]//
   *""crossing_id"": //integer [FK]//
@@ -174,7 +174,7 @@ entity "**plant_rows**" #0000ff12 ##000088 {
   --
   *""name"": //character varying(45) //
   *""orchard_id"": //integer [FK]//
-  ""note"": //text //
+  ""note"": //character varying(2047) //
   ""date_created"": //date //
   ""date_eliminated"": //date //
   *""disabled"": //boolean  : Derived from date_eliminated.//
@@ -187,7 +187,7 @@ entity "**pollen**" #0000ff06 {
   --
   *""name"": //character varying(45) //
   ""date_harvested"": //date //
-  ""note"": //text //
+  ""note"": //character varying(2047) //
   *""cultivar_id"": //integer [FK]//
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
@@ -198,7 +198,7 @@ entity "**queries**" {
   --
   *""name"": //character varying(45) //
   *""my_query"": //jsonb //
-  ""description"": //text //
+  ""note"": //character varying(2047) //
   *""query_group_id"": //integer [FK]//
   ""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
@@ -237,7 +237,7 @@ entity "**trees**" #0000ff12 ##000088 {
   ""date_eliminated"": //date //
   ""date_labeled"": //date //
   *""genuine_seedling"": //boolean //
-  ""note"": //text //
+  ""note"": //character varying(2047) //
   ""rootstock_id"": //integer [FK]//
   ""grafting_id"": //integer [FK]//
   *""disabled"": //boolean  : Derived from date_eliminated.//

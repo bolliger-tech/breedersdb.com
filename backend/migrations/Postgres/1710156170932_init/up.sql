@@ -884,6 +884,8 @@ create trigger update_queries_modified
     for each row
 execute function modified_column();
 
+-- TODO: validate my_query (once the final structure is known)
+
 
 ------------------------------------------------------------------------------------------------------------------------
 -- VIEWS

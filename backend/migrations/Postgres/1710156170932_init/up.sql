@@ -40,11 +40,11 @@ create table lots
     date_sowed           date,
     numb_seeds_sowed     int,
     numb_sprouts_grown   int,
-    seed_tray            text,
+    seed_tray            varchar(255),
     date_planted         date,
     numb_sprouts_planted int,
-    patch                text,
-    note                 text,
+    patch                varchar(255),
+    note                 varchar(2047),
     created              timestamp with time zone not null default now(),
     modified             timestamp with time zone
 );
@@ -105,11 +105,11 @@ create table cultivars
     lot_id       int                      not null references lots,
     name_segment varchar(45)              not null check ( name_segment ~ '^[-_\w\d]{1,45}$' ),
     name         varchar(58)              not null unique,
-    common_name  text,
+    common_name  varchar(255),
     acronym      varchar(10),
-    breeder      text,
-    registration text,
-    description  text,
+    breeder      varchar(255),
+    registration varchar(255),
+    description  varchar(2047),
     created      timestamp with time zone not null default now(),
     modified     timestamp with time zone
 );
@@ -241,7 +241,7 @@ create table plant_rows
     id              integer primary key generated always as identity,
     name            varchar(45)              not null check (name ~ '^[^\n]{1,45}$'),
     orchard_id      int                      not null references orchards,
-    note            text,
+    note            varchar(2047),
     date_created    date,
     date_eliminated date,
     disabled        boolean                  not null generated always as (date_eliminated is not null) stored,
@@ -282,7 +282,7 @@ create table trees
     date_eliminated          date,
     date_labeled             date,
     genuine_seedling         boolean                           default false not null,
-    note                     text,
+    note                     varchar(2047),
     rootstock_id             int references rootstocks,
     grafting_id              int references graftings,
     disabled                 boolean                  not null generated always as (date_eliminated is not null) stored,
@@ -406,7 +406,7 @@ create table pollen
     id             integer primary key generated always as identity,
     name           varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
     date_harvested date,
-    note           text,
+    note           varchar(2047),
     cultivar_id    int                      not null references cultivars,
     created        timestamp with time zone not null default now(),
     modified       timestamp with time zone
@@ -435,7 +435,7 @@ create table mother_trees
     numb_flowers          int,
     numb_fruits           int,
     numb_seeds            int,
-    note                  text,
+    note                  varchar(2047),
     tree_id               int                      not null references trees,
     pollen_id             int references pollen,
     crossing_id           int                      not null references crossings,
@@ -540,7 +540,7 @@ create table mark_attributes
     name            varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
     validation_rule jsonb,
     data_type       varchar(12)              not null references mark_attribute_data_types,
-    description     text,
+    description     varchar(255),
     mark_type       varchar(12)              not null references mark_types,
     disabled        boolean                           default false not null,
     created         timestamp with time zone not null default now(),
@@ -642,7 +642,7 @@ create table mark_forms
 (
     id          integer primary key generated always as identity,
     name        varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
-    description text,
+    description varchar(255),
     disabled    boolean                           default false not null,
     created     timestamp with time zone not null default now(),
     modified    timestamp with time zone
@@ -740,10 +740,10 @@ create table mark_values
     mark_id           int                      not null references marks,
     integer_value     int,
     float_value       double precision,
-    text_value        text check (0 < length(text_value) and length(text_value) <= 2000),
+    text_value        text check (0 < length(text_value) and length(text_value) <= 2047),
     boolean_value     boolean,
     date_value        date,
-    note              text,
+    note              varchar(2047),
     exceptional_mark  boolean                           default false not null,
     offline_id        uuid unique,
     created           timestamp with time zone not null default now(),
@@ -894,7 +894,7 @@ execute function modified_column();
 create table materialized_view_refreshes
 (
     id          integer primary key generated always as identity,
-    view_name   text not null,
+    view_name   varchar(63) not null,
     last_change timestamp with time zone,
     last_check  timestamp with time zone
 );

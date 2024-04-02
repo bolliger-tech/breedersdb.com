@@ -655,7 +655,7 @@ test('insert TEXT too long', async () => {
       mark_attribute_name: 'Mark Attribute 1',
       mark_attribute_mark_type: 'OBSERVATION',
       mark_attribute_data_type: 'TEXT',
-      text_value: 'a'.repeat(2001),
+      text_value: 'a'.repeat(2048),
     },
   });
 

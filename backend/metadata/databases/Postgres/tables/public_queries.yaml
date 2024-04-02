@@ -10,7 +10,7 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - description
+        - note
         - my_query
         - name
         - query_group_id
@@ -23,7 +23,7 @@ select_permissions:
         - id
         - query_group_id
         - my_query
-        - description
+        - note
         - created
         - modified
       filter: {}
@@ -32,7 +32,7 @@ update_permissions:
   - role: user
     permission:
       columns:
-        - description
+        - note
         - my_query
         - name
         - query_group_id

@@ -6,21 +6,21 @@ const insertMutation = /* GraphQL */ `
   mutation InsertQuery(
     $name: String
     $my_query: jsonb
-    $description: String
+    $note: String
     $query_group_name: String
   ) {
     insert_queries_one(
       object: {
         name: $name
         my_query: $my_query
-        description: $description
+        note: $note
         query_group: { data: { name: $query_group_name, version: "1.0.0" } }
       }
     ) {
       id
       name
       my_query
-      description
+      note
       query_group {
         name
       }
@@ -155,7 +155,7 @@ test('insert', async () => {
     variables: {
       name: 'Query 1',
       my_query,
-      description: 'Description 1',
+      note: 'Note 1',
       query_group_name: 'QueryGroup 1',
     },
   });
@@ -163,7 +163,7 @@ test('insert', async () => {
   expect(resp.data.insert_queries_one.id).toBeGreaterThan(0);
   expect(resp.data.insert_queries_one.name).toBe('Query 1');
   expect(resp.data.insert_queries_one.my_query).toEqual(my_query);
-  expect(resp.data.insert_queries_one.description).toBe('Description 1');
+  expect(resp.data.insert_queries_one.note).toBe('Note 1');
   expect(resp.data.insert_queries_one.query_group.name).toBe('QueryGroup 1');
   expect(resp.data.insert_queries_one.created).toMatch(iso8601dateRegex);
   expect(resp.data.insert_queries_one.modified).toBeNull();

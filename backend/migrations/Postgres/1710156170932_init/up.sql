@@ -868,7 +868,7 @@ create table queries
     id             integer primary key generated always as identity,
     name           varchar(45) unique not null check (name ~ '^[^/\n]{1,45}$'),
     my_query       jsonb              not null default '{}'::jsonb,
-    description    text,
+    note           varchar(2047),
     query_group_id int                not null references query_groups,
     created        timestamp with time zone    default now(),
     modified       timestamp with time zone

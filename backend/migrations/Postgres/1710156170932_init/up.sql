@@ -9,6 +9,40 @@ begin
 end;
 $$ language plpgsql;
 
+create or replace function trim_strings() returns trigger as
+$$
+declare
+    _cols_to_trim   text[] := tg_argv;
+    _cols_to_select text[];
+begin
+    with _cols_to_trim_escaped_and_prefixed as (select array_agg('n.' || quote_ident(column_name)) as c
+                                                from unnest(_cols_to_trim) as column_name),
+         _cols as (select 'n.' || quote_ident(column_name)                    as name,
+                          data_type || '(' || character_maximum_length || ')' as _cast
+                   from information_schema.columns
+                   where table_name = tg_table_name
+                     and table_schema = "current_schema"()),
+         _statements as (select case
+                                    when _cols.name = any (_cols_to_trim_escaped_and_prefixed.c)
+                                        then $a$trim(both E' \n\t\r' from $a$ || _cols.name || $a$)::$a$ ||
+                                             _cols._cast ||
+                                             $a$ as $a$ ||
+                                             substring(_cols.name from 3 for length(_cols.name))
+                                    else _cols.name
+                                    end as _statement
+                         from _cols,
+                              _cols_to_trim_escaped_and_prefixed)
+    select array_agg(_statement)
+    from _statements
+    into _cols_to_select;
+
+    execute $a$select $a$ || array_to_string(_cols_to_select, ', ') ||
+            $a$ from (select $1.*) as n$a$ into new using new;
+    return new;
+end ;
+$$ language plpgsql;
+
+
 create table crossings
 (
     id                 integer primary key generated always as identity,
@@ -30,6 +64,12 @@ create trigger update_crossings_modified
     on crossings
     for each row
 execute function modified_column();
+
+create trigger trim_crossings
+    before insert or update of name
+    on crossings
+    for each row
+execute function trim_strings('name');
 
 create table lots
 (
@@ -68,6 +108,12 @@ create trigger update_lots_modified
     on lots
     for each row
 execute function modified_column();
+
+create trigger trim_lots
+    before insert or update of name_segment, seed_tray, patch, note
+    on lots
+    for each row
+execute function trim_strings('name_segment', 'seed_tray', 'patch', 'note');
 
 -- set crossing lot for changes on lots table
 create or replace function lots_set_name() returns trigger as
@@ -131,6 +177,12 @@ create trigger update_cultivars_modified
     on cultivars
     for each row
 execute function modified_column();
+
+create trigger trim_cultivars
+    before insert or update of name_segment, common_name, acronym, breeder, registration, description
+    on cultivars
+    for each row
+execute function trim_strings('name_segment', 'common_name', 'acronym', 'breeder', 'registration', 'description');
 
 -- set name for changes on cultivars table
 create or replace function cultivars_set_cultivar() returns trigger as
@@ -201,6 +253,12 @@ create trigger update_graftings_modified
     for each row
 execute function modified_column();
 
+create trigger trim_graftings
+    before insert or update of name
+    on graftings
+    for each row
+execute function trim_strings('name');
+
 create table rootstocks
 (
     id       integer primary key generated always as identity,
@@ -216,6 +274,12 @@ create trigger update_rootstocks_modified
     on rootstocks
     for each row
 execute function modified_column();
+
+create trigger trim_rootstocks
+    before insert or update of name
+    on rootstocks
+    for each row
+execute function trim_strings('name');
 
 create table orchards
 (
@@ -235,6 +299,12 @@ create trigger update_orchards_modified
     on orchards
     for each row
 execute function modified_column();
+
+create trigger trim_orchards
+    before insert or update of name
+    on orchards
+    for each row
+execute function trim_strings('name');
 
 create table plant_rows
 (
@@ -265,6 +335,12 @@ create trigger update_plant_rows_modified
     on plant_rows
     for each row
 execute function modified_column();
+
+create trigger trim_plant_rows
+    before insert or update of name, note
+    on plant_rows
+    for each row
+execute function trim_strings('name', 'note');
 
 create table trees
 (
@@ -319,6 +395,12 @@ create trigger update_trees_modified
     on trees
     for each row
 execute function modified_column();
+
+create trigger trim_trees
+    before insert or update of publicid, note
+    on trees
+    for each row
+execute function trim_strings('publicid', 'note');
 
 -- prefix publicid when date_eliminated is set
 create or replace function prefix_publicid_on_elimination() returns trigger as
@@ -424,6 +506,12 @@ create trigger update_pollen_modified
     for each row
 execute function modified_column();
 
+create trigger trim_pollen
+    before insert or update of name, note
+    on pollen
+    for each row
+execute function trim_strings('name', 'note');
+
 
 create table mother_trees
 (
@@ -458,6 +546,12 @@ create trigger update_mother_trees_modified
     on mother_trees
     for each row
 execute function modified_column();
+
+create trigger trim_mother_trees
+    before insert or update of name, note
+    on mother_trees
+    for each row
+execute function trim_strings('name', 'note');
 
 create or replace function check_crossing_tree_cultivar() returns trigger as
 $$
@@ -566,6 +660,12 @@ create trigger update_mark_attributes_modified
     for each row
 execute function modified_column();
 
+create trigger trim_mark_attributes
+    before insert or update of name, description
+    on mark_attributes
+    for each row
+execute function trim_strings('name', 'description');
+
 -- check the validation rule
 create or replace function check_validation_rule() returns trigger as
 $$
@@ -658,6 +758,12 @@ create trigger update_mark_forms_modified
     for each row
 execute function modified_column();
 
+create trigger trim_mark_forms
+    before insert or update of name, description
+    on mark_forms
+    for each row
+execute function trim_strings('name', 'description');
+
 
 create table mark_form_fields
 (
@@ -716,6 +822,12 @@ create trigger update_marks_modified
     for each row
 execute function modified_column();
 
+create trigger trim_marks
+    before insert or update of author
+    on marks
+    for each row
+execute function trim_strings('author');
+
 create or replace function check_mark_object() returns trigger as
 $$
 begin
@@ -740,7 +852,7 @@ create table mark_values
     mark_id           int                      not null references marks,
     integer_value     int,
     float_value       double precision,
-    text_value        text check (0 < length(text_value) and length(text_value) <= 2047),
+    text_value        varchar(2047) check (0 < length(text_value)),
     boolean_value     boolean,
     date_value        date,
     note              varchar(2047),
@@ -766,6 +878,12 @@ create trigger update_mark_values_modified
     on mark_values
     for each row
 execute function modified_column();
+
+create trigger trim_mark_values
+    before insert or update of text_value, note
+    on mark_values
+    for each row
+execute function trim_strings('text_value', 'note');
 
 
 create or replace function sanitize_and_validate_mark_value() returns trigger as
@@ -862,6 +980,12 @@ create trigger update_query_groups_modified
     for each row
 execute function modified_column();
 
+create trigger trim_query_groups
+    before insert or update of name
+    on query_groups
+    for each row
+execute function trim_strings('name');
+
 
 create table queries
 (
@@ -883,6 +1007,13 @@ create trigger update_queries_modified
     on queries
     for each row
 execute function modified_column();
+
+create trigger trim_query_name
+    before insert or update of name, note
+    on queries
+    for each row
+execute function trim_strings('name', 'note');
+
 
 -- TODO: validate my_query (once the final structure is known)
 

@@ -659,7 +659,9 @@ test('insert TEXT too long', async () => {
     },
   });
 
-  expect(resp.errors[0].message).toMatch(/Check constraint violation/);
+  expect(resp.errors[0].message).toBe(
+    'value too long for type character varying(2047)',
+  );
 });
 
 test('insert TEXT empty', async () => {

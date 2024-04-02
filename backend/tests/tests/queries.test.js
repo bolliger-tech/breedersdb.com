@@ -230,4 +230,18 @@ test('modified', async () => {
   expect(updated.data.update_queries_by_pk.modified).toMatch(iso8601dateRegex);
 });
 
+test('note is trimmed', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Query 1',
+      my_query,
+      note: '   Note 1   ',
+      query_group_name: 'QueryGroup 1',
+    },
+  });
+
+  expect(resp.data.insert_queries_one.note).toBe('Note 1');
+});
+
 // TODO: test validation of my_query structure

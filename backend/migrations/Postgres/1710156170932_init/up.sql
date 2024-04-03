@@ -9,37 +9,41 @@ begin
 end;
 $$ language plpgsql;
 
+-- trim strings before insert or update
+-- see https://medium.com/@cyrillbolliger/postgres-automatically-trim-strings-on-insert-or-update-on-any-table-be1114030c6a
 create or replace function trim_strings() returns trigger as
 $$
 declare
     _cols_to_trim   text[] := tg_argv;
-    _cols_to_select text[];
+    _cols_to_select text;
 begin
-    with _cols_to_trim_escaped_and_prefixed as (select array_agg('n.' || quote_ident(column_name)) as c
-                                                from unnest(_cols_to_trim) as column_name),
-         _cols as (select 'n.' || quote_ident(column_name)                    as name,
-                          data_type || '(' || character_maximum_length || ')' as _cast
+    with _cols as (select column_name as _name,
+                          '::' || data_type || '(' || character_maximum_length || ')'
+                                      as _cast
                    from information_schema.columns
                    where table_name = tg_table_name
-                     and table_schema = "current_schema"()),
-         _statements as (select case
-                                    when _cols.name = any (_cols_to_trim_escaped_and_prefixed.c)
-                                        then $a$trim(both E' \n\t\r' from $a$ || _cols.name || $a$)::$a$ ||
-                                             _cols._cast ||
-                                             $a$ as $a$ ||
-                                             substring(_cols.name from 3 for length(_cols.name))
-                                    else _cols.name
-                                    end as _statement
-                         from _cols,
-                              _cols_to_trim_escaped_and_prefixed)
-    select array_agg(_statement)
-    from _statements
+                     and table_schema = tg_table_schema
+                   order by ordinal_position),
+         _col_statements as (select case
+                                        when _cols._name = any (_cols_to_trim)
+                                            then
+                                                                'trim(both e'' \t\n\r'' from $1.' ||
+                                                                quote_ident(_cols._name) || ')'
+                                                        || coalesce(_cols._cast, '')
+                                                    || ' as '
+                                                || quote_ident(_cols._name)
+                                        else
+                                            '$1.' || quote_ident(_cols._name)
+                                        end as _statement
+                             from _cols)
+    select string_agg(_statement, ', ')
+    from _col_statements
     into _cols_to_select;
 
-    execute $a$select $a$ || array_to_string(_cols_to_select, ', ') ||
-            $a$ from (select $1.*) as n$a$ into new using new;
+    execute 'select ' || _cols_to_select into new using new;
+
     return new;
-end ;
+end;
 $$ language plpgsql;
 
 

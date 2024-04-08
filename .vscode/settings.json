@@ -20,5 +20,8 @@
     "graphql",
     "yaml",
     "dockerfile"
-  ]
+  ],
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

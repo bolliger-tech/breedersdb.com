@@ -5,6 +5,7 @@
 
 import { configure } from 'quasar/wrappers';
 import { fileURLToPath } from 'node:url';
+import 'dotenv/config';
 
 export default configure((ctx) => {
   return {
@@ -14,7 +15,7 @@ export default configure((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['i18n'],
+    boot: ['i18n', 'sentry'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ['app.scss'],
@@ -49,7 +50,7 @@ export default configure((ctx) => {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: process.env,
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -58,6 +59,8 @@ export default configure((ctx) => {
 
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
+
+      sourcemap: true, // required for prod source maps to work in Sentry
 
       vitePlugins: [
         [

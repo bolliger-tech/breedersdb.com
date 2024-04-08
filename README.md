@@ -38,3 +38,9 @@ See the [backend README](./backend/README.md).
 ### Frontend
 
 TODO
+
+## Format the files
+
+```bash
+bun format
+```

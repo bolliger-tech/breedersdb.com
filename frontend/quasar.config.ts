@@ -60,7 +60,7 @@ export default configure((ctx) => {
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
 
-      sourcemap: true, // required for prod source maps to work in Sentry
+      sourcemap: 'hidden', // required for prod source maps to work in Sentry
 
       vitePlugins: [
         [

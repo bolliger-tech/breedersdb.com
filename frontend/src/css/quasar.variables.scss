@@ -12,9 +12,9 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary: #116d76;
-$secondary: #c2a71a;
-$accent: #9e155d;
+$primary: #093a3e; // NOTICE: this is overwritten in App.vue
+$secondary: #00558a; // NOTICE: this is overwritten in App.vue
+$accent: #b8007d; // NOTICE: this is overwritten in App.vue
 
 $dark: #1d1d1d;
 $dark-page: #121212;

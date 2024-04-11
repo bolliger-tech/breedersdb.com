@@ -1,11 +1,12 @@
 import { boot } from 'quasar/wrappers';
 import { createI18n } from 'vue-i18n';
 
-import messages from 'src/i18n';
+import { messages, datetimeFormats } from 'src/i18n';
 
 export type MessageLanguages = keyof typeof messages;
 // Type-define 'en-US' as the master schema for the resource
 export type MessageSchema = (typeof messages)['en-US'];
+export type DateTimeFormats = (typeof datetimeFormats)['en-US'];
 
 // See https://vue-i18n.intlify.dev/guide/advanced/typescript.html#global-resource-schema-type-definition
 /* eslint-disable @typescript-eslint/no-empty-interface */
@@ -14,7 +15,7 @@ declare module 'vue-i18n' {
   export interface DefineLocaleMessage extends MessageSchema {}
 
   // define the datetime format schema
-  export interface DefineDateTimeFormat {}
+  export interface DefineDateTimeFormat extends DateTimeFormats {}
 
   // define the number format schema
   export interface DefineNumberFormat {}
@@ -26,6 +27,7 @@ export default boot(({ app }) => {
     locale: 'en-US',
     legacy: false,
     messages,
+    datetimeFormats,
   });
 
   // Set i18n instance on app

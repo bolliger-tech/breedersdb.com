@@ -1,9 +1,9 @@
 const messages = {
   base: {
-    loading: 'Loading...',
+    loading: 'Laden...',
     suspenseWithError: {
-      reload: 'Reload page',
-      title: 'Error',
+      reload: 'Seite neu laden',
+      title: 'Fehler',
     },
   },
 };

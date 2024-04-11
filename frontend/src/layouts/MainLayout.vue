@@ -27,6 +27,7 @@
           v-bind="link"
         />
       </q-list>
+      <LanguageSwitcher />
     </q-drawer>
 
     <q-page-container>
@@ -41,6 +42,7 @@ import EssentialLink, {
   EssentialLinkProps,
 } from 'components/EssentialLink.vue';
 import DarkModeToggler from 'components/layout/DarkMode/DarkModeToggler.vue';
+import LanguageSwitcher from 'components/layout/LanguageSwitcher.vue';
 
 defineOptions({
   name: 'MainLayout',

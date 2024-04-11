@@ -1,7 +1,9 @@
 <template>
-  <q-page class="row items-center justify-evenly"> </q-page>
+  <q-page class="row items-center justify-evenly">
+    <ExampleTreesTable />
+  </q-page>
 </template>
 
 <script setup lang="ts">
-import TreesTable from 'components/TreesTable.vue';
+import ExampleTreesTable from 'components/ExampleTreesTable.vue';
 </script>

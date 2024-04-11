@@ -40,7 +40,7 @@ import { ref } from 'vue';
 import EssentialLink, {
   EssentialLinkProps,
 } from 'components/EssentialLink.vue';
-import DarkModeToggler from 'components/DarkModeToggler.vue';
+import DarkModeToggler from 'components/layout/DarkMode/DarkModeToggler.vue';
 
 defineOptions({
   name: 'MainLayout',

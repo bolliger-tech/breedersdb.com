@@ -1,11 +1,11 @@
 <template>
-  <DarkModeColorProvider>
+  <TheDarkModeColorProvider>
     <router-view />
-  </DarkModeColorProvider>
+  </TheDarkModeColorProvider>
 </template>
 
 <script setup lang="ts">
-import DarkModeColorProvider from 'components/DarkModeColorProvider.vue';
+import TheDarkModeColorProvider from 'components/layout/DarkMode/TheDarkModeColorProvider.vue';
 defineOptions({
   name: 'App',
 });

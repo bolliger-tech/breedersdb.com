@@ -31,17 +31,28 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <BaseSuspense>
+        <template #default>
+          <router-view />
+        </template>
+        <template #fallback>
+          <div class="fixed-center">
+            <BaseSpinner size="xl" />
+          </div>
+        </template>
+      </BaseSuspense>
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import BaseSuspense from 'components/base/BaseSuspense/BaseSuspense.vue';
 import EssentialLink, {
   EssentialLinkProps,
 } from 'components/EssentialLink.vue';
 import DarkModeToggler from 'components/layout/DarkMode/DarkModeToggler.vue';
+import BaseSpinner from 'components/base/BaseSpinner/BaseSpinner.vue';
 import LanguageSwitcher from 'components/layout/LanguageSwitcher.vue';
 
 defineOptions({

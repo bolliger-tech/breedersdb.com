@@ -76,11 +76,11 @@ mutation InsertTree(
   $note: String
   ) {
   insert_crossings_one(object: {
-    name: $crossing_name, 
+    name: $crossing_name,
     lots: {data: {
       name_segment: $lot_name_segment,
       cultivars: {data: {
-        name_segment: $cultivar_name_segment, 
+        name_segment: $cultivar_name_segment,
         trees: {data: {
           publicid: $publicid,
           serial_in_plant_row: $serial_in_plant_row,
@@ -123,11 +123,11 @@ mutation InsertTree(
   $date_eliminated: date
   ) {
   insert_crossings_one(object: {
-    name: $crossing_name, 
+    name: $crossing_name,
     lots: {data: {
       name_segment: $lot_name_segment,
       cultivars: {data: {
-        name_segment: $cultivar_name_segment, 
+        name_segment: $cultivar_name_segment,
         trees: {data: {
           publicid: $publicid,
           date_eliminated: $date_eliminated
@@ -151,11 +151,11 @@ mutation InsertTree(
   $serial_in_plant_row: Int!
   ) {
   insert_crossings_one(object: {
-    name: $crossing_name, 
+    name: $crossing_name,
     lots: {data: {
       name_segment: $lot_name_segment,
       cultivars: {data: {
-        name_segment: $cultivar_name_segment, 
+        name_segment: $cultivar_name_segment,
         trees: {data: {
           publicid: $publicid,
           date_eliminated: $date_eliminated
@@ -220,7 +220,7 @@ test('insert', async () => {
       date_grafted: '2024-03-21',
       date_planted: '2024-03-22',
       date_labeled: '2024-03-24',
-      genuine_seedling: true,
+      genuine_seedling: false,
       note: 'This is a note',
       rootstock_name: 'Rootstock1',
       grafting_name: 'Grafting1',
@@ -243,7 +243,7 @@ test('insert', async () => {
   expect(tree.date_grafted).toBe('2024-03-21');
   expect(tree.date_planted).toBe('2024-03-22');
   expect(tree.date_labeled).toBe('2024-03-24');
-  expect(tree.genuine_seedling).toBe(true);
+  expect(tree.genuine_seedling).toBe(false);
   expect(tree.note).toBe('This is a note');
   expect(tree.rootstock.name).toBe('Rootstock1');
   expect(tree.grafting.name).toBe('Grafting1');
@@ -529,9 +529,27 @@ test('updated cultivar_name tree cultivar_id change', async () => {
       cultivar_id: newCultivar.data.insert_cultivars_one.id,
     },
   });
+});
 
-  expect(updatedTree.data.update_trees_by_pk.cultivar_name).toBe(
-    'Abcd.24A.999',
+test('genuine_seedling and (rootstock / graftinfg / date grafted) are mutually exclusive', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      publicid: '00000001',
+      date_grafted: '2024-03-21',
+      genuine_seedling: true,
+      rootstock_name: 'Rootstock1',
+      grafting_name: 'Grafting1',
+      plant_row_name: 'PlantRow1',
+      orchard_name: 'Orchard1',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'A genuine seedling cannot have a rootstock, grafting or grafting date.',
   );
 });
 

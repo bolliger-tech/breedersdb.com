@@ -456,6 +456,25 @@ create trigger prevent_invalid_publicid
     for each row
 execute function prevent_invalid_publicid();
 
+-- prevent insertion or update of a tree as genuine_seedling that has a rootstock, grafting or grafting_date
+create or replace function check_genuine_seedling() returns trigger as
+$$
+begin
+    if new.genuine_seedling = true and
+       (new.rootstock_id is not null or new.grafting_id is not null or new.date_grafted) then
+        raise exception 'A genuine seedling cannot have a rootstock, grafting or grafting date.';
+    end if;
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger check_genuine_seedling
+    before insert or update of genuine_seedling, rootstock_id, grafting_id
+    on trees
+    for each row
+execute function check_genuine_seedling();
+
+
 -- set cultivar_name for changes on trees table
 create or replace function trees_set_cultivar_name() returns trigger as
 $$

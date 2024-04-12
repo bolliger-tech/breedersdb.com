@@ -461,7 +461,7 @@ create or replace function check_genuine_seedling() returns trigger as
 $$
 begin
     if new.genuine_seedling = true and
-       (new.rootstock_id is not null or new.grafting_id is not null or new.date_grafted) then
+       (new.rootstock_id is not null or new.grafting_id is not null or new.date_grafted is not null) then
         raise exception 'A genuine seedling cannot have a rootstock, grafting or grafting date.';
     end if;
     return new;

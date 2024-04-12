@@ -104,6 +104,11 @@ export default configure((ctx) => {
     framework: {
       config: {
         dark: 'auto',
+        loadingBar: {
+          position: 'top',
+          color: 'accent',
+          size: '0.25rem',
+        },
       },
 
       // iconSet: 'material-icons', // Quasar icon set
@@ -117,7 +122,7 @@ export default configure((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['LoadingBar'],
     },
 
     // animations: 'all', // --- includes all animations

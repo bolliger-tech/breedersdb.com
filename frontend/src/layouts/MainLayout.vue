@@ -1,35 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-
-        <DarkModeToggler />
-      </q-toolbar>
-    </q-header>
-
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-      <LanguageSwitcher />
-    </q-drawer>
-
+  <q-layout view="lhr Lpr fFf">
     <q-page-container>
       <BaseSuspense>
         <template #default>
@@ -42,71 +12,31 @@
         </template>
       </BaseSuspense>
     </q-page-container>
+
+    <q-drawer
+      v-if="$q.screen.gt.sm"
+      side="left"
+      persitent
+      no-swipe-open
+      no-swipe-close
+      show-if-above
+      :width="100"
+      class="bg-primary"
+    >
+      <MainNav />
+    </q-drawer>
+
+    <q-footer v-else>
+      <MainNav />
+    </q-footer>
   </q-layout>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import BaseSuspense from 'components/base/BaseSuspense/BaseSuspense.vue';
-import EssentialLink, {
-  EssentialLinkProps,
-} from 'components/EssentialLink.vue';
-import DarkModeToggler from 'components/layout/DarkMode/DarkModeToggler.vue';
-import BaseSpinner from 'components/base/BaseSpinner/BaseSpinner.vue';
-import LanguageSwitcher from 'components/layout/LanguageSwitcher.vue';
+import BaseSpinner from 'components/base/BaseSpinner.vue';
+import MainNav from 'components/layout/TheNav/TheNav.vue';
+import { useQuasar } from 'quasar';
 
-defineOptions({
-  name: 'MainLayout',
-});
-
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
-  },
-];
-
-const leftDrawerOpen = ref(false);
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
-}
+const $q = useQuasar();
 </script>

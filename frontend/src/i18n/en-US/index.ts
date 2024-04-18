@@ -6,6 +6,24 @@ const messages = {
       title: 'Error',
     },
   },
+  layout: {
+    nav: {
+      trees: {
+        main: 'Trees',
+        list: 'List',
+        new: 'New',
+      },
+      groups: {
+        main: 'Groups',
+        list: 'List',
+        new: 'New',
+      },
+      cultivars: { main: 'Cultivars' },
+      lots: { main: 'Lots' },
+      crossings: { main: 'Crossings' },
+      more: { main: 'More' },
+    },
+  },
 };
 
 const datetimeFormats = {

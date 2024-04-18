@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-ts-expect-error */
 import { boot } from 'quasar/wrappers';
 import { createI18n } from 'vue-i18n';
 
@@ -23,8 +24,13 @@ declare module 'vue-i18n' {
 /* eslint-enable @typescript-eslint/no-empty-interface */
 
 export default boot(({ app }) => {
+  /**
+   * if not all languages contain all keys, this will fail
+   *
+   * @ts-ignore: No overload matches this call. */
   const i18n = createI18n({
     locale: 'en-US',
+    fallbackLocale: 'en-US',
     legacy: false,
     messages,
     datetimeFormats,

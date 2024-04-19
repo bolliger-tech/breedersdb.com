@@ -22,5 +22,6 @@ export type SpriteIcons =
   | 'star'
   | 'trash'
   | 'tree-group'
+  | 'tree-stumps'
   | 'tree'
   | 'user';

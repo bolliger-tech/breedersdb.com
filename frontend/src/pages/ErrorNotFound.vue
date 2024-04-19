@@ -1,27 +1,16 @@
 <template>
-  <div
-    class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center"
-  >
+  <div class="text-center q-pa-md flex flex-center">
     <div>
-      <div style="font-size: 30vh">404</div>
-
-      <div class="text-h2" style="opacity: 0.4">Oops. Nothing here...</div>
-
-      <q-btn
-        class="q-mt-xl"
-        color="white"
-        text-color="blue"
-        unelevated
-        to="/"
-        label="Go Home"
-        no-caps
-      />
+      <BaseSpriteIcon name="tree-stumps" size="50vh" />
+      <h1 class="text-h3 q-mt-none q-mb-sm">{{ t('errorNotFound.title') }}</h1>
+      <p>{{ t('errorNotFound.message') }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: 'ErrorNotFound',
-});
+import BaseSpriteIcon from 'src/components/base/BaseSpriteIcon/BaseSpriteIcon.vue';
+import { useI18n } from 'src/composables/useI18n';
+
+const { t } = useI18n();
 </script>

@@ -24,6 +24,10 @@ const messages = {
       more: { main: 'More' },
     },
   },
+  errorNotFound: {
+    title: 'Nothing here!',
+    message: 'The page you are looking for does not exist.',
+  },
 };
 
 const datetimeFormats = {

@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
+import DarkModeSetter from '../DarkMode/DarkModeSetter.vue';
+import LanguageSetter from '../LanguageSetter.vue';
 import NavLevel0, { NavLevel0Props } from './NavLevel0.vue';
 import { useI18n } from 'src/composables/useI18n';
 
@@ -242,12 +244,24 @@ const items: NavLevel0Props['items'] = [
         to: 'dark-mode',
         children: [
           {
-            label: t('layout.nav.more.darkMode.on'),
             to: 'on',
+            component: {
+              component: DarkModeSetter,
+              props: {
+                isDark: true,
+                label: t('layout.nav.more.darkMode.on'),
+              },
+            },
           },
           {
-            label: t('layout.nav.more.darkMode.off'),
             to: 'off',
+            component: {
+              component: DarkModeSetter,
+              props: {
+                isDark: false,
+                label: t('layout.nav.more.darkMode.off'),
+              },
+            },
           },
         ],
       },
@@ -257,12 +271,24 @@ const items: NavLevel0Props['items'] = [
         to: 'language',
         children: [
           {
-            label: t('layout.nav.more.language.en'),
             to: 'en',
+            component: {
+              component: LanguageSetter,
+              props: {
+                locale: 'en-US',
+                label: t('layout.nav.more.language.en'),
+              },
+            },
           },
           {
-            label: t('layout.nav.more.language.de'),
             to: 'de',
+            component: {
+              component: LanguageSetter,
+              props: {
+                locale: 'de-CH',
+                label: t('layout.nav.more.language.de'),
+              },
+            },
           },
         ],
       },

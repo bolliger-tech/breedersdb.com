@@ -1,11 +1,6 @@
 <template>
   <ul class="q-pa-none list">
-    <NavLevel2Item
-      v-for="child in children"
-      :key="child.to"
-      :to="child.to"
-      :label="child.label"
-    />
+    <NavLevel2Item v-for="child in children" :key="child.to" v-bind="child" />
   </ul>
 </template>
 

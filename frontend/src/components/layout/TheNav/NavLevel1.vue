@@ -1,13 +1,6 @@
 <template>
   <ul class="list">
-    <NavLevel1Item
-      v-for="child in children"
-      :key="child.to"
-      :to="child.to"
-      :label="child.label"
-      :icon="child.icon"
-      :children="child.children"
-    />
+    <NavLevel1Item v-for="child in children" :key="child.to" v-bind="child" />
   </ul>
 </template>
 

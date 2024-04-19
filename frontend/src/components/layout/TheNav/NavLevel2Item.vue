@@ -1,6 +1,11 @@
 <template>
   <li>
-    <q-item clickable tag="a" :to="to" class="column justify-center">
+    <component
+      :is="component.component"
+      v-if="component"
+      v-bind="component.props"
+    />
+    <q-item v-else clickable tag="a" :to="to" class="column justify-center">
       <span
         class="label"
         :class="{
@@ -14,14 +19,24 @@
 </template>
 
 <script setup lang="ts">
+import { type Component } from 'vue';
 import { useNavItem } from './useNavItem';
 
-export interface NavLevel2ItemProps {
-  to: string;
+type NavLevel2ItemRegular = {
   label: string;
-}
+  component?: never;
+};
 
-const { to, label } = defineProps<NavLevel2ItemProps>();
+type NavLevel2ItemComponent = {
+  label?: never;
+  component: { component: Component; props?: Record<string, unknown> };
+};
+
+export type NavLevel2ItemProps = {
+  to: string;
+} & (NavLevel2ItemRegular | NavLevel2ItemComponent);
+
+const { to, label, component } = defineProps<NavLevel2ItemProps>();
 
 const { isCurrentRoute } = useNavItem({ to });
 </script>

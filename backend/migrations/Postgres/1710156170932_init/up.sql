@@ -53,6 +53,7 @@ create table crossings
     name               varchar(8)               not null unique check ( name ~ '^[-_\w\d]{1,8}$' ),
     mother_cultivar_id int, -- constraint is added after table cultivars is created: default null references cultivars on delete set null,
     father_cultivar_id int, -- constraint is added after table cultivars is created: default null references cultivars on delete set null,
+    note               varchar(2047),
     created            timestamp with time zone not null default now(),
     modified           timestamp with time zone
 );
@@ -70,10 +71,10 @@ create trigger update_crossings_modified
 execute function modified_column();
 
 create trigger trim_crossings
-    before insert or update of name
+    before insert or update of name, note
     on crossings
     for each row
-execute function trim_strings('name');
+execute function trim_strings('name', 'note');
 
 create table lots
 (
@@ -159,7 +160,7 @@ create table cultivars
     acronym      varchar(10),
     breeder      varchar(255),
     registration varchar(255),
-    description  varchar(2047),
+    note  varchar(2047),
     created      timestamp with time zone not null default now(),
     modified     timestamp with time zone
 );
@@ -183,10 +184,10 @@ create trigger update_cultivars_modified
 execute function modified_column();
 
 create trigger trim_cultivars
-    before insert or update of name_segment, common_name, acronym, breeder, registration, description
+    before insert or update of name_segment, common_name, acronym, breeder, registration, note
     on cultivars
     for each row
-execute function trim_strings('name_segment', 'common_name', 'acronym', 'breeder', 'registration', 'description');
+execute function trim_strings('name_segment', 'common_name', 'acronym', 'breeder', 'registration', 'note');
 
 -- set name for changes on cultivars table
 create or replace function cultivars_set_cultivar() returns trigger as

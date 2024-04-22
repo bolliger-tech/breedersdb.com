@@ -11,7 +11,7 @@ const insertMutation = /* GraphQL */ `
     $acronym: String
     $breeder: String
     $registration: String
-    $description: String
+    $note: String
   ) {
     insert_crossings_one(
       object: {
@@ -26,7 +26,7 @@ const insertMutation = /* GraphQL */ `
                 acronym: $acronym
                 breeder: $breeder
                 registration: $registration
-                description: $description
+                note: $note
               }
             }
           }
@@ -46,7 +46,7 @@ const insertMutation = /* GraphQL */ `
           acronym
           breeder
           registration
-          description
+          note
           created
           modified
         }
@@ -84,7 +84,7 @@ test('insert', async () => {
       acronym: 'TIAN',
       breeder: 'Poma Culta',
       registration: '123456',
-      description: 'This is a description',
+      note: 'This is a note',
     },
   });
 
@@ -97,7 +97,7 @@ test('insert', async () => {
   expect(cultivar.acronym).toBe('TIAN');
   expect(cultivar.breeder).toBe('Poma Culta');
   expect(cultivar.registration).toBe('123456');
-  expect(cultivar.description).toBe('This is a description');
+  expect(cultivar.note).toBe('This is a note');
   expect(cultivar.created).toMatch(iso8601dateRegex);
   expect(cultivar.modified).toBeNull();
 });

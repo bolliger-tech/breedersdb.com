@@ -58,7 +58,7 @@ insert_permissions:
         - acronym
         - lot_id
         - name_segment
-        - description
+        - note
         - common_name
         - breeder
         - registration
@@ -71,7 +71,7 @@ select_permissions:
         - name_segment
         - lot_id
         - id
-        - description
+        - note
         - common_name
         - breeder
         - registration
@@ -87,7 +87,7 @@ update_permissions:
         - acronym
         - lot_id
         - name_segment
-        - description
+        - note
         - common_name
         - breeder
         - registration

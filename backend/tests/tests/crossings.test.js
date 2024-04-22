@@ -3,12 +3,13 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertCrossing($name: String) {
-    insert_crossings_one(object: { name: $name }) {
+  mutation InsertCrossing($name: String, $note: String) {
+    insert_crossings_one(object: { name: $name, note: $note }) {
       id
       name
       mother_cultivar_id
       father_cultivar_id
+      note
       created
       modified
     }
@@ -32,6 +33,7 @@ test('insert', async () => {
     query: insertMutation,
     variables: {
       name: 'Abcd',
+      note: 'Some note',
     },
   });
 
@@ -39,6 +41,7 @@ test('insert', async () => {
   expect(resp.data.insert_crossings_one.name).toBe('Abcd');
   expect(resp.data.insert_crossings_one.mother_cultivar_id).toBeNull();
   expect(resp.data.insert_crossings_one.father_cultivar_id).toBeNull();
+  expect(resp.data.insert_crossings_one.note).toBe('Some note');
   expect(resp.data.insert_crossings_one.created).toMatch(iso8601dateRegex);
   expect(resp.data.insert_crossings_one.modified).toBeNull();
 });

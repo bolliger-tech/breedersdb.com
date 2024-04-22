@@ -48,7 +48,7 @@ insert_permissions:
         - date_labeled
         - date_planted
         - distance_plant_row_start
-        - genuine_seedling
+        - uncloned_seedling
         - geo_location
         - geo_location_accuracy
         - grafting_id
@@ -71,7 +71,7 @@ select_permissions:
         - date_planted
         - disabled
         - distance_plant_row_start
-        - genuine_seedling
+        - uncloned_seedling
         - geo_location
         - geo_location_accuracy
         - grafting_id
@@ -94,7 +94,7 @@ update_permissions:
         - date_labeled
         - date_planted
         - distance_plant_row_start
-        - genuine_seedling
+        - uncloned_seedling
         - geo_location
         - geo_location_accuracy
         - grafting_id

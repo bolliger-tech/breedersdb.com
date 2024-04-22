@@ -24,7 +24,7 @@ lots {
       date_planted
       date_eliminated
       date_labeled
-      genuine_seedling
+      uncloned_seedling
       note
       rootstock {
         id
@@ -72,7 +72,7 @@ mutation InsertTree(
   $date_planted: date,
   $date_eliminated: date,
   $date_labeled: date,
-  $genuine_seedling: Boolean,
+  $uncloned_seedling: Boolean,
   $note: String
   ) {
   insert_crossings_one(object: {
@@ -91,7 +91,7 @@ mutation InsertTree(
           date_planted: $date_planted,
           date_eliminated: $date_eliminated,
           date_labeled: $date_labeled,
-          genuine_seedling: $genuine_seedling,
+          uncloned_seedling: $uncloned_seedling,
           note: $note
           rootstock: {data: {
             name: $rootstock_name
@@ -220,7 +220,7 @@ test('insert', async () => {
       date_grafted: '2024-03-21',
       date_planted: '2024-03-22',
       date_labeled: '2024-03-24',
-      genuine_seedling: false,
+      uncloned_seedling: false,
       note: 'This is a note',
       rootstock_name: 'Rootstock1',
       grafting_name: 'Grafting1',
@@ -243,7 +243,7 @@ test('insert', async () => {
   expect(tree.date_grafted).toBe('2024-03-21');
   expect(tree.date_planted).toBe('2024-03-22');
   expect(tree.date_labeled).toBe('2024-03-24');
-  expect(tree.genuine_seedling).toBe(false);
+  expect(tree.uncloned_seedling).toBe(false);
   expect(tree.note).toBe('This is a note');
   expect(tree.rootstock.name).toBe('Rootstock1');
   expect(tree.grafting.name).toBe('Grafting1');
@@ -531,7 +531,7 @@ test('updated cultivar_name tree cultivar_id change', async () => {
   });
 });
 
-test('genuine_seedling and (rootstock / graftinfg / date grafted) are mutually exclusive', async () => {
+test('uncloned_seedling and (rootstock / graftinfg / date grafted) are mutually exclusive', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
@@ -540,7 +540,7 @@ test('genuine_seedling and (rootstock / graftinfg / date grafted) are mutually e
       cultivar_name_segment: '001',
       publicid: '00000001',
       date_grafted: '2024-03-21',
-      genuine_seedling: true,
+      uncloned_seedling: true,
       rootstock_name: 'Rootstock1',
       grafting_name: 'Grafting1',
       plant_row_name: 'PlantRow1',

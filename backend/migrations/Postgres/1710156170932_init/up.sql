@@ -160,7 +160,7 @@ create table cultivars
     acronym      varchar(10),
     breeder      varchar(255),
     registration varchar(255),
-    note  varchar(2047),
+    note         varchar(2047),
     created      timestamp with time zone not null default now(),
     modified     timestamp with time zone
 );
@@ -362,7 +362,7 @@ create table trees
     date_planted             date,
     date_eliminated          date,
     date_labeled             date,
-    uncloned_seedling         boolean                           default false not null,
+    uncloned_seedling        boolean                           default false not null,
     note                     varchar(2047),
     rootstock_id             int references rootstocks,
     grafting_id              int references graftings,

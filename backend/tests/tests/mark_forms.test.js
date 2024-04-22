@@ -4,7 +4,7 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertMarkForm($name: String, $description: String) {
-    insert_mark_forms_one(
+    insert_attribution_forms_one(
       object: { name: $name, description: $description, disabled: false }
     ) {
       id
@@ -21,7 +21,7 @@ afterEach(async () => {
   await post({
     query: /* GraphQL */ `
       mutation DeleteAllMarkForms {
-        delete_mark_forms(where: {}) {
+        delete_attribution_forms(where: {}) {
           affected_rows
         }
       }
@@ -38,12 +38,16 @@ test('insert', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_forms_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_forms_one.name).toBe('MarkForm 1');
-  expect(resp.data.insert_mark_forms_one.description).toBe('Description 1');
-  expect(resp.data.insert_mark_forms_one.disabled).toBe(false);
-  expect(resp.data.insert_mark_forms_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_mark_forms_one.modified).toBeNull();
+  expect(resp.data.insert_attribution_forms_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_forms_one.name).toBe('MarkForm 1');
+  expect(resp.data.insert_attribution_forms_one.description).toBe(
+    'Description 1',
+  );
+  expect(resp.data.insert_attribution_forms_one.disabled).toBe(false);
+  expect(resp.data.insert_attribution_forms_one.created).toMatch(
+    iso8601dateRegex,
+  );
+  expect(resp.data.insert_attribution_forms_one.modified).toBeNull();
 });
 
 test('name is unique', async () => {
@@ -60,7 +64,7 @@ test('name is unique', async () => {
     },
   });
 
-  expect(resp1.data.insert_mark_forms_one.id).toBeGreaterThan(0);
+  expect(resp1.data.insert_attribution_forms_one.id).toBeGreaterThan(0);
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
 
@@ -86,7 +90,7 @@ test('modified', async () => {
   const updated = await post({
     query: /* GraphQL */ `
       mutation UpdateMarkForm($id: Int!, $name: String) {
-        update_mark_forms_by_pk(
+        update_attribution_forms_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }
         ) {
@@ -96,10 +100,13 @@ test('modified', async () => {
         }
       }
     `,
-    variables: { id: resp.data.insert_mark_forms_one.id, name: 'MarkForm 999' },
+    variables: {
+      id: resp.data.insert_attribution_forms_one.id,
+      name: 'MarkForm 999',
+    },
   });
 
-  expect(updated.data.update_mark_forms_by_pk.modified).toMatch(
+  expect(updated.data.update_attribution_forms_by_pk.modified).toMatch(
     iso8601dateRegex,
   );
 });

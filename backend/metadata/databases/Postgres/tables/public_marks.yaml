@@ -8,9 +8,9 @@ object_relationships:
   - name: lot
     using:
       foreign_key_constraint_on: lot_id
-  - name: mark_form
+  - name: attribution_form
     using:
-      foreign_key_constraint_on: mark_form_id
+      foreign_key_constraint_on: attribution_form_id
   - name: tree
     using:
       foreign_key_constraint_on: tree_id
@@ -32,7 +32,7 @@ insert_permissions:
         - geo_location
         - geo_location_accuracy
         - lot_id
-        - mark_form_id
+        - attribution_form_id
         - offline_id
         - tree_id
         - cultivar_id
@@ -45,7 +45,7 @@ select_permissions:
         - date_marked
         - id
         - lot_id
-        - mark_form_id
+        - attribution_form_id
         - tree_id
         - cultivar_id
         - created
@@ -64,7 +64,7 @@ update_permissions:
         - geo_location
         - geo_location_accuracy
         - lot_id
-        - mark_form_id
+        - attribution_form_id
         - offline_id
         - tree_id
         - cultivar_id

@@ -64,7 +64,7 @@ const insertMarkMutation = /* GraphQL */ `
   mutation InsertMarks(
     $author: String
     $date_marked: date
-    $mark_form_name: String
+    $attribution_form_name: String
     $lot_name_segment: String
     $crossing_name: String
   ) {
@@ -72,7 +72,7 @@ const insertMarkMutation = /* GraphQL */ `
       object: {
         author: $author
         date_marked: $date_marked
-        mark_form: { data: { name: $mark_form_name } }
+        attribution_form: { data: { name: $attribution_form_name } }
         lot: {
           data: {
             name_segment: $lot_name_segment
@@ -96,7 +96,7 @@ afterEach(async () => {
         delete_marks(where: {}) {
           affected_rows
         }
-        delete_mark_forms(where: {}) {
+        delete_attribution_forms(where: {}) {
           affected_rows
         }
         delete_lots(where: {}) {
@@ -119,7 +119,7 @@ test('insert', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -162,7 +162,7 @@ test('insert with offline data', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -227,7 +227,7 @@ test('insert INTEGER valid low', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -256,7 +256,7 @@ test('insert INTEGER valid high', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -285,7 +285,7 @@ test('insert INTEGER too low', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -315,7 +315,7 @@ test('insert INTEGER too high', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -345,7 +345,7 @@ test('insert INTEGER invalid step', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -375,7 +375,7 @@ test('insert INTEGER invalid value data type', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -405,7 +405,7 @@ test('insert INTEGER wrong column', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -435,7 +435,7 @@ test('insert FLOAT valid low', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -464,7 +464,7 @@ test('insert FLOAT valid high', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -493,7 +493,7 @@ test('insert FLOAT too low', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -523,7 +523,7 @@ test('insert FLOAT too high', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -553,7 +553,7 @@ test('insert FLOAT invalid value data type', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -583,7 +583,7 @@ test('insert FLOAT wrong column', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -613,7 +613,7 @@ test('insert TEXT valid', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -641,7 +641,7 @@ test('insert TEXT too long', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -670,7 +670,7 @@ test('insert TEXT empty', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -699,7 +699,7 @@ test('insert TEXT wrong column', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -728,7 +728,7 @@ test('insert BOOLEAN valid', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -756,7 +756,7 @@ test('insert BOOLEAN invalid value data type', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -785,7 +785,7 @@ test('insert BOOLEAN wrong column', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -814,7 +814,7 @@ test('insert DATE valid', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -842,7 +842,7 @@ test('insert DATE out of range date', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -869,7 +869,7 @@ test('insert DATE invalid date format', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -896,7 +896,7 @@ test('insert DATE timestamp', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -924,7 +924,7 @@ test('insert DATE invalid value data type', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -951,7 +951,7 @@ test('insert DATE wrong column', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -980,7 +980,7 @@ test('insert PHOTO jpg', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1010,7 +1010,7 @@ test('insert PHOTO jpeg', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1040,7 +1040,7 @@ test('insert PHOTO avif', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1070,7 +1070,7 @@ test('insert PHOTO png invalid', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1099,7 +1099,7 @@ test('insert PHOTO name invalid', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1128,7 +1128,7 @@ test('insert PHOTO empty', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1157,7 +1157,7 @@ test('insert PHOTO wrong column', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1186,7 +1186,7 @@ test('modified', async () => {
     variables: {
       author: 'Mark Author',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },

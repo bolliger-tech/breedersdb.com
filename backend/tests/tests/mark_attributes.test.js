@@ -43,7 +43,7 @@ afterEach(async () => {
         delete_marks(where: {}) {
           affected_rows
         }
-        delete_mark_forms(where: {}) {
+        delete_attribution_forms(where: {}) {
           affected_rows
         }
         delete_lots(where: {}) {
@@ -322,7 +322,7 @@ test('data type is immutable after insert of mark_values', async () => {
               data: {
                 author: "Author 1"
                 date_marked: "2021-01-01"
-                mark_form: { data: { name: "Mark Form 1" } }
+                attribution_form: { data: { name: "Mark Form 1" } }
                 lot: {
                   data: {
                     name_segment: "24A"

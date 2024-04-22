@@ -155,7 +155,7 @@ const insertMarkAttribute = /* GraphQL */ `
 
 const insertMarkForm = /* GraphQL */ `
   mutation InsertMarkForm($name: String!) {
-    insert_mark_forms_one(object: { name: $name }) {
+    insert_attribution_forms_one(object: { name: $name }) {
       id
     }
   }
@@ -165,7 +165,7 @@ const insertMark = /* GraphQL */ `
   mutation InsertMark(
     $author: String!
     $date_marked: date!
-    $mark_form_id: Int!
+    $attribution_form_id: Int!
     $lot_id: Int
     $cultivar_id: Int
     $tree_id: Int
@@ -176,7 +176,7 @@ const insertMark = /* GraphQL */ `
       object: {
         author: $author
         date_marked: $date_marked
-        mark_form_id: $mark_form_id
+        attribution_form_id: $attribution_form_id
         lot_id: $lot_id
         cultivar_id: $cultivar_id
         tree_id: $tree_id
@@ -244,7 +244,7 @@ afterEach(async () => {
         delete_marks(where: {}) {
           affected_rows
         }
-        delete_mark_forms(where: {}) {
+        delete_attribution_forms(where: {}) {
           affected_rows
         }
         delete_trees(where: {}) {
@@ -274,7 +274,7 @@ async function insert_mark_value_with_associated_data({
   lot_name_segment = '24A',
   cultivar_name_segment = '001',
   tree_publicid = '00000001',
-  mark_form_name = 'Form 1',
+  attribution_form_name = 'Form 1',
   mark_attribute_name = 'Attribute 1',
   attribute_data_type = 'INTEGER',
   mark_attribute_validation_rule = { min: 0, max: 100, step: 1 },
@@ -323,7 +323,7 @@ async function insert_mark_value_with_associated_data({
   const form = await post({
     query: insertMarkForm,
     variables: {
-      name: mark_form_name,
+      name: attribution_form_name,
     },
   });
 
@@ -344,7 +344,7 @@ async function insert_mark_value_with_associated_data({
     variables: {
       author: mark_author,
       date_marked: mark_date_marked,
-      mark_form_id: form.data.insert_mark_forms_one.id,
+      attribution_form_id: form.data.insert_attribution_forms_one.id,
       lot_id: is_lot ? lot.data.insert_lots_one.id : null,
       cultivar_id: is_cultivar ? cultivar.data.insert_cultivars_one.id : null,
       tree_id: is_tree ? tree.data.insert_trees_one.id : null,
@@ -372,7 +372,7 @@ async function insert_mark_value_with_associated_data({
     lot_id: lot.data.insert_lots_one.id,
     cultivar_id: cultivar.data.insert_cultivars_one.id,
     tree_id: tree.data.insert_trees_one.id,
-    form_id: form.data.insert_mark_forms_one.id,
+    form_id: form.data.insert_attribution_forms_one.id,
     attribute_id: attribute.data.insert_mark_attributes_one.id,
     mark_id: mark.data.insert_marks_one.id,
     value_id: value.data.insert_mark_values_one.id,

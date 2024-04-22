@@ -6,7 +6,7 @@ const insertMutation = /* GraphQL */ `
   mutation InsertMarks(
     $author: String
     $date_marked: date
-    $mark_form_name: String
+    $attribution_form_name: String
     $tree_id: Int
     $cultivar_id: Int
     $lot_id: Int
@@ -17,7 +17,7 @@ const insertMutation = /* GraphQL */ `
       object: {
         author: $author
         date_marked: $date_marked
-        mark_form: { data: { name: $mark_form_name } }
+        attribution_form: { data: { name: $attribution_form_name } }
         tree_id: $tree_id
         cultivar_id: $cultivar_id
         lot_id: $lot_id
@@ -28,7 +28,7 @@ const insertMutation = /* GraphQL */ `
       id
       author
       date_marked
-      mark_form {
+      attribution_form {
         id
         name
       }
@@ -93,7 +93,7 @@ afterEach(async () => {
         delete_marks(where: {}) {
           affected_rows
         }
-        delete_mark_forms(where: {}) {
+        delete_attribution_forms(where: {}) {
           affected_rows
         }
         delete_trees(where: {}) {
@@ -129,7 +129,7 @@ test('insert', async () => {
     variables: {
       author: 'Author 1',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
       cultivar_id: null,
       lot_id: null,
@@ -144,7 +144,7 @@ test('insert', async () => {
   expect(resp.data.insert_marks_one.id).toBeGreaterThan(0);
   expect(resp.data.insert_marks_one.author).toBe('Author 1');
   expect(resp.data.insert_marks_one.date_marked).toBe('2021-01-01');
-  expect(resp.data.insert_marks_one.mark_form.name).toBe('Mark Form 1');
+  expect(resp.data.insert_marks_one.attribution_form.name).toBe('Mark Form 1');
   expect(resp.data.insert_marks_one.tree.publicid).toBe('00000001');
   expect(resp.data.insert_marks_one.cultivar).toBeNull();
   expect(resp.data.insert_marks_one.lot).toBeNull();
@@ -173,7 +173,7 @@ test('author is required', async () => {
     variables: {
       author: '',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
     },
   });
@@ -197,7 +197,7 @@ test('date_marked is required', async () => {
     variables: {
       author: '',
       date_marked: null,
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
     },
   });
@@ -221,7 +221,7 @@ test('has mark object', async () => {
     variables: {
       author: 'Author 1',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
     },
   });
 
@@ -246,7 +246,7 @@ test('has exclusively one tree', async () => {
     variables: {
       author: 'Author 1',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
       cultivar_id: tree.data.insert_trees_one.cultivar.id,
     },
@@ -273,7 +273,7 @@ test('has exclusively one cultivar', async () => {
     variables: {
       author: 'Author 1',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       cultivar_id: tree.data.insert_trees_one.cultivar.id,
       lot_id: tree.data.insert_trees_one.cultivar.lot.id,
     },
@@ -300,7 +300,7 @@ test('has exclusively one lot', async () => {
     variables: {
       author: 'Author 1',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
       lot_id: tree.data.insert_trees_one.cultivar.lot.id,
     },
@@ -327,7 +327,7 @@ test('modified', async () => {
     variables: {
       author: 'Author 1',
       date_marked: '2021-01-01',
-      mark_form_name: 'Mark Form 1',
+      attribution_form_name: 'Mark Form 1',
       tree_id: tree.data.insert_trees_one.id,
     },
   });

@@ -761,7 +761,7 @@ create trigger make_data_type_immutable
 execute function make_data_type_immutable();
 
 
-create table mark_forms
+create table attribution_forms
 (
     id          integer primary key generated always as identity,
     name        varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
@@ -771,41 +771,41 @@ create table mark_forms
     modified    timestamp with time zone
 );
 
-create index on mark_forms (name);
-create index on mark_forms (disabled);
-create index on mark_forms (created);
+create index on attribution_forms (name);
+create index on attribution_forms (disabled);
+create index on attribution_forms (created);
 
-create trigger update_mark_forms_modified
+create trigger update_attribution_forms_modified
     before update
-    on mark_forms
+    on attribution_forms
     for each row
 execute function modified_column();
 
-create trigger trim_mark_forms
+create trigger trim_attribution_forms
     before insert or update of name, description
-    on mark_forms
+    on attribution_forms
     for each row
 execute function trim_strings('name', 'description');
 
 
-create table attribute_form_fields
+create table attribution_form_fields
 (
     id                integer primary key generated always as identity,
     priority          int                      not null,
-    mark_form_id      int                      not null references mark_forms,
+    attribution_form_id      int                      not null references attribution_forms,
     mark_attribute_id int                      not null references mark_attributes,
     created           timestamp with time zone not null default now(),
     modified          timestamp with time zone
 );
 
-create unique index on attribute_form_fields (priority, mark_form_id);
-create index on attribute_form_fields (mark_form_id);
-create index on attribute_form_fields (mark_attribute_id);
-create index on attribute_form_fields (created);
+create unique index on attribution_form_fields (priority, attribution_form_id);
+create index on attribution_form_fields (attribution_form_id);
+create index on attribution_form_fields (mark_attribute_id);
+create index on attribution_form_fields (created);
 
-create trigger update_attribute_form_fields_modified
+create trigger update_attribution_form_fields_modified
     before update
-    on attribute_form_fields
+    on attribution_form_fields
     for each row
 execute function modified_column();
 
@@ -815,7 +815,7 @@ create table marks
     id                    integer primary key generated always as identity,
     author                varchar(45)              not null check (author ~ '^[^\n]{1,45}$'),
     date_marked           date                     not null,
-    mark_form_id          int                      not null references mark_forms,
+    attribution_form_id          int                      not null references attribution_forms,
     tree_id               int references trees,
     cultivar_id           int references cultivars,
     lot_id                int references lots,
@@ -831,7 +831,7 @@ comment on column marks.geo_location is 'SRID:4326'; -- default for GPS coordina
 
 create index on marks (author);
 create index on marks (date_marked);
-create index on marks (mark_form_id);
+create index on marks (attribution_form_id);
 create index on marks (tree_id);
 create index on marks (cultivar_id);
 create index on marks (lot_id);

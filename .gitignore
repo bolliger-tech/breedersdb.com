@@ -1,3 +1,4 @@
 /migrate
 .env
 node_modules
+.sentryclirc

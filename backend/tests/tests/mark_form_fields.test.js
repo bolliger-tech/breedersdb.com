@@ -9,7 +9,7 @@ const insertMutation = /* GraphQL */ `
     $mark_attribute_name: String
     $mark_attribute_validation_rule: jsonb
     $mark_attribute_data_type: attribute_data_types_enum
-    $mark_attribute_mark_type: mark_types_enum
+    $attribute_type: attribute_types_enum
   ) {
     insert_mark_form_fields_one(
       object: {
@@ -20,7 +20,7 @@ const insertMutation = /* GraphQL */ `
             name: $mark_attribute_name
             validation_rule: $mark_attribute_validation_rule
             data_type: $mark_attribute_data_type
-            mark_type: $mark_attribute_mark_type
+            attribute_type: $attribute_type
           }
         }
       }
@@ -36,7 +36,7 @@ const insertMutation = /* GraphQL */ `
         name
         validation_rule
         data_type
-        mark_type
+        attribute_type
       }
       created
       modified
@@ -71,7 +71,7 @@ test('insert', async () => {
       mark_attribute_name: 'Mark Attribute 1',
       mark_attribute_validation_rule: { max: 9, min: 1, step: 1 },
       mark_attribute_data_type: 'INTEGER',
-      mark_attribute_mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -108,7 +108,7 @@ test('priority is unique per form', async () => {
             name: "Mark Attribute 1"
             validation_rule: { max: 9, min: 1, step: 1 }
             data_type: INTEGER
-            mark_type: OBSERVATION
+            attribute_type: OBSERVATION
           }
         ) {
           id
@@ -175,7 +175,7 @@ test('modified', async () => {
       mark_attribute_name: 'Mark Attribute 1',
       mark_attribute_validation_rule: { max: 9, min: 1, step: 1 },
       mark_attribute_data_type: 'INTEGER',
-      mark_attribute_mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 

@@ -34,7 +34,7 @@ const marksViewFields = /* GraphQL */ `
     geo_location
     geo_location_accuracy
     exceptional_mark
-    mark_type
+    attribute_type
     created
     modified
   }
@@ -138,14 +138,14 @@ const insertMarkAttribute = /* GraphQL */ `
     $name: String!
     $validation_rule: jsonb
     $data_type: attribute_data_types_enum!
-    $mark_type: mark_types_enum!
+    $attribute_type: attribute_types_enum!
   ) {
     insert_mark_attributes_one(
       object: {
         name: $name
         validation_rule: $validation_rule
         data_type: $data_type
-        mark_type: $mark_type
+        attribute_type: $attribute_type
       }
     ) {
       id
@@ -278,7 +278,7 @@ async function insert_mark_value_with_associated_data({
   mark_attribute_name = 'Attribute 1',
   mark_attribute_data_type = 'INTEGER',
   mark_attribute_validation_rule = { min: 0, max: 100, step: 1 },
-  mark_attribute_mark_type = 'OBSERVATION',
+  attribute_type = 'OBSERVATION',
   mark_author = 'Author 1',
   mark_date_marked = '2021-01-01',
   mark_geo_location = { type: 'Point', coordinates: [1, 2] },
@@ -335,7 +335,7 @@ async function insert_mark_value_with_associated_data({
         ? mark_attribute_validation_rule
         : null,
       data_type: mark_attribute_data_type,
-      mark_type: mark_attribute_mark_type,
+      attribute_type: attribute_type,
     },
   });
 
@@ -401,7 +401,7 @@ describe('non aggregated values are correct', async () => {
         is_lot: true,
         mark_attribute_name: 'Attribute 1',
         mark_attribute_data_type: 'INTEGER',
-        mark_attribute_mark_type: 'OBSERVATION',
+        attribute_type: 'OBSERVATION',
         author: 'Author 1',
         date_marked: '2021-01-01',
         geo_location: { type: 'Point', coordinates: [1, 2] },
@@ -426,7 +426,7 @@ describe('non aggregated values are correct', async () => {
     expect(data.marks_view[0].geo_location.coordinates).toEqual([1, 2]);
     expect(data.marks_view[0].geo_location_accuracy).toBe(1);
     expect(data.marks_view[0].exceptional_mark).toBe(true);
-    expect(data.marks_view[0].mark_type).toBe('OBSERVATION');
+    expect(data.marks_view[0].attribute_type).toBe('OBSERVATION');
     expect(data.marks_view[0].created).toMatch(iso8601dateRegex);
     expect(data.marks_view[0].modified).toBeNull();
   });

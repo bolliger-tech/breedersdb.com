@@ -622,15 +622,15 @@ execute function check_crossing_pollen_cultivar();
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- MARKS
+-- ATTRIBUTES
 ------------------------------------------------------------------------------------------------------------------------
 
-create table mark_types
+create table attribute_types
 (
     enum text primary key
 );
 
-insert into mark_types (enum)
+insert into attribute_types (enum)
 values ('OBSERVATION'),
        ('TREATMENT'),
        ('SAMPLE'),
@@ -658,7 +658,7 @@ create table mark_attributes
     validation_rule jsonb,
     data_type       varchar(12)              not null references attribute_data_types,
     description     varchar(255),
-    mark_type       varchar(12)              not null references mark_types,
+    attribute_type       varchar(12)              not null references attribute_types,
     disabled        boolean                           default false not null,
     created         timestamp with time zone not null default now(),
     modified        timestamp with time zone
@@ -673,7 +673,7 @@ comment on table mark_attributes is '""- validation_rule"":\n'
 create index on mark_attributes (name);
 create index on mark_attributes using gin (name gin_trgm_ops);
 create index on mark_attributes (data_type);
-create index on mark_attributes (mark_type);
+create index on mark_attributes (attribute_type);
 create index on mark_attributes (disabled);
 create index on mark_attributes (created);
 
@@ -1071,7 +1071,7 @@ select mark_values.id,
        mark_attributes.name                                   as mark_attribute_name,
        mark_attributes.id                                     as mark_attribute_id,
        mark_attributes.data_type,
-       mark_attributes.mark_type,
+       mark_attributes.attribute_type,
        marks.id                                               as mark_id,
        marks.tree_id,
        marks.cultivar_id,
@@ -1101,7 +1101,7 @@ create index on marks_view (mark_attribute_name);
 create index on marks_view using gin (mark_attribute_name gin_trgm_ops);
 create index on marks_view (mark_attribute_id);
 create index on marks_view (data_type);
-create index on marks_view (mark_type);
+create index on marks_view (attribute_type);
 create index on marks_view (mark_id);
 create index on marks_view (tree_id);
 create index on marks_view (cultivar_id);

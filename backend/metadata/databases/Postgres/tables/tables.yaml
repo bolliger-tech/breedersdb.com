@@ -6,7 +6,7 @@
 - "!include public_mark_attributes.yaml"
 - "!include public_mark_form_fields.yaml"
 - "!include public_mark_forms.yaml"
-- "!include public_mark_types.yaml"
+- "!include public_attribute_types.yaml"
 - "!include public_mark_values.yaml"
 - "!include public_marks.yaml"
 - "!include public_marks_view.yaml"

@@ -60,7 +60,7 @@ select_permissions:
         - mark_attribute_id
         - mark_attribute_name
         - mark_id
-        - mark_type
+        - attribute_type
         - modified
         - note
         - text_value

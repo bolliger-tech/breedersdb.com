@@ -8,7 +8,7 @@ const insertMutation = /* GraphQL */ `
     $validation_rule: jsonb
     $data_type: attribute_data_types_enum
     $description: String
-    $mark_type: mark_types_enum
+    $attribute_type: attribute_types_enum
   ) {
     insert_mark_attributes_one(
       object: {
@@ -16,7 +16,7 @@ const insertMutation = /* GraphQL */ `
         validation_rule: $validation_rule
         data_type: $data_type
         description: $description
-        mark_type: $mark_type
+        attribute_type: $attribute_type
         disabled: false
       }
     ) {
@@ -25,7 +25,7 @@ const insertMutation = /* GraphQL */ `
       validation_rule
       data_type
       description
-      mark_type
+      attribute_type
       disabled
       created
       modified
@@ -68,7 +68,7 @@ test('insert', async () => {
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
       description: 'Description 1',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -83,7 +83,9 @@ test('insert', async () => {
   expect(resp.data.insert_mark_attributes_one.description).toBe(
     'Description 1',
   );
-  expect(resp.data.insert_mark_attributes_one.mark_type).toBe('OBSERVATION');
+  expect(resp.data.insert_mark_attributes_one.attribute_type).toBe(
+    'OBSERVATION',
+  );
   expect(resp.data.insert_mark_attributes_one.disabled).toBe(false);
   expect(resp.data.insert_mark_attributes_one.created).toMatch(
     iso8601dateRegex,
@@ -98,7 +100,7 @@ test('name is unique', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
   const resp2 = await post({
@@ -107,7 +109,7 @@ test('name is unique', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -122,7 +124,7 @@ test('name is required', async () => {
       name: '',
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -136,7 +138,7 @@ test('empty validation rule is valid for TEXT', async () => {
       name: 'Mark Attribute 1',
       validation_rule: null,
       data_type: 'TEXT',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -150,7 +152,7 @@ test('validation rule is empty for TEXT', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: 9, min: 1, step: 1 },
       data_type: 'TEXT',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -166,7 +168,7 @@ test('validation rule is empty for BOOLEAN', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: 9, min: 1, step: 1 },
       data_type: 'BOOLEAN',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -182,7 +184,7 @@ test('validation rule is empty for DATE', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: 9, min: 1, step: 1 },
       data_type: 'DATE',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -198,7 +200,7 @@ test('validation rule is empty for PHOTO', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: 9, min: 1, step: 1 },
       data_type: 'PHOTO',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -214,7 +216,7 @@ test('validation rule contains integers for INTEGER', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: 9, min: -1, step: 1 },
       data_type: 'INTEGER',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -228,7 +230,7 @@ test('validation rule contains no floats for INTEGER', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: 9, min: 1, step: 0.1 },
       data_type: 'INTEGER',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -244,7 +246,7 @@ test('validation rule contains min, max, step for INTEGER', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: 9, min: 1 },
       data_type: 'INTEGER',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -260,7 +262,7 @@ test('validation rule contains numbers for FLOAT', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: 10, min: -0.5, step: 0.001 },
       data_type: 'FLOAT',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -274,7 +276,7 @@ test('validation rule contains only numbers for FLOAT', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: 9, min: 'NaN', step: 0.1 },
       data_type: 'FLOAT',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -290,7 +292,7 @@ test('validation rule contains min, max, step for FLOAT', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: 9, min: 1 },
       data_type: 'FLOAT',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -306,7 +308,7 @@ test('data type is immutable after insert of mark_values', async () => {
       name: 'Mark Attribute 1',
       validation_rule: null,
       data_type: 'TEXT',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 
@@ -372,7 +374,7 @@ test('modified', async () => {
       name: 'Mark Attribute 1',
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
-      mark_type: 'OBSERVATION',
+      attribute_type: 'OBSERVATION',
     },
   });
 

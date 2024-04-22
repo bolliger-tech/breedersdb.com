@@ -1,12 +1,12 @@
 table:
-  name: mark_types
+  name: attribute_types
   schema: public
 is_enum: true
 array_relationships:
   - name: mark_attributes
     using:
       foreign_key_constraint_on:
-        column: mark_type
+        column: attribute_type
         table:
           name: mark_attributes
           schema: public

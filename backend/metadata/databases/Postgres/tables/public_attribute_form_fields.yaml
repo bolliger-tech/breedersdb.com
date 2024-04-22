@@ -1,5 +1,5 @@
 table:
-  name: mark_form_fields
+  name: attribute_form_fields
   schema: public
 object_relationships:
   - name: mark_attribute

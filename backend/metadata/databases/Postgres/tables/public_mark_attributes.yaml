@@ -9,12 +9,12 @@ object_relationships:
     using:
       foreign_key_constraint_on: attribute_type
 array_relationships:
-  - name: mark_form_fields
+  - name: attribute_form_fields
     using:
       foreign_key_constraint_on:
         column: mark_attribute_id
         table:
-          name: mark_form_fields
+          name: attribute_form_fields
           schema: public
   - name: mark_values
     using:

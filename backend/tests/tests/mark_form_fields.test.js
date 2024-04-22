@@ -11,7 +11,7 @@ const insertMutation = /* GraphQL */ `
     $attribute_data_type: attribute_data_types_enum
     $attribute_type: attribute_types_enum
   ) {
-    insert_mark_form_fields_one(
+    insert_attribute_form_fields_one(
       object: {
         priority: $priority
         mark_form: { data: { name: $mark_form_name } }
@@ -48,7 +48,7 @@ afterEach(async () => {
   const resp = await post({
     query: /* GraphQL */ `
       mutation DeleteAllMarkFormFields {
-        delete_mark_form_fields(where: {}) {
+        delete_attribute_form_fields(where: {}) {
           affected_rows
         }
         delete_mark_attributes(where: {}) {
@@ -75,18 +75,18 @@ test('insert', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_form_fields_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_form_fields_one.priority).toBe(1);
-  expect(resp.data.insert_mark_form_fields_one.mark_form.name).toBe(
+  expect(resp.data.insert_attribute_form_fields_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_form_fields_one.priority).toBe(1);
+  expect(resp.data.insert_attribute_form_fields_one.mark_form.name).toBe(
     'Mark Form 1',
   );
-  expect(resp.data.insert_mark_form_fields_one.mark_attribute.name).toBe(
+  expect(resp.data.insert_attribute_form_fields_one.mark_attribute.name).toBe(
     'Mark Attribute 1',
   );
-  expect(resp.data.insert_mark_form_fields_one.created).toMatch(
+  expect(resp.data.insert_attribute_form_fields_one.created).toMatch(
     iso8601dateRegex,
   );
-  expect(resp.data.insert_mark_form_fields_one.modified).toBeNull();
+  expect(resp.data.insert_attribute_form_fields_one.modified).toBeNull();
 });
 
 test('priority is unique per form', async () => {
@@ -123,7 +123,7 @@ test('priority is unique per form', async () => {
         $mark_form_id: Int!
         $mark_attribute_id: Int!
       ) {
-        insert_mark_form_fields_one(
+        insert_attribute_form_fields_one(
           object: {
             priority: 1
             mark_form_id: $mark_form_id
@@ -145,7 +145,7 @@ test('priority is unique per form', async () => {
         $mark_form_id: Int!
         $mark_attribute_id: Int!
       ) {
-        insert_mark_form_fields_one(
+        insert_attribute_form_fields_one(
           object: {
             priority: 1
             mark_form_id: $mark_form_id
@@ -162,7 +162,7 @@ test('priority is unique per form', async () => {
     },
   });
 
-  expect(resp1.data.insert_mark_form_fields_one.id).toBeGreaterThan(0);
+  expect(resp1.data.insert_attribute_form_fields_one.id).toBeGreaterThan(0);
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
 
@@ -182,7 +182,7 @@ test('modified', async () => {
   const updated = await post({
     query: /* GraphQL */ `
       mutation UpdateMarkFormField($id: Int!, $priority: Int) {
-        update_mark_form_fields_by_pk(
+        update_attribute_form_fields_by_pk(
           pk_columns: { id: $id }
           _set: { priority: $priority }
         ) {
@@ -193,12 +193,12 @@ test('modified', async () => {
       }
     `,
     variables: {
-      id: resp.data.insert_mark_form_fields_one.id,
+      id: resp.data.insert_attribute_form_fields_one.id,
       priority: 999,
     },
   });
 
-  expect(updated.data.update_mark_form_fields_by_pk.modified).toMatch(
+  expect(updated.data.update_attribute_form_fields_by_pk.modified).toMatch(
     iso8601dateRegex,
   );
 });

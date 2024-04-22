@@ -2,12 +2,12 @@ table:
   name: mark_forms
   schema: public
 array_relationships:
-  - name: mark_form_fields
+  - name: attribute_form_fields
     using:
       foreign_key_constraint_on:
         column: mark_form_id
         table:
-          name: mark_form_fields
+          name: attribute_form_fields
           schema: public
   - name: marks
     using:

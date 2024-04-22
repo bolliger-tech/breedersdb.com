@@ -788,7 +788,7 @@ create trigger trim_mark_forms
 execute function trim_strings('name', 'description');
 
 
-create table mark_form_fields
+create table attribute_form_fields
 (
     id                integer primary key generated always as identity,
     priority          int                      not null,
@@ -798,14 +798,14 @@ create table mark_form_fields
     modified          timestamp with time zone
 );
 
-create unique index on mark_form_fields (priority, mark_form_id);
-create index on mark_form_fields (mark_form_id);
-create index on mark_form_fields (mark_attribute_id);
-create index on mark_form_fields (created);
+create unique index on attribute_form_fields (priority, mark_form_id);
+create index on attribute_form_fields (mark_form_id);
+create index on attribute_form_fields (mark_attribute_id);
+create index on attribute_form_fields (created);
 
-create trigger update_mark_form_fields_modified
+create trigger update_attribute_form_fields_modified
     before update
-    on mark_form_fields
+    on attribute_form_fields
     for each row
 execute function modified_column();
 

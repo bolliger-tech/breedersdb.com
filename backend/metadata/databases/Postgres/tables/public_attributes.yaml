@@ -1,5 +1,5 @@
 table:
-  name: mark_attributes
+  name: attributes
   schema: public
 object_relationships:
   - name: attribute_data_types
@@ -12,14 +12,14 @@ array_relationships:
   - name: attribution_form_fields
     using:
       foreign_key_constraint_on:
-        column: mark_attribute_id
+        column: attribute_id
         table:
           name: attribution_form_fields
           schema: public
   - name: attribute_values
     using:
       foreign_key_constraint_on:
-        column: mark_attribute_id
+        column: attribute_id
         table:
           name: attribute_values
           schema: public

@@ -4,8 +4,8 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertMarkValue(
-    $mark_attribute_name: String
-    $mark_attribute_validation_rule: jsonb
+    $attribute_name: String
+    $attribute_validation_rule: jsonb
     $attribute_data_type: attribute_data_types_enum
     $attribute_type: attribute_types_enum
     $mark_id: Int
@@ -19,10 +19,10 @@ const insertMutation = /* GraphQL */ `
   ) {
     insert_attribute_values_one(
       object: {
-        mark_attribute: {
+        attribute: {
           data: {
-            name: $mark_attribute_name
-            validation_rule: $mark_attribute_validation_rule
+            name: $attribute_name
+            validation_rule: $attribute_validation_rule
             data_type: $attribute_data_type
             attribute_type: $attribute_type
           }
@@ -38,7 +38,7 @@ const insertMutation = /* GraphQL */ `
       }
     ) {
       id
-      mark_attribute {
+      attribute {
         id
         name
         validation_rule
@@ -105,7 +105,7 @@ afterEach(async () => {
         delete_crossings(where: {}) {
           affected_rows
         }
-        delete_mark_attributes(where: {}) {
+        delete_attributes(where: {}) {
           affected_rows
         }
       }
@@ -128,7 +128,7 @@ test('insert', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_data_type: 'TEXT',
       attribute_type: 'OBSERVATION',
       mark_id: mark.data.insert_marks_one.id,
@@ -139,7 +139,7 @@ test('insert', async () => {
   });
 
   expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.mark_attribute.name).toBe(
+  expect(resp.data.insert_attribute_values_one.attribute.name).toBe(
     'Mark Attribute 1',
   );
   expect(resp.data.insert_attribute_values_one.mark_id).toBe(
@@ -173,7 +173,7 @@ test('insert with offline data', async () => {
   const resp = await post({
     query: /* GraphQL */ `
       mutation InsertMarkValue(
-        $mark_attribute_name: String
+        $attribute_name: String
         $attribute_data_type: attribute_data_types_enum
         $attribute_type: attribute_types_enum
         $mark_id: Int
@@ -183,9 +183,9 @@ test('insert with offline data', async () => {
       ) {
         insert_attribute_values_one(
           object: {
-            mark_attribute: {
+            attribute: {
               data: {
-                name: $mark_attribute_name
+                name: $attribute_name
                 data_type: $attribute_data_type
                 attribute_type: $attribute_type
               }
@@ -204,7 +204,7 @@ test('insert with offline data', async () => {
       }
     `,
     variables: {
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_data_type: 'TEXT',
       attribute_type: 'OBSERVATION',
       mark_id: mark.data.insert_marks_one.id,
@@ -240,10 +240,10 @@ test('insert INTEGER valid low', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
-      mark_attribute_validation_rule: { min: 1, max: 9, step: 1 },
+      attribute_validation_rule: { min: 1, max: 9, step: 1 },
       integer_value: 1,
     },
   });
@@ -269,10 +269,10 @@ test('insert INTEGER valid high', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
-      mark_attribute_validation_rule: { min: 1, max: 9, step: 1 },
+      attribute_validation_rule: { min: 1, max: 9, step: 1 },
       integer_value: 9,
     },
   });
@@ -298,10 +298,10 @@ test('insert INTEGER too low', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
-      mark_attribute_validation_rule: { min: 1, max: 9, step: 1 },
+      attribute_validation_rule: { min: 1, max: 9, step: 1 },
       integer_value: 0,
     },
   });
@@ -328,10 +328,10 @@ test('insert INTEGER too high', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
-      mark_attribute_validation_rule: { min: 1, max: 9, step: 1 },
+      attribute_validation_rule: { min: 1, max: 9, step: 1 },
       integer_value: 10,
     },
   });
@@ -358,10 +358,10 @@ test('insert INTEGER invalid step', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
-      mark_attribute_validation_rule: { min: 0, max: 10, step: 2 },
+      attribute_validation_rule: { min: 0, max: 10, step: 2 },
       integer_value: 1,
     },
   });
@@ -388,10 +388,10 @@ test('insert INTEGER invalid value data type', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
-      mark_attribute_validation_rule: { min: 0, max: 10, step: 2 },
+      attribute_validation_rule: { min: 0, max: 10, step: 2 },
       integer_value: 1.0,
     },
   });
@@ -418,10 +418,10 @@ test('insert INTEGER wrong column', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
-      mark_attribute_validation_rule: { min: 0, max: 10, step: 2 },
+      attribute_validation_rule: { min: 0, max: 10, step: 2 },
       float_value: 1,
     },
   });
@@ -448,10 +448,10 @@ test('insert FLOAT valid low', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
-      mark_attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
+      attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
       float_value: 0,
     },
   });
@@ -477,10 +477,10 @@ test('insert FLOAT valid high', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
-      mark_attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
+      attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
       float_value: 1,
     },
   });
@@ -506,10 +506,10 @@ test('insert FLOAT too low', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
-      mark_attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
+      attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
       float_value: -0.1,
     },
   });
@@ -536,10 +536,10 @@ test('insert FLOAT too high', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
-      mark_attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
+      attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
       float_value: 1.1,
     },
   });
@@ -566,10 +566,10 @@ test('insert FLOAT invalid value data type', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
-      mark_attribute_validation_rule: { min: 0, max: 10, step: 1 },
+      attribute_validation_rule: { min: 0, max: 10, step: 1 },
       float_value: 'asdf',
     },
   });
@@ -596,10 +596,10 @@ test('insert FLOAT wrong column', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
-      mark_attribute_validation_rule: { min: 0, max: 10, step: 2 },
+      attribute_validation_rule: { min: 0, max: 10, step: 2 },
       integer_value: 1,
     },
   });
@@ -626,7 +626,7 @@ test('insert TEXT valid', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'TEXT',
       text_value: 'Text Value 1',
@@ -654,7 +654,7 @@ test('insert TEXT too long', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'TEXT',
       text_value: 'a'.repeat(2048),
@@ -683,7 +683,7 @@ test('insert TEXT empty', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'TEXT',
       text_value: '',
@@ -712,7 +712,7 @@ test('insert TEXT wrong column', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'TEXT',
       integer_value: 1,
@@ -741,7 +741,7 @@ test('insert BOOLEAN valid', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'BOOLEAN',
       boolean_value: false,
@@ -769,7 +769,7 @@ test('insert BOOLEAN invalid value data type', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'BOOLEAN',
       boolean_value: 'asdf',
@@ -798,7 +798,7 @@ test('insert BOOLEAN wrong column', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'BOOLEAN',
       text_value: 'false',
@@ -827,7 +827,7 @@ test('insert DATE valid', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       date_value: '2021-01-01',
@@ -855,7 +855,7 @@ test('insert DATE out of range date', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       date_value: '2021-01-32',
@@ -882,7 +882,7 @@ test('insert DATE invalid date format', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       date_value: '31.01.21',
@@ -909,7 +909,7 @@ test('insert DATE timestamp', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       date_value: '2021-01-01:23:00+12:00',
@@ -937,7 +937,7 @@ test('insert DATE invalid value data type', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       date_value: 'asdf',
@@ -964,7 +964,7 @@ test('insert DATE wrong column', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       text_value: '2021-01-01',
@@ -993,7 +993,7 @@ test('insert PHOTO jpg', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpg',
@@ -1023,7 +1023,7 @@ test('insert PHOTO jpeg', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpeg',
@@ -1053,7 +1053,7 @@ test('insert PHOTO avif', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.avif',
@@ -1083,7 +1083,7 @@ test('insert PHOTO png invalid', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.png',
@@ -1112,7 +1112,7 @@ test('insert PHOTO name invalid', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: 'a photo.jpg',
@@ -1141,7 +1141,7 @@ test('insert PHOTO empty', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: '',
@@ -1170,7 +1170,7 @@ test('insert PHOTO wrong column', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       integer_value: 1,
@@ -1199,7 +1199,7 @@ test('modified', async () => {
     variables: {
       exceptional_mark: false,
       mark_id: mark.data.insert_marks_one.id,
-      mark_attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'TEXT',
       text_value: 'Text Value 1',

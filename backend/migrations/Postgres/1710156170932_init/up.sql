@@ -651,7 +651,7 @@ values ('INTEGER'),
        ('PHOTO');
 
 
-create table mark_attributes
+create table attributes
 (
     id              integer primary key generated always as identity,
     name            varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
@@ -664,28 +664,28 @@ create table mark_attributes
     modified        timestamp with time zone
 );
 
-comment on table mark_attributes is '""- validation_rule"":\n'
+comment on table attributes is '""- validation_rule"":\n'
     '""    JSONB: {min: int, max: int, step: int}"" for ""INTEGER"",\n'
     '""           {min: float|int, max: float|int, step: float|int}"" for ""FLOAT""\n'
     '""    NULL"" for other data types.\n'
-    '""- data_type"": Can''t be changed once ""attribute_values"" for this ""mark_attribute"" exist.';
+    '""- data_type"": Can''t be changed once ""attribute_values"" for this ""attribute"" exist.';
 
-create index on mark_attributes (name);
-create index on mark_attributes using gin (name gin_trgm_ops);
-create index on mark_attributes (data_type);
-create index on mark_attributes (attribute_type);
-create index on mark_attributes (disabled);
-create index on mark_attributes (created);
+create index on attributes (name);
+create index on attributes using gin (name gin_trgm_ops);
+create index on attributes (data_type);
+create index on attributes (attribute_type);
+create index on attributes (disabled);
+create index on attributes (created);
 
-create trigger update_mark_attributes_modified
+create trigger update_attributes_modified
     before update
-    on mark_attributes
+    on attributes
     for each row
 execute function modified_column();
 
-create trigger trim_mark_attributes
+create trigger trim_attributes
     before insert or update of name, description
-    on mark_attributes
+    on attributes
     for each row
 execute function trim_strings('name', 'description');
 
@@ -739,7 +739,7 @@ $$ language plpgsql;
 
 create trigger check_validation_rule
     before insert or update of validation_rule, data_type
-    on mark_attributes
+    on attributes
     for each row
 execute function check_validation_rule();
 
@@ -747,7 +747,7 @@ execute function check_validation_rule();
 create or replace function make_data_type_immutable() returns trigger as
 $$
 begin
-    if exists (select 1 from attribute_values where mark_attribute_id = new.id) then
+    if exists (select 1 from attribute_values where attribute_id = new.id) then
         raise exception 'The data type of a mark attribute cannot be changed once a mark value has been inserted.';
     end if;
     return new;
@@ -756,7 +756,7 @@ $$ language plpgsql;
 
 create trigger make_data_type_immutable
     before update of data_type
-    on mark_attributes
+    on attributes
     for each row
 execute function make_data_type_immutable();
 
@@ -793,14 +793,14 @@ create table attribution_form_fields
     id                integer primary key generated always as identity,
     priority          int                      not null,
     attribution_form_id      int                      not null references attribution_forms,
-    mark_attribute_id int                      not null references mark_attributes,
+    attribute_id int                      not null references attributes,
     created           timestamp with time zone not null default now(),
     modified          timestamp with time zone
 );
 
 create unique index on attribution_form_fields (priority, attribution_form_id);
 create index on attribution_form_fields (attribution_form_id);
-create index on attribution_form_fields (mark_attribute_id);
+create index on attribution_form_fields (attribute_id);
 create index on attribution_form_fields (created);
 
 create trigger update_attribution_form_fields_modified
@@ -871,7 +871,7 @@ execute function check_mark_object();
 create table attribute_values
 (
     id                integer primary key generated always as identity,
-    mark_attribute_id int                      not null references mark_attributes,
+    attribute_id int                      not null references attributes,
     mark_id           int                      not null references marks,
     integer_value     int,
     float_value       double precision,
@@ -885,7 +885,7 @@ create table attribute_values
     modified          timestamp with time zone
 );
 
-create index on attribute_values (mark_attribute_id);
+create index on attribute_values (attribute_id);
 create index on attribute_values (mark_id);
 create index on attribute_values (integer_value);
 create index on attribute_values (float_value);
@@ -930,8 +930,8 @@ begin
 
     select data_type, validation_rule
     into _data_type, _validation_rule
-    from mark_attributes
-    where id = new.mark_attribute_id;
+    from attributes
+    where id = new.attribute_id;
 
     -- check that the value type matches the attribute type
     if _data_type = 'INTEGER' and new.integer_value is null or
@@ -975,7 +975,7 @@ execute function sanitize_and_validate_attribute_value();
 
 comment on table attribute_values is '""- text_value"" is trimmed.\n'
     '""- integer_value"" and ""float_value"" are checked against the\n'
-    '""  ""corresponding ""mark_attribute.validation_rule"".\n'
+    '""  ""corresponding ""attribute.validation_rule"".\n'
     '""  ""The checking is performed on insert and update of the value\n'
     '""  ""but not revalidated if the ""validation_rule"" changes.';
 
@@ -1068,10 +1068,10 @@ select attribute_values.id,
        attribute_values.date_value,
        attribute_values.note,
        attribute_values.exceptional_mark,
-       mark_attributes.name                                   as mark_attribute_name,
-       mark_attributes.id                                     as mark_attribute_id,
-       mark_attributes.data_type,
-       mark_attributes.attribute_type,
+       attributes.name                                   as attribute_name,
+       attributes.id                                     as attribute_id,
+       attributes.data_type,
+       attributes.attribute_type,
        marks.id                                               as mark_id,
        marks.tree_id,
        marks.cultivar_id,
@@ -1085,7 +1085,7 @@ select attribute_values.id,
        marks.geo_location_accuracy
 from attribute_values
          inner join marks on marks.id = attribute_values.mark_id
-         inner join mark_attributes on attribute_values.mark_attribute_id = mark_attributes.id
+         inner join attributes on attribute_values.attribute_id = attributes.id
          left join tree_cultivar on marks.tree_id = tree_cultivar.id;
 
 
@@ -1097,9 +1097,9 @@ create index on marks_view using gin (text_value gin_trgm_ops);
 create index on marks_view (boolean_value);
 create index on marks_view (date_value);
 create index on marks_view (exceptional_mark);
-create index on marks_view (mark_attribute_name);
-create index on marks_view using gin (mark_attribute_name gin_trgm_ops);
-create index on marks_view (mark_attribute_id);
+create index on marks_view (attribute_name);
+create index on marks_view using gin (attribute_name gin_trgm_ops);
+create index on marks_view (attribute_id);
 create index on marks_view (data_type);
 create index on marks_view (attribute_type);
 create index on marks_view (mark_id);
@@ -1118,7 +1118,7 @@ begin
     return greatest(
             (select max(coalesce(modified, created)) from marks),
             (select max(coalesce(modified, created)) from attribute_values),
-            (select max(coalesce(modified, created)) from mark_attributes)
+            (select max(coalesce(modified, created)) from attributes)
            );
 end;
 $$ language plpgsql stable;

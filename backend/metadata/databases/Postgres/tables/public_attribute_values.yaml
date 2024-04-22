@@ -5,9 +5,9 @@ object_relationships:
   - name: mark
     using:
       foreign_key_constraint_on: mark_id
-  - name: mark_attribute
+  - name: attribute
     using:
-      foreign_key_constraint_on: mark_attribute_id
+      foreign_key_constraint_on: attribute_id
 insert_permissions:
   - role: user
     permission:
@@ -19,7 +19,7 @@ insert_permissions:
         - exceptional_mark
         - float_value
         - integer_value
-        - mark_attribute_id
+        - attribute_id
         - mark_id
         - note
         - offline_id
@@ -35,7 +35,7 @@ select_permissions:
         - float_value
         - id
         - integer_value
-        - mark_attribute_id
+        - attribute_id
         - mark_id
         - note
         - text_value
@@ -54,7 +54,7 @@ update_permissions:
         - exceptional_mark
         - float_value
         - integer_value
-        - mark_attribute_id
+        - attribute_id
         - mark_id
         - note
         - text_value

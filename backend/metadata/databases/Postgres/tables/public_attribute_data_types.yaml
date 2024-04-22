@@ -3,12 +3,12 @@ table:
   schema: public
 is_enum: true
 array_relationships:
-  - name: mark_attributes
+  - name: attributes
     using:
       foreign_key_constraint_on:
         column: data_type
         table:
-          name: mark_attributes
+          name: attributes
           schema: public
 insert_permissions:
   - role: user

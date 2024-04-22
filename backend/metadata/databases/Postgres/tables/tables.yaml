@@ -3,7 +3,7 @@
 - "!include public_graftings.yaml"
 - "!include public_lots.yaml"
 - "!include public_attribute_data_types.yaml"
-- "!include public_mark_attributes.yaml"
+- "!include public_attributes.yaml"
 - "!include public_attribution_form_fields.yaml"
 - "!include public_attribution_forms.yaml"
 - "!include public_attribute_types.yaml"

@@ -6,8 +6,8 @@ const insertMutation = /* GraphQL */ `
   mutation InsertMarkFormField(
     $priority: Int
     $attribution_form_name: String
-    $mark_attribute_name: String
-    $mark_attribute_validation_rule: jsonb
+    $attribute_name: String
+    $attribute_validation_rule: jsonb
     $attribute_data_type: attribute_data_types_enum
     $attribute_type: attribute_types_enum
   ) {
@@ -15,10 +15,10 @@ const insertMutation = /* GraphQL */ `
       object: {
         priority: $priority
         attribution_form: { data: { name: $attribution_form_name } }
-        mark_attribute: {
+        attribute: {
           data: {
-            name: $mark_attribute_name
-            validation_rule: $mark_attribute_validation_rule
+            name: $attribute_name
+            validation_rule: $attribute_validation_rule
             data_type: $attribute_data_type
             attribute_type: $attribute_type
           }
@@ -31,7 +31,7 @@ const insertMutation = /* GraphQL */ `
         id
         name
       }
-      mark_attribute {
+      attribute {
         id
         name
         validation_rule
@@ -51,7 +51,7 @@ afterEach(async () => {
         delete_attribution_form_fields(where: {}) {
           affected_rows
         }
-        delete_mark_attributes(where: {}) {
+        delete_attributes(where: {}) {
           affected_rows
         }
         delete_attribution_forms(where: {}) {
@@ -68,8 +68,8 @@ test('insert', async () => {
     variables: {
       priority: 1,
       attribution_form_name: 'Mark Form 1',
-      mark_attribute_name: 'Mark Attribute 1',
-      mark_attribute_validation_rule: { max: 9, min: 1, step: 1 },
+      attribute_name: 'Mark Attribute 1',
+      attribute_validation_rule: { max: 9, min: 1, step: 1 },
       attribute_data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
     },
@@ -80,7 +80,7 @@ test('insert', async () => {
   expect(
     resp.data.insert_attribution_form_fields_one.attribution_form.name,
   ).toBe('Mark Form 1');
-  expect(resp.data.insert_attribution_form_fields_one.mark_attribute.name).toBe(
+  expect(resp.data.insert_attribution_form_fields_one.attribute.name).toBe(
     'Mark Attribute 1',
   );
   expect(resp.data.insert_attribution_form_fields_one.created).toMatch(
@@ -103,7 +103,7 @@ test('priority is unique per form', async () => {
   const attr = await post({
     query: /* GraphQL */ `
       mutation InsertMarkAttribute {
-        insert_mark_attributes_one(
+        insert_attributes_one(
           object: {
             name: "Mark Attribute 1"
             validation_rule: { max: 9, min: 1, step: 1 }
@@ -121,13 +121,13 @@ test('priority is unique per form', async () => {
     query: /* GraphQL */ `
       mutation InsertMarkFormField(
         $attribution_form_id: Int!
-        $mark_attribute_id: Int!
+        $attribute_id: Int!
       ) {
         insert_attribution_form_fields_one(
           object: {
             priority: 1
             attribution_form_id: $attribution_form_id
-            mark_attribute_id: $mark_attribute_id
+            attribute_id: $attribute_id
           }
         ) {
           id
@@ -136,20 +136,20 @@ test('priority is unique per form', async () => {
     `,
     variables: {
       attribution_form_id: form.data.insert_attribution_forms_one.id,
-      mark_attribute_id: attr.data.insert_mark_attributes_one.id,
+      attribute_id: attr.data.insert_attributes_one.id,
     },
   });
   const resp2 = await post({
     query: /* GraphQL */ `
       mutation InsertMarkFormField(
         $attribution_form_id: Int!
-        $mark_attribute_id: Int!
+        $attribute_id: Int!
       ) {
         insert_attribution_form_fields_one(
           object: {
             priority: 1
             attribution_form_id: $attribution_form_id
-            mark_attribute_id: $mark_attribute_id
+            attribute_id: $attribute_id
           }
         ) {
           id
@@ -158,7 +158,7 @@ test('priority is unique per form', async () => {
     `,
     variables: {
       attribution_form_id: form.data.insert_attribution_forms_one.id,
-      mark_attribute_id: attr.data.insert_mark_attributes_one.id,
+      attribute_id: attr.data.insert_attributes_one.id,
     },
   });
 
@@ -172,8 +172,8 @@ test('modified', async () => {
     variables: {
       priority: 1,
       attribution_form_name: 'Mark Form 1',
-      mark_attribute_name: 'Mark Attribute 1',
-      mark_attribute_validation_rule: { max: 9, min: 1, step: 1 },
+      attribute_name: 'Mark Attribute 1',
+      attribute_validation_rule: { max: 9, min: 1, step: 1 },
       attribute_data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
     },

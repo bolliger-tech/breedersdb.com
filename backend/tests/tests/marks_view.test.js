@@ -12,8 +12,8 @@ const marksViewFields = /* GraphQL */ `
     text_value
     boolean_value
     date_value
-    mark_attribute_name
-    mark_attribute {
+    attribute_name
+    attribute {
       id
     }
     data_type
@@ -51,8 +51,8 @@ const queryAll = /* GraphQL */ `
 
 const queryByAttributeId = /* GraphQL */ `
   ${marksViewFields}
-  query MarksView($mark_attribute_id: Int!) {
-    marks_view(where: { mark_attribute_id: { _eq: $mark_attribute_id } }) {
+  query MarksView($attribute_id: Int!) {
+    marks_view(where: { attribute_id: { _eq: $attribute_id } }) {
       ...MarksViewFields
     }
   }
@@ -60,12 +60,9 @@ const queryByAttributeId = /* GraphQL */ `
 
 const queryByAttributeIdAndLotId = /* GraphQL */ `
   ${marksViewFields}
-  query MarksView($mark_attribute_id: Int!, $lot_id: Int!) {
+  query MarksView($attribute_id: Int!, $lot_id: Int!) {
     marks_view(
-      where: {
-        mark_attribute_id: { _eq: $mark_attribute_id }
-        lot_id: { _eq: $lot_id }
-      }
+      where: { attribute_id: { _eq: $attribute_id }, lot_id: { _eq: $lot_id } }
     ) {
       ...MarksViewFields
     }
@@ -74,10 +71,10 @@ const queryByAttributeIdAndLotId = /* GraphQL */ `
 
 const queryByAttributeIdAndCultivarId = /* GraphQL */ `
   ${marksViewFields}
-  query MarksView($mark_attribute_id: Int!, $cultivar_id: Int!) {
+  query MarksView($attribute_id: Int!, $cultivar_id: Int!) {
     marks_view(
       where: {
-        mark_attribute_id: { _eq: $mark_attribute_id }
+        attribute_id: { _eq: $attribute_id }
         combined_cultivar_id: { _eq: $cultivar_id }
       }
     ) {
@@ -88,10 +85,10 @@ const queryByAttributeIdAndCultivarId = /* GraphQL */ `
 
 const queryByAttributeIdAndTreeId = /* GraphQL */ `
   ${marksViewFields}
-  query MarksView($mark_attribute_id: Int!, $tree_id: Int!) {
+  query MarksView($attribute_id: Int!, $tree_id: Int!) {
     marks_view(
       where: {
-        mark_attribute_id: { _eq: $mark_attribute_id }
+        attribute_id: { _eq: $attribute_id }
         tree_id: { _eq: $tree_id }
       }
     ) {
@@ -140,7 +137,7 @@ const insertMarkAttribute = /* GraphQL */ `
     $data_type: attribute_data_types_enum!
     $attribute_type: attribute_types_enum!
   ) {
-    insert_mark_attributes_one(
+    insert_attributes_one(
       object: {
         name: $name
         validation_rule: $validation_rule
@@ -192,7 +189,7 @@ const insertMark = /* GraphQL */ `
 const insertMarkValue = /* GraphQL */ `
   mutation InsertMarkValue(
     $mark_id: Int!
-    $mark_attribute_id: Int!
+    $attribute_id: Int!
     $integer_value: Int
     $float_value: float8
     $text_value: String
@@ -204,7 +201,7 @@ const insertMarkValue = /* GraphQL */ `
     insert_attribute_values_one(
       object: {
         mark_id: $mark_id
-        mark_attribute_id: $mark_attribute_id
+        attribute_id: $attribute_id
         integer_value: $integer_value
         float_value: $float_value
         text_value: $text_value
@@ -259,7 +256,7 @@ afterEach(async () => {
         delete_crossings(where: {}) {
           affected_rows
         }
-        delete_mark_attributes(where: {}) {
+        delete_attributes(where: {}) {
           affected_rows
         }
       }`,
@@ -275,9 +272,9 @@ async function insert_attribute_value_with_associated_data({
   cultivar_name_segment = '001',
   tree_publicid = '00000001',
   attribution_form_name = 'Form 1',
-  mark_attribute_name = 'Attribute 1',
+  attribute_name = 'Attribute 1',
   attribute_data_type = 'INTEGER',
-  mark_attribute_validation_rule = { min: 0, max: 100, step: 1 },
+  attribute_validation_rule = { min: 0, max: 100, step: 1 },
   attribute_type = 'OBSERVATION',
   mark_author = 'Author 1',
   mark_date_marked = '2021-01-01',
@@ -330,9 +327,9 @@ async function insert_attribute_value_with_associated_data({
   const attribute = await post({
     query: insertMarkAttribute,
     variables: {
-      name: mark_attribute_name,
+      name: attribute_name,
       validation_rule: ['INTEGER', 'FLOAT'].includes(attribute_data_type)
-        ? mark_attribute_validation_rule
+        ? attribute_validation_rule
         : null,
       data_type: attribute_data_type,
       attribute_type: attribute_type,
@@ -356,7 +353,7 @@ async function insert_attribute_value_with_associated_data({
   const value = await post({
     query: insertMarkValue,
     variables: {
-      mark_attribute_id: attribute.data.insert_mark_attributes_one.id,
+      attribute_id: attribute.data.insert_attributes_one.id,
       mark_id: mark.data.insert_marks_one.id,
       integer_value: attribute_data_type === 'INTEGER' ? integer_value : null,
       float_value: attribute_data_type === 'FLOAT' ? float_value : null,
@@ -373,7 +370,7 @@ async function insert_attribute_value_with_associated_data({
     cultivar_id: cultivar.data.insert_cultivars_one.id,
     tree_id: tree.data.insert_trees_one.id,
     form_id: form.data.insert_attribution_forms_one.id,
-    attribute_id: attribute.data.insert_mark_attributes_one.id,
+    attribute_id: attribute.data.insert_attributes_one.id,
     mark_id: mark.data.insert_marks_one.id,
     value_id: value.data.insert_attribute_values_one.id,
   };
@@ -397,7 +394,7 @@ describe('non aggregated values are correct', async () => {
     const { attribute_id, value_id } =
       await insert_attribute_value_with_associated_data({
         is_lot: true,
-        mark_attribute_name: 'Attribute 1',
+        attribute_name: 'Attribute 1',
         attribute_data_type: 'INTEGER',
         attribute_type: 'OBSERVATION',
         author: 'Author 1',
@@ -417,8 +414,8 @@ describe('non aggregated values are correct', async () => {
     expect(data.marks_view[0].id).toBe(value_id);
     expect(data.marks_view[0].author).toBe('Author 1');
     expect(data.marks_view[0].date_marked).toBe('2021-01-01');
-    expect(data.marks_view[0].mark_attribute_name).toBe('Attribute 1');
-    expect(data.marks_view[0].mark_attribute.id).toBe(attribute_id);
+    expect(data.marks_view[0].attribute_name).toBe('Attribute 1');
+    expect(data.marks_view[0].attribute.id).toBe(attribute_id);
     expect(data.marks_view[0].data_type).toBe('INTEGER');
     expect(data.marks_view[0].note).toBe('Note 1');
     expect(data.marks_view[0].geo_location.coordinates).toEqual([1, 2]);
@@ -492,7 +489,7 @@ test('cultivar contains marks of trees', async () => {
   const { data } = await post({
     query: queryByAttributeIdAndCultivarId,
     variables: {
-      mark_attribute_id: attribute_id,
+      attribute_id: attribute_id,
       cultivar_id: cultivar_id,
     },
   });
@@ -514,7 +511,7 @@ test('trees do not contain cultivar marks', async () => {
   const { data } = await post({
     query: queryByAttributeIdAndTreeId,
     variables: {
-      mark_attribute_id: attribute_id,
+      attribute_id: attribute_id,
       tree_id: tree_id,
     },
   });

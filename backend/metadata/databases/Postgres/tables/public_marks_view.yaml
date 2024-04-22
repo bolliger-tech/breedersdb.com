@@ -20,14 +20,14 @@ object_relationships:
         remote_table:
           name: lots
           schema: public
-  - name: mark_attribute
+  - name: attribute
     using:
       manual_configuration:
         column_mapping:
-          mark_attribute_id: id
+          attribute_id: id
         insertion_order: null
         remote_table:
-          name: mark_attributes
+          name: attributes
           schema: public
   - name: tree
     using:
@@ -57,8 +57,8 @@ select_permissions:
         - id
         - integer_value
         - lot_id
-        - mark_attribute_id
-        - mark_attribute_name
+        - attribute_id
+        - attribute_name
         - mark_id
         - attribute_type
         - modified

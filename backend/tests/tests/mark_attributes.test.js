@@ -10,7 +10,7 @@ const insertMutation = /* GraphQL */ `
     $description: String
     $attribute_type: attribute_types_enum
   ) {
-    insert_mark_attributes_one(
+    insert_attributes_one(
       object: {
         name: $name
         validation_rule: $validation_rule
@@ -52,7 +52,7 @@ afterEach(async () => {
         delete_crossings(where: {}) {
           affected_rows
         }
-        delete_mark_attributes(where: {}) {
+        delete_attributes(where: {}) {
           affected_rows
         }
       }
@@ -72,25 +72,19 @@ test('insert', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_attributes_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_attributes_one.name).toBe('Mark Attribute 1');
-  expect(resp.data.insert_mark_attributes_one.validation_rule).toMatchObject({
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attributes_one.name).toBe('Mark Attribute 1');
+  expect(resp.data.insert_attributes_one.validation_rule).toMatchObject({
     max: '9',
     min: '1',
     step: '1',
   });
-  expect(resp.data.insert_mark_attributes_one.data_type).toBe('INTEGER');
-  expect(resp.data.insert_mark_attributes_one.description).toBe(
-    'Description 1',
-  );
-  expect(resp.data.insert_mark_attributes_one.attribute_type).toBe(
-    'OBSERVATION',
-  );
-  expect(resp.data.insert_mark_attributes_one.disabled).toBe(false);
-  expect(resp.data.insert_mark_attributes_one.created).toMatch(
-    iso8601dateRegex,
-  );
-  expect(resp.data.insert_mark_attributes_one.modified).toBeNull();
+  expect(resp.data.insert_attributes_one.data_type).toBe('INTEGER');
+  expect(resp.data.insert_attributes_one.description).toBe('Description 1');
+  expect(resp.data.insert_attributes_one.attribute_type).toBe('OBSERVATION');
+  expect(resp.data.insert_attributes_one.disabled).toBe(false);
+  expect(resp.data.insert_attributes_one.created).toMatch(iso8601dateRegex);
+  expect(resp.data.insert_attributes_one.modified).toBeNull();
 });
 
 test('name is unique', async () => {
@@ -113,7 +107,7 @@ test('name is unique', async () => {
     },
   });
 
-  expect(resp1.data.insert_mark_attributes_one.id).toBeGreaterThan(0);
+  expect(resp1.data.insert_attributes_one.id).toBeGreaterThan(0);
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
 
@@ -142,7 +136,7 @@ test('empty validation rule is valid for TEXT', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_attributes_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
 });
 
 test('validation rule is empty for TEXT', async () => {
@@ -220,7 +214,7 @@ test('validation rule contains integers for INTEGER', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_attributes_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
 });
 
 test('validation rule contains no floats for INTEGER', async () => {
@@ -266,7 +260,7 @@ test('validation rule contains numbers for FLOAT', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_attributes_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
 });
 
 test('validation rule contains only numbers for FLOAT', async () => {
@@ -314,10 +308,10 @@ test('data type is immutable after insert of attribute_values', async () => {
 
   await post({
     query: /* GraphQL */ `
-      mutation InsertMarkValue($mark_attribute_id: Int!) {
+      mutation InsertMarkValue($attribute_id: Int!) {
         insert_attribute_values_one(
           object: {
-            mark_attribute_id: $mark_attribute_id
+            attribute_id: $attribute_id
             mark: {
               data: {
                 author: "Author 1"
@@ -338,7 +332,7 @@ test('data type is immutable after insert of attribute_values', async () => {
         }
       }
     `,
-    variables: { mark_attribute_id: resp.data.insert_mark_attributes_one.id },
+    variables: { attribute_id: resp.data.insert_attributes_one.id },
   });
 
   const updated = await post({
@@ -347,7 +341,7 @@ test('data type is immutable after insert of attribute_values', async () => {
         $id: Int!
         $data_type: attribute_data_types_enum
       ) {
-        update_mark_attributes_by_pk(
+        update_attributes_by_pk(
           pk_columns: { id: $id }
           _set: { data_type: $data_type }
         ) {
@@ -357,7 +351,7 @@ test('data type is immutable after insert of attribute_values', async () => {
       }
     `,
     variables: {
-      id: resp.data.insert_mark_attributes_one.id,
+      id: resp.data.insert_attributes_one.id,
       data_type: 'PHOTO',
     },
   });
@@ -381,7 +375,7 @@ test('modified', async () => {
   const updated = await post({
     query: /* GraphQL */ `
       mutation UpdateMarkAttribute($id: Int!, $name: String) {
-        update_mark_attributes_by_pk(
+        update_attributes_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }
         ) {
@@ -392,12 +386,12 @@ test('modified', async () => {
       }
     `,
     variables: {
-      id: resp.data.insert_mark_attributes_one.id,
+      id: resp.data.insert_attributes_one.id,
       name: 'Mark Attribute 999',
     },
   });
 
-  expect(updated.data.update_mark_attributes_by_pk.modified).toMatch(
+  expect(updated.data.update_attributes_by_pk.modified).toMatch(
     iso8601dateRegex,
   );
 });

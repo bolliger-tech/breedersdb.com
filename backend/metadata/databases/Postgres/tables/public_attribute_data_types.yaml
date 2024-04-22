@@ -1,5 +1,5 @@
 table:
-  name: mark_attribute_data_types
+  name: attribute_data_types
   schema: public
 is_enum: true
 array_relationships:

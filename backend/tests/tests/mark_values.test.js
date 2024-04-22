@@ -6,7 +6,7 @@ const insertMutation = /* GraphQL */ `
   mutation InsertMarkValue(
     $mark_attribute_name: String
     $mark_attribute_validation_rule: jsonb
-    $mark_attribute_data_type: mark_attribute_data_types_enum
+    $mark_attribute_data_type: attribute_data_types_enum
     $mark_attribute_mark_type: mark_types_enum
     $mark_id: Int
     $integer_value: Int
@@ -172,7 +172,7 @@ test('insert with offline data', async () => {
     query: /* GraphQL */ `
       mutation InsertMarkValue(
         $mark_attribute_name: String
-        $mark_attribute_data_type: mark_attribute_data_types_enum
+        $mark_attribute_data_type: attribute_data_types_enum
         $mark_attribute_mark_type: mark_types_enum
         $mark_id: Int
         $text_value: String

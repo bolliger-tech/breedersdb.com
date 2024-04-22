@@ -8,7 +8,7 @@ const insertMutation = /* GraphQL */ `
     $mark_form_name: String
     $mark_attribute_name: String
     $mark_attribute_validation_rule: jsonb
-    $mark_attribute_data_type: mark_attribute_data_types_enum
+    $mark_attribute_data_type: attribute_data_types_enum
     $mark_attribute_mark_type: mark_types_enum
   ) {
     insert_mark_form_fields_one(

@@ -637,12 +637,12 @@ values ('OBSERVATION'),
        ('OTHER');
 
 
-create table mark_attribute_data_types
+create table attribute_data_types
 (
     enum text primary key
 );
 
-insert into mark_attribute_data_types (enum)
+insert into attribute_data_types (enum)
 values ('INTEGER'),
        ('FLOAT'),
        ('TEXT'),
@@ -656,7 +656,7 @@ create table mark_attributes
     id              integer primary key generated always as identity,
     name            varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
     validation_rule jsonb,
-    data_type       varchar(12)              not null references mark_attribute_data_types,
+    data_type       varchar(12)              not null references attribute_data_types,
     description     varchar(255),
     mark_type       varchar(12)              not null references mark_types,
     disabled        boolean                           default false not null,

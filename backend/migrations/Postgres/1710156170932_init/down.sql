@@ -11,7 +11,7 @@ drop table if exists mother_trees cascade;
 drop table if exists marks cascade;
 drop table if exists mark_forms cascade;
 drop table if exists mark_form_fields cascade;
-drop table if exists mark_attribute_data_types cascade;
+drop table if exists attribute_data_types cascade;
 drop table if exists mark_types cascade;
 drop table if exists mark_attributes cascade;
 drop table if exists mark_values cascade;

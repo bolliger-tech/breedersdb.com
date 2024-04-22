@@ -137,7 +137,7 @@ const insertMarkAttribute = /* GraphQL */ `
   mutation InsertMarkAttribute(
     $name: String!
     $validation_rule: jsonb
-    $data_type: mark_attribute_data_types_enum!
+    $data_type: attribute_data_types_enum!
     $mark_type: mark_types_enum!
   ) {
     insert_mark_attributes_one(

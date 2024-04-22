@@ -6,7 +6,7 @@ const insertMutation = /* GraphQL */ `
   mutation InsertMarkAttribute(
     $name: String
     $validation_rule: jsonb
-    $data_type: mark_attribute_data_types_enum
+    $data_type: attribute_data_types_enum
     $description: String
     $mark_type: mark_types_enum
   ) {
@@ -343,7 +343,7 @@ test('data type is immutable after insert of mark_values', async () => {
     query: /* GraphQL */ `
       mutation UpdateMarkAttribute(
         $id: Int!
-        $data_type: mark_attribute_data_types_enum
+        $data_type: attribute_data_types_enum
       ) {
         update_mark_attributes_by_pk(
           pk_columns: { id: $id }

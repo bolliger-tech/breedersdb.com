@@ -1,5 +1,5 @@
 table:
-  name: mark_values
+  name: attribute_values
   schema: public
 object_relationships:
   - name: mark

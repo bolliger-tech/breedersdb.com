@@ -17,7 +17,7 @@ const insertMutation = /* GraphQL */ `
     $note: String
     $exceptional_mark: Boolean
   ) {
-    insert_mark_values_one(
+    insert_attribute_values_one(
       object: {
         mark_attribute: {
           data: {
@@ -90,7 +90,7 @@ afterEach(async () => {
   await post({
     query: /* GraphQL */ `
       mutation DeleteAllMarkValues {
-        delete_mark_values(where: {}) {
+        delete_attribute_values(where: {}) {
           affected_rows
         }
         delete_marks(where: {}) {
@@ -138,22 +138,24 @@ test('insert', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.mark_attribute.name).toBe(
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.mark_attribute.name).toBe(
     'Mark Attribute 1',
   );
-  expect(resp.data.insert_mark_values_one.mark_id).toBe(
+  expect(resp.data.insert_attribute_values_one.mark_id).toBe(
     mark.data.insert_marks_one.id,
   );
-  expect(resp.data.insert_mark_values_one.integer_value).toBeNull();
-  expect(resp.data.insert_mark_values_one.float_value).toBeNull();
-  expect(resp.data.insert_mark_values_one.text_value).toBe('Text Value 1');
-  expect(resp.data.insert_mark_values_one.boolean_value).toBeNull();
-  expect(resp.data.insert_mark_values_one.date_value).toBeNull();
-  expect(resp.data.insert_mark_values_one.note).toBe('Description 1');
-  expect(resp.data.insert_mark_values_one.exceptional_mark).toBe(true);
-  expect(resp.data.insert_mark_values_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_mark_values_one.modified).toBeNull();
+  expect(resp.data.insert_attribute_values_one.integer_value).toBeNull();
+  expect(resp.data.insert_attribute_values_one.float_value).toBeNull();
+  expect(resp.data.insert_attribute_values_one.text_value).toBe('Text Value 1');
+  expect(resp.data.insert_attribute_values_one.boolean_value).toBeNull();
+  expect(resp.data.insert_attribute_values_one.date_value).toBeNull();
+  expect(resp.data.insert_attribute_values_one.note).toBe('Description 1');
+  expect(resp.data.insert_attribute_values_one.exceptional_mark).toBe(true);
+  expect(resp.data.insert_attribute_values_one.created).toMatch(
+    iso8601dateRegex,
+  );
+  expect(resp.data.insert_attribute_values_one.modified).toBeNull();
 });
 
 test('insert with offline data', async () => {
@@ -179,7 +181,7 @@ test('insert with offline data', async () => {
         $offline_id: uuid
         $created: timestamptz
       ) {
-        insert_mark_values_one(
+        insert_attribute_values_one(
           object: {
             mark_attribute: {
               data: {
@@ -212,11 +214,11 @@ test('insert with offline data', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.offline_id).toBe(
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.offline_id).toBe(
     '00000000-0000-0000-0000-000000000000',
   );
-  expect(resp.data.insert_mark_values_one.created).toBe(
+  expect(resp.data.insert_attribute_values_one.created).toBe(
     '2021-01-01T00:00:00+00:00',
   );
 });
@@ -246,8 +248,8 @@ test('insert INTEGER valid low', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.integer_value).toBe(1);
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.integer_value).toBe(1);
 });
 
 test('insert INTEGER valid high', async () => {
@@ -275,8 +277,8 @@ test('insert INTEGER valid high', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.integer_value).toBe(9);
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.integer_value).toBe(9);
 });
 
 test('insert INTEGER too low', async () => {
@@ -454,8 +456,8 @@ test('insert FLOAT valid low', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.float_value).toBe(0);
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.float_value).toBe(0);
 });
 
 test('insert FLOAT valid high', async () => {
@@ -483,8 +485,8 @@ test('insert FLOAT valid high', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.float_value).toBe(1);
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.float_value).toBe(1);
 });
 
 test('insert FLOAT too low', async () => {
@@ -631,8 +633,8 @@ test('insert TEXT valid', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.text_value).toBe('Text Value 1');
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.text_value).toBe('Text Value 1');
 });
 
 test('insert TEXT too long', async () => {
@@ -746,8 +748,8 @@ test('insert BOOLEAN valid', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.boolean_value).toBe(false);
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.boolean_value).toBe(false);
 });
 
 test('insert BOOLEAN invalid value data type', async () => {
@@ -832,8 +834,8 @@ test('insert DATE valid', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.date_value).toBe('2021-01-01');
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.date_value).toBe('2021-01-01');
 });
 
 test('insert DATE out of range date', async () => {
@@ -914,8 +916,8 @@ test('insert DATE timestamp', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.date_value).toBe('2021-01-01');
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.date_value).toBe('2021-01-01');
 });
 
 test('insert DATE invalid value data type', async () => {
@@ -998,8 +1000,8 @@ test('insert PHOTO jpg', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.text_value).toBe(
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.text_value).toBe(
     'b51fd56a7e0528c5c35f2669750e2c65.jpg',
   );
 });
@@ -1028,8 +1030,8 @@ test('insert PHOTO jpeg', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.text_value).toBe(
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.text_value).toBe(
     'b51fd56a7e0528c5c35f2669750e2c65.jpeg',
   );
 });
@@ -1058,8 +1060,8 @@ test('insert PHOTO avif', async () => {
     },
   });
 
-  expect(resp.data.insert_mark_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_mark_values_one.text_value).toBe(
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.text_value).toBe(
     'b51fd56a7e0528c5c35f2669750e2c65.avif',
   );
 });
@@ -1207,7 +1209,7 @@ test('modified', async () => {
   const updated = await post({
     query: /* GraphQL */ `
       mutation UpdateMarkAttribute($id: Int!, $text_value: String) {
-        update_mark_values_by_pk(
+        update_attribute_values_by_pk(
           pk_columns: { id: $id }
           _set: { text_value: $text_value }
         ) {
@@ -1218,12 +1220,12 @@ test('modified', async () => {
       }
     `,
     variables: {
-      id: resp.data.insert_mark_values_one.id,
+      id: resp.data.insert_attribute_values_one.id,
       text_value: 'Text Value 999',
     },
   });
 
-  expect(updated.data.update_mark_values_by_pk.modified).toMatch(
+  expect(updated.data.update_attribute_values_by_pk.modified).toMatch(
     iso8601dateRegex,
   );
 });

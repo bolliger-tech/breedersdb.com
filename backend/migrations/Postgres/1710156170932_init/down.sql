@@ -14,7 +14,7 @@ drop table if exists attribution_form_fields cascade;
 drop table if exists attribute_data_types cascade;
 drop table if exists attribute_types cascade;
 drop table if exists mark_attributes cascade;
-drop table if exists mark_values cascade;
+drop table if exists attribute_values cascade;
 drop table if exists query_groups cascade;
 drop table if exists queries cascade;
 drop table if exists materialized_view_refreshes cascade;

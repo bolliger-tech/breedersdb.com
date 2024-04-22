@@ -201,7 +201,7 @@ const insertMarkValue = /* GraphQL */ `
     $note: String
     $exceptional_mark: Boolean = false
   ) {
-    insert_mark_values_one(
+    insert_attribute_values_one(
       object: {
         mark_id: $mark_id
         mark_attribute_id: $mark_attribute_id
@@ -238,7 +238,7 @@ afterEach(async () => {
     /* GraphQL */
     query: `
       mutation DeleteAll {
-        delete_mark_values(where: {}) {
+        delete_attribute_values(where: {}) {
           affected_rows
         }
         delete_marks(where: {}) {
@@ -266,7 +266,7 @@ afterEach(async () => {
   });
 });
 
-async function insert_mark_value_with_associated_data({
+async function insert_attribute_value_with_associated_data({
   is_lot = false,
   is_cultivar = false,
   is_tree = false,
@@ -375,12 +375,12 @@ async function insert_mark_value_with_associated_data({
     form_id: form.data.insert_attribution_forms_one.id,
     attribute_id: attribute.data.insert_mark_attributes_one.id,
     mark_id: mark.data.insert_marks_one.id,
-    value_id: value.data.insert_mark_values_one.id,
+    value_id: value.data.insert_attribute_values_one.id,
   };
 }
 
 test('view contains new value after update', async () => {
-  const { value_id } = await insert_mark_value_with_associated_data({
+  const { value_id } = await insert_attribute_value_with_associated_data({
     is_lot: true,
   });
 
@@ -395,7 +395,7 @@ test('view contains new value after update', async () => {
 describe('non aggregated values are correct', async () => {
   test('common columns', async () => {
     const { attribute_id, value_id } =
-      await insert_mark_value_with_associated_data({
+      await insert_attribute_value_with_associated_data({
         is_lot: true,
         mark_attribute_name: 'Attribute 1',
         attribute_data_type: 'INTEGER',
@@ -430,9 +430,10 @@ describe('non aggregated values are correct', async () => {
   });
 
   test('mark: lot', async () => {
-    const { lot_id, value_id } = await insert_mark_value_with_associated_data({
-      is_lot: true,
-    });
+    const { lot_id, value_id } =
+      await insert_attribute_value_with_associated_data({
+        is_lot: true,
+      });
 
     await refreshMarksView();
 
@@ -447,7 +448,7 @@ describe('non aggregated values are correct', async () => {
 
   test('mark: cultivar', async () => {
     const { cultivar_id, value_id } =
-      await insert_mark_value_with_associated_data({
+      await insert_attribute_value_with_associated_data({
         is_cultivar: true,
       });
 
@@ -464,7 +465,7 @@ describe('non aggregated values are correct', async () => {
 
   test('mark: tree', async () => {
     const { tree_id, cultivar_id, value_id } =
-      await insert_mark_value_with_associated_data({
+      await insert_attribute_value_with_associated_data({
         is_tree: true,
       });
 
@@ -482,7 +483,7 @@ describe('non aggregated values are correct', async () => {
 
 test('cultivar contains marks of trees', async () => {
   const { cultivar_id, tree_id, value_id, attribute_id } =
-    await insert_mark_value_with_associated_data({
+    await insert_attribute_value_with_associated_data({
       is_tree: true,
     });
 
@@ -504,7 +505,7 @@ test('cultivar contains marks of trees', async () => {
 
 test('trees do not contain cultivar marks', async () => {
   const { tree_id, value_id, attribute_id } =
-    await insert_mark_value_with_associated_data({
+    await insert_attribute_value_with_associated_data({
       is_cultivar: true,
     });
 

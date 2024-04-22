@@ -668,7 +668,7 @@ comment on table mark_attributes is '""- validation_rule"":\n'
     '""    JSONB: {min: int, max: int, step: int}"" for ""INTEGER"",\n'
     '""           {min: float|int, max: float|int, step: float|int}"" for ""FLOAT""\n'
     '""    NULL"" for other data types.\n'
-    '""- data_type"": Can''t be changed once ""mark_values"" for this ""mark_attribute"" exist.';
+    '""- data_type"": Can''t be changed once ""attribute_values"" for this ""mark_attribute"" exist.';
 
 create index on mark_attributes (name);
 create index on mark_attributes using gin (name gin_trgm_ops);
@@ -743,11 +743,11 @@ create trigger check_validation_rule
     for each row
 execute function check_validation_rule();
 
--- make data_type immutable as soon as mark_values exist
+-- make data_type immutable as soon as attribute_values exist
 create or replace function make_data_type_immutable() returns trigger as
 $$
 begin
-    if exists (select 1 from mark_values where mark_attribute_id = new.id) then
+    if exists (select 1 from attribute_values where mark_attribute_id = new.id) then
         raise exception 'The data type of a mark attribute cannot be changed once a mark value has been inserted.';
     end if;
     return new;
@@ -868,7 +868,7 @@ create trigger check_mark_object
 execute function check_mark_object();
 
 
-create table mark_values
+create table attribute_values
 (
     id                integer primary key generated always as identity,
     mark_attribute_id int                      not null references mark_attributes,
@@ -885,31 +885,31 @@ create table mark_values
     modified          timestamp with time zone
 );
 
-create index on mark_values (mark_attribute_id);
-create index on mark_values (mark_id);
-create index on mark_values (integer_value);
-create index on mark_values (float_value);
-create index on mark_values (text_value);
-create index on mark_values (boolean_value);
-create index on mark_values (date_value);
-create index on mark_values (exceptional_mark);
-create index on mark_values (offline_id);
-create index on mark_values (created);
+create index on attribute_values (mark_attribute_id);
+create index on attribute_values (mark_id);
+create index on attribute_values (integer_value);
+create index on attribute_values (float_value);
+create index on attribute_values (text_value);
+create index on attribute_values (boolean_value);
+create index on attribute_values (date_value);
+create index on attribute_values (exceptional_mark);
+create index on attribute_values (offline_id);
+create index on attribute_values (created);
 
-create trigger update_mark_values_modified
+create trigger update_attribute_values_modified
     before update
-    on mark_values
+    on attribute_values
     for each row
 execute function modified_column();
 
-create trigger trim_mark_values
+create trigger trim_attribute_values
     before insert or update of text_value, note
-    on mark_values
+    on attribute_values
     for each row
 execute function trim_strings('text_value', 'note');
 
 
-create or replace function sanitize_and_validate_mark_value() returns trigger as
+create or replace function sanitize_and_validate_attribute_value() returns trigger as
 $$
 declare
     _data_type       text;
@@ -967,13 +967,13 @@ begin
 end;
 $$ language plpgsql;
 
-create trigger sanitize_and_validate_mark_value
+create trigger sanitize_and_validate_attribute_value
     before insert or update of integer_value, float_value, text_value, boolean_value, date_value
-    on mark_values
+    on attribute_values
     for each row
-execute function sanitize_and_validate_mark_value();
+execute function sanitize_and_validate_attribute_value();
 
-comment on table mark_values is '""- text_value"" is trimmed.\n'
+comment on table attribute_values is '""- text_value"" is trimmed.\n'
     '""- integer_value"" and ""float_value"" are checked against the\n'
     '""  ""corresponding ""mark_attribute.validation_rule"".\n'
     '""  ""The checking is performed on insert and update of the value\n'
@@ -1060,14 +1060,14 @@ create unique index on materialized_view_refreshes (view_name, last_change);
 drop materialized view if exists marks_view;
 create materialized view marks_view as
 with tree_cultivar as (select id, cultivar_id from trees)
-select mark_values.id,
-       mark_values.integer_value,
-       mark_values.float_value,
-       mark_values.text_value,
-       mark_values.boolean_value,
-       mark_values.date_value,
-       mark_values.note,
-       mark_values.exceptional_mark,
+select attribute_values.id,
+       attribute_values.integer_value,
+       attribute_values.float_value,
+       attribute_values.text_value,
+       attribute_values.boolean_value,
+       attribute_values.date_value,
+       attribute_values.note,
+       attribute_values.exceptional_mark,
        mark_attributes.name                                   as mark_attribute_name,
        mark_attributes.id                                     as mark_attribute_id,
        mark_attributes.data_type,
@@ -1083,9 +1083,9 @@ select mark_values.id,
        marks.date_marked,
        marks.geo_location,
        marks.geo_location_accuracy
-from mark_values
-         inner join marks on marks.id = mark_values.mark_id
-         inner join mark_attributes on mark_values.mark_attribute_id = mark_attributes.id
+from attribute_values
+         inner join marks on marks.id = attribute_values.mark_id
+         inner join mark_attributes on attribute_values.mark_attribute_id = mark_attributes.id
          left join tree_cultivar on marks.tree_id = tree_cultivar.id;
 
 
@@ -1117,7 +1117,7 @@ $$
 begin
     return greatest(
             (select max(coalesce(modified, created)) from marks),
-            (select max(coalesce(modified, created)) from mark_values),
+            (select max(coalesce(modified, created)) from attribute_values),
             (select max(coalesce(modified, created)) from mark_attributes)
            );
 end;

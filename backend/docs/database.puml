@@ -3,6 +3,86 @@ title Database Schema
 hide circle
 skinparam linetype ortho
 
+entity "**attribute_data_types**" #00ff0012 ##008800 {
+  + ""enum"": //text [PK]//
+  --
+}
+
+entity "**attribute_types**" #00ff0012 ##008800 {
+  + ""enum"": //text [PK]//
+  --
+}
+
+entity "**attribute_values**" #00ff0012 ##008800 {
+  ""- text_value"" is trimmed.\n""- integer_value"" and ""float_value"" are checked against the\n""  ""corresponding ""attribute.validation_rule"".\n""  ""The checking is performed on insert and update of the value\n""  ""but not revalidated if the ""validation_rule"" changes.
+  ..
+  + ""id"": //integer [PK]//
+  --
+  *""attribute_id"": //integer [FK]//
+  *""attribution_id"": //integer [FK]//
+  ""integer_value"": //integer //
+  ""float_value"": //double precision //
+  ""text_value"": //character varying(2047) //
+  ""boolean_value"": //boolean //
+  ""date_value"": //date //
+  ""note"": //character varying(2047) //
+  *""exceptional_attribution"": //boolean //
+  ""offline_id"": //uuid //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**attributes**" #00ff0012 ##008800 {
+  ""- validation_rule"":\n""    JSONB: {min: int, max: int, step: int}"" for ""INTEGER"",\n""           {min: float|int, max: float|int, step: float|int}"" for ""FLOAT""\n""    NULL"" for other data types.\n""- data_type"": Can&#39;t be changed once ""attribute_values"" for this ""attribute"" exist.
+  ..
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  ""validation_rule"": //jsonb //
+  *""data_type"": //character varying(12) [FK]//
+  ""description"": //character varying(255) //
+  *""attribute_type"": //character varying(12) [FK]//
+  *""disabled"": //boolean //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**attribution_form_fields**" #00ff0012 ##008800 {
+  + ""id"": //integer [PK]//
+  --
+  *""priority"": //integer //
+  *""attribution_form_id"": //integer [FK]//
+  *""attribute_id"": //integer [FK]//
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**attribution_forms**" #00ff0012 ##008800 {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  ""description"": //character varying(255) //
+  *""disabled"": //boolean //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**attributions**" #00ff0012 ##008800 {
+  + ""id"": //integer [PK]//
+  --
+  *""author"": //character varying(45) //
+  *""date_attributed"": //date //
+  *""attribution_form_id"": //integer [FK]//
+  ""tree_id"": //integer [FK]//
+  ""cultivar_id"": //integer [FK]//
+  ""lot_id"": //integer [FK]//
+  ""geo_location"": //geography(Point,4326)  : SRID:4326//
+  ""geo_location_accuracy"": //double precision  : Meters//
+  ""offline_id"": //uuid //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
 entity "**crossings**" #ffff0012 ##888800 {
   + ""id"": //integer [PK]//
   --
@@ -50,86 +130,6 @@ entity "**lots**" #ffff0012 ##888800 {
   ""numb_sprouts_planted"": //integer //
   ""patch"": //character varying(255) //
   ""note"": //character varying(2047) //
-  *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-}
-
-entity "**mark_attribute_data_types**" #00ff0012 ##008800 {
-  + ""enum"": //text [PK]//
-  --
-}
-
-entity "**mark_attributes**" #00ff0012 ##008800 {
-  ""- validation_rule"":\n""    JSONB: {min: int, max: int, step: int}"" for ""INTEGER"",\n""           {min: float|int, max: float|int, step: float|int}"" for ""FLOAT""\n""    NULL"" for other data types.\n""- data_type"": Can&#39;t be changed once ""mark_values"" for this ""mark_attribute"" exist.
-  ..
-  + ""id"": //integer [PK]//
-  --
-  *""name"": //character varying(45) //
-  ""validation_rule"": //jsonb //
-  *""data_type"": //character varying(12) [FK]//
-  ""description"": //character varying(255) //
-  *""mark_type"": //character varying(12) [FK]//
-  *""disabled"": //boolean //
-  *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-}
-
-entity "**mark_form_fields**" #00ff0012 ##008800 {
-  + ""id"": //integer [PK]//
-  --
-  *""priority"": //integer //
-  *""mark_form_id"": //integer [FK]//
-  *""mark_attribute_id"": //integer [FK]//
-  *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-}
-
-entity "**mark_forms**" #00ff0012 ##008800 {
-  + ""id"": //integer [PK]//
-  --
-  *""name"": //character varying(45) //
-  ""description"": //character varying(255) //
-  *""disabled"": //boolean //
-  *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-}
-
-entity "**mark_types**" #00ff0012 ##008800 {
-  + ""enum"": //text [PK]//
-  --
-}
-
-entity "**mark_values**" #00ff0012 ##008800 {
-  ""- text_value"" is trimmed.\n""- integer_value"" and ""float_value"" are checked against the\n""  ""corresponding ""mark_attribute.validation_rule"".\n""  ""The checking is performed on insert and update of the value\n""  ""but not revalidated if the ""validation_rule"" changes.
-  ..
-  + ""id"": //integer [PK]//
-  --
-  *""mark_attribute_id"": //integer [FK]//
-  *""mark_id"": //integer [FK]//
-  ""integer_value"": //integer //
-  ""float_value"": //double precision //
-  ""text_value"": //character varying(2047) //
-  ""boolean_value"": //boolean //
-  ""date_value"": //date //
-  ""note"": //character varying(2047) //
-  *""exceptional_mark"": //boolean //
-  ""offline_id"": //uuid //
-  *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-}
-
-entity "**marks**" #00ff0012 ##008800 {
-  + ""id"": //integer [PK]//
-  --
-  *""author"": //character varying(45) //
-  *""date_marked"": //date //
-  *""mark_form_id"": //integer [FK]//
-  ""tree_id"": //integer [FK]//
-  ""cultivar_id"": //integer [FK]//
-  ""lot_id"": //integer [FK]//
-  ""geo_location"": //geography(Point,4326)  : SRID:4326//
-  ""geo_location_accuracy"": //double precision  : Meters//
-  ""offline_id"": //uuid //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
 }
@@ -245,6 +245,26 @@ entity "**trees**" #0000ff12 ##000088 {
   ""modified"": //timestamp with time zone //
 }
 
+"**attribute_values**"   }--  "**attributes**"
+
+"**attribute_values**"   }--  "**attributions**"
+
+"**attributes**"   }--  "**attribute_types**"
+
+"**attributes**"   }--  "**attribute_data_types**"
+
+"**attribution_form_fields**"   }--  "**attributes**"
+
+"**attribution_form_fields**"   }--  "**attribution_forms**"
+
+"**attributions**"   }--  "**attribution_forms**"
+
+"**attributions**"   }--  "**cultivars**"
+
+"**attributions**"   }--  "**lots**"
+
+"**attributions**"   }--  "**trees**"
+
 "**crossings**"   }--  "**cultivars**"
 
 "**crossings**"   }--  "**cultivars**"
@@ -252,26 +272,6 @@ entity "**trees**" #0000ff12 ##000088 {
 "**cultivars**"   }--  "**lots**"
 
 "**lots**"   }--  "**crossings**"
-
-"**mark_attributes**"   }--  "**mark_attribute_data_types**"
-
-"**mark_attributes**"   }--  "**mark_types**"
-
-"**mark_form_fields**"   }--  "**mark_attributes**"
-
-"**mark_form_fields**"   }--  "**mark_forms**"
-
-"**mark_values**"   }--  "**mark_attributes**"
-
-"**mark_values**"   }--  "**marks**"
-
-"**marks**"   }--  "**cultivars**"
-
-"**marks**"   }--  "**lots**"
-
-"**marks**"   }--  "**mark_forms**"
-
-"**marks**"   }--  "**trees**"
 
 "**mother_trees**"   }--  "**crossings**"
 

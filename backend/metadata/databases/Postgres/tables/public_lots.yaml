@@ -40,8 +40,8 @@ insert_permissions:
         - date_sowed
         - note
         - numb_seeds_sowed
-        - numb_sprouts_grown
-        - numb_sprouts_planted
+        - numb_seedlings_grown
+        - numb_seedlings_planted
         - patch
         - seed_tray
     comment: ""
@@ -55,8 +55,8 @@ select_permissions:
         - crossing_id
         - id
         - numb_seeds_sowed
-        - numb_sprouts_grown
-        - numb_sprouts_planted
+        - numb_seedlings_grown
+        - numb_seedlings_planted
         - note
         - patch
         - seed_tray
@@ -75,8 +75,8 @@ update_permissions:
         - date_sowed
         - note
         - numb_seeds_sowed
-        - numb_sprouts_grown
-        - numb_sprouts_planted
+        - numb_seedlings_grown
+        - numb_seedlings_planted
         - patch
         - seed_tray
       filter: {}

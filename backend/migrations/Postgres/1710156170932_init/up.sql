@@ -78,20 +78,20 @@ execute function trim_strings('name', 'note');
 
 create table lots
 (
-    id                   integer primary key generated always as identity,
-    crossing_id          int                      not null references crossings,
-    name_segment         varchar(3)               not null check ( name_segment ~ '^(\d{2}[A-Z]|000)$' ),
-    name                 varchar(12)              not null unique,
-    date_sowed           date,
-    numb_seeds_sowed     int,
-    numb_sprouts_grown   int,
-    seed_tray            varchar(255),
-    date_planted         date,
-    numb_sprouts_planted int,
-    patch                varchar(255),
-    note                 varchar(2047),
-    created              timestamp with time zone not null default now(),
-    modified             timestamp with time zone
+    id                     integer primary key generated always as identity,
+    crossing_id            int                      not null references crossings,
+    name_segment           varchar(3)               not null check ( name_segment ~ '^(\d{2}[A-Z]|000)$' ),
+    name                   varchar(12)              not null unique,
+    date_sowed             date,
+    numb_seeds_sowed       int,
+    numb_seedlings_grown   int,
+    seed_tray              varchar(255),
+    date_planted           date,
+    numb_seedlings_planted int,
+    patch                  varchar(255),
+    note                   varchar(2047),
+    created                timestamp with time zone not null default now(),
+    modified               timestamp with time zone
 );
 
 comment on column lots.name is 'Set by triggers.';
@@ -541,7 +541,6 @@ create table mother_trees
 (
     id                    integer primary key generated always as identity,
     name                  varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
-    planned               boolean                           default false not null,
     date_impregnated      date,
     date_fruits_harvested date,
     numb_flowers          int,
@@ -557,7 +556,6 @@ create table mother_trees
 
 create index on mother_trees (name);
 create index on mother_trees using gin (name gin_trgm_ops);
-create index on mother_trees (planned);
 create index on mother_trees (date_impregnated);
 create index on mother_trees (date_fruits_harvested);
 create index on mother_trees (tree_id);

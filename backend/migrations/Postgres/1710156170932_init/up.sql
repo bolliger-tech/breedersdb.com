@@ -658,7 +658,7 @@ create table attributes
     validation_rule jsonb,
     data_type       varchar(12)              not null references attribute_data_types,
     description     varchar(255),
-    attribute_type       varchar(12)              not null references attribute_types,
+    attribute_type  varchar(12)              not null references attribute_types,
     disabled        boolean                           default false not null,
     created         timestamp with time zone not null default now(),
     modified        timestamp with time zone
@@ -790,12 +790,12 @@ execute function trim_strings('name', 'description');
 
 create table attribution_form_fields
 (
-    id                integer primary key generated always as identity,
-    priority          int                      not null,
-    attribution_form_id      int                      not null references attribution_forms,
-    attribute_id int                      not null references attributes,
-    created           timestamp with time zone not null default now(),
-    modified          timestamp with time zone
+    id                  integer primary key generated always as identity,
+    priority            int                      not null,
+    attribution_form_id int                      not null references attribution_forms,
+    attribute_id        int                      not null references attributes,
+    created             timestamp with time zone not null default now(),
+    modified            timestamp with time zone
 );
 
 create unique index on attribution_form_fields (priority, attribution_form_id);
@@ -814,8 +814,8 @@ create table attributions
 (
     id                    integer primary key generated always as identity,
     author                varchar(45)              not null check (author ~ '^[^\n]{1,45}$'),
-    date_attributed           date                     not null,
-    attribution_form_id          int                      not null references attribution_forms,
+    date_attributed       date                     not null,
+    attribution_form_id   int                      not null references attribution_forms,
     tree_id               int references trees,
     cultivar_id           int references cultivars,
     lot_id                int references lots,
@@ -870,19 +870,19 @@ execute function check_attribution_object();
 
 create table attribute_values
 (
-    id                integer primary key generated always as identity,
-    attribute_id int                      not null references attributes,
-    attribution_id           int                      not null references attributions,
-    integer_value     int,
-    float_value       double precision,
-    text_value        varchar(2047) check (0 < length(text_value)),
-    boolean_value     boolean,
-    date_value        date,
-    note              varchar(2047),
-    exceptional_attribution  boolean                           default false not null,
-    offline_id        uuid unique,
-    created           timestamp with time zone not null default now(),
-    modified          timestamp with time zone
+    id                      integer primary key generated always as identity,
+    attribute_id            int                      not null references attributes,
+    attribution_id          int                      not null references attributions,
+    integer_value           int,
+    float_value             double precision,
+    text_value              varchar(2047) check (0 < length(text_value)),
+    boolean_value           boolean,
+    date_value              date,
+    note                    varchar(2047),
+    exceptional_attribution boolean                           default false not null,
+    offline_id              uuid unique,
+    created                 timestamp with time zone not null default now(),
+    modified                timestamp with time zone
 );
 
 create index on attribute_values (attribute_id);
@@ -1068,8 +1068,8 @@ select attribute_values.id,
        attribute_values.date_value,
        attribute_values.note,
        attribute_values.exceptional_attribution,
-       attributes.name                                   as attribute_name,
-       attributes.id                                     as attribute_id,
+       attributes.name                                               as attribute_name,
+       attributes.id                                                 as attribute_id,
        attributes.data_type,
        attributes.attribute_type,
        attributions.id                                               as attribution_id,

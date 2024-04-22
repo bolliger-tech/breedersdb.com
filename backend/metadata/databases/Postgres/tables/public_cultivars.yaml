@@ -6,20 +6,6 @@ object_relationships:
     using:
       foreign_key_constraint_on: lot_id
 array_relationships:
-  - name: crossings
-    using:
-      foreign_key_constraint_on:
-        column: father_cultivar_id
-        table:
-          name: crossings
-          schema: public
-  - name: crossingsByMotherCultivarId
-    using:
-      foreign_key_constraint_on:
-        column: mother_cultivar_id
-        table:
-          name: crossings
-          schema: public
   - name: attributions
     using:
       foreign_key_constraint_on:
@@ -35,6 +21,20 @@ array_relationships:
         insertion_order: null
         remote_table:
           name: attributions_view
+          schema: public
+  - name: crossings
+    using:
+      foreign_key_constraint_on:
+        column: father_cultivar_id
+        table:
+          name: crossings
+          schema: public
+  - name: crossingsByMotherCultivarId
+    using:
+      foreign_key_constraint_on:
+        column: mother_cultivar_id
+        table:
+          name: crossings
           schema: public
   - name: pollens
     using:

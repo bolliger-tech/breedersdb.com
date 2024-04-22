@@ -2,15 +2,15 @@ table:
   name: attributions
   schema: public
 object_relationships:
+  - name: attribution_form
+    using:
+      foreign_key_constraint_on: attribution_form_id
   - name: cultivar
     using:
       foreign_key_constraint_on: cultivar_id
   - name: lot
     using:
       foreign_key_constraint_on: lot_id
-  - name: attribution_form
-    using:
-      foreign_key_constraint_on: attribution_form_id
   - name: tree
     using:
       foreign_key_constraint_on: tree_id

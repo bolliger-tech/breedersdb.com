@@ -2,6 +2,15 @@ table:
   name: attributions_view
   schema: public
 object_relationships:
+  - name: attribute
+    using:
+      manual_configuration:
+        column_mapping:
+          attribute_id: id
+        insertion_order: null
+        remote_table:
+          name: attributes
+          schema: public
   - name: cultivar
     using:
       manual_configuration:
@@ -19,15 +28,6 @@ object_relationships:
         insertion_order: null
         remote_table:
           name: lots
-          schema: public
-  - name: attribute
-    using:
-      manual_configuration:
-        column_mapping:
-          attribute_id: id
-        insertion_order: null
-        remote_table:
-          name: attributes
           schema: public
   - name: tree
     using:

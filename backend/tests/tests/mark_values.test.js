@@ -6,7 +6,7 @@ const insertMutation = /* GraphQL */ `
   mutation InsertMarkValue(
     $mark_attribute_name: String
     $mark_attribute_validation_rule: jsonb
-    $mark_attribute_data_type: attribute_data_types_enum
+    $attribute_data_type: attribute_data_types_enum
     $attribute_type: attribute_types_enum
     $mark_id: Int
     $integer_value: Int
@@ -23,7 +23,7 @@ const insertMutation = /* GraphQL */ `
           data: {
             name: $mark_attribute_name
             validation_rule: $mark_attribute_validation_rule
-            data_type: $mark_attribute_data_type
+            data_type: $attribute_data_type
             attribute_type: $attribute_type
           }
         }
@@ -129,7 +129,7 @@ test('insert', async () => {
     query: insertMutation,
     variables: {
       mark_attribute_name: 'Mark Attribute 1',
-      mark_attribute_data_type: 'TEXT',
+      attribute_data_type: 'TEXT',
       attribute_type: 'OBSERVATION',
       mark_id: mark.data.insert_marks_one.id,
       text_value: 'Text Value 1',
@@ -172,7 +172,7 @@ test('insert with offline data', async () => {
     query: /* GraphQL */ `
       mutation InsertMarkValue(
         $mark_attribute_name: String
-        $mark_attribute_data_type: attribute_data_types_enum
+        $attribute_data_type: attribute_data_types_enum
         $attribute_type: attribute_types_enum
         $mark_id: Int
         $text_value: String
@@ -184,7 +184,7 @@ test('insert with offline data', async () => {
             mark_attribute: {
               data: {
                 name: $mark_attribute_name
-                data_type: $mark_attribute_data_type
+                data_type: $attribute_data_type
                 attribute_type: $attribute_type
               }
             }
@@ -203,7 +203,7 @@ test('insert with offline data', async () => {
     `,
     variables: {
       mark_attribute_name: 'Mark Attribute 1',
-      mark_attribute_data_type: 'TEXT',
+      attribute_data_type: 'TEXT',
       attribute_type: 'OBSERVATION',
       mark_id: mark.data.insert_marks_one.id,
       text_value: 'Text Value 1',
@@ -240,7 +240,7 @@ test('insert INTEGER valid low', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'INTEGER',
+      attribute_data_type: 'INTEGER',
       mark_attribute_validation_rule: { min: 1, max: 9, step: 1 },
       integer_value: 1,
     },
@@ -269,7 +269,7 @@ test('insert INTEGER valid high', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'INTEGER',
+      attribute_data_type: 'INTEGER',
       mark_attribute_validation_rule: { min: 1, max: 9, step: 1 },
       integer_value: 9,
     },
@@ -298,7 +298,7 @@ test('insert INTEGER too low', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'INTEGER',
+      attribute_data_type: 'INTEGER',
       mark_attribute_validation_rule: { min: 1, max: 9, step: 1 },
       integer_value: 0,
     },
@@ -328,7 +328,7 @@ test('insert INTEGER too high', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'INTEGER',
+      attribute_data_type: 'INTEGER',
       mark_attribute_validation_rule: { min: 1, max: 9, step: 1 },
       integer_value: 10,
     },
@@ -358,7 +358,7 @@ test('insert INTEGER invalid step', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'INTEGER',
+      attribute_data_type: 'INTEGER',
       mark_attribute_validation_rule: { min: 0, max: 10, step: 2 },
       integer_value: 1,
     },
@@ -388,7 +388,7 @@ test('insert INTEGER invalid value data type', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'INTEGER',
+      attribute_data_type: 'INTEGER',
       mark_attribute_validation_rule: { min: 0, max: 10, step: 2 },
       integer_value: 1.0,
     },
@@ -418,7 +418,7 @@ test('insert INTEGER wrong column', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'INTEGER',
+      attribute_data_type: 'INTEGER',
       mark_attribute_validation_rule: { min: 0, max: 10, step: 2 },
       float_value: 1,
     },
@@ -448,7 +448,7 @@ test('insert FLOAT valid low', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'FLOAT',
+      attribute_data_type: 'FLOAT',
       mark_attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
       float_value: 0,
     },
@@ -477,7 +477,7 @@ test('insert FLOAT valid high', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'FLOAT',
+      attribute_data_type: 'FLOAT',
       mark_attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
       float_value: 1,
     },
@@ -506,7 +506,7 @@ test('insert FLOAT too low', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'FLOAT',
+      attribute_data_type: 'FLOAT',
       mark_attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
       float_value: -0.1,
     },
@@ -536,7 +536,7 @@ test('insert FLOAT too high', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'FLOAT',
+      attribute_data_type: 'FLOAT',
       mark_attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
       float_value: 1.1,
     },
@@ -566,7 +566,7 @@ test('insert FLOAT invalid value data type', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'FLOAT',
+      attribute_data_type: 'FLOAT',
       mark_attribute_validation_rule: { min: 0, max: 10, step: 1 },
       float_value: 'asdf',
     },
@@ -596,7 +596,7 @@ test('insert FLOAT wrong column', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'FLOAT',
+      attribute_data_type: 'FLOAT',
       mark_attribute_validation_rule: { min: 0, max: 10, step: 2 },
       integer_value: 1,
     },
@@ -626,7 +626,7 @@ test('insert TEXT valid', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'TEXT',
+      attribute_data_type: 'TEXT',
       text_value: 'Text Value 1',
     },
   });
@@ -654,7 +654,7 @@ test('insert TEXT too long', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'TEXT',
+      attribute_data_type: 'TEXT',
       text_value: 'a'.repeat(2048),
     },
   });
@@ -683,7 +683,7 @@ test('insert TEXT empty', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'TEXT',
+      attribute_data_type: 'TEXT',
       text_value: '',
     },
   });
@@ -712,7 +712,7 @@ test('insert TEXT wrong column', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'TEXT',
+      attribute_data_type: 'TEXT',
       integer_value: 1,
     },
   });
@@ -741,7 +741,7 @@ test('insert BOOLEAN valid', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'BOOLEAN',
+      attribute_data_type: 'BOOLEAN',
       boolean_value: false,
     },
   });
@@ -769,7 +769,7 @@ test('insert BOOLEAN invalid value data type', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'BOOLEAN',
+      attribute_data_type: 'BOOLEAN',
       boolean_value: 'asdf',
     },
   });
@@ -798,7 +798,7 @@ test('insert BOOLEAN wrong column', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'BOOLEAN',
+      attribute_data_type: 'BOOLEAN',
       text_value: 'false',
     },
   });
@@ -827,7 +827,7 @@ test('insert DATE valid', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'DATE',
+      attribute_data_type: 'DATE',
       date_value: '2021-01-01',
     },
   });
@@ -855,7 +855,7 @@ test('insert DATE out of range date', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'DATE',
+      attribute_data_type: 'DATE',
       date_value: '2021-01-32',
     },
   });
@@ -882,7 +882,7 @@ test('insert DATE invalid date format', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'DATE',
+      attribute_data_type: 'DATE',
       date_value: '31.01.21',
     },
   });
@@ -909,7 +909,7 @@ test('insert DATE timestamp', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'DATE',
+      attribute_data_type: 'DATE',
       date_value: '2021-01-01:23:00+12:00',
     },
   });
@@ -937,7 +937,7 @@ test('insert DATE invalid value data type', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'DATE',
+      attribute_data_type: 'DATE',
       date_value: 'asdf',
     },
   });
@@ -964,7 +964,7 @@ test('insert DATE wrong column', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'DATE',
+      attribute_data_type: 'DATE',
       text_value: '2021-01-01',
     },
   });
@@ -993,7 +993,7 @@ test('insert PHOTO jpg', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'PHOTO',
+      attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpg',
     },
   });
@@ -1023,7 +1023,7 @@ test('insert PHOTO jpeg', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'PHOTO',
+      attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpeg',
     },
   });
@@ -1053,7 +1053,7 @@ test('insert PHOTO avif', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'PHOTO',
+      attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.avif',
     },
   });
@@ -1083,7 +1083,7 @@ test('insert PHOTO png invalid', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'PHOTO',
+      attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.png',
     },
   });
@@ -1112,7 +1112,7 @@ test('insert PHOTO name invalid', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'PHOTO',
+      attribute_data_type: 'PHOTO',
       text_value: 'a photo.jpg',
     },
   });
@@ -1141,7 +1141,7 @@ test('insert PHOTO empty', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'PHOTO',
+      attribute_data_type: 'PHOTO',
       text_value: '',
     },
   });
@@ -1170,7 +1170,7 @@ test('insert PHOTO wrong column', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'PHOTO',
+      attribute_data_type: 'PHOTO',
       integer_value: 1,
     },
   });
@@ -1199,7 +1199,7 @@ test('modified', async () => {
       mark_id: mark.data.insert_marks_one.id,
       mark_attribute_name: 'Mark Attribute 1',
       attribute_type: 'OBSERVATION',
-      mark_attribute_data_type: 'TEXT',
+      attribute_data_type: 'TEXT',
       text_value: 'Text Value 1',
     },
   });

@@ -276,7 +276,7 @@ async function insert_mark_value_with_associated_data({
   tree_publicid = '00000001',
   mark_form_name = 'Form 1',
   mark_attribute_name = 'Attribute 1',
-  mark_attribute_data_type = 'INTEGER',
+  attribute_data_type = 'INTEGER',
   mark_attribute_validation_rule = { min: 0, max: 100, step: 1 },
   attribute_type = 'OBSERVATION',
   mark_author = 'Author 1',
@@ -331,10 +331,10 @@ async function insert_mark_value_with_associated_data({
     query: insertMarkAttribute,
     variables: {
       name: mark_attribute_name,
-      validation_rule: ['INTEGER', 'FLOAT'].includes(mark_attribute_data_type)
+      validation_rule: ['INTEGER', 'FLOAT'].includes(attribute_data_type)
         ? mark_attribute_validation_rule
         : null,
-      data_type: mark_attribute_data_type,
+      data_type: attribute_data_type,
       attribute_type: attribute_type,
     },
   });
@@ -358,13 +358,11 @@ async function insert_mark_value_with_associated_data({
     variables: {
       mark_attribute_id: attribute.data.insert_mark_attributes_one.id,
       mark_id: mark.data.insert_marks_one.id,
-      integer_value:
-        mark_attribute_data_type === 'INTEGER' ? integer_value : null,
-      float_value: mark_attribute_data_type === 'FLOAT' ? float_value : null,
-      text_value: mark_attribute_data_type === 'TEXT' ? text_value : null,
-      boolean_value:
-        mark_attribute_data_type === 'BOOLEAN' ? boolean_value : null,
-      date_value: mark_attribute_data_type === 'DATE' ? date_value : null,
+      integer_value: attribute_data_type === 'INTEGER' ? integer_value : null,
+      float_value: attribute_data_type === 'FLOAT' ? float_value : null,
+      text_value: attribute_data_type === 'TEXT' ? text_value : null,
+      boolean_value: attribute_data_type === 'BOOLEAN' ? boolean_value : null,
+      date_value: attribute_data_type === 'DATE' ? date_value : null,
       note,
       exceptional_mark,
     },
@@ -400,7 +398,7 @@ describe('non aggregated values are correct', async () => {
       await insert_mark_value_with_associated_data({
         is_lot: true,
         mark_attribute_name: 'Attribute 1',
-        mark_attribute_data_type: 'INTEGER',
+        attribute_data_type: 'INTEGER',
         attribute_type: 'OBSERVATION',
         author: 'Author 1',
         date_marked: '2021-01-01',

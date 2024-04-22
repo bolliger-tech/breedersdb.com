@@ -186,8 +186,8 @@ const insertAttribution = /* GraphQL */ `
   }
 `;
 
-const insertAttributionValue = /* GraphQL */ `
-  mutation InsertAttributionValue(
+const insertAttributeValue = /* GraphQL */ `
+  mutation InsertAttributeValue(
     $attribution_id: Int!
     $attribute_id: Int!
     $integer_value: Int
@@ -351,7 +351,7 @@ async function insert_attribute_value_with_associated_data({
   });
 
   const value = await post({
-    query: insertAttributionValue,
+    query: insertAttributeValue,
     variables: {
       attribute_id: attribute.data.insert_attributes_one.id,
       attribution_id: attribution.data.insert_attributions_one.id,

@@ -3,7 +3,7 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertAttributionValue(
+  mutation InsertAttributeValue(
     $attribute_name: String
     $attribute_validation_rule: jsonb
     $attribute_data_type: attribute_data_types_enum
@@ -61,7 +61,7 @@ const insertMutation = /* GraphQL */ `
 `;
 
 const insertAttributionMutation = /* GraphQL */ `
-  mutation Insertattributions(
+  mutation InsertAttributions(
     $author: String
     $date_attributed: date
     $attribution_form_name: String
@@ -89,7 +89,7 @@ const insertAttributionMutation = /* GraphQL */ `
 afterEach(async () => {
   await post({
     query: /* GraphQL */ `
-      mutation DeleteAllAttributionValues {
+      mutation DeleteAllAttributeValues {
         delete_attribute_values(where: {}) {
           affected_rows
         }
@@ -174,7 +174,7 @@ test('insert with offline data', async () => {
 
   const resp = await post({
     query: /* GraphQL */ `
-      mutation InsertAttributionValue(
+      mutation InsertAttributeValue(
         $attribute_name: String
         $attribute_data_type: attribute_data_types_enum
         $attribute_type: attribute_types_enum

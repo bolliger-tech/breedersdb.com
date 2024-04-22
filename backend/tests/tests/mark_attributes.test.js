@@ -308,7 +308,7 @@ test('data type is immutable after insert of attribute_values', async () => {
 
   await post({
     query: /* GraphQL */ `
-      mutation InsertAttributionValue($attribute_id: Int!) {
+      mutation InsertAttributeValue($attribute_id: Int!) {
         insert_attribute_values_one(
           object: {
             attribute_id: $attribute_id

@@ -1,5 +1,5 @@
 table:
-  name: marks
+  name: attributions
   schema: public
 object_relationships:
   - name: cultivar
@@ -18,7 +18,7 @@ array_relationships:
   - name: attribute_values
     using:
       foreign_key_constraint_on:
-        column: mark_id
+        column: attribution_id
         table:
           name: attribute_values
           schema: public
@@ -28,7 +28,7 @@ insert_permissions:
       check: {}
       columns:
         - author
-        - date_marked
+        - date_attributed
         - geo_location
         - geo_location_accuracy
         - lot_id
@@ -42,7 +42,7 @@ select_permissions:
     permission:
       columns:
         - author
-        - date_marked
+        - date_attributed
         - id
         - lot_id
         - attribution_form_id
@@ -60,7 +60,7 @@ update_permissions:
     permission:
       columns:
         - author
-        - date_marked
+        - date_attributed
         - geo_location
         - geo_location_accuracy
         - lot_id

@@ -3,7 +3,7 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertMarkAttribute(
+  mutation InsertAttribute(
     $name: String
     $validation_rule: jsonb
     $data_type: attribute_data_types_enum
@@ -36,11 +36,11 @@ const insertMutation = /* GraphQL */ `
 afterEach(async () => {
   await post({
     query: /* GraphQL */ `
-      mutation DeleteAllMarkAttributes {
+      mutation DeleteAllAttributes {
         delete_attribute_values(where: {}) {
           affected_rows
         }
-        delete_marks(where: {}) {
+        delete_attributions(where: {}) {
           affected_rows
         }
         delete_attribution_forms(where: {}) {
@@ -64,7 +64,7 @@ test('insert', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
       description: 'Description 1',
@@ -73,7 +73,7 @@ test('insert', async () => {
   });
 
   expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attributes_one.name).toBe('Mark Attribute 1');
+  expect(resp.data.insert_attributes_one.name).toBe('Attribution Attribute 1');
   expect(resp.data.insert_attributes_one.validation_rule).toMatchObject({
     max: '9',
     min: '1',
@@ -91,7 +91,7 @@ test('name is unique', async () => {
   const resp1 = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
@@ -100,7 +100,7 @@ test('name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
@@ -129,7 +129,7 @@ test('empty validation rule is valid for TEXT', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: null,
       data_type: 'TEXT',
       attribute_type: 'OBSERVATION',
@@ -143,7 +143,7 @@ test('validation rule is empty for TEXT', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: 9, min: 1, step: 1 },
       data_type: 'TEXT',
       attribute_type: 'OBSERVATION',
@@ -159,7 +159,7 @@ test('validation rule is empty for BOOLEAN', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: 9, min: 1, step: 1 },
       data_type: 'BOOLEAN',
       attribute_type: 'OBSERVATION',
@@ -175,7 +175,7 @@ test('validation rule is empty for DATE', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: 9, min: 1, step: 1 },
       data_type: 'DATE',
       attribute_type: 'OBSERVATION',
@@ -191,7 +191,7 @@ test('validation rule is empty for PHOTO', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: 9, min: 1, step: 1 },
       data_type: 'PHOTO',
       attribute_type: 'OBSERVATION',
@@ -207,7 +207,7 @@ test('validation rule contains integers for INTEGER', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: 9, min: -1, step: 1 },
       data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
@@ -221,7 +221,7 @@ test('validation rule contains no floats for INTEGER', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: 9, min: 1, step: 0.1 },
       data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
@@ -237,7 +237,7 @@ test('validation rule contains min, max, step for INTEGER', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: 9, min: 1 },
       data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
@@ -253,7 +253,7 @@ test('validation rule contains numbers for FLOAT', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: 10, min: -0.5, step: 0.001 },
       data_type: 'FLOAT',
       attribute_type: 'OBSERVATION',
@@ -267,7 +267,7 @@ test('validation rule contains only numbers for FLOAT', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: 9, min: 'NaN', step: 0.1 },
       data_type: 'FLOAT',
       attribute_type: 'OBSERVATION',
@@ -283,7 +283,7 @@ test('validation rule contains min, max, step for FLOAT', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: 9, min: 1 },
       data_type: 'FLOAT',
       attribute_type: 'OBSERVATION',
@@ -299,7 +299,7 @@ test('data type is immutable after insert of attribute_values', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: null,
       data_type: 'TEXT',
       attribute_type: 'OBSERVATION',
@@ -308,15 +308,15 @@ test('data type is immutable after insert of attribute_values', async () => {
 
   await post({
     query: /* GraphQL */ `
-      mutation InsertMarkValue($attribute_id: Int!) {
+      mutation InsertAttributionValue($attribute_id: Int!) {
         insert_attribute_values_one(
           object: {
             attribute_id: $attribute_id
-            mark: {
+            attribution: {
               data: {
                 author: "Author 1"
-                date_marked: "2021-01-01"
-                attribution_form: { data: { name: "Mark Form 1" } }
+                date_attributed: "2021-01-01"
+                attribution_form: { data: { name: "Attribution Form 1" } }
                 lot: {
                   data: {
                     name_segment: "24A"
@@ -337,7 +337,7 @@ test('data type is immutable after insert of attribute_values', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateMarkAttribute(
+      mutation UpdateAttribute(
         $id: Int!
         $data_type: attribute_data_types_enum
       ) {
@@ -357,7 +357,7 @@ test('data type is immutable after insert of attribute_values', async () => {
   });
 
   expect(updated.errors[0].extensions.internal.error.message).toBe(
-    'The data type of a mark attribute cannot be changed once a mark value has been inserted.',
+    'The data type of an attribution attribute cannot be changed once an attribution value has been inserted.',
   );
 });
 
@@ -365,7 +365,7 @@ test('modified', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'Mark Attribute 1',
+      name: 'Attribution Attribute 1',
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
@@ -374,7 +374,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateMarkAttribute($id: Int!, $name: String) {
+      mutation UpdateAttribute($id: Int!, $name: String) {
         update_attributes_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }
@@ -387,7 +387,7 @@ test('modified', async () => {
     `,
     variables: {
       id: resp.data.insert_attributes_one.id,
-      name: 'Mark Attribute 999',
+      name: 'Attribution Attribute 999',
     },
   });
 

@@ -3,7 +3,7 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertMarkFormField(
+  mutation InsertAttributionFormField(
     $priority: Int
     $attribution_form_name: String
     $attribute_name: String
@@ -47,7 +47,7 @@ const insertMutation = /* GraphQL */ `
 afterEach(async () => {
   const resp = await post({
     query: /* GraphQL */ `
-      mutation DeleteAllMarkFormFields {
+      mutation DeleteAllAttributionFormFields {
         delete_attribution_form_fields(where: {}) {
           affected_rows
         }
@@ -67,8 +67,8 @@ test('insert', async () => {
     query: insertMutation,
     variables: {
       priority: 1,
-      attribution_form_name: 'Mark Form 1',
-      attribute_name: 'Mark Attribute 1',
+      attribution_form_name: 'Attribution Form 1',
+      attribute_name: 'Attribution Attribute 1',
       attribute_validation_rule: { max: 9, min: 1, step: 1 },
       attribute_data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
@@ -79,9 +79,9 @@ test('insert', async () => {
   expect(resp.data.insert_attribution_form_fields_one.priority).toBe(1);
   expect(
     resp.data.insert_attribution_form_fields_one.attribution_form.name,
-  ).toBe('Mark Form 1');
+  ).toBe('Attribution Form 1');
   expect(resp.data.insert_attribution_form_fields_one.attribute.name).toBe(
-    'Mark Attribute 1',
+    'Attribution Attribute 1',
   );
   expect(resp.data.insert_attribution_form_fields_one.created).toMatch(
     iso8601dateRegex,
@@ -92,8 +92,8 @@ test('insert', async () => {
 test('priority is unique per form', async () => {
   const form = await post({
     query: /* GraphQL */ `
-      mutation InsertMarkForm {
-        insert_attribution_forms_one(object: { name: "Mark Form 1" }) {
+      mutation InsertAttributionForm {
+        insert_attribution_forms_one(object: { name: "Attribution Form 1" }) {
           id
         }
       }
@@ -102,10 +102,10 @@ test('priority is unique per form', async () => {
 
   const attr = await post({
     query: /* GraphQL */ `
-      mutation InsertMarkAttribute {
+      mutation InsertAttribute {
         insert_attributes_one(
           object: {
-            name: "Mark Attribute 1"
+            name: "Attribution Attribute 1"
             validation_rule: { max: 9, min: 1, step: 1 }
             data_type: INTEGER
             attribute_type: OBSERVATION
@@ -119,7 +119,7 @@ test('priority is unique per form', async () => {
 
   const resp1 = await post({
     query: /* GraphQL */ `
-      mutation InsertMarkFormField(
+      mutation InsertAttributionFormField(
         $attribution_form_id: Int!
         $attribute_id: Int!
       ) {
@@ -141,7 +141,7 @@ test('priority is unique per form', async () => {
   });
   const resp2 = await post({
     query: /* GraphQL */ `
-      mutation InsertMarkFormField(
+      mutation InsertAttributionFormField(
         $attribution_form_id: Int!
         $attribute_id: Int!
       ) {
@@ -171,8 +171,8 @@ test('modified', async () => {
     query: insertMutation,
     variables: {
       priority: 1,
-      attribution_form_name: 'Mark Form 1',
-      attribute_name: 'Mark Attribute 1',
+      attribution_form_name: 'Attribution Form 1',
+      attribute_name: 'Attribution Attribute 1',
       attribute_validation_rule: { max: 9, min: 1, step: 1 },
       attribute_data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
@@ -181,7 +181,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateMarkFormField($id: Int!, $priority: Int) {
+      mutation UpdateAttributionFormField($id: Int!, $priority: Int) {
         update_attribution_form_fields_by_pk(
           pk_columns: { id: $id }
           _set: { priority: $priority }

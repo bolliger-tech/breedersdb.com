@@ -13,21 +13,21 @@ array_relationships:
         table:
           name: cultivars
           schema: public
-  - name: marks
+  - name: attributions
     using:
       foreign_key_constraint_on:
         column: lot_id
         table:
-          name: marks
+          name: attributions
           schema: public
-  - name: marks_views
+  - name: attributions_views
     using:
       manual_configuration:
         column_mapping:
           id: lot_id
         insertion_order: null
         remote_table:
-          name: marks_view
+          name: attributions_view
           schema: public
 insert_permissions:
   - role: user

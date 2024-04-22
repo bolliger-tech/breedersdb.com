@@ -1,5 +1,5 @@
 function:
-  name: refresh_marks_view
+  name: refresh_attributions_view
   schema: public
 configuration:
   custom_root_fields: {}

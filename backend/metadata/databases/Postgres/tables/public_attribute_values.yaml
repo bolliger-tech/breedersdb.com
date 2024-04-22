@@ -2,9 +2,9 @@ table:
   name: attribute_values
   schema: public
 object_relationships:
-  - name: mark
+  - name: attribution
     using:
-      foreign_key_constraint_on: mark_id
+      foreign_key_constraint_on: attribution_id
   - name: attribute
     using:
       foreign_key_constraint_on: attribute_id
@@ -16,11 +16,11 @@ insert_permissions:
         - boolean_value
         - created
         - date_value
-        - exceptional_mark
+        - exceptional_attribution
         - float_value
         - integer_value
         - attribute_id
-        - mark_id
+        - attribution_id
         - note
         - offline_id
         - text_value
@@ -30,13 +30,13 @@ select_permissions:
     permission:
       columns:
         - boolean_value
-        - exceptional_mark
+        - exceptional_attribution
         - date_value
         - float_value
         - id
         - integer_value
         - attribute_id
-        - mark_id
+        - attribution_id
         - note
         - text_value
         - created
@@ -51,11 +51,11 @@ update_permissions:
       columns:
         - boolean_value
         - date_value
-        - exceptional_mark
+        - exceptional_attribution
         - float_value
         - integer_value
         - attribute_id
-        - mark_id
+        - attribution_id
         - note
         - text_value
       filter: {}

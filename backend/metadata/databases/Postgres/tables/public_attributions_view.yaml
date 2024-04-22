@@ -1,5 +1,5 @@
 table:
-  name: marks_view
+  name: attributions_view
   schema: public
 object_relationships:
   - name: cultivar
@@ -48,9 +48,9 @@ select_permissions:
         - created
         - cultivar_id
         - data_type
-        - date_marked
+        - date_attributed
         - date_value
-        - exceptional_mark
+        - exceptional_attribution
         - float_value
         - geo_location
         - geo_location_accuracy
@@ -59,7 +59,7 @@ select_permissions:
         - lot_id
         - attribute_id
         - attribute_name
-        - mark_id
+        - attribution_id
         - attribute_type
         - modified
         - note

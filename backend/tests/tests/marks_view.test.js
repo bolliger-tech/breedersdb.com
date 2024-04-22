@@ -2,11 +2,11 @@ import { test, expect, afterEach, describe } from 'bun:test';
 import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
-const marksViewFields = /* GraphQL */ `
-  fragment MarksViewFields on marks_view {
+const attributionsViewFields = /* GraphQL */ `
+  fragment attributionsViewFields on attributions_view {
     id
     author
-    date_marked
+    date_attributed
     integer_value
     float_value
     text_value
@@ -33,7 +33,7 @@ const marksViewFields = /* GraphQL */ `
     }
     geo_location
     geo_location_accuracy
-    exceptional_mark
+    exceptional_attribution
     attribute_type
     created
     modified
@@ -41,58 +41,58 @@ const marksViewFields = /* GraphQL */ `
 `;
 
 const queryAll = /* GraphQL */ `
-  ${marksViewFields}
-  query MarksView {
-    marks_view {
-      ...MarksViewFields
+  ${attributionsViewFields}
+  query attributionsView {
+    attributions_view {
+      ...attributionsViewFields
     }
   }
 `;
 
 const queryByAttributeId = /* GraphQL */ `
-  ${marksViewFields}
-  query MarksView($attribute_id: Int!) {
-    marks_view(where: { attribute_id: { _eq: $attribute_id } }) {
-      ...MarksViewFields
+  ${attributionsViewFields}
+  query attributionsView($attribute_id: Int!) {
+    attributions_view(where: { attribute_id: { _eq: $attribute_id } }) {
+      ...attributionsViewFields
     }
   }
 `;
 
 const queryByAttributeIdAndLotId = /* GraphQL */ `
-  ${marksViewFields}
-  query MarksView($attribute_id: Int!, $lot_id: Int!) {
-    marks_view(
+  ${attributionsViewFields}
+  query attributionsView($attribute_id: Int!, $lot_id: Int!) {
+    attributions_view(
       where: { attribute_id: { _eq: $attribute_id }, lot_id: { _eq: $lot_id } }
     ) {
-      ...MarksViewFields
+      ...attributionsViewFields
     }
   }
 `;
 
 const queryByAttributeIdAndCultivarId = /* GraphQL */ `
-  ${marksViewFields}
-  query MarksView($attribute_id: Int!, $cultivar_id: Int!) {
-    marks_view(
+  ${attributionsViewFields}
+  query attributionsView($attribute_id: Int!, $cultivar_id: Int!) {
+    attributions_view(
       where: {
         attribute_id: { _eq: $attribute_id }
         combined_cultivar_id: { _eq: $cultivar_id }
       }
     ) {
-      ...MarksViewFields
+      ...attributionsViewFields
     }
   }
 `;
 
 const queryByAttributeIdAndTreeId = /* GraphQL */ `
-  ${marksViewFields}
-  query MarksView($attribute_id: Int!, $tree_id: Int!) {
-    marks_view(
+  ${attributionsViewFields}
+  query attributionsView($attribute_id: Int!, $tree_id: Int!) {
+    attributions_view(
       where: {
         attribute_id: { _eq: $attribute_id }
         tree_id: { _eq: $tree_id }
       }
     ) {
-      ...MarksViewFields
+      ...attributionsViewFields
     }
   }
 `;
@@ -130,8 +130,8 @@ const insertTree = /* GraphQL */ `
   }
 `;
 
-const insertMarkAttribute = /* GraphQL */ `
-  mutation InsertMarkAttribute(
+const insertAttribute = /* GraphQL */ `
+  mutation InsertAttribute(
     $name: String!
     $validation_rule: jsonb
     $data_type: attribute_data_types_enum!
@@ -150,18 +150,18 @@ const insertMarkAttribute = /* GraphQL */ `
   }
 `;
 
-const insertMarkForm = /* GraphQL */ `
-  mutation InsertMarkForm($name: String!) {
+const insertAttributionForm = /* GraphQL */ `
+  mutation InsertAttributionForm($name: String!) {
     insert_attribution_forms_one(object: { name: $name }) {
       id
     }
   }
 `;
 
-const insertMark = /* GraphQL */ `
-  mutation InsertMark(
+const insertAttribution = /* GraphQL */ `
+  mutation InsertAttribution(
     $author: String!
-    $date_marked: date!
+    $date_attributed: date!
     $attribution_form_id: Int!
     $lot_id: Int
     $cultivar_id: Int
@@ -169,10 +169,10 @@ const insertMark = /* GraphQL */ `
     $geo_location: geography
     $geo_location_accuracy: float8
   ) {
-    insert_marks_one(
+    insert_attributions_one(
       object: {
         author: $author
-        date_marked: $date_marked
+        date_attributed: $date_attributed
         attribution_form_id: $attribution_form_id
         lot_id: $lot_id
         cultivar_id: $cultivar_id
@@ -186,9 +186,9 @@ const insertMark = /* GraphQL */ `
   }
 `;
 
-const insertMarkValue = /* GraphQL */ `
-  mutation InsertMarkValue(
-    $mark_id: Int!
+const insertAttributionValue = /* GraphQL */ `
+  mutation InsertAttributionValue(
+    $attribution_id: Int!
     $attribute_id: Int!
     $integer_value: Int
     $float_value: float8
@@ -196,11 +196,11 @@ const insertMarkValue = /* GraphQL */ `
     $boolean_value: Boolean
     $date_value: date
     $note: String
-    $exceptional_mark: Boolean = false
+    $exceptional_attribution: Boolean = false
   ) {
     insert_attribute_values_one(
       object: {
-        mark_id: $mark_id
+        attribution_id: $attribution_id
         attribute_id: $attribute_id
         integer_value: $integer_value
         float_value: $float_value
@@ -208,7 +208,7 @@ const insertMarkValue = /* GraphQL */ `
         boolean_value: $boolean_value
         date_value: $date_value
         note: $note
-        exceptional_mark: $exceptional_mark
+        exceptional_attribution: $exceptional_attribution
       }
     ) {
       id
@@ -216,12 +216,12 @@ const insertMarkValue = /* GraphQL */ `
   }
 `;
 
-async function refreshMarksView() {
+async function refreshattributionsView() {
   return await post({
     /* GraphQL */
     query: `
-      mutation RefreshMarksView {
-        refresh_marks_view {
+      mutation RefreshattributionsView {
+        refresh_attributions_view {
           id
           last_check
           last_change
@@ -238,7 +238,7 @@ afterEach(async () => {
         delete_attribute_values(where: {}) {
           affected_rows
         }
-        delete_marks(where: {}) {
+        delete_attributions(where: {}) {
           affected_rows
         }
         delete_attribution_forms(where: {}) {
@@ -276,17 +276,17 @@ async function insert_attribute_value_with_associated_data({
   attribute_data_type = 'INTEGER',
   attribute_validation_rule = { min: 0, max: 100, step: 1 },
   attribute_type = 'OBSERVATION',
-  mark_author = 'Author 1',
-  mark_date_marked = '2021-01-01',
-  mark_geo_location = { type: 'Point', coordinates: [1, 2] },
-  mark_geo_location_accuracy = 1,
+  attribution_author = 'Author 1',
+  attribution_date_attributed = '2021-01-01',
+  attribution_geo_location = { type: 'Point', coordinates: [1, 2] },
+  attribution_geo_location_accuracy = 1,
   integer_value = 42,
   float_value = 42.42,
   text_value = 'Text 1',
   boolean_value = true,
   date_value = '2021-01-01',
   note = 'Note 1',
-  exceptional_mark = false,
+  exceptional_attribution = false,
 }) {
   const objects = (is_lot ? 1 : 0) + (is_cultivar ? 1 : 0) + (is_tree ? 1 : 0);
   if (objects !== 1) {
@@ -318,14 +318,14 @@ async function insert_attribute_value_with_associated_data({
   });
 
   const form = await post({
-    query: insertMarkForm,
+    query: insertAttributionForm,
     variables: {
       name: attribution_form_name,
     },
   });
 
   const attribute = await post({
-    query: insertMarkAttribute,
+    query: insertAttribute,
     variables: {
       name: attribute_name,
       validation_rule: ['INTEGER', 'FLOAT'].includes(attribute_data_type)
@@ -336,32 +336,32 @@ async function insert_attribute_value_with_associated_data({
     },
   });
 
-  const mark = await post({
-    query: insertMark,
+  const attribution = await post({
+    query: insertAttribution,
     variables: {
-      author: mark_author,
-      date_marked: mark_date_marked,
+      author: attribution_author,
+      date_attributed: attribution_date_attributed,
       attribution_form_id: form.data.insert_attribution_forms_one.id,
       lot_id: is_lot ? lot.data.insert_lots_one.id : null,
       cultivar_id: is_cultivar ? cultivar.data.insert_cultivars_one.id : null,
       tree_id: is_tree ? tree.data.insert_trees_one.id : null,
-      geo_location: mark_geo_location,
-      geo_location_accuracy: mark_geo_location_accuracy,
+      geo_location: attribution_geo_location,
+      geo_location_accuracy: attribution_geo_location_accuracy,
     },
   });
 
   const value = await post({
-    query: insertMarkValue,
+    query: insertAttributionValue,
     variables: {
       attribute_id: attribute.data.insert_attributes_one.id,
-      mark_id: mark.data.insert_marks_one.id,
+      attribution_id: attribution.data.insert_attributions_one.id,
       integer_value: attribute_data_type === 'INTEGER' ? integer_value : null,
       float_value: attribute_data_type === 'FLOAT' ? float_value : null,
       text_value: attribute_data_type === 'TEXT' ? text_value : null,
       boolean_value: attribute_data_type === 'BOOLEAN' ? boolean_value : null,
       date_value: attribute_data_type === 'DATE' ? date_value : null,
       note,
-      exceptional_mark,
+      exceptional_attribution,
     },
   });
 
@@ -371,7 +371,7 @@ async function insert_attribute_value_with_associated_data({
     tree_id: tree.data.insert_trees_one.id,
     form_id: form.data.insert_attribution_forms_one.id,
     attribute_id: attribute.data.insert_attributes_one.id,
-    mark_id: mark.data.insert_marks_one.id,
+    attribution_id: attribution.data.insert_attributions_one.id,
     value_id: value.data.insert_attribute_values_one.id,
   };
 }
@@ -381,12 +381,12 @@ test('view contains new value after update', async () => {
     is_lot: true,
   });
 
-  await refreshMarksView();
+  await refreshattributionsView();
 
   const { data } = await post({ query: queryAll });
 
-  expect(data.marks_view).toHaveLength(1);
-  expect(data.marks_view[0].id).toBe(value_id);
+  expect(data.attributions_view).toHaveLength(1);
+  expect(data.attributions_view[0].id).toBe(value_id);
 });
 
 describe('non aggregated values are correct', async () => {
@@ -398,93 +398,93 @@ describe('non aggregated values are correct', async () => {
         attribute_data_type: 'INTEGER',
         attribute_type: 'OBSERVATION',
         author: 'Author 1',
-        date_marked: '2021-01-01',
+        date_attributed: '2021-01-01',
         geo_location: { type: 'Point', coordinates: [1, 2] },
         geo_location_accuracy: 1,
         integer_value: 42,
         note: 'Note 1',
-        exceptional_mark: true,
+        exceptional_attribution: true,
       });
 
-    await refreshMarksView();
+    await refreshattributionsView();
 
     const { data } = await post({ query: queryAll });
 
-    expect(data.marks_view).toHaveLength(1);
-    expect(data.marks_view[0].id).toBe(value_id);
-    expect(data.marks_view[0].author).toBe('Author 1');
-    expect(data.marks_view[0].date_marked).toBe('2021-01-01');
-    expect(data.marks_view[0].attribute_name).toBe('Attribute 1');
-    expect(data.marks_view[0].attribute.id).toBe(attribute_id);
-    expect(data.marks_view[0].data_type).toBe('INTEGER');
-    expect(data.marks_view[0].note).toBe('Note 1');
-    expect(data.marks_view[0].geo_location.coordinates).toEqual([1, 2]);
-    expect(data.marks_view[0].geo_location_accuracy).toBe(1);
-    expect(data.marks_view[0].exceptional_mark).toBe(true);
-    expect(data.marks_view[0].attribute_type).toBe('OBSERVATION');
-    expect(data.marks_view[0].created).toMatch(iso8601dateRegex);
-    expect(data.marks_view[0].modified).toBeNull();
+    expect(data.attributions_view).toHaveLength(1);
+    expect(data.attributions_view[0].id).toBe(value_id);
+    expect(data.attributions_view[0].author).toBe('Author 1');
+    expect(data.attributions_view[0].date_attributed).toBe('2021-01-01');
+    expect(data.attributions_view[0].attribute_name).toBe('Attribute 1');
+    expect(data.attributions_view[0].attribute.id).toBe(attribute_id);
+    expect(data.attributions_view[0].data_type).toBe('INTEGER');
+    expect(data.attributions_view[0].note).toBe('Note 1');
+    expect(data.attributions_view[0].geo_location.coordinates).toEqual([1, 2]);
+    expect(data.attributions_view[0].geo_location_accuracy).toBe(1);
+    expect(data.attributions_view[0].exceptional_attribution).toBe(true);
+    expect(data.attributions_view[0].attribute_type).toBe('OBSERVATION');
+    expect(data.attributions_view[0].created).toMatch(iso8601dateRegex);
+    expect(data.attributions_view[0].modified).toBeNull();
   });
 
-  test('mark: lot', async () => {
+  test('attribution: lot', async () => {
     const { lot_id, value_id } =
       await insert_attribute_value_with_associated_data({
         is_lot: true,
       });
 
-    await refreshMarksView();
+    await refreshattributionsView();
 
     const { data } = await post({ query: queryAll });
 
-    expect(data.marks_view).toHaveLength(1);
-    expect(data.marks_view[0].id).toBe(value_id);
-    expect(data.marks_view[0].lot.id).toBe(lot_id);
-    expect(data.marks_view[0].cultivar).toBeNull();
-    expect(data.marks_view[0].tree).toBeNull();
+    expect(data.attributions_view).toHaveLength(1);
+    expect(data.attributions_view[0].id).toBe(value_id);
+    expect(data.attributions_view[0].lot.id).toBe(lot_id);
+    expect(data.attributions_view[0].cultivar).toBeNull();
+    expect(data.attributions_view[0].tree).toBeNull();
   });
 
-  test('mark: cultivar', async () => {
+  test('attribution: cultivar', async () => {
     const { cultivar_id, value_id } =
       await insert_attribute_value_with_associated_data({
         is_cultivar: true,
       });
 
-    await refreshMarksView();
+    await refreshattributionsView();
 
     const { data } = await post({ query: queryAll });
 
-    expect(data.marks_view).toHaveLength(1);
-    expect(data.marks_view[0].id).toBe(value_id);
-    expect(data.marks_view[0].lot).toBeNull();
-    expect(data.marks_view[0].cultivar.id).toBe(cultivar_id);
-    expect(data.marks_view[0].tree).toBeNull();
+    expect(data.attributions_view).toHaveLength(1);
+    expect(data.attributions_view[0].id).toBe(value_id);
+    expect(data.attributions_view[0].lot).toBeNull();
+    expect(data.attributions_view[0].cultivar.id).toBe(cultivar_id);
+    expect(data.attributions_view[0].tree).toBeNull();
   });
 
-  test('mark: tree', async () => {
+  test('attribution: tree', async () => {
     const { tree_id, cultivar_id, value_id } =
       await insert_attribute_value_with_associated_data({
         is_tree: true,
       });
 
-    await refreshMarksView();
+    await refreshattributionsView();
 
     const { data } = await post({ query: queryAll });
 
-    expect(data.marks_view).toHaveLength(1);
-    expect(data.marks_view[0].id).toBe(value_id);
-    expect(data.marks_view[0].lot).toBeNull();
-    expect(data.marks_view[0].cultivar.id).toBe(cultivar_id);
-    expect(data.marks_view[0].tree.id).toBe(tree_id);
+    expect(data.attributions_view).toHaveLength(1);
+    expect(data.attributions_view[0].id).toBe(value_id);
+    expect(data.attributions_view[0].lot).toBeNull();
+    expect(data.attributions_view[0].cultivar.id).toBe(cultivar_id);
+    expect(data.attributions_view[0].tree.id).toBe(tree_id);
   });
 });
 
-test('cultivar contains marks of trees', async () => {
+test('cultivar contains attributions of trees', async () => {
   const { cultivar_id, tree_id, value_id, attribute_id } =
     await insert_attribute_value_with_associated_data({
       is_tree: true,
     });
 
-  await refreshMarksView();
+  await refreshattributionsView();
 
   const { data } = await post({
     query: queryByAttributeIdAndCultivarId,
@@ -494,19 +494,19 @@ test('cultivar contains marks of trees', async () => {
     },
   });
 
-  expect(data.marks_view).toHaveLength(1);
-  expect(data.marks_view[0].id).toBe(value_id);
-  expect(data.marks_view[0].cultivar.id).toBe(cultivar_id);
-  expect(data.marks_view[0].tree.id).toBe(tree_id);
+  expect(data.attributions_view).toHaveLength(1);
+  expect(data.attributions_view[0].id).toBe(value_id);
+  expect(data.attributions_view[0].cultivar.id).toBe(cultivar_id);
+  expect(data.attributions_view[0].tree.id).toBe(tree_id);
 });
 
-test('trees do not contain cultivar marks', async () => {
+test('trees do not contain cultivar attributions', async () => {
   const { tree_id, value_id, attribute_id } =
     await insert_attribute_value_with_associated_data({
       is_cultivar: true,
     });
 
-  await refreshMarksView();
+  await refreshattributionsView();
 
   const { data } = await post({
     query: queryByAttributeIdAndTreeId,
@@ -516,5 +516,5 @@ test('trees do not contain cultivar marks', async () => {
     },
   });
 
-  expect(data.marks_view).toHaveLength(0);
+  expect(data.attributions_view).toHaveLength(0);
 });

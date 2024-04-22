@@ -3,7 +3,7 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertMarkForm($name: String, $description: String) {
+  mutation InsertAttributionForm($name: String, $description: String) {
     insert_attribution_forms_one(
       object: { name: $name, description: $description, disabled: false }
     ) {
@@ -20,7 +20,7 @@ const insertMutation = /* GraphQL */ `
 afterEach(async () => {
   await post({
     query: /* GraphQL */ `
-      mutation DeleteAllMarkForms {
+      mutation DeleteAllAttributionForms {
         delete_attribution_forms(where: {}) {
           affected_rows
         }
@@ -33,13 +33,13 @@ test('insert', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'MarkForm 1',
+      name: 'AttributionForm 1',
       description: 'Description 1',
     },
   });
 
   expect(resp.data.insert_attribution_forms_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribution_forms_one.name).toBe('MarkForm 1');
+  expect(resp.data.insert_attribution_forms_one.name).toBe('AttributionForm 1');
   expect(resp.data.insert_attribution_forms_one.description).toBe(
     'Description 1',
   );
@@ -54,13 +54,13 @@ test('name is unique', async () => {
   const resp1 = await post({
     query: insertMutation,
     variables: {
-      name: 'MarkForm 1',
+      name: 'AttributionForm 1',
     },
   });
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'MarkForm 1',
+      name: 'AttributionForm 1',
     },
   });
 
@@ -83,13 +83,13 @@ test('modified', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      name: 'MarkForm 1',
+      name: 'AttributionForm 1',
     },
   });
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateMarkForm($id: Int!, $name: String) {
+      mutation UpdateAttributionForm($id: Int!, $name: String) {
         update_attribution_forms_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }
@@ -102,7 +102,7 @@ test('modified', async () => {
     `,
     variables: {
       id: resp.data.insert_attribution_forms_one.id,
-      name: 'MarkForm 999',
+      name: 'AttributionForm 999',
     },
   });
 

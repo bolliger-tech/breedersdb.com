@@ -3,19 +3,19 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertMarkValue(
+  mutation InsertAttributionValue(
     $attribute_name: String
     $attribute_validation_rule: jsonb
     $attribute_data_type: attribute_data_types_enum
     $attribute_type: attribute_types_enum
-    $mark_id: Int
+    $attribution_id: Int
     $integer_value: Int
     $float_value: float8
     $text_value: String
     $boolean_value: Boolean
     $date_value: date
     $note: String
-    $exceptional_mark: Boolean
+    $exceptional_attribution: Boolean
   ) {
     insert_attribute_values_one(
       object: {
@@ -27,14 +27,14 @@ const insertMutation = /* GraphQL */ `
             attribute_type: $attribute_type
           }
         }
-        mark_id: $mark_id
+        attribution_id: $attribution_id
         integer_value: $integer_value
         float_value: $float_value
         text_value: $text_value
         boolean_value: $boolean_value
         date_value: $date_value
         note: $note
-        exceptional_mark: $exceptional_mark
+        exceptional_attribution: $exceptional_attribution
       }
     ) {
       id
@@ -45,14 +45,14 @@ const insertMutation = /* GraphQL */ `
         data_type
         attribute_type
       }
-      mark_id
+      attribution_id
       integer_value
       float_value
       text_value
       boolean_value
       date_value
       note
-      exceptional_mark
+      exceptional_attribution
       offline_id
       created
       modified
@@ -60,18 +60,18 @@ const insertMutation = /* GraphQL */ `
   }
 `;
 
-const insertMarkMutation = /* GraphQL */ `
-  mutation InsertMarks(
+const insertAttributionMutation = /* GraphQL */ `
+  mutation Insertattributions(
     $author: String
-    $date_marked: date
+    $date_attributed: date
     $attribution_form_name: String
     $lot_name_segment: String
     $crossing_name: String
   ) {
-    insert_marks_one(
+    insert_attributions_one(
       object: {
         author: $author
-        date_marked: $date_marked
+        date_attributed: $date_attributed
         attribution_form: { data: { name: $attribution_form_name } }
         lot: {
           data: {
@@ -89,11 +89,11 @@ const insertMarkMutation = /* GraphQL */ `
 afterEach(async () => {
   await post({
     query: /* GraphQL */ `
-      mutation DeleteAllMarkValues {
+      mutation DeleteAllAttributionValues {
         delete_attribute_values(where: {}) {
           affected_rows
         }
-        delete_marks(where: {}) {
+        delete_attributions(where: {}) {
           affected_rows
         }
         delete_attribution_forms(where: {}) {
@@ -114,12 +114,12 @@ afterEach(async () => {
 });
 
 test('insert', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -128,22 +128,22 @@ test('insert', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Attribution Attribute 1',
       attribute_data_type: 'TEXT',
       attribute_type: 'OBSERVATION',
-      mark_id: mark.data.insert_marks_one.id,
+      attribution_id: attribution.data.insert_attributions_one.id,
       text_value: 'Text Value 1',
       note: 'Description 1',
-      exceptional_mark: true,
+      exceptional_attribution: true,
     },
   });
 
   expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
   expect(resp.data.insert_attribute_values_one.attribute.name).toBe(
-    'Mark Attribute 1',
+    'Attribution Attribute 1',
   );
-  expect(resp.data.insert_attribute_values_one.mark_id).toBe(
-    mark.data.insert_marks_one.id,
+  expect(resp.data.insert_attribute_values_one.attribution_id).toBe(
+    attribution.data.insert_attributions_one.id,
   );
   expect(resp.data.insert_attribute_values_one.integer_value).toBeNull();
   expect(resp.data.insert_attribute_values_one.float_value).toBeNull();
@@ -151,7 +151,9 @@ test('insert', async () => {
   expect(resp.data.insert_attribute_values_one.boolean_value).toBeNull();
   expect(resp.data.insert_attribute_values_one.date_value).toBeNull();
   expect(resp.data.insert_attribute_values_one.note).toBe('Description 1');
-  expect(resp.data.insert_attribute_values_one.exceptional_mark).toBe(true);
+  expect(resp.data.insert_attribute_values_one.exceptional_attribution).toBe(
+    true,
+  );
   expect(resp.data.insert_attribute_values_one.created).toMatch(
     iso8601dateRegex,
   );
@@ -159,12 +161,12 @@ test('insert', async () => {
 });
 
 test('insert with offline data', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -172,11 +174,11 @@ test('insert with offline data', async () => {
 
   const resp = await post({
     query: /* GraphQL */ `
-      mutation InsertMarkValue(
+      mutation InsertAttributionValue(
         $attribute_name: String
         $attribute_data_type: attribute_data_types_enum
         $attribute_type: attribute_types_enum
-        $mark_id: Int
+        $attribution_id: Int
         $text_value: String
         $offline_id: uuid
         $created: timestamptz
@@ -190,7 +192,7 @@ test('insert with offline data', async () => {
                 attribute_type: $attribute_type
               }
             }
-            mark_id: $mark_id
+            attribution_id: $attribution_id
             text_value: $text_value
             offline_id: $offline_id
             created: $created
@@ -204,10 +206,10 @@ test('insert with offline data', async () => {
       }
     `,
     variables: {
-      attribute_name: 'Mark Attribute 1',
+      attribute_name: 'Attribution Attribute 1',
       attribute_data_type: 'TEXT',
       attribute_type: 'OBSERVATION',
-      mark_id: mark.data.insert_marks_one.id,
+      attribution_id: attribution.data.insert_attributions_one.id,
       text_value: 'Text Value 1',
       offline_id: '00000000-0000-0000-0000-000000000000',
       created: '2021-01-01T00:00:00+00:00',
@@ -224,12 +226,12 @@ test('insert with offline data', async () => {
 });
 
 test('insert INTEGER valid low', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -238,9 +240,9 @@ test('insert INTEGER valid low', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
       attribute_validation_rule: { min: 1, max: 9, step: 1 },
@@ -253,12 +255,12 @@ test('insert INTEGER valid low', async () => {
 });
 
 test('insert INTEGER valid high', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -267,9 +269,9 @@ test('insert INTEGER valid high', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
       attribute_validation_rule: { min: 1, max: 9, step: 1 },
@@ -282,12 +284,12 @@ test('insert INTEGER valid high', async () => {
 });
 
 test('insert INTEGER too low', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -296,9 +298,9 @@ test('insert INTEGER too low', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
       attribute_validation_rule: { min: 1, max: 9, step: 1 },
@@ -312,12 +314,12 @@ test('insert INTEGER too low', async () => {
 });
 
 test('insert INTEGER too high', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -326,9 +328,9 @@ test('insert INTEGER too high', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
       attribute_validation_rule: { min: 1, max: 9, step: 1 },
@@ -342,12 +344,12 @@ test('insert INTEGER too high', async () => {
 });
 
 test('insert INTEGER invalid step', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -356,9 +358,9 @@ test('insert INTEGER invalid step', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
       attribute_validation_rule: { min: 0, max: 10, step: 2 },
@@ -372,12 +374,12 @@ test('insert INTEGER invalid step', async () => {
 });
 
 test('insert INTEGER invalid value data type', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -386,9 +388,9 @@ test('insert INTEGER invalid value data type', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
       attribute_validation_rule: { min: 0, max: 10, step: 2 },
@@ -402,12 +404,12 @@ test('insert INTEGER invalid value data type', async () => {
 });
 
 test('insert INTEGER wrong column', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -416,9 +418,9 @@ test('insert INTEGER wrong column', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
       attribute_validation_rule: { min: 0, max: 10, step: 2 },
@@ -432,12 +434,12 @@ test('insert INTEGER wrong column', async () => {
 });
 
 test('insert FLOAT valid low', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -446,9 +448,9 @@ test('insert FLOAT valid low', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
       attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
@@ -461,12 +463,12 @@ test('insert FLOAT valid low', async () => {
 });
 
 test('insert FLOAT valid high', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -475,9 +477,9 @@ test('insert FLOAT valid high', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
       attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
@@ -490,12 +492,12 @@ test('insert FLOAT valid high', async () => {
 });
 
 test('insert FLOAT too low', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -504,9 +506,9 @@ test('insert FLOAT too low', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
       attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
@@ -520,12 +522,12 @@ test('insert FLOAT too low', async () => {
 });
 
 test('insert FLOAT too high', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -534,9 +536,9 @@ test('insert FLOAT too high', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
       attribute_validation_rule: { min: 0, max: 1, step: 0.1 },
@@ -550,12 +552,12 @@ test('insert FLOAT too high', async () => {
 });
 
 test('insert FLOAT invalid value data type', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -564,9 +566,9 @@ test('insert FLOAT invalid value data type', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
       attribute_validation_rule: { min: 0, max: 10, step: 1 },
@@ -580,12 +582,12 @@ test('insert FLOAT invalid value data type', async () => {
 });
 
 test('insert FLOAT wrong column', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -594,9 +596,9 @@ test('insert FLOAT wrong column', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'FLOAT',
       attribute_validation_rule: { min: 0, max: 10, step: 2 },
@@ -610,12 +612,12 @@ test('insert FLOAT wrong column', async () => {
 });
 
 test('insert TEXT valid', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -624,9 +626,9 @@ test('insert TEXT valid', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'TEXT',
       text_value: 'Text Value 1',
@@ -638,12 +640,12 @@ test('insert TEXT valid', async () => {
 });
 
 test('insert TEXT too long', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -652,9 +654,9 @@ test('insert TEXT too long', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'TEXT',
       text_value: 'a'.repeat(2048),
@@ -667,12 +669,12 @@ test('insert TEXT too long', async () => {
 });
 
 test('insert TEXT empty', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -681,9 +683,9 @@ test('insert TEXT empty', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'TEXT',
       text_value: '',
@@ -691,17 +693,17 @@ test('insert TEXT empty', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'A mark value must populate exactly one column of: integer_value, float_value, text_value, boolean_value or date_value.',
+    'An attribution value must populate exactly one column of: integer_value, float_value, text_value, boolean_value or date_value.',
   );
 });
 
 test('insert TEXT wrong column', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -710,9 +712,9 @@ test('insert TEXT wrong column', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'TEXT',
       integer_value: 1,
@@ -725,12 +727,12 @@ test('insert TEXT wrong column', async () => {
 });
 
 test('insert BOOLEAN valid', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -739,9 +741,9 @@ test('insert BOOLEAN valid', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'BOOLEAN',
       boolean_value: false,
@@ -753,12 +755,12 @@ test('insert BOOLEAN valid', async () => {
 });
 
 test('insert BOOLEAN invalid value data type', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -767,9 +769,9 @@ test('insert BOOLEAN invalid value data type', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'BOOLEAN',
       boolean_value: 'asdf',
@@ -782,12 +784,12 @@ test('insert BOOLEAN invalid value data type', async () => {
 });
 
 test('insert BOOLEAN wrong column', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -796,9 +798,9 @@ test('insert BOOLEAN wrong column', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'BOOLEAN',
       text_value: 'false',
@@ -811,12 +813,12 @@ test('insert BOOLEAN wrong column', async () => {
 });
 
 test('insert DATE valid', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -825,9 +827,9 @@ test('insert DATE valid', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       date_value: '2021-01-01',
@@ -839,12 +841,12 @@ test('insert DATE valid', async () => {
 });
 
 test('insert DATE out of range date', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -853,9 +855,9 @@ test('insert DATE out of range date', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       date_value: '2021-01-32',
@@ -866,12 +868,12 @@ test('insert DATE out of range date', async () => {
 });
 
 test('insert DATE invalid date format', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -880,9 +882,9 @@ test('insert DATE invalid date format', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       date_value: '31.01.21',
@@ -893,12 +895,12 @@ test('insert DATE invalid date format', async () => {
 });
 
 test('insert DATE timestamp', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -907,9 +909,9 @@ test('insert DATE timestamp', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       date_value: '2021-01-01:23:00+12:00',
@@ -921,12 +923,12 @@ test('insert DATE timestamp', async () => {
 });
 
 test('insert DATE invalid value data type', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -935,9 +937,9 @@ test('insert DATE invalid value data type', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       date_value: 'asdf',
@@ -948,12 +950,12 @@ test('insert DATE invalid value data type', async () => {
 });
 
 test('insert DATE wrong column', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -962,9 +964,9 @@ test('insert DATE wrong column', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'DATE',
       text_value: '2021-01-01',
@@ -977,12 +979,12 @@ test('insert DATE wrong column', async () => {
 });
 
 test('insert PHOTO jpg', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -991,9 +993,9 @@ test('insert PHOTO jpg', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpg',
@@ -1007,12 +1009,12 @@ test('insert PHOTO jpg', async () => {
 });
 
 test('insert PHOTO jpeg', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1021,9 +1023,9 @@ test('insert PHOTO jpeg', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpeg',
@@ -1037,12 +1039,12 @@ test('insert PHOTO jpeg', async () => {
 });
 
 test('insert PHOTO avif', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1051,9 +1053,9 @@ test('insert PHOTO avif', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.avif',
@@ -1067,12 +1069,12 @@ test('insert PHOTO avif', async () => {
 });
 
 test('insert PHOTO png invalid', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1081,9 +1083,9 @@ test('insert PHOTO png invalid', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: 'b51fd56a7e0528c5c35f2669750e2c65.png',
@@ -1096,12 +1098,12 @@ test('insert PHOTO png invalid', async () => {
 });
 
 test('insert PHOTO name invalid', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1110,9 +1112,9 @@ test('insert PHOTO name invalid', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: 'a photo.jpg',
@@ -1125,12 +1127,12 @@ test('insert PHOTO name invalid', async () => {
 });
 
 test('insert PHOTO empty', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1139,9 +1141,9 @@ test('insert PHOTO empty', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       text_value: '',
@@ -1149,17 +1151,17 @@ test('insert PHOTO empty', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'A mark value must populate exactly one column of: integer_value, float_value, text_value, boolean_value or date_value.',
+    'An attribution value must populate exactly one column of: integer_value, float_value, text_value, boolean_value or date_value.',
   );
 });
 
 test('insert PHOTO wrong column', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1168,9 +1170,9 @@ test('insert PHOTO wrong column', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'PHOTO',
       integer_value: 1,
@@ -1183,12 +1185,12 @@ test('insert PHOTO wrong column', async () => {
 });
 
 test('modified', async () => {
-  const mark = await post({
-    query: insertMarkMutation,
+  const attribution = await post({
+    query: insertAttributionMutation,
     variables: {
-      author: 'Mark Author',
-      date_marked: '2021-01-01',
-      attribution_form_name: 'Mark Form 1',
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
     },
@@ -1197,9 +1199,9 @@ test('modified', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
-      exceptional_mark: false,
-      mark_id: mark.data.insert_marks_one.id,
-      attribute_name: 'Mark Attribute 1',
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'TEXT',
       text_value: 'Text Value 1',
@@ -1208,7 +1210,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateMarkAttribute($id: Int!, $text_value: String) {
+      mutation UpdateAttribute($id: Int!, $text_value: String) {
         update_attribute_values_by_pk(
           pk_columns: { id: $id }
           _set: { text_value: $text_value }

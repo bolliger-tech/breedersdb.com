@@ -96,7 +96,7 @@ const my_query = {
     filterType: 'base',
     childrensOperand: 'and',
   },
-  markFilter: {
+  attributionFilter: {
     id: 29,
     level: 0,
     children: [
@@ -105,7 +105,7 @@ const my_query = {
         level: 1,
         children: [],
         filterRule: {
-          column: 'MarksView.name',
+          column: 'AttributionsView.name',
           isValid: true,
           criteria: 'D_1_Schorf Blatt',
           comparator: {
@@ -113,12 +113,12 @@ const my_query = {
             value: '===',
           },
         },
-        filterType: 'mark',
+        filterType: 'attribution',
         childrensOperand: null,
       },
     ],
     filterRule: null,
-    filterType: 'mark',
+    filterType: 'attribution',
     childrensOperand: 'and',
   },
   visibleColumns: [
@@ -126,12 +126,12 @@ const my_query = {
     'TreesView.publicid',
     'TreesView.row',
     'TreesView.offset',
-    'Mark.5-none',
-    'Mark.5-mean',
-    'Mark.183-none',
-    'Mark.40-none',
+    'Attribution.5-none',
+    'Attribution.5-mean',
+    'Attribution.183-none',
+    'Attribution.40-none',
   ],
-  showRowsWithoutMarks: false,
+  showRowsWithoutAttributions: false,
 };
 
 afterEach(async () => {

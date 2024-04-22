@@ -748,7 +748,7 @@ create or replace function make_data_type_immutable() returns trigger as
 $$
 begin
     if exists (select 1 from attribute_values where attribute_id = new.id) then
-        raise exception 'The data type of a mark attribute cannot be changed once a mark value has been inserted.';
+        raise exception 'The data type of an attribution attribute cannot be changed once an attribution value has been inserted.';
     end if;
     return new;
 end;
@@ -810,11 +810,11 @@ create trigger update_attribution_form_fields_modified
 execute function modified_column();
 
 
-create table marks
+create table attributions
 (
     id                    integer primary key generated always as identity,
     author                varchar(45)              not null check (author ~ '^[^\n]{1,45}$'),
-    date_marked           date                     not null,
+    date_attributed           date                     not null,
     attribution_form_id          int                      not null references attribution_forms,
     tree_id               int references trees,
     cultivar_id           int references cultivars,
@@ -826,73 +826,73 @@ create table marks
     modified              timestamp with time zone
 );
 
-comment on column marks.geo_location_accuracy is 'Meters';
-comment on column marks.geo_location is 'SRID:4326'; -- default for GPS coordinates
+comment on column attributions.geo_location_accuracy is 'Meters';
+comment on column attributions.geo_location is 'SRID:4326'; -- default for GPS coordinates
 
-create index on marks (author);
-create index on marks (date_marked);
-create index on marks (attribution_form_id);
-create index on marks (tree_id);
-create index on marks (cultivar_id);
-create index on marks (lot_id);
-create index on marks using gist (geo_location);
-create index on marks (offline_id);
-create index on marks (created);
+create index on attributions (author);
+create index on attributions (date_attributed);
+create index on attributions (attribution_form_id);
+create index on attributions (tree_id);
+create index on attributions (cultivar_id);
+create index on attributions (lot_id);
+create index on attributions using gist (geo_location);
+create index on attributions (offline_id);
+create index on attributions (created);
 
-create trigger update_marks_modified
+create trigger update_attributions_modified
     before update
-    on marks
+    on attributions
     for each row
 execute function modified_column();
 
-create trigger trim_marks
+create trigger trim_attributions
     before insert or update of author
-    on marks
+    on attributions
     for each row
 execute function trim_strings('author');
 
-create or replace function check_mark_object() returns trigger as
+create or replace function check_attribution_object() returns trigger as
 $$
 begin
     if num_nonnulls(new.tree_id, new.cultivar_id, new.lot_id) <> 1 then
-        raise exception 'A mark must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.';
+        raise exception 'An attribution must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.';
     end if;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger check_mark_object
+create trigger check_attribution_object
     before insert or update of tree_id, cultivar_id, lot_id
-    on marks
+    on attributions
     for each row
-execute function check_mark_object();
+execute function check_attribution_object();
 
 
 create table attribute_values
 (
     id                integer primary key generated always as identity,
     attribute_id int                      not null references attributes,
-    mark_id           int                      not null references marks,
+    attribution_id           int                      not null references attributions,
     integer_value     int,
     float_value       double precision,
     text_value        varchar(2047) check (0 < length(text_value)),
     boolean_value     boolean,
     date_value        date,
     note              varchar(2047),
-    exceptional_mark  boolean                           default false not null,
+    exceptional_attribution  boolean                           default false not null,
     offline_id        uuid unique,
     created           timestamp with time zone not null default now(),
     modified          timestamp with time zone
 );
 
 create index on attribute_values (attribute_id);
-create index on attribute_values (mark_id);
+create index on attribute_values (attribution_id);
 create index on attribute_values (integer_value);
 create index on attribute_values (float_value);
 create index on attribute_values (text_value);
 create index on attribute_values (boolean_value);
 create index on attribute_values (date_value);
-create index on attribute_values (exceptional_mark);
+create index on attribute_values (exceptional_attribution);
 create index on attribute_values (offline_id);
 create index on attribute_values (created);
 
@@ -925,7 +925,7 @@ begin
 
     -- check that exactly one value is set
     if num_nonnulls(new.integer_value, new.float_value, new.text_value, new.boolean_value, new.date_value) <> 1 then
-        raise exception 'A mark value must populate exactly one column of: integer_value, float_value, text_value, boolean_value or date_value.';
+        raise exception 'An attribution value must populate exactly one column of: integer_value, float_value, text_value, boolean_value or date_value.';
     end if;
 
     select data_type, validation_rule
@@ -1057,8 +1057,8 @@ create index on materialized_view_refreshes (view_name);
 create index on materialized_view_refreshes (last_check);
 create unique index on materialized_view_refreshes (view_name, last_change);
 
-drop materialized view if exists marks_view;
-create materialized view marks_view as
+drop materialized view if exists attributions_view;
+create materialized view attributions_view as
 with tree_cultivar as (select id, cultivar_id from trees)
 select attribute_values.id,
        attribute_values.integer_value,
@@ -1067,82 +1067,82 @@ select attribute_values.id,
        attribute_values.boolean_value,
        attribute_values.date_value,
        attribute_values.note,
-       attribute_values.exceptional_mark,
+       attribute_values.exceptional_attribution,
        attributes.name                                   as attribute_name,
        attributes.id                                     as attribute_id,
        attributes.data_type,
        attributes.attribute_type,
-       marks.id                                               as mark_id,
-       marks.tree_id,
-       marks.cultivar_id,
-       marks.lot_id,
-       coalesce(marks.cultivar_id, tree_cultivar.cultivar_id) as combined_cultivar_id,
-       marks.created,
-       marks.modified,
-       marks.author,
-       marks.date_marked,
-       marks.geo_location,
-       marks.geo_location_accuracy
+       attributions.id                                               as attribution_id,
+       attributions.tree_id,
+       attributions.cultivar_id,
+       attributions.lot_id,
+       coalesce(attributions.cultivar_id, tree_cultivar.cultivar_id) as combined_cultivar_id,
+       attributions.created,
+       attributions.modified,
+       attributions.author,
+       attributions.date_attributed,
+       attributions.geo_location,
+       attributions.geo_location_accuracy
 from attribute_values
-         inner join marks on marks.id = attribute_values.mark_id
+         inner join attributions on attributions.id = attribute_values.attribution_id
          inner join attributes on attribute_values.attribute_id = attributes.id
-         left join tree_cultivar on marks.tree_id = tree_cultivar.id;
+         left join tree_cultivar on attributions.tree_id = tree_cultivar.id;
 
 
-create unique index on marks_view (id);
-create index on marks_view (integer_value);
-create index on marks_view (float_value);
-create index on marks_view (text_value);
-create index on marks_view using gin (text_value gin_trgm_ops);
-create index on marks_view (boolean_value);
-create index on marks_view (date_value);
-create index on marks_view (exceptional_mark);
-create index on marks_view (attribute_name);
-create index on marks_view using gin (attribute_name gin_trgm_ops);
-create index on marks_view (attribute_id);
-create index on marks_view (data_type);
-create index on marks_view (attribute_type);
-create index on marks_view (mark_id);
-create index on marks_view (tree_id);
-create index on marks_view (cultivar_id);
-create index on marks_view (lot_id);
-create index on marks_view (combined_cultivar_id);
-create index on marks_view (created);
-create index on marks_view (author);
-create index on marks_view using gin (author gin_trgm_ops);
-create index on marks_view (date_marked);
+create unique index on attributions_view (id);
+create index on attributions_view (integer_value);
+create index on attributions_view (float_value);
+create index on attributions_view (text_value);
+create index on attributions_view using gin (text_value gin_trgm_ops);
+create index on attributions_view (boolean_value);
+create index on attributions_view (date_value);
+create index on attributions_view (exceptional_attribution);
+create index on attributions_view (attribute_name);
+create index on attributions_view using gin (attribute_name gin_trgm_ops);
+create index on attributions_view (attribute_id);
+create index on attributions_view (data_type);
+create index on attributions_view (attribute_type);
+create index on attributions_view (attribution_id);
+create index on attributions_view (tree_id);
+create index on attributions_view (cultivar_id);
+create index on attributions_view (lot_id);
+create index on attributions_view (combined_cultivar_id);
+create index on attributions_view (created);
+create index on attributions_view (author);
+create index on attributions_view using gin (author gin_trgm_ops);
+create index on attributions_view (date_attributed);
 
-create or replace function marks_last_changed() returns timestamp with time zone as
+create or replace function attributions_last_changed() returns timestamp with time zone as
 $$
 begin
     return greatest(
-            (select max(coalesce(modified, created)) from marks),
+            (select max(coalesce(modified, created)) from attributions),
             (select max(coalesce(modified, created)) from attribute_values),
             (select max(coalesce(modified, created)) from attributes)
            );
 end;
 $$ language plpgsql stable;
 
-create or replace function refresh_marks_view() returns setof materialized_view_refreshes as
+create or replace function refresh_attributions_view() returns setof materialized_view_refreshes as
 $$
 declare
     last_changed timestamp with time zone;
     last_checked timestamp with time zone;
 begin
-    select marks_last_changed() into last_changed;
+    select attributions_last_changed() into last_changed;
     select now() into last_checked;
 
     if (select coalesce(max(last_change), '1970-01-01') from materialized_view_refreshes) < last_changed then
-        refresh materialized view marks_view;
+        refresh materialized view attributions_view;
     end if;
 
     insert into materialized_view_refreshes (view_name, last_change, last_check)
-    values ('marks_view', last_changed, last_checked)
+    values ('attributions_view', last_changed, last_checked)
     on conflict (view_name, last_change) do update set last_check = excluded.last_check;
 
     return query select *
                  from materialized_view_refreshes
-                 where view_name = 'marks_view'
+                 where view_name = 'attributions_view'
                    and last_change = last_changed;
 end;
 $$ language plpgsql volatile;

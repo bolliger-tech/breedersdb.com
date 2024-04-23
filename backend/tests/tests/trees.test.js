@@ -14,7 +14,7 @@ lots {
     name_segment
     trees {
       id
-      publicid
+      label_id
       cultivar_name
       serial_in_plant_row
       distance_plant_row_start
@@ -24,7 +24,6 @@ lots {
       date_planted
       date_eliminated
       date_labeled
-      genuine_seedling
       note
       rootstock {
         id
@@ -63,7 +62,7 @@ mutation InsertTree(
   $grafting_name: String,
   $orchard_name: String,
   $plant_row_name: String,
-  $publicid: String!,
+  $label_id: String!,
   $serial_in_plant_row: Int,
   $distance_plant_row_start: float8,
   $geo_location: geography,
@@ -72,7 +71,6 @@ mutation InsertTree(
   $date_planted: date,
   $date_eliminated: date,
   $date_labeled: date,
-  $genuine_seedling: Boolean,
   $note: String
   ) {
   insert_crossings_one(object: {
@@ -82,7 +80,7 @@ mutation InsertTree(
       cultivars: {data: {
         name_segment: $cultivar_name_segment,
         trees: {data: {
-          publicid: $publicid,
+          label_id: $label_id,
           serial_in_plant_row: $serial_in_plant_row,
           distance_plant_row_start: $distance_plant_row_start,
           geo_location: $geo_location,
@@ -91,7 +89,6 @@ mutation InsertTree(
           date_planted: $date_planted,
           date_eliminated: $date_eliminated,
           date_labeled: $date_labeled,
-          genuine_seedling: $genuine_seedling,
           note: $note
           rootstock: {data: {
             name: $rootstock_name
@@ -119,7 +116,7 @@ mutation InsertTree(
   $crossing_name: String!,
   $lot_name_segment: String!,
   $cultivar_name_segment: String!,
-  $publicid: String!,
+  $label_id: String!,
   $date_eliminated: date
   ) {
   insert_crossings_one(object: {
@@ -129,7 +126,7 @@ mutation InsertTree(
       cultivars: {data: {
         name_segment: $cultivar_name_segment,
         trees: {data: {
-          publicid: $publicid,
+          label_id: $label_id,
           date_eliminated: $date_eliminated
         }}
       }}
@@ -145,7 +142,7 @@ mutation InsertTree(
   $crossing_name: String!,
   $lot_name_segment: String!,
   $cultivar_name_segment: String!,
-  $publicid: String!,
+  $label_id: String!,
   $date_eliminated: date,
   $plant_row_id: Int!,
   $serial_in_plant_row: Int!
@@ -157,7 +154,7 @@ mutation InsertTree(
       cultivars: {data: {
         name_segment: $cultivar_name_segment,
         trees: {data: {
-          publicid: $publicid,
+          label_id: $label_id,
           date_eliminated: $date_eliminated
           plant_row_id: $plant_row_id
           serial_in_plant_row: $serial_in_plant_row
@@ -209,7 +206,7 @@ test('insert', async () => {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
       serial_in_plant_row: 1,
       distance_plant_row_start: 0.5,
       geo_location: {
@@ -220,7 +217,6 @@ test('insert', async () => {
       date_grafted: '2024-03-21',
       date_planted: '2024-03-22',
       date_labeled: '2024-03-24',
-      genuine_seedling: false,
       note: 'This is a note',
       rootstock_name: 'Rootstock1',
       grafting_name: 'Grafting1',
@@ -232,7 +228,7 @@ test('insert', async () => {
   const tree = resp.data.insert_crossings_one.lots[0].cultivars[0].trees[0];
 
   expect(tree.id).toBeGreaterThan(0);
-  expect(tree.publicid).toBe('00000001');
+  expect(tree.label_id).toBe('00000001');
   expect(tree.cultivar_name).toBe('Abcd.24A.001');
   expect(tree.serial_in_plant_row).toBe(1);
   expect(tree.distance_plant_row_start).toBe(0.5);
@@ -243,7 +239,6 @@ test('insert', async () => {
   expect(tree.date_grafted).toBe('2024-03-21');
   expect(tree.date_planted).toBe('2024-03-22');
   expect(tree.date_labeled).toBe('2024-03-24');
-  expect(tree.genuine_seedling).toBe(false);
   expect(tree.note).toBe('This is a note');
   expect(tree.rootstock.name).toBe('Rootstock1');
   expect(tree.grafting.name).toBe('Grafting1');
@@ -254,14 +249,14 @@ test('insert', async () => {
   expect(tree.modified).toBeNull();
 });
 
-test('eliminating prefixes publicid and sets disabled', async () => {
+test('eliminating prefixes label_id and sets disabled', async () => {
   const resp = await post({
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -272,7 +267,7 @@ test('eliminating prefixes publicid and sets disabled', async () => {
           pk_columns: { id: $id }
           _set: { date_eliminated: $date_eliminated }
         ) {
-          publicid
+          label_id
           disabled
         }
       }
@@ -283,40 +278,40 @@ test('eliminating prefixes publicid and sets disabled', async () => {
     },
   });
 
-  expect(eliminated.data.update_trees_by_pk.publicid).toBe('#00000001');
+  expect(eliminated.data.update_trees_by_pk.label_id).toBe('#00000001');
   expect(eliminated.data.update_trees_by_pk.disabled).toBe(true);
 });
 
-test('prevent insertion of non-prefixed publicid if eliminated', async () => {
+test('prevent insertion of non-prefixed label_id if eliminated', async () => {
   const resp = await post({
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
       date_eliminated: '2024-03-23',
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toMatch(
-    "Cannot insert or update a tree with a publicid that is prefixed with a '#' but has no date_eliminated.",
+    "Cannot insert or update a tree with a label_id that is prefixed with a '#' but has no date_eliminated.",
   );
 });
 
-test('prevent insertion of prefixed publicid if not eliminated', async () => {
+test('prevent insertion of prefixed label_id if not eliminated', async () => {
   const resp = await post({
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '#00000001',
+      label_id: '#00000001',
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toMatch(
-    "Cannot insert or update a tree with a publicid that is prefixed with a '#' but has no date_eliminated.",
+    "Cannot insert or update a tree with a label_id that is prefixed with a '#' but has no date_eliminated.",
   );
 });
 
@@ -327,7 +322,7 @@ test('removal of elimination date removes prefix and unsets disabled', async () 
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '#00000001',
+      label_id: '#00000001',
       date_eliminated: '2024-03-23',
     },
   });
@@ -339,7 +334,7 @@ test('removal of elimination date removes prefix and unsets disabled', async () 
           pk_columns: { id: $id }
           _set: { date_eliminated: $date_eliminated }
         ) {
-          publicid
+          label_id
           disabled
         }
       }
@@ -350,18 +345,18 @@ test('removal of elimination date removes prefix and unsets disabled', async () 
     },
   });
 
-  expect(eliminated.data.update_trees_by_pk.publicid).toBe('00000001');
+  expect(eliminated.data.update_trees_by_pk.label_id).toBe('00000001');
   expect(eliminated.data.update_trees_by_pk.disabled).toBe(false);
 });
 
-test('publicid is unique', async () => {
+test('label_id is unique', async () => {
   const resp1 = await post({
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
   const resp2 = await post({
@@ -370,7 +365,7 @@ test('publicid is unique', async () => {
       crossing_name: 'Defg',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -380,14 +375,14 @@ test('publicid is unique', async () => {
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
 
-test('deleted publicid is not unique', async () => {
+test('deleted label_id is not unique', async () => {
   const resp1 = await post({
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '#00000001',
+      label_id: '#00000001',
       date_eliminated: '2024-03-23',
     },
   });
@@ -397,7 +392,7 @@ test('deleted publicid is not unique', async () => {
       crossing_name: 'Defg',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '#00000001',
+      label_id: '#00000001',
       date_eliminated: '2024-03-23',
     },
   });
@@ -410,42 +405,42 @@ test('deleted publicid is not unique', async () => {
   ).toBeGreaterThan(0);
 });
 
-test('publicid is no shorter than 8 digits', async () => {
+test('label_id is no shorter than 8 digits', async () => {
   const resp = await post({
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '1234567',
+      label_id: '1234567',
     },
   });
 
   expect(resp.errors[0].message).toMatch(/Check constraint violation/);
 });
 
-test('publicid is no longer than 8 digits', async () => {
+test('label_id is no longer than 8 digits', async () => {
   const resp = await post({
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '123456789',
+      label_id: '123456789',
     },
   });
 
   expect(resp.errors[0].message).toMatch(/Check constraint violation/);
 });
 
-test('publicid is digits only', async () => {
+test('label_id is digits only', async () => {
   const resp = await post({
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '1234567a',
+      label_id: '1234567a',
     },
   });
 
@@ -459,7 +454,7 @@ test('updated cultivar_name cultivar', async () => {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '12345678',
+      label_id: '12345678',
     },
   });
 
@@ -496,7 +491,7 @@ test('updated cultivar_name tree cultivar_id change', async () => {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '12345678',
+      label_id: '12345678',
     },
   });
 
@@ -531,28 +526,6 @@ test('updated cultivar_name tree cultivar_id change', async () => {
   });
 });
 
-test('genuine_seedling and (rootstock / graftinfg / date grafted) are mutually exclusive', async () => {
-  const resp = await post({
-    query: insertMutation,
-    variables: {
-      crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
-      publicid: '00000001',
-      date_grafted: '2024-03-21',
-      genuine_seedling: true,
-      rootstock_name: 'Rootstock1',
-      grafting_name: 'Grafting1',
-      plant_row_name: 'PlantRow1',
-      orchard_name: 'Orchard1',
-    },
-  });
-
-  expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'A genuine seedling cannot have a rootstock, grafting or grafting date.',
-  );
-});
-
 test('modified', async () => {
   const resp = await post({
     query: insertMutationMinimal,
@@ -560,16 +533,16 @@ test('modified', async () => {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '12345678',
+      label_id: '12345678',
     },
   });
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateTree($id: Int!, $publicid: String!) {
+      mutation UpdateTree($id: Int!, $label_id: String!) {
         update_trees_by_pk(
           pk_columns: { id: $id }
-          _set: { publicid: $publicid }
+          _set: { label_id: $label_id }
         ) {
           id
           modified
@@ -578,7 +551,7 @@ test('modified', async () => {
     `,
     variables: {
       id: resp.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
-      publicid: '01234567',
+      label_id: '01234567',
     },
   });
 
@@ -608,7 +581,7 @@ test('row / serial combo is unique if not eliminated', async () => {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
       plant_row_id: plantRow.data.insert_plant_rows_one.id,
       serial_in_plant_row: 1,
     },
@@ -619,7 +592,7 @@ test('row / serial combo is unique if not eliminated', async () => {
       crossing_name: 'Defg',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000002',
+      label_id: '00000002',
       plant_row_id: plantRow.data.insert_plant_rows_one.id,
       serial_in_plant_row: 1,
     },
@@ -654,7 +627,7 @@ test('row / serial combo not unique if is eliminated', async () => {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '#00000001',
+      label_id: '#00000001',
       date_eliminated: '2024-03-23',
       plant_row_id: plantRow.data.insert_plant_rows_one.id,
       serial_in_plant_row: 1,
@@ -666,7 +639,7 @@ test('row / serial combo not unique if is eliminated', async () => {
       crossing_name: 'Defg',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '#00000002',
+      label_id: '#00000002',
       date_eliminated: '2024-03-23',
       plant_row_id: plantRow.data.insert_plant_rows_one.id,
       serial_in_plant_row: 1,

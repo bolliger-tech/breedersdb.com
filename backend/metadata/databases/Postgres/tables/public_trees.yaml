@@ -15,21 +15,21 @@ object_relationships:
     using:
       foreign_key_constraint_on: rootstock_id
 array_relationships:
-  - name: marks
+  - name: attributions
     using:
       foreign_key_constraint_on:
         column: tree_id
         table:
-          name: marks
+          name: attributions
           schema: public
-  - name: marks_views
+  - name: attributions_views
     using:
       manual_configuration:
         column_mapping:
           id: tree_id
         insertion_order: null
         remote_table:
-          name: marks_view
+          name: attributions_view
           schema: public
   - name: mother_trees
     using:
@@ -48,13 +48,12 @@ insert_permissions:
         - date_labeled
         - date_planted
         - distance_plant_row_start
-        - genuine_seedling
         - geo_location
         - geo_location_accuracy
         - grafting_id
         - note
         - plant_row_id
-        - publicid
+        - label_id
         - rootstock_id
         - serial_in_plant_row
         - cultivar_id
@@ -71,7 +70,6 @@ select_permissions:
         - date_planted
         - disabled
         - distance_plant_row_start
-        - genuine_seedling
         - geo_location
         - geo_location_accuracy
         - grafting_id
@@ -79,7 +77,7 @@ select_permissions:
         - modified
         - note
         - plant_row_id
-        - publicid
+        - label_id
         - rootstock_id
         - serial_in_plant_row
         - cultivar_id
@@ -94,13 +92,12 @@ update_permissions:
         - date_labeled
         - date_planted
         - distance_plant_row_start
-        - genuine_seedling
         - geo_location
         - geo_location_accuracy
         - grafting_id
         - note
         - plant_row_id
-        - publicid
+        - label_id
         - rootstock_id
         - serial_in_plant_row
         - cultivar_id

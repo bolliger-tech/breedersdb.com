@@ -31,6 +31,7 @@ insert_permissions:
         - name
         - father_cultivar_id
         - mother_cultivar_id
+        - note
     comment: ""
 select_permissions:
   - role: user
@@ -40,6 +41,7 @@ select_permissions:
         - father_cultivar_id
         - id
         - mother_cultivar_id
+        - note
         - created
         - modified
       filter: {}
@@ -51,6 +53,7 @@ update_permissions:
         - name
         - father_cultivar_id
         - mother_cultivar_id
+        - note
       filter: {}
       check: {}
     comment: ""

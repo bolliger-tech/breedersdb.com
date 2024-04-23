@@ -5,7 +5,6 @@ import { iso8601dateRegex } from '../utils';
 const insertMutation = /* GraphQL */ `
   mutation InsertMotherTree(
     $name: String!
-    $planned: Boolean
     $date_impregnated: date
     $date_fruits_harvested: date
     $numb_flowers: Int
@@ -21,7 +20,6 @@ const insertMutation = /* GraphQL */ `
     insert_mother_trees_one(
       object: {
         name: $name
-        planned: $planned
         date_impregnated: $date_impregnated
         date_fruits_harvested: $date_fruits_harvested
         numb_flowers: $numb_flowers
@@ -41,7 +39,6 @@ const insertMutation = /* GraphQL */ `
     ) {
       id
       name
-      planned
       date_impregnated
       date_fruits_harvested
       numb_flowers
@@ -83,11 +80,11 @@ const insertTreeMutation = /* GraphQL */ `
     $crossing_name: String!
     $lot_name_segment: String!
     $cultivar_name_segment: String!
-    $publicid: String!
+    $label_id: String!
   ) {
     insert_trees_one(
       object: {
-        publicid: $publicid
+        label_id: $label_id
         cultivar: {
           data: {
             name_segment: $cultivar_name_segment
@@ -186,7 +183,7 @@ test('insert', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -204,7 +201,6 @@ test('insert', async () => {
     query: insertMutation,
     variables: {
       name: 'Mother tree 1',
-      planned: true,
       date_impregnated: '2021-01-02',
       date_fruits_harvested: '2021-01-03',
       numb_flowers: 2,
@@ -221,7 +217,6 @@ test('insert', async () => {
 
   expect(resp.data.insert_mother_trees_one.id).toBeGreaterThan(0);
   expect(resp.data.insert_mother_trees_one.name).toBe('Mother tree 1');
-  expect(resp.data.insert_mother_trees_one.planned).toBe(true);
   expect(resp.data.insert_mother_trees_one.date_impregnated).toBe('2021-01-02');
   expect(resp.data.insert_mother_trees_one.date_fruits_harvested).toBe(
     '2021-01-03',
@@ -275,7 +270,7 @@ test('insert with contradicting tree cultivar', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -283,7 +278,6 @@ test('insert with contradicting tree cultivar', async () => {
     query: insertMutation,
     variables: {
       name: 'Mother tree 1',
-      planned: true,
       date_impregnated: '2021-01-02',
       date_fruits_harvested: '2021-01-03',
       numb_flowers: 2,
@@ -329,7 +323,7 @@ test('insert with contradicting pollen cultivar', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -347,7 +341,6 @@ test('insert with contradicting pollen cultivar', async () => {
     query: insertMutation,
     variables: {
       name: 'Mother tree 1',
-      planned: true,
       date_impregnated: '2021-01-02',
       date_fruits_harvested: '2021-01-03',
       numb_flowers: 2,
@@ -374,7 +367,7 @@ test('insert name is unique', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -382,7 +375,6 @@ test('insert name is unique', async () => {
     query: insertMutation,
     variables: {
       name: 'Mother tree 1',
-      planned: true,
       tree_id: tree.data.insert_trees_one.id,
       crossing_name: 'C2',
       crossing_mother_cultivar_id: tree.data.insert_trees_one.cultivar.id,
@@ -393,7 +385,6 @@ test('insert name is unique', async () => {
     query: insertMutation,
     variables: {
       name: 'Mother tree 1',
-      planned: true,
       tree_id: tree.data.insert_trees_one.id,
       crossing_name: 'C2',
       crossing_mother_cultivar_id: tree.data.insert_trees_one.cultivar.id,
@@ -411,7 +402,7 @@ test('insert name is required', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -419,7 +410,6 @@ test('insert name is required', async () => {
     query: insertMutation,
     variables: {
       name: '',
-      planned: true,
       tree_id: tree.data.insert_trees_one.id,
       crossing_name: 'C2',
       crossing_mother_cultivar_id: tree.data.insert_trees_one.cultivar.id,
@@ -436,7 +426,7 @@ test('modified', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -444,7 +434,6 @@ test('modified', async () => {
     query: insertMutation,
     variables: {
       name: 'Mother tree 1',
-      planned: false,
       tree_id: tree.data.insert_trees_one.id,
       crossing_name: 'C2',
       crossing_mother_cultivar_id: tree.data.insert_trees_one.cultivar.id,

@@ -1,20 +1,20 @@
 table:
-  name: mark_form_fields
+  name: attribution_form_fields
   schema: public
 object_relationships:
-  - name: mark_attribute
+  - name: attribute
     using:
-      foreign_key_constraint_on: mark_attribute_id
-  - name: mark_form
+      foreign_key_constraint_on: attribute_id
+  - name: attribution_form
     using:
-      foreign_key_constraint_on: mark_form_id
+      foreign_key_constraint_on: attribution_form_id
 insert_permissions:
   - role: user
     permission:
       check: {}
       columns:
-        - mark_form_id
-        - mark_attribute_id
+        - attribution_form_id
+        - attribute_id
         - priority
     comment: ""
 select_permissions:
@@ -22,8 +22,8 @@ select_permissions:
     permission:
       columns:
         - id
-        - mark_form_id
-        - mark_attribute_id
+        - attribution_form_id
+        - attribute_id
         - priority
         - created
         - modified
@@ -33,8 +33,8 @@ update_permissions:
   - role: user
     permission:
       columns:
-        - mark_form_id
-        - mark_attribute_id
+        - attribution_form_id
+        - attribute_id
         - priority
       filter: {}
       check: {}

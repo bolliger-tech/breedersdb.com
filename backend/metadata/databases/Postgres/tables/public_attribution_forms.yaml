@@ -1,20 +1,20 @@
 table:
-  name: mark_forms
+  name: attribution_forms
   schema: public
 array_relationships:
-  - name: mark_form_fields
+  - name: attribution_form_fields
     using:
       foreign_key_constraint_on:
-        column: mark_form_id
+        column: attribution_form_id
         table:
-          name: mark_form_fields
+          name: attribution_form_fields
           schema: public
-  - name: marks
+  - name: attributions
     using:
       foreign_key_constraint_on:
-        column: mark_form_id
+        column: attribution_form_id
         table:
-          name: marks
+          name: attributions
           schema: public
 insert_permissions:
   - role: user

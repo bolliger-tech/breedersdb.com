@@ -6,28 +6,28 @@ object_relationships:
     using:
       foreign_key_constraint_on: crossing_id
 array_relationships:
-  - name: cultivars
+  - name: attributions
     using:
       foreign_key_constraint_on:
         column: lot_id
         table:
-          name: cultivars
+          name: attributions
           schema: public
-  - name: marks
-    using:
-      foreign_key_constraint_on:
-        column: lot_id
-        table:
-          name: marks
-          schema: public
-  - name: marks_views
+  - name: attributions_views
     using:
       manual_configuration:
         column_mapping:
           id: lot_id
         insertion_order: null
         remote_table:
-          name: marks_view
+          name: attributions_view
+          schema: public
+  - name: cultivars
+    using:
+      foreign_key_constraint_on:
+        column: lot_id
+        table:
+          name: cultivars
           schema: public
 insert_permissions:
   - role: user
@@ -40,8 +40,8 @@ insert_permissions:
         - date_sowed
         - note
         - numb_seeds_sowed
-        - numb_sprouts_grown
-        - numb_sprouts_planted
+        - numb_seedlings_grown
+        - numb_seedlings_planted
         - patch
         - seed_tray
     comment: ""
@@ -55,8 +55,8 @@ select_permissions:
         - crossing_id
         - id
         - numb_seeds_sowed
-        - numb_sprouts_grown
-        - numb_sprouts_planted
+        - numb_seedlings_grown
+        - numb_seedlings_planted
         - note
         - patch
         - seed_tray
@@ -75,8 +75,8 @@ update_permissions:
         - date_sowed
         - note
         - numb_seeds_sowed
-        - numb_sprouts_grown
-        - numb_sprouts_planted
+        - numb_seedlings_grown
+        - numb_seedlings_planted
         - patch
         - seed_tray
       filter: {}

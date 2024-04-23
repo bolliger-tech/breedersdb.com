@@ -8,10 +8,10 @@ const insertMutation = /* GraphQL */ `
     $name_segment: String
     $date_sowed: date
     $numb_seeds_sowed: Int
-    $numb_sprouts_grown: Int
+    $numb_seedlings_grown: Int
     $seed_tray: String
     $date_planted: date
-    $numb_sprouts_planted: Int
+    $numb_seedlings_planted: Int
     $patch: String
     $note: String
   ) {
@@ -23,10 +23,10 @@ const insertMutation = /* GraphQL */ `
             name_segment: $name_segment
             date_sowed: $date_sowed
             numb_seeds_sowed: $numb_seeds_sowed
-            numb_sprouts_grown: $numb_sprouts_grown
+            numb_seedlings_grown: $numb_seedlings_grown
             seed_tray: $seed_tray
             date_planted: $date_planted
-            numb_sprouts_planted: $numb_sprouts_planted
+            numb_seedlings_planted: $numb_seedlings_planted
             patch: $patch
             note: $note
           }
@@ -41,10 +41,10 @@ const insertMutation = /* GraphQL */ `
         name
         date_sowed
         numb_seeds_sowed
-        numb_sprouts_grown
+        numb_seedlings_grown
         seed_tray
         date_planted
-        numb_sprouts_planted
+        numb_seedlings_planted
         patch
         note
         created
@@ -78,10 +78,10 @@ test('insert', async () => {
       name_segment: '24A',
       date_sowed: date,
       numb_seeds_sowed: 100,
-      numb_sprouts_grown: 90,
+      numb_seedlings_grown: 90,
       seed_tray: 'A1',
       date_planted: date,
-      numb_sprouts_planted: 80,
+      numb_seedlings_planted: 80,
       patch: 'Patch1',
       note: 'This is a note',
     },
@@ -92,10 +92,12 @@ test('insert', async () => {
   expect(resp.data.insert_crossings_one.lots[0].name).toBe('Abcd.24A');
   expect(resp.data.insert_crossings_one.lots[0].date_sowed).toBe(date);
   expect(resp.data.insert_crossings_one.lots[0].numb_seeds_sowed).toBe(100);
-  expect(resp.data.insert_crossings_one.lots[0].numb_sprouts_grown).toBe(90);
+  expect(resp.data.insert_crossings_one.lots[0].numb_seedlings_grown).toBe(90);
   expect(resp.data.insert_crossings_one.lots[0].seed_tray).toBe('A1');
   expect(resp.data.insert_crossings_one.lots[0].date_planted).toBe(date);
-  expect(resp.data.insert_crossings_one.lots[0].numb_sprouts_planted).toBe(80);
+  expect(resp.data.insert_crossings_one.lots[0].numb_seedlings_planted).toBe(
+    80,
+  );
   expect(resp.data.insert_crossings_one.lots[0].patch).toBe('Patch1');
   expect(resp.data.insert_crossings_one.lots[0].note).toBe('This is a note');
   expect(resp.data.insert_crossings_one.lots[0].created).toMatch(

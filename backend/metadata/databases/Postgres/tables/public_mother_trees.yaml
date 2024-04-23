@@ -24,7 +24,6 @@ insert_permissions:
         - numb_flowers
         - numb_fruits
         - numb_seeds
-        - planned
         - pollen_id
         - tree_id
     comment: ""
@@ -32,7 +31,6 @@ select_permissions:
   - role: user
     permission:
       columns:
-        - planned
         - name
         - date_fruits_harvested
         - date_impregnated
@@ -60,7 +58,6 @@ update_permissions:
         - numb_flowers
         - numb_fruits
         - numb_seeds
-        - planned
         - pollen_id
         - tree_id
       filter: {}

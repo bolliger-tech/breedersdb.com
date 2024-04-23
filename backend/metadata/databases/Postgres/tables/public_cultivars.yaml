@@ -6,6 +6,22 @@ object_relationships:
     using:
       foreign_key_constraint_on: lot_id
 array_relationships:
+  - name: attributions
+    using:
+      foreign_key_constraint_on:
+        column: cultivar_id
+        table:
+          name: attributions
+          schema: public
+  - name: attributions_views
+    using:
+      manual_configuration:
+        column_mapping:
+          id: combined_cultivar_id
+        insertion_order: null
+        remote_table:
+          name: attributions_view
+          schema: public
   - name: crossings
     using:
       foreign_key_constraint_on:
@@ -19,22 +35,6 @@ array_relationships:
         column: mother_cultivar_id
         table:
           name: crossings
-          schema: public
-  - name: marks
-    using:
-      foreign_key_constraint_on:
-        column: cultivar_id
-        table:
-          name: marks
-          schema: public
-  - name: marks_views
-    using:
-      manual_configuration:
-        column_mapping:
-          id: combined_cultivar_id
-        insertion_order: null
-        remote_table:
-          name: marks_view
           schema: public
   - name: pollens
     using:
@@ -58,7 +58,7 @@ insert_permissions:
         - acronym
         - lot_id
         - name_segment
-        - description
+        - note
         - common_name
         - breeder
         - registration
@@ -71,7 +71,7 @@ select_permissions:
         - name_segment
         - lot_id
         - id
-        - description
+        - note
         - common_name
         - breeder
         - registration
@@ -87,7 +87,7 @@ update_permissions:
         - acronym
         - lot_id
         - name_segment
-        - description
+        - note
         - common_name
         - breeder
         - registration

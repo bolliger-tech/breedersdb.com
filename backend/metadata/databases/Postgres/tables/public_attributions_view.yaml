@@ -1,7 +1,16 @@
 table:
-  name: marks_view
+  name: attributions_view
   schema: public
 object_relationships:
+  - name: attribute
+    using:
+      manual_configuration:
+        column_mapping:
+          attribute_id: id
+        insertion_order: null
+        remote_table:
+          name: attributes
+          schema: public
   - name: cultivar
     using:
       manual_configuration:
@@ -19,15 +28,6 @@ object_relationships:
         insertion_order: null
         remote_table:
           name: lots
-          schema: public
-  - name: mark_attribute
-    using:
-      manual_configuration:
-        column_mapping:
-          mark_attribute_id: id
-        insertion_order: null
-        remote_table:
-          name: mark_attributes
           schema: public
   - name: tree
     using:
@@ -48,19 +48,19 @@ select_permissions:
         - created
         - cultivar_id
         - data_type
-        - date_marked
+        - date_attributed
         - date_value
-        - exceptional_mark
+        - exceptional_attribution
         - float_value
         - geo_location
         - geo_location_accuracy
         - id
         - integer_value
         - lot_id
-        - mark_attribute_id
-        - mark_attribute_name
-        - mark_id
-        - mark_type
+        - attribute_id
+        - attribute_name
+        - attribution_id
+        - attribute_type
         - modified
         - note
         - text_value

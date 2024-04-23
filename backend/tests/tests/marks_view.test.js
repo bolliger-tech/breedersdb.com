@@ -28,7 +28,7 @@ const attributionsViewFields = /* GraphQL */ `
     }
     tree {
       id
-      publicid
+      label_id
       cultivar_name
     }
     geo_location
@@ -121,9 +121,9 @@ const insertCultivar = /* GraphQL */ `
 `;
 
 const insertTree = /* GraphQL */ `
-  mutation InsertTree($publicid: String!, $cultivar_id: Int!) {
+  mutation InsertTree($label_id: String!, $cultivar_id: Int!) {
     insert_trees_one(
-      object: { publicid: $publicid, cultivar_id: $cultivar_id }
+      object: { label_id: $label_id, cultivar_id: $cultivar_id }
     ) {
       id
     }
@@ -270,7 +270,7 @@ async function insert_attribute_value_with_associated_data({
   crossing_name = 'Cross1',
   lot_name_segment = '24A',
   cultivar_name_segment = '001',
-  tree_publicid = '00000001',
+  tree_label_id = '00000001',
   attribution_form_name = 'Form 1',
   attribute_name = 'Attribute 1',
   attribute_data_type = 'INTEGER',
@@ -312,7 +312,7 @@ async function insert_attribute_value_with_associated_data({
   const tree = await post({
     query: insertTree,
     variables: {
-      publicid: tree_publicid,
+      label_id: tree_label_id,
       cultivar_id: cultivar.data.insert_cultivars_one.id,
     },
   });

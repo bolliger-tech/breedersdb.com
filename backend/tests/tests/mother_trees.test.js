@@ -80,11 +80,11 @@ const insertTreeMutation = /* GraphQL */ `
     $crossing_name: String!
     $lot_name_segment: String!
     $cultivar_name_segment: String!
-    $publicid: String!
+    $label_id: String!
   ) {
     insert_trees_one(
       object: {
-        publicid: $publicid
+        label_id: $label_id
         cultivar: {
           data: {
             name_segment: $cultivar_name_segment
@@ -183,7 +183,7 @@ test('insert', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -270,7 +270,7 @@ test('insert with contradicting tree cultivar', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -323,7 +323,7 @@ test('insert with contradicting pollen cultivar', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -367,7 +367,7 @@ test('insert name is unique', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -402,7 +402,7 @@ test('insert name is required', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 
@@ -426,7 +426,7 @@ test('modified', async () => {
       crossing_name: 'C1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
-      publicid: '00000001',
+      label_id: '00000001',
     },
   });
 

@@ -80,7 +80,7 @@ const my_query = {
         level: 1,
         children: [],
         filterRule: {
-          column: 'TreesView.publicid',
+          column: 'TreesView.label_id',
           isValid: true,
           criteria: '#',
           comparator: {
@@ -123,7 +123,7 @@ const my_query = {
   },
   visibleColumns: [
     'TreesView.convar',
-    'TreesView.publicid',
+    'TreesView.label_id',
     'TreesView.row',
     'TreesView.offset',
     'Attribution.5-none',

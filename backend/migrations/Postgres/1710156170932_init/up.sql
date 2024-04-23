@@ -350,7 +350,7 @@ execute function trim_strings('name', 'note');
 create table trees
 (
     id                       integer primary key generated always as identity,
-    publicid                 varchar(9)               not null check ( publicid ~ '^#?[[:digit:]]{8}$' ),
+    label_id                 varchar(9)               not null check ( label_id ~ '^#?[[:digit:]]{8}$' ),
     cultivar_id              int                      not null references cultivars,
     cultivar_name            varchar(58)              not null,
     plant_row_id             int references plant_rows,
@@ -376,8 +376,8 @@ comment on column trees.geo_location_accuracy is 'Meters';
 comment on column trees.geo_location is 'SRID:4326'; -- default for GPS coordinates
 comment on column trees.disabled is 'Derived from date_eliminated.';
 
-create index on trees (publicid);
-create unique index on trees (publicid) where publicid not like '#%';
+create index on trees (label_id);
+create unique index on trees (label_id) where label_id not like '#%';
 create index on trees (cultivar_id);
 create index on trees (cultivar_name);
 create index on trees using gin (cultivar_name gin_trgm_ops);
@@ -400,60 +400,60 @@ create trigger update_trees_modified
 execute function modified_column();
 
 create trigger trim_trees
-    before insert or update of publicid, note
+    before insert or update of label_id, note
     on trees
     for each row
-execute function trim_strings('publicid', 'note');
+execute function trim_strings('label_id', 'note');
 
--- prefix publicid when date_eliminated is set
-create or replace function prefix_publicid_on_elimination() returns trigger as
+-- prefix label_id when date_eliminated is set
+create or replace function prefix_label_id_on_elimination() returns trigger as
 $$
 begin
-    if new.date_eliminated is not null and new.publicid not like '#%' then new.publicid := '#' || new.publicid; end if;
+    if new.date_eliminated is not null and new.label_id not like '#%' then new.label_id := '#' || new.label_id; end if;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger prefix_publicid
-    before update of publicid, date_eliminated
+create trigger prefix_label_id
+    before update of label_id, date_eliminated
     on trees
     for each row
-execute function prefix_publicid_on_elimination();
+execute function prefix_label_id_on_elimination();
 
--- remove prefix from publicid when date_eliminated is null
-create or replace function remove_publicid_prefix_on_revival() returns trigger as
+-- remove prefix from label_id when date_eliminated is null
+create or replace function remove_label_id_prefix_on_revival() returns trigger as
 $$
 begin
-    if new.date_eliminated is null and new.publicid like '#%' then
-        new.publicid := substring(new.publicid from 2 for length(new.publicid) - 1);
+    if new.date_eliminated is null and new.label_id like '#%' then
+        new.label_id := substring(new.label_id from 2 for length(new.label_id) - 1);
     end if;
     return new;
 end;
 $$ language plpgsql;
 
 create trigger remove_prefix
-    before update of publicid, date_eliminated
+    before update of label_id, date_eliminated
     on trees
     for each row
-execute function remove_publicid_prefix_on_revival();
+execute function remove_label_id_prefix_on_revival();
 
--- prevent insertion or update of a tree with a publicid that is prefixed with a '#' but has no date_eliminated
-create or replace function prevent_invalid_publicid() returns trigger as
+-- prevent insertion or update of a tree with a label_id that is prefixed with a '#' but has no date_eliminated
+create or replace function prevent_invalid_label_id() returns trigger as
 $$
 begin
-    if new.publicid like '#%' and new.date_eliminated is null or
-       new.publicid not like '#%' and new.date_eliminated is not null then
-        raise exception 'Cannot insert or update a tree with a publicid that is prefixed with a ''#'' but has no date_eliminated.';
+    if new.label_id like '#%' and new.date_eliminated is null or
+       new.label_id not like '#%' and new.date_eliminated is not null then
+        raise exception 'Cannot insert or update a tree with a label_id that is prefixed with a ''#'' but has no date_eliminated.';
     end if;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger prevent_invalid_publicid
-    before insert -- update handled by triggers prefix_publicid and remove_prefix
+create trigger prevent_invalid_label_id
+    before insert -- update handled by triggers prefix_label_id and remove_prefix
     on trees
     for each row
-execute function prevent_invalid_publicid();
+execute function prevent_invalid_label_id();
 
 -- set cultivar_name for changes on trees table
 create or replace function trees_set_cultivar_name() returns trigger as

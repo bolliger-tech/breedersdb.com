@@ -34,7 +34,7 @@ const insertMutation = /* GraphQL */ `
       }
       tree {
         id
-        publicid
+        label_id
       }
       cultivar {
         id
@@ -54,14 +54,14 @@ const insertMutation = /* GraphQL */ `
 
 const insertTreeMutation = /* GraphQL */ `
   mutation InsertTree(
-    $publicid: String!
+    $label_id: String!
     $cultivar_name_segment: String!
     $lot_name_segment: String!
     $crossing_name: String!
   ) {
     insert_trees_one(
       object: {
-        publicid: $publicid
+        label_id: $label_id
         cultivar: {
           data: {
             name_segment: $cultivar_name_segment
@@ -117,7 +117,7 @@ test('insert', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: '00000001',
+      label_id: '00000001',
       cultivar_name_segment: '001',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
@@ -147,7 +147,7 @@ test('insert', async () => {
   expect(resp.data.insert_attributions_one.attribution_form.name).toBe(
     'Attribution Form 1',
   );
-  expect(resp.data.insert_attributions_one.tree.publicid).toBe('00000001');
+  expect(resp.data.insert_attributions_one.tree.label_id).toBe('00000001');
   expect(resp.data.insert_attributions_one.cultivar).toBeNull();
   expect(resp.data.insert_attributions_one.lot).toBeNull();
   expect(resp.data.insert_attributions_one.geo_location).toMatchObject({
@@ -163,7 +163,7 @@ test('author is required', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: '00000001',
+      label_id: '00000001',
       cultivar_name_segment: '001',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
@@ -187,7 +187,7 @@ test('date_attributed is required', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: '00000001',
+      label_id: '00000001',
       cultivar_name_segment: '001',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
@@ -211,7 +211,7 @@ test('has attribution object', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: '00000001',
+      label_id: '00000001',
       cultivar_name_segment: '001',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
@@ -236,7 +236,7 @@ test('has exclusively one tree', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: '00000001',
+      label_id: '00000001',
       cultivar_name_segment: '001',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
@@ -263,7 +263,7 @@ test('has exclusively one cultivar', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: '00000001',
+      label_id: '00000001',
       cultivar_name_segment: '001',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
@@ -290,7 +290,7 @@ test('has exclusively one lot', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: '00000001',
+      label_id: '00000001',
       cultivar_name_segment: '001',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',
@@ -317,7 +317,7 @@ test('modified', async () => {
   const tree = await post({
     query: insertTreeMutation,
     variables: {
-      publicid: '00000001',
+      label_id: '00000001',
       cultivar_name_segment: '001',
       lot_name_segment: '24A',
       crossing_name: 'Cross1',

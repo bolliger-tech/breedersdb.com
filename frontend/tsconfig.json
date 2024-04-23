@@ -1,0 +1,39 @@
+{
+  "extends": "@quasar/app-vite/tsconfig-preset",
+  "compilerOptions": {
+    "noErrorTruncation": true,
+    "baseUrl": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+
+    // Set `sourceRoot` to  "/" to strip the build path prefix
+    // from generated source code references.
+    // This improves issue grouping in Sentry.
+    "sourceRoot": "/",
+
+    // gql.tada: Let the GraphQLSP (@0no-co/graphqlsp) generate the types
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": {
+          "url": "http://localhost:8080/v1/graphql",
+          "headers": {
+            // see ../backend/.env
+            // never use the production secret here
+            // this is only for development
+            "x-hasura-admin-secret": "changeForProduction"
+          }
+        },
+        "tadaOutputLocation": "./src/graphql-env.d.ts"
+      }
+    ]
+  },
+  "exclude": [
+    "./dist",
+    "./.quasar",
+    "./node_modules",
+    "./src-capacitor",
+    "./src-cordova",
+    "./quasar.config.*.temporary.compiled*"
+  ]
+}

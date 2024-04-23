@@ -1,0 +1,27 @@
+// app global css in SCSS form
+
+:root {
+  --q-primary-contrast: #{$primary-contrast};
+  --q-text-muted: #{$text-muted};
+  --q-bg-muted: #{$bg-muted};
+}
+
+.text-muted {
+  color: var(--q-text-muted);
+}
+
+.bg-muted {
+  background-color: var(--q-bg-muted);
+}
+
+.text-primary-contrast {
+  color: var(--q-primary-contrast);
+}
+
+.bg-primary-contrast {
+  background-color: var(--q-primary-contrast);
+}
+
+.align-center {
+  align-items: center;
+}

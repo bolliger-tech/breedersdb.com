@@ -362,7 +362,6 @@ create table trees
     date_planted             date,
     date_eliminated          date,
     date_labeled             date,
-    uncloned_seedling        boolean                           default false not null,
     note                     varchar(2047),
     rootstock_id             int references rootstocks,
     grafting_id              int references graftings,
@@ -389,7 +388,6 @@ create index on trees (date_grafted);
 create index on trees (date_planted);
 create index on trees (date_eliminated);
 create index on trees (date_labeled);
-create index on trees (uncloned_seedling);
 create index on trees (rootstock_id);
 create index on trees (grafting_id);
 create index on trees (disabled);
@@ -456,25 +454,6 @@ create trigger prevent_invalid_publicid
     on trees
     for each row
 execute function prevent_invalid_publicid();
-
--- prevent insertion or update of a tree as uncloned_seedling that has a rootstock, grafting or grafting_date
-create or replace function check_uncloned_seedling() returns trigger as
-$$
-begin
-    if new.uncloned_seedling = true and
-       (new.rootstock_id is not null or new.grafting_id is not null or new.date_grafted is not null) then
-        raise exception 'A genuine seedling cannot have a rootstock, grafting or grafting date.';
-    end if;
-    return new;
-end;
-$$ language plpgsql;
-
-create trigger check_uncloned_seedling
-    before insert or update of uncloned_seedling, rootstock_id, grafting_id
-    on trees
-    for each row
-execute function check_uncloned_seedling();
-
 
 -- set cultivar_name for changes on trees table
 create or replace function trees_set_cultivar_name() returns trigger as

@@ -24,7 +24,6 @@ lots {
       date_planted
       date_eliminated
       date_labeled
-      uncloned_seedling
       note
       rootstock {
         id
@@ -72,7 +71,6 @@ mutation InsertTree(
   $date_planted: date,
   $date_eliminated: date,
   $date_labeled: date,
-  $uncloned_seedling: Boolean,
   $note: String
   ) {
   insert_crossings_one(object: {
@@ -91,7 +89,6 @@ mutation InsertTree(
           date_planted: $date_planted,
           date_eliminated: $date_eliminated,
           date_labeled: $date_labeled,
-          uncloned_seedling: $uncloned_seedling,
           note: $note
           rootstock: {data: {
             name: $rootstock_name
@@ -220,7 +217,6 @@ test('insert', async () => {
       date_grafted: '2024-03-21',
       date_planted: '2024-03-22',
       date_labeled: '2024-03-24',
-      uncloned_seedling: false,
       note: 'This is a note',
       rootstock_name: 'Rootstock1',
       grafting_name: 'Grafting1',
@@ -243,7 +239,6 @@ test('insert', async () => {
   expect(tree.date_grafted).toBe('2024-03-21');
   expect(tree.date_planted).toBe('2024-03-22');
   expect(tree.date_labeled).toBe('2024-03-24');
-  expect(tree.uncloned_seedling).toBe(false);
   expect(tree.note).toBe('This is a note');
   expect(tree.rootstock.name).toBe('Rootstock1');
   expect(tree.grafting.name).toBe('Grafting1');
@@ -529,28 +524,6 @@ test('updated cultivar_name tree cultivar_id change', async () => {
       cultivar_id: newCultivar.data.insert_cultivars_one.id,
     },
   });
-});
-
-test('uncloned_seedling and (rootstock / graftinfg / date grafted) are mutually exclusive', async () => {
-  const resp = await post({
-    query: insertMutation,
-    variables: {
-      crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
-      publicid: '00000001',
-      date_grafted: '2024-03-21',
-      uncloned_seedling: true,
-      rootstock_name: 'Rootstock1',
-      grafting_name: 'Grafting1',
-      plant_row_name: 'PlantRow1',
-      orchard_name: 'Orchard1',
-    },
-  });
-
-  expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'A genuine seedling cannot have a rootstock, grafting or grafting date.',
-  );
 });
 
 test('modified', async () => {

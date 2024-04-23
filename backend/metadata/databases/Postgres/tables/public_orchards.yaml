@@ -1,0 +1,44 @@
+table:
+  name: orchards
+  schema: public
+array_relationships:
+  - name: plant_rows
+    using:
+      foreign_key_constraint_on:
+        column: orchard_id
+        table:
+          name: plant_rows
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - disabled
+        - name
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - created
+        - disabled
+        - id
+        - modified
+        - name
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - disabled
+        - name
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

@@ -1,0 +1,61 @@
+table:
+  name: crossings
+  schema: public
+object_relationships:
+  - name: father_cultivar
+    using:
+      foreign_key_constraint_on: father_cultivar_id
+  - name: mother_cultivar
+    using:
+      foreign_key_constraint_on: mother_cultivar_id
+array_relationships:
+  - name: lots
+    using:
+      foreign_key_constraint_on:
+        column: crossing_id
+        table:
+          name: lots
+          schema: public
+  - name: mother_trees
+    using:
+      foreign_key_constraint_on:
+        column: crossing_id
+        table:
+          name: mother_trees
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - name
+        - father_cultivar_id
+        - mother_cultivar_id
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - name
+        - father_cultivar_id
+        - id
+        - mother_cultivar_id
+        - created
+        - modified
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - name
+        - father_cultivar_id
+        - mother_cultivar_id
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

@@ -1,0 +1,54 @@
+table:
+  name: mark_forms
+  schema: public
+array_relationships:
+  - name: mark_form_fields
+    using:
+      foreign_key_constraint_on:
+        column: mark_form_id
+        table:
+          name: mark_form_fields
+          schema: public
+  - name: marks
+    using:
+      foreign_key_constraint_on:
+        column: mark_form_id
+        table:
+          name: marks
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - description
+        - disabled
+        - name
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - created
+        - description
+        - disabled
+        - id
+        - modified
+        - name
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - description
+        - disabled
+        - name
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

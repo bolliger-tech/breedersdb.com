@@ -1,0 +1,58 @@
+table:
+  name: plant_rows
+  schema: public
+object_relationships:
+  - name: orchard
+    using:
+      foreign_key_constraint_on: orchard_id
+array_relationships:
+  - name: trees
+    using:
+      foreign_key_constraint_on:
+        column: plant_row_id
+        table:
+          name: trees
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - date_created
+        - date_eliminated
+        - orchard_id
+        - name
+        - note
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - created
+        - date_created
+        - date_eliminated
+        - disabled
+        - id
+        - modified
+        - name
+        - note
+        - orchard_id
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - date_created
+        - date_eliminated
+        - orchard_id
+        - name
+        - note
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

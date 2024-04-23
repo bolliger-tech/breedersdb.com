@@ -1,0 +1,39 @@
+table:
+  name: mark_types
+  schema: public
+is_enum: true
+array_relationships:
+  - name: mark_attributes
+    using:
+      foreign_key_constraint_on:
+        column: mark_type
+        table:
+          name: mark_attributes
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - enum
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - enum
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - enum
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

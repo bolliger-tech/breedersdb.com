@@ -1,0 +1,22 @@
+{
+  "graphql-config.dotEnvPath": "backend/.env",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": ["source.fixAll.eslint"],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
+  "typescript.tsdk": "frontend/node_modules/typescript/lib",
+  "spellright.language": ["en"],
+  "spellright.documentTypes": [
+    "javascript",
+    "typescript",
+    "markdown",
+    "plaintext",
+    "jsonc",
+    "vue",
+    "html",
+    "css",
+    "graphql",
+    "yaml",
+    "dockerfile"
+  ]
+}

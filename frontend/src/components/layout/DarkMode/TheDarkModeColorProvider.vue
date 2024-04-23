@@ -8,6 +8,8 @@ import { watch } from 'vue';
 import { setCssVar } from 'quasar';
 import { onMounted } from 'vue';
 
+const DARK_MODE_KEY = 'darkMode';
+
 const $q = useQuasar();
 
 function setColors(isDark: boolean) {
@@ -18,10 +20,16 @@ function setColors(isDark: boolean) {
 
 watch(
   () => $q.dark.isActive,
-  (isDark) => setColors(isDark),
+  (isDark) => {
+    setColors(isDark);
+    $q.localStorage.set(DARK_MODE_KEY, isDark);
+  },
 );
 
 onMounted(() => {
+  if ($q.localStorage.has(DARK_MODE_KEY)) {
+    $q.dark.set($q.localStorage.getItem(DARK_MODE_KEY) === true);
+  }
   setColors($q.dark.isActive);
 });
 </script>

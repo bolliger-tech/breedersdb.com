@@ -1,62 +1,14 @@
-const messages = {
-  base: {
-    loading: 'Loading...',
-    suspenseWithError: {
-      reload: 'Reload page',
-      title: 'Error',
-    },
-  },
-  layout: {
-    nav: {
-      trees: {
-        main: 'Trees',
-        list: 'List',
-        new: 'New',
-      },
-      groups: {
-        main: 'Groups',
-        list: 'List',
-        new: 'New',
-      },
-      cultivars: { main: 'Cultivars' },
-      lots: { main: 'Lots' },
-      crossings: { main: 'Crossings' },
-      more: { main: 'More' },
-    },
-  },
-  errorNotFound: {
-    title: 'Nothing here!',
-    message: 'The page you are looking for does not exist.',
-  },
-};
+import { base } from './base';
+import { nav } from './nav';
+import { errorNotFound } from './error-not-found';
+import { trees } from './trees';
+import { datetimeFormats } from './datetime-formats';
 
-const datetimeFormats = {
-  ymd: {
-    year: '2-digit',
-    month: '2-digit',
-    day: '2-digit',
-  },
-  Ymd: {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  },
-  ymdHis: {
-    year: '2-digit',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  },
-  YmdHis: {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  },
+const messages = {
+  base,
+  nav,
+  errorNotFound,
+  trees,
 };
 
 export default { messages, datetimeFormats };

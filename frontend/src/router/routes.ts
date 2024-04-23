@@ -13,6 +13,14 @@ const routes: RouteRecordRaw[] = [
         ],
       },
 
+      {
+        path: 'dev',
+        children: [
+          { path: '', component: () => import('pages/Dev/IndexPage.vue') },
+          { path: 'typo', component: () => import('pages/Dev/TypoPage.vue') },
+        ],
+      },
+
       // Always leave this as last one,
       // but you can also remove it
       {

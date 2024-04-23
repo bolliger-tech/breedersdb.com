@@ -1,9 +1,18 @@
 // app global css in SCSS form
-
 :root {
   --q-primary-contrast: #{$primary-contrast};
   --q-text-muted: #{$text-muted};
   --q-bg-muted: #{$bg-muted};
+  --q-link-color: #{$link-color};
+  --q-link-color-hover: #{$link-hover-color};
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/montserrat.woff2) format('woff2');
 }
 
 .text-muted {
@@ -24,4 +33,36 @@
 
 .align-center {
   align-items: center;
+}
+
+h1,
+.text-h1,
+h2,
+.text-h2,
+h3,
+.text-h3,
+h4,
+.text-h4,
+h5,
+.text-h5,
+h6,
+.text-h6,
+.text-subtitle1,
+.text-subtitle2 {
+  font-family: 'Montserrat', sans-serif;
+}
+
+p {
+  size: map-get($map: $body1, $key: 'size');
+  line-height: map-get($map: $body1, $key: 'line-height');
+  letter-spacing: map-get($map: $body1, $key: 'letter-spacing');
+  font-weight: map-get($map: $body1, $key: 'weight');
+}
+
+a {
+  color: var(--q-link-color);
+
+  &:hover {
+    color: var(--q-link-color-hover);
+  }
 }

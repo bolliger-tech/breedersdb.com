@@ -16,6 +16,8 @@ function setColors(isDark: boolean) {
   setCssVar('primary', isDark ? '#0f636b' : '#093a3e');
   setCssVar('secondary', isDark ? '#0074bd' : '#00558a');
   setCssVar('accent', isDark ? '#ff85d8' : '#b8007d');
+  setCssVar('link-color', isDark ? '#32d3e2' : '#168d97');
+  setCssVar('link-color-hover', isDark ? '#8be6ee' : '#093a3e');
 }
 
 watch(

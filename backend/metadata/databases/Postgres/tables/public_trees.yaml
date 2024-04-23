@@ -1,0 +1,111 @@
+table:
+  name: trees
+  schema: public
+object_relationships:
+  - name: cultivar
+    using:
+      foreign_key_constraint_on: cultivar_id
+  - name: grafting
+    using:
+      foreign_key_constraint_on: grafting_id
+  - name: plant_row
+    using:
+      foreign_key_constraint_on: plant_row_id
+  - name: rootstock
+    using:
+      foreign_key_constraint_on: rootstock_id
+array_relationships:
+  - name: attributions
+    using:
+      foreign_key_constraint_on:
+        column: tree_id
+        table:
+          name: attributions
+          schema: public
+  - name: attributions_views
+    using:
+      manual_configuration:
+        column_mapping:
+          id: tree_id
+        insertion_order: null
+        remote_table:
+          name: attributions_view
+          schema: public
+  - name: mother_trees
+    using:
+      foreign_key_constraint_on:
+        column: tree_id
+        table:
+          name: mother_trees
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - date_eliminated
+        - date_grafted
+        - date_labeled
+        - date_planted
+        - distance_plant_row_start
+        - geo_location
+        - geo_location_accuracy
+        - grafting_id
+        - note
+        - plant_row_id
+        - label_id
+        - rootstock_id
+        - serial_in_plant_row
+        - cultivar_id
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - created
+        - cultivar_name
+        - date_eliminated
+        - date_grafted
+        - date_labeled
+        - date_planted
+        - disabled
+        - distance_plant_row_start
+        - geo_location
+        - geo_location_accuracy
+        - grafting_id
+        - id
+        - modified
+        - note
+        - plant_row_id
+        - label_id
+        - rootstock_id
+        - serial_in_plant_row
+        - cultivar_id
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - date_eliminated
+        - date_grafted
+        - date_labeled
+        - date_planted
+        - distance_plant_row_start
+        - geo_location
+        - geo_location_accuracy
+        - grafting_id
+        - note
+        - plant_row_id
+        - label_id
+        - rootstock_id
+        - serial_in_plant_row
+        - cultivar_id
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

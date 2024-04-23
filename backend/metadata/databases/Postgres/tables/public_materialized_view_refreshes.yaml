@@ -1,0 +1,13 @@
+table:
+  name: materialized_view_refreshes
+  schema: public
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - view_name
+        - last_change
+        - last_check
+      filter: {}
+    comment: ""

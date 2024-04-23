@@ -1,0 +1,70 @@
+table:
+  name: attributions_view
+  schema: public
+object_relationships:
+  - name: attribute
+    using:
+      manual_configuration:
+        column_mapping:
+          attribute_id: id
+        insertion_order: null
+        remote_table:
+          name: attributes
+          schema: public
+  - name: cultivar
+    using:
+      manual_configuration:
+        column_mapping:
+          combined_cultivar_id: id
+        insertion_order: null
+        remote_table:
+          name: cultivars
+          schema: public
+  - name: lot
+    using:
+      manual_configuration:
+        column_mapping:
+          lot_id: id
+        insertion_order: null
+        remote_table:
+          name: lots
+          schema: public
+  - name: tree
+    using:
+      manual_configuration:
+        column_mapping:
+          tree_id: id
+        insertion_order: null
+        remote_table:
+          name: trees
+          schema: public
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - author
+        - boolean_value
+        - combined_cultivar_id
+        - created
+        - cultivar_id
+        - data_type
+        - date_attributed
+        - date_value
+        - exceptional_attribution
+        - float_value
+        - geo_location
+        - geo_location_accuracy
+        - id
+        - integer_value
+        - lot_id
+        - attribute_id
+        - attribute_name
+        - attribution_id
+        - attribute_type
+        - modified
+        - note
+        - text_value
+        - tree_id
+      filter: {}
+      allow_aggregations: true
+    comment: ""

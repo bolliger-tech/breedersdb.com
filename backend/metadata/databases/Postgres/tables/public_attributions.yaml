@@ -1,0 +1,78 @@
+table:
+  name: attributions
+  schema: public
+object_relationships:
+  - name: attribution_form
+    using:
+      foreign_key_constraint_on: attribution_form_id
+  - name: cultivar
+    using:
+      foreign_key_constraint_on: cultivar_id
+  - name: lot
+    using:
+      foreign_key_constraint_on: lot_id
+  - name: tree
+    using:
+      foreign_key_constraint_on: tree_id
+array_relationships:
+  - name: attribute_values
+    using:
+      foreign_key_constraint_on:
+        column: attribution_id
+        table:
+          name: attribute_values
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - author
+        - date_attributed
+        - geo_location
+        - geo_location_accuracy
+        - lot_id
+        - attribution_form_id
+        - offline_id
+        - tree_id
+        - cultivar_id
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - author
+        - date_attributed
+        - id
+        - lot_id
+        - attribution_form_id
+        - tree_id
+        - cultivar_id
+        - created
+        - modified
+        - offline_id
+        - geo_location_accuracy
+        - geo_location
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - author
+        - date_attributed
+        - geo_location
+        - geo_location_accuracy
+        - lot_id
+        - attribution_form_id
+        - offline_id
+        - tree_id
+        - cultivar_id
+      filter: {}
+      check: null
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

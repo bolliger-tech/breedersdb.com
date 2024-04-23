@@ -1,0 +1,46 @@
+table:
+  name: attribution_form_fields
+  schema: public
+object_relationships:
+  - name: attribute
+    using:
+      foreign_key_constraint_on: attribute_id
+  - name: attribution_form
+    using:
+      foreign_key_constraint_on: attribution_form_id
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - attribution_form_id
+        - attribute_id
+        - priority
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - attribution_form_id
+        - attribute_id
+        - priority
+        - created
+        - modified
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - attribution_form_id
+        - attribute_id
+        - priority
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

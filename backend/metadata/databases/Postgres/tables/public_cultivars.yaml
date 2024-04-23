@@ -1,0 +1,101 @@
+table:
+  name: cultivars
+  schema: public
+object_relationships:
+  - name: lot
+    using:
+      foreign_key_constraint_on: lot_id
+array_relationships:
+  - name: attributions
+    using:
+      foreign_key_constraint_on:
+        column: cultivar_id
+        table:
+          name: attributions
+          schema: public
+  - name: attributions_views
+    using:
+      manual_configuration:
+        column_mapping:
+          id: combined_cultivar_id
+        insertion_order: null
+        remote_table:
+          name: attributions_view
+          schema: public
+  - name: crossings
+    using:
+      foreign_key_constraint_on:
+        column: father_cultivar_id
+        table:
+          name: crossings
+          schema: public
+  - name: crossingsByMotherCultivarId
+    using:
+      foreign_key_constraint_on:
+        column: mother_cultivar_id
+        table:
+          name: crossings
+          schema: public
+  - name: pollens
+    using:
+      foreign_key_constraint_on:
+        column: cultivar_id
+        table:
+          name: pollen
+          schema: public
+  - name: trees
+    using:
+      foreign_key_constraint_on:
+        column: cultivar_id
+        table:
+          name: trees
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - acronym
+        - lot_id
+        - name_segment
+        - note
+        - common_name
+        - breeder
+        - registration
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - acronym
+        - name_segment
+        - lot_id
+        - id
+        - note
+        - common_name
+        - breeder
+        - registration
+        - created
+        - modified
+        - name
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - acronym
+        - lot_id
+        - name_segment
+        - note
+        - common_name
+        - breeder
+        - registration
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

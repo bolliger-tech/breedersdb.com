@@ -89,6 +89,7 @@ entity "**crossings**" #ffff0012 ##888800 {
   *""name"": //character varying(8) //
   ""mother_cultivar_id"": //integer [FK]//
   ""father_cultivar_id"": //integer [FK]//
+  ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
 }
@@ -103,7 +104,7 @@ entity "**cultivars**" #ffff0012 ##888800 {
   ""acronym"": //character varying(10) //
   ""breeder"": //character varying(255) //
   ""registration"": //character varying(255) //
-  ""description"": //character varying(2047) //
+  ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
 }
@@ -124,10 +125,10 @@ entity "**lots**" #ffff0012 ##888800 {
   *""name"": //character varying(12)  : Set by triggers.//
   ""date_sowed"": //date //
   ""numb_seeds_sowed"": //integer //
-  ""numb_sprouts_grown"": //integer //
+  ""numb_seedlings_grown"": //integer //
   ""seed_tray"": //character varying(255) //
   ""date_planted"": //date //
-  ""numb_sprouts_planted"": //integer //
+  ""numb_seedlings_planted"": //integer //
   ""patch"": //character varying(255) //
   ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
@@ -146,7 +147,6 @@ entity "**mother_trees**" #0000ff06 {
   + ""id"": //integer [PK]//
   --
   *""name"": //character varying(45) //
-  *""planned"": //boolean //
   ""date_impregnated"": //date //
   ""date_fruits_harvested"": //date //
   ""numb_flowers"": //integer //
@@ -224,7 +224,7 @@ entity "**rootstocks**" #0000ff12 ##000088 {
 entity "**trees**" #0000ff12 ##000088 {
   + ""id"": //integer [PK]//
   --
-  *""publicid"": //character varying(9) //
+  *""label_id"": //character varying(9) //
   *""cultivar_id"": //integer [FK]//
   *""cultivar_name"": //character varying(58)  : Set by triggers.//
   ""plant_row_id"": //integer [FK]//
@@ -236,7 +236,6 @@ entity "**trees**" #0000ff12 ##000088 {
   ""date_planted"": //date //
   ""date_eliminated"": //date //
   ""date_labeled"": //date //
-  *""genuine_seedling"": //boolean //
   ""note"": //character varying(2047) //
   ""rootstock_id"": //integer [FK]//
   ""grafting_id"": //integer [FK]//

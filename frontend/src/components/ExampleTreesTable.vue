@@ -53,7 +53,7 @@ const query = graphql(`
     }
     trees(where: $where, limit: $limit, offset: $offset, order_by: $orderBy) {
       id
-      publicid
+      label_id
       cultivar_name
       serial_in_plant_row
       distance_plant_row_start
@@ -63,7 +63,6 @@ const query = graphql(`
       date_planted
       date_eliminated
       date_labeled
-      genuine_seedling
       note
       rootstock {
         id
@@ -90,7 +89,7 @@ const filter = ref('');
 const showDisabled = ref(false);
 
 const pagination = ref({
-  sortBy: 'publicid',
+  sortBy: 'label_id',
   descending: false,
   page: 1,
   rowsPerPage: 10,
@@ -123,17 +122,17 @@ const where = computed(() => {
     });
 
     if (filter.value.match(/^\d+$/)) {
-      or._or.push({ publicid: { _eq: `${filter.value.padStart(8, '0')}` } });
+      or._or.push({ label_id: { _eq: `${filter.value.padStart(8, '0')}` } });
     }
 
     if (filter.value.match(/^#\d+$/)) {
       or._or.push({
-        publicid: { _eq: `#${filter.value.replace('#', '').padStart(8, '0')}` },
+        label_id: { _eq: `#${filter.value.replace('#', '').padStart(8, '0')}` },
       });
     }
 
     if (filter.value === '#') {
-      or._or.push({ publicid: { _like: '#%' } });
+      or._or.push({ label_id: { _like: '#%' } });
     }
 
     where._and.push(or);
@@ -161,10 +160,10 @@ type Tree = ResultOf<typeof query>['trees'][0];
 
 const columns = [
   {
-    name: 'publicid',
-    label: 'Public ID',
+    name: 'label_id',
+    label: 'Label ID',
     align: 'left' as const,
-    field: 'publicid',
+    field: 'label_id',
     sortable: true,
     required: true,
   },

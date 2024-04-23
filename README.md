@@ -33,11 +33,11 @@ The application follows a client-server pattern. The backend (server) is a Graph
 
 ### Backend
 
-See the [backend README](./backend/README.md).
+See the [backend README](/backend/README.md).
 
 ### Frontend
 
-TODO
+See the [frontend README](/frontend/README.md).
 
 ## Format the files
 

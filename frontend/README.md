@@ -1,8 +1,11 @@
-# BreedersDB (breedersdb)
+# BreedersDB - Frontend
 
-Collect and Analyze your Plant's Traits.
+Web frontend for the BreedersDB, built with [quasar](https://quasar.dev/) using
+the Quasar CLI with Vite and TypeScript.
 
 ## Getting Started
+
+1. Start the backend (see [backend/README.md](/backend/README.md))
 
 1. Install [bun](https://bun.sh):
 
@@ -19,19 +22,19 @@ Collect and Analyze your Plant's Traits.
 1. Start the frontend (development mode with hot reloading, etc.)
 
    ```bash
-   bun quasar dev
+   bun --bun run quasar dev
    ```
 
 ### Lint the files
 
 ```bash
-bun lint
+bun --bun lint
 ```
 
 ### Build the app for production
 
 ```bash
-bun quasar build
+bun run quasar build
 ```
 
 ### Customize the configuration

@@ -10,7 +10,7 @@
         class="label"
         :class="{
           'text-white': !isCurrentRoute,
-          'text-primary-contrast': isCurrentRoute,
+          'text-secondary-100': isCurrentRoute,
         }"
         >{{ label }}</span
       >

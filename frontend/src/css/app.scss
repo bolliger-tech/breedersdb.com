@@ -1,10 +1,9 @@
 // app global css in SCSS form
 :root {
-  --q-primary-contrast: #{$primary-contrast};
   --q-text-muted: #{$text-muted};
   --q-bg-muted: #{$bg-muted};
-  --q-link-color: #{$link-color};
-  --q-link-color-hover: #{$link-hover-color};
+  --q-link-color: var(--bdb-primary-500);
+  --q-link-color-hover: var(--bdb-accent-500);
 }
 
 @font-face {
@@ -23,12 +22,15 @@
   background-color: var(--q-bg-muted);
 }
 
-.text-primary-contrast {
-  color: var(--q-primary-contrast);
-}
-
-.bg-primary-contrast {
-  background-color: var(--q-primary-contrast);
+@each $type in primary secondary accent {
+  @for $i from 1 through 9 {
+    .text-#{$type}-#{$i}00 {
+      color: var(--bdb-#{$type}-#{$i}00);
+    }
+    .bg-#{$type}-#{$i}00 {
+      color: var(--bdb-#{$type}-#{$i}00);
+    }
+  }
 }
 
 .align-center {

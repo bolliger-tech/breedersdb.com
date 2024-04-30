@@ -11,20 +11,76 @@
 // It's highly recommended to change the default colors
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
+:root {
+  // By default, the folowing colors are used:
+  // primary: hsl(189, 75%, 24%);
+  // secondary: hsl(28, 75%, 24%);
+  // accent: hsl(350, 75%, 24%);
+  //
+  // If you overwrite the primary color only, the secondary and accent colors
+  // will be generated based on the primary color.
+  //
+  // Use the following variables to overwrite the colors (every variable is optional):
+  // --bdb-primary-color-hue, --bdb-primary-color-saturation, --bdb-primary-color-lightness
+  // --bdb-secondary-color-hue, --bdb-secondary-color-saturation, --bdb-secondary-color-lightness
+  // --bdb-accent-color-hue, --bdb-accent-color-saturation, --bdb-accent-color-lightness
 
-$primary: #093a3e; // NOTICE: this is overwritten in App.vue
-$secondary: #00558a; // NOTICE: this is overwritten in App.vue
-$accent: #b8007d; // NOTICE: this is overwritten in App.vue
-$primary-contrast: #fbdc5b;
+  --bdb-primary-color-hue: 189; // Is overwritten by index.html
+  --bdb-secondary-color-hue: calc(var(--bdb-primary-color-hue) + 180 + 19);
+  --bdb-accent-color-hue: calc(var(--bdb-primary-color-hue) - 180 - 19);
+
+  // Generates the variables:
+  // --bdb-primary-100 to --bdb-primary-900
+  // --bdb-secondary-100 to --bdb-secondary-900
+  // --bdb-accent-100 to --bdb-accent-900
+  @each $type in primary secondary accent {
+    --bdb-#{$type}-color-saturation: 75%;
+    --bdb-#{$type}-color-lightness: 24%;
+
+    --bdb-#{$type}-color-saturation-step: (
+      min(
+          var(--bdb-#{$type}-color-saturation),
+          100% - var(--bdb-#{$type}-color-saturation)
+        ) /
+        4
+    );
+
+    --bdb-#{$type}-color-lightness-step: (
+      min(
+          var(--bdb-#{$type}-color-lightness),
+          100% - var(--bdb-#{$type}-color-lightness)
+        ) /
+        4
+    );
+
+    @for $i from 1 through 9 {
+      --bdb-#{$type}-#{$i}00: hsl(
+        var(--bdb-#{$type}-color-hue),
+        calc(
+          var(--bdb-#{$type}-color-saturation) - var(
+              --bdb-#{$type}-color-saturation-step
+            ) *
+            #{5 -
+            $i}
+        ),
+        calc(
+          var(--bdb-#{$type}-color-lightness) - var(
+              --bdb-#{$type}-color-lightness-step
+            ) *
+            #{$i -
+            5}
+        )
+      );
+    }
+  }
+}
+
+$primary: var(--bdb-primary-500); // Overwritten in App.vue
+$secondary: var(--bdb-secondary-500); // Overwritten in App.vue
+$accent: var(--bdb-accent-500); // Overwritten in App.vue
 
 $text-muted: #6c757d;
 $bg-muted: #f8f9fa;
-
-$link-color: lighten($primary, 20%); // NOTICE: this is overwritten in App.vue
-$link-hover-color: darken(
-  $primary,
-  20%
-); // NOTICE: this is overwritten in App.vue
 
 $dark: #1d1d1d;
 $dark-page: #121212;

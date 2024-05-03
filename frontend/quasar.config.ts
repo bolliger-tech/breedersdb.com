@@ -123,6 +123,7 @@ export default configure((ctx) => {
 
       // Quasar plugins
       plugins: ['LoadingBar', 'LocalStorage', 'SessionStorage'],
+      cssAddon: true,
     },
 
     // animations: 'all', // --- includes all animations

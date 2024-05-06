@@ -14,174 +14,174 @@ const { t } = useI18n();
 
 const items: NavLevel0Props['items'] = [
   {
-    label: t('layout.nav.trees.main'),
+    label: t('nav.trees.main'),
     to: '/trees',
     icon: 'tree',
     children: [
       {
-        label: t('layout.nav.trees.list'),
+        label: t('nav.shared.list'),
         icon: 'list',
         to: '',
       },
       {
-        label: t('layout.nav.trees.new'),
+        label: t('nav.shared.new'),
         icon: 'add',
         to: 'new',
       },
       {
-        label: t('layout.nav.trees.plant'),
+        label: t('nav.trees.plant'),
         icon: 'shovel',
         to: 'plant',
       },
       {
-        label: t('layout.nav.trees.eliminate'),
+        label: t('nav.trees.eliminate'),
         icon: 'trash',
         to: 'eliminate',
       },
       {
-        label: t('layout.nav.trees.addAttribute'),
+        label: t('nav.shared.addAttribute'),
         icon: 'star',
         to: 'add-attribute',
       },
       {
-        label: t('layout.nav.trees.analyze'),
+        label: t('nav.shared.analyze'),
         icon: 'search',
         to: 'analyze',
       },
     ],
   },
   {
-    label: t('layout.nav.groups.main'),
+    label: t('nav.groups.main'),
     to: '/groups',
     icon: 'tree-group',
     children: [
       {
-        label: t('layout.nav.groups.list'),
+        label: t('nav.shared.list'),
         icon: 'list',
         to: '',
       },
       {
-        label: t('layout.nav.groups.new'),
+        label: t('nav.shared.new'),
         icon: 'add',
         to: 'new',
       },
       {
-        label: t('layout.nav.groups.addAttribute'),
+        label: t('nav.shared.addAttribute'),
         icon: 'star',
         to: 'add-attribute',
       },
       {
-        label: t('layout.nav.groups.analyze'),
+        label: t('nav.shared.analyze'),
         icon: 'search',
         to: 'analyze',
       },
     ],
   },
   {
-    label: t('layout.nav.cultivars.main'),
+    label: t('nav.cultivars.main'),
     icon: 'cultivar',
     to: '/cultivars',
     children: [
       {
-        label: t('layout.nav.cultivars.list'),
+        label: t('nav.shared.list'),
         icon: 'list',
         to: '',
       },
       {
-        label: t('layout.nav.cultivars.new.main'),
+        label: t('nav.cultivars.new.main'),
         icon: 'add',
         to: 'new',
         children: [
           {
-            label: t('layout.nav.cultivars.new.breedersCultivar'),
+            label: t('nav.cultivars.new.breedersCultivar'),
             to: 'breeders-cultivar',
           },
           {
-            label: t('layout.nav.cultivars.new.variety'),
+            label: t('nav.cultivars.new.variety'),
             to: 'variety',
           },
         ],
       },
       {
-        label: t('layout.nav.cultivars.addAttribute'),
+        label: t('nav.shared.addAttribute'),
         icon: 'star',
         to: 'add-attribute',
       },
       {
-        label: t('layout.nav.cultivars.analyze'),
+        label: t('nav.shared.analyze'),
         icon: 'search',
         to: 'analyze',
       },
     ],
   },
   {
-    label: t('layout.nav.lots.main'),
+    label: t('nav.lots.main'),
     to: '/lots',
     icon: 'lot',
     children: [
       {
-        label: t('layout.nav.lots.list'),
+        label: t('nav.shared.list'),
         icon: 'list',
         to: '',
       },
       {
-        label: t('layout.nav.lots.new'),
+        label: t('nav.shared.new'),
         icon: 'add',
         to: 'new',
       },
       {
-        label: t('layout.nav.lots.addAttribute'),
+        label: t('nav.shared.addAttribute'),
         icon: 'star',
         to: 'add-attribute',
       },
       {
-        label: t('layout.nav.lots.analyze'),
+        label: t('nav.shared.analyze'),
         icon: 'search',
         to: 'analyze',
       },
     ],
   },
   {
-    label: t('layout.nav.crossings.main'),
+    label: t('nav.crossings.main'),
     to: '/crossings',
     icon: 'blossom',
     children: [
       {
-        label: t('layout.nav.crossings.list'),
+        label: t('nav.shared.list'),
         icon: 'list',
         to: '',
       },
       {
-        label: t('layout.nav.crossings.new'),
+        label: t('nav.shared.new'),
         icon: 'add',
         to: 'new',
       },
       {
-        label: t('layout.nav.crossings.motherTrees.main'),
+        label: t('nav.crossings.motherTrees.main'),
         to: 'mother-trees',
         icon: 'female',
         children: [
           {
-            label: t('layout.nav.crossings.motherTrees.list'),
+            label: t('nav.shared.list'),
             to: '',
           },
           {
-            label: t('layout.nav.crossings.motherTrees.new'),
+            label: t('nav.shared.new'),
             to: 'new',
           },
         ],
       },
       {
-        label: t('layout.nav.crossings.pollen.main'),
+        label: t('nav.crossings.pollen.main'),
         to: 'pollen',
         icon: 'male',
         children: [
           {
-            label: t('layout.nav.crossings.pollen.list'),
+            label: t('nav.shared.list'),
             to: '',
           },
           {
-            label: t('layout.nav.crossings.pollen.new'),
+            label: t('nav.shared.new'),
             to: 'new',
           },
         ],
@@ -189,57 +189,57 @@ const items: NavLevel0Props['items'] = [
     ],
   },
   {
-    label: t('layout.nav.more.main'),
+    label: t('nav.more.main'),
     icon: 'more',
     to: '/more',
     children: [
       {
-        label: t('layout.nav.more.attributeForms.main'),
+        label: t('nav.more.attributionForms.main'),
         icon: 'form',
-        to: 'attribute-forms',
+        to: 'attribution-forms',
         children: [
           {
-            label: t('layout.nav.more.attributeForms.forms'),
+            label: t('nav.more.attributionForms.forms'),
             to: 'forms',
           },
           {
-            label: t('layout.nav.more.attributeForms.attributes'),
+            label: t('nav.more.attributionForms.attributes'),
             to: 'attributes',
           },
         ],
       },
       {
-        label: t('layout.nav.more.rows'),
+        label: t('nav.more.rows'),
         icon: 'rows',
         to: 'rows',
       },
       {
-        label: t('layout.nav.more.orchards'),
+        label: t('nav.more.orchards'),
         icon: 'orchard',
         to: 'orchards',
       },
       {
-        label: t('layout.nav.more.rootstocks'),
+        label: t('nav.more.rootstocks'),
         icon: 'rootstock',
         to: 'rootstocks',
       },
       {
-        label: t('layout.nav.more.graftings'),
+        label: t('nav.more.graftings'),
         icon: 'grafting',
         to: 'graftings',
       },
       {
-        label: t('layout.nav.more.users'),
+        label: t('nav.more.users'),
         icon: 'user',
         to: 'users',
       },
       {
-        label: t('layout.nav.more.settings'),
+        label: t('nav.more.settings'),
         icon: 'settings',
         to: 'settings',
       },
       {
-        label: t('layout.nav.more.darkMode.main'),
+        label: t('nav.more.darkMode.main'),
         icon: 'dark-mode',
         to: 'dark-mode',
         children: [
@@ -249,7 +249,7 @@ const items: NavLevel0Props['items'] = [
               component: DarkModeSetter,
               props: {
                 isDark: true,
-                label: t('layout.nav.more.darkMode.on'),
+                label: t('nav.more.darkMode.on'),
               },
             },
           },
@@ -259,14 +259,14 @@ const items: NavLevel0Props['items'] = [
               component: DarkModeSetter,
               props: {
                 isDark: false,
-                label: t('layout.nav.more.darkMode.off'),
+                label: t('nav.more.darkMode.off'),
               },
             },
           },
         ],
       },
       {
-        label: t('layout.nav.more.language.main'),
+        label: t('nav.more.language.main'),
         icon: 'locale',
         to: 'language',
         children: [
@@ -276,7 +276,7 @@ const items: NavLevel0Props['items'] = [
               component: LanguageSetter,
               props: {
                 locale: 'en-US',
-                label: t('layout.nav.more.language.en'),
+                label: 'English',
               },
             },
           },
@@ -286,14 +286,14 @@ const items: NavLevel0Props['items'] = [
               component: LanguageSetter,
               props: {
                 locale: 'de-CH',
-                label: t('layout.nav.more.language.de'),
+                label: 'Deutsch',
               },
             },
           },
         ],
       },
       {
-        label: t('layout.nav.more.logout'),
+        label: t('nav.more.logout'),
         icon: 'logout',
         to: 'logout',
       },

@@ -3,7 +3,7 @@
     class="row items-center q-mx-none child-item no-wrap"
     :class="{
       'text-white': !isCurrentRoute,
-      'text-primary-contrast': isCurrentRoute,
+      'text-secondary-100': isCurrentRoute,
     }"
   >
     <BaseSpriteIcon :name="icon" size="sm" />

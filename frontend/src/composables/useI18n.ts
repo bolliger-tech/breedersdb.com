@@ -1,13 +1,19 @@
 import type { MessageSchema } from 'src/boot/i18n';
 import { useI18n as useVueI18n } from 'vue-i18n';
 
+type OriginalT = ReturnType<typeof useVueI18n>;
+export type TFunc = (
+  key: LocaleMessageKeys,
+  ...args: Parameters<OriginalT>
+) => ReturnType<OriginalT>;
+
 // wrapper for vue-i18n
 export function useI18n(options?: Parameters<typeof useVueI18n>[0]) {
   const { t, ...i18n } = useVueI18n(options);
   return {
     ...i18n,
     // add strong typing for t function
-    t: t as (key: LocaleMessageKeys) => string,
+    t: t as TFunc,
   };
 }
 

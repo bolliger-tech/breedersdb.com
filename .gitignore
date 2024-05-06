@@ -2,4 +2,8 @@
 .env
 node_modules
 .sentryclirc
+<<<<<<< Updated upstream
 /tmp
+=======
+tmp
+>>>>>>> Stashed changes

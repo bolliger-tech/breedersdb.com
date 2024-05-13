@@ -87,7 +87,7 @@ function simplify() {
 watch(
   () => props.filter,
   (filter) => {
-    if (props.filter.filterType === 'base') {
+    if (props.filter.getFilterType() === 'base') {
       localStorageHelper.setBaseFilter(filter);
     } else {
       localStorageHelper.setMarkFilter(filter);
@@ -96,17 +96,17 @@ watch(
 );
 </script>
 
-<style scoped>
+<style lang="scss">
 .filter-tree-root__notification--error {
-  color: var(--q-accent);
+  color: $negative;
 }
 
 .filter-tree-root__notification--success {
-  color: var(--q-primary);
+  color: $positive;
 }
 
 .filter-tree-root__simplify {
-  color: var(--q-accent);
+  color: $negative;
   background: none;
   padding: 0;
   border: none;
@@ -121,12 +121,18 @@ watch(
 }
 
 .filter-tree-root__dummy-filter {
-  background: #efefef;
+  background: $grey-3;
   width: 100%;
   min-height: 48px;
   border-left: solid 3px var(--q-primary);
   display: flex;
   align-items: center;
   padding: 4px 12px;
+}
+
+.body--dark {
+  .filter-tree-root__dummy-filter {
+    background: $grey-9;
+  }
 }
 </style>

@@ -100,6 +100,11 @@ function getOptionsFromAttribute(attribute: Attribute): PropertySchemaOptions {
           Attribute['validation_rule']
         >,
       };
+    case PropertySchemaOptionType.Photo:
+      return {
+        type,
+        allowEmpty: true,
+      };
     case PropertySchemaOptionType.Enum:
       throw Error('Enum is not supported yet');
     default:

@@ -4,7 +4,7 @@
   <template v-else>
     <q-select
       v-if="isEnum"
-      :bg-color="disabled ? 'transparent' : 'white'"
+      :bg-color="disabled ? 'transparent' : inputBgColor"
       :disable="disabled"
       :error="isInvalid"
       :label="t('filter.criteria')"
@@ -30,7 +30,7 @@
 
     <q-input
       v-else
-      :bg-color="disabled ? 'transparent' : 'white'"
+      :bg-color="disabled ? 'transparent' : inputBgColor"
       :disable="disabled"
       :error="isInvalid"
       :label="t('filter.criteria')"
@@ -39,7 +39,7 @@
       :min="minValue"
       :model-value="modelValue"
       :pattern="pattern"
-      :stack-label="isDate || isTime"
+      :stack-label="isDate || isTime || isDateTime"
       :step="step"
       :type="inputType"
       autocomplete="off"
@@ -64,6 +64,7 @@ import {
 import { useI18n } from 'src/composables/useI18n';
 import { useLocalizedSort } from 'src/composables/localizedSort';
 import { filterOptions, FilterUpdateFn } from './filterRuleSelectOptionFilter';
+import { useInputBackground } from './useQueryRule';
 
 export interface QueryFilterRuleCriteriaProps {
   schema?: PropertySchema;
@@ -96,6 +97,10 @@ const isDate = computed<boolean>(() => {
 
 const isTime = computed<boolean>(() => {
   return type.value === PropertySchemaOptionType.Time;
+});
+
+const isDateTime = computed<boolean>(() => {
+  return type.value === PropertySchemaOptionType.Datetime;
 });
 
 const step = computed<number | undefined>(() => {
@@ -155,12 +160,14 @@ const selectOptions = computed<string[]>(() => {
 
 const filteredSelectOptions = ref(selectOptions.value);
 
-const inputType = computed<'date' | 'time' | 'number' | 'text'>(() => {
+const inputType = computed(() => {
   switch (type.value) {
     case PropertySchemaOptionType.Date:
       return 'date';
     case PropertySchemaOptionType.Time:
       return 'time';
+    case PropertySchemaOptionType.Datetime:
+      return 'datetime-local';
     case PropertySchemaOptionType.Integer:
     case PropertySchemaOptionType.Float:
       return 'number';
@@ -222,6 +229,29 @@ const isValidDate = computed<boolean>(() => {
   return !isNaN(Date.parse(props.modelValue));
 });
 
+const isValidDateTime = computed<boolean>(() => {
+  if (
+    props.modelValue === undefined ||
+    type.value !== PropertySchemaOptionType.Datetime
+  ) {
+    return false;
+  }
+
+  return !isNaN(Date.parse(props.modelValue));
+});
+
+const isValidTime = computed<boolean>(() => {
+  if (
+    props.modelValue === undefined ||
+    props.modelValue === '' ||
+    type.value !== PropertySchemaOptionType.Time
+  ) {
+    return false;
+  }
+
+  return !isNaN(Date.parse(`1970-01-01T${props.modelValue}`));
+});
+
 const isValidString = computed<boolean>(() => {
   if (
     props.modelValue === undefined ||
@@ -266,11 +296,12 @@ const isValidBoolean = computed<boolean>(() => {
 });
 
 const isValid = computed<boolean>(() => {
-  // todo: implement isValidTime, isValidTimestamp
   return (
     isValidInteger.value ||
     isValidFloat.value ||
     isValidDate.value ||
+    isValidDateTime.value ||
+    isValidTime.value ||
     isValidString.value ||
     isValidEnum.value ||
     isValidPhoto.value ||
@@ -304,5 +335,6 @@ function emitValidity() {
 watch(isValid, emitValidity);
 watch(isInvalid, emitValidity);
 onMounted(emitValidity);
+
+const inputBgColor = useInputBackground();
 </script>
-src/composables/localizedSort

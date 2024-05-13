@@ -20,7 +20,7 @@ export class FilterNode {
   private static nextId = 0;
 
   private constructor(
-    readonly filterType: FilterType,
+    private readonly filterType: FilterType,
     parent: FilterNode | null,
     private childrensOperand: FilterOperand | null,
     private filterRule: FilterRule | null,

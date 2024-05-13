@@ -37,7 +37,7 @@ export interface FilterOption {
 
 export interface FilterComparatorOption {
   label: string;
-  value: string;
+  value: FilterComparator;
   type: PropertySchemaOptionType[];
 }
 

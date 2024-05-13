@@ -133,6 +133,7 @@ function deleteRule() {
 const hasInputCriteria = computed<boolean>(() => {
   switch (column.value?.schema.options.type) {
     case PropertySchemaOptionType.Date:
+    case PropertySchemaOptionType.Datetime:
     case PropertySchemaOptionType.Integer:
     case PropertySchemaOptionType.Float:
     case PropertySchemaOptionType.Enum:
@@ -189,16 +190,37 @@ function setValidity() {
 watch(isValid, setValidity);
 watch(isInvalid, setValidity);
 onMounted(setValidity);
+watch(
+  () => filterRule.value?.dataType,
+  () => {
+    if (filterRule.value) {
+      filterRule.value.criteria = undefined;
+    }
+    if (filterRule.value) {
+      filterRule.value.comparator = undefined;
+    }
+  },
+);
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .filter-rule {
   padding: 4px 3px 4px 1px;
-  background: #efefef;
+  background: $grey-3;
 }
 
 .filter-rule--invalid {
-  background: #fad9dd;
+  background: lighten($negative, 53%);
+}
+
+.body--dark {
+  .filter-rule {
+    background: $grey-9;
+  }
+
+  .filter-rule--invalid {
+    background: darken($negative, 16%);
+  }
 }
 
 .filter-rule--and {
@@ -210,7 +232,7 @@ onMounted(setValidity);
 }
 
 .drag-handle {
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--q-text-muted);
   cursor: grab;
 }
 
@@ -219,7 +241,7 @@ onMounted(setValidity);
 }
 
 .delete-button {
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--q-text-muted);
 }
 
 .delete-button:hover,

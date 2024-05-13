@@ -5,7 +5,7 @@
     :model-value="modelValue"
     :options="filteredFilterOptions"
     autocomplete="off"
-    bg-color="white"
+    :bg-color="inputBgColor"
     class="col-12 col-md-4"
     dense
     hide-bottom-space
@@ -32,6 +32,7 @@ import {
   filterOptions as filterSelectOptions,
   FilterUpdateFn,
 } from './filterRuleSelectOptionFilter';
+import { useInputBackground } from './useQueryRule';
 
 export interface QueryFilterRuleColumnProps {
   modelValue?: FilterOption;
@@ -94,4 +95,6 @@ function emitValidity() {
 watch(isValid, emitValidity);
 watch(isInvalid, emitValidity);
 onMounted(emitValidity);
+
+const inputBgColor = useInputBackground();
 </script>

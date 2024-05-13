@@ -177,7 +177,7 @@ function onDrop(position: 'before' | 'after') {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 .filter-tree {
   position: relative;
 }
@@ -189,7 +189,13 @@ function onDrop(position: 'before' | 'after') {
 .filter-tree__drag-bg {
   border-right-width: 3px;
   border-right-style: solid;
-  background: #efefef;
+  background: $grey-3;
+}
+
+.body--dark {
+  .filter-tree__drag-bg {
+    background: $grey-9;
+  }
 }
 
 .filter-tree__drag-bg--and {
@@ -206,7 +212,7 @@ function onDrop(position: 'before' | 'after') {
 }
 
 .filter-tree__drag-handle {
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--q-text-muted);
   cursor: grab;
 }
 

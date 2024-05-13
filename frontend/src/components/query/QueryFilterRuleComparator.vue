@@ -1,6 +1,6 @@
 <template>
   <q-select
-    :bg-color="disabled ? 'transparent' : 'white'"
+    :bg-color="disabled ? 'transparent' : inputBgColor"
     :disable="disabled"
     :error="isInvalid"
     :label="t('filter.comparator')"
@@ -31,6 +31,7 @@ import { FilterComparator, FilterComparatorOption } from './filterTypes';
 import { PropertySchema, PropertySchemaOptionType } from './filterOptionSchema';
 import { QSelect } from 'quasar';
 import { filterOptions, FilterUpdateFn } from './filterRuleSelectOptionFilter';
+import { useInputBackground } from './useQueryRule';
 
 export interface QueryFilterRuleComparatorProps {
   schema?: PropertySchema;
@@ -56,8 +57,9 @@ const allComparatorOptions: FilterComparatorOption[] = [
       PropertySchemaOptionType.Integer,
       PropertySchemaOptionType.Float,
       PropertySchemaOptionType.String,
-      PropertySchemaOptionType.Date,
       PropertySchemaOptionType.Enum,
+      PropertySchemaOptionType.Date,
+      PropertySchemaOptionType.Datetime,
     ],
   },
   {
@@ -67,8 +69,9 @@ const allComparatorOptions: FilterComparatorOption[] = [
       PropertySchemaOptionType.Integer,
       PropertySchemaOptionType.Float,
       PropertySchemaOptionType.String,
-      PropertySchemaOptionType.Date,
       PropertySchemaOptionType.Enum,
+      PropertySchemaOptionType.Date,
+      PropertySchemaOptionType.Datetime,
     ],
   },
   {
@@ -78,6 +81,7 @@ const allComparatorOptions: FilterComparatorOption[] = [
       PropertySchemaOptionType.Integer,
       PropertySchemaOptionType.Float,
       PropertySchemaOptionType.Date,
+      PropertySchemaOptionType.Datetime,
     ],
   },
   {
@@ -87,6 +91,7 @@ const allComparatorOptions: FilterComparatorOption[] = [
       PropertySchemaOptionType.Integer,
       PropertySchemaOptionType.Float,
       PropertySchemaOptionType.Date,
+      PropertySchemaOptionType.Datetime,
     ],
   },
   {
@@ -96,6 +101,7 @@ const allComparatorOptions: FilterComparatorOption[] = [
       PropertySchemaOptionType.Integer,
       PropertySchemaOptionType.Float,
       PropertySchemaOptionType.Date,
+      PropertySchemaOptionType.Datetime,
     ],
   },
   {
@@ -105,6 +111,7 @@ const allComparatorOptions: FilterComparatorOption[] = [
       PropertySchemaOptionType.Integer,
       PropertySchemaOptionType.Float,
       PropertySchemaOptionType.Date,
+      PropertySchemaOptionType.Datetime,
     ],
   },
   {
@@ -165,10 +172,19 @@ const allComparatorOptions: FilterComparatorOption[] = [
 ];
 
 const availableComparatorOptions = computed<FilterComparatorOption[]>(() => {
-  // noinspection TypeScriptUnresolvedVariable
-  return allComparatorOptions.filter((option: FilterComparatorOption) =>
-    option.type.find((type) => type === props.schema?.options.type),
-  );
+  return allComparatorOptions
+    .filter((option: FilterComparatorOption) =>
+      option.type.find((type) => type === props.schema?.options.type),
+    )
+    .filter((option) => {
+      if (props.schema?.options.allowEmpty) {
+        return true;
+      }
+      return (
+        option.value !== FilterComparator.Empty &&
+        option.value !== FilterComparator.NotEmpty
+      );
+    });
 });
 
 const filteredComparatorOptions = ref(availableComparatorOptions.value);
@@ -212,4 +228,6 @@ function emitValidity() {
 watch(isValid, emitValidity);
 watch(isInvalid, emitValidity);
 onMounted(emitValidity);
+
+const inputBgColor = useInputBackground();
 </script>

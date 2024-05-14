@@ -125,8 +125,8 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
           rule.criteria === '') ||
         rule.comparator?.value === FilterComparator.Empty;
       const conditions = empty
-        ? `{ _or: [ { ${field}: { _is_null: true } }, { ${field}: { _eq: '' } ] }`
-        : `{ _and: [ { ${field}: { _is_null: false } }, { ${field}: { _neq: '' } ] }`;
+        ? `{ _or: [ { ${field}: { _is_null: true } }, { ${field}: { _eq: "" } } ] }`
+        : `{ _and: [ { ${field}: { _is_null: false } }, { ${field}: { _neq: "" } } ] }`;
       return {
         conditions,
         variables: [],
@@ -327,14 +327,14 @@ function toAttributeValueCondition({
         const textVar =
           comparison.variable.type === 'String'
             ? `$${comparison.variable.name}`
-            : "''";
+            : '""';
         const nullVar =
           comparison.variable.type === 'String'
             ? empty
             : `$${comparison.variable.name}`;
         return empty
-          ? `{ _or: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _eq: ${textVar} } ] }`
-          : `{ _and: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _neq: ${textVar} } ] }`;
+          ? `{ _or: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _eq: ${textVar} } } ] }`
+          : `{ _and: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _neq: ${textVar} } } ] }`;
       } else {
         // comparison is neither empty string nor null
         return `{ text_value: { ${comparison.operator}: $${comparison.variable.name} } }`;

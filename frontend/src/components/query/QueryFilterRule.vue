@@ -15,30 +15,46 @@
         @mouseup="$emit('dragMouseUp')"
       />
       <div class="col row q-col-gutter-sm">
-        <QueryFilterRuleColumn
-          :model-value="column"
-          :options="options"
-          @update:model-value="updateColumn"
-          @valid="columnIsValid = true"
-          @invalid="columnIsValid = false"
-        />
-        <QueryFilterRuleComparator
-          :schema="column?.schema"
-          :disabled="column === undefined"
-          :model-value="comparator"
-          @update:model-value="updateComparator"
-          @valid="comparatorIsValid = true"
-          @invalid="comparatorIsValid = false"
-        />
-        <QueryFilterRuleCriteria
-          :schema="column?.schema || undefined"
-          :disabled="comparator === undefined"
-          :hide="!hasInputCriteria"
-          :model-value="criteria"
-          @update:model-value="updateCriteria"
-          @valid="criteriaInputIsValid = true"
-          @invalid="criteriaInputIsValid = false"
-        />
+        <div class="col-12 col-md-4">
+          <QueryFilterRuleColumn
+            :model-value="column"
+            :options="options"
+            @update:model-value="updateColumn"
+            @valid="columnIsValid = true"
+            @invalid="columnIsValid = false"
+          />
+        </div>
+        <div class="col-12 col-md-4">
+          <QueryFilterRuleComparator
+            :schema="column?.schema"
+            :disabled="column === undefined"
+            :model-value="comparator"
+            @update:model-value="updateComparator"
+            @valid="comparatorIsValid = true"
+            @invalid="comparatorIsValid = false"
+          />
+        </div>
+        <div class="col-12 col-md-4">
+          <QueryFilterRuleCriteria
+            :schema="column?.schema || undefined"
+            :disabled="comparator === undefined"
+            :hide="!hasInputCriteria"
+            :model-value="criteria"
+            @update:model-value="updateCriteria"
+            @valid="criteriaInputIsValid = true"
+            @invalid="criteriaInputIsValid = false"
+          />
+        </div>
+        <div v-if="isAttribute" class="text-body2 col-12">
+          <QueryFilterRuleIncludeEntitiesWithoutAttributionsToggle
+            :attributeName="column?.label"
+            :model-value="includeEntitiesWithoutAttributions"
+            @update:model-value="updateIncludeEntitiesWithoutAttributions"
+          />
+        </div>
+        <div v-if="isValid && filterRule" class="col-12">
+          <QueryFilterRuleExplainer :rule="filterRule" />
+        </div>
       </div>
       <q-icon
         :color="isValid ? 'positive' : 'negative'"
@@ -72,6 +88,8 @@ import { PropertySchema, PropertySchemaOptionType } from './filterOptionSchema';
 import QueryFilterRuleCriteria from './QueryFilterRuleCriteria.vue';
 import QueryFilterRuleColumn from './QueryFilterRuleColumn.vue';
 import QueryFilterRuleComparator from './QueryFilterRuleComparator.vue';
+import QueryFilterRuleExplainer from './QueryFilterRuleExplainer.vue';
+import QueryFilterRuleIncludeEntitiesWithoutAttributionsToggle from './QueryFilterRuleIncludeEntitiesWithoutAttributionsToggle.vue';
 
 defineEmits<{
   (e: 'dragMouseDown'): void;
@@ -101,6 +119,10 @@ const filterRule = computed(() => props.node.getFilterRule());
 const column = computed(() => filterRule.value?.column);
 const comparator = computed(() => filterRule.value?.comparator);
 const criteria = computed(() => filterRule.value?.criteria);
+const includeEntitiesWithoutAttributions = computed(
+  () => filterRule.value?.includeEntitiesWithoutAttributions,
+);
+const isAttribute = computed(() => filterRule.value?.isAttribute);
 
 function updateColumn(value: FilterOption) {
   if (filterRule.value) {
@@ -121,6 +143,14 @@ function updateComparator(value: FilterComparatorOption) {
 function updateCriteria(value: FilterCriteria) {
   if (filterRule.value) {
     filterRule.value.criteria = value;
+  } else {
+    throw new Error('Filter rule is undefined');
+  }
+}
+
+function updateIncludeEntitiesWithoutAttributions(value: boolean) {
+  if (filterRule.value) {
+    filterRule.value.includeEntitiesWithoutAttributions = value;
   } else {
     throw new Error('Filter rule is undefined');
   }
@@ -195,9 +225,9 @@ watch(
   () => {
     if (filterRule.value) {
       filterRule.value.criteria = undefined;
-    }
-    if (filterRule.value) {
       filterRule.value.comparator = undefined;
+      criteriaInputIsValid.value = false;
+      comparatorIsValid.value = false;
     }
   },
 );
@@ -209,17 +239,9 @@ watch(
   background: $grey-3;
 }
 
-.filter-rule--invalid {
-  background: lighten($negative, 53%);
-}
-
 .body--dark {
   .filter-rule {
     background: $grey-9;
-  }
-
-  .filter-rule--invalid {
-    background: darken($negative, 16%);
   }
 }
 

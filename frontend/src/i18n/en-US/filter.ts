@@ -1,5 +1,4 @@
 export const filter = {
-  cultivar: 'Cultivar',
   attribute: 'Attribute',
   attributionFilter: 'Filter criteria to select the attributions',
   id: 'ID',
@@ -24,9 +23,33 @@ export const filter = {
   cultivars: 'cultivars',
   trees: 'trees',
 
+  crossing: 'crossing',
+  lot: 'lot',
+  cultivar: 'cultivar',
+  tree: 'tree',
+  cultivarAndSubentities: 'cultivar or its groups or trees',
+
+  explainer: {
+    title: 'Explanation:',
+    attributeWithNoAttributions:
+      'The {entity} have either no {column} attribution or at least one which satisfies: {column} {comparator} {criteria}',
+    attribute:
+      'The {entity} has at least one attribution which satisfies: {column} {comparator} {criteria}',
+    entity: 'The {entity} where {column} {comparator} {criteria}',
+  },
+
+  error: {
+    column: 'Please select a column.',
+    comparator: 'Please select a comparator.',
+    criterion: 'Please enter a valid criterion.',
+  },
+
   column: 'Column',
   comparator: 'Comparator',
   criteria: 'Criteria',
+
+  withNoAttributions:
+    'Include {entities} without {attributeName} attributions.',
 
   noResults: 'No results.',
 

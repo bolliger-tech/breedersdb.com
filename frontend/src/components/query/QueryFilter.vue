@@ -22,6 +22,7 @@ import { PropertySchema, PropertySchemaOptionType } from './filterOptionSchema';
 import { useAttributionFilterOptions } from './useAttributionFilterOptions';
 import { computed, ref, watch } from 'vue';
 import { useQueryStore } from './queryStore';
+import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 
 const { t } = useI18n();
 
@@ -45,7 +46,7 @@ const cultivarFilterOptions: PropertySchema[] = [
   },
   {
     name: 'name',
-    label: t('filter.cultivar'),
+    label: uppercaseFirstLetter(t('filter.cultivar')),
     options: {
       type: PropertySchemaOptionType.String,
       allowEmpty: false,
@@ -125,7 +126,7 @@ const cultivarFilterOptions: PropertySchema[] = [
   },
 ];
 
-const labelPrefix = t('filter.cultivar');
+const labelPrefix = uppercaseFirstLetter(t('filter.cultivar'));
 const cultivarFilterOptionsPrefixed = cultivarFilterOptions.map((item) => ({
   ...item,
   name: `cultivar.${item.name}`,

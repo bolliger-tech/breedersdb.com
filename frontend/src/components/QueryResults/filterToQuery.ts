@@ -107,14 +107,22 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
   }
 
   if (rule.isAttribute) {
-    const attribute_id = parseInt(field);
-    const attribute = `{ attribute_id: { _eq: ${attribute_id} } }`;
-    const attributeValue = toAttributeValueCondition({
+    const attributeId = parseInt(field);
+    const attributeIdCondition = `{ attribute_id: { _eq: ${attributeId} } }`;
+    const attributeValueCondition = toAttributeValueCondition({
       comparison,
       rule,
     });
+    const attributionCondition = `{ attributions_views: { _and: [ ${attributeIdCondition}, ${attributeValueCondition} ] } }`;
+    if (rule.includeEntitiesWithoutAttributions) {
+      const noAttributionsCondition = `{ attributions_views_aggregate: { count: { predicate: { _eq: 0 }, filter: ${attributeIdCondition} } } }`;
+      return {
+        conditions: `{ _or: [ ${attributionCondition}, ${noAttributionsCondition} ] }`,
+        variables: [comparison.variable],
+      };
+    }
     return {
-      conditions: `{ attributions_views: { _and: [ ${attribute}, ${attributeValue} ] } }`,
+      conditions: attributionCondition,
       variables: [comparison.variable],
     };
   } else {

@@ -7,15 +7,18 @@
       :bg-color="disabled ? 'transparent' : inputBgColor"
       :disable="disabled"
       :error="isInvalid"
+      :error-message="t('filter.error.criterion')"
       :label="t('filter.criteria')"
       :model-value="modelValue"
       :options="filteredSelectOptions"
       autocomplete="off"
-      class="col-12 col-md-4"
       dense
       hide-bottom-space
       outlined
       use-input
+      fill-input
+      hide-selected
+      clearable
       @filter="filterSelectOptions"
       @update:model-value="(value) => $emit('update:modelValue', value)"
     >
@@ -33,6 +36,7 @@
       :bg-color="disabled ? 'transparent' : inputBgColor"
       :disable="disabled"
       :error="isInvalid"
+      :error-message="t('filter.error.criterion')"
       :label="t('filter.criteria')"
       :max="maxValue"
       :maxlength="maxLen"
@@ -43,10 +47,10 @@
       :step="step"
       :type="inputType"
       autocomplete="off"
-      class="col-12 col-md-4"
       dense
       hide-bottom-space
       outlined
+      clearable
       @update:model-value="
         (value) => $emit('update:modelValue', (value || '').toString().trim())
       "
@@ -62,7 +66,7 @@ import {
   PropertySchemaOptionType,
 } from './filterOptionSchema';
 import { useI18n } from 'src/composables/useI18n';
-import { useLocalizedSort } from 'src/composables/localizedSort';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { filterOptions, FilterUpdateFn } from './filterRuleSelectOptionFilter';
 import { useInputBackground } from './useQueryRule';
 

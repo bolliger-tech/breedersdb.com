@@ -1,16 +1,19 @@
 <template>
   <q-select
     :error="isInvalid"
+    :error-message="t('filter.error.column')"
     :label="t('filter.column')"
     :model-value="modelValue"
     :options="filteredFilterOptions"
     autocomplete="off"
     :bg-color="inputBgColor"
-    class="col-12 col-md-4"
     dense
     hide-bottom-space
     outlined
     use-input
+    fill-input
+    hide-selected
+    clearable
     @filter="filterFilterOptions"
     @update:model-value="(value) => $emit('update:modelValue', value)"
   >

@@ -3,15 +3,18 @@
     :bg-color="disabled ? 'transparent' : inputBgColor"
     :disable="disabled"
     :error="isInvalid"
+    :error-message="t('filter.error.comparator')"
     :label="t('filter.comparator')"
     :model-value="modelValue"
     :options="filteredComparatorOptions"
     autocomplete="off"
-    class="col-12 col-md-4"
     dense
     hide-bottom-space
     outlined
     use-input
+    fill-input
+    hide-selected
+    clearable
     @filter="filterComparatorOptions"
     @update:model-value="(value) => $emit('update:modelValue', value)"
   >

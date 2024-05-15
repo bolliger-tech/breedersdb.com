@@ -35,6 +35,8 @@ export interface QueryState {
   attemptedToSaveQuery: boolean;
 }
 
+export type QueryStore = ReturnType<typeof useQueryStore>;
+
 export const useQueryStore = defineStore('query', {
   state: (): QueryState => ({
     baseTable: localStorageHelper.getBaseTable(BaseTable.Cultivars),

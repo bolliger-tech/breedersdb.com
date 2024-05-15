@@ -11,6 +11,7 @@ export class FilterRule {
   comparator: FilterComparatorOption | undefined;
   criteria: FilterCriteria | undefined;
   isValid = false;
+  private _includeEntitiesWithoutAttributions = false;
   get isAttribute() {
     return this.tableName === 'attribute';
   }
@@ -38,5 +39,14 @@ export class FilterRule {
         FilterComparator.NotEmpty,
       ].includes(this.comparator.value)
     );
+  }
+  get includeEntitiesWithoutAttributions() {
+    if (!this.isAttribute) return false;
+    return this._includeEntitiesWithoutAttributions;
+  }
+  set includeEntitiesWithoutAttributions(value: boolean) {
+    if (!this.isAttribute)
+      throw new Error('Only attributions can have this property');
+    this._includeEntitiesWithoutAttributions = value;
   }
 }

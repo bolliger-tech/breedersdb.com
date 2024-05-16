@@ -1,6 +1,7 @@
 <template>
   <q-fab
     v-model="actionsVisible"
+    data-test="filter-tree__action-btn"
     :label="t('filter.operands.add')"
     :color="operand === FilterOperand.And ? 'primary' : 'accent'"
     icon="add"
@@ -18,12 +19,14 @@
       :label="t('filter.operands.andFilter')"
       color="primary"
       padding="xs"
+      data-test="filter-tree__action-btn-and"
       @click="addLeaf(FilterOperand.And)"
     />
     <q-fab-action
       :label="t('filter.operands.orFilter')"
       color="accent"
       padding="xs"
+      data-test="filter-tree__action-btn-or"
       @click="addLeaf(FilterOperand.Or)"
     />
   </q-fab>

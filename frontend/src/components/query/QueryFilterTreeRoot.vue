@@ -1,6 +1,9 @@
 <template>
   <div v-if="isEmpty">
-    <div class="filter-tree-root__dummy-filter">
+    <div
+      class="filter-tree-root__dummy-filter"
+      data-test="filter-tree-root__dummy-filter"
+    >
       {{ t('filter.noFilter', { entity: entityName }) }}
     </div>
     <QueryFilterRuleButtonAdd :node="filter" :operand="FilterOperand.And" />

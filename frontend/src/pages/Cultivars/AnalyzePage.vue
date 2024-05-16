@@ -7,11 +7,11 @@
         JSON.stringify(store.baseFilter, undefined, 2)
       }}</pre>
     </details>
-    <!-- <details> -->
-    <!-- <summary><h3>Query</h3></summary> -->
-    <pre style="font-size: 12px">{{ query }}</pre>
-    <pre style="font-size: 12px">{{ variables }}</pre>
-    <!-- </details> -->
+    <details open>
+      <summary><h3>Query</h3></summary>
+      <pre style="font-size: 12px" data-test="query">{{ query }}</pre>
+      <pre style="font-size: 12px" data-test="variables">{{ variables }}</pre>
+    </details>
 
     <details open>
       <summary><h3>Results</h3></summary>

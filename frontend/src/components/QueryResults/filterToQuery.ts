@@ -47,7 +47,7 @@ export function filterToQuery({
       : '';
 
   const q = `
-  query ${toCamelCase(baseTable)}${inputVarDefs} {
+  query ${toCamelCase(baseTable)}FilterResults${inputVarDefs} {
     ${toSnakeCase(baseTable)}(where: ${where.conditions}) {
       id
       name

@@ -1,5 +1,9 @@
 <template>
-  <div class="filter-rule" :class="{ 'filter-rule--invalid': isInvalid }">
+  <div
+    class="filter-rule"
+    :class="{ 'filter-rule--invalid': isInvalid }"
+    data-test="filter-rule"
+  >
     <div
       :class="{
         'filter-rule--and': operand === FilterOperand.And,

@@ -29,7 +29,6 @@ const { t } = useI18n();
 const store = useQueryStore();
 const baseFilterDefault = computed(() => store.getBaseFilter);
 
-// todo: add link to lot
 const cultivarFilterOptions: PropertySchema[] = [
   {
     name: 'id',

@@ -10,8 +10,8 @@
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
-import { BaseTable } from 'src/components/query/Filter/query';
-import { useQueryStore } from 'src/components/query/Filter/queryStore';
+import { BaseTable } from 'src/components/Query/Filter/query';
+import { useQueryStore } from 'src/components/Query/Filter/queryStore';
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 

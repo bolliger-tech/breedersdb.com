@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import BaseSpriteIcon, {
   BaseSpriteIconProps,
-} from 'components/base/BaseSpriteIcon/BaseSpriteIcon.vue';
+} from 'components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 
 export interface NavLevel0ItemIconProps
   extends Omit<BaseSpriteIconProps, 'name'> {

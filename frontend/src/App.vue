@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import TheDarkModeColorProvider from 'components/layout/DarkMode/TheDarkModeColorProvider.vue';
+import TheDarkModeColorProvider from 'components/Layout/DarkMode/TheDarkModeColorProvider.vue';
 defineOptions({
   name: 'App',
 });

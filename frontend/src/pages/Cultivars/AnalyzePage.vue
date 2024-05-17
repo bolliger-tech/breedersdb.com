@@ -22,13 +22,13 @@
 </template>
 
 <script setup lang="ts">
-import QueryFilter from 'src/components/query/Filter/QueryFilter.vue';
+import QueryFilter from 'src/components/Query/Filter/QueryFilter.vue';
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useQueryStore } from 'src/components/query/Filter/queryStore';
+import { useQueryStore } from 'src/components/Query/Filter/queryStore';
 import { computed } from 'vue';
-import { filterToQuery } from 'src/components/query/Result/filterToQuery';
-import { FilterNode } from 'src/components/query/Filter/filterNode';
+import { filterToQuery } from 'src/components/Query/Result/filterToQuery';
+import { FilterNode } from 'src/components/Query/Filter/filterNode';
 import { useQuery } from '@urql/vue';
 
 const { t } = useI18n();

@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import BaseSpriteIcon from 'src/components/base/BaseSpriteIcon/BaseSpriteIcon.vue';
+import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { useI18n } from 'src/composables/useI18n';
 
 const { t } = useI18n();

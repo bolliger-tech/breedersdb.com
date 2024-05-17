@@ -6,7 +6,7 @@
     >
       {{ t('filter.noFilter', { entity: entityName }) }}
     </div>
-    <QueryFilterRuleButtonAdd :node="filter" :operand="FilterOperand.And" />
+    <QueryFilterRuleAddButton :node="filter" :operand="FilterOperand.And" />
   </div>
 
   <template v-else>
@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import QueryFilterRuleButtonAdd from './QueryFilterRuleButtonAdd.vue';
+import QueryFilterRuleAddButton from './QueryFilterRuleAddButton.vue';
 import QueryFilterTree from './QueryFilterTree.vue';
 import { FilterOperand, FilterType } from './filterTypes';
 import { computed, watch } from 'vue';

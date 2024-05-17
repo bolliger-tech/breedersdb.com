@@ -39,12 +39,12 @@ import { FilterOperand } from './filterTypes';
 import { FilterNode } from './filterNode';
 import useFilterNodeActions from './filterNodeActions';
 
-export interface QueryFilterRuleButtonAddProps {
+export interface QueryFilterRuleAddButtonProps {
   operand: FilterOperand;
   node: FilterNode;
 }
 
-const props = defineProps<QueryFilterRuleButtonAddProps>();
+const props = defineProps<QueryFilterRuleAddButtonProps>();
 
 const { t } = useI18n();
 const filter = useFilterNodeActions();

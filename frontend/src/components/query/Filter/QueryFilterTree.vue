@@ -90,7 +90,7 @@ import { computed, PropType, ref } from 'vue';
 import useFilterNodeActions from './filterNodeActions';
 import { useI18n } from 'src/composables/useI18n';
 import QueryFilterRule from './QueryFilterRule.vue';
-import FilterRuleButtonAdd from './QueryFilterRuleButtonAdd.vue';
+import FilterRuleButtonAdd from './QueryFilterRuleAddButton.vue';
 import { FilterNode } from './filterNode';
 import { FilterOperand } from './filterTypes';
 import { useQueryStore } from './queryStore';

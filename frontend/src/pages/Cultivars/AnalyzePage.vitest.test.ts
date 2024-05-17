@@ -90,7 +90,7 @@ describe('AnalyzePage', () => {
         .get('a')
         .trigger('click');
 
-      // click and criteria
+      // click and term
       await wrapper
         .getComponent('[data-test="filter-tree__action-btn-and"]')
         .get('a')
@@ -114,7 +114,7 @@ describe('AnalyzePage', () => {
         .get('a')
         .trigger('click');
 
-      // click and criteria
+      // click and term
       await wrapper
         .getComponent('[data-test="filter-tree__action-btn-and"]')
         .get('a')
@@ -153,8 +153,8 @@ describe('AnalyzePage', () => {
         value: '>',
         type: ['integer', 'double', 'date', 'datetime'],
       });
-      const criteria = await wrapper.findComponent(QueryFilterRuleTerm);
-      await criteria.setValue('1');
+      const term = await wrapper.findComponent(QueryFilterRuleTerm);
+      await term.setValue('1');
 
       await flushPromises();
 

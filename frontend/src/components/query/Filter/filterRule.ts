@@ -2,14 +2,14 @@ import { PropertySchemaOptionType } from './filterOptionSchema';
 import {
   FilterOperator,
   FilterOperatorOption,
-  FilterCriteria,
+  FilterTerm,
   FilterOption,
 } from './filterTypes';
 
 export class FilterRule {
   column: FilterOption | undefined;
   operator: FilterOperatorOption | undefined;
-  criteria: FilterCriteria | undefined;
+  term: FilterTerm | undefined;
   isValid = false;
   private _includeEntitiesWithoutAttributions = false;
   get isAttribute() {

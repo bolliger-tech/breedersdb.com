@@ -3,7 +3,7 @@ import { PropertySchemaOptionType } from '../Filter/filterOptionSchema';
 import type { FilterRule } from '../Filter/filterRule';
 import {
   type FilterOperatorOption,
-  type FilterCriteria,
+  type FilterTerm,
   FilterOperator,
 } from '../Filter/filterTypes';
 import type { BaseTable } from '../Filter/query';
@@ -65,7 +65,7 @@ export function filterToQuery({
 function filterToWhere(filter: FilterNode): GraphQLWhereArgs {
   const operand = filter.getChildrensOperand() === 'and' ? '_and' : '_or';
 
-  const criteria = filter
+  const term = filter
     .getChildren()
     .map((node) => {
       const rule = node.getFilterRule();
@@ -79,11 +79,11 @@ function filterToWhere(filter: FilterNode): GraphQLWhereArgs {
     })
     .filter(Boolean) as GraphQLWhereArgs[];
 
-  const criteriaString = criteria.map((c) => c.conditions).join(', ');
+  const termString = term.map((c) => c.conditions).join(', ');
 
   return {
-    conditions: `{ ${operand}: [ ${criteriaString} ] }`,
-    variables: criteria.map((c) => c.variables).flat(),
+    conditions: `{ ${operand}: [ ${termString} ] }`,
+    variables: term.map((c) => c.variables).flat(),
   };
 }
 
@@ -98,7 +98,7 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
 
   const comparison = toComparison({
     operator,
-    criteria: rule.criteria,
+    term: rule.term,
     type: dataType,
   });
 
@@ -129,8 +129,7 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
     // if value can be null or empty string and it is one of both
     if (rule.compareNullAndEmpty) {
       const empty =
-        (rule.operator?.value === FilterOperator.Equal &&
-          rule.criteria === '') ||
+        (rule.operator?.value === FilterOperator.Equal && rule.term === '') ||
         rule.operator?.value === FilterOperator.Empty;
       const conditions = empty
         ? `{ _or: [ { ${field}: { _is_null: true } }, { ${field}: { _eq: "" } } ] }`
@@ -151,15 +150,15 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
 
 function toComparison({
   operator,
-  criteria,
+  term,
   type: propertySchemaOptionType,
 }: {
   operator: FilterOperatorOption;
-  criteria?: FilterCriteria;
+  term?: FilterTerm;
   type: PropertySchemaOptionType;
 }): Comparison | undefined {
   const name = `v${varCounter++}`;
-  const value = cast({ criteria, type: propertySchemaOptionType });
+  const value = cast({ term, type: propertySchemaOptionType });
   const type = propertySchemaOptionTypeToGraphQLType(propertySchemaOptionType);
 
   if (undefined === value) {
@@ -253,30 +252,30 @@ function toComparison({
 }
 
 function cast({
-  criteria,
+  term,
   type,
 }: {
-  criteria?: FilterCriteria;
+  term?: FilterTerm;
   type: PropertySchemaOptionType;
 }) {
   switch (type) {
     case PropertySchemaOptionType.String:
-      return criteria?.toString() || '';
+      return term?.toString() || '';
     case PropertySchemaOptionType.Integer:
-      return criteria ? parseInt(criteria) : NaN;
+      return term ? parseInt(term) : NaN;
     case PropertySchemaOptionType.Float:
-      return criteria ? parseFloat(criteria) : NaN;
+      return term ? parseFloat(term) : NaN;
     case PropertySchemaOptionType.Boolean:
-      return String(criteria).toLowerCase() === 'true';
+      return String(term).toLowerCase() === 'true';
     case PropertySchemaOptionType.Enum:
       // TODO: handle enum
       throw new Error('Not implemented');
     case PropertySchemaOptionType.Date:
-      if (!criteria) return undefined;
-      return new Date(criteria).toISOString().split('T')[0];
+      if (!term) return undefined;
+      return new Date(term).toISOString().split('T')[0];
     case PropertySchemaOptionType.Datetime:
-      if (!criteria) return undefined;
-      return new Date(criteria).toISOString();
+      if (!term) return undefined;
+      return new Date(term).toISOString();
     case PropertySchemaOptionType.Time:
       // TODO: handle time
       throw new Error('Not implemented');
@@ -329,8 +328,7 @@ function toAttributeValueCondition({
     case 'String':
       if (rule.compareNullAndEmpty) {
         const empty =
-          (rule.operator?.value === FilterOperator.Equal &&
-            rule.criteria === '') ||
+          (rule.operator?.value === FilterOperator.Equal && rule.term === '') ||
           rule.operator?.value === FilterOperator.Empty;
         const textVar =
           comparison.variable.type === 'String'

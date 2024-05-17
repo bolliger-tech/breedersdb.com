@@ -41,4 +41,4 @@ export interface FilterOperatorOption {
   type: PropertySchemaOptionType[];
 }
 
-export type FilterCriteria = string;
+export type FilterTerm = string;

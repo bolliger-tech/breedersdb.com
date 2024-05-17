@@ -26,8 +26,8 @@ const column = computed(() => {
 const operator = computed(() => {
   return props.rule.operator?.label || '';
 });
-const criteria = computed(() => {
-  return props.rule.criteria || '';
+const term = computed(() => {
+  return props.rule.term || '';
 });
 
 const { t } = useI18n();
@@ -55,7 +55,7 @@ const explainer = computed(() => {
       : entityName.value,
     column: column.value,
     operator: operator.value,
-    criteria: criteria.value,
+    term: term.value,
   };
   if (props.rule.isAttribute) {
     if (props.rule.includeEntitiesWithoutAttributions) {

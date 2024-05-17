@@ -32,21 +32,21 @@ export const filter = {
   explainer: {
     title: 'Explanation:',
     attributeWithNoAttributions:
-      'The {entity} have either no {column} attribution or at least one which satisfies: {column} {operator} {criteria}',
+      'The {entity} have either no {column} attribution or at least one which satisfies: {column} {operator} {term}',
     attribute:
-      'The {entity} has at least one attribution which satisfies: {column} {operator} {criteria}',
-    entity: 'The {entity} where {column} {operator} {criteria}',
+      'The {entity} has at least one attribution which satisfies: {column} {operator} {term}',
+    entity: 'The {entity} where {column} {operator} {term}',
   },
 
   error: {
     column: 'Please select a column.',
     operator: 'Please select a operator.',
-    criterion: 'Please enter a valid criterion.',
+    term: 'Please enter a valid term.',
   },
 
   column: 'Column',
   operator: 'Operator',
-  criteria: 'Criteria',
+  term: 'Term',
 
   withNoAttributions:
     'Include {entities} without {attributeName} attributions.',
@@ -73,8 +73,8 @@ export const filter = {
     isFalse: 'is false',
 
     add: 'Add',
-    andFilter: 'and criteria',
-    orFilter: 'or criteria',
+    andFilter: 'and criterion',
+    orFilter: 'or criterion',
 
     and: 'and',
     or: 'or',

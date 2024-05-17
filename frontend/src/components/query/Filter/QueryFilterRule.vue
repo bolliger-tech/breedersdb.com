@@ -42,11 +42,11 @@
           <QueryFilterRuleTerm
             :schema="column?.schema || undefined"
             :disabled="operator === undefined"
-            :hide="!hasInputCriteria"
-            :model-value="criteria"
-            @update:model-value="updateCriteria"
-            @valid="criteriaInputIsValid = true"
-            @invalid="criteriaInputIsValid = false"
+            :hide="!hasInputTerm"
+            :model-value="term"
+            @update:model-value="updateTerm"
+            @valid="termInputIsValid = true"
+            @invalid="termInputIsValid = false"
           />
         </div>
         <div v-if="isAttribute" class="text-body2 col-12">
@@ -83,7 +83,7 @@ import { computed, onMounted, PropType, ref, watch } from 'vue';
 import {
   FilterOperator,
   FilterOperatorOption,
-  FilterCriteria,
+  FilterTerm,
   FilterOperand,
   FilterOption,
 } from './filterTypes';
@@ -117,12 +117,12 @@ const props = defineProps({
 
 const columnIsValid = ref<boolean>();
 const operatorIsValid = ref<boolean>();
-const criteriaInputIsValid = ref<boolean>();
+const termInputIsValid = ref<boolean>();
 
 const filterRule = computed(() => props.node.getFilterRule());
 const column = computed(() => filterRule.value?.column);
 const operator = computed(() => filterRule.value?.operator);
-const criteria = computed(() => filterRule.value?.criteria);
+const term = computed(() => filterRule.value?.term);
 const includeEntitiesWithoutAttributions = computed(
   () => filterRule.value?.includeEntitiesWithoutAttributions,
 );
@@ -144,9 +144,9 @@ function updateOperator(value: FilterOperatorOption) {
   }
 }
 
-function updateCriteria(value: FilterCriteria) {
+function updateTerm(value: FilterTerm) {
   if (filterRule.value) {
-    filterRule.value.criteria = value;
+    filterRule.value.term = value;
   } else {
     throw new Error('Filter rule is undefined');
   }
@@ -164,7 +164,7 @@ function deleteRule() {
   props.node.remove();
 }
 
-const hasInputCriteria = computed<boolean>(() => {
+const hasInputTerm = computed<boolean>(() => {
   switch (column.value?.schema.options.type) {
     case PropertySchemaOptionType.Date:
     case PropertySchemaOptionType.Datetime:
@@ -182,12 +182,12 @@ const hasInputCriteria = computed<boolean>(() => {
   }
 });
 
-const criteriaIsValid = computed(() => {
-  if (!hasInputCriteria.value) {
+const termIsValid = computed(() => {
+  if (!hasInputTerm.value) {
     return true;
   }
 
-  return criteriaInputIsValid.value;
+  return termInputIsValid.value;
 });
 
 const isInvalid = computed<boolean>(() => {
@@ -195,8 +195,8 @@ const isInvalid = computed<boolean>(() => {
     !isValid.value &&
     column.value !== undefined &&
     operator.value !== undefined &&
-    hasInputCriteria.value &&
-    criteria.value !== undefined
+    hasInputTerm.value &&
+    term.value !== undefined
   );
 });
 
@@ -204,7 +204,7 @@ const isValid = computed<boolean>(() => {
   return (
     columnIsValid.value === true && // may also be undefined
     operatorIsValid.value === true && // may also be undefined
-    criteriaIsValid.value === true
+    termIsValid.value === true
   );
 });
 
@@ -228,9 +228,9 @@ watch(
   () => filterRule.value?.dataType,
   () => {
     if (filterRule.value) {
-      filterRule.value.criteria = undefined;
+      filterRule.value.term = undefined;
       filterRule.value.operator = undefined;
-      criteriaInputIsValid.value = false;
+      termInputIsValid.value = false;
       operatorIsValid.value = false;
     }
   },

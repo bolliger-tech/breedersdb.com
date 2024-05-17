@@ -1,6 +1,6 @@
 <template>
   <q-item clickable class="column justify-center" @click="setLocale">
-    <span class="label">{{ label }}</span>
+    <span class="label text-white">{{ label }}</span>
   </q-item>
 </template>
 

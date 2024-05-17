@@ -32,20 +32,20 @@ export const filter = {
   explainer: {
     title: 'Explanation:',
     attributeWithNoAttributions:
-      'The {entity} have either no {column} attribution or at least one which satisfies: {column} {comparator} {criteria}',
+      'The {entity} have either no {column} attribution or at least one which satisfies: {column} {operator} {criteria}',
     attribute:
-      'The {entity} has at least one attribution which satisfies: {column} {comparator} {criteria}',
-    entity: 'The {entity} where {column} {comparator} {criteria}',
+      'The {entity} has at least one attribution which satisfies: {column} {operator} {criteria}',
+    entity: 'The {entity} where {column} {operator} {criteria}',
   },
 
   error: {
     column: 'Please select a column.',
-    comparator: 'Please select a comparator.',
+    operator: 'Please select a operator.',
     criterion: 'Please enter a valid criterion.',
   },
 
   column: 'Column',
-  comparator: 'Comparator',
+  operator: 'Operator',
   criteria: 'Criteria',
 
   withNoAttributions:

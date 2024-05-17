@@ -1,6 +1,6 @@
 import { PropertySchema, PropertySchemaOptionType } from './filterOptionSchema';
 
-export enum FilterComparator {
+export enum FilterOperator {
   Equal = '===',
   NotEqual = '!==',
   Less = '<',
@@ -35,9 +35,9 @@ export interface FilterOption {
   schema: PropertySchema;
 }
 
-export interface FilterComparatorOption {
+export interface FilterOperatorOption {
   label: string;
-  value: FilterComparator;
+  value: FilterOperator;
   type: PropertySchemaOptionType[];
 }
 

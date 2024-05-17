@@ -2,9 +2,9 @@ import type { FilterNode } from '../Filter/filterNode';
 import { PropertySchemaOptionType } from '../Filter/filterOptionSchema';
 import type { FilterRule } from '../Filter/filterRule';
 import {
-  type FilterComparatorOption,
+  type FilterOperatorOption,
   type FilterCriteria,
-  FilterComparator,
+  FilterOperator,
 } from '../Filter/filterTypes';
 import type { BaseTable } from '../Filter/query';
 
@@ -90,14 +90,14 @@ function filterToWhere(filter: FilterNode): GraphQLWhereArgs {
 function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
   const field = rule.columnName;
   const dataType = rule.dataType;
-  const comparator = rule.comparator;
+  const operator = rule.operator;
 
-  if (!(field && dataType && comparator && rule.isValid)) {
+  if (!(field && dataType && operator && rule.isValid)) {
     return;
   }
 
   const comparison = toComparison({
-    comparator,
+    operator,
     criteria: rule.criteria,
     type: dataType,
   });
@@ -129,9 +129,9 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
     // if value can be null or empty string and it is one of both
     if (rule.compareNullAndEmpty) {
       const empty =
-        (rule.comparator?.value === FilterComparator.Equal &&
+        (rule.operator?.value === FilterOperator.Equal &&
           rule.criteria === '') ||
-        rule.comparator?.value === FilterComparator.Empty;
+        rule.operator?.value === FilterOperator.Empty;
       const conditions = empty
         ? `{ _or: [ { ${field}: { _is_null: true } }, { ${field}: { _eq: "" } } ] }`
         : `{ _and: [ { ${field}: { _is_null: false } }, { ${field}: { _neq: "" } } ] }`;
@@ -150,11 +150,11 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
 }
 
 function toComparison({
-  comparator,
+  operator,
   criteria,
   type: propertySchemaOptionType,
 }: {
-  comparator: FilterComparatorOption;
+  operator: FilterOperatorOption;
   criteria?: FilterCriteria;
   type: PropertySchemaOptionType;
 }): Comparison | undefined {
@@ -166,89 +166,89 @@ function toComparison({
     return;
   }
 
-  switch (comparator.value) {
-    case FilterComparator.Equal:
+  switch (operator.value) {
+    case FilterOperator.Equal:
       return {
         operator: GraphQLComparisonOperator.Eq,
         variable: { name, type, value },
       };
-    case FilterComparator.NotEqual:
+    case FilterOperator.NotEqual:
       return {
         operator: GraphQLComparisonOperator.Neq,
         variable: { name, type, value },
       };
-    case FilterComparator.Less:
+    case FilterOperator.Less:
       return {
         operator: GraphQLComparisonOperator.Lt,
         variable: { name, type, value },
       };
-    case FilterComparator.LessOrEqual:
+    case FilterOperator.LessOrEqual:
       return {
         operator: GraphQLComparisonOperator.Lte,
         variable: { name, type, value },
       };
-    case FilterComparator.Greater:
+    case FilterOperator.Greater:
       return {
         operator: GraphQLComparisonOperator.Gt,
         variable: { name, type, value },
       };
-    case FilterComparator.GreaterOrEqual:
+    case FilterOperator.GreaterOrEqual:
       return {
         operator: GraphQLComparisonOperator.Gte,
         variable: { name, type, value },
       };
-    case FilterComparator.StartsWith:
+    case FilterOperator.StartsWith:
       return {
         operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `${value}%` },
       };
-    case FilterComparator.StartsNotWith:
+    case FilterOperator.StartsNotWith:
       return {
         operator: GraphQLComparisonOperator.Nilike,
         variable: { name, type, value: `${value}%` },
       };
-    case FilterComparator.Contains:
+    case FilterOperator.Contains:
       return {
         operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `%${value}%` },
       };
-    case FilterComparator.NotContains:
+    case FilterOperator.NotContains:
       return {
         operator: GraphQLComparisonOperator.Nilike,
         variable: { name, type, value: `%${value}%` },
       };
-    case FilterComparator.EndsWith:
+    case FilterOperator.EndsWith:
       return {
         operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `%${value}` },
       };
-    case FilterComparator.NotEndsWith:
+    case FilterOperator.NotEndsWith:
       return {
         operator: GraphQLComparisonOperator.Nilike,
         variable: { name, type, value: `%${value}` },
       };
-    case FilterComparator.Empty:
+    case FilterOperator.Empty:
       return {
         operator: GraphQLComparisonOperator.IsNull,
         variable: { name, type: 'Boolean', value: true },
       };
-    case FilterComparator.NotEmpty:
+    case FilterOperator.NotEmpty:
       return {
         operator: GraphQLComparisonOperator.IsNull,
         variable: { name, type: 'Boolean', value: false },
       };
-    case FilterComparator.True:
+    case FilterOperator.True:
       return {
         operator: GraphQLComparisonOperator.Eq,
         variable: { name, type: 'Boolean', value: true },
       };
-    case FilterComparator.False:
+    case FilterOperator.False:
       return {
         operator: GraphQLComparisonOperator.Eq,
         variable: { name, type: 'Boolean', value: false },
       };
     default:
-      throw new Error(`Unknown comparator: ${comparator.value}`);
+      throw new Error(`Unknown operator: ${operator.value}`);
   }
 }
 
@@ -329,9 +329,9 @@ function toAttributeValueCondition({
     case 'String':
       if (rule.compareNullAndEmpty) {
         const empty =
-          (rule.comparator?.value === FilterComparator.Equal &&
+          (rule.operator?.value === FilterOperator.Equal &&
             rule.criteria === '') ||
-          rule.comparator?.value === FilterComparator.Empty;
+          rule.operator?.value === FilterOperator.Empty;
         const textVar =
           comparison.variable.type === 'String'
             ? `$${comparison.variable.name}`

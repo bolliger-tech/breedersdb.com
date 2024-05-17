@@ -23,8 +23,8 @@ const column = computed(() => {
   const label = props.rule.column?.label || '';
   return label.split('>')[1] || label;
 });
-const comparator = computed(() => {
-  return props.rule.comparator?.label || '';
+const operator = computed(() => {
+  return props.rule.operator?.label || '';
 });
 const criteria = computed(() => {
   return props.rule.criteria || '';
@@ -54,7 +54,7 @@ const explainer = computed(() => {
       ? t('filter.cultivarAndSubentities')
       : entityName.value,
     column: column.value,
-    comparator: comparator.value,
+    operator: operator.value,
     criteria: criteria.value,
   };
   if (props.rule.isAttribute) {

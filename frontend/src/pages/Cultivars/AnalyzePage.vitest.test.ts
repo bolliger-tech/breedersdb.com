@@ -147,8 +147,8 @@ describe('AnalyzePage', () => {
           },
         },
       });
-      const comparator = await wrapper.findComponent(QueryFilterRuleOperator);
-      await comparator.setValue({
+      const operator = await wrapper.findComponent(QueryFilterRuleOperator);
+      await operator.setValue({
         label: 'greater than',
         value: '>',
         type: ['integer', 'double', 'date', 'datetime'],

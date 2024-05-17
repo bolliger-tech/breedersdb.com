@@ -1,14 +1,14 @@
 import { PropertySchemaOptionType } from './filterOptionSchema';
 import {
-  FilterComparator,
-  FilterComparatorOption,
+  FilterOperator,
+  FilterOperatorOption,
   FilterCriteria,
   FilterOption,
 } from './filterTypes';
 
 export class FilterRule {
   column: FilterOption | undefined;
-  comparator: FilterComparatorOption | undefined;
+  operator: FilterOperatorOption | undefined;
   criteria: FilterCriteria | undefined;
   isValid = false;
   private _includeEntitiesWithoutAttributions = false;
@@ -31,13 +31,13 @@ export class FilterRule {
     return (
       this.columnValueCanBeEmpty &&
       this.dataType === PropertySchemaOptionType.String &&
-      this.comparator?.value &&
+      this.operator?.value &&
       [
-        FilterComparator.Equal,
-        FilterComparator.NotEqual,
-        FilterComparator.Empty,
-        FilterComparator.NotEmpty,
-      ].includes(this.comparator.value)
+        FilterOperator.Equal,
+        FilterOperator.NotEqual,
+        FilterOperator.Empty,
+        FilterOperator.NotEmpty,
+      ].includes(this.operator.value)
     );
   }
   get includeEntitiesWithoutAttributions() {

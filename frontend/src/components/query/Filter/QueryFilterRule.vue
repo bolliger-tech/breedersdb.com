@@ -32,16 +32,16 @@
           <QueryFilterRuleOperator
             :schema="column?.schema"
             :disabled="column === undefined"
-            :model-value="comparator"
-            @update:model-value="updateComparator"
-            @valid="comparatorIsValid = true"
-            @invalid="comparatorIsValid = false"
+            :model-value="operator"
+            @update:model-value="updateOperator"
+            @valid="operatorIsValid = true"
+            @invalid="operatorIsValid = false"
           />
         </div>
         <div class="col-12 col-md-4">
           <QueryFilterRuleTerm
             :schema="column?.schema || undefined"
-            :disabled="comparator === undefined"
+            :disabled="operator === undefined"
             :hide="!hasInputCriteria"
             :model-value="criteria"
             @update:model-value="updateCriteria"
@@ -81,8 +81,8 @@
 <script lang="ts" setup>
 import { computed, onMounted, PropType, ref, watch } from 'vue';
 import {
-  FilterComparator,
-  FilterComparatorOption,
+  FilterOperator,
+  FilterOperatorOption,
   FilterCriteria,
   FilterOperand,
   FilterOption,
@@ -116,12 +116,12 @@ const props = defineProps({
 });
 
 const columnIsValid = ref<boolean>();
-const comparatorIsValid = ref<boolean>();
+const operatorIsValid = ref<boolean>();
 const criteriaInputIsValid = ref<boolean>();
 
 const filterRule = computed(() => props.node.getFilterRule());
 const column = computed(() => filterRule.value?.column);
-const comparator = computed(() => filterRule.value?.comparator);
+const operator = computed(() => filterRule.value?.operator);
 const criteria = computed(() => filterRule.value?.criteria);
 const includeEntitiesWithoutAttributions = computed(
   () => filterRule.value?.includeEntitiesWithoutAttributions,
@@ -136,9 +136,9 @@ function updateColumn(value: FilterOption) {
   }
 }
 
-function updateComparator(value: FilterComparatorOption) {
+function updateOperator(value: FilterOperatorOption) {
   if (filterRule.value) {
-    filterRule.value.comparator = value;
+    filterRule.value.operator = value;
   } else {
     throw new Error('Filter rule is undefined');
   }
@@ -174,8 +174,8 @@ const hasInputCriteria = computed<boolean>(() => {
       return true;
     case PropertySchemaOptionType.String:
       return (
-        comparator.value?.value !== FilterComparator.Empty &&
-        comparator.value?.value !== FilterComparator.NotEmpty
+        operator.value?.value !== FilterOperator.Empty &&
+        operator.value?.value !== FilterOperator.NotEmpty
       );
     default:
       return false;
@@ -194,7 +194,7 @@ const isInvalid = computed<boolean>(() => {
   return (
     !isValid.value &&
     column.value !== undefined &&
-    comparator.value !== undefined &&
+    operator.value !== undefined &&
     hasInputCriteria.value &&
     criteria.value !== undefined
   );
@@ -203,7 +203,7 @@ const isInvalid = computed<boolean>(() => {
 const isValid = computed<boolean>(() => {
   return (
     columnIsValid.value === true && // may also be undefined
-    comparatorIsValid.value === true && // may also be undefined
+    operatorIsValid.value === true && // may also be undefined
     criteriaIsValid.value === true
   );
 });
@@ -229,9 +229,9 @@ watch(
   () => {
     if (filterRule.value) {
       filterRule.value.criteria = undefined;
-      filterRule.value.comparator = undefined;
+      filterRule.value.operator = undefined;
       criteriaInputIsValid.value = false;
-      comparatorIsValid.value = false;
+      operatorIsValid.value = false;
     }
   },
 );

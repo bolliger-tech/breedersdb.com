@@ -10,12 +10,15 @@ import {
 } from 'src/utils/testHelpers';
 import { flushPromises } from '@vue/test-utils';
 import { OperationDefinitionNode } from 'graphql';
-import { useQueryStore } from 'src/components/query/queryStore';
-import { FilterNode } from 'src/components/query/filterNode';
-import { FilterOperand, FilterType } from 'src/components/query/filterTypes';
-import QueryFilterRuleColumn from 'src/components/query/QueryFilterRuleColumn.vue';
-import QueryFilterRuleComparator from 'src/components/query/QueryFilterRuleComparator.vue';
-import QueryFilterRuleCriteria from 'src/components/query/QueryFilterRuleCriteria.vue';
+import { useQueryStore } from 'src/components/query/Filter/queryStore';
+import { FilterNode } from 'src/components/query/Filter/filterNode';
+import {
+  FilterOperand,
+  FilterType,
+} from 'src/components/query/Filter/filterTypes';
+import QueryFilterRuleColumn from 'src/components/query/Filter/QueryFilterRuleColumn.vue';
+import QueryFilterRuleComparator from 'src/components/query/Filter/QueryFilterRuleComparator.vue';
+import QueryFilterRuleCriteria from 'src/components/query/Filter/QueryFilterRuleCriteria.vue';
 
 addQuasarPlugins();
 

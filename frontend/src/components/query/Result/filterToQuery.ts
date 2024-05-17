@@ -1,12 +1,12 @@
-import type { FilterNode } from '../query/filterNode';
-import { PropertySchemaOptionType } from '../query/filterOptionSchema';
-import type { FilterRule } from '../query/filterRule';
+import type { FilterNode } from '../Filter/filterNode';
+import { PropertySchemaOptionType } from '../Filter/filterOptionSchema';
+import type { FilterRule } from '../Filter/filterRule';
 import {
   type FilterComparatorOption,
   type FilterCriteria,
   FilterComparator,
-} from '../query/filterTypes';
-import type { BaseTable } from '../query/query';
+} from '../Filter/filterTypes';
+import type { BaseTable } from '../Filter/query';
 
 type QueryVariable = {
   name: string;

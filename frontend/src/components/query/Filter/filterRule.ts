@@ -1,4 +1,4 @@
-import { AttributeSchemaOptionType } from './filterOptionSchema';
+import { AttributeSchemaOptionType } from './filterOptionSchemaTypes';
 import {
   FilterOperator,
   FilterOperatorOption,

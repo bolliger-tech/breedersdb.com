@@ -1,12 +1,12 @@
 import type { FilterNode } from '../Filter/filterNode';
-import { AttributeSchemaOptionType } from '../Filter/filterOptionSchema';
+import { AttributeSchemaOptionType } from '../Filter/filterOptionSchemaTypes';
 import type { FilterRule } from '../Filter/filterRule';
 import {
   type FilterOperatorOption,
   type FilterTerm,
   FilterOperator,
 } from '../Filter/filterTypes';
-import type { BaseTable } from '../Filter/query';
+import type { BaseTable } from '../Filter/queryTypes';
 
 type QueryVariable = {
   name: string;

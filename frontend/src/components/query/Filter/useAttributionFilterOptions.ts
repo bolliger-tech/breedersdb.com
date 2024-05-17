@@ -4,7 +4,7 @@ import {
   AttributeSchemaOptionType,
   type AttributeSchema,
   type AttributeSchemaOptions,
-} from './filterOptionSchema';
+} from './filterOptionSchemaTypes';
 
 // warning about unused fields is wrong. ignore it.
 const query = graphql(`

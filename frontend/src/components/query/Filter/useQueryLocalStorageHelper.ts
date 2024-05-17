@@ -1,5 +1,5 @@
 import { useQueryStore } from './queryStore';
-import { BaseTable } from './query';
+import { BaseTable } from './queryTypes';
 import { FilterNode } from './filterNode';
 
 function setVisibleColumns(visibleColumns: string[]) {

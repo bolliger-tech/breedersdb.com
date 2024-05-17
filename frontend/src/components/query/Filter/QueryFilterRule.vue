@@ -91,7 +91,7 @@ import { FilterNode } from './filterNode';
 import {
   AttributeSchema,
   AttributeSchemaOptionType,
-} from './filterOptionSchema';
+} from './filterOptionSchemaTypes';
 import QueryFilterRuleTerm from './QueryFilterRuleTerm.vue';
 import QueryFilterRuleColumn from './QueryFilterRuleColumn.vue';
 import QueryFilterRuleOperator from './QueryFilterRuleOperator.vue';
@@ -278,3 +278,4 @@ watch(
   color: var(--q-negative);
 }
 </style>
+./filterOptionSchemaTypes

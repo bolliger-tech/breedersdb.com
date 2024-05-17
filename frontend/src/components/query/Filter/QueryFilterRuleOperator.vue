@@ -34,7 +34,7 @@ import { FilterOperator, FilterOperatorOption } from './filterTypes';
 import {
   AttributeSchema,
   AttributeSchemaOptionType,
-} from './filterOptionSchema';
+} from './filterOptionSchemaTypes';
 import { QSelect } from 'quasar';
 import {
   filterSelectOptions,
@@ -240,3 +240,4 @@ onMounted(emitValidity);
 
 const inputBgColor = useInputBackground();
 </script>
+./filterOptionSchemaTypes

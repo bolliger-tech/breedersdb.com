@@ -1,12 +1,17 @@
+// TODO: store should only be used for state management, not for api calls
+
 import { defineStore } from 'pinia';
-import { BaseTable, FilterDragNode } from './query';
+import { BaseTable, FilterDragNode } from './queryTypes';
 import { FilterNode } from './filterNode';
 import { FilterOperand, FilterType } from './filterTypes';
-import { Attribute } from './form';
+import { Attribute } from './formTypes';
 // import useApi from 'src/composables/api';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
-import { FilterOptionSchemas, AttributeSchema } from './filterOptionSchema';
-import { QueryGroup } from './queryGroup';
+import {
+  FilterOptionSchemas,
+  AttributeSchema,
+} from './filterOptionSchemaTypes';
+import { QueryGroup } from './queryGroupTypes';
 
 const localStorageHelper = useQueryLocalStorageHelper();
 

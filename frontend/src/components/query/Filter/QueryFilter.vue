@@ -21,7 +21,7 @@ import QueryFilterTreeRoot from './QueryFilterTreeRoot.vue';
 import {
   AttributeSchema,
   AttributeSchemaOptionType,
-} from './filterOptionSchema';
+} from './filterOptionSchemaTypes';
 import { useAttributionFilterOptions } from './useAttributionFilterOptions';
 import { computed, ref, watch } from 'vue';
 import { useQueryStore } from './queryStore';
@@ -152,3 +152,4 @@ watch(error, (error) => {
   }
 });
 </script>
+./filterOptionSchemaTypes

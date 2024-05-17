@@ -94,9 +94,9 @@ import FilterRuleButtonAdd from './QueryFilterRuleAddButton.vue';
 import { FilterNode } from './filterNode';
 import { FilterOperand } from './filterTypes';
 import { useQueryStore } from './queryStore';
-import { FilterDragNode } from './query';
+import { FilterDragNode } from './queryTypes';
 import QueryFilterRuleDropZone from './QueryFilterRuleDropZone.vue';
-import { AttributeSchema } from './filterOptionSchema';
+import { AttributeSchema } from './filterOptionSchemaTypes';
 
 const props = defineProps({
   node: {
@@ -243,3 +243,4 @@ function onDrop(position: 'before' | 'after') {
   bottom: -18px;
 }
 </style>
+./filterOptionSchemaTypes ./queryTypes

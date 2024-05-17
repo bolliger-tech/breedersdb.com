@@ -11,7 +11,7 @@ import { computed } from 'vue';
 import { FilterRule } from './filterRule';
 import { useQueryStore } from './queryStore';
 import { useI18n } from 'src/composables/useI18n';
-import { BaseTable } from './query';
+import { BaseTable } from './queryTypes';
 
 interface QueryFilterRuleExplainerProps {
   rule: FilterRule;
@@ -67,3 +67,4 @@ const explainer = computed(() => {
   return t('filter.explainer.entity', args);
 });
 </script>
+./queryTypes

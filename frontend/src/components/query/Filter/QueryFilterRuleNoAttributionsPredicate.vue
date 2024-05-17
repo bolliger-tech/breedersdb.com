@@ -16,7 +16,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryStore } from './queryStore';
 import { computed } from 'vue';
-import { BaseTable } from './query';
+import { BaseTable } from './queryTypes';
 
 export interface QueryFilterRuleNoAttributionsPredicateProps {
   attributeName?: string;
@@ -47,3 +47,4 @@ const entitiesName = computed(() => {
   }
 });
 </script>
+./queryTypes

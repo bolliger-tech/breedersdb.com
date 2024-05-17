@@ -29,7 +29,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 import { computed, onMounted, ref, watch } from 'vue';
-import { AttributeSchema } from './filterOptionSchema';
+import { AttributeSchema } from './filterOptionSchemaTypes';
 import { FilterOption } from './filterTypes';
 import {
   filterSelectOptions,
@@ -100,3 +100,4 @@ onMounted(emitValidity);
 
 const inputBgColor = useInputBackground();
 </script>
+./filterOptionSchemaTypes

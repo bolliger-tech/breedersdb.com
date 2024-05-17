@@ -1,5 +1,5 @@
 import { FilterNode } from './filterNode';
-import { AttributeSchema } from './filterOptionSchema';
+import { AttributeSchema } from './filterOptionSchemaTypes';
 // import { TreeView } from 'src/models/tree';
 // import { VarietyView } from 'src/models/variety';
 // import { BatchView } from 'src/models/batch';

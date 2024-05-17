@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
-import { BaseTable } from 'src/components/Query/Filter/query';
+import { BaseTable } from 'src/components/Query/Filter/queryTypes';
 import { useQueryStore } from 'src/components/Query/Filter/queryStore';
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
@@ -43,3 +43,4 @@ state.baseTable = BaseTable.Crossings;
 
 const { t } = useI18n();
 </script>
+src/components/Query/Filter/queryTypes

@@ -41,10 +41,10 @@ import { FilterOperand, FilterType } from './filterTypes';
 import { computed, watch } from 'vue';
 import { FilterNode } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
-import { AttributeSchema } from './filterOptionSchema';
+import { AttributeSchema } from './filterOptionSchemaTypes';
 import { useQueryStore } from './queryStore';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
-import { BaseTable } from './query';
+import { BaseTable } from './queryTypes';
 
 const { t } = useI18n();
 const store = useQueryStore();
@@ -139,3 +139,4 @@ watch(
   }
 }
 </style>
+./filterOptionSchemaTypes ./queryTypes

@@ -1,4 +1,4 @@
-import { BaseTable } from './query';
+import { BaseTable } from './queryTypes';
 
 export enum AttributeSchemaOptionType {
   String = 'string',

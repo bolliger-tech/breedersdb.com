@@ -1,7 +1,7 @@
 import {
   AttributeSchema,
   AttributeSchemaOptionType,
-} from './filterOptionSchema';
+} from './filterOptionSchemaTypes';
 
 export enum FilterOperator {
   Equal = '===',

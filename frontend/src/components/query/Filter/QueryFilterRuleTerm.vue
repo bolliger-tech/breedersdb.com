@@ -63,7 +63,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import {
   AttributeSchema,
   AttributeSchemaOptionType,
-} from './filterOptionSchema';
+} from './filterOptionSchemaTypes';
 import { useI18n } from 'src/composables/useI18n';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import {
@@ -334,3 +334,4 @@ onMounted(emitValidity);
 
 const inputBgColor = useInputBackground();
 </script>
+./filterOptionSchemaTypes

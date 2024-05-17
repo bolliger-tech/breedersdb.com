@@ -12,7 +12,7 @@ export type AttributionFormFieldNumberConstraint = null | {
   max: number;
   step: number;
 };
-export type MarkValueValue = string | boolean | number | Date | File;
+export type AttributionValueValue = string | boolean | number | Date | File;
 
 export interface Attribute {
   id: number;
@@ -38,9 +38,9 @@ export interface AttributionForm {
   attributes?: Attribute[] | null;
 }
 
-export interface MarkValue {
+export interface AttributionValue {
   id?: number;
-  value: MarkValueValue;
+  value: AttributionValueValue;
   exceptional_mark: boolean;
   attribute_id: number;
   mark_id?: number;
@@ -64,5 +64,5 @@ export interface Mark {
   tree?: unknown; // TODO: Tree;
   // variety?: Variety
   // batch?: Batch
-  mark_values?: MarkValue[];
+  attribution_values?: AttributionValue[];
 }

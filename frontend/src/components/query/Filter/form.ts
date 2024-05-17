@@ -15,6 +15,7 @@ export type AttributionFormFieldNumberConstraint = null | {
 export type AttributionValueValue = string | boolean | number | Date | File;
 
 export interface Attribute {
+  // TODO: check. e.g. validation_rule is missing
   id: number;
   name: string;
   number_constraints: AttributionFormFieldNumberConstraint;
@@ -23,9 +24,6 @@ export interface Attribute {
   attribute_type_id: number;
   created: string | null;
   modified: string | null;
-  tree_property: boolean;
-  variety_property: boolean;
-  batch_property: boolean;
   // attribute_type?: AttributeType
 }
 
@@ -41,16 +39,16 @@ export interface AttributionForm {
 export interface AttributionValue {
   id?: number;
   value: AttributionValueValue;
-  exceptional_mark: boolean;
+  exceptional_attribution: boolean;
   attribute_id: number;
-  mark_id?: number;
+  attribution_id?: number;
   created?: string | null;
   modified?: string | null;
   attribution_form?: AttributionForm;
   attribute?: Attribute;
 }
 
-export interface Mark {
+export interface Attribution {
   id?: number;
   date: Date | null;
   author: string | null;

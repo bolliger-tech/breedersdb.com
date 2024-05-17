@@ -5,7 +5,7 @@ import { FilterOperand, FilterType } from './filterTypes';
 import { Attribute } from './form';
 // import useApi from 'src/composables/api';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
-import { FilterOptionSchemas, PropertySchema } from './filterOptionSchema';
+import { FilterOptionSchemas, AttributeSchema } from './filterOptionSchema';
 import { QueryGroup } from './queryGroup';
 
 const localStorageHelper = useQueryLocalStorageHelper();
@@ -14,15 +14,15 @@ const defaultBaseFilter = FilterNode.FilterRoot(
   FilterOperand.And,
   FilterType.Base,
 );
-const defaultMarkFilter = FilterNode.FilterRoot(
+const defaultAttributionFilter = FilterNode.FilterRoot(
   FilterOperand.And,
-  FilterType.Mark,
+  FilterType.Attribution,
 );
 
 export interface QueryState {
   baseTable: BaseTable;
   baseFilter: FilterNode;
-  markFilter: FilterNode;
+  attributionFilter: FilterNode;
   filterDragNode: FilterDragNode;
   attributes: Attribute[];
   filterOptionSchemas: FilterOptionSchemas | undefined;
@@ -41,7 +41,9 @@ export const useQueryStore = defineStore('query', {
   state: (): QueryState => ({
     baseTable: localStorageHelper.getBaseTable(BaseTable.Cultivars),
     baseFilter: localStorageHelper.getBaseFilter(defaultBaseFilter), // use getters and actions
-    markFilter: localStorageHelper.getMarkFilter(defaultMarkFilter), // use getters and actions
+    attributionFilter: localStorageHelper.getAttributionFilter(
+      defaultAttributionFilter,
+    ), // use getters and actions
     filterDragNode: false,
     attributes: [],
     filterOptionSchemas: undefined,
@@ -65,11 +67,11 @@ export const useQueryStore = defineStore('query', {
       );
     },
 
-    markPropertySchema(state) {
+    attributionAttributeSchema(state) {
       const s = state as QueryState;
       return s.attributes.map(
         (s) => s,
-        // attributeConverter.toPropertySchema,
+        // attributeConverter.toAttributeSchema,
       );
     },
 
@@ -79,17 +81,17 @@ export const useQueryStore = defineStore('query', {
         return [];
       }
 
-      const options: PropertySchema[] =
+      const options: AttributeSchema[] =
         [...s.filterOptionSchemas[s.baseTable]] || [];
 
       if (this.attributionsAvailable) {
-        // options.push(...this.markPropertySchema);
+        // options.push(...this.attributionAttributeSchema);
       }
 
       return options;
     },
 
-    markFilterOptions(state) {
+    attributionFilterOptions(state) {
       const s = state as QueryState;
       if (!s.filterOptionSchemas) {
         return [];
@@ -106,12 +108,12 @@ export const useQueryStore = defineStore('query', {
       return (state as QueryState).baseFilter;
     },
 
-    getMarkFilter(state) {
-      if (!this.markFilterOptions) {
-        return defaultMarkFilter;
+    getAttributionFilter(state) {
+      if (!this.attributionFilterOptions) {
+        return defaultAttributionFilter;
       }
 
-      return (state as QueryState).markFilter;
+      return (state as QueryState).attributionFilter;
     },
 
     getVisibleColumns(state) {
@@ -124,21 +126,21 @@ export const useQueryStore = defineStore('query', {
           return true;
         }
 
-        return attributionsAvailable && col.startsWith('Mark.');
+        return attributionsAvailable && col.startsWith('Attribution.');
       });
     },
 
-    hasVisibleMarkColumns(): boolean {
+    hasVisibleAttributionColumns(): boolean {
       // noinspection JSIncompatibleTypesComparison
       return (
         this.getVisibleColumns.find((col: string): boolean =>
-          col.startsWith('Mark.'),
+          col.startsWith('Attribution.'),
         ) !== undefined
       );
     },
 
     rowsWithattributionsOnly(state) {
-      if (!this.attributionsAvailable || !this.hasVisibleMarkColumns) {
+      if (!this.attributionsAvailable || !this.hasVisibleAttributionColumns) {
         return false;
       }
 
@@ -149,9 +151,9 @@ export const useQueryStore = defineStore('query', {
   actions: {
     async maybeLoadAttributes() {
       if (!this.attributes.length) {
-        console.log('loading mark form properties');
+        console.log('loading attribution form properties');
         // await useApi()
-        //   .get<Attribute[]>('mark-form-properties')
+        //   .get<Attribute[]>('attribution-form-properties')
         //   .then(
         //     (data) => (this.attributes = data as Attribute[]),
         //   );
@@ -184,9 +186,9 @@ export const useQueryStore = defineStore('query', {
 
     async ensureSchemasLoaded() {
       const base = this.maybeLoadFilterOptionSchemas();
-      const mark = this.maybeLoadAttributes();
+      const attribution = this.maybeLoadAttributes();
 
-      await Promise.all([base, mark]);
+      await Promise.all([base, attribution]);
     },
 
     setBaseFilter(filter: FilterNode) {
@@ -194,9 +196,9 @@ export const useQueryStore = defineStore('query', {
       Object.assign(this.baseFilter, filter);
     },
 
-    setMarkFilter(filter: FilterNode) {
+    setAttributionFilter(filter: FilterNode) {
       // use object assign to maintain reactivity
-      Object.assign(this.markFilter, filter);
+      Object.assign(this.attributionFilter, filter);
     },
 
     setVisibleColumns(columns: string[]) {

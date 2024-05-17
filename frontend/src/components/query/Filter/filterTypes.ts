@@ -1,4 +1,7 @@
-import { PropertySchema, PropertySchemaOptionType } from './filterOptionSchema';
+import {
+  AttributeSchema,
+  AttributeSchemaOptionType,
+} from './filterOptionSchema';
 
 export enum FilterOperator {
   Equal = '===',
@@ -26,19 +29,19 @@ export enum FilterOperand {
 
 export enum FilterType {
   Base = 'base',
-  Mark = 'mark',
+  Attribution = 'attribution',
 }
 
 export interface FilterOption {
   label: string;
   value: string;
-  schema: PropertySchema;
+  schema: AttributeSchema;
 }
 
 export interface FilterOperatorOption {
   label: string;
   value: FilterOperator;
-  type: PropertySchemaOptionType[];
+  type: AttributeSchemaOptionType[];
 }
 
 export type FilterTerm = string;

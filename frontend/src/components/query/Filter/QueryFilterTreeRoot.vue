@@ -41,7 +41,7 @@ import { FilterOperand, FilterType } from './filterTypes';
 import { computed, watch } from 'vue';
 import { FilterNode } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
-import { PropertySchema } from './filterOptionSchema';
+import { AttributeSchema } from './filterOptionSchema';
 import { useQueryStore } from './queryStore';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
 import { BaseTable } from './query';
@@ -52,7 +52,7 @@ const localStorageHelper = useQueryLocalStorageHelper();
 
 export interface QueryFilterTreeRootProps {
   filter: FilterNode;
-  options: PropertySchema[];
+  options: AttributeSchema[];
 }
 
 const props = defineProps<QueryFilterTreeRootProps>();
@@ -62,7 +62,7 @@ const isEmpty = computed(() => !props.filter.hasChildren());
 const isValid = computed(() => props.filter.isValid());
 
 const entityName = computed(() => {
-  if (props.filter.getFilterType() === FilterType.Mark) {
+  if (props.filter.getFilterType() === FilterType.Attribution) {
     return t('filter.attributions');
   }
 
@@ -93,7 +93,7 @@ watch(
     if (props.filter.getFilterType() === 'base') {
       localStorageHelper.setBaseFilter(filter);
     } else {
-      localStorageHelper.setMarkFilter(filter);
+      localStorageHelper.setAttributionFilter(filter);
     }
   },
 );

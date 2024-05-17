@@ -1,5 +1,5 @@
 import { FilterNode } from './filterNode';
-import { PropertySchema } from './filterOptionSchema';
+import { AttributeSchema } from './filterOptionSchema';
 // import { TreeView } from 'src/models/tree';
 // import { VarietyView } from 'src/models/variety';
 // import { BatchView } from 'src/models/batch';
@@ -27,7 +27,7 @@ export type QueryResponseDebug = {
 export type ViewEntity = {
   [key: string]: null | number | string | ViewEntity[];
 };
-export type QueryResponseSchemas = { [key: string]: PropertySchema[] };
+export type QueryResponseSchemas = { [key: string]: AttributeSchema[] };
 
 export interface QueryResponse {
   count: number;
@@ -40,33 +40,33 @@ export interface QueryResponse {
   schema: QueryResponseSchemas;
 }
 
-export interface MarkCell {
+export interface AttributionCell {
   id: number;
-  property_id: number;
+  attribute_id: number;
   name: string;
   author: string;
   batch_id: number | null;
   variety_id: number | null;
   tree_id: number | null;
   date: string;
-  exceptional_mark: boolean;
+  exceptional_attribution: boolean;
   field_type: 'INTEGER' | 'FLOAT' | 'BOOLEAN' | 'DATE' | 'VARCHAR' | 'PHOTO';
-  property_type: string;
+  attribute_type: string;
   value: string | number | boolean;
   entity: unknown; // TODO: TreeView | VarietyView | BatchView;
 }
 
-export interface AggregatedMarkCell {
-  property_id: number;
+export interface AggregatedAttributionCell {
+  attribute_id: number;
   name: string;
   value: string | number | boolean;
-  rawValues: MarkCell[];
+  rawValues: AttributionCell[];
 }
 
 export interface Query {
   id: number;
   code: string;
-  raw_query: MarkQuery;
+  raw_query: AttributionQuery;
   description: string | null;
   query_group_id: number;
   created: string | null;
@@ -74,10 +74,10 @@ export interface Query {
   deleted: string | null;
 }
 
-export interface MarkQuery {
+export interface AttributionQuery {
   baseTable: BaseTable;
   baseFilter: FilterNode;
-  markFilter?: FilterNode;
+  attributionFilter?: FilterNode;
   visibleColumns: string[];
   showRowsWithoutattributions: boolean;
 }

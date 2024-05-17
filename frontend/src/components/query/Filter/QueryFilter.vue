@@ -18,7 +18,10 @@
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 import QueryFilterTreeRoot from './QueryFilterTreeRoot.vue';
-import { PropertySchema, PropertySchemaOptionType } from './filterOptionSchema';
+import {
+  AttributeSchema,
+  AttributeSchemaOptionType,
+} from './filterOptionSchema';
 import { useAttributionFilterOptions } from './useAttributionFilterOptions';
 import { computed, ref, watch } from 'vue';
 import { useQueryStore } from './queryStore';
@@ -29,12 +32,12 @@ const { t } = useI18n();
 const store = useQueryStore();
 const baseFilterDefault = computed(() => store.getBaseFilter);
 
-const cultivarFilterOptions: PropertySchema[] = [
+const cultivarFilterOptions: AttributeSchema[] = [
   {
     name: 'id',
     label: t('filter.id'),
     options: {
-      type: PropertySchemaOptionType.Integer,
+      type: AttributeSchemaOptionType.Integer,
       allowEmpty: false,
       validation: {
         min: 1,
@@ -47,7 +50,7 @@ const cultivarFilterOptions: PropertySchema[] = [
     name: 'name',
     label: uppercaseFirstLetter(t('filter.cultivar')),
     options: {
-      type: PropertySchemaOptionType.String,
+      type: AttributeSchemaOptionType.String,
       allowEmpty: false,
       validation: {
         maxLen: 58,
@@ -59,7 +62,7 @@ const cultivarFilterOptions: PropertySchema[] = [
     name: 'common_name',
     label: t('filter.commonName'),
     options: {
-      type: PropertySchemaOptionType.String,
+      type: AttributeSchemaOptionType.String,
       allowEmpty: true,
       validation: {
         maxLen: 255,
@@ -71,7 +74,7 @@ const cultivarFilterOptions: PropertySchema[] = [
     name: 'acronym',
     label: t('filter.acronym'),
     options: {
-      type: PropertySchemaOptionType.String,
+      type: AttributeSchemaOptionType.String,
       allowEmpty: true,
       validation: {
         maxLen: 10,
@@ -83,7 +86,7 @@ const cultivarFilterOptions: PropertySchema[] = [
     name: 'breeder',
     label: t('filter.breeder'),
     options: {
-      type: PropertySchemaOptionType.String,
+      type: AttributeSchemaOptionType.String,
       allowEmpty: true,
       validation: {
         maxLen: 255,
@@ -95,7 +98,7 @@ const cultivarFilterOptions: PropertySchema[] = [
     name: 'registration',
     label: t('filter.registration'),
     options: {
-      type: PropertySchemaOptionType.String,
+      type: AttributeSchemaOptionType.String,
       allowEmpty: true,
       validation: {
         maxLen: 255,
@@ -107,7 +110,7 @@ const cultivarFilterOptions: PropertySchema[] = [
     name: 'note',
     label: t('filter.note'),
     options: {
-      type: PropertySchemaOptionType.String,
+      type: AttributeSchemaOptionType.String,
       allowEmpty: true,
       validation: {
         maxLen: 2047,
@@ -119,7 +122,7 @@ const cultivarFilterOptions: PropertySchema[] = [
     name: 'created',
     label: t('filter.created'),
     options: {
-      type: PropertySchemaOptionType.Datetime,
+      type: AttributeSchemaOptionType.Datetime,
       allowEmpty: false,
     },
   },

@@ -29,7 +29,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 import { computed, onMounted, ref, watch } from 'vue';
-import { PropertySchema } from './filterOptionSchema';
+import { AttributeSchema } from './filterOptionSchema';
 import { FilterOption } from './filterTypes';
 import {
   filterOptions as filterSelectOptions,
@@ -39,7 +39,7 @@ import { useInputBackground } from './useQueryRule';
 
 export interface QueryFilterRuleColumnProps {
   modelValue?: FilterOption;
-  options: PropertySchema[];
+  options: AttributeSchema[];
 }
 
 const { t } = useI18n();
@@ -53,7 +53,7 @@ const emit = defineEmits<{
 const props = defineProps<QueryFilterRuleColumnProps>();
 
 const filterOptions = computed<FilterOption[]>(() => {
-  return props.options.map((option: PropertySchema) => {
+  return props.options.map((option: AttributeSchema) => {
     return {
       label: option.label,
       value: option.name,

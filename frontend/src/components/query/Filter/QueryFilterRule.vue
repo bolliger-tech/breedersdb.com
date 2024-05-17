@@ -88,7 +88,10 @@ import {
   FilterOption,
 } from './filterTypes';
 import { FilterNode } from './filterNode';
-import { PropertySchema, PropertySchemaOptionType } from './filterOptionSchema';
+import {
+  AttributeSchema,
+  AttributeSchemaOptionType,
+} from './filterOptionSchema';
 import QueryFilterRuleTerm from './QueryFilterRuleTerm.vue';
 import QueryFilterRuleColumn from './QueryFilterRuleColumn.vue';
 import QueryFilterRuleOperator from './QueryFilterRuleOperator.vue';
@@ -102,7 +105,7 @@ defineEmits<{
 
 const props = defineProps({
   options: {
-    type: Object as PropType<PropertySchema[]>,
+    type: Object as PropType<AttributeSchema[]>,
     required: true,
   },
   node: {
@@ -166,13 +169,13 @@ function deleteRule() {
 
 const hasInputTerm = computed<boolean>(() => {
   switch (column.value?.schema.options.type) {
-    case PropertySchemaOptionType.Date:
-    case PropertySchemaOptionType.Datetime:
-    case PropertySchemaOptionType.Integer:
-    case PropertySchemaOptionType.Float:
-    case PropertySchemaOptionType.Enum:
+    case AttributeSchemaOptionType.Date:
+    case AttributeSchemaOptionType.Datetime:
+    case AttributeSchemaOptionType.Integer:
+    case AttributeSchemaOptionType.Float:
+    case AttributeSchemaOptionType.Enum:
       return true;
-    case PropertySchemaOptionType.String:
+    case AttributeSchemaOptionType.String:
       return (
         operator.value?.value !== FilterOperator.Empty &&
         operator.value?.value !== FilterOperator.NotEmpty

@@ -1,4 +1,4 @@
-import { PropertySchemaOptionType } from './filterOptionSchema';
+import { AttributeSchemaOptionType } from './filterOptionSchema';
 import {
   FilterOperator,
   FilterOperatorOption,
@@ -30,7 +30,7 @@ export class FilterRule {
   get compareNullAndEmpty() {
     return (
       this.columnValueCanBeEmpty &&
-      this.dataType === PropertySchemaOptionType.String &&
+      this.dataType === AttributeSchemaOptionType.String &&
       this.operator?.value &&
       [
         FilterOperator.Equal,
@@ -46,7 +46,7 @@ export class FilterRule {
   }
   set includeEntitiesWithoutAttributions(value: boolean) {
     if (!this.isAttribute)
-      throw new Error('Only attributions can have this property');
+      throw new Error('Only attributions can have this attribute');
     this._includeEntitiesWithoutAttributions = value;
   }
 }

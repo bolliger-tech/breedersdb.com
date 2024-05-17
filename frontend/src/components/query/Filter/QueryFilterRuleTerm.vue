@@ -61,9 +61,9 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import {
-  PropertySchema,
-  PropertySchemaOptions,
-  PropertySchemaOptionType,
+  AttributeSchema,
+  AttributeSchemaOptions,
+  AttributeSchemaOptionType,
 } from './filterOptionSchema';
 import { useI18n } from 'src/composables/useI18n';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
@@ -71,7 +71,7 @@ import { filterOptions, FilterUpdateFn } from './filterRuleSelectOptionFilter';
 import { useInputBackground } from './useQueryRule';
 
 export interface QueryFilterRuleTermProps {
-  schema?: PropertySchema;
+  schema?: AttributeSchema;
   disabled: boolean;
   hide: boolean;
   modelValue?: string;
@@ -87,28 +87,28 @@ const emit = defineEmits<{
 
 const props = defineProps<QueryFilterRuleTermProps>();
 
-const type = computed<null | PropertySchemaOptionType>(
+const type = computed<null | AttributeSchemaOptionType>(
   () => props.schema?.options.type || null,
 );
 
 const isEnum = computed<boolean>(() => {
-  return type.value === PropertySchemaOptionType.Enum;
+  return type.value === AttributeSchemaOptionType.Enum;
 });
 
 const isDate = computed<boolean>(() => {
-  return type.value === PropertySchemaOptionType.Date;
+  return type.value === AttributeSchemaOptionType.Date;
 });
 
 const isTime = computed<boolean>(() => {
-  return type.value === PropertySchemaOptionType.Time;
+  return type.value === AttributeSchemaOptionType.Time;
 });
 
 const isDateTime = computed<boolean>(() => {
-  return type.value === PropertySchemaOptionType.Datetime;
+  return type.value === AttributeSchemaOptionType.Datetime;
 });
 
 const step = computed<number | undefined>(() => {
-  const options: PropertySchemaOptions | undefined =
+  const options: AttributeSchemaOptions | undefined =
     props.schema?.options || undefined;
   if (options && 'validation' in options && 'step' in options.validation) {
     return options.validation.step;
@@ -117,7 +117,7 @@ const step = computed<number | undefined>(() => {
 });
 
 const minValue = computed<number | undefined>(() => {
-  const options: PropertySchemaOptions | undefined =
+  const options: AttributeSchemaOptions | undefined =
     props.schema?.options || undefined;
   if (options && 'validation' in options && 'min' in options.validation) {
     return options.validation.min;
@@ -126,7 +126,7 @@ const minValue = computed<number | undefined>(() => {
 });
 
 const maxValue = computed<number | undefined>(() => {
-  const options: PropertySchemaOptions | undefined =
+  const options: AttributeSchemaOptions | undefined =
     props.schema?.options || undefined;
   if (options && 'validation' in options && 'max' in options.validation) {
     return options.validation.max;
@@ -135,7 +135,7 @@ const maxValue = computed<number | undefined>(() => {
 });
 
 const maxLen = computed<number | undefined>(() => {
-  const options: PropertySchemaOptions | undefined =
+  const options: AttributeSchemaOptions | undefined =
     props.schema?.options || undefined;
   if (options && 'validation' in options && 'maxLen' in options.validation) {
     return options.validation.maxLen || undefined;
@@ -144,7 +144,7 @@ const maxLen = computed<number | undefined>(() => {
 });
 
 const pattern = computed<string | undefined>(() => {
-  const options: PropertySchemaOptions | undefined =
+  const options: AttributeSchemaOptions | undefined =
     props.schema?.options || undefined;
   if (options && 'validation' in options && 'pattern' in options.validation) {
     return options.validation.pattern || undefined;
@@ -154,7 +154,7 @@ const pattern = computed<string | undefined>(() => {
 
 const { localizedSort } = useLocalizedSort();
 const selectOptions = computed<string[]>(() => {
-  const options: PropertySchemaOptions | null = props.schema?.options || null;
+  const options: AttributeSchemaOptions | null = props.schema?.options || null;
   if (options && 'validation' in options && 'options' in options.validation) {
     const selectOptions = options.validation.options;
     return localizedSort(selectOptions);
@@ -166,14 +166,14 @@ const filteredSelectOptions = ref(selectOptions.value);
 
 const inputType = computed(() => {
   switch (type.value) {
-    case PropertySchemaOptionType.Date:
+    case AttributeSchemaOptionType.Date:
       return 'date';
-    case PropertySchemaOptionType.Time:
+    case AttributeSchemaOptionType.Time:
       return 'time';
-    case PropertySchemaOptionType.Datetime:
+    case AttributeSchemaOptionType.Datetime:
       return 'datetime-local';
-    case PropertySchemaOptionType.Integer:
-    case PropertySchemaOptionType.Float:
+    case AttributeSchemaOptionType.Integer:
+    case AttributeSchemaOptionType.Float:
       return 'number';
     default:
       return 'text';
@@ -183,7 +183,7 @@ const inputType = computed(() => {
 const isValidInteger = computed<boolean>(() => {
   if (
     props.modelValue === undefined ||
-    type.value !== PropertySchemaOptionType.Integer
+    type.value !== AttributeSchemaOptionType.Integer
   ) {
     return false;
   }
@@ -204,7 +204,7 @@ const isValidInteger = computed<boolean>(() => {
 const isValidFloat = computed<boolean>(() => {
   if (
     props.modelValue === undefined ||
-    type.value !== PropertySchemaOptionType.Float
+    type.value !== AttributeSchemaOptionType.Float
   ) {
     return false;
   }
@@ -225,7 +225,7 @@ const isValidFloat = computed<boolean>(() => {
 const isValidDate = computed<boolean>(() => {
   if (
     props.modelValue === undefined ||
-    type.value !== PropertySchemaOptionType.Date
+    type.value !== AttributeSchemaOptionType.Date
   ) {
     return false;
   }
@@ -236,7 +236,7 @@ const isValidDate = computed<boolean>(() => {
 const isValidDateTime = computed<boolean>(() => {
   if (
     props.modelValue === undefined ||
-    type.value !== PropertySchemaOptionType.Datetime
+    type.value !== AttributeSchemaOptionType.Datetime
   ) {
     return false;
   }
@@ -248,7 +248,7 @@ const isValidTime = computed<boolean>(() => {
   if (
     props.modelValue === undefined ||
     props.modelValue === '' ||
-    type.value !== PropertySchemaOptionType.Time
+    type.value !== AttributeSchemaOptionType.Time
   ) {
     return false;
   }
@@ -259,7 +259,7 @@ const isValidTime = computed<boolean>(() => {
 const isValidString = computed<boolean>(() => {
   if (
     props.modelValue === undefined ||
-    type.value !== PropertySchemaOptionType.String
+    type.value !== AttributeSchemaOptionType.String
   ) {
     return false;
   }
@@ -277,7 +277,7 @@ const isValidString = computed<boolean>(() => {
 const isValidEnum = computed<boolean>(() => {
   if (
     props.modelValue === undefined ||
-    type.value !== PropertySchemaOptionType.Enum
+    type.value !== AttributeSchemaOptionType.Enum
   ) {
     return false;
   }
@@ -288,14 +288,14 @@ const isValidEnum = computed<boolean>(() => {
 const isValidPhoto = computed<boolean>(() => {
   return !(
     props.modelValue === undefined ||
-    type.value !== PropertySchemaOptionType.Photo
+    type.value !== AttributeSchemaOptionType.Photo
   );
 });
 
 const isValidBoolean = computed<boolean>(() => {
   return !(
     props.modelValue === undefined ||
-    type.value !== PropertySchemaOptionType.Boolean
+    type.value !== AttributeSchemaOptionType.Boolean
   );
 });
 

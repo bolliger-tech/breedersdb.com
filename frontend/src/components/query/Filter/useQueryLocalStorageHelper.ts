@@ -50,19 +50,22 @@ function getBaseFilterKey() {
   return `breedersdb_query_base_filter--${baseTableName}`;
 }
 
-function setMarkFilter(filter: FilterNode) {
-  window.localStorage.setItem(getMarkFilterKey(), JSON.stringify(filter));
+function setAttributionFilter(filter: FilterNode) {
+  window.localStorage.setItem(
+    getAttributionFilterKey(),
+    JSON.stringify(filter),
+  );
 }
 
-function getMarkFilter(defaultValue: FilterNode): FilterNode {
-  const encoded = window.localStorage.getItem(getMarkFilterKey());
+function getAttributionFilter(defaultValue: FilterNode): FilterNode {
+  const encoded = window.localStorage.getItem(getAttributionFilterKey());
 
   return encoded ? FilterNode.FromJSON(encoded) : defaultValue;
 }
 
-function getMarkFilterKey() {
+function getAttributionFilterKey() {
   const baseTableName = useQueryStore().baseTable;
-  return `breedersdb_query_mark_filter--${baseTableName}`;
+  return `breedersdb_query_attribution_filter--${baseTableName}`;
 }
 
 function setShowRowsWithoutattributions(show: boolean) {
@@ -97,8 +100,8 @@ export default function useQueryLocalStorageHelper() {
     getBaseTable,
     setBaseFilter,
     getBaseFilter,
-    setMarkFilter,
-    getMarkFilter,
+    setAttributionFilter,
+    getAttributionFilter,
     setShowRowsWithoutattributions,
     getShowRowsWithoutattributions,
   };

@@ -31,13 +31,16 @@
 import { useI18n } from 'src/composables/useI18n';
 import { computed, onMounted, ref, watch } from 'vue';
 import { FilterOperator, FilterOperatorOption } from './filterTypes';
-import { PropertySchema, PropertySchemaOptionType } from './filterOptionSchema';
+import {
+  AttributeSchema,
+  AttributeSchemaOptionType,
+} from './filterOptionSchema';
 import { QSelect } from 'quasar';
 import { filterOptions, FilterUpdateFn } from './filterRuleSelectOptionFilter';
 import { useInputBackground } from './useQueryRule';
 
 export interface QueryFilterRuleOperatorProps {
-  schema?: PropertySchema;
+  schema?: AttributeSchema;
   disabled: boolean;
   modelValue?: FilterOperatorOption;
 }
@@ -57,120 +60,120 @@ const allOperatorOptions: FilterOperatorOption[] = [
     label: t('filter.operands.equals'),
     value: FilterOperator.Equal,
     type: [
-      PropertySchemaOptionType.Integer,
-      PropertySchemaOptionType.Float,
-      PropertySchemaOptionType.String,
-      PropertySchemaOptionType.Enum,
-      PropertySchemaOptionType.Date,
-      PropertySchemaOptionType.Datetime,
+      AttributeSchemaOptionType.Integer,
+      AttributeSchemaOptionType.Float,
+      AttributeSchemaOptionType.String,
+      AttributeSchemaOptionType.Enum,
+      AttributeSchemaOptionType.Date,
+      AttributeSchemaOptionType.Datetime,
     ],
   },
   {
     label: t('filter.operands.notEquals'),
     value: FilterOperator.NotEqual,
     type: [
-      PropertySchemaOptionType.Integer,
-      PropertySchemaOptionType.Float,
-      PropertySchemaOptionType.String,
-      PropertySchemaOptionType.Enum,
-      PropertySchemaOptionType.Date,
-      PropertySchemaOptionType.Datetime,
+      AttributeSchemaOptionType.Integer,
+      AttributeSchemaOptionType.Float,
+      AttributeSchemaOptionType.String,
+      AttributeSchemaOptionType.Enum,
+      AttributeSchemaOptionType.Date,
+      AttributeSchemaOptionType.Datetime,
     ],
   },
   {
     label: t('filter.operands.less'),
     value: FilterOperator.Less,
     type: [
-      PropertySchemaOptionType.Integer,
-      PropertySchemaOptionType.Float,
-      PropertySchemaOptionType.Date,
-      PropertySchemaOptionType.Datetime,
+      AttributeSchemaOptionType.Integer,
+      AttributeSchemaOptionType.Float,
+      AttributeSchemaOptionType.Date,
+      AttributeSchemaOptionType.Datetime,
     ],
   },
   {
     label: t('filter.operands.lessOrEqual'),
     value: FilterOperator.LessOrEqual,
     type: [
-      PropertySchemaOptionType.Integer,
-      PropertySchemaOptionType.Float,
-      PropertySchemaOptionType.Date,
-      PropertySchemaOptionType.Datetime,
+      AttributeSchemaOptionType.Integer,
+      AttributeSchemaOptionType.Float,
+      AttributeSchemaOptionType.Date,
+      AttributeSchemaOptionType.Datetime,
     ],
   },
   {
     label: t('filter.operands.greater'),
     value: FilterOperator.Greater,
     type: [
-      PropertySchemaOptionType.Integer,
-      PropertySchemaOptionType.Float,
-      PropertySchemaOptionType.Date,
-      PropertySchemaOptionType.Datetime,
+      AttributeSchemaOptionType.Integer,
+      AttributeSchemaOptionType.Float,
+      AttributeSchemaOptionType.Date,
+      AttributeSchemaOptionType.Datetime,
     ],
   },
   {
     label: t('filter.operands.greaterOrEqual'),
     value: FilterOperator.GreaterOrEqual,
     type: [
-      PropertySchemaOptionType.Integer,
-      PropertySchemaOptionType.Float,
-      PropertySchemaOptionType.Date,
-      PropertySchemaOptionType.Datetime,
+      AttributeSchemaOptionType.Integer,
+      AttributeSchemaOptionType.Float,
+      AttributeSchemaOptionType.Date,
+      AttributeSchemaOptionType.Datetime,
     ],
   },
   {
     label: t('filter.operands.startsWith'),
     value: FilterOperator.StartsWith,
-    type: [PropertySchemaOptionType.String],
+    type: [AttributeSchemaOptionType.String],
   },
   {
     label: t('filter.operands.startsNotWith'),
     value: FilterOperator.StartsNotWith,
-    type: [PropertySchemaOptionType.String],
+    type: [AttributeSchemaOptionType.String],
   },
   {
     label: t('filter.operands.contains'),
     value: FilterOperator.Contains,
-    type: [PropertySchemaOptionType.String],
+    type: [AttributeSchemaOptionType.String],
   },
   {
     label: t('filter.operands.notContains'),
     value: FilterOperator.NotContains,
-    type: [PropertySchemaOptionType.String],
+    type: [AttributeSchemaOptionType.String],
   },
   {
     label: t('filter.operands.endsWith'),
     value: FilterOperator.EndsWith,
-    type: [PropertySchemaOptionType.String],
+    type: [AttributeSchemaOptionType.String],
   },
   {
     label: t('filter.operands.notEndsWith'),
     value: FilterOperator.NotEndsWith,
-    type: [PropertySchemaOptionType.String],
+    type: [AttributeSchemaOptionType.String],
   },
   {
     label: t('filter.operands.empty'),
     value: FilterOperator.Empty,
-    type: [PropertySchemaOptionType.String],
+    type: [AttributeSchemaOptionType.String],
   },
   {
     label: t('filter.operands.notEmpty'),
     value: FilterOperator.NotEmpty,
-    type: [PropertySchemaOptionType.String],
+    type: [AttributeSchemaOptionType.String],
   },
   {
     label: t('filter.operands.hasPhoto'),
     value: FilterOperator.NotEmpty,
-    type: [PropertySchemaOptionType.Photo],
+    type: [AttributeSchemaOptionType.Photo],
   },
   {
     label: t('filter.operands.isTrue'),
     value: FilterOperator.True,
-    type: [PropertySchemaOptionType.Boolean],
+    type: [AttributeSchemaOptionType.Boolean],
   },
   {
     label: t('filter.operands.isFalse'),
     value: FilterOperator.False,
-    type: [PropertySchemaOptionType.Boolean],
+    type: [AttributeSchemaOptionType.Boolean],
   },
 ];
 

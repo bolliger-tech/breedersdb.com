@@ -1,6 +1,6 @@
 import { BaseTable } from './query';
 
-export enum PropertySchemaOptionType {
+export enum AttributeSchemaOptionType {
   String = 'string',
   Integer = 'integer',
   Float = 'double',
@@ -12,16 +12,16 @@ export enum PropertySchemaOptionType {
   Photo = 'photo',
 }
 
-export interface PropertySchemaStringOptions {
-  type: PropertySchemaOptionType.String;
+export interface AttributeSchemaStringOptions {
+  type: AttributeSchemaOptionType.String;
   validation: {
     maxLen: number | null;
     pattern: string | null;
   };
 }
 
-export interface PropertySchemaIntegerOptions {
-  type: PropertySchemaOptionType.Integer;
+export interface AttributeSchemaIntegerOptions {
+  type: AttributeSchemaOptionType.Integer;
   validation: {
     min: number;
     max: number;
@@ -29,8 +29,8 @@ export interface PropertySchemaIntegerOptions {
   };
 }
 
-export interface PropertySchemaDoubleOptions {
-  type: PropertySchemaOptionType.Float;
+export interface AttributeSchemaDoubleOptions {
+  type: AttributeSchemaOptionType.Float;
   validation: {
     min: number;
     max: number;
@@ -38,60 +38,60 @@ export interface PropertySchemaDoubleOptions {
   };
 }
 
-export interface PropertySchemaBooleanOptions {
-  type: PropertySchemaOptionType.Boolean;
+export interface AttributeSchemaBooleanOptions {
+  type: AttributeSchemaOptionType.Boolean;
 }
 
-export interface PropertySchemaEnumOptions {
-  type: PropertySchemaOptionType.Enum;
+export interface AttributeSchemaEnumOptions {
+  type: AttributeSchemaOptionType.Enum;
   validation: {
     options: string[];
   };
 }
 
-export interface PropertySchemaDateOptions {
-  type: PropertySchemaOptionType.Date;
+export interface AttributeSchemaDateOptions {
+  type: AttributeSchemaOptionType.Date;
 }
 
-export interface PropertySchemaDatetimeOptions {
-  type: PropertySchemaOptionType.Datetime;
+export interface AttributeSchemaDatetimeOptions {
+  type: AttributeSchemaOptionType.Datetime;
 }
 
-export interface PropertySchemaTimeOptions {
-  type: PropertySchemaOptionType.Time;
+export interface AttributeSchemaTimeOptions {
+  type: AttributeSchemaOptionType.Time;
 }
 
-export interface PropertySchemaPhotoOptions {
-  type: PropertySchemaOptionType.Photo;
+export interface AttributeSchemaPhotoOptions {
+  type: AttributeSchemaOptionType.Photo;
 }
 
-export interface PropertySchemaEmptyOption {
+export interface AttributeSchemaEmptyOption {
   allowEmpty: boolean;
 }
 
-export type PropertySchemaOptions = PropertySchemaEmptyOption &
+export type AttributeSchemaOptions = AttributeSchemaEmptyOption &
   (
-    | PropertySchemaStringOptions
-    | PropertySchemaIntegerOptions
-    | PropertySchemaDoubleOptions
-    | PropertySchemaEnumOptions
-    | PropertySchemaBooleanOptions
-    | PropertySchemaDateOptions
-    | PropertySchemaDatetimeOptions
-    | PropertySchemaTimeOptions
-    | PropertySchemaPhotoOptions
+    | AttributeSchemaStringOptions
+    | AttributeSchemaIntegerOptions
+    | AttributeSchemaDoubleOptions
+    | AttributeSchemaEnumOptions
+    | AttributeSchemaBooleanOptions
+    | AttributeSchemaDateOptions
+    | AttributeSchemaDatetimeOptions
+    | AttributeSchemaTimeOptions
+    | AttributeSchemaPhotoOptions
   );
 
-export interface PropertySchema {
+export interface AttributeSchema {
   name: string; // e.g. TreesView.publicid
   label: string; // e.g. Tree -> Publicid
-  options: PropertySchemaOptions;
+  options: AttributeSchemaOptions;
 }
 
 export interface FilterOptionSchemas {
-  [BaseTable.Crossings]: PropertySchema[];
-  [BaseTable.Lots]: PropertySchema[];
-  [BaseTable.Trees]: PropertySchema[];
-  [BaseTable.Cultivars]: PropertySchema[];
-  attributions: PropertySchema[];
+  [BaseTable.Crossings]: AttributeSchema[];
+  [BaseTable.Lots]: AttributeSchema[];
+  [BaseTable.Trees]: AttributeSchema[];
+  [BaseTable.Cultivars]: AttributeSchema[];
+  attributions: AttributeSchema[];
 }

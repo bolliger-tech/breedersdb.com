@@ -96,7 +96,7 @@ import { FilterOperand } from './filterTypes';
 import { useQueryStore } from './queryStore';
 import { FilterDragNode } from './query';
 import QueryFilterRuleDropZone from './QueryFilterRuleDropZone.vue';
-import { PropertySchema } from './filterOptionSchema';
+import { AttributeSchema } from './filterOptionSchema';
 
 const props = defineProps({
   node: {
@@ -104,7 +104,7 @@ const props = defineProps({
     required: true,
   },
   options: {
-    type: Object as PropType<PropertySchema[]>,
+    type: Object as PropType<AttributeSchema[]>,
     required: true,
   },
   operand: {

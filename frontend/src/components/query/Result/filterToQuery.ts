@@ -1,5 +1,5 @@
 import type { FilterNode } from '../Filter/filterNode';
-import { PropertySchemaOptionType } from '../Filter/filterOptionSchema';
+import { AttributeSchemaOptionType } from '../Filter/filterOptionSchema';
 import type { FilterRule } from '../Filter/filterRule';
 import {
   type FilterOperatorOption,
@@ -10,7 +10,7 @@ import type { BaseTable } from '../Filter/query';
 
 type QueryVariable = {
   name: string;
-  type: ReturnType<typeof propertySchemaOptionTypeToGraphQLType>; // GraphQL type
+  type: ReturnType<typeof attributeSchemaOptionTypeToGraphQLType>; // GraphQL type
   value: string | number | boolean; // TODO: handle other types
 };
 type Comparison = {
@@ -151,15 +151,17 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
 function toComparison({
   operator,
   term,
-  type: propertySchemaOptionType,
+  type: attributeSchemaOptionType,
 }: {
   operator: FilterOperatorOption;
   term?: FilterTerm;
-  type: PropertySchemaOptionType;
+  type: AttributeSchemaOptionType;
 }): Comparison | undefined {
   const name = `v${varCounter++}`;
-  const value = cast({ term, type: propertySchemaOptionType });
-  const type = propertySchemaOptionTypeToGraphQLType(propertySchemaOptionType);
+  const value = cast({ term, type: attributeSchemaOptionType });
+  const type = attributeSchemaOptionTypeToGraphQLType(
+    attributeSchemaOptionType,
+  );
 
   if (undefined === value) {
     return;
@@ -256,55 +258,57 @@ function cast({
   type,
 }: {
   term?: FilterTerm;
-  type: PropertySchemaOptionType;
+  type: AttributeSchemaOptionType;
 }) {
   switch (type) {
-    case PropertySchemaOptionType.String:
+    case AttributeSchemaOptionType.String:
       return term?.toString() || '';
-    case PropertySchemaOptionType.Integer:
+    case AttributeSchemaOptionType.Integer:
       return term ? parseInt(term) : NaN;
-    case PropertySchemaOptionType.Float:
+    case AttributeSchemaOptionType.Float:
       return term ? parseFloat(term) : NaN;
-    case PropertySchemaOptionType.Boolean:
+    case AttributeSchemaOptionType.Boolean:
       return String(term).toLowerCase() === 'true';
-    case PropertySchemaOptionType.Enum:
+    case AttributeSchemaOptionType.Enum:
       // TODO: handle enum
       throw new Error('Not implemented');
-    case PropertySchemaOptionType.Date:
+    case AttributeSchemaOptionType.Date:
       if (!term) return undefined;
       return new Date(term).toISOString().split('T')[0];
-    case PropertySchemaOptionType.Datetime:
+    case AttributeSchemaOptionType.Datetime:
       if (!term) return undefined;
       return new Date(term).toISOString();
-    case PropertySchemaOptionType.Time:
+    case AttributeSchemaOptionType.Time:
       // TODO: handle time
       throw new Error('Not implemented');
-    case PropertySchemaOptionType.Photo:
+    case AttributeSchemaOptionType.Photo:
       return true;
     default:
       throw new Error(`Unknown type: ${type}`);
   }
 }
 
-function propertySchemaOptionTypeToGraphQLType(type: PropertySchemaOptionType) {
+function attributeSchemaOptionTypeToGraphQLType(
+  type: AttributeSchemaOptionType,
+) {
   switch (type) {
-    case PropertySchemaOptionType.String:
+    case AttributeSchemaOptionType.String:
       return 'String';
-    case PropertySchemaOptionType.Integer:
+    case AttributeSchemaOptionType.Integer:
       return 'Int';
-    case PropertySchemaOptionType.Float:
+    case AttributeSchemaOptionType.Float:
       return 'float8';
-    case PropertySchemaOptionType.Boolean:
+    case AttributeSchemaOptionType.Boolean:
       return 'Boolean';
-    case PropertySchemaOptionType.Enum:
+    case AttributeSchemaOptionType.Enum:
       throw new Error('Not implemented');
-    case PropertySchemaOptionType.Date:
+    case AttributeSchemaOptionType.Date:
       return 'date';
-    case PropertySchemaOptionType.Datetime:
+    case AttributeSchemaOptionType.Datetime:
       return 'timestamptz';
-    case PropertySchemaOptionType.Time:
+    case AttributeSchemaOptionType.Time:
       throw new Error('Not implemented');
-    case PropertySchemaOptionType.Photo:
+    case AttributeSchemaOptionType.Photo:
       return 'String';
     default:
       throw new Error(`Unknown type: ${type}`);
@@ -318,10 +322,10 @@ function toAttributeValueCondition({
   comparison: Comparison;
   rule: FilterRule;
 }) {
-  const attributeDataType = rule.dataType || PropertySchemaOptionType.String;
+  const attributeDataType = rule.dataType || AttributeSchemaOptionType.String;
   const graphQLDataType =
     comparison.operator === GraphQLComparisonOperator.IsNull
-      ? propertySchemaOptionTypeToGraphQLType(attributeDataType)
+      ? attributeSchemaOptionTypeToGraphQLType(attributeDataType)
       : comparison.variable.type;
 
   switch (graphQLDataType) {

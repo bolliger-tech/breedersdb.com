@@ -1,9 +1,9 @@
 import { useQuery } from '@urql/vue';
 import { graphql, type ResultOf } from 'src/graphql';
 import {
-  PropertySchemaOptionType,
-  type PropertySchema,
-  type PropertySchemaOptions,
+  AttributeSchemaOptionType,
+  type AttributeSchema,
+  type AttributeSchemaOptions,
 } from './filterOptionSchema';
 
 // warning about unused fields is wrong. ignore it.
@@ -42,7 +42,7 @@ async function fetchOptions(labelPrefix: string) {
     query,
   });
 
-  const attributionOptions: PropertySchema[] =
+  const attributionOptions: AttributeSchema[] =
     data.value?.attributes.map((attribute) =>
       convertAttributeToSchemaOption(attribute as Attribute, labelPrefix),
     ) || [];
@@ -53,7 +53,7 @@ async function fetchOptions(labelPrefix: string) {
 function convertAttributeToSchemaOption(
   attribute: Attribute,
   labelPrefix: string,
-): PropertySchema {
+): AttributeSchema {
   return {
     name: `attribute.${attribute.id}`,
     label: `${labelPrefix} > ${attribute.name}`,
@@ -61,14 +61,14 @@ function convertAttributeToSchemaOption(
   };
 }
 
-function getTypeFromDataType(dataType: string): PropertySchemaOptionType {
+function getTypeFromDataType(dataType: string): AttributeSchemaOptionType {
   const type = {
-    TEXT: PropertySchemaOptionType.String,
-    INTEGER: PropertySchemaOptionType.Integer,
-    FLOAT: PropertySchemaOptionType.Float,
-    BOOLEAN: PropertySchemaOptionType.Boolean,
-    DATE: PropertySchemaOptionType.Date,
-    PHOTO: PropertySchemaOptionType.Photo,
+    TEXT: AttributeSchemaOptionType.String,
+    INTEGER: AttributeSchemaOptionType.Integer,
+    FLOAT: AttributeSchemaOptionType.Float,
+    BOOLEAN: AttributeSchemaOptionType.Boolean,
+    DATE: AttributeSchemaOptionType.Date,
+    PHOTO: AttributeSchemaOptionType.Photo,
   }[dataType];
 
   if (typeof type === 'undefined') {
@@ -78,11 +78,11 @@ function getTypeFromDataType(dataType: string): PropertySchemaOptionType {
   return type;
 }
 
-function getOptionsFromAttribute(attribute: Attribute): PropertySchemaOptions {
+function getOptionsFromAttribute(attribute: Attribute): AttributeSchemaOptions {
   const type = getTypeFromDataType(attribute.data_type);
 
   switch (type) {
-    case PropertySchemaOptionType.String:
+    case AttributeSchemaOptionType.String:
       return {
         type,
         allowEmpty: false,
@@ -91,8 +91,8 @@ function getOptionsFromAttribute(attribute: Attribute): PropertySchemaOptions {
           pattern: null,
         },
       };
-    case PropertySchemaOptionType.Integer:
-    case PropertySchemaOptionType.Float:
+    case AttributeSchemaOptionType.Integer:
+    case AttributeSchemaOptionType.Float:
       return {
         type,
         allowEmpty: false,
@@ -100,12 +100,12 @@ function getOptionsFromAttribute(attribute: Attribute): PropertySchemaOptions {
           Attribute['validation_rule']
         >,
       };
-    case PropertySchemaOptionType.Photo:
+    case AttributeSchemaOptionType.Photo:
       return {
         type,
         allowEmpty: true,
       };
-    case PropertySchemaOptionType.Enum:
+    case AttributeSchemaOptionType.Enum:
       throw Error('Enum is not supported yet');
     default:
       return {

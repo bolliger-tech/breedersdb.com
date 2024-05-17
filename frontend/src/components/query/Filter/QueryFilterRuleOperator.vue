@@ -6,7 +6,7 @@
     :error-message="t('filter.error.operator')"
     :label="t('filter.operator')"
     :model-value="modelValue"
-    :options="filteredOperatorOptions"
+    :options="filteredOptions"
     autocomplete="off"
     dense
     hide-bottom-space
@@ -15,7 +15,7 @@
     fill-input
     hide-selected
     clearable
-    @filter="filterOperatorOptions"
+    @filter="filterOptions"
     @update:model-value="(value) => $emit('update:modelValue', value)"
   >
     <template #no-option>
@@ -36,7 +36,10 @@ import {
   AttributeSchemaOptionType,
 } from './filterOptionSchema';
 import { QSelect } from 'quasar';
-import { filterOptions, FilterUpdateFn } from './filterRuleSelectOptionFilter';
+import {
+  filterSelectOptions,
+  FilterSelectOptionsUpdateFn,
+} from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
 
 export interface QueryFilterRuleOperatorProps {
@@ -55,7 +58,7 @@ const emit = defineEmits<{
 
 const props = defineProps<QueryFilterRuleOperatorProps>();
 
-const allOperatorOptions: FilterOperatorOption[] = [
+const allOptions: FilterOperatorOption[] = [
   {
     label: t('filter.operands.equals'),
     value: FilterOperator.Equal,
@@ -177,8 +180,8 @@ const allOperatorOptions: FilterOperatorOption[] = [
   },
 ];
 
-const availableOperatorOptions = computed<FilterOperatorOption[]>(() => {
-  return allOperatorOptions
+const applicableOptions = computed<FilterOperatorOption[]>(() => {
+  return allOptions
     .filter((option: FilterOperatorOption) =>
       option.type.find((type) => type === props.schema?.options.type),
     )
@@ -193,14 +196,14 @@ const availableOperatorOptions = computed<FilterOperatorOption[]>(() => {
     });
 });
 
-const filteredOperatorOptions = ref(availableOperatorOptions.value);
+const filteredOptions = ref(applicableOptions.value);
 
-function filterOperatorOptions(value: string, update: FilterUpdateFn) {
-  filterOptions<FilterOperatorOption>(
+function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
+  filterSelectOptions<FilterOperatorOption>(
     value,
     update,
-    availableOperatorOptions.value,
-    filteredOperatorOptions,
+    applicableOptions.value,
+    filteredOptions,
     (item) => item.label,
   );
 }
@@ -209,7 +212,7 @@ const isValid = computed<boolean>(() => {
   if (!!props.modelValue && 'value' in props.modelValue) {
     const modelValue = props.modelValue;
     return (
-      availableOperatorOptions.value.findIndex(
+      applicableOptions.value.findIndex(
         (item) => item.value === modelValue.value,
       ) > -1
     );

@@ -1,14 +1,14 @@
 import { QSelect } from 'quasar';
 import { Ref } from 'vue';
 
-export type FilterUpdateFn = (
+export type FilterSelectOptionsUpdateFn = (
   filterFn: () => void,
   selectFn: (ref: QSelect) => void,
 ) => void;
 
-export function filterOptions<T>(
+export function filterSelectOptions<T>(
   value: string,
-  update: FilterUpdateFn,
+  update: FilterSelectOptionsUpdateFn,
   allOptions: Array<T>,
   filteredOptions: Ref<Array<T>>,
   valueExtractorFn: (item: T) => string,

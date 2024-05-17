@@ -10,7 +10,7 @@
       :error-message="t('filter.error.term')"
       :label="t('filter.term')"
       :model-value="modelValue"
-      :options="filteredSelectOptions"
+      :options="filteredOptions"
       autocomplete="off"
       dense
       hide-bottom-space
@@ -19,7 +19,7 @@
       fill-input
       hide-selected
       clearable
-      @filter="filterSelectOptions"
+      @filter="filterOptions"
       @update:model-value="(value) => $emit('update:modelValue', value)"
     >
       <template #no-option>
@@ -62,12 +62,14 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import {
   AttributeSchema,
-  AttributeSchemaOptions,
   AttributeSchemaOptionType,
 } from './filterOptionSchema';
 import { useI18n } from 'src/composables/useI18n';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
-import { filterOptions, FilterUpdateFn } from './filterRuleSelectOptionFilter';
+import {
+  filterSelectOptions,
+  FilterSelectOptionsUpdateFn,
+} from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
 
 export interface QueryFilterRuleTermProps {
@@ -107,62 +109,52 @@ const isDateTime = computed<boolean>(() => {
   return type.value === AttributeSchemaOptionType.Datetime;
 });
 
-const step = computed<number | undefined>(() => {
-  const options: AttributeSchemaOptions | undefined =
-    props.schema?.options || undefined;
-  if (options && 'validation' in options && 'step' in options.validation) {
-    return options.validation.step;
+const validationOptions = computed(() => {
+  const options = props.schema?.options;
+  if (options && 'validation' in options) {
+    return options.validation;
   }
   return undefined;
+});
+
+const step = computed<number | undefined>(() => {
+  return validationOptions.value && 'step' in validationOptions.value
+    ? validationOptions.value.step
+    : undefined;
 });
 
 const minValue = computed<number | undefined>(() => {
-  const options: AttributeSchemaOptions | undefined =
-    props.schema?.options || undefined;
-  if (options && 'validation' in options && 'min' in options.validation) {
-    return options.validation.min;
-  }
-  return undefined;
+  return validationOptions.value && 'min' in validationOptions.value
+    ? validationOptions.value.min
+    : undefined;
 });
 
 const maxValue = computed<number | undefined>(() => {
-  const options: AttributeSchemaOptions | undefined =
-    props.schema?.options || undefined;
-  if (options && 'validation' in options && 'max' in options.validation) {
-    return options.validation.max;
-  }
-  return undefined;
+  return validationOptions.value && 'max' in validationOptions.value
+    ? validationOptions.value.max
+    : undefined;
 });
 
 const maxLen = computed<number | undefined>(() => {
-  const options: AttributeSchemaOptions | undefined =
-    props.schema?.options || undefined;
-  if (options && 'validation' in options && 'maxLen' in options.validation) {
-    return options.validation.maxLen || undefined;
-  }
-  return undefined;
+  return validationOptions.value && 'maxLen' in validationOptions.value
+    ? validationOptions.value.maxLen ?? undefined
+    : undefined;
 });
 
-const pattern = computed<string | undefined>(() => {
-  const options: AttributeSchemaOptions | undefined =
-    props.schema?.options || undefined;
-  if (options && 'validation' in options && 'pattern' in options.validation) {
-    return options.validation.pattern || undefined;
-  }
-  return undefined;
+const pattern = computed<string | null | undefined>(() => {
+  return validationOptions.value && 'pattern' in validationOptions.value
+    ? validationOptions.value.pattern
+    : undefined;
 });
 
 const { localizedSort } = useLocalizedSort();
-const selectOptions = computed<string[]>(() => {
-  const options: AttributeSchemaOptions | null = props.schema?.options || null;
-  if (options && 'validation' in options && 'options' in options.validation) {
-    const selectOptions = options.validation.options;
-    return localizedSort(selectOptions);
-  }
-  return [];
+const options = computed<string[]>(() => {
+  return validationOptions.value && 'options' in validationOptions.value
+    ? localizedSort(validationOptions.value.options)
+    : [];
 });
 
-const filteredSelectOptions = ref(selectOptions.value);
+const filteredOptions = ref(options.value);
 
 const inputType = computed(() => {
   switch (type.value) {
@@ -282,7 +274,7 @@ const isValidEnum = computed<boolean>(() => {
     return false;
   }
 
-  return selectOptions.value.indexOf(props.modelValue) > -1;
+  return options.value.indexOf(props.modelValue) > -1;
 });
 
 const isValidPhoto = computed<boolean>(() => {
@@ -317,12 +309,12 @@ const isInvalid = computed<boolean>(() => {
   return !isValid.value && props.modelValue !== undefined;
 });
 
-function filterSelectOptions(value: string, update: FilterUpdateFn) {
-  filterOptions<string>(
+function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
+  filterSelectOptions<string>(
     value,
     update,
-    selectOptions.value,
-    filteredSelectOptions,
+    options.value,
+    filteredOptions,
     (item) => item,
   );
 }

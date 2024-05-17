@@ -4,7 +4,7 @@
     :error-message="t('filter.error.column')"
     :label="t('filter.column')"
     :model-value="modelValue"
-    :options="filteredFilterOptions"
+    :options="filteredOptions"
     autocomplete="off"
     :bg-color="inputBgColor"
     dense
@@ -14,7 +14,7 @@
     fill-input
     hide-selected
     clearable
-    @filter="filterFilterOptions"
+    @filter="filterOptions"
     @update:model-value="(value) => $emit('update:modelValue', value)"
   >
     <template #no-option>
@@ -32,9 +32,9 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { AttributeSchema } from './filterOptionSchema';
 import { FilterOption } from './filterTypes';
 import {
-  filterOptions as filterSelectOptions,
-  FilterUpdateFn,
-} from './filterRuleSelectOptionFilter';
+  filterSelectOptions,
+  FilterSelectOptionsUpdateFn,
+} from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
 
 export interface QueryFilterRuleColumnProps {
@@ -52,7 +52,7 @@ const emit = defineEmits<{
 
 const props = defineProps<QueryFilterRuleColumnProps>();
 
-const filterOptions = computed<FilterOption[]>(() => {
+const options = computed<FilterOption[]>(() => {
   return props.options.map((option: AttributeSchema) => {
     return {
       label: option.label,
@@ -62,23 +62,22 @@ const filterOptions = computed<FilterOption[]>(() => {
   });
 });
 
-const filteredFilterOptions = ref(filterOptions.value);
+const filteredOptions = ref(options.value);
 
-function filterFilterOptions(value: string, update: FilterUpdateFn) {
+function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
   filterSelectOptions<FilterOption>(
     value,
     update,
-    filterOptions.value,
-    filteredFilterOptions,
+    options.value,
+    filteredOptions,
     (item) => item.label,
   );
 }
 
 const isValid = computed<boolean>(() => {
   return (
-    filterOptions.value.findIndex(
-      (item) => item.value === props.modelValue?.value,
-    ) > -1
+    options.value.findIndex((item) => item.value === props.modelValue?.value) >
+    -1
   );
 });
 

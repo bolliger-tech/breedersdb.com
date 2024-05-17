@@ -17,7 +17,7 @@ import {
   FilterType,
 } from 'src/components/Query/Filter/filterTypes';
 import QueryFilterRuleColumn from 'src/components/Query/Filter/QueryFilterRuleColumn.vue';
-import QueryFilterRuleComparator from 'src/components/Query/Filter/QueryFilterRuleComparator.vue';
+import QueryFilterRuleOperator from 'src/components/Query/Filter/QueryFilterRuleOperator.vue';
 import QueryFilterRuleCriteria from 'src/components/Query/Filter/QueryFilterRuleCriteria.vue';
 
 addQuasarPlugins();
@@ -147,7 +147,7 @@ describe('AnalyzePage', () => {
           },
         },
       });
-      const comparator = await wrapper.findComponent(QueryFilterRuleComparator);
+      const comparator = await wrapper.findComponent(QueryFilterRuleOperator);
       await comparator.setValue({
         label: 'greater than',
         value: '>',

@@ -36,7 +36,7 @@ import { QSelect } from 'quasar';
 import { filterOptions, FilterUpdateFn } from './filterRuleSelectOptionFilter';
 import { useInputBackground } from './useQueryRule';
 
-export interface QueryFilterRuleComparatorProps {
+export interface QueryFilterRuleOperatorProps {
   schema?: PropertySchema;
   disabled: boolean;
   modelValue?: FilterComparatorOption;
@@ -50,7 +50,7 @@ const emit = defineEmits<{
   (e: 'invalid'): void;
 }>();
 
-const props = defineProps<QueryFilterRuleComparatorProps>();
+const props = defineProps<QueryFilterRuleOperatorProps>();
 
 const allComparatorOptions: FilterComparatorOption[] = [
   {

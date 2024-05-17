@@ -29,7 +29,7 @@
           />
         </div>
         <div class="col-12 col-md-4">
-          <QueryFilterRuleComparator
+          <QueryFilterRuleOperator
             :schema="column?.schema"
             :disabled="column === undefined"
             :model-value="comparator"
@@ -91,7 +91,7 @@ import { FilterNode } from './filterNode';
 import { PropertySchema, PropertySchemaOptionType } from './filterOptionSchema';
 import QueryFilterRuleCriteria from './QueryFilterRuleCriteria.vue';
 import QueryFilterRuleColumn from './QueryFilterRuleColumn.vue';
-import QueryFilterRuleComparator from './QueryFilterRuleComparator.vue';
+import QueryFilterRuleOperator from './QueryFilterRuleOperator.vue';
 import QueryFilterRuleExplainer from './QueryFilterRuleExplainer.vue';
 import QueryFilterRuleIncludeEntitiesWithoutAttributionsToggle from './QueryFilterRuleIncludeEntitiesWithoutAttributionsToggle.vue';
 

@@ -18,12 +18,12 @@ import { useQueryStore } from './queryStore';
 import { computed } from 'vue';
 import { BaseTable } from './query';
 
-export interface QueryFilterRuleIncludeEntitiesWithoutAttributionsToggleProps {
+export interface QueryFilterRuleNoAttributionsPredicateProps {
   attributeName?: string;
   modelValue?: boolean;
 }
 
-defineProps<QueryFilterRuleIncludeEntitiesWithoutAttributionsToggleProps>();
+defineProps<QueryFilterRuleNoAttributionsPredicateProps>();
 
 defineEmits<{
   'update:modelValue': [value: boolean];

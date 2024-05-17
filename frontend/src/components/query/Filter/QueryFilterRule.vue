@@ -50,7 +50,7 @@
           />
         </div>
         <div v-if="isAttribute" class="text-body2 col-12">
-          <QueryFilterRuleIncludeEntitiesWithoutAttributionsToggle
+          <QueryFilterRuleNoAttributionsPredicate
             :attributeName="column?.label"
             :model-value="includeEntitiesWithoutAttributions"
             @update:model-value="updateIncludeEntitiesWithoutAttributions"
@@ -93,7 +93,7 @@ import QueryFilterRuleTerm from './QueryFilterRuleTerm.vue';
 import QueryFilterRuleColumn from './QueryFilterRuleColumn.vue';
 import QueryFilterRuleOperator from './QueryFilterRuleOperator.vue';
 import QueryFilterRuleExplainer from './QueryFilterRuleExplainer.vue';
-import QueryFilterRuleIncludeEntitiesWithoutAttributionsToggle from './QueryFilterRuleIncludeEntitiesWithoutAttributionsToggle.vue';
+import QueryFilterRuleNoAttributionsPredicate from './QueryFilterRuleNoAttributionsPredicate.vue';
 
 defineEmits<{
   (e: 'dragMouseDown'): void;

@@ -43,7 +43,7 @@ import { FilterNode } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
 import { PropertySchema } from './filterOptionSchema';
 import { useQueryStore } from './queryStore';
-import useQueryLocalStorageHelper from './queryLocalStorageHelper';
+import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
 import { BaseTable } from './query';
 
 const { t } = useI18n();

@@ -4,7 +4,7 @@ import { FilterNode } from './filterNode';
 import { FilterOperand, FilterType } from './filterTypes';
 import { MarkFormProperty } from './form';
 // import useApi from 'src/composables/api';
-import useQueryLocalStorageHelper from './queryLocalStorageHelper';
+import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
 import { FilterOptionSchemas, PropertySchema } from './filterOptionSchema';
 import { QueryGroup } from './queryGroup';
 

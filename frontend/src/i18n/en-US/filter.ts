@@ -17,7 +17,7 @@ export const filter = {
   invalid: 'Invalid filter rules. Rectify or delete them.',
   valid: 'Congrats, all rules are valid.',
 
-  marks: 'marks',
+  attributions: 'attributions',
   crossings: 'crossings',
   lots: 'lots',
   cultivars: 'cultivars',
@@ -108,14 +108,14 @@ export const filter = {
 //   motherTrees: 'mother trees',
 //   scionsBundles: 'scions bundles',
 
-//   marks: 'marks',
-//   Marks: 'Marks',
+//   attributions: 'attributions',
+//   attributions: 'attributions',
 
 //   defaultFilter: 'Filter criteria',
 //   batchFilter: 'Filter criteria to select the batches',
 //   varietyFilter: 'Filter criteria to select the varieties',
 //   treeFilter: 'Filter criteria to select the trees',
-//   markFilter: 'Filter criteria to select the marks',
+//   markFilter: 'Filter criteria to select the attributions',
 
 //   noFilter:
 //     'No filter criteria defined. All {entity} will be selected. Click the plus button below to add filter criteria.',
@@ -129,7 +129,7 @@ export const filter = {
 //     'Invalid filter rules. Rectify or delete them to get results.',
 //   results: 'Results',
 //   addColumn: 'Add Column',
-//   showRowsWithoutMarks: 'Show rows without marks',
+//   showRowsWithoutattributions: 'Show rows without attributions',
 
 //   debugShow: 'Show debug info',
 //   debugHide: 'Hide debug info',

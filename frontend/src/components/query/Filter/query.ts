@@ -79,5 +79,5 @@ export interface MarkQuery {
   baseFilter: FilterNode;
   markFilter?: FilterNode;
   visibleColumns: string[];
-  showRowsWithoutMarks: boolean;
+  showRowsWithoutattributions: boolean;
 }

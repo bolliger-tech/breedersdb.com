@@ -63,7 +63,7 @@ const isValid = computed(() => props.filter.isValid());
 
 const entityName = computed(() => {
   if (props.filter.getFilterType() === FilterType.Mark) {
-    return t('filter.marks');
+    return t('filter.attributions');
   }
 
   switch (store.baseTable) {

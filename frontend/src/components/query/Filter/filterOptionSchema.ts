@@ -93,5 +93,5 @@ export interface FilterOptionSchemas {
   [BaseTable.Lots]: PropertySchema[];
   [BaseTable.Trees]: PropertySchema[];
   [BaseTable.Cultivars]: PropertySchema[];
-  Marks: PropertySchema[];
+  attributions: PropertySchema[];
 }

@@ -27,7 +27,7 @@ export interface QueryState {
   markFormProperties: MarkFormProperty[];
   filterOptionSchemas: FilterOptionSchemas | undefined;
   visibleColumns: string[];
-  showRowsWithoutMarks: boolean;
+  showRowsWithoutattributions: boolean;
   queryGroups: QueryGroup[];
   queryGroup: QueryGroup | null;
   queryCode: string;
@@ -46,7 +46,8 @@ export const useQueryStore = defineStore('query', {
     markFormProperties: [],
     filterOptionSchemas: undefined,
     visibleColumns: localStorageHelper.getVisibleColumns(),
-    showRowsWithoutMarks: localStorageHelper.getShowRowsWithoutMarks(true),
+    showRowsWithoutattributions:
+      localStorageHelper.getShowRowsWithoutattributions(true),
     queryGroups: [],
     queryGroup: null,
     queryCode: '',
@@ -55,7 +56,7 @@ export const useQueryStore = defineStore('query', {
   }),
 
   getters: {
-    marksAvailable(state) {
+    attributionsAvailable(state) {
       const s = state as QueryState;
       return (
         s.baseTable === BaseTable.Lots ||
@@ -81,7 +82,7 @@ export const useQueryStore = defineStore('query', {
       const options: PropertySchema[] =
         [...s.filterOptionSchemas[s.baseTable]] || [];
 
-      if (this.marksAvailable) {
+      if (this.attributionsAvailable) {
         // options.push(...this.markPropertySchema);
       }
 
@@ -94,7 +95,7 @@ export const useQueryStore = defineStore('query', {
         return [];
       }
 
-      return s.filterOptionSchemas['Marks'] || [];
+      return s.filterOptionSchemas['attributions'] || [];
     },
 
     getBaseFilter(state) {
@@ -116,14 +117,14 @@ export const useQueryStore = defineStore('query', {
     getVisibleColumns(state) {
       const columns = (state as QueryState).visibleColumns;
       const baseTable = (state as QueryState).baseTable;
-      const marksAvailable = this.marksAvailable;
+      const attributionsAvailable = this.attributionsAvailable;
 
       return columns.filter((col: string): boolean => {
         if (col.startsWith(`${baseTable}View.`)) {
           return true;
         }
 
-        return marksAvailable && col.startsWith('Mark.');
+        return attributionsAvailable && col.startsWith('Mark.');
       });
     },
 
@@ -136,12 +137,12 @@ export const useQueryStore = defineStore('query', {
       );
     },
 
-    rowsWithMarksOnly(state) {
-      if (!this.marksAvailable || !this.hasVisibleMarkColumns) {
+    rowsWithattributionsOnly(state) {
+      if (!this.attributionsAvailable || !this.hasVisibleMarkColumns) {
         return false;
       }
 
-      return !(state as QueryState).showRowsWithoutMarks;
+      return !(state as QueryState).showRowsWithoutattributions;
     },
   },
 
@@ -203,9 +204,9 @@ export const useQueryStore = defineStore('query', {
       localStorageHelper.setVisibleColumns(columns);
     },
 
-    setShowRowsWithoutMarks(show: boolean) {
-      this.showRowsWithoutMarks = show;
-      localStorageHelper.setShowRowsWithoutMarks(show);
+    setShowRowsWithoutattributions(show: boolean) {
+      this.showRowsWithoutattributions = show;
+      localStorageHelper.setShowRowsWithoutattributions(show);
     },
 
     async setQueryGroupById(id: number) {

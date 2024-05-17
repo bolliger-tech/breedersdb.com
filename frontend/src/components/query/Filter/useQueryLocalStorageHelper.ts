@@ -65,15 +65,17 @@ function getMarkFilterKey() {
   return `breedersdb_query_mark_filter--${baseTableName}`;
 }
 
-function setShowRowsWithoutMarks(show: boolean) {
+function setShowRowsWithoutattributions(show: boolean) {
   window.localStorage.setItem(
-    getShowRowsWithoutMarksKey(),
+    getShowRowsWithoutattributionsKey(),
     JSON.stringify(show),
   );
 }
 
-function getShowRowsWithoutMarks(defaultValue: boolean): boolean {
-  const encoded = window.localStorage.getItem(getShowRowsWithoutMarksKey());
+function getShowRowsWithoutattributions(defaultValue: boolean): boolean {
+  const encoded = window.localStorage.getItem(
+    getShowRowsWithoutattributionsKey(),
+  );
 
   // noinspection JSIncompatibleTypesComparison
   if (null === encoded) {
@@ -83,8 +85,8 @@ function getShowRowsWithoutMarks(defaultValue: boolean): boolean {
   return JSON.parse(encoded) as boolean;
 }
 
-function getShowRowsWithoutMarksKey() {
-  return 'breedersdb_query_show_rows_without_marks';
+function getShowRowsWithoutattributionsKey() {
+  return 'breedersdb_query_show_rows_without_attributions';
 }
 
 export default function useQueryLocalStorageHelper() {
@@ -97,7 +99,7 @@ export default function useQueryLocalStorageHelper() {
     getBaseFilter,
     setMarkFilter,
     getMarkFilter,
-    setShowRowsWithoutMarks,
-    getShowRowsWithoutMarks,
+    setShowRowsWithoutattributions,
+    getShowRowsWithoutattributions,
   };
 }

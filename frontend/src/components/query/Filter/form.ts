@@ -14,19 +14,19 @@ export type MarkFormFieldNumberConstraint = null | {
 };
 export type MarkValueValue = string | boolean | number | Date | File;
 
-export interface MarkFormProperty {
+export interface Attribute {
   id: number;
   name: string;
   number_constraints: MarkFormFieldNumberConstraint;
   field_type: MarkFormFieldType;
   note: string | null;
-  mark_form_property_type_id: number;
+  attribute_type_id: number;
   created: string | null;
   modified: string | null;
   tree_property: boolean;
   variety_property: boolean;
   batch_property: boolean;
-  // mark_form_property_type?: MarkFormPropertyType
+  // attribute_type?: AttributeType
 }
 
 export interface MarkForm {
@@ -35,19 +35,19 @@ export interface MarkForm {
   description: string | null;
   created: string | null;
   modified: string | null;
-  mark_form_properties?: MarkFormProperty[] | null;
+  attributes?: Attribute[] | null;
 }
 
 export interface MarkValue {
   id?: number;
   value: MarkValueValue;
   exceptional_mark: boolean;
-  mark_form_property_id: number;
+  attribute_id: number;
   mark_id?: number;
   created?: string | null;
   modified?: string | null;
   mark_form?: MarkForm;
-  mark_form_property?: MarkFormProperty;
+  attribute?: Attribute;
 }
 
 export interface Mark {

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { BaseTable, FilterDragNode } from './query';
 import { FilterNode } from './filterNode';
 import { FilterOperand, FilterType } from './filterTypes';
-import { MarkFormProperty } from './form';
+import { Attribute } from './form';
 // import useApi from 'src/composables/api';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
 import { FilterOptionSchemas, PropertySchema } from './filterOptionSchema';
@@ -24,7 +24,7 @@ export interface QueryState {
   baseFilter: FilterNode;
   markFilter: FilterNode;
   filterDragNode: FilterDragNode;
-  markFormProperties: MarkFormProperty[];
+  attributes: Attribute[];
   filterOptionSchemas: FilterOptionSchemas | undefined;
   visibleColumns: string[];
   showRowsWithoutattributions: boolean;
@@ -43,7 +43,7 @@ export const useQueryStore = defineStore('query', {
     baseFilter: localStorageHelper.getBaseFilter(defaultBaseFilter), // use getters and actions
     markFilter: localStorageHelper.getMarkFilter(defaultMarkFilter), // use getters and actions
     filterDragNode: false,
-    markFormProperties: [],
+    attributes: [],
     filterOptionSchemas: undefined,
     visibleColumns: localStorageHelper.getVisibleColumns(),
     showRowsWithoutattributions:
@@ -67,9 +67,9 @@ export const useQueryStore = defineStore('query', {
 
     markPropertySchema(state) {
       const s = state as QueryState;
-      return s.markFormProperties.map(
+      return s.attributes.map(
         (s) => s,
-        // markFormPropertyConverter.toPropertySchema,
+        // attributeConverter.toPropertySchema,
       );
     },
 
@@ -147,13 +147,13 @@ export const useQueryStore = defineStore('query', {
   },
 
   actions: {
-    async maybeLoadMarkFormProperties() {
-      if (!this.markFormProperties.length) {
+    async maybeLoadAttributes() {
+      if (!this.attributes.length) {
         console.log('loading mark form properties');
         // await useApi()
-        //   .get<MarkFormProperty[]>('mark-form-properties')
+        //   .get<Attribute[]>('mark-form-properties')
         //   .then(
-        //     (data) => (this.markFormProperties = data as MarkFormProperty[]),
+        //     (data) => (this.attributes = data as Attribute[]),
         //   );
       }
     },
@@ -184,7 +184,7 @@ export const useQueryStore = defineStore('query', {
 
     async ensureSchemasLoaded() {
       const base = this.maybeLoadFilterOptionSchemas();
-      const mark = this.maybeLoadMarkFormProperties();
+      const mark = this.maybeLoadAttributes();
 
       await Promise.all([base, mark]);
     },

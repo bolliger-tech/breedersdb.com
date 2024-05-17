@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { computed, PropType, ref } from 'vue';
-import useFilterNodeActions from './filterNodeActions';
+import useFilterNodeActions from './useFilterNodeActions';
 import { useI18n } from 'src/composables/useI18n';
 import QueryFilterRule from './QueryFilterRule.vue';
 import FilterRuleButtonAdd from './QueryFilterRuleAddButton.vue';

@@ -70,7 +70,7 @@ import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { filterOptions, FilterUpdateFn } from './filterRuleSelectOptionFilter';
 import { useInputBackground } from './useQueryRule';
 
-export interface QueryFilterRuleCriteriaProps {
+export interface QueryFilterRuleTermProps {
   schema?: PropertySchema;
   disabled: boolean;
   hide: boolean;
@@ -85,7 +85,7 @@ const emit = defineEmits<{
   (e: 'invalid'): void;
 }>();
 
-const props = defineProps<QueryFilterRuleCriteriaProps>();
+const props = defineProps<QueryFilterRuleTermProps>();
 
 const type = computed<null | PropertySchemaOptionType>(
   () => props.schema?.options.type || null,

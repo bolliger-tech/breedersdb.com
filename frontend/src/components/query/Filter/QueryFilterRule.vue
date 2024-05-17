@@ -39,7 +39,7 @@
           />
         </div>
         <div class="col-12 col-md-4">
-          <QueryFilterRuleCriteria
+          <QueryFilterRuleTerm
             :schema="column?.schema || undefined"
             :disabled="comparator === undefined"
             :hide="!hasInputCriteria"
@@ -89,7 +89,7 @@ import {
 } from './filterTypes';
 import { FilterNode } from './filterNode';
 import { PropertySchema, PropertySchemaOptionType } from './filterOptionSchema';
-import QueryFilterRuleCriteria from './QueryFilterRuleCriteria.vue';
+import QueryFilterRuleTerm from './QueryFilterRuleTerm.vue';
 import QueryFilterRuleColumn from './QueryFilterRuleColumn.vue';
 import QueryFilterRuleOperator from './QueryFilterRuleOperator.vue';
 import QueryFilterRuleExplainer from './QueryFilterRuleExplainer.vue';

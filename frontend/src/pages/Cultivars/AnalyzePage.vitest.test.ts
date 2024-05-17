@@ -18,7 +18,7 @@ import {
 } from 'src/components/Query/Filter/filterTypes';
 import QueryFilterRuleColumn from 'src/components/Query/Filter/QueryFilterRuleColumn.vue';
 import QueryFilterRuleOperator from 'src/components/Query/Filter/QueryFilterRuleOperator.vue';
-import QueryFilterRuleCriteria from 'src/components/Query/Filter/QueryFilterRuleCriteria.vue';
+import QueryFilterRuleTerm from 'src/components/Query/Filter/QueryFilterRuleTerm.vue';
 
 addQuasarPlugins();
 
@@ -153,7 +153,7 @@ describe('AnalyzePage', () => {
         value: '>',
         type: ['integer', 'double', 'date', 'datetime'],
       });
-      const criteria = await wrapper.findComponent(QueryFilterRuleCriteria);
+      const criteria = await wrapper.findComponent(QueryFilterRuleTerm);
       await criteria.setValue('1');
 
       await flushPromises();

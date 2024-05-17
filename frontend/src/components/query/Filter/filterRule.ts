@@ -46,7 +46,7 @@ export class FilterRule {
   }
   set includeEntitiesWithoutAttributions(value: boolean) {
     if (!this.isAttribute)
-      throw new Error('Only attributions can have this attribute');
+      throw new Error('Only attributions can have this property');
     this._includeEntitiesWithoutAttributions = value;
   }
 }

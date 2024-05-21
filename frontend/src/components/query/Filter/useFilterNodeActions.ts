@@ -1,35 +1,34 @@
-import { FilterNode } from './filterNode';
-import { FilterOperand } from './filterTypes';
+import { FilterNode, FilterConjunction } from './filterNode';
 import { FilterRule } from './filterRule';
 
 export default function useFilterNodeActions() {
-  function addLeaf(parent: FilterNode, operand: FilterOperand) {
+  function addLeaf(parent: FilterNode, conjunction: FilterConjunction) {
     const rule = new FilterRule();
 
     if (parent.getChildCount() <= 1) {
-      parent.setChildrensOperand(operand);
+      parent.setChildrensConjunction(conjunction);
     }
 
-    if (parent.getChildrensOperand() === operand) {
+    if (parent.getChildrensConjunction() === conjunction) {
       const leaf = FilterNode.FilterLeaf(parent, rule);
       parent.appendChild(leaf);
 
       return;
     }
 
-    const parentsOperand = parent.getChildrensOperand();
-    if (!parentsOperand) {
+    const parentsConjunction = parent.getChildrensConjunction();
+    if (!parentsConjunction) {
       throw Error(
-        'Failed to add leaf: Missing childrensOperand on parent node.',
+        'Failed to add leaf: Missing childrensConjunction on parent node.',
       );
     }
 
     const leaf = FilterNode.FilterLeaf(parent, rule);
-    const intermediateNode = FilterNode.FilterNode(parentsOperand, parent);
+    const intermediateNode = FilterNode.FilterNode(parentsConjunction, parent);
 
     intermediateNode.setChildren(parent.getChildren());
     parent.setChildren([intermediateNode, leaf]);
-    parent.setChildrensOperand(operand);
+    parent.setChildrensConjunction(conjunction);
 
     return;
   }

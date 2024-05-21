@@ -6,8 +6,8 @@
   >
     <div
       :class="{
-        'filter-rule--and': operand === FilterOperand.And,
-        'filter-rule--or': operand === FilterOperand.Or,
+        'filter-rule--and': conjunction === FilterConjunction.And,
+        'filter-rule--or': conjunction === FilterConjunction.Or,
       }"
       class="row items-center"
     >
@@ -24,8 +24,6 @@
             :model-value="column"
             :options="options"
             @update:model-value="updateColumn"
-            @valid="columnIsValid = true"
-            @invalid="columnIsValid = false"
           />
         </div>
         <div class="col-12 col-md-4">
@@ -34,19 +32,15 @@
             :disabled="column === undefined"
             :model-value="operator"
             @update:model-value="updateOperator"
-            @valid="operatorIsValid = true"
-            @invalid="operatorIsValid = false"
           />
         </div>
         <div class="col-12 col-md-4">
           <QueryFilterRuleTerm
             :schema="column?.schema || undefined"
             :disabled="operator === undefined"
-            :hide="!hasInputTerm"
+            :hide="!requiresTerm"
             :model-value="term"
             @update:model-value="updateTerm"
-            @valid="termInputIsValid = true"
-            @invalid="termInputIsValid = false"
           />
         </div>
         <div v-if="isAttribute" class="text-body2 col-12">
@@ -79,24 +73,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, PropType, ref, watch } from 'vue';
-import {
-  FilterOperator,
-  FilterOperatorOption,
-  FilterTerm,
-  FilterOperand,
-  FilterOption,
-} from './filterTypes';
-import { FilterNode } from './filterNode';
-import {
-  AttributeSchema,
-  AttributeSchemaOptionType,
-} from './filterOptionSchemaTypes';
+import { computed, PropType, watch } from 'vue';
+import { FilterNode, FilterConjunction } from './filterNode';
 import QueryFilterRuleTerm from './QueryFilterRuleTerm.vue';
 import QueryFilterRuleColumn from './QueryFilterRuleColumn.vue';
 import QueryFilterRuleOperator from './QueryFilterRuleOperator.vue';
 import QueryFilterRuleExplainer from './QueryFilterRuleExplainer.vue';
 import QueryFilterRuleNoAttributionsPredicate from './QueryFilterRuleNoAttributionsPredicate.vue';
+import { FilterColumn } from './filterColumn';
+import { FilterOperator } from './filterOperator';
+import { FilterTerm } from './filterTerm';
 
 defineEmits<{
   (e: 'dragMouseDown'): void;
@@ -105,22 +91,18 @@ defineEmits<{
 
 const props = defineProps({
   options: {
-    type: Object as PropType<AttributeSchema[]>,
+    type: Object as PropType<FilterColumn[]>,
     required: true,
   },
   node: {
     type: Object as PropType<FilterNode>,
     required: true,
   },
-  operand: {
-    type: String as PropType<FilterOperand>,
+  conjunction: {
+    type: String as PropType<FilterConjunction>,
     required: true,
   },
 });
-
-const columnIsValid = ref<boolean>();
-const operatorIsValid = ref<boolean>();
-const termInputIsValid = ref<boolean>();
 
 const filterRule = computed(() => props.node.getFilterRule());
 const column = computed(() => filterRule.value?.column);
@@ -131,7 +113,7 @@ const includeEntitiesWithoutAttributions = computed(
 );
 const isAttribute = computed(() => filterRule.value?.isAttribute);
 
-function updateColumn(value: FilterOption) {
+function updateColumn(value: FilterColumn) {
   if (filterRule.value) {
     filterRule.value.column = value;
   } else {
@@ -139,7 +121,7 @@ function updateColumn(value: FilterOption) {
   }
 }
 
-function updateOperator(value: FilterOperatorOption) {
+function updateOperator(value: FilterOperator) {
   if (filterRule.value) {
     filterRule.value.operator = value;
   } else {
@@ -167,74 +149,24 @@ function deleteRule() {
   props.node.remove();
 }
 
-const hasInputTerm = computed<boolean>(() => {
-  switch (column.value?.schema.options.type) {
-    case AttributeSchemaOptionType.Date:
-    case AttributeSchemaOptionType.Datetime:
-    case AttributeSchemaOptionType.Integer:
-    case AttributeSchemaOptionType.Float:
-    case AttributeSchemaOptionType.Enum:
-      return true;
-    case AttributeSchemaOptionType.String:
-      return (
-        operator.value?.value !== FilterOperator.Empty &&
-        operator.value?.value !== FilterOperator.NotEmpty
-      );
-    default:
-      return false;
-  }
+const requiresTerm = computed<boolean>(() => {
+  return filterRule.value?.requiresTerm || false;
 });
 
-const termIsValid = computed(() => {
-  if (!hasInputTerm.value) {
-    return true;
-  }
-
-  return termInputIsValid.value;
+const isValid = computed<boolean | undefined>(() => {
+  return filterRule.value?.isValid;
 });
 
 const isInvalid = computed<boolean>(() => {
-  return (
-    !isValid.value &&
-    column.value !== undefined &&
-    operator.value !== undefined &&
-    hasInputTerm.value &&
-    term.value !== undefined
-  );
+  return !isValid.value && typeof filterRule.value?.isValid !== 'undefined';
 });
 
-const isValid = computed<boolean>(() => {
-  return (
-    columnIsValid.value === true && // may also be undefined
-    operatorIsValid.value === true && // may also be undefined
-    termIsValid.value === true
-  );
-});
-
-function setValidity() {
-  if (filterRule.value) {
-    if (isValid.value) {
-      filterRule.value.isValid = true;
-    }
-    if (isInvalid.value) {
-      filterRule.value.isValid = false;
-    }
-  } else {
-    throw new Error('Filter rule is undefined');
-  }
-}
-
-watch(isValid, setValidity);
-watch(isInvalid, setValidity);
-onMounted(setValidity);
 watch(
-  () => filterRule.value?.dataType,
+  () => filterRule.value?.type,
   () => {
     if (filterRule.value) {
       filterRule.value.term = undefined;
       filterRule.value.operator = undefined;
-      termInputIsValid.value = false;
-      operatorIsValid.value = false;
     }
   },
 );
@@ -278,4 +210,3 @@ watch(
   color: var(--q-negative);
 }
 </style>
-./filterOptionSchemaTypes

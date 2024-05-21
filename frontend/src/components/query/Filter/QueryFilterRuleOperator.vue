@@ -2,7 +2,7 @@
   <q-select
     :bg-color="disabled ? 'transparent' : inputBgColor"
     :disable="disabled"
-    :error="isInvalid"
+    :error="modelValue?.isValid === false"
     :error-message="t('filter.error.operator')"
     :label="t('filter.operator')"
     :model-value="modelValue"
@@ -29,169 +29,181 @@
 </template>
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import { computed, onMounted, ref, watch } from 'vue';
-import { FilterOperator, FilterOperatorOption } from './filterTypes';
-import {
-  AttributeSchema,
-  AttributeSchemaOptionType,
-} from './filterOptionSchemaTypes';
+import { computed, ref } from 'vue';
 import { QSelect } from 'quasar';
 import {
   filterSelectOptions,
   FilterSelectOptionsUpdateFn,
 } from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
+import { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
+import { FilterOperator, FilterOperatorValue } from './filterOperator';
 
 export interface QueryFilterRuleOperatorProps {
-  schema?: AttributeSchema;
+  schema?: FilterRuleSchema;
   disabled: boolean;
-  modelValue?: FilterOperatorOption;
+  modelValue?: FilterOperator;
 }
 
 const { t } = useI18n();
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: FilterOperatorOption): void;
-  (e: 'valid'): void;
-  (e: 'invalid'): void;
+defineEmits<{
+  (e: 'update:modelValue', value: FilterOperator): void;
 }>();
 
 const props = defineProps<QueryFilterRuleOperatorProps>();
 
-const allOptions: FilterOperatorOption[] = [
-  {
-    label: t('filter.operands.equals'),
-    value: FilterOperator.Equal,
-    type: [
-      AttributeSchemaOptionType.Integer,
-      AttributeSchemaOptionType.Float,
-      AttributeSchemaOptionType.String,
-      AttributeSchemaOptionType.Enum,
-      AttributeSchemaOptionType.Date,
-      AttributeSchemaOptionType.Datetime,
+const allOptions = computed(() => [
+  new FilterOperator(
+    t('filter.operators.equals'),
+    FilterOperatorValue.Equal,
+    [
+      FilterRuleType.Integer,
+      FilterRuleType.Float,
+      FilterRuleType.String,
+      FilterRuleType.Enum,
+      FilterRuleType.Date,
+      FilterRuleType.Datetime,
     ],
-  },
-  {
-    label: t('filter.operands.notEquals'),
-    value: FilterOperator.NotEqual,
-    type: [
-      AttributeSchemaOptionType.Integer,
-      AttributeSchemaOptionType.Float,
-      AttributeSchemaOptionType.String,
-      AttributeSchemaOptionType.Enum,
-      AttributeSchemaOptionType.Date,
-      AttributeSchemaOptionType.Datetime,
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.notEquals'),
+    FilterOperatorValue.NotEqual,
+    [
+      FilterRuleType.Integer,
+      FilterRuleType.Float,
+      FilterRuleType.String,
+      FilterRuleType.Enum,
+      FilterRuleType.Date,
+      FilterRuleType.Datetime,
     ],
-  },
-  {
-    label: t('filter.operands.less'),
-    value: FilterOperator.Less,
-    type: [
-      AttributeSchemaOptionType.Integer,
-      AttributeSchemaOptionType.Float,
-      AttributeSchemaOptionType.Date,
-      AttributeSchemaOptionType.Datetime,
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.less'),
+    FilterOperatorValue.Less,
+    [
+      FilterRuleType.Integer,
+      FilterRuleType.Float,
+      FilterRuleType.Date,
+      FilterRuleType.Datetime,
     ],
-  },
-  {
-    label: t('filter.operands.lessOrEqual'),
-    value: FilterOperator.LessOrEqual,
-    type: [
-      AttributeSchemaOptionType.Integer,
-      AttributeSchemaOptionType.Float,
-      AttributeSchemaOptionType.Date,
-      AttributeSchemaOptionType.Datetime,
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.lessOrEqual'),
+    FilterOperatorValue.LessOrEqual,
+    [
+      FilterRuleType.Integer,
+      FilterRuleType.Float,
+      FilterRuleType.Date,
+      FilterRuleType.Datetime,
     ],
-  },
-  {
-    label: t('filter.operands.greater'),
-    value: FilterOperator.Greater,
-    type: [
-      AttributeSchemaOptionType.Integer,
-      AttributeSchemaOptionType.Float,
-      AttributeSchemaOptionType.Date,
-      AttributeSchemaOptionType.Datetime,
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.greater'),
+    FilterOperatorValue.Greater,
+    [
+      FilterRuleType.Integer,
+      FilterRuleType.Float,
+      FilterRuleType.Date,
+      FilterRuleType.Datetime,
     ],
-  },
-  {
-    label: t('filter.operands.greaterOrEqual'),
-    value: FilterOperator.GreaterOrEqual,
-    type: [
-      AttributeSchemaOptionType.Integer,
-      AttributeSchemaOptionType.Float,
-      AttributeSchemaOptionType.Date,
-      AttributeSchemaOptionType.Datetime,
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.greaterOrEqual'),
+    FilterOperatorValue.GreaterOrEqual,
+    [
+      FilterRuleType.Integer,
+      FilterRuleType.Float,
+      FilterRuleType.Date,
+      FilterRuleType.Datetime,
     ],
-  },
-  {
-    label: t('filter.operands.startsWith'),
-    value: FilterOperator.StartsWith,
-    type: [AttributeSchemaOptionType.String],
-  },
-  {
-    label: t('filter.operands.startsNotWith'),
-    value: FilterOperator.StartsNotWith,
-    type: [AttributeSchemaOptionType.String],
-  },
-  {
-    label: t('filter.operands.contains'),
-    value: FilterOperator.Contains,
-    type: [AttributeSchemaOptionType.String],
-  },
-  {
-    label: t('filter.operands.notContains'),
-    value: FilterOperator.NotContains,
-    type: [AttributeSchemaOptionType.String],
-  },
-  {
-    label: t('filter.operands.endsWith'),
-    value: FilterOperator.EndsWith,
-    type: [AttributeSchemaOptionType.String],
-  },
-  {
-    label: t('filter.operands.notEndsWith'),
-    value: FilterOperator.NotEndsWith,
-    type: [AttributeSchemaOptionType.String],
-  },
-  {
-    label: t('filter.operands.empty'),
-    value: FilterOperator.Empty,
-    type: [AttributeSchemaOptionType.String],
-  },
-  {
-    label: t('filter.operands.notEmpty'),
-    value: FilterOperator.NotEmpty,
-    type: [AttributeSchemaOptionType.String],
-  },
-  {
-    label: t('filter.operands.hasPhoto'),
-    value: FilterOperator.NotEmpty,
-    type: [AttributeSchemaOptionType.Photo],
-  },
-  {
-    label: t('filter.operands.isTrue'),
-    value: FilterOperator.True,
-    type: [AttributeSchemaOptionType.Boolean],
-  },
-  {
-    label: t('filter.operands.isFalse'),
-    value: FilterOperator.False,
-    type: [AttributeSchemaOptionType.Boolean],
-  },
-];
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.startsWith'),
+    FilterOperatorValue.StartsWith,
+    [FilterRuleType.String],
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.startsNotWith'),
+    FilterOperatorValue.StartsNotWith,
+    [FilterRuleType.String],
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.contains'),
+    FilterOperatorValue.Contains,
+    [FilterRuleType.String],
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.notContains'),
+    FilterOperatorValue.NotContains,
+    [FilterRuleType.String],
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.endsWith'),
+    FilterOperatorValue.EndsWith,
+    [FilterRuleType.String],
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.notEndsWith'),
+    FilterOperatorValue.NotEndsWith,
+    [FilterRuleType.String],
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.empty'),
+    FilterOperatorValue.Empty,
+    [FilterRuleType.String],
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.notEmpty'),
+    FilterOperatorValue.NotEmpty,
+    [FilterRuleType.String],
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.hasPhoto'),
+    FilterOperatorValue.NotEmpty,
+    [FilterRuleType.Photo],
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.isTrue'),
+    FilterOperatorValue.True,
+    [FilterRuleType.Boolean],
+    props.schema,
+  ),
+  new FilterOperator(
+    t('filter.operators.isFalse'),
+    FilterOperatorValue.False,
+    [FilterRuleType.Boolean],
+    props.schema,
+  ),
+]);
 
-const applicableOptions = computed<FilterOperatorOption[]>(() => {
-  return allOptions
-    .filter((option: FilterOperatorOption) =>
-      option.type.find((type) => type === props.schema?.options.type),
+const applicableOptions = computed(() => {
+  return allOptions.value
+    .filter((option) =>
+      option.suitableRuleTypes.find((type) => type === props.schema?.type),
     )
     .filter((option) => {
-      if (props.schema?.options.allowEmpty) {
+      if (props.schema?.allowEmpty) {
         return true;
       }
       return (
-        option.value !== FilterOperator.Empty &&
-        option.value !== FilterOperator.NotEmpty
+        option.value !== FilterOperatorValue.Empty &&
+        option.value !== FilterOperatorValue.NotEmpty
       );
     });
 });
@@ -199,7 +211,7 @@ const applicableOptions = computed<FilterOperatorOption[]>(() => {
 const filteredOptions = ref(applicableOptions.value);
 
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
-  filterSelectOptions<FilterOperatorOption>(
+  filterSelectOptions<FilterOperator>(
     value,
     update,
     applicableOptions.value,
@@ -208,36 +220,5 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
   );
 }
 
-const isValid = computed<boolean>(() => {
-  if (!!props.modelValue && 'value' in props.modelValue) {
-    const modelValue = props.modelValue;
-    return (
-      applicableOptions.value.findIndex(
-        (item) => item.value === modelValue.value,
-      ) > -1
-    );
-  }
-
-  return false;
-});
-
-const isInvalid = computed<boolean>(() => {
-  return !isValid.value && props.modelValue !== undefined;
-});
-
-function emitValidity() {
-  if (isValid.value) {
-    emit('valid');
-  }
-  if (isInvalid.value) {
-    emit('invalid');
-  }
-}
-
-watch(isValid, emitValidity);
-watch(isInvalid, emitValidity);
-onMounted(emitValidity);
-
 const inputBgColor = useInputBackground();
 </script>
-./filterOptionSchemaTypes

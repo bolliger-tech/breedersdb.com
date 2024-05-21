@@ -6,7 +6,10 @@
     >
       {{ t('filter.noFilter', { entity: entityName }) }}
     </div>
-    <QueryFilterRuleAddButton :node="filter" :operand="FilterOperand.And" />
+    <QueryFilterRuleAddButton
+      :node="filter"
+      :conjunction="FilterConjunction.And"
+    />
   </div>
 
   <template v-else>
@@ -28,7 +31,7 @@
 
     <QueryFilterTree
       :node="filter"
-      :operand="filter.getChildrensOperand() || FilterOperand.And"
+      :conjunction="filter.getChildrensConjunction() || FilterConjunction.And"
       :options="options"
     />
   </template>
@@ -37,14 +40,13 @@
 <script lang="ts" setup>
 import QueryFilterRuleAddButton from './QueryFilterRuleAddButton.vue';
 import QueryFilterTree from './QueryFilterTree.vue';
-import { FilterOperand, FilterType } from './filterTypes';
 import { computed, watch } from 'vue';
-import { FilterNode } from './filterNode';
+import { FilterNode, FilterConjunction, FilterType } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
-import { AttributeSchema } from './filterOptionSchemaTypes';
 import { useQueryStore } from './queryStore';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
 import { BaseTable } from './queryTypes';
+import { FilterColumn } from './filterColumn';
 
 const { t } = useI18n();
 const store = useQueryStore();
@@ -52,7 +54,7 @@ const localStorageHelper = useQueryLocalStorageHelper();
 
 export interface QueryFilterTreeRootProps {
   filter: FilterNode;
-  options: AttributeSchema[];
+  options: FilterColumn[];
 }
 
 const props = defineProps<QueryFilterTreeRootProps>();
@@ -139,4 +141,3 @@ watch(
   }
 }
 </style>
-./filterOptionSchemaTypes ./queryTypes

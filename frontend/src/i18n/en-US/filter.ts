@@ -53,7 +53,7 @@ export const filter = {
 
   noResults: 'No results.',
 
-  operands: {
+  operators: {
     equals: 'equals',
     notEquals: 'not equals',
     less: 'less than',

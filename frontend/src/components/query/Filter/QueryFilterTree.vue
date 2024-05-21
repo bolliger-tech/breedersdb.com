@@ -8,7 +8,7 @@
   >
     <QueryFilterRuleDropZone
       :active="dragActive && canBeTarget"
-      :color="dropOperand === FilterOperand.And ? 'primary' : 'accent'"
+      :color="dropConjunction === FilterConjunction.And ? 'primary' : 'accent'"
       :dragging="!!dragObj"
       class="filter-rule__drop--before"
       @drop.prevent="onDrop('before')"
@@ -18,7 +18,7 @@
       v-if="node.isLeaf()"
       :options="options"
       :node="node"
-      :operand="operand"
+      :conjunction="conjunction"
       @drag-mouse-down="setDragObj(node)"
       @drag-mouse-up="setDragObj(false)"
     />
@@ -28,8 +28,8 @@
         <div
           class="filter-tree__drag-bg row items-center"
           :class="{
-            'filter-tree__drag-bg--and': operand === FilterOperand.And,
-            'filter-tree__drag-bg--or': operand === FilterOperand.Or,
+            'filter-tree__drag-bg--and': conjunction === FilterConjunction.And,
+            'filter-tree__drag-bg--or': conjunction === FilterConjunction.Or,
             'filter-tree__drag-bg--root': node.isRoot(),
           }"
         >
@@ -49,35 +49,37 @@
             <QueryFilterTree
               :node="tree"
               :options="options"
-              :operand="
-                tree.getChildrensOperand() ||
-                node.getChildrensOperand() ||
-                FilterOperand.And
+              :conjunction="
+                tree.getChildrensConjunction() ||
+                node.getChildrensConjunction() ||
+                FilterConjunction.And
               "
             />
             <div
               v-if="idx + 1 < node.getChildCount()"
-              class="filter-tree__operand"
+              class="filter-tree__conjunction"
               :class="{
-                'filter-tree__operand--and': operand === FilterOperand.And,
-                'filter-tree__operand--or': operand === FilterOperand.Or,
+                'filter-tree__conjunction--and':
+                  conjunction === FilterConjunction.And,
+                'filter-tree__conjunction--or':
+                  conjunction === FilterConjunction.Or,
               }"
             >
               {{
-                operand === FilterOperand.And
-                  ? t('filter.operands.and')
-                  : t('filter.operands.or')
+                conjunction === FilterConjunction.And
+                  ? t('filter.operators.and')
+                  : t('filter.operators.or')
               }}
             </div>
           </template>
         </div>
       </div>
-      <FilterRuleButtonAdd :operand="operand" :node="node" />
+      <FilterRuleButtonAdd :conjunction="conjunction" :node="node" />
     </div>
 
     <QueryFilterRuleDropZone
       :active="dragActive && canBeTarget"
-      :color="dropOperand === FilterOperand.And ? 'primary' : 'accent'"
+      :color="dropConjunction === FilterConjunction.And ? 'primary' : 'accent'"
       :dragging="!!dragObj"
       class="filter-rule__drop--after"
       @drop.prevent="onDrop('after')"
@@ -91,12 +93,11 @@ import useFilterNodeActions from './useFilterNodeActions';
 import { useI18n } from 'src/composables/useI18n';
 import QueryFilterRule from './QueryFilterRule.vue';
 import FilterRuleButtonAdd from './QueryFilterRuleAddButton.vue';
-import { FilterNode } from './filterNode';
-import { FilterOperand } from './filterTypes';
+import { FilterNode, FilterConjunction } from './filterNode';
 import { useQueryStore } from './queryStore';
 import { FilterDragNode } from './queryTypes';
 import QueryFilterRuleDropZone from './QueryFilterRuleDropZone.vue';
-import { AttributeSchema } from './filterOptionSchemaTypes';
+import { FilterColumn } from './filterColumn';
 
 const props = defineProps({
   node: {
@@ -104,11 +105,11 @@ const props = defineProps({
     required: true,
   },
   options: {
-    type: Object as PropType<AttributeSchema[]>,
+    type: Object as PropType<FilterColumn[]>,
     required: true,
   },
-  operand: {
-    type: String as PropType<FilterOperand>,
+  conjunction: {
+    type: String as PropType<FilterConjunction>,
     required: true,
   },
 });
@@ -142,12 +143,12 @@ const canBeTarget = computed(() => {
   );
 });
 
-const dropOperand = computed(() => {
+const dropConjunction = computed(() => {
   if (props.node.isLeaf()) {
-    return props.operand;
+    return props.conjunction;
   }
 
-  return props.node.getParent()?.getChildrensOperand();
+  return props.node.getParent()?.getChildrensConjunction();
 });
 
 function setDragObj(node: FilterDragNode) {
@@ -220,18 +221,18 @@ function onDrop(position: 'before' | 'after') {
   color: var(--q-primary);
 }
 
-.filter-tree__operand {
+.filter-tree__conjunction {
   text-transform: uppercase;
   font-size: 0.75rem;
   margin-left: 5px;
   font-weight: bold;
 }
 
-.filter-tree__operand--and {
+.filter-tree__conjunction--and {
   color: var(--q-primary);
 }
 
-.filter-tree__operand--or {
+.filter-tree__conjunction--or {
   color: var(--q-accent);
 }
 
@@ -243,4 +244,3 @@ function onDrop(position: 'before' | 'after') {
   bottom: -18px;
 }
 </style>
-./filterOptionSchemaTypes ./queryTypes

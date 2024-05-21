@@ -1,6 +1,6 @@
 <template>
   <q-select
-    :error="isInvalid"
+    :error="modelValue?.isValid === false"
     :error-message="t('filter.error.column')"
     :label="t('filter.column')"
     :model-value="modelValue"
@@ -28,76 +28,38 @@
 </template>
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import { computed, onMounted, ref, watch } from 'vue';
-import { AttributeSchema } from './filterOptionSchemaTypes';
-import { FilterOption } from './filterTypes';
+import { ref } from 'vue';
 import {
   filterSelectOptions,
   FilterSelectOptionsUpdateFn,
 } from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
+import { FilterColumn } from './filterColumn';
 
 export interface QueryFilterRuleColumnProps {
-  modelValue?: FilterOption;
-  options: AttributeSchema[];
+  modelValue?: FilterColumn;
+  options: FilterColumn[];
 }
 
 const { t } = useI18n();
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: FilterOption): void;
-  (e: 'valid'): void;
-  (e: 'invalid'): void;
+defineEmits<{
+  (e: 'update:modelValue', value: FilterColumn): void;
 }>();
 
 const props = defineProps<QueryFilterRuleColumnProps>();
 
-const options = computed<FilterOption[]>(() => {
-  return props.options.map((option: AttributeSchema) => {
-    return {
-      label: option.label,
-      value: option.name,
-      schema: option,
-    } as FilterOption;
-  });
-});
-
-const filteredOptions = ref(options.value);
+const filteredOptions = ref(props.options);
 
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
-  filterSelectOptions<FilterOption>(
+  filterSelectOptions<FilterColumn>(
     value,
     update,
-    options.value,
+    props.options,
     filteredOptions,
     (item) => item.label,
   );
 }
 
-const isValid = computed<boolean>(() => {
-  return (
-    options.value.findIndex((item) => item.value === props.modelValue?.value) >
-    -1
-  );
-});
-
-const isInvalid = computed<boolean>(() => {
-  return !isValid.value && typeof props.modelValue !== 'undefined';
-});
-
-function emitValidity() {
-  if (isValid.value) {
-    emit('valid');
-  }
-  if (isInvalid.value) {
-    emit('invalid');
-  }
-}
-
-watch(isValid, emitValidity);
-watch(isInvalid, emitValidity);
-onMounted(emitValidity);
-
 const inputBgColor = useInputBackground();
 </script>
-./filterOptionSchemaTypes

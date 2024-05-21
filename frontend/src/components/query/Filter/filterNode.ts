@@ -1,11 +1,20 @@
-import { FilterOperand, FilterType } from './filterTypes';
 import { FilterRule } from './filterRule';
+
+export enum FilterConjunction {
+  And = 'and',
+  Or = 'or',
+}
+
+export enum FilterType {
+  Base = 'base',
+  Attribution = 'attribution',
+}
 
 type FilterNodeJson = {
   id: number;
   level: number;
   children: FilterNodeJson[];
-  childrensOperand: FilterOperand | null;
+  childrensConjunction: FilterConjunction | null;
   filterRule: FilterRule | null;
   filterType: FilterType;
 };
@@ -22,7 +31,7 @@ export class FilterNode {
   private constructor(
     private readonly filterType: FilterType,
     parent: FilterNode | null,
-    private childrensOperand: FilterOperand | null,
+    private childrensConjunction: FilterConjunction | null,
     private filterRule: FilterRule | null,
     root: FilterNode | null,
   ) {
@@ -32,15 +41,21 @@ export class FilterNode {
     this.root = root || this;
   }
 
-  static FilterRoot(childrensOperand: FilterOperand, filterType: FilterType) {
-    return new FilterNode(filterType, null, childrensOperand, null, null);
+  static FilterRoot(
+    childrensConjunction: FilterConjunction,
+    filterType: FilterType,
+  ) {
+    return new FilterNode(filterType, null, childrensConjunction, null, null);
   }
 
-  static FilterNode(childrensOperand: FilterOperand, parent: FilterNode) {
+  static FilterNode(
+    childrensConjunction: FilterConjunction,
+    parent: FilterNode,
+  ) {
     return new FilterNode(
       parent.filterType,
       parent,
-      childrensOperand,
+      childrensConjunction,
       null,
       parent.root,
     );
@@ -126,12 +141,12 @@ export class FilterNode {
     this.setChildren(children);
   }
 
-  getChildrensOperand() {
-    return this.childrensOperand;
+  getChildrensConjunction() {
+    return this.childrensConjunction;
   }
 
-  setChildrensOperand(operand: FilterOperand) {
-    this.childrensOperand = operand;
+  setChildrensConjunction(conjunction: FilterConjunction) {
+    this.childrensConjunction = conjunction;
   }
 
   getFilterRule() {
@@ -238,12 +253,13 @@ export class FilterNode {
   }
 
   private mergeableIntoParent() {
-    return this.hasSameOperandAsParent() || this.isMergeableOnlyChild();
+    return this.hasSameConjunctionAsParent() || this.isMergeableOnlyChild();
   }
 
-  private hasSameOperandAsParent() {
+  private hasSameConjunctionAsParent() {
     return (
-      this.getChildrensOperand() === this.getParent()?.getChildrensOperand()
+      this.getChildrensConjunction() ===
+      this.getParent()?.getChildrensConjunction()
     );
   }
 
@@ -256,7 +272,7 @@ export class FilterNode {
     );
   }
 
-  private mergeIntoParentWithSameOperand() {
+  private mergeIntoParentWithSameConjunction() {
     const parent = this.getParent();
 
     if (!parent) {
@@ -265,9 +281,12 @@ export class FilterNode {
       );
     }
 
-    if (1 === this.getParent()?.getChildCount() && this.getChildrensOperand()) {
-      this.getParent()?.setChildrensOperand(
-        this.getChildrensOperand() as FilterOperand,
+    if (
+      1 === this.getParent()?.getChildCount() &&
+      this.getChildrensConjunction()
+    ) {
+      this.getParent()?.setChildrensConjunction(
+        this.getChildrensConjunction() as FilterConjunction,
       );
     }
 
@@ -278,8 +297,8 @@ export class FilterNode {
   }
 
   private mergeIntoParent() {
-    if (this.hasSameOperandAsParent()) {
-      this.mergeIntoParentWithSameOperand();
+    if (this.hasSameConjunctionAsParent()) {
+      this.mergeIntoParentWithSameConjunction();
     } else if (this.isMergeableOnlyChild()) {
       if (!this.isLeaf()) {
         this.mergeOnlyChildsChildrenIntoParent();
@@ -303,15 +322,15 @@ export class FilterNode {
       );
     }
 
-    const operand = this.getChildrensOperand();
-    if (!operand) {
+    const conjunction = this.getChildrensConjunction();
+    if (!conjunction) {
       throw Error(
-        "Can not merge only child's children into parent as only child is missing the childrensOperand.",
+        "Can not merge only child's children into parent as only child is missing the childrensConjunction.",
       );
     }
 
     parent.setChildren(this.getChildren());
-    parent.setChildrensOperand(operand);
+    parent.setChildrensConjunction(conjunction);
   }
 
   private mergeOnlyChildIntoGrandParent() {
@@ -341,7 +360,7 @@ export class FilterNode {
       id: this.getId(),
       level: this.getLevel(),
       children: this.getChildren() as unknown as FilterNodeJson[],
-      childrensOperand: this.getChildrensOperand(),
+      childrensConjunction: this.getChildrensConjunction(),
       filterRule: this.getFilterRule(),
       filterType: this.getFilterType(),
     };
@@ -361,11 +380,11 @@ export class FilterNode {
 
     let node: FilterNode;
 
-    if (parent && json.childrensOperand) {
-      node = FilterNode.FilterNode(json.childrensOperand, parent);
+    if (parent && json.childrensConjunction) {
+      node = FilterNode.FilterNode(json.childrensConjunction, parent);
     } else {
       node = FilterNode.FilterRoot(
-        json.childrensOperand || FilterOperand.And,
+        json.childrensConjunction || FilterConjunction.And,
         json.filterType,
       );
     }

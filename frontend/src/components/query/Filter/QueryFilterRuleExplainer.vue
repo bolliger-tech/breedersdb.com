@@ -27,7 +27,7 @@ const operator = computed(() => {
   return props.rule.operator?.label || '';
 });
 const term = computed(() => {
-  return props.rule.term || '';
+  return props.rule.term?.value || '';
 });
 
 const { t } = useI18n();
@@ -67,4 +67,3 @@ const explainer = computed(() => {
   return t('filter.explainer.entity', args);
 });
 </script>
-./queryTypes

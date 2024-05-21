@@ -1,10 +1,7 @@
 import { useQuery } from '@urql/vue';
 import { graphql, type ResultOf } from 'src/graphql';
-import {
-  AttributeSchemaOptionType,
-  type AttributeSchema,
-  type AttributeSchemaOptions,
-} from './filterOptionSchemaTypes';
+import { FilterColumn } from './filterColumn';
+import { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
 
 // warning about unused fields is wrong. ignore it.
 const query = graphql(`
@@ -42,33 +39,34 @@ async function fetchOptions(labelPrefix: string) {
     query,
   });
 
-  const attributionOptions: AttributeSchema[] =
+  const attributionOptions: FilterColumn[] =
     data.value?.attributes.map((attribute) =>
-      convertAttributeToSchemaOption(attribute as Attribute, labelPrefix),
+      getFilterColumnFromAttribute(attribute as Attribute, labelPrefix),
     ) || [];
 
   return { data: attributionOptions, fetching, error };
 }
 
-function convertAttributeToSchemaOption(
+function getFilterColumnFromAttribute(
   attribute: Attribute,
   labelPrefix: string,
-): AttributeSchema {
-  return {
-    name: `attribute.${attribute.id}`,
-    label: `${labelPrefix} > ${attribute.name}`,
-    options: getOptionsFromAttribute(attribute),
-  };
+): FilterColumn {
+  return new FilterColumn(
+    'attributes',
+    attribute.id.toString(),
+    `${labelPrefix} > ${attribute.name}`,
+    getSchemaFromAttribute(attribute),
+  );
 }
 
-function getTypeFromDataType(dataType: string): AttributeSchemaOptionType {
+function getFilterRuleTypeFromDataType(dataType: string): FilterRuleType {
   const type = {
-    TEXT: AttributeSchemaOptionType.String,
-    INTEGER: AttributeSchemaOptionType.Integer,
-    FLOAT: AttributeSchemaOptionType.Float,
-    BOOLEAN: AttributeSchemaOptionType.Boolean,
-    DATE: AttributeSchemaOptionType.Date,
-    PHOTO: AttributeSchemaOptionType.Photo,
+    TEXT: FilterRuleType.String,
+    INTEGER: FilterRuleType.Integer,
+    FLOAT: FilterRuleType.Float,
+    BOOLEAN: FilterRuleType.Boolean,
+    DATE: FilterRuleType.Date,
+    PHOTO: FilterRuleType.Photo,
   }[dataType];
 
   if (typeof type === 'undefined') {
@@ -78,11 +76,11 @@ function getTypeFromDataType(dataType: string): AttributeSchemaOptionType {
   return type;
 }
 
-function getOptionsFromAttribute(attribute: Attribute): AttributeSchemaOptions {
-  const type = getTypeFromDataType(attribute.data_type);
+function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
+  const type = getFilterRuleTypeFromDataType(attribute.data_type);
 
   switch (type) {
-    case AttributeSchemaOptionType.String:
+    case FilterRuleType.String:
       return {
         type,
         allowEmpty: false,
@@ -91,8 +89,8 @@ function getOptionsFromAttribute(attribute: Attribute): AttributeSchemaOptions {
           pattern: null,
         },
       };
-    case AttributeSchemaOptionType.Integer:
-    case AttributeSchemaOptionType.Float:
+    case FilterRuleType.Integer:
+    case FilterRuleType.Float:
       return {
         type,
         allowEmpty: false,
@@ -100,12 +98,12 @@ function getOptionsFromAttribute(attribute: Attribute): AttributeSchemaOptions {
           Attribute['validation_rule']
         >,
       };
-    case AttributeSchemaOptionType.Photo:
+    case FilterRuleType.Photo:
       return {
         type,
         allowEmpty: true,
       };
-    case AttributeSchemaOptionType.Enum:
+    case FilterRuleType.Enum:
       throw Error('Enum is not supported yet');
     default:
       return {

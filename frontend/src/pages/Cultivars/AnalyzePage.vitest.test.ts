@@ -11,14 +11,20 @@ import {
 import { flushPromises } from '@vue/test-utils';
 import { OperationDefinitionNode } from 'graphql';
 import { useQueryStore } from 'src/components/Query/Filter/queryStore';
-import { FilterNode } from 'src/components/Query/Filter/filterNode';
 import {
-  FilterOperand,
+  FilterNode,
+  FilterConjunction,
   FilterType,
-} from 'src/components/Query/Filter/filterTypes';
+} from 'src/components/Query/Filter/filterNode';
 import QueryFilterRuleColumn from 'src/components/Query/Filter/QueryFilterRuleColumn.vue';
 import QueryFilterRuleOperator from 'src/components/Query/Filter/QueryFilterRuleOperator.vue';
 import QueryFilterRuleTerm from 'src/components/Query/Filter/QueryFilterRuleTerm.vue';
+import {
+  FilterOperator,
+  FilterOperatorValue,
+} from 'src/components/Query/Filter/filterOperator';
+import { FilterRuleType } from 'src/components/Query/Filter/filterRuleTypes';
+import { FilterTerm } from 'src/components/Query/Filter/filterTerm';
 
 addQuasarPlugins();
 
@@ -124,7 +130,7 @@ describe('AnalyzePage', () => {
     it('should create correct cultivar id query', async () => {
       const store = useQueryStore();
       store.baseFilter = FilterNode.FilterRoot(
-        FilterOperand.And,
+        FilterConjunction.And,
         FilterType.Base,
       );
       const wrapper = await mountAsync(AnalyzePage, {
@@ -134,27 +140,26 @@ describe('AnalyzePage', () => {
       await addAndRule(wrapper);
 
       const column = await wrapper.findComponent(QueryFilterRuleColumn);
-      await column.setValue({
-        label: 'Cultivar > ID',
-        value: 'cultivar.id',
-        schema: {
-          name: 'cultivar.id',
-          label: 'Cultivar > ID',
-          options: {
-            type: 'integer',
-            allowEmpty: false,
-            validation: { min: 1, max: 9007199254740991, step: 1 },
-          },
-        },
-      });
+      const currentColumn = column.vm.$props.options.find(
+        (col) => col.value === 'cultivar.id',
+      );
+      await column.setValue(currentColumn);
       const operator = await wrapper.findComponent(QueryFilterRuleOperator);
-      await operator.setValue({
-        label: 'greater than',
-        value: '>',
-        type: ['integer', 'double', 'date', 'datetime'],
-      });
+      await operator.setValue(
+        new FilterOperator(
+          'greater than',
+          FilterOperatorValue.Greater,
+          [
+            FilterRuleType.Integer,
+            FilterRuleType.Float,
+            FilterRuleType.Date,
+            FilterRuleType.Datetime,
+          ],
+          operator.vm.$props.schema,
+        ),
+      );
       const term = await wrapper.findComponent(QueryFilterRuleTerm);
-      await term.setValue('1');
+      await term.setValue(new FilterTerm('1', term.vm.$props.schema));
 
       await flushPromises();
 

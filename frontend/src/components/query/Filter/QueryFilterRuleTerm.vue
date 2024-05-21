@@ -6,7 +6,7 @@
       v-if="isEnum"
       :bg-color="disabled ? 'transparent' : inputBgColor"
       :disable="disabled"
-      :error="isInvalid"
+      :error="modelValue?.isValid === false"
       :error-message="t('filter.error.term')"
       :label="t('filter.term')"
       :model-value="modelValue"
@@ -35,13 +35,13 @@
       v-else
       :bg-color="disabled ? 'transparent' : inputBgColor"
       :disable="disabled"
-      :error="isInvalid"
+      :error="modelValue?.isValid === false"
       :error-message="t('filter.error.term')"
       :label="t('filter.term')"
       :max="maxValue"
       :maxlength="maxLen"
       :min="minValue"
-      :model-value="modelValue"
+      :model-value="modelValue?.value"
       :pattern="pattern"
       :stack-label="isDate || isTime || isDateTime"
       :step="step"
@@ -51,19 +51,13 @@
       hide-bottom-space
       outlined
       clearable
-      @update:model-value="
-        (value) => $emit('update:modelValue', (value || '').toString().trim())
-      "
+      @update:model-value="updateTerm"
     />
   </template>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
-import {
-  AttributeSchema,
-  AttributeSchemaOptionType,
-} from './filterOptionSchemaTypes';
+import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import {
@@ -71,48 +65,51 @@ import {
   FilterSelectOptionsUpdateFn,
 } from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
+import { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
+import { FilterTerm } from './filterTerm';
 
 export interface QueryFilterRuleTermProps {
-  schema?: AttributeSchema;
+  schema?: FilterRuleSchema;
   disabled: boolean;
   hide: boolean;
-  modelValue?: string;
+  modelValue?: FilterTerm;
 }
 
 const { t } = useI18n();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
-  (e: 'valid'): void;
-  (e: 'invalid'): void;
+  (e: 'update:modelValue', value: FilterTerm): void;
 }>();
 
 const props = defineProps<QueryFilterRuleTermProps>();
 
-const type = computed<null | AttributeSchemaOptionType>(
-  () => props.schema?.options.type || null,
-);
+function updateTerm(value: string | number | null) {
+  const term = props.modelValue ?? new FilterTerm('', props.schema);
+  term.value = (value || '').toString().trim();
+  emit('update:modelValue', term);
+}
+
+const type = computed<null | FilterRuleType>(() => props.schema?.type || null);
 
 const isEnum = computed<boolean>(() => {
-  return type.value === AttributeSchemaOptionType.Enum;
+  return type.value === FilterRuleType.Enum;
 });
 
 const isDate = computed<boolean>(() => {
-  return type.value === AttributeSchemaOptionType.Date;
+  return type.value === FilterRuleType.Date;
 });
 
 const isTime = computed<boolean>(() => {
-  return type.value === AttributeSchemaOptionType.Time;
+  return type.value === FilterRuleType.Time;
 });
 
 const isDateTime = computed<boolean>(() => {
-  return type.value === AttributeSchemaOptionType.Datetime;
+  return type.value === FilterRuleType.Datetime;
 });
 
 const validationOptions = computed(() => {
-  const options = props.schema?.options;
-  if (options && 'validation' in options) {
-    return options.validation;
+  if (props.schema && 'validation' in props.schema) {
+    return props.schema.validation;
   }
   return undefined;
 });
@@ -158,155 +155,18 @@ const filteredOptions = ref(options.value);
 
 const inputType = computed(() => {
   switch (type.value) {
-    case AttributeSchemaOptionType.Date:
+    case FilterRuleType.Date:
       return 'date';
-    case AttributeSchemaOptionType.Time:
+    case FilterRuleType.Time:
       return 'time';
-    case AttributeSchemaOptionType.Datetime:
+    case FilterRuleType.Datetime:
       return 'datetime-local';
-    case AttributeSchemaOptionType.Integer:
-    case AttributeSchemaOptionType.Float:
+    case FilterRuleType.Integer:
+    case FilterRuleType.Float:
       return 'number';
     default:
       return 'text';
   }
-});
-
-const isValidInteger = computed<boolean>(() => {
-  if (
-    props.modelValue === undefined ||
-    type.value !== AttributeSchemaOptionType.Integer
-  ) {
-    return false;
-  }
-
-  const value = Number.parseFloat(props.modelValue);
-
-  if (step.value !== undefined && value % step.value !== 0.0) {
-    return false;
-  }
-
-  if (minValue.value !== undefined && value < minValue.value) {
-    return false;
-  }
-
-  return !(maxValue.value !== undefined && value > maxValue.value);
-});
-
-const isValidFloat = computed<boolean>(() => {
-  if (
-    props.modelValue === undefined ||
-    type.value !== AttributeSchemaOptionType.Float
-  ) {
-    return false;
-  }
-
-  const value = Number.parseFloat(props.modelValue);
-
-  if (step.value !== undefined && value % step.value !== 0.0) {
-    return false;
-  }
-
-  if (minValue.value !== undefined && value < minValue.value) {
-    return false;
-  }
-
-  return !(maxValue.value !== undefined && value > maxValue.value);
-});
-
-const isValidDate = computed<boolean>(() => {
-  if (
-    props.modelValue === undefined ||
-    type.value !== AttributeSchemaOptionType.Date
-  ) {
-    return false;
-  }
-
-  return !isNaN(Date.parse(props.modelValue));
-});
-
-const isValidDateTime = computed<boolean>(() => {
-  if (
-    props.modelValue === undefined ||
-    type.value !== AttributeSchemaOptionType.Datetime
-  ) {
-    return false;
-  }
-
-  return !isNaN(Date.parse(props.modelValue));
-});
-
-const isValidTime = computed<boolean>(() => {
-  if (
-    props.modelValue === undefined ||
-    props.modelValue === '' ||
-    type.value !== AttributeSchemaOptionType.Time
-  ) {
-    return false;
-  }
-
-  return !isNaN(Date.parse(`1970-01-01T${props.modelValue}`));
-});
-
-const isValidString = computed<boolean>(() => {
-  if (
-    props.modelValue === undefined ||
-    type.value !== AttributeSchemaOptionType.String
-  ) {
-    return false;
-  }
-
-  if (maxLen.value !== undefined && props.modelValue.length > maxLen.value) {
-    return false;
-  }
-
-  return !(
-    pattern.value !== undefined &&
-    props.modelValue.match(`/${pattern.value}/`) === null
-  );
-});
-
-const isValidEnum = computed<boolean>(() => {
-  if (
-    props.modelValue === undefined ||
-    type.value !== AttributeSchemaOptionType.Enum
-  ) {
-    return false;
-  }
-
-  return options.value.indexOf(props.modelValue) > -1;
-});
-
-const isValidPhoto = computed<boolean>(() => {
-  return !(
-    props.modelValue === undefined ||
-    type.value !== AttributeSchemaOptionType.Photo
-  );
-});
-
-const isValidBoolean = computed<boolean>(() => {
-  return !(
-    props.modelValue === undefined ||
-    type.value !== AttributeSchemaOptionType.Boolean
-  );
-});
-
-const isValid = computed<boolean>(() => {
-  return (
-    isValidInteger.value ||
-    isValidFloat.value ||
-    isValidDate.value ||
-    isValidDateTime.value ||
-    isValidTime.value ||
-    isValidString.value ||
-    isValidEnum.value ||
-    isValidPhoto.value ||
-    isValidBoolean.value
-  );
-});
-
-const isInvalid = computed<boolean>(() => {
-  return !isValid.value && props.modelValue !== undefined;
 });
 
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
@@ -319,19 +179,5 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
   );
 }
 
-function emitValidity() {
-  if (isValid.value) {
-    emit('valid');
-  }
-  if (isInvalid.value) {
-    emit('invalid');
-  }
-}
-
-watch(isValid, emitValidity);
-watch(isInvalid, emitValidity);
-onMounted(emitValidity);
-
 const inputBgColor = useInputBackground();
 </script>
-./filterOptionSchemaTypes

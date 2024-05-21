@@ -2,8 +2,7 @@
 
 import { defineStore } from 'pinia';
 import { BaseTable, FilterDragNode } from './queryTypes';
-import { FilterNode } from './filterNode';
-import { FilterOperand, FilterType } from './filterTypes';
+import { FilterNode, FilterConjunction, FilterType } from './filterNode';
 import { Attribute } from './formTypes';
 // import useApi from 'src/composables/api';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
@@ -16,11 +15,11 @@ import { QueryGroup } from './queryGroupTypes';
 const localStorageHelper = useQueryLocalStorageHelper();
 
 const defaultBaseFilter = FilterNode.FilterRoot(
-  FilterOperand.And,
+  FilterConjunction.And,
   FilterType.Base,
 );
 const defaultAttributionFilter = FilterNode.FilterRoot(
-  FilterOperand.And,
+  FilterConjunction.And,
   FilterType.Attribution,
 );
 

@@ -2,8 +2,8 @@
   <q-fab
     v-model="actionsVisible"
     data-test="filter-tree__action-btn"
-    :label="t('filter.operands.add')"
-    :color="operand === FilterOperand.And ? 'primary' : 'accent'"
+    :label="t('filter.operators.add')"
+    :color="conjunction === FilterConjunction.And ? 'primary' : 'accent'"
     icon="add"
     direction="down"
     unelevated
@@ -16,18 +16,18 @@
     @mouseleave="actionButtonHover = false"
   >
     <q-fab-action
-      :label="t('filter.operands.andFilter')"
+      :label="t('filter.operators.andFilter')"
       color="primary"
       padding="xs"
       data-test="filter-tree__action-btn-and"
-      @click="addLeaf(FilterOperand.And)"
+      @click="addLeaf(FilterConjunction.And)"
     />
     <q-fab-action
-      :label="t('filter.operands.orFilter')"
+      :label="t('filter.operators.orFilter')"
       color="accent"
       padding="xs"
       data-test="filter-tree__action-btn-or"
-      @click="addLeaf(FilterOperand.Or)"
+      @click="addLeaf(FilterConjunction.Or)"
     />
   </q-fab>
 </template>
@@ -35,12 +35,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { FilterOperand } from './filterTypes';
-import { FilterNode } from './filterNode';
+import { FilterNode, FilterConjunction } from './filterNode';
 import useFilterNodeActions from './useFilterNodeActions';
 
 export interface QueryFilterRuleAddButtonProps {
-  operand: FilterOperand;
+  conjunction: FilterConjunction;
   node: FilterNode;
 }
 
@@ -52,8 +51,8 @@ const filter = useFilterNodeActions();
 const actionsVisible = ref(false);
 const actionButtonHover = ref(false);
 
-function addLeaf(operand: FilterOperand) {
-  filter.addLeaf(props.node, operand);
+function addLeaf(conjunction: FilterConjunction) {
+  filter.addLeaf(props.node, conjunction);
 }
 </script>
 

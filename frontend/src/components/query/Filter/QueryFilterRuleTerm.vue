@@ -65,11 +65,12 @@ import {
   FilterSelectOptionsUpdateFn,
 } from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
-import { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
+import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
+
 import { FilterRuleTerm } from './filterRuleTerm';
 
 export interface QueryFilterRuleTermProps {
-  schema?: FilterRuleSchema;
+  schema?: FilterRuleTypeSchema;
   disabled: boolean;
   hide: boolean;
   modelValue?: FilterRuleTerm;

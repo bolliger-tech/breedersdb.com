@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FilterRuleTerm } from './filterRuleTerm';
-import { FilterRuleType } from './filterRuleTypes';
+import { FilterRuleType } from './filterRule';
 
 describe('FilterTerm', () => {
   it('should return undefined if no schema is provided', () => {

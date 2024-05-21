@@ -4,7 +4,7 @@ import {
   FilterOperatorValue,
 } from '../Filter/filterRuleOperator';
 import type { FilterRule } from '../Filter/filterRule';
-import { FilterRuleType } from '../Filter/filterRuleTypes';
+import { FilterRuleType } from '../Filter/filterRule';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
 import type { BaseTable } from '../Filter/queryTypes';
 

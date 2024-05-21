@@ -1,8 +1,8 @@
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 import { FilterRuleColumn } from './filterRuleColumn';
-import { FilterRuleType, type FilterRuleSchema } from './filterRuleTypes';
 import { BaseTable } from './queryTypes';
 import type { TFunc } from 'src/composables/useI18n';
+import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
 
 export function getBaseFilterOptions({
   baseTable,
@@ -41,7 +41,7 @@ type FilterColumnConstructorData = {
   table: string;
   column: string;
   labelKey: Parameters<TFunc>[0];
-  schema: FilterRuleSchema;
+  schema: FilterRuleTypeSchema;
 };
 
 // TODO:

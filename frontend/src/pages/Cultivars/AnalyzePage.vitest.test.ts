@@ -23,7 +23,7 @@ import {
   FilterRuleOperator,
   FilterOperatorValue,
 } from 'src/components/Query/Filter/filterRuleOperator';
-import { FilterRuleType } from 'src/components/Query/Filter/filterRuleTypes';
+import { FilterRuleType } from 'src/components/Query/Filter/filterRule';
 import { FilterRuleTerm } from 'src/components/Query/Filter/filterRuleTerm';
 
 addQuasarPlugins();

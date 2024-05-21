@@ -1,7 +1,7 @@
 import { useQuery } from '@urql/vue';
 import { graphql, type ResultOf } from 'src/graphql';
 import { FilterRuleColumn } from './filterRuleColumn';
-import { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
+import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
 
 // warning about unused fields is wrong. ignore it.
 const query = graphql(`
@@ -77,7 +77,7 @@ function getFilterRuleTypeFromDataType(dataType: string): FilterRuleType {
   return type;
 }
 
-function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
+function getSchemaFromAttribute(attribute: Attribute): FilterRuleTypeSchema {
   const type = getFilterRuleTypeFromDataType(attribute.data_type);
 
   switch (type) {

@@ -1,11 +1,11 @@
-import type { FilterRuleSchema } from './filterRuleTypes';
+import type { FilterRuleTypeSchema } from './filterRule';
 
 export class FilterRuleColumn {
   public readonly tableName: string;
   public readonly tableColumnName: string;
   public readonly tableLabel: string;
   public readonly tableColumnLabel: string;
-  public readonly schema: FilterRuleSchema | undefined;
+  public readonly schema: FilterRuleTypeSchema | undefined;
 
   constructor({
     tableName,
@@ -18,7 +18,7 @@ export class FilterRuleColumn {
     tableColumnName: string;
     tableLabel: string;
     tableColumnLabel: string;
-    schema: FilterRuleSchema | undefined;
+    schema: FilterRuleTypeSchema | undefined;
   }) {
     this.tableName = tableName;
     this.tableColumnName = tableColumnName;

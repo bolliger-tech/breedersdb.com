@@ -1,15 +1,15 @@
-import { FilterRuleType, type FilterRuleSchema } from './filterRuleTypes';
+import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
 
 export class FilterRuleTerm {
   public value: string;
-  public schema: FilterRuleSchema | undefined;
+  public schema: FilterRuleTypeSchema | undefined;
 
   constructor({
     value,
     schema,
   }: {
     value: string;
-    schema: FilterRuleSchema | undefined;
+    schema: FilterRuleTypeSchema | undefined;
   }) {
     this.value = value;
     this.schema = schema;

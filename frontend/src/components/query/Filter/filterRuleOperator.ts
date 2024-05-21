@@ -1,10 +1,10 @@
-import type { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
+import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
 
 export class FilterRuleOperator {
   public readonly label: string;
   public readonly value: FilterOperatorValue;
   public readonly suitableRuleTypes: FilterRuleType[];
-  public readonly schema: FilterRuleSchema | undefined;
+  public readonly schema: FilterRuleTypeSchema | undefined;
 
   constructor({
     label,
@@ -15,7 +15,7 @@ export class FilterRuleOperator {
     label: string;
     value: FilterOperatorValue;
     suitableRuleTypes: FilterRuleType[];
-    schema?: FilterRuleSchema;
+    schema?: FilterRuleTypeSchema;
   }) {
     this.label = label;
     this.value = value;

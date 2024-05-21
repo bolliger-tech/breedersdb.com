@@ -46,7 +46,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { useQueryStore } from './queryStore';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
 import { BaseTable } from './queryTypes';
-import { FilterColumn } from './filterColumn';
+import { FilterRuleColumn } from './filterRuleColumn';
 
 const { t } = useI18n();
 const store = useQueryStore();
@@ -54,7 +54,7 @@ const localStorageHelper = useQueryLocalStorageHelper();
 
 export interface QueryFilterTreeRootProps {
   filter: FilterNode;
-  options: FilterColumn[];
+  options: FilterRuleColumn[];
 }
 
 const props = defineProps<QueryFilterTreeRootProps>();
@@ -141,3 +141,4 @@ watch(
   }
 }
 </style>
+./filterRuleColumn

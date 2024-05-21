@@ -1,6 +1,6 @@
 import { useQuery } from '@urql/vue';
 import { graphql, type ResultOf } from 'src/graphql';
-import { FilterColumn } from './filterColumn';
+import { FilterRuleColumn } from './filterRuleColumn';
 import { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
 
 // warning about unused fields is wrong. ignore it.
@@ -27,21 +27,21 @@ type Attribute = Omit<
 };
 
 export function useAttributionFilterOptions({
-  labelPrefix,
+  tableLabel,
 }: {
-  labelPrefix: string;
+  tableLabel: string;
 }) {
-  return { fetchOptions: () => fetchOptions(labelPrefix) };
+  return { fetchOptions: () => fetchOptions(tableLabel) };
 }
 
-async function fetchOptions(labelPrefix: string) {
+async function fetchOptions(tableLabel: string) {
   const { data, fetching, error } = await useQuery({
     query,
   });
 
-  const attributionOptions: FilterColumn[] =
+  const attributionOptions: FilterRuleColumn[] =
     data.value?.attributes.map((attribute) =>
-      getFilterColumnFromAttribute(attribute as Attribute, labelPrefix),
+      getFilterColumnFromAttribute(attribute as Attribute, tableLabel),
     ) || [];
 
   return { data: attributionOptions, fetching, error };
@@ -49,12 +49,13 @@ async function fetchOptions(labelPrefix: string) {
 
 function getFilterColumnFromAttribute(
   attribute: Attribute,
-  labelPrefix: string,
-): FilterColumn {
-  return new FilterColumn({
-    table: 'attributes',
-    tableColumn: attribute.id.toString(),
-    label: `${labelPrefix} > ${attribute.name}`,
+  tableLabel: string,
+): FilterRuleColumn {
+  return new FilterRuleColumn({
+    tableName: 'attributes',
+    tableColumnName: attribute.id.toString(),
+    tableLabel: tableLabel,
+    tableColumnLabel: attribute.name,
     schema: getSchemaFromAttribute(attribute),
   });
 }

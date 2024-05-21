@@ -1,6 +1,6 @@
 import { FilterRuleType, type FilterRuleSchema } from './filterRuleTypes';
 
-export class FilterTerm {
+export class FilterRuleTerm {
   public value: string;
   public schema: FilterRuleSchema | undefined;
 

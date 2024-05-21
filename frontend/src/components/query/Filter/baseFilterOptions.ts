@@ -1,5 +1,5 @@
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
-import { FilterColumn } from './filterColumn';
+import { FilterRuleColumn } from './filterRuleColumn';
 import { FilterRuleType, type FilterRuleSchema } from './filterRuleTypes';
 import { BaseTable } from './queryTypes';
 import type { TFunc } from 'src/composables/useI18n';
@@ -11,28 +11,29 @@ export function getBaseFilterOptions({
   baseTable: BaseTable;
   t: TFunc;
 }) {
-  const prefix = getPrefix({ baseTable, t });
+  const tableLabel = getTableName({ baseTable, t });
 
   return options[baseTable].map((data) => {
-    return new FilterColumn({
-      table: data.table,
-      tableColumn: data.column,
-      label: prefix + uppercaseFirstLetter(t(data.labelKey)),
+    return new FilterRuleColumn({
+      tableName: data.table,
+      tableColumnName: data.column,
+      tableLabel,
+      tableColumnLabel: uppercaseFirstLetter(t(data.labelKey)),
       schema: data.schema,
     });
   });
 }
 
-function getPrefix({ baseTable, t }: { baseTable: BaseTable; t: TFunc }) {
+function getTableName({ baseTable, t }: { baseTable: BaseTable; t: TFunc }) {
   switch (baseTable) {
     case BaseTable.Crossings:
-      return uppercaseFirstLetter(t('filter.crossing')) + ' > ';
+      return uppercaseFirstLetter(t('filter.crossing'));
     case BaseTable.Lots:
-      return uppercaseFirstLetter(t('filter.lot')) + ' > ';
+      return uppercaseFirstLetter(t('filter.lot'));
     case BaseTable.Cultivars:
-      return uppercaseFirstLetter(t('filter.cultivar')) + ' > ';
+      return uppercaseFirstLetter(t('filter.cultivar'));
     case BaseTable.Trees:
-      return uppercaseFirstLetter(t('filter.tree')) + ' > ';
+      return uppercaseFirstLetter(t('filter.tree'));
   }
 }
 

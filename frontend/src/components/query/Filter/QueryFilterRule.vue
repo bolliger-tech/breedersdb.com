@@ -80,9 +80,9 @@ import QueryFilterRuleColumn from './QueryFilterRuleColumn.vue';
 import QueryFilterRuleOperator from './QueryFilterRuleOperator.vue';
 import QueryFilterRuleExplainer from './QueryFilterRuleExplainer.vue';
 import QueryFilterRuleNoAttributionsPredicate from './QueryFilterRuleNoAttributionsPredicate.vue';
-import { FilterColumn } from './filterColumn';
-import { FilterOperator } from './filterOperator';
-import { FilterTerm } from './filterTerm';
+import { FilterRuleColumn } from './filterRuleColumn';
+import { FilterRuleOperator } from './filterRuleOperator';
+import { FilterRuleTerm } from './filterRuleTerm';
 
 defineEmits<{
   (e: 'dragMouseDown'): void;
@@ -91,7 +91,7 @@ defineEmits<{
 
 const props = defineProps({
   options: {
-    type: Object as PropType<FilterColumn[]>,
+    type: Object as PropType<FilterRuleColumn[]>,
     required: true,
   },
   node: {
@@ -113,7 +113,7 @@ const includeEntitiesWithoutAttributions = computed(
 );
 const isAttribute = computed(() => filterRule.value?.isAttribute);
 
-function updateColumn(value: FilterColumn) {
+function updateColumn(value: FilterRuleColumn) {
   if (filterRule.value) {
     filterRule.value.column = value;
   } else {
@@ -121,7 +121,7 @@ function updateColumn(value: FilterColumn) {
   }
 }
 
-function updateOperator(value: FilterOperator) {
+function updateOperator(value: FilterRuleOperator) {
   if (filterRule.value) {
     filterRule.value.operator = value;
   } else {
@@ -129,7 +129,7 @@ function updateOperator(value: FilterOperator) {
   }
 }
 
-function updateTerm(value: FilterTerm) {
+function updateTerm(value: FilterRuleTerm) {
   if (filterRule.value) {
     filterRule.value.term = value;
   } else {
@@ -210,3 +210,4 @@ watch(
   color: var(--q-negative);
 }
 </style>
+./filterRuleColumn ./filterRuleOperator ./filterRuleTerm

@@ -97,7 +97,7 @@ import { FilterNode, FilterConjunction } from './filterNode';
 import { useQueryStore } from './queryStore';
 import { FilterDragNode } from './queryTypes';
 import QueryFilterRuleDropZone from './QueryFilterRuleDropZone.vue';
-import { FilterColumn } from './filterColumn';
+import { FilterRuleColumn } from './filterRuleColumn';
 
 const props = defineProps({
   node: {
@@ -105,7 +105,7 @@ const props = defineProps({
     required: true,
   },
   options: {
-    type: Object as PropType<FilterColumn[]>,
+    type: Object as PropType<FilterRuleColumn[]>,
     required: true,
   },
   conjunction: {
@@ -244,3 +244,4 @@ function onDrop(position: 'before' | 'after') {
   bottom: -18px;
 }
 </style>
+./filterRuleColumn

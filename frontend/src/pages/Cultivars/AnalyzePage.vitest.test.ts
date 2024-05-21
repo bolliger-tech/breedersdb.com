@@ -20,11 +20,11 @@ import QueryFilterRuleColumn from 'src/components/Query/Filter/QueryFilterRuleCo
 import QueryFilterRuleOperator from 'src/components/Query/Filter/QueryFilterRuleOperator.vue';
 import QueryFilterRuleTerm from 'src/components/Query/Filter/QueryFilterRuleTerm.vue';
 import {
-  FilterOperator,
+  FilterRuleOperator,
   FilterOperatorValue,
-} from 'src/components/Query/Filter/filterOperator';
+} from 'src/components/Query/Filter/filterRuleOperator';
 import { FilterRuleType } from 'src/components/Query/Filter/filterRuleTypes';
-import { FilterTerm } from 'src/components/Query/Filter/filterTerm';
+import { FilterRuleTerm } from 'src/components/Query/Filter/filterRuleTerm';
 
 addQuasarPlugins();
 
@@ -146,7 +146,7 @@ describe('AnalyzePage', () => {
       await column.setValue(currentColumn);
       const operator = await wrapper.findComponent(QueryFilterRuleOperator);
       await operator.setValue(
-        new FilterOperator({
+        new FilterRuleOperator({
           label: 'greater than',
           value: FilterOperatorValue.Greater,
           suitableRuleTypes: [
@@ -160,7 +160,7 @@ describe('AnalyzePage', () => {
       );
       const term = await wrapper.findComponent(QueryFilterRuleTerm);
       await term.setValue(
-        new FilterTerm({ value: '1', schema: term.vm.$props.schema }),
+        new FilterRuleTerm({ value: '1', schema: term.vm.$props.schema }),
       );
 
       await flushPromises();

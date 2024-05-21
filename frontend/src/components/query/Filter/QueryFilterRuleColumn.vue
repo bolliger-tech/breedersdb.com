@@ -34,17 +34,17 @@ import {
   FilterSelectOptionsUpdateFn,
 } from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
-import { FilterColumn } from './filterColumn';
+import { FilterRuleColumn } from './filterRuleColumn';
 
 export interface QueryFilterRuleColumnProps {
-  modelValue?: FilterColumn;
-  options: FilterColumn[];
+  modelValue?: FilterRuleColumn;
+  options: FilterRuleColumn[];
 }
 
 const { t } = useI18n();
 
 defineEmits<{
-  (e: 'update:modelValue', value: FilterColumn): void;
+  (e: 'update:modelValue', value: FilterRuleColumn): void;
 }>();
 
 const props = defineProps<QueryFilterRuleColumnProps>();
@@ -52,7 +52,7 @@ const props = defineProps<QueryFilterRuleColumnProps>();
 const filteredOptions = ref(props.options);
 
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
-  filterSelectOptions<FilterColumn>(
+  filterSelectOptions<FilterRuleColumn>(
     value,
     update,
     props.options,
@@ -63,3 +63,4 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
 
 const inputBgColor = useInputBackground();
 </script>
+./filterRuleColumn

@@ -66,26 +66,26 @@ import {
 } from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
 import { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
-import { FilterTerm } from './filterTerm';
+import { FilterRuleTerm } from './filterRuleTerm';
 
 export interface QueryFilterRuleTermProps {
   schema?: FilterRuleSchema;
   disabled: boolean;
   hide: boolean;
-  modelValue?: FilterTerm;
+  modelValue?: FilterRuleTerm;
 }
 
 const { t } = useI18n();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: FilterTerm): void;
+  (e: 'update:modelValue', value: FilterRuleTerm): void;
 }>();
 
 const props = defineProps<QueryFilterRuleTermProps>();
 
 function updateTerm(value: string | number | null) {
   const term =
-    props.modelValue ?? new FilterTerm({ value: '', schema: props.schema });
+    props.modelValue ?? new FilterRuleTerm({ value: '', schema: props.schema });
   term.value = (value || '').toString().trim();
   emit('update:modelValue', term);
 }
@@ -182,3 +182,4 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
 
 const inputBgColor = useInputBackground();
 </script>
+./filterRuleTerm

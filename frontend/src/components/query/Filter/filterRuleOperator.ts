@@ -1,6 +1,6 @@
 import type { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
 
-export class FilterOperator {
+export class FilterRuleOperator {
   public readonly label: string;
   public readonly value: FilterOperatorValue;
   public readonly suitableRuleTypes: FilterRuleType[];

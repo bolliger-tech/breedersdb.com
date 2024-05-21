@@ -37,24 +37,24 @@ import {
 } from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
 import { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
-import { FilterOperator, FilterOperatorValue } from './filterOperator';
+import { FilterRuleOperator, FilterOperatorValue } from './filterRuleOperator';
 
 export interface QueryFilterRuleOperatorProps {
   schema?: FilterRuleSchema;
   disabled: boolean;
-  modelValue?: FilterOperator;
+  modelValue?: FilterRuleOperator;
 }
 
 const { t } = useI18n();
 
 defineEmits<{
-  (e: 'update:modelValue', value: FilterOperator): void;
+  (e: 'update:modelValue', value: FilterRuleOperator): void;
 }>();
 
 const props = defineProps<QueryFilterRuleOperatorProps>();
 
 const allOptions = computed(() => [
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.equals'),
     value: FilterOperatorValue.Equal,
     suitableRuleTypes: [
@@ -67,7 +67,7 @@ const allOptions = computed(() => [
     ],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.notEquals'),
     value: FilterOperatorValue.NotEqual,
     suitableRuleTypes: [
@@ -80,7 +80,7 @@ const allOptions = computed(() => [
     ],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.less'),
     value: FilterOperatorValue.Less,
     suitableRuleTypes: [
@@ -91,7 +91,7 @@ const allOptions = computed(() => [
     ],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.lessOrEqual'),
     value: FilterOperatorValue.LessOrEqual,
     suitableRuleTypes: [
@@ -102,7 +102,7 @@ const allOptions = computed(() => [
     ],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.greater'),
     value: FilterOperatorValue.Greater,
     suitableRuleTypes: [
@@ -113,7 +113,7 @@ const allOptions = computed(() => [
     ],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.greaterOrEqual'),
     value: FilterOperatorValue.GreaterOrEqual,
     suitableRuleTypes: [
@@ -124,67 +124,67 @@ const allOptions = computed(() => [
     ],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.startsWith'),
     value: FilterOperatorValue.StartsWith,
     suitableRuleTypes: [FilterRuleType.String],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.startsNotWith'),
     value: FilterOperatorValue.StartsNotWith,
     suitableRuleTypes: [FilterRuleType.String],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.contains'),
     value: FilterOperatorValue.Contains,
     suitableRuleTypes: [FilterRuleType.String],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.notContains'),
     value: FilterOperatorValue.NotContains,
     suitableRuleTypes: [FilterRuleType.String],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.endsWith'),
     value: FilterOperatorValue.EndsWith,
     suitableRuleTypes: [FilterRuleType.String],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.notEndsWith'),
     value: FilterOperatorValue.NotEndsWith,
     suitableRuleTypes: [FilterRuleType.String],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.empty'),
     value: FilterOperatorValue.Empty,
     suitableRuleTypes: [FilterRuleType.String],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.notEmpty'),
     value: FilterOperatorValue.NotEmpty,
     suitableRuleTypes: [FilterRuleType.String],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.hasPhoto'),
     value: FilterOperatorValue.NotEmpty,
     suitableRuleTypes: [FilterRuleType.Photo],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.isTrue'),
     value: FilterOperatorValue.True,
     suitableRuleTypes: [FilterRuleType.Boolean],
     schema: props.schema,
   }),
-  new FilterOperator({
+  new FilterRuleOperator({
     label: t('filter.operators.isFalse'),
     value: FilterOperatorValue.False,
     suitableRuleTypes: [FilterRuleType.Boolean],
@@ -211,7 +211,7 @@ const applicableOptions = computed(() => {
 const filteredOptions = ref(applicableOptions.value);
 
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
-  filterSelectOptions<FilterOperator>(
+  filterSelectOptions<FilterRuleOperator>(
     value,
     update,
     applicableOptions.value,
@@ -222,3 +222,4 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
 
 const inputBgColor = useInputBackground();
 </script>
+./filterRuleOperator

@@ -1,12 +1,15 @@
-import type { FilterColumn } from './filterColumn';
-import { FilterOperatorValue, type FilterOperator } from './filterOperator';
+import type { FilterRuleColumn } from './filterRuleColumn';
+import {
+  FilterOperatorValue,
+  type FilterRuleOperator,
+} from './filterRuleOperator';
 import { FilterRuleType } from './filterRuleTypes';
-import type { FilterTerm } from './filterTerm';
+import type { FilterRuleTerm } from './filterRuleTerm';
 
 export class FilterRule {
-  column: FilterColumn | undefined;
-  operator: FilterOperator | undefined;
-  term: FilterTerm | undefined;
+  column: FilterRuleColumn | undefined;
+  operator: FilterRuleOperator | undefined;
+  term: FilterRuleTerm | undefined;
   private _includeEntitiesWithoutAttributions = false;
 
   get isAttribute() {
@@ -16,10 +19,10 @@ export class FilterRule {
     return this.column?.type;
   }
   get tableName() {
-    return this.column?.table;
+    return this.column?.tableName;
   }
   get columnName() {
-    return this.column?.tableColumn;
+    return this.column?.tableColumnName;
   }
   get canBeNullOrEmpty() {
     return (

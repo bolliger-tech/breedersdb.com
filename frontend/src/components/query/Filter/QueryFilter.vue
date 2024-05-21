@@ -29,7 +29,7 @@ const store = useQueryStore();
 const baseFilterDefault = computed(() => store.getBaseFilter);
 
 const { fetchOptions: fetchAttributionFilterOptions } =
-  useAttributionFilterOptions({ labelPrefix: t('filter.attribute') });
+  useAttributionFilterOptions({ tableLabel: t('filter.attribute') });
 
 const { data: attributionFilterOptions, error } =
   await fetchAttributionFilterOptions();

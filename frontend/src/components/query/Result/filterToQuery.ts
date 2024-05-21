@@ -1,8 +1,11 @@
 import type { FilterNode } from '../Filter/filterNode';
-import { FilterOperator, FilterOperatorValue } from '../Filter/filterOperator';
+import {
+  FilterRuleOperator,
+  FilterOperatorValue,
+} from '../Filter/filterRuleOperator';
 import type { FilterRule } from '../Filter/filterRule';
 import { FilterRuleType } from '../Filter/filterRuleTypes';
-import type { FilterTerm } from '../Filter/filterTerm';
+import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
 import type { BaseTable } from '../Filter/queryTypes';
 
 type QueryVariable = {
@@ -152,8 +155,8 @@ function toComparison({
   term,
   type: filterRuleType,
 }: {
-  operator: FilterOperator;
-  term?: FilterTerm;
+  operator: FilterRuleOperator;
+  term?: FilterRuleTerm;
   type: FilterRuleType;
 }): Comparison | undefined {
   const name = `v${varCounter++}`;
@@ -250,7 +253,7 @@ function toComparison({
   }
 }
 
-function cast({ term, type }: { term?: FilterTerm; type: FilterRuleType }) {
+function cast({ term, type }: { term?: FilterRuleTerm; type: FilterRuleType }) {
   switch (type) {
     case FilterRuleType.String:
       return term?.value || '';

@@ -24,51 +24,69 @@ export class FilterNode {
   private level = 0;
   private parent: FilterNode | null = null;
   private children: FilterNode[] = [];
-
+  private childrensConjunction: FilterConjunction | null;
+  private readonly filterType: FilterType;
+  private filterRule: FilterRule | null;
   private readonly root: FilterNode;
   private static nextId = 0;
 
-  private constructor(
-    private readonly filterType: FilterType,
-    parent: FilterNode | null,
-    private childrensConjunction: FilterConjunction | null,
-    private filterRule: FilterRule | null,
-    root: FilterNode | null,
-  ) {
+  private constructor({
+    filterType,
+    parent,
+    childrensConjunction,
+    filterRule,
+    root,
+  }: {
+    filterType: FilterType;
+    parent: FilterNode | null;
+    childrensConjunction: FilterConjunction | null;
+    filterRule: FilterRule | null;
+    root: FilterNode | null;
+  }) {
     this.id = ++FilterNode.nextId;
     this.setParent(parent);
 
     this.root = root || this;
+
+    this.filterType = filterType;
+    this.childrensConjunction = childrensConjunction;
+    this.filterRule = filterRule;
   }
 
   static FilterRoot(
     childrensConjunction: FilterConjunction,
     filterType: FilterType,
   ) {
-    return new FilterNode(filterType, null, childrensConjunction, null, null);
+    return new FilterNode({
+      filterType,
+      parent: null,
+      childrensConjunction,
+      filterRule: null,
+      root: null,
+    });
   }
 
   static FilterNode(
     childrensConjunction: FilterConjunction,
     parent: FilterNode,
   ) {
-    return new FilterNode(
-      parent.filterType,
+    return new FilterNode({
+      filterType: parent.filterType,
       parent,
       childrensConjunction,
-      null,
-      parent.root,
-    );
+      filterRule: null,
+      root: parent.root,
+    });
   }
 
   static FilterLeaf(parent: FilterNode, filterRule: FilterRule) {
-    return new FilterNode(
-      parent.filterType,
+    return new FilterNode({
+      filterType: parent.filterType,
       parent,
-      null,
+      childrensConjunction: null,
       filterRule,
-      parent.root,
-    );
+      root: parent.root,
+    });
   }
 
   getId() {

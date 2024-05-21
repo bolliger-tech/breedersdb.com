@@ -146,20 +146,22 @@ describe('AnalyzePage', () => {
       await column.setValue(currentColumn);
       const operator = await wrapper.findComponent(QueryFilterRuleOperator);
       await operator.setValue(
-        new FilterOperator(
-          'greater than',
-          FilterOperatorValue.Greater,
-          [
+        new FilterOperator({
+          label: 'greater than',
+          value: FilterOperatorValue.Greater,
+          suitableRuleTypes: [
             FilterRuleType.Integer,
             FilterRuleType.Float,
             FilterRuleType.Date,
             FilterRuleType.Datetime,
           ],
-          operator.vm.$props.schema,
-        ),
+          schema: operator.vm.$props.schema,
+        }),
       );
       const term = await wrapper.findComponent(QueryFilterRuleTerm);
-      await term.setValue(new FilterTerm('1', term.vm.$props.schema));
+      await term.setValue(
+        new FilterTerm({ value: '1', schema: term.vm.$props.schema }),
+      );
 
       await flushPromises();
 

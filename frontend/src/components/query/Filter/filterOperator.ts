@@ -1,12 +1,27 @@
 import type { FilterRuleSchema, FilterRuleType } from './filterRuleTypes';
 
 export class FilterOperator {
-  constructor(
-    public readonly label: string,
-    public readonly value: FilterOperatorValue,
-    public readonly suitableRuleTypes: FilterRuleType[],
-    public readonly schema: FilterRuleSchema | undefined,
-  ) {}
+  public readonly label: string;
+  public readonly value: FilterOperatorValue;
+  public readonly suitableRuleTypes: FilterRuleType[];
+  public readonly schema: FilterRuleSchema | undefined;
+
+  constructor({
+    label,
+    value,
+    suitableRuleTypes,
+    schema,
+  }: {
+    label: string;
+    value: FilterOperatorValue;
+    suitableRuleTypes: FilterRuleType[];
+    schema?: FilterRuleSchema;
+  }) {
+    this.label = label;
+    this.value = value;
+    this.suitableRuleTypes = suitableRuleTypes;
+    this.schema = schema;
+  }
 
   get isValid() {
     if (typeof this.schema === 'undefined') return undefined;

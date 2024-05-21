@@ -51,12 +51,12 @@ function getFilterColumnFromAttribute(
   attribute: Attribute,
   labelPrefix: string,
 ): FilterColumn {
-  return new FilterColumn(
-    'attributes',
-    attribute.id.toString(),
-    `${labelPrefix} > ${attribute.name}`,
-    getSchemaFromAttribute(attribute),
-  );
+  return new FilterColumn({
+    table: 'attributes',
+    tableColumn: attribute.id.toString(),
+    label: `${labelPrefix} > ${attribute.name}`,
+    schema: getSchemaFromAttribute(attribute),
+  });
 }
 
 function getFilterRuleTypeFromDataType(dataType: string): FilterRuleType {

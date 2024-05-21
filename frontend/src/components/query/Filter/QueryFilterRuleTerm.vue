@@ -84,7 +84,8 @@ const emit = defineEmits<{
 const props = defineProps<QueryFilterRuleTermProps>();
 
 function updateTerm(value: string | number | null) {
-  const term = props.modelValue ?? new FilterTerm('', props.schema);
+  const term =
+    props.modelValue ?? new FilterTerm({ value: '', schema: props.schema });
   term.value = (value || '').toString().trim();
   emit('update:modelValue', term);
 }

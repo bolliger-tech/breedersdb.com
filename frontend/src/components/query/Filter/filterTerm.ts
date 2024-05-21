@@ -1,10 +1,19 @@
 import { FilterRuleType, type FilterRuleSchema } from './filterRuleTypes';
 
 export class FilterTerm {
-  constructor(
-    public value: string,
-    public schema: FilterRuleSchema | undefined,
-  ) {}
+  public value: string;
+  public schema: FilterRuleSchema | undefined;
+
+  constructor({
+    value,
+    schema,
+  }: {
+    value: string;
+    schema: FilterRuleSchema | undefined;
+  }) {
+    this.value = value;
+    this.schema = schema;
+  }
 
   get isValid() {
     if (typeof this.schema === 'undefined') return undefined;

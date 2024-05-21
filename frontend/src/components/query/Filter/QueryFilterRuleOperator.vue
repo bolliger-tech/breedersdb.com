@@ -54,10 +54,10 @@ defineEmits<{
 const props = defineProps<QueryFilterRuleOperatorProps>();
 
 const allOptions = computed(() => [
-  new FilterOperator(
-    t('filter.operators.equals'),
-    FilterOperatorValue.Equal,
-    [
+  new FilterOperator({
+    label: t('filter.operators.equals'),
+    value: FilterOperatorValue.Equal,
+    suitableRuleTypes: [
       FilterRuleType.Integer,
       FilterRuleType.Float,
       FilterRuleType.String,
@@ -65,12 +65,12 @@ const allOptions = computed(() => [
       FilterRuleType.Date,
       FilterRuleType.Datetime,
     ],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.notEquals'),
-    FilterOperatorValue.NotEqual,
-    [
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.notEquals'),
+    value: FilterOperatorValue.NotEqual,
+    suitableRuleTypes: [
       FilterRuleType.Integer,
       FilterRuleType.Float,
       FilterRuleType.String,
@@ -78,118 +78,118 @@ const allOptions = computed(() => [
       FilterRuleType.Date,
       FilterRuleType.Datetime,
     ],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.less'),
-    FilterOperatorValue.Less,
-    [
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.less'),
+    value: FilterOperatorValue.Less,
+    suitableRuleTypes: [
       FilterRuleType.Integer,
       FilterRuleType.Float,
       FilterRuleType.Date,
       FilterRuleType.Datetime,
     ],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.lessOrEqual'),
-    FilterOperatorValue.LessOrEqual,
-    [
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.lessOrEqual'),
+    value: FilterOperatorValue.LessOrEqual,
+    suitableRuleTypes: [
       FilterRuleType.Integer,
       FilterRuleType.Float,
       FilterRuleType.Date,
       FilterRuleType.Datetime,
     ],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.greater'),
-    FilterOperatorValue.Greater,
-    [
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.greater'),
+    value: FilterOperatorValue.Greater,
+    suitableRuleTypes: [
       FilterRuleType.Integer,
       FilterRuleType.Float,
       FilterRuleType.Date,
       FilterRuleType.Datetime,
     ],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.greaterOrEqual'),
-    FilterOperatorValue.GreaterOrEqual,
-    [
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.greaterOrEqual'),
+    value: FilterOperatorValue.GreaterOrEqual,
+    suitableRuleTypes: [
       FilterRuleType.Integer,
       FilterRuleType.Float,
       FilterRuleType.Date,
       FilterRuleType.Datetime,
     ],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.startsWith'),
-    FilterOperatorValue.StartsWith,
-    [FilterRuleType.String],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.startsNotWith'),
-    FilterOperatorValue.StartsNotWith,
-    [FilterRuleType.String],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.contains'),
-    FilterOperatorValue.Contains,
-    [FilterRuleType.String],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.notContains'),
-    FilterOperatorValue.NotContains,
-    [FilterRuleType.String],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.endsWith'),
-    FilterOperatorValue.EndsWith,
-    [FilterRuleType.String],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.notEndsWith'),
-    FilterOperatorValue.NotEndsWith,
-    [FilterRuleType.String],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.empty'),
-    FilterOperatorValue.Empty,
-    [FilterRuleType.String],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.notEmpty'),
-    FilterOperatorValue.NotEmpty,
-    [FilterRuleType.String],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.hasPhoto'),
-    FilterOperatorValue.NotEmpty,
-    [FilterRuleType.Photo],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.isTrue'),
-    FilterOperatorValue.True,
-    [FilterRuleType.Boolean],
-    props.schema,
-  ),
-  new FilterOperator(
-    t('filter.operators.isFalse'),
-    FilterOperatorValue.False,
-    [FilterRuleType.Boolean],
-    props.schema,
-  ),
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.startsWith'),
+    value: FilterOperatorValue.StartsWith,
+    suitableRuleTypes: [FilterRuleType.String],
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.startsNotWith'),
+    value: FilterOperatorValue.StartsNotWith,
+    suitableRuleTypes: [FilterRuleType.String],
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.contains'),
+    value: FilterOperatorValue.Contains,
+    suitableRuleTypes: [FilterRuleType.String],
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.notContains'),
+    value: FilterOperatorValue.NotContains,
+    suitableRuleTypes: [FilterRuleType.String],
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.endsWith'),
+    value: FilterOperatorValue.EndsWith,
+    suitableRuleTypes: [FilterRuleType.String],
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.notEndsWith'),
+    value: FilterOperatorValue.NotEndsWith,
+    suitableRuleTypes: [FilterRuleType.String],
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.empty'),
+    value: FilterOperatorValue.Empty,
+    suitableRuleTypes: [FilterRuleType.String],
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.notEmpty'),
+    value: FilterOperatorValue.NotEmpty,
+    suitableRuleTypes: [FilterRuleType.String],
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.hasPhoto'),
+    value: FilterOperatorValue.NotEmpty,
+    suitableRuleTypes: [FilterRuleType.Photo],
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.isTrue'),
+    value: FilterOperatorValue.True,
+    suitableRuleTypes: [FilterRuleType.Boolean],
+    schema: props.schema,
+  }),
+  new FilterOperator({
+    label: t('filter.operators.isFalse'),
+    value: FilterOperatorValue.False,
+    suitableRuleTypes: [FilterRuleType.Boolean],
+    schema: props.schema,
+  }),
 ]);
 
 const applicableOptions = computed(() => {

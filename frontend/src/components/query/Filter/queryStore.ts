@@ -6,10 +6,7 @@ import { FilterNode, FilterConjunction, FilterType } from './filterNode';
 import { Attribute } from './formTypes';
 // import useApi from 'src/composables/api';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
-import {
-  FilterOptionSchemas,
-  AttributeSchema,
-} from './filterOptionSchemaTypes';
+// import { AttributeSchema } from './attributeSchemaTypes';
 import { QueryGroup } from './queryGroupTypes';
 
 const localStorageHelper = useQueryLocalStorageHelper();
@@ -29,7 +26,7 @@ export interface QueryState {
   attributionFilter: FilterNode;
   filterDragNode: FilterDragNode;
   attributes: Attribute[];
-  filterOptionSchemas: FilterOptionSchemas | undefined;
+  // filterOptionSchemas: AttributeSchema[] | undefined;
   visibleColumns: string[];
   showRowsWithoutattributions: boolean;
   queryGroups: QueryGroup[];
@@ -50,7 +47,7 @@ export const useQueryStore = defineStore('query', {
     ), // use getters and actions
     filterDragNode: false,
     attributes: [],
-    filterOptionSchemas: undefined,
+    // filterOptionSchemas: undefined,
     visibleColumns: localStorageHelper.getVisibleColumns(),
     showRowsWithoutattributions:
       localStorageHelper.getShowRowsWithoutattributions(true),
@@ -71,51 +68,51 @@ export const useQueryStore = defineStore('query', {
       );
     },
 
-    attributionAttributeSchema(state) {
-      const s = state as QueryState;
-      return s.attributes.map(
-        (s) => s,
-        // attributeConverter.toAttributeSchema,
-      );
-    },
+    // attributionAttributeSchema(state) {
+    //   const s = state as QueryState;
+    //   return s.attributes.map(
+    //     (s) => s,
+    //     // attributeConverter.toAttributeSchema,
+    //   );
+    // },
 
-    baseFilterOptions(state) {
-      const s = state as QueryState;
-      if (!s.filterOptionSchemas || !s.baseFilter) {
-        return [];
-      }
+    // baseFilterOptions(state) {
+    //   const s = state as QueryState;
+    //   if (!s.filterOptionSchemas || !s.baseFilter) {
+    //     return [];
+    //   }
 
-      const options: AttributeSchema[] =
-        [...s.filterOptionSchemas[s.baseTable]] || [];
+    //   const options: AttributeSchema[] =
+    //     [...s.filterOptionSchemas[s.baseTable]] || [];
 
-      if (this.attributionsAvailable) {
-        // options.push(...this.attributionAttributeSchema);
-      }
+    //   if (this.attributionsAvailable) {
+    //     // options.push(...this.attributionAttributeSchema);
+    //   }
 
-      return options;
-    },
+    //   return options;
+    // },
 
-    attributionFilterOptions(state) {
-      const s = state as QueryState;
-      if (!s.filterOptionSchemas) {
-        return [];
-      }
+    // attributionFilterOptions(state) {
+    //   const s = state as QueryState;
+    //   if (!s.filterOptionSchemas) {
+    //     return [];
+    //   }
 
-      return s.filterOptionSchemas['attributions'] || [];
-    },
+    //   return s.filterOptionSchemas['attributions'] || [];
+    // },
 
     getBaseFilter(state) {
-      if (!this.baseFilterOptions) {
-        return defaultBaseFilter;
-      }
+      // if (!this.baseFilterOptions) {
+      //   return defaultBaseFilter;
+      // }
 
       return (state as QueryState).baseFilter;
     },
 
     getAttributionFilter(state) {
-      if (!this.attributionFilterOptions) {
-        return defaultAttributionFilter;
-      }
+      // if (!this.attributionFilterOptions) {
+      //   return defaultAttributionFilter;
+      // }
 
       return (state as QueryState).attributionFilter;
     },
@@ -165,14 +162,14 @@ export const useQueryStore = defineStore('query', {
     },
 
     async maybeLoadFilterOptionSchemas() {
-      if (undefined === this.filterOptionSchemas) {
-        console.log('loading filter option schemas');
-        // await useApi()
-        //   .get<FilterOptionSchemas>('queries/get-filter-schemas')
-        //   .then(
-        //     (data) => (this.filterOptionSchemas = data as FilterOptionSchemas),
-        //   );
-      }
+      // if (undefined === this.filterOptionSchemas) {
+      //   console.log('loading filter option schemas');
+      // await useApi()
+      //   .get<FilterOptionSchemas>('queries/get-filter-schemas')
+      //   .then(
+      //     (data) => (this.filterOptionSchemas = data as FilterOptionSchemas),
+      //   );
+      // }
     },
 
     async maybeLoadQueryGroups() {

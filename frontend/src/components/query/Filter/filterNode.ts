@@ -53,10 +53,13 @@ export class FilterNode {
     this.filterRule = filterRule;
   }
 
-  static FilterRoot(
-    childrensConjunction: FilterConjunction,
-    filterType: FilterType,
-  ) {
+  static FilterRoot({
+    childrensConjunction,
+    filterType,
+  }: {
+    childrensConjunction: FilterConjunction;
+    filterType: FilterType;
+  }) {
     return new FilterNode({
       filterType,
       parent: null,
@@ -66,10 +69,13 @@ export class FilterNode {
     });
   }
 
-  static FilterNode(
-    childrensConjunction: FilterConjunction,
-    parent: FilterNode,
-  ) {
+  static FilterNode({
+    childrensConjunction,
+    parent,
+  }: {
+    childrensConjunction: FilterConjunction;
+    parent: FilterNode;
+  }) {
     return new FilterNode({
       filterType: parent.filterType,
       parent,
@@ -79,7 +85,13 @@ export class FilterNode {
     });
   }
 
-  static FilterLeaf(parent: FilterNode, filterRule: FilterRule) {
+  static FilterLeaf({
+    parent,
+    filterRule,
+  }: {
+    parent: FilterNode;
+    filterRule: FilterRule;
+  }) {
     return new FilterNode({
       filterType: parent.filterType,
       parent,
@@ -393,18 +405,22 @@ export class FilterNode {
     }
 
     if (parent && json.filterRule) {
-      return FilterNode.FilterLeaf(parent, json.filterRule);
+      return FilterNode.FilterLeaf({ parent, filterRule: json.filterRule });
     }
 
     let node: FilterNode;
 
     if (parent && json.childrensConjunction) {
-      node = FilterNode.FilterNode(json.childrensConjunction, parent);
+      node = FilterNode.FilterNode({
+        childrensConjunction: json.childrensConjunction,
+        parent,
+      });
     } else {
-      node = FilterNode.FilterRoot(
-        json.childrensConjunction || FilterConjunction.And,
-        json.filterType,
-      );
+      node = FilterNode.FilterRoot({
+        childrensConjunction:
+          json.childrensConjunction || FilterConjunction.And,
+        filterType: json.filterType,
+      });
     }
 
     json.children.forEach((item) => {

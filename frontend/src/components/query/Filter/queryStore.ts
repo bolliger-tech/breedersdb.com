@@ -11,14 +11,14 @@ import { QueryGroup } from './queryGroupTypes';
 
 const localStorageHelper = useQueryLocalStorageHelper();
 
-const defaultBaseFilter = FilterNode.FilterRoot(
-  FilterConjunction.And,
-  FilterType.Base,
-);
-const defaultAttributionFilter = FilterNode.FilterRoot(
-  FilterConjunction.And,
-  FilterType.Attribution,
-);
+const defaultBaseFilter = FilterNode.FilterRoot({
+  childrensConjunction: FilterConjunction.And,
+  filterType: FilterType.Base,
+});
+const defaultAttributionFilter = FilterNode.FilterRoot({
+  childrensConjunction: FilterConjunction.And,
+  filterType: FilterType.Attribution,
+});
 
 export interface QueryState {
   baseTable: BaseTable;

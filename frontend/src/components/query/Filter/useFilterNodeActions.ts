@@ -10,7 +10,7 @@ export default function useFilterNodeActions() {
     }
 
     if (parent.getChildrensConjunction() === conjunction) {
-      const leaf = FilterNode.FilterLeaf(parent, rule);
+      const leaf = FilterNode.FilterLeaf({ parent, filterRule: rule });
       parent.appendChild(leaf);
 
       return;
@@ -23,8 +23,11 @@ export default function useFilterNodeActions() {
       );
     }
 
-    const leaf = FilterNode.FilterLeaf(parent, rule);
-    const intermediateNode = FilterNode.FilterNode(parentsConjunction, parent);
+    const leaf = FilterNode.FilterLeaf({ parent, filterRule: rule });
+    const intermediateNode = FilterNode.FilterNode({
+      childrensConjunction: parentsConjunction,
+      parent,
+    });
 
     intermediateNode.setChildren(parent.getChildren());
     parent.setChildren([intermediateNode, leaf]);

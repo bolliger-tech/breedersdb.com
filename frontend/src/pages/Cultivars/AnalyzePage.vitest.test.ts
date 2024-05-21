@@ -129,10 +129,10 @@ describe('AnalyzePage', () => {
 
     it('should create correct cultivar id query', async () => {
       const store = useQueryStore();
-      store.baseFilter = FilterNode.FilterRoot(
-        FilterConjunction.And,
-        FilterType.Base,
-      );
+      store.baseFilter = FilterNode.FilterRoot({
+        childrensConjunction: FilterConjunction.And,
+        filterType: FilterType.Base,
+      });
       const wrapper = await mountAsync(AnalyzePage, {
         executeQuery: queryMock,
       });

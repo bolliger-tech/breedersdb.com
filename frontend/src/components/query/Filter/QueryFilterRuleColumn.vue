@@ -24,6 +24,18 @@
         </q-item-section>
       </q-item>
     </template>
+
+    <template #option="{ opt, itemProps }">
+      <q-item v-bind="itemProps">
+        <q-item-section>
+          <q-item-label>
+            <span class="text-muted"
+              >{{ opt.tableLabel }}&nbsp;&nbsp;>&nbsp;&nbsp;</span
+            >{{ opt.tableColumnLabel }}</q-item-label
+          >
+        </q-item-section>
+      </q-item>
+    </template>
   </q-select>
 </template>
 <script lang="ts" setup>

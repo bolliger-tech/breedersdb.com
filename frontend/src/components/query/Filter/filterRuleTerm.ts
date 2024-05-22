@@ -1,5 +1,9 @@
 import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
 
+export type FilterRuleTermJson = {
+  value: string;
+};
+
 export class FilterRuleTerm {
   public value: string;
   public schema: FilterRuleTypeSchema | undefined;
@@ -45,6 +49,24 @@ export class FilterRuleTerm {
           `Unknown filter rule type: ${this.schema.type}`,
         );
     }
+  }
+
+  toJSON(): FilterRuleTermJson {
+    return {
+      value: this.value,
+    };
+  }
+
+  static FromJSON(
+    json: string | FilterRuleTermJson,
+    schema?: FilterRuleTypeSchema,
+  ) {
+    const data = 'string' === typeof json ? JSON.parse(json) : json;
+
+    return new FilterRuleTerm({
+      value: data.value,
+      schema,
+    });
   }
 
   private isValidString() {

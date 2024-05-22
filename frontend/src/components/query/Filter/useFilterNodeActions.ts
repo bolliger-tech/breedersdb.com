@@ -10,9 +10,7 @@ export default function useFilterNodeActions() {
     }
 
     if (parent.getChildrensConjunction() === conjunction) {
-      const leaf = FilterNode.FilterLeaf({ parent, filterRule: rule });
-      parent.appendChild(leaf);
-
+      FilterNode.FilterLeaf({ parent, filterRule: rule });
       return;
     }
 
@@ -23,17 +21,18 @@ export default function useFilterNodeActions() {
       );
     }
 
-    const leaf = FilterNode.FilterLeaf({ parent, filterRule: rule });
+    const parentChildren = parent.getChildren();
+
+    parent.setChildren([]);
+    parent.setChildrensConjunction(conjunction);
+
     const intermediateNode = FilterNode.FilterNode({
       childrensConjunction: parentsConjunction,
       parent,
     });
+    intermediateNode.setChildren(parentChildren);
 
-    intermediateNode.setChildren(parent.getChildren());
-    parent.setChildren([intermediateNode, leaf]);
-    parent.setChildrensConjunction(conjunction);
-
-    return;
+    FilterNode.FilterLeaf({ parent, filterRule: rule });
   }
 
   function moveNode(

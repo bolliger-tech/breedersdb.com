@@ -1,5 +1,11 @@
 import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
 
+export type FilterRuleOperatorJson = {
+  label: string;
+  value: FilterOperatorValue;
+  suitableRuleTypes: FilterRuleType[];
+};
+
 export class FilterRuleOperator {
   public readonly label: string;
   public readonly value: FilterOperatorValue;
@@ -26,6 +32,28 @@ export class FilterRuleOperator {
   get isValid() {
     if (typeof this.schema === 'undefined') return undefined;
     return this.suitableRuleTypes.includes(this.schema.type);
+  }
+
+  toJSON(): FilterRuleOperatorJson {
+    return {
+      label: this.label,
+      value: this.value,
+      suitableRuleTypes: this.suitableRuleTypes,
+    };
+  }
+
+  static FromJSON(
+    json: string | FilterRuleOperatorJson,
+    schema?: FilterRuleTypeSchema,
+  ) {
+    const data = 'string' === typeof json ? JSON.parse(json) : json;
+
+    return new FilterRuleOperator({
+      label: data.label,
+      value: data.value,
+      suitableRuleTypes: data.suitableRuleTypes,
+      schema,
+    });
   }
 }
 

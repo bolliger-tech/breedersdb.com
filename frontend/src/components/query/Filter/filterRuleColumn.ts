@@ -1,5 +1,12 @@
 import type { FilterRuleTypeSchema } from './filterRule';
 
+export type FilterRuleColumnJson = {
+  tableName: string;
+  tableColumnName: string;
+  tableLabel: string;
+  tableColumnLabel: string;
+};
+
 export class FilterRuleColumn {
   public readonly tableName: string;
   public readonly tableColumnName: string;
@@ -49,5 +56,30 @@ export class FilterRuleColumn {
 
   get type() {
     return this.schema?.type;
+  }
+
+  toJSON(): FilterRuleColumnJson {
+    return {
+      tableName: this.tableName,
+      tableColumnName: this.tableColumnName,
+      tableLabel: this.tableLabel,
+      tableColumnLabel: this.tableColumnLabel,
+    };
+  }
+
+  static FromJSON(
+    json: string | FilterRuleColumnJson,
+    schema?: FilterRuleTypeSchema,
+  ) {
+    const data: FilterRuleColumnJson =
+      'string' === typeof json ? JSON.parse(json) : json;
+
+    return new FilterRuleColumn({
+      tableName: data.tableName,
+      tableColumnName: data.tableColumnName,
+      tableLabel: data.tableLabel,
+      tableColumnLabel: data.tableColumnLabel,
+      schema,
+    });
   }
 }

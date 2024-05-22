@@ -512,4 +512,22 @@ describe('FilterTerm', () => {
       expect(filterTerm.isValid).toBe(false);
     });
   });
+
+  describe('toJSON', () => {
+    it('should return the value only', () => {
+      const value = 'value';
+      const schema = {
+        type: FilterRuleType.String as const,
+        allowEmpty: true,
+        validation: {
+          maxLen: 3,
+          pattern: null,
+        },
+      };
+
+      const json = JSON.stringify(new FilterRuleTerm({ value, schema }));
+
+      expect(JSON.parse(json)).toEqual({ value });
+    });
+  });
 });

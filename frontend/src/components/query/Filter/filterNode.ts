@@ -1,4 +1,5 @@
-import { FilterRule } from './filterRule';
+import { FilterRule, type FilterRuleJson } from './filterRule';
+import type { FilterRuleColumn } from './filterRuleColumn';
 
 export enum FilterConjunction {
   And = 'and',
@@ -11,12 +12,10 @@ export enum FilterType {
 }
 
 type FilterNodeJson = {
-  id: number;
-  level: number;
-  children: FilterNodeJson[];
-  childrensConjunction: FilterConjunction | null;
-  filterRule: FilterRule | null;
-  filterType: FilterType;
+  children?: FilterNodeJson[];
+  childrensConjunction?: FilterConjunction | null;
+  filterRule?: FilterRuleJson | null;
+  filterType?: FilterType;
 };
 
 export class FilterNode {
@@ -131,12 +130,24 @@ export class FilterNode {
   }
 
   setParent(parent: FilterNode | null) {
+    if (this.parent) {
+      // remove this node from the old parent
+      this.parent.setChildren(
+        this.parent.getChildren().filter((child) => child !== this),
+      );
+    }
+
     if (null === parent) {
       this.parent = null;
       this.setLevel(0);
-    } else {
-      this.parent = parent;
-      this.setLevel(parent.getLevel() + 1);
+      return;
+    }
+
+    this.parent = parent;
+    this.setLevel(parent.getLevel() + 1);
+    if (!this.parent.getChildren().find((child) => child === this)) {
+      // attach this node to the new parent
+      this.parent.appendChild(this);
     }
   }
 
@@ -161,7 +172,7 @@ export class FilterNode {
 
     this.children = children;
     this.children.forEach((child) => {
-      child.setParent(this);
+      if (child.getParent() !== this) child.setParent(this);
     });
   }
 
@@ -231,10 +242,9 @@ export class FilterNode {
     }
 
     // remove this node
-    const childrenOfParent = parent.getChildren();
-    const currentChildIdx = childrenOfParent.indexOf(this);
-    childrenOfParent.splice(currentChildIdx, 1);
-    parent.setChildren(childrenOfParent);
+    parent.setChildren(parent.getChildren().filter((child) => child !== this));
+
+    this.setParent(null);
 
     // remove parent node, if it isn't the root and
     // hasn't any children anymore
@@ -311,19 +321,21 @@ export class FilterNode {
       );
     }
 
-    if (
-      1 === this.getParent()?.getChildCount() &&
-      this.getChildrensConjunction()
-    ) {
-      this.getParent()?.setChildrensConjunction(
-        this.getChildrensConjunction() as FilterConjunction,
-      );
+    const conjunction = this.getChildrensConjunction();
+
+    if (this.isOnlyChild() && conjunction) {
+      parent.setChildrensConjunction(conjunction);
     }
 
     const parentsChildren = parent.getChildren();
     const nodeIdx = parentsChildren.indexOf(this);
-    parentsChildren.splice(nodeIdx, 1, ...this.getChildren());
-    parent.setChildren(parentsChildren);
+
+    if (nodeIdx === -1) {
+      parentsChildren.push(...this.getChildren());
+    } else {
+      parentsChildren.splice(nodeIdx, 1, ...this.getChildren());
+      parent.setChildren(parentsChildren);
+    }
   }
 
   private mergeIntoParent() {
@@ -387,44 +399,74 @@ export class FilterNode {
 
   toJSON(): FilterNodeJson {
     return {
-      id: this.getId(),
-      level: this.getLevel(),
-      children: this.getChildren() as unknown as FilterNodeJson[],
-      childrensConjunction: this.getChildrensConjunction(),
-      filterRule: this.getFilterRule(),
-      filterType: this.getFilterType(),
+      ...(!this.isLeaf()
+        ? { children: this.getChildren() as unknown as FilterNodeJson[] }
+        : {}),
+      ...(!this.isLeaf()
+        ? { childrensConjunction: this.getChildrensConjunction() }
+        : {}),
+      ...(this.isLeaf() ? { filterRule: this.getFilterRule() } : {}),
+      ...(this.isRoot() ? { filterType: this.getFilterType() } : {}),
     };
   }
 
   static FromJSON(
     json: string | FilterNodeJson,
     parent: FilterNode | null = null,
+    columns: FilterRuleColumn[],
   ) {
-    if ('string' === typeof json) {
-      json = JSON.parse(json) as FilterNodeJson;
+    const data: FilterNodeJson =
+      'string' === typeof json ? JSON.parse(json) : json;
+
+    // Leaf
+    if (parent && typeof data.filterRule !== 'undefined') {
+      if (!data.filterRule) {
+        throw Error(
+          'Failed to deserialize FilterNodeJSON: Missing filterRule on leaf node.',
+        );
+      }
+      const filterRule = FilterRule.FromJSON(data.filterRule, columns);
+
+      return FilterNode.FilterLeaf({
+        parent,
+        filterRule,
+      });
     }
 
-    if (parent && json.filterRule) {
-      return FilterNode.FilterLeaf({ parent, filterRule: json.filterRule });
+    if (!data.childrensConjunction) {
+      throw Error(
+        'Failed to deserialize FilterNodeJSON: Missing childrensConjunction.',
+      );
+    }
+    if (!data.children) {
+      throw Error(
+        'Failed to deserialize FilterNodeJSON: Missing children on non-leaf node.',
+      );
     }
 
     let node: FilterNode;
 
-    if (parent && json.childrensConjunction) {
+    if (parent) {
+      // Node
       node = FilterNode.FilterNode({
-        childrensConjunction: json.childrensConjunction,
+        childrensConjunction: data.childrensConjunction,
         parent,
       });
     } else {
+      // Root
+      if (!data.filterType) {
+        throw Error(
+          'Failed to deserialize FilterNodeJSON: Missing filterType on root node.',
+        );
+      }
       node = FilterNode.FilterRoot({
-        childrensConjunction:
-          json.childrensConjunction || FilterConjunction.And,
-        filterType: json.filterType,
+        childrensConjunction: data.childrensConjunction,
+        filterType: data.filterType,
       });
     }
 
-    json.children.forEach((item) => {
-      node.appendChild(FilterNode.FromJSON(item, node));
+    data.children.forEach((child) => {
+      FilterNode.FromJSON(child, node, columns);
     });
 
     return node;

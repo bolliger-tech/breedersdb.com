@@ -1,9 +1,10 @@
-import type { FilterRuleColumn } from './filterRuleColumn';
+import { FilterRuleColumn, FilterRuleColumnJson } from './filterRuleColumn';
 import {
   FilterOperatorValue,
-  type FilterRuleOperator,
+  FilterRuleOperator,
+  type FilterRuleOperatorJson,
 } from './filterRuleOperator';
-import type { FilterRuleTerm } from './filterRuleTerm';
+import { FilterRuleTerm, FilterRuleTermJson } from './filterRuleTerm';
 
 export enum FilterRuleType {
   String = 'string',
@@ -28,6 +29,13 @@ export type FilterRuleTypeSchema =
   | TimeSchema
   | PhotoSchema;
 
+export type FilterRuleJson = {
+  column: FilterRuleColumnJson | undefined;
+  operator: FilterRuleOperatorJson | undefined;
+  term: FilterRuleTermJson | undefined;
+  includeEntitiesWithoutAttributions?: boolean;
+};
+
 export class FilterRule {
   column: FilterRuleColumn | undefined;
   operator: FilterRuleOperator | undefined;
@@ -37,15 +45,19 @@ export class FilterRule {
   get isAttribute() {
     return this.column?.isAttribute;
   }
+
   get type() {
     return this.column?.type;
   }
+
   get tableName() {
     return this.column?.tableName;
   }
+
   get columnName() {
     return this.column?.tableColumnName;
   }
+
   get canBeNullOrEmpty() {
     return (
       this.column?.termCanBeEmpty &&
@@ -59,15 +71,18 @@ export class FilterRule {
       ].includes(this.operator.value)
     );
   }
+
   get includeEntitiesWithoutAttributions() {
     if (!this.isAttribute) return false;
     return this._includeEntitiesWithoutAttributions;
   }
+
   set includeEntitiesWithoutAttributions(value: boolean) {
     if (!this.isAttribute)
       throw new Error('Only attributions can have this property');
     this._includeEntitiesWithoutAttributions = value;
   }
+
   get requiresTerm() {
     switch (this.type) {
       case FilterRuleType.Date:
@@ -85,6 +100,7 @@ export class FilterRule {
         return false;
     }
   }
+
   get isValid() {
     if (!this.column || !this.operator) return undefined;
     if (this.requiresTerm && this.term === undefined) return undefined;
@@ -94,6 +110,49 @@ export class FilterRule {
       this.operator.isValid &&
       ((this.requiresTerm && this.term?.isValid) || !this.requiresTerm)
     );
+  }
+
+  toJSON(): FilterRuleJson {
+    return {
+      column: this.column,
+      operator: this.operator,
+      term: this.term,
+      ...(this.isAttribute
+        ? {
+            includeEntitiesWithoutAttributions:
+              this.includeEntitiesWithoutAttributions,
+          }
+        : {}),
+    };
+  }
+
+  static FromJSON(json: string | FilterRuleJson, columns: FilterRuleColumn[]) {
+    const data: FilterRuleJson =
+      'string' === typeof json ? JSON.parse(json) : json;
+
+    const schema = columns.find(
+      (col) =>
+        col.tableName === data.column?.tableName &&
+        col.tableColumnName === data.column?.tableColumnName,
+    )?.schema;
+
+    const rule = new FilterRule();
+    rule.column = data.column
+      ? FilterRuleColumn.FromJSON(data.column, schema)
+      : undefined;
+    rule.operator = data.operator
+      ? FilterRuleOperator.FromJSON(data.operator, schema)
+      : undefined;
+    rule.term = data.term
+      ? FilterRuleTerm.FromJSON(data.term, schema)
+      : undefined;
+
+    if (typeof data.includeEntitiesWithoutAttributions !== 'undefined') {
+      rule.includeEntitiesWithoutAttributions =
+        data.includeEntitiesWithoutAttributions;
+    }
+
+    return rule;
   }
 }
 

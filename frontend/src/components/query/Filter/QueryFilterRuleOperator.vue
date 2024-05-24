@@ -15,7 +15,6 @@
     use-input
     fill-input
     hide-selected
-    clearable
     @filter="filterOptions"
     @update:model-value="(value) => $emit('update:modelValue', value)"
   >

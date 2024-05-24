@@ -38,6 +38,7 @@
     </template>
   </q-select>
 </template>
+
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
@@ -56,7 +57,7 @@ export interface QueryFilterRuleColumnProps {
 const { t } = useI18n();
 
 defineEmits<{
-  (e: 'update:modelValue', value: FilterRuleColumn): void;
+  'update:modelValue': [value: FilterRuleColumn];
 }>();
 
 const props = defineProps<QueryFilterRuleColumnProps>();
@@ -75,4 +76,3 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
 
 const inputBgColor = useInputBackground();
 </script>
-./filterRuleColumn

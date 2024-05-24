@@ -28,6 +28,7 @@
     </template>
   </q-select>
 </template>
+
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
@@ -51,18 +52,18 @@ export interface QueryFilterRuleOperatorProps {
 const { t } = useI18n();
 
 defineEmits<{
-  (e: 'update:modelValue', value: FilterRuleOperator): void;
+  'update:modelValue': [value: FilterRuleOperator];
 }>();
 
 const props = defineProps<QueryFilterRuleOperatorProps>();
 
 const getOperators = createGetFilterRuleOperators();
-const applicableOptions = computed(() =>
-  getOperators(
-    props.ruleType || FilterRuleType.String,
-    props.modelValue?.allowEmpty || true,
-  ),
-);
+const applicableOptions = computed(() => {
+  return typeof props.modelValue?.allowEmpty !== 'undefined' && props.ruleType
+    ? getOperators(props.ruleType, props.modelValue.allowEmpty)
+    : [];
+});
+
 const filteredOptions = ref(applicableOptions.value);
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
   filterSelectOptions(

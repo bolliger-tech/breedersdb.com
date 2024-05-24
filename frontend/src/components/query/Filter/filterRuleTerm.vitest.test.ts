@@ -5,9 +5,8 @@ import { FilterRuleType } from './filterRule';
 describe('FilterTerm', () => {
   it('should return undefined if no schema is provided', () => {
     const value = 'value';
-    const schema = undefined;
 
-    const filterTerm = new FilterRuleTerm({ value, schema });
+    const filterTerm = new FilterRuleTerm({ value });
 
     expect(filterTerm.isValid).toBeUndefined();
   });
@@ -24,7 +23,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -40,7 +40,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -58,7 +59,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -74,7 +76,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -90,7 +93,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -106,7 +110,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -125,7 +130,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -142,7 +148,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -159,7 +166,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -176,7 +184,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -193,7 +202,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -210,7 +220,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -229,7 +240,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -246,7 +258,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -263,7 +276,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -280,7 +294,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -297,7 +312,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -311,7 +327,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -323,7 +340,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -340,7 +358,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -355,7 +374,8 @@ describe('FilterTerm', () => {
         },
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -369,7 +389,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -381,7 +402,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -393,7 +415,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -403,11 +426,12 @@ describe('FilterTerm', () => {
     it('should be a valid date time', () => {
       const value = '2021-01-01T00:00:00';
       const schema = {
-        type: FilterRuleType.Datetime as const,
+        type: FilterRuleType.DateTime as const,
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -415,11 +439,12 @@ describe('FilterTerm', () => {
     it('should not be a valid date time', () => {
       const value = '2021-01-01T00:00:60';
       const schema = {
-        type: FilterRuleType.Datetime as const,
+        type: FilterRuleType.DateTime as const,
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -427,11 +452,12 @@ describe('FilterTerm', () => {
     it('should contain at least hours and minutes', () => {
       const value = '2021-01-01T00';
       const schema = {
-        type: FilterRuleType.Datetime as const,
+        type: FilterRuleType.DateTime as const,
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -445,7 +471,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -457,7 +484,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -469,7 +497,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -481,7 +510,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -495,7 +525,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(true);
     });
@@ -507,7 +538,8 @@ describe('FilterTerm', () => {
         allowEmpty: false,
       };
 
-      const filterTerm = new FilterRuleTerm({ value, schema });
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
 
       expect(filterTerm.isValid).toBe(false);
     });
@@ -525,7 +557,9 @@ describe('FilterTerm', () => {
         },
       };
 
-      const json = JSON.stringify(new FilterRuleTerm({ value, schema }));
+      const term = new FilterRuleTerm({ value });
+      term.schema = schema;
+      const json = JSON.stringify(term);
 
       expect(JSON.parse(json)).toEqual({ value });
     });

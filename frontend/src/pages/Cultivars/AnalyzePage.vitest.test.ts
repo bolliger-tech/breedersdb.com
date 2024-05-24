@@ -23,7 +23,6 @@ import {
   FilterRuleOperator,
   FilterOperatorValue,
 } from 'src/components/Query/Filter/filterRuleOperator';
-import { FilterRuleType } from 'src/components/Query/Filter/filterRule';
 import { FilterRuleTerm } from 'src/components/Query/Filter/filterRuleTerm';
 
 addQuasarPlugins();
@@ -147,21 +146,11 @@ describe('AnalyzePage', () => {
       const operator = await wrapper.findComponent(QueryFilterRuleOperator);
       await operator.setValue(
         new FilterRuleOperator({
-          label: 'greater than',
           value: FilterOperatorValue.Greater,
-          suitableRuleTypes: [
-            FilterRuleType.Integer,
-            FilterRuleType.Float,
-            FilterRuleType.Date,
-            FilterRuleType.Datetime,
-          ],
-          schema: operator.vm.$props.schema,
         }),
       );
       const term = await wrapper.findComponent(QueryFilterRuleTerm);
-      await term.setValue(
-        new FilterRuleTerm({ value: '1', schema: term.vm.$props.schema }),
-      );
+      await term.setValue(new FilterRuleTerm({ value: '1' }));
 
       await flushPromises();
 

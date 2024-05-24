@@ -65,12 +65,11 @@ import {
   FilterSelectOptionsUpdateFn,
 } from './selectOptionFilter';
 import { useInputBackground } from './useQueryRule';
-import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
+import { FilterRuleType } from './filterRule';
 
 import { FilterRuleTerm } from './filterRuleTerm';
 
 export interface QueryFilterRuleTermProps {
-  schema?: FilterRuleTypeSchema;
   disabled: boolean;
   hide: boolean;
   modelValue?: FilterRuleTerm;
@@ -85,13 +84,14 @@ const emit = defineEmits<{
 const props = defineProps<QueryFilterRuleTermProps>();
 
 function updateTerm(value: string | number | null) {
-  const term =
-    props.modelValue ?? new FilterRuleTerm({ value: '', schema: props.schema });
+  const term = props.modelValue ?? new FilterRuleTerm({ value: '' });
   term.value = (value || '').toString().trim();
   emit('update:modelValue', term);
 }
 
-const type = computed<null | FilterRuleType>(() => props.schema?.type || null);
+const type = computed<null | FilterRuleType>(
+  () => props.modelValue?.type || null,
+);
 
 const isEnum = computed<boolean>(() => {
   return type.value === FilterRuleType.Enum;
@@ -106,14 +106,11 @@ const isTime = computed<boolean>(() => {
 });
 
 const isDateTime = computed<boolean>(() => {
-  return type.value === FilterRuleType.Datetime;
+  return type.value === FilterRuleType.DateTime;
 });
 
 const validationOptions = computed(() => {
-  if (props.schema && 'validation' in props.schema) {
-    return props.schema.validation;
-  }
-  return undefined;
+  return props.modelValue?.validation;
 });
 
 const step = computed<number | undefined>(() => {
@@ -161,7 +158,7 @@ const inputType = computed(() => {
       return 'date';
     case FilterRuleType.Time:
       return 'time';
-    case FilterRuleType.Datetime:
+    case FilterRuleType.DateTime:
       return 'datetime-local';
     case FilterRuleType.Integer:
     case FilterRuleType.Float:
@@ -183,4 +180,3 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
 
 const inputBgColor = useInputBackground();
 </script>
-./filterRuleTerm

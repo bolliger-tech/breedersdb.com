@@ -24,7 +24,7 @@ const column = computed(() => {
   return label.split('>')[1] || label;
 });
 const operator = computed(() => {
-  return props.rule.operator?.label || '';
+  return props.rule.operator?.labelKey ? t(props.rule.operator?.labelKey) : '';
 });
 const term = computed(() => {
   return props.rule.term?.value || '';

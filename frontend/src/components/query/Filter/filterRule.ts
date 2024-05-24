@@ -13,7 +13,7 @@ export enum FilterRuleType {
   Boolean = 'boolean',
   Enum = 'enum',
   Date = 'date',
-  Datetime = 'datetime',
+  DateTime = 'datetime',
   Time = 'time',
   Photo = 'photo',
 }
@@ -21,7 +21,7 @@ export enum FilterRuleType {
 export type FilterRuleTypeSchema =
   | StringSchema
   | IntegerSchema
-  | DoubleSchema
+  | FloatSchema
   | BooleanSchema
   | EnumSchema
   | DateSchema
@@ -37,10 +37,66 @@ export type FilterRuleJson = {
 };
 
 export class FilterRule {
-  column: FilterRuleColumn | undefined;
-  operator: FilterRuleOperator | undefined;
-  term: FilterRuleTerm | undefined;
+  private _column: FilterRuleColumn | undefined;
+  private _operator: FilterRuleOperator | undefined;
+  private _term: FilterRuleTerm | undefined;
   private _includeEntitiesWithoutAttributions = false;
+
+  constructor({
+    column,
+    operator,
+    term,
+    includeEntitiesWithoutAttributions,
+  }: {
+    column?: FilterRuleColumn;
+    operator?: FilterRuleOperator;
+    term?: FilterRuleTerm;
+    includeEntitiesWithoutAttributions?: boolean;
+  } = {}) {
+    this.column = column;
+    this.operator = operator;
+    this.term = term;
+    if (typeof includeEntitiesWithoutAttributions !== 'undefined') {
+      this.includeEntitiesWithoutAttributions =
+        includeEntitiesWithoutAttributions;
+    }
+  }
+
+  get column() {
+    return this._column;
+  }
+
+  set column(value: FilterRuleColumn | undefined) {
+    this._column = value;
+    if (this._operator) {
+      this._operator.schema = value?.schema;
+    }
+    if (this._term) {
+      this._term.schema = value?.schema;
+    }
+  }
+
+  get operator() {
+    return this._operator;
+  }
+
+  set operator(value: FilterRuleOperator | undefined) {
+    if (value) {
+      value.schema = this._column?.schema;
+    }
+    this._operator = value;
+  }
+
+  get term() {
+    return this._term;
+  }
+
+  set term(value: FilterRuleTerm | undefined) {
+    if (value) {
+      value.schema = this._column?.schema;
+    }
+    this._term = value;
+  }
 
   get isAttribute() {
     return this.column?.isAttribute;
@@ -58,9 +114,13 @@ export class FilterRule {
     return this.column?.tableColumnName;
   }
 
+  get allowEmptyTerm() {
+    return this.column?.allowEmptyTerm;
+  }
+
   get canBeNullOrEmpty() {
     return (
-      this.column?.termCanBeEmpty &&
+      this.allowEmptyTerm &&
       this.type === FilterRuleType.String &&
       this.operator?.value &&
       [
@@ -84,9 +144,12 @@ export class FilterRule {
   }
 
   get requiresTerm() {
+    if (!this.type) return false;
+
     switch (this.type) {
+      case FilterRuleType.Time:
       case FilterRuleType.Date:
-      case FilterRuleType.Datetime:
+      case FilterRuleType.DateTime:
       case FilterRuleType.Integer:
       case FilterRuleType.Float:
       case FilterRuleType.Enum:
@@ -96,8 +159,11 @@ export class FilterRule {
           this.operator?.value !== FilterOperatorValue.Empty &&
           this.operator?.value !== FilterOperatorValue.NotEmpty
         );
-      default:
+      case FilterRuleType.Boolean:
+      case FilterRuleType.Photo:
         return false;
+      default:
+        throw new Error(`Unknown filter rule type: ${this.type}`);
     }
   }
 
@@ -136,21 +202,19 @@ export class FilterRule {
         col.tableColumnName === data.column?.tableColumnName,
     )?.schema;
 
-    const rule = new FilterRule();
-    rule.column = data.column
-      ? FilterRuleColumn.FromJSON(data.column, schema)
-      : undefined;
-    rule.operator = data.operator
-      ? FilterRuleOperator.FromJSON(data.operator, schema)
-      : undefined;
-    rule.term = data.term
-      ? FilterRuleTerm.FromJSON(data.term, schema)
-      : undefined;
-
-    if (typeof data.includeEntitiesWithoutAttributions !== 'undefined') {
-      rule.includeEntitiesWithoutAttributions =
-        data.includeEntitiesWithoutAttributions;
-    }
+    const rule = new FilterRule({
+      column: data.column
+        ? FilterRuleColumn.FromJSON(data.column, schema)
+        : undefined,
+      operator: data.operator
+        ? FilterRuleOperator.FromJSON(data.operator)
+        : undefined,
+      term: data.term ? FilterRuleTerm.FromJSON(data.term) : undefined,
+      includeEntitiesWithoutAttributions:
+        typeof data.includeEntitiesWithoutAttributions !== 'undefined'
+          ? data.includeEntitiesWithoutAttributions
+          : undefined,
+    });
 
     return rule;
   }
@@ -175,7 +239,7 @@ interface IntegerSchema {
   };
 }
 
-interface DoubleSchema {
+interface FloatSchema {
   allowEmpty: boolean;
   type: FilterRuleType.Float;
   validation: {
@@ -205,7 +269,7 @@ interface DateSchema {
 
 interface DateTimeSchema {
   allowEmpty: boolean;
-  type: FilterRuleType.Datetime;
+  type: FilterRuleType.DateTime;
 }
 
 interface TimeSchema {

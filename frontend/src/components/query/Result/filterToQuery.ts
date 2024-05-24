@@ -269,7 +269,7 @@ function cast({ term, type }: { term?: FilterRuleTerm; type: FilterRuleType }) {
     case FilterRuleType.Date:
       if (!term) return undefined;
       return new Date(term.value).toISOString().split('T')[0];
-    case FilterRuleType.Datetime:
+    case FilterRuleType.DateTime:
       if (!term) return undefined;
       return new Date(term.value).toISOString();
     case FilterRuleType.Time:
@@ -296,7 +296,7 @@ function filterRuleTypeToGraphQLType(type: FilterRuleType) {
       throw new Error('Not implemented');
     case FilterRuleType.Date:
       return 'date';
-    case FilterRuleType.Datetime:
+    case FilterRuleType.DateTime:
       return 'timestamptz';
     case FilterRuleType.Time:
       throw new Error('Not implemented');

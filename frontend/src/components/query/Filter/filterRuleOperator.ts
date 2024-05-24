@@ -1,32 +1,55 @@
+import type { TFunc } from 'src/composables/useI18n';
 import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
 
 export type FilterRuleOperatorJson = {
-  label: string;
   value: FilterOperatorValue;
-  suitableRuleTypes: FilterRuleType[];
 };
 
 export class FilterRuleOperator {
-  public readonly label: string;
   public readonly value: FilterOperatorValue;
-  public readonly suitableRuleTypes: FilterRuleType[];
-  public readonly schema: FilterRuleTypeSchema | undefined;
+  public schema: FilterRuleTypeSchema | undefined;
 
-  constructor({
-    label,
-    value,
-    suitableRuleTypes,
-    schema,
-  }: {
-    label: string;
-    value: FilterOperatorValue;
-    suitableRuleTypes: FilterRuleType[];
-    schema?: FilterRuleTypeSchema;
-  }) {
-    this.label = label;
+  constructor({ value }: { value: FilterOperatorValue }) {
     this.value = value;
-    this.suitableRuleTypes = suitableRuleTypes;
-    this.schema = schema;
+  }
+
+  get labelKey(): Parameters<TFunc>[0] {
+    switch (this.value) {
+      case FilterOperatorValue.Equal:
+        return 'filter.operators.equals';
+      case FilterOperatorValue.NotEqual:
+        return 'filter.operators.notEquals';
+      case FilterOperatorValue.Less:
+        return 'filter.operators.less';
+      case FilterOperatorValue.LessOrEqual:
+        return 'filter.operators.lessOrEqual';
+      case FilterOperatorValue.Greater:
+        return 'filter.operators.greater';
+      case FilterOperatorValue.GreaterOrEqual:
+        return 'filter.operators.greaterOrEqual';
+      case FilterOperatorValue.StartsWith:
+        return 'filter.operators.startsWith';
+      case FilterOperatorValue.StartsNotWith:
+        return 'filter.operators.startsNotWith';
+      case FilterOperatorValue.Contains:
+        return 'filter.operators.contains';
+      case FilterOperatorValue.NotContains:
+        return 'filter.operators.notContains';
+      case FilterOperatorValue.EndsWith:
+        return 'filter.operators.endsWith';
+      case FilterOperatorValue.NotEndsWith:
+        return 'filter.operators.notEndsWith';
+      case FilterOperatorValue.Empty:
+        return 'filter.operators.empty';
+      case FilterOperatorValue.NotEmpty:
+        return 'filter.operators.notEmpty';
+      case FilterOperatorValue.True:
+        return 'filter.operators.isTrue';
+      case FilterOperatorValue.False:
+        return 'filter.operators.isFalse';
+      default:
+        throw new Error(`Unknown filter operator value: ${this.value}`);
+    }
   }
 
   get isValid() {
@@ -34,25 +57,67 @@ export class FilterRuleOperator {
     return this.suitableRuleTypes.includes(this.schema.type);
   }
 
+  get type() {
+    return this.schema?.type;
+  }
+
+  get allowEmpty() {
+    return this.schema?.allowEmpty;
+  }
+
+  get suitableRuleTypes() {
+    switch (this.value) {
+      case FilterOperatorValue.Equal:
+      case FilterOperatorValue.NotEqual:
+        return [
+          FilterRuleType.String,
+          FilterRuleType.Integer,
+          FilterRuleType.Float,
+          FilterRuleType.Enum,
+          FilterRuleType.Date,
+          FilterRuleType.DateTime,
+          FilterRuleType.Time,
+        ];
+      case FilterOperatorValue.Less:
+      case FilterOperatorValue.LessOrEqual:
+      case FilterOperatorValue.Greater:
+      case FilterOperatorValue.GreaterOrEqual:
+        return [
+          FilterRuleType.Integer,
+          FilterRuleType.Float,
+          FilterRuleType.Date,
+          FilterRuleType.DateTime,
+          FilterRuleType.Time,
+        ];
+      case FilterOperatorValue.StartsWith:
+      case FilterOperatorValue.StartsNotWith:
+      case FilterOperatorValue.Contains:
+      case FilterOperatorValue.NotContains:
+      case FilterOperatorValue.EndsWith:
+      case FilterOperatorValue.NotEndsWith:
+      case FilterOperatorValue.Empty:
+        return [FilterRuleType.String];
+      case FilterOperatorValue.NotEmpty:
+        return [FilterRuleType.String, FilterRuleType.Photo];
+      case FilterOperatorValue.True:
+      case FilterOperatorValue.False:
+        return [FilterRuleType.Boolean];
+      default:
+        throw new Error(`Unknown filter operator value: ${this.value}`);
+    }
+  }
+
   toJSON(): FilterRuleOperatorJson {
     return {
-      label: this.label,
       value: this.value,
-      suitableRuleTypes: this.suitableRuleTypes,
     };
   }
 
-  static FromJSON(
-    json: string | FilterRuleOperatorJson,
-    schema?: FilterRuleTypeSchema,
-  ) {
+  static FromJSON(json: string | FilterRuleOperatorJson) {
     const data = 'string' === typeof json ? JSON.parse(json) : json;
 
     return new FilterRuleOperator({
-      label: data.label,
       value: data.value,
-      suitableRuleTypes: data.suitableRuleTypes,
-      schema,
     });
   }
 }

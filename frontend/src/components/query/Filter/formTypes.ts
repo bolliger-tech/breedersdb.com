@@ -1,4 +1,4 @@
-export enum AttributionFormFieldType {
+enum AttributionFormFieldType {
   Integer = 'INTEGER',
   Float = 'FLOAT',
   Boolean = 'BOOLEAN',
@@ -7,12 +7,12 @@ export enum AttributionFormFieldType {
   Photo = 'PHOTO',
 }
 
-export type AttributionFormFieldNumberConstraint = null | {
+type AttributionFormFieldNumberConstraint = null | {
   min: number;
   max: number;
   step: number;
 };
-export type AttributionValueValue = string | boolean | number | Date | File;
+type AttributionValueValue = string | boolean | number | Date | File;
 
 export interface Attribute {
   // TODO: check. e.g. validation_rule is missing
@@ -36,7 +36,7 @@ export interface AttributionForm {
   attributes?: Attribute[] | null;
 }
 
-export interface AttributionValue {
+interface AttributionValue {
   id?: number;
   value: AttributionValueValue;
   exceptional_attribution: boolean;

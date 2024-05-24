@@ -227,26 +227,23 @@ describe('FilterNode', () => {
 
   describe('isValid', () => {
     it('should be valid if all leafs are valid', () => {
-      const schema: FilterRuleTypeSchema = {
-        type: FilterRuleType.String,
-        allowEmpty: true,
-        validation: { maxLen: null, pattern: null },
-      };
-      const validRule = new FilterRule();
-      validRule.column = new FilterRuleColumn({
-        tableName: 'table',
-        tableColumnName: 'column',
-        tableLabel: 'Table',
-        tableColumnLabel: 'Column',
-        schema,
+      const validRule = new FilterRule({
+        column: new FilterRuleColumn({
+          tableName: 'table',
+          tableColumnName: 'column',
+          tableLabel: 'Table',
+          tableColumnLabel: 'Column',
+          schema: {
+            type: FilterRuleType.String,
+            allowEmpty: true,
+            validation: { maxLen: null, pattern: null },
+          },
+        }),
+        operator: new FilterRuleOperator({
+          value: FilterOperatorValue.Equal,
+        }),
+        term: new FilterRuleTerm({ value: 'value' }),
       });
-      validRule.operator = new FilterRuleOperator({
-        label: 'Equal',
-        value: FilterOperatorValue.Equal,
-        suitableRuleTypes: [FilterRuleType.String],
-        schema,
-      });
-      validRule.term = new FilterRuleTerm({ value: 'value', schema });
 
       const root = FilterNode.FilterRoot({
         filterType: FilterType.Base,
@@ -269,28 +266,25 @@ describe('FilterNode', () => {
     });
 
     it('should be invalid if any leafs are invalid', () => {
-      const schema: FilterRuleTypeSchema = {
-        type: FilterRuleType.String,
-        allowEmpty: false,
-        validation: { maxLen: null, pattern: null },
-      };
-      const validRule = new FilterRule();
-      validRule.column = new FilterRuleColumn({
-        tableName: 'table',
-        tableColumnName: 'column',
-        tableLabel: 'Table',
-        tableColumnLabel: 'Column',
-        schema,
+      const validRule = new FilterRule({
+        column: new FilterRuleColumn({
+          tableName: 'table',
+          tableColumnName: 'column',
+          tableLabel: 'Table',
+          tableColumnLabel: 'Column',
+          schema: {
+            type: FilterRuleType.String,
+            allowEmpty: false,
+            validation: { maxLen: null, pattern: null },
+          },
+        }),
+        operator: new FilterRuleOperator({
+          value: FilterOperatorValue.Equal,
+        }),
+        term: new FilterRuleTerm({ value: 'value' }),
       });
-      validRule.operator = new FilterRuleOperator({
-        label: 'Equal',
-        value: FilterOperatorValue.Equal,
-        suitableRuleTypes: [FilterRuleType.String],
-        schema,
-      });
-      validRule.term = new FilterRuleTerm({ value: 'value', schema });
       const invalidRule = Object.assign({}, validRule);
-      invalidRule.term = new FilterRuleTerm({ value: '', schema });
+      invalidRule.term = new FilterRuleTerm({ value: '' });
 
       const root = FilterNode.FilterRoot({
         filterType: FilterType.Base,
@@ -675,36 +669,32 @@ describe('FilterNode', () => {
         allowEmpty: true,
         validation: { maxLen: 55, pattern: '[a-z]+' },
       };
-      const baseTableRule = new FilterRule();
-      baseTableRule.column = new FilterRuleColumn({
-        tableName: 'table',
-        tableColumnName: 'column',
-        tableLabel: 'Table',
-        tableColumnLabel: 'Column',
-        schema,
+      const baseTableRule = new FilterRule({
+        column: new FilterRuleColumn({
+          tableName: 'table',
+          tableColumnName: 'column',
+          tableLabel: 'Table',
+          tableColumnLabel: 'Column',
+          schema,
+        }),
+        operator: new FilterRuleOperator({
+          value: FilterOperatorValue.Equal,
+        }),
+        term: new FilterRuleTerm({ value: 'value' }),
       });
-      baseTableRule.operator = new FilterRuleOperator({
-        label: 'Equal',
-        value: FilterOperatorValue.Equal,
-        suitableRuleTypes: [FilterRuleType.String],
-        schema,
+      const attributionRule = new FilterRule({
+        column: new FilterRuleColumn({
+          tableName: 'attributes',
+          tableColumnName: 'column',
+          tableLabel: 'Attributes',
+          tableColumnLabel: 'Column',
+          schema,
+        }),
+        operator: new FilterRuleOperator({
+          value: FilterOperatorValue.Equal,
+        }),
+        term: new FilterRuleTerm({ value: 'value' }),
       });
-      baseTableRule.term = new FilterRuleTerm({ value: 'value', schema });
-      const attributionRule = new FilterRule();
-      attributionRule.column = new FilterRuleColumn({
-        tableName: 'attributes',
-        tableColumnName: 'column',
-        tableLabel: 'Attributes',
-        tableColumnLabel: 'Column',
-        schema,
-      });
-      attributionRule.operator = new FilterRuleOperator({
-        label: 'Equal',
-        value: FilterOperatorValue.Equal,
-        suitableRuleTypes: [FilterRuleType.String],
-        schema,
-      });
-      attributionRule.term = new FilterRuleTerm({ value: 'value', schema });
       const emptyRule = new FilterRule();
 
       const root = FilterNode.FilterRoot({
@@ -743,9 +733,7 @@ describe('FilterNode', () => {
                     tableColumnLabel: 'Column',
                   },
                   operator: {
-                    label: 'Equal',
                     value: FilterOperatorValue.Equal,
-                    suitableRuleTypes: [FilterRuleType.String],
                   },
                   term: {
                     value: 'value',
@@ -761,9 +749,7 @@ describe('FilterNode', () => {
                     tableColumnLabel: 'Column',
                   },
                   operator: {
-                    label: 'Equal',
                     value: FilterOperatorValue.Equal,
-                    suitableRuleTypes: [FilterRuleType.String],
                   },
                   term: {
                     value: 'value',
@@ -791,36 +777,32 @@ describe('FilterNode', () => {
         allowEmpty: true,
         validation: { maxLen: 55, pattern: '[a-z]+' },
       };
-      const baseTableRule = new FilterRule();
-      baseTableRule.column = new FilterRuleColumn({
-        tableName: 'table',
-        tableColumnName: 'column',
-        tableLabel: 'Table',
-        tableColumnLabel: 'Column',
-        schema,
+      const baseTableRule = new FilterRule({
+        column: new FilterRuleColumn({
+          tableName: 'table',
+          tableColumnName: 'column',
+          tableLabel: 'Table',
+          tableColumnLabel: 'Column',
+          schema,
+        }),
+        operator: new FilterRuleOperator({
+          value: FilterOperatorValue.Equal,
+        }),
+        term: new FilterRuleTerm({ value: 'value' }),
       });
-      baseTableRule.operator = new FilterRuleOperator({
-        label: 'Equal',
-        value: FilterOperatorValue.Equal,
-        suitableRuleTypes: [FilterRuleType.String],
-        schema,
+      const attributionRule = new FilterRule({
+        column: new FilterRuleColumn({
+          tableName: 'attributes',
+          tableColumnName: 'column',
+          tableLabel: 'Attributes',
+          tableColumnLabel: 'Column',
+          schema,
+        }),
+        operator: new FilterRuleOperator({
+          value: FilterOperatorValue.Equal,
+        }),
+        term: new FilterRuleTerm({ value: 'value' }),
       });
-      baseTableRule.term = new FilterRuleTerm({ value: 'value', schema });
-      const attributionRule = new FilterRule();
-      attributionRule.column = new FilterRuleColumn({
-        tableName: 'attributes',
-        tableColumnName: 'column',
-        tableLabel: 'Attributes',
-        tableColumnLabel: 'Column',
-        schema,
-      });
-      attributionRule.operator = new FilterRuleOperator({
-        label: 'Equal',
-        value: FilterOperatorValue.Equal,
-        suitableRuleTypes: [FilterRuleType.String],
-        schema,
-      });
-      attributionRule.term = new FilterRuleTerm({ value: 'value', schema });
       const emptyRule = new FilterRule();
 
       const root = FilterNode.FilterRoot({
@@ -849,8 +831,8 @@ describe('FilterNode', () => {
 
       const json = JSON.stringify(root);
       const deserialized = FilterNode.FromJSON(json, null, [
-        baseTableRule.column,
-        attributionRule.column,
+        baseTableRule.column!,
+        attributionRule.column!,
       ]);
 
       expect(deserialized).toEqual(root);

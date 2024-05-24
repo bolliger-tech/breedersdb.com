@@ -148,7 +148,7 @@ const cultivar: FilterColumnConstructorData[] = [
     column: 'created',
     labelKey: 'filter.created',
     schema: {
-      type: FilterRuleType.Datetime,
+      type: FilterRuleType.DateTime,
       allowEmpty: false,
     },
   },

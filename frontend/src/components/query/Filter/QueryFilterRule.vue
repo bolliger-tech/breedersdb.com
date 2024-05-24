@@ -28,15 +28,14 @@
         </div>
         <div class="col-12 col-md-4">
           <QueryFilterRuleOperator
-            :schema="column?.schema"
             :disabled="column === undefined"
             :model-value="operator"
+            :rule-type="filterRule?.type"
             @update:model-value="updateOperator"
           />
         </div>
         <div class="col-12 col-md-4">
           <QueryFilterRuleTerm
-            :schema="column?.schema || undefined"
             :disabled="operator === undefined"
             :hide="!requiresTerm"
             :model-value="term"
@@ -83,6 +82,7 @@ import QueryFilterRuleNoAttributionsPredicate from './QueryFilterRuleNoAttributi
 import { FilterRuleColumn } from './filterRuleColumn';
 import { FilterRuleOperator } from './filterRuleOperator';
 import { FilterRuleTerm } from './filterRuleTerm';
+import { createGetFilterRuleOperators } from './createFilterRuleOperators';
 
 defineEmits<{
   (e: 'dragMouseDown'): void;
@@ -161,12 +161,25 @@ const isInvalid = computed<boolean>(() => {
   return !isValid.value && typeof filterRule.value?.isValid !== 'undefined';
 });
 
+const getOperators = createGetFilterRuleOperators();
+const applicableOperators = computed(() => {
+  if (
+    filterRule.value?.type &&
+    typeof filterRule.value?.allowEmptyTerm !== 'undefined'
+  ) {
+    return getOperators(filterRule.value.type, filterRule.value.allowEmptyTerm);
+  }
+  return [];
+});
+
 watch(
   () => filterRule.value?.type,
   () => {
     if (filterRule.value) {
+      filterRule.value.operator = applicableOperators.value
+        ? applicableOperators.value[0]
+        : undefined;
       filterRule.value.term = undefined;
-      filterRule.value.operator = undefined;
     }
   },
 );
@@ -210,4 +223,3 @@ watch(
   color: var(--q-negative);
 }
 </style>
-./filterRuleColumn ./filterRuleOperator ./filterRuleTerm

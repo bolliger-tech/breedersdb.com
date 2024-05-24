@@ -50,7 +50,7 @@ export class FilterRuleColumn {
     return this.schema !== undefined;
   }
 
-  get termCanBeEmpty() {
+  get allowEmptyTerm() {
     return this.schema?.allowEmpty;
   }
 

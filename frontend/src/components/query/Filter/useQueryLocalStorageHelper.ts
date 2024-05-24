@@ -40,9 +40,11 @@ function setBaseFilter(filter: FilterNode) {
 }
 
 function getBaseFilter(defaultValue: FilterNode): FilterNode {
-  const encoded = window.localStorage.getItem(getBaseFilterKey());
+  // TODO:
+  // const encoded = window.localStorage.getItem(getBaseFilterKey());
 
-  return encoded ? FilterNode.FromJSON(encoded) : defaultValue;
+  // return encoded ? FilterNode.FromJSON(encoded) : defaultValue;
+  return defaultValue;
 }
 
 function getBaseFilterKey() {
@@ -58,9 +60,11 @@ function setAttributionFilter(filter: FilterNode) {
 }
 
 function getAttributionFilter(defaultValue: FilterNode): FilterNode {
-  const encoded = window.localStorage.getItem(getAttributionFilterKey());
+  // TODO:
+  // const encoded = window.localStorage.getItem(getAttributionFilterKey());
 
-  return encoded ? FilterNode.FromJSON(encoded) : defaultValue;
+  // return encoded ? FilterNode.FromJSON(encoded) : defaultValue;
+  return defaultValue;
 }
 
 function getAttributionFilterKey() {

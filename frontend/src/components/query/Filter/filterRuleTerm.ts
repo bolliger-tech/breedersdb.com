@@ -8,23 +8,43 @@ export class FilterRuleTerm {
   public value: string;
   public schema: FilterRuleTypeSchema | undefined;
 
-  constructor({
-    value,
-    schema,
-  }: {
-    value: string;
-    schema: FilterRuleTypeSchema | undefined;
-  }) {
+  constructor({ value }: { value: string }) {
     this.value = value;
-    this.schema = schema;
+  }
+
+  get type() {
+    return this.schema?.type;
+  }
+
+  get allowEmpty() {
+    return this.schema?.allowEmpty;
+  }
+
+  get validation() {
+    if (typeof this.schema === 'undefined') return undefined;
+    switch (this.schema.type) {
+      case FilterRuleType.String:
+      case FilterRuleType.Integer:
+      case FilterRuleType.Float:
+      case FilterRuleType.Enum:
+        return this.schema.validation;
+      case FilterRuleType.Boolean:
+      case FilterRuleType.Date:
+      case FilterRuleType.DateTime:
+      case FilterRuleType.Time:
+      case FilterRuleType.Photo:
+        return undefined;
+      default:
+        throw new Error(`Unknown filter rule type: ${this.type}`);
+    }
   }
 
   get isValid() {
     if (typeof this.schema === 'undefined') return undefined;
 
-    if (this.value === '') return this.schema.allowEmpty;
+    if (this.value === '') return this.allowEmpty;
 
-    switch (this.schema.type) {
+    switch (this.type) {
       case FilterRuleType.String:
         return this.isValidString();
       case FilterRuleType.Integer:
@@ -37,17 +57,14 @@ export class FilterRuleTerm {
         return this.isValidEnum();
       case FilterRuleType.Date:
         return this.isValidDate();
-      case FilterRuleType.Datetime:
+      case FilterRuleType.DateTime:
         return this.isValidDateTime();
       case FilterRuleType.Time:
         return this.isValidTime();
       case FilterRuleType.Photo:
         return this.isValidPhoto();
       default:
-        throw new Error(
-          // @ts-expect-error type can be other than never FilterRuleType is extended
-          `Unknown filter rule type: ${this.schema.type}`,
-        );
+        throw new Error(`Unknown filter rule type: ${this.type}`);
     }
   }
 
@@ -57,15 +74,11 @@ export class FilterRuleTerm {
     };
   }
 
-  static FromJSON(
-    json: string | FilterRuleTermJson,
-    schema?: FilterRuleTypeSchema,
-  ) {
+  static FromJSON(json: string | FilterRuleTermJson) {
     const data = 'string' === typeof json ? JSON.parse(json) : json;
 
     return new FilterRuleTerm({
       value: data.value,
-      schema,
     });
   }
 

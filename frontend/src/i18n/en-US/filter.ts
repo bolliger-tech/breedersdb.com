@@ -10,7 +10,7 @@ export const filter = {
   created: 'Created',
 
   noFilter:
-    'No filter criteria defined. All {entity} will be selected. Click the plus button below to add filter criteria.',
+    'No filter defined. All {entity} will be selected. Click the plus button below to add some filter criteria.',
 
   simplifiable: 'Unnecessary complexity detected.',
   simplify: 'Simplify filter',

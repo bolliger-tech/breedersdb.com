@@ -1,8 +1,8 @@
 <template>
   <div v-if="isEmpty">
     <div
-      class="query-filter-root-node__dummy-filter"
-      data-test="query-filter-root-node__dummy-filter"
+      class="query-filter-root-node__filter-placeholder"
+      data-test="query-filter-root-node__filter-placeholder"
     >
       {{ t('filter.noFilter', { entity: entityName }) }}
     </div>
@@ -13,24 +13,25 @@
   </div>
 
   <template v-else>
-    <div
-      v-if="isSimplifiable"
-      class="query-filter-root-node__notification--error"
-    >
+    <div v-if="isSimplifiable" class="text-negative q-mb-sm">
       <q-icon name="warning" />
-      {{ t('filter.simplifiable') }}
-      <button class="query-filter-root-node__simplify" @click="simplify()">
+      {{ t('filter.simplifiable') }}&nbsp;&nbsp;
+      <q-btn
+        size="sm"
+        color="negative"
+        dense
+        class="q-px-md"
+        unelevated
+        @click="simplify()"
+      >
         {{ t('filter.simplify') }}
-      </button>
+      </q-btn>
     </div>
-    <div
-      v-else-if="!isValid"
-      class="query-filter-root-node__notification--error"
-    >
+    <div v-else-if="!isValid" class="text-negative q-mb-sm">
       <q-icon name="warning" />
       {{ t('filter.invalid') }}
     </div>
-    <div v-else class="query-filter-root-node__notification--success">
+    <div v-else class="text-positive q-mb-sm">
       <q-icon name="check" />
       {{ t('filter.valid') }}
     </div>
@@ -99,8 +100,10 @@ watch(
   () => props.filter,
   (filter) => {
     if (props.filter.getFilterType() === 'base') {
+      // TODO: check if this should be scoped to the base entity
       localStorageHelper.setBaseFilter(filter);
     } else {
+      // TODO: check if this should be scoped to the base entity
       localStorageHelper.setAttributionFilter(filter);
     }
   },
@@ -108,14 +111,6 @@ watch(
 </script>
 
 <style scoped lang="scss">
-.query-filter-root-node__notification--error {
-  color: $negative;
-}
-
-.query-filter-root-node__notification--success {
-  color: $positive;
-}
-
 .query-filter-root-node__simplify {
   color: $negative;
   background: none;
@@ -131,7 +126,7 @@ watch(
   text-decoration: none;
 }
 
-.query-filter-root-node__dummy-filter {
+.query-filter-root-node__filter-placeholder {
   background: $grey-3;
   width: 100%;
   min-height: 48px;
@@ -142,7 +137,7 @@ watch(
 }
 
 .body--dark {
-  .query-filter-root-node__dummy-filter {
+  .query-filter-root-node__filter-placeholder {
     background: $grey-9;
   }
 }

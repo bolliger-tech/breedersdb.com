@@ -78,7 +78,7 @@ export interface QueryFilterRuleTermProps {
 const { t } = useI18n();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: FilterRuleTerm): void;
+  'update:modelValue': [value: FilterRuleTerm];
 }>();
 
 const props = defineProps<QueryFilterRuleTermProps>();
@@ -154,17 +154,24 @@ const filteredOptions = ref(options.value);
 
 const inputType = computed(() => {
   switch (type.value) {
-    case FilterRuleType.Date:
-      return 'date';
-    case FilterRuleType.Time:
-      return 'time';
-    case FilterRuleType.DateTime:
-      return 'datetime-local';
     case FilterRuleType.Integer:
     case FilterRuleType.Float:
       return 'number';
-    default:
+    case FilterRuleType.Boolean:
+    case FilterRuleType.Photo:
+      throw new Error('Boolean type is not supported');
+    case FilterRuleType.Date:
+      return 'date';
+    case FilterRuleType.DateTime:
+      return 'datetime-local';
+    case FilterRuleType.Time:
+      return 'time';
+    case FilterRuleType.String:
+    case FilterRuleType.Enum:
+    case null:
       return 'text';
+    default:
+      throw new Error(`Unknown type: ${type.value}`);
   }
 });
 

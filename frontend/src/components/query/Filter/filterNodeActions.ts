@@ -2,17 +2,17 @@ import { FilterNode, FilterConjunction } from './filterNode';
 import { FilterRule } from './filterRule';
 
 export function addLeaf(parent: FilterNode, conjunction: FilterConjunction) {
-  const rule = new FilterRule();
-
+  // attach child directly if only child or same conjunction
   if (parent.getChildCount() <= 1) {
     parent.setChildrensConjunction(conjunction);
   }
 
   if (parent.getChildrensConjunction() === conjunction) {
-    FilterNode.FilterLeaf({ parent, filterRule: rule });
+    FilterNode.FilterLeaf({ parent, filterRule: new FilterRule() });
     return;
   }
 
+  // otherwise add intermediate node for existing children before attaching the new one
   const parentsConjunction = parent.getChildrensConjunction();
   if (!parentsConjunction) {
     throw Error(
@@ -31,7 +31,7 @@ export function addLeaf(parent: FilterNode, conjunction: FilterConjunction) {
   });
   intermediateNode.setChildren(parentChildren);
 
-  FilterNode.FilterLeaf({ parent, filterRule: rule });
+  FilterNode.FilterLeaf({ parent, filterRule: new FilterRule() });
 }
 
 export function moveNode(

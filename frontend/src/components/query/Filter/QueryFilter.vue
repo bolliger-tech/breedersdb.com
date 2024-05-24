@@ -1,6 +1,6 @@
 <template>
   <p class="text-overline q-mb-none q-mt-lg">
-    {{ t('cultivars.analyze.filter.cultivarFilter') }}
+    {{ t('filter.baseFilter', { entityName }) }}
   </p>
   <q-toggle v-model="store.explain" :label="t('filter.showExplanation')" />
   <QueryFilterRootNode
@@ -23,8 +23,19 @@ import { useAttributionFilterOptions } from './useAttributionFilterOptions';
 import { computed, ref, watch } from 'vue';
 import { useQueryStore } from '../useQueryStore';
 import { getBaseFilterOptions } from './baseFilterOptions';
+import { BaseTable } from './queryTypes';
+import { getEntityName } from './getEntityName';
+
+export interface QueryFilterProps {
+  baseTable: BaseTable;
+}
 
 const { t } = useI18n();
+
+const props = defineProps<QueryFilterProps>();
+const entityName = computed(() =>
+  getEntityName({ t, table: props.baseTable, plural: true }),
+);
 
 const store = useQueryStore();
 

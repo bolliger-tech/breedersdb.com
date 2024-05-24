@@ -16,7 +16,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryStore } from '../useQueryStore';
 import { computed } from 'vue';
-import { BaseTable } from './queryTypes';
+import { getEntityName } from './getEntityName';
 
 export interface QueryFilterRuleNoAttributionsPredicateProps {
   attributeName?: string;
@@ -33,17 +33,6 @@ const { t } = useI18n();
 const store = useQueryStore();
 
 const entitiesName = computed(() => {
-  switch (store.baseTable) {
-    case BaseTable.Crossings:
-      return t('filter.crossings');
-    case BaseTable.Lots:
-      return t('filter.lots');
-    case BaseTable.Cultivars:
-      return t('filter.cultivars');
-    case BaseTable.Trees:
-      return t('filter.trees');
-    default:
-      throw new Error('Unknown entity: ' + store.baseTable);
-  }
+  return getEntityName({ t, table: store.baseTable, plural: true });
 });
 </script>

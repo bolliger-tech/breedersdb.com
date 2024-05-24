@@ -19,7 +19,7 @@ import { computed } from 'vue';
 import { FilterRule } from './filterRule';
 import { useQueryStore } from '../useQueryStore';
 import { useI18n } from 'src/composables/useI18n';
-import { BaseTable } from './queryTypes';
+import { getEntityName } from './getEntityName';
 
 interface QueryFilterRuleExplainerProps {
   rule?: FilterRule;
@@ -41,18 +41,7 @@ const term = computed(() => {
 
 const store = useQueryStore();
 const entityName = computed(() => {
-  switch (store.baseTable) {
-    case BaseTable.Crossings:
-      return t('filter.crossing');
-    case BaseTable.Lots:
-      return t('filter.lot');
-    case BaseTable.Cultivars:
-      return t('filter.cultivar');
-    case BaseTable.Trees:
-      return t('filter.tree');
-    default:
-      throw new Error('Unknown entity: ' + store.baseTable);
-  }
+  return getEntityName({ t, table: store.baseTable, plural: true });
 });
 
 const explainer = computed(() => {

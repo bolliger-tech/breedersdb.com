@@ -1,6 +1,6 @@
 <template>
   <PageLayout :title="t('cultivars.analyze.title')">
-    <QueryFilter />
+    <QueryFilter :base-table="BaseTable.Cultivars" />
     <details>
       <summary><h3>Base Filter</h3></summary>
       <pre style="font-size: 12px">{{
@@ -30,6 +30,7 @@ import { computed } from 'vue';
 import { filterToQuery } from 'src/components/Query/Result/filterToQuery';
 import { FilterNode } from 'src/components/Query/Filter/filterNode';
 import { useQuery } from '@urql/vue';
+import { BaseTable } from 'src/components/Query/Filter/queryTypes';
 
 const { t } = useI18n();
 const store = useQueryStore();

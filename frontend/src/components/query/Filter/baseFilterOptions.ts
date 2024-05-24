@@ -3,6 +3,7 @@ import { FilterRuleColumn } from './filterRuleColumn';
 import { BaseTable } from './queryTypes';
 import type { TFunc } from 'src/composables/useI18n';
 import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
+import { getEntityName } from './getEntityName';
 
 export function getBaseFilterOptions({
   baseTable,
@@ -11,7 +12,7 @@ export function getBaseFilterOptions({
   baseTable: BaseTable;
   t: TFunc;
 }) {
-  const tableLabel = getTableName({ baseTable, t });
+  const tableLabel = getEntityName({ table: baseTable, t, capitalize: true });
 
   return options[baseTable].map((data) => {
     return new FilterRuleColumn({
@@ -22,19 +23,6 @@ export function getBaseFilterOptions({
       schema: data.schema,
     });
   });
-}
-
-function getTableName({ baseTable, t }: { baseTable: BaseTable; t: TFunc }) {
-  switch (baseTable) {
-    case BaseTable.Crossings:
-      return uppercaseFirstLetter(t('filter.crossing'));
-    case BaseTable.Lots:
-      return uppercaseFirstLetter(t('filter.lot'));
-    case BaseTable.Cultivars:
-      return uppercaseFirstLetter(t('filter.cultivar'));
-    case BaseTable.Trees:
-      return uppercaseFirstLetter(t('filter.tree'));
-  }
 }
 
 type FilterColumnConstructorData = {
@@ -68,7 +56,7 @@ const cultivar: FilterColumnConstructorData[] = [
   {
     table: 'cultivar',
     column: 'name',
-    labelKey: 'filter.cultivar',
+    labelKey: 'filter.name',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: false,

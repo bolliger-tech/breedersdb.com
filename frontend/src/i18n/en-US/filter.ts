@@ -1,7 +1,9 @@
 export const filter = {
   attribute: 'Attribute',
   attributionFilter: 'Filter criteria to select the attributions',
+  baseFilter: 'Filter criteria to select the {entityName}',
   id: 'ID',
+  name: 'Name',
   commonName: 'Common Name',
   acronym: 'Acronym',
   breeder: 'Breeder',
@@ -18,16 +20,14 @@ export const filter = {
   valid: 'Congrats, all rules are valid.',
 
   attributions: 'attributions',
-  crossings: 'crossings',
-  lots: 'lots',
-  cultivars: 'cultivars',
-  trees: 'trees',
-
-  crossing: 'crossing',
-  lot: 'lot',
-  cultivar: 'cultivar',
-  tree: 'tree',
   cultivarAndSubentities: 'cultivar, its groups or trees',
+
+  entityName: {
+    crossing: 'crossing | crossings',
+    lot: 'lot | lots',
+    cultivar: 'cultivar | cultivars',
+    tree: 'tree | trees',
+  },
 
   showExplanation: 'Explain filters',
   explainer: {

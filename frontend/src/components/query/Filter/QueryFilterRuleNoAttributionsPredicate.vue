@@ -4,7 +4,7 @@
     :label="
       t('filter.withNoAttributions', {
         entities: entitiesName,
-        attribute: attributeName,
+        attributeName,
       })
     "
     size="xs"
@@ -47,4 +47,3 @@ const entitiesName = computed(() => {
   }
 });
 </script>
-./queryTypes

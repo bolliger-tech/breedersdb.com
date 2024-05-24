@@ -44,7 +44,7 @@
         </div>
         <div v-if="isAttribute" class="text-body2 col-12">
           <QueryFilterRuleNoAttributionsPredicate
-            :attributeName="column?.label"
+            :attributeName="column?.tableColumnLabel"
             :model-value="includeEntitiesWithoutAttributions"
             @update:model-value="updateIncludeEntitiesWithoutAttributions"
           />

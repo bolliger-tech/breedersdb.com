@@ -1,4 +1,4 @@
-import { useQueryStore } from './queryStore';
+import { useQueryStore } from '../useQueryStore';
 import { BaseTable } from './queryTypes';
 import { FilterNode } from './filterNode';
 

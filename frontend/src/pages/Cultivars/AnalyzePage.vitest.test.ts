@@ -10,7 +10,7 @@ import {
 } from 'src/utils/testHelpers';
 import { flushPromises } from '@vue/test-utils';
 import { OperationDefinitionNode } from 'graphql';
-import { useQueryStore } from 'src/components/Query/Filter/queryStore';
+import { useQueryStore } from 'src/components/Query/useQueryStore';
 import {
   FilterNode,
   FilterConjunction,

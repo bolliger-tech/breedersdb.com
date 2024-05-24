@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { FilterRule } from './filterRule';
-import { useQueryStore } from './queryStore';
+import { useQueryStore } from '../useQueryStore';
 import { useI18n } from 'src/composables/useI18n';
 import { BaseTable } from './queryTypes';
 

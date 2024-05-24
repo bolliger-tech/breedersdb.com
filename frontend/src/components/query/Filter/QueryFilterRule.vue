@@ -83,7 +83,7 @@ import { FilterRuleColumn } from './filterRuleColumn';
 import { FilterRuleOperator } from './filterRuleOperator';
 import { FilterRuleTerm } from './filterRuleTerm';
 import { createGetFilterRuleOperators } from './createFilterRuleOperators';
-import { useQueryStore } from './queryStore';
+import { useQueryStore } from '../useQueryStore';
 
 export interface QueryFilterRuleProps {
   options: FilterRuleColumn[];

@@ -50,7 +50,7 @@ import QueryFilterNode from './QueryFilterNode.vue';
 import { computed, watch } from 'vue';
 import { FilterNode, FilterConjunction, FilterType } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
-import { useQueryStore } from './queryStore';
+import { useQueryStore } from '../useQueryStore';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
 import { BaseTable } from './queryTypes';
 import { FilterRuleColumn } from './filterRuleColumn';

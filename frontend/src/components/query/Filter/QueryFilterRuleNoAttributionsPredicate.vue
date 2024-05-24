@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { useQueryStore } from './queryStore';
+import { useQueryStore } from '../useQueryStore';
 import { computed } from 'vue';
 import { BaseTable } from './queryTypes';
 

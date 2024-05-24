@@ -21,7 +21,7 @@ import { useI18n } from 'src/composables/useI18n';
 import QueryFilterRootNode from './QueryFilterRootNode.vue';
 import { useAttributionFilterOptions } from './useAttributionFilterOptions';
 import { computed, ref, watch } from 'vue';
-import { useQueryStore } from './queryStore';
+import { useQueryStore } from '../useQueryStore';
 import { getBaseFilterOptions } from './baseFilterOptions';
 
 const { t } = useI18n();

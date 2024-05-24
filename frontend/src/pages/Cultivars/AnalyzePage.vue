@@ -25,7 +25,7 @@
 import QueryFilter from 'src/components/Query/Filter/QueryFilter.vue';
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useQueryStore } from 'src/components/Query/Filter/queryStore';
+import { useQueryStore } from 'src/components/Query/useQueryStore';
 import { computed } from 'vue';
 import { filterToQuery } from 'src/components/Query/Result/filterToQuery';
 import { FilterNode } from 'src/components/Query/Filter/filterNode';

@@ -96,7 +96,7 @@ import { useI18n } from 'src/composables/useI18n';
 import QueryFilterRule from './QueryFilterRule.vue';
 import FilterRuleButtonAdd from './QueryFilterRuleAddButton.vue';
 import { FilterNode, FilterConjunction } from './filterNode';
-import { useQueryStore } from './queryStore';
+import { useQueryStore } from '../useQueryStore';
 import { FilterDragNode } from './queryTypes';
 import QueryFilterRuleDropZone from './QueryFilterRuleDropZone.vue';
 import { FilterRuleColumn } from './filterRuleColumn';

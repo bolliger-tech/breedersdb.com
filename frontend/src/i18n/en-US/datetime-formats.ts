@@ -25,4 +25,4 @@ export const datetimeFormats = {
     minute: '2-digit',
     second: '2-digit',
   },
-};
+} as const;

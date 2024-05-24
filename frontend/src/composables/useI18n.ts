@@ -1,5 +1,9 @@
 import type { MessageSchema } from 'src/boot/i18n';
-import { useI18n as useVueI18n } from 'vue-i18n';
+import {
+  useI18n as useVueI18n,
+  type NamedValue,
+  type TranslateOptions,
+} from 'vue-i18n';
 
 // wrapper for vue-i18n
 export function useI18n(options?: Parameters<typeof useVueI18n>[0]) {
@@ -7,10 +11,12 @@ export function useI18n(options?: Parameters<typeof useVueI18n>[0]) {
   return {
     ...i18n,
     // add strong typing for t function
+    // https://vue-i18n.intlify.dev/api/composition.html#t
     t: t as (
       key: LocaleMessageKeys,
-      ...args: Partial<OmitFirst<Parameters<typeof t>>>
-    ) => ReturnType<typeof t>,
+      arg2?: NamedValue | number | string | unknown[],
+      arg3?: number | string | TranslateOptions,
+    ) => string,
   };
 }
 
@@ -30,6 +36,3 @@ type Paths<T> = T extends object
         : never;
     }[keyof T]
   : '';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type OmitFirst<T extends any[]> = T extends [any, ...infer R] ? R : never;

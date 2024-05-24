@@ -1,18 +1,18 @@
 <template>
   <div
     class="query-filter-rule"
-    :class="{ 'query-filter-rule-tree--invalid': isInvalid }"
+    :class="{ 'query-filter-rule__tree--invalid': isInvalid }"
     data-test="query-filter-rule"
   >
     <div
       :class="{
-        'query-filter-rule-tree--and': conjunction === FilterConjunction.And,
-        'query-filter-rule-tree--or': conjunction === FilterConjunction.Or,
+        'query-filter-rule__tree--and': conjunction === FilterConjunction.And,
+        'query-filter-rule__tree--or': conjunction === FilterConjunction.Or,
       }"
       class="row items-center"
     >
       <q-icon
-        class="drag-handle"
+        class="query-filter-rule__drag-handle"
         name="drag_indicator"
         size="md"
         @mousedown="$emit('dragMouseDown')"
@@ -49,8 +49,8 @@
             @update:model-value="updateIncludeEntitiesWithoutAttributions"
           />
         </div>
-        <div v-if="isValid && filterRule" class="col-12">
-          <QueryFilterRuleExplainer :rule="filterRule" />
+        <div v-if="explain" class="col-12">
+          <QueryFilterRuleExplainer :rule="filterRule || undefined" />
         </div>
       </div>
       <q-icon
@@ -60,7 +60,7 @@
         size="sm"
       />
       <q-btn
-        class="delete-button"
+        class="query-filter-rule__delete-button"
         dense
         flat
         icon="delete_outline"
@@ -72,7 +72,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { FilterNode, FilterConjunction } from './filterNode';
 import QueryFilterRuleTerm from './QueryFilterRuleTerm.vue';
 import QueryFilterRuleColumn from './QueryFilterRuleColumn.vue';
@@ -83,26 +83,23 @@ import { FilterRuleColumn } from './filterRuleColumn';
 import { FilterRuleOperator } from './filterRuleOperator';
 import { FilterRuleTerm } from './filterRuleTerm';
 import { createGetFilterRuleOperators } from './createFilterRuleOperators';
+import { useQueryStore } from './queryStore';
+
+export interface QueryFilterRuleProps {
+  options: FilterRuleColumn[];
+  node: FilterNode;
+  conjunction: FilterConjunction;
+}
 
 defineEmits<{
-  (e: 'dragMouseDown'): void;
-  (e: 'dragMouseUp'): void;
+  dragMouseDown: [];
+  dragMouseUp: [];
 }>();
 
-const props = defineProps({
-  options: {
-    type: Object as PropType<FilterRuleColumn[]>,
-    required: true,
-  },
-  node: {
-    type: Object as PropType<FilterNode>,
-    required: true,
-  },
-  conjunction: {
-    type: String as PropType<FilterConjunction>,
-    required: true,
-  },
-});
+const props = defineProps<QueryFilterRuleProps>();
+
+const store = useQueryStore();
+const explain = computed(() => store.explain);
 
 const filterRule = computed(() => props.node.getFilterRule());
 const column = computed(() => filterRule.value?.column);
@@ -197,29 +194,29 @@ watch(
   }
 }
 
-.query-filter-rule-tree--and {
+.query-filter-rule__tree--and {
   border-left-color: var(--q-primary);
 }
 
-.query-filter-rule-tree--or {
+.query-filter-rule__tree--or {
   border-left-color: var(--q-accent);
 }
 
-.drag-handle {
+.query-filter-rule__drag-handle {
   color: var(--q-text-muted);
   cursor: grab;
 }
 
-.drag-handle:hover {
+.query-filter-rule__drag-handle:hover {
   color: var(--q-primary);
 }
 
-.delete-button {
+.query-filter-rule__delete-button {
   color: var(--q-text-muted);
 }
 
-.delete-button:hover,
-.delete-button:focus {
+.query-filter-rule__delete-button:hover,
+.query-filter-rule__delete-button:focus {
   color: var(--q-negative);
 }
 </style>

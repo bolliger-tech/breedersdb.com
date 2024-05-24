@@ -2,6 +2,7 @@
   <p class="text-overline q-mb-none q-mt-lg">
     {{ t('cultivars.analyze.filter.cultivarFilter') }}
   </p>
+  <q-toggle v-model="store.explain" :label="t('filter.showExplanation')" />
   <QueryFilterTreeRoot
     :filter="baseFilterDefault"
     :options="baseFilterOptions"
@@ -26,6 +27,7 @@ import { getBaseFilterOptions } from './baseFilterOptions';
 const { t } = useI18n();
 
 const store = useQueryStore();
+
 const baseFilterDefault = computed(() => store.getBaseFilter);
 
 const { fetchOptions: fetchAttributionFilterOptions } =

@@ -1,9 +1,17 @@
 <template>
-  <q-icon name="info" />&nbsp;
-  <span class="text-body2">
-    <strong>{{ t('filter.explainer.title') }}</strong>
-    {{ explainer }}
-  </span>
+  <template v-if="rule && rule.isValid">
+    <q-icon name="info" />&nbsp;
+    <span class="text-body2">
+      <strong>{{ t('filter.explainer.title') }}</strong>
+      {{ explainer }}
+    </span>
+  </template>
+  <template v-else>
+    <q-icon name="warning" class="text-negative" />&nbsp;
+    <span class="text-body2 text-negative">
+      {{ t('filter.invalidRule') }}
+    </span>
+  </template>
 </template>
 
 <script lang="ts" setup>
@@ -14,20 +22,20 @@ import { useI18n } from 'src/composables/useI18n';
 import { BaseTable } from './queryTypes';
 
 interface QueryFilterRuleExplainerProps {
-  rule: FilterRule;
+  rule?: FilterRule;
 }
 
 const props = defineProps<QueryFilterRuleExplainerProps>();
 
 const column = computed(() => {
-  const label = props.rule.column?.label || '';
+  const label = props.rule?.column?.label || '';
   return label.split('>')[1] || label;
 });
 const operator = computed(() => {
-  return props.rule.operator?.labelKey ? t(props.rule.operator?.labelKey) : '';
+  return props.rule?.operator?.labelKey ? t(props.rule.operator?.labelKey) : '';
 });
 const term = computed(() => {
-  return props.rule.term?.value || '';
+  return props.rule?.term?.value || '';
 });
 
 const { t } = useI18n();
@@ -50,14 +58,14 @@ const entityName = computed(() => {
 
 const explainer = computed(() => {
   const args = {
-    entity: props.rule.isAttribute
+    entity: props.rule?.isAttribute
       ? t('filter.cultivarAndSubentities')
       : entityName.value,
     column: column.value,
     operator: operator.value,
     term: term.value,
   };
-  if (props.rule.isAttribute) {
+  if (props.rule?.isAttribute) {
     if (props.rule.includeEntitiesWithoutAttributions) {
       return t('filter.explainer.attributeWithNoAttributions', args);
     } else {

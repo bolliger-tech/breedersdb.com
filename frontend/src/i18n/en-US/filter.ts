@@ -27,8 +27,9 @@ export const filter = {
   lot: 'lot',
   cultivar: 'cultivar',
   tree: 'tree',
-  cultivarAndSubentities: 'cultivar or its groups or trees',
+  cultivarAndSubentities: 'cultivar, its groups or trees',
 
+  showExplanation: 'Explain filters',
   explainer: {
     title: 'Explanation:',
     attributeWithNoAttributions:
@@ -37,6 +38,7 @@ export const filter = {
       'The {entity} has at least one attribution which satisfies: {column} {operator} {term}',
     entity: 'The {entity} where {column} {operator} {term}',
   },
+  invalidRule: 'Invalid rule. Either complete, correct or delete it.',
 
   error: {
     column: 'Please select a column.',

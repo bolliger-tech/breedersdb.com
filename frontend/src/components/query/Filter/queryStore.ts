@@ -34,6 +34,7 @@ export interface QueryState {
   queryCode: string;
   queryDescription: string;
   attemptedToSaveQuery: boolean;
+  explain: boolean;
 }
 
 export type QueryStore = ReturnType<typeof useQueryStore>;
@@ -56,6 +57,7 @@ export const useQueryStore = defineStore('query', {
     queryCode: '',
     queryDescription: '',
     attemptedToSaveQuery: false,
+    explain: false, // TODO: get from local storage
   }),
 
   getters: {

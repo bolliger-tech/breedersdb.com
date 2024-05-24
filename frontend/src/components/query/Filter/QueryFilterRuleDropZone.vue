@@ -14,22 +14,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
-const props = defineProps({
-  active: {
-    type: Boolean,
-    required: true,
-  },
-  color: {
-    type: String as PropType<'primary' | 'accent'>,
-    default: 'primary',
-  },
-  dragging: {
-    type: Boolean,
-    required: true,
-  },
-});
+export interface QueryFilterRuleDropZoneProps {
+  active: boolean;
+  color: 'primary' | 'accent';
+  dragging: boolean;
+}
+
+const props = defineProps<QueryFilterRuleDropZoneProps>();
 
 const mouseInDropZone = ref(false);
 
@@ -58,12 +51,13 @@ watch(
 <style scoped>
 .query-filter-rule-tree__drop {
   height: 18px;
-  width: 100%;
+  width: calc(100% + 3px);
   opacity: 0.25;
   display: none;
   position: absolute;
   left: 0;
   z-index: -1;
+  transform: translateX(-3px);
 }
 
 .query-filter-rule-tree__drop--active {

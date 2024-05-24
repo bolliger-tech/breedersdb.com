@@ -28,7 +28,7 @@
         </div>
         <div class="col-12 col-md-4">
           <QueryFilterRuleOperator
-            :disabled="column === undefined"
+            :disabled="!column"
             :model-value="operator"
             :rule-type="filterRule?.type"
             @update:model-value="updateOperator"

@@ -80,7 +80,7 @@ describe('AnalyzePage', () => {
 
       expect(
         wrapper
-          .find('[data-test="query-filter-root-node__dummy-filter"]')
+          .find('[data-test="query-filter-root-node__filter-placeholder"]')
           .exists(),
       ).toBe(true);
       expect(wrapper.find('[data-test="query-filter-rule"]').exists()).toBe(

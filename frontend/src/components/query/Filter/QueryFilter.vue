@@ -1,28 +1,28 @@
 <template>
+  <q-toggle v-model="store.explain" :label="t('filter.showExplanation')" />
   <p class="text-overline q-mb-none q-mt-lg">
     {{ t('filter.baseFilter', { entityName }) }}
   </p>
-  <q-toggle v-model="store.explain" :label="t('filter.showExplanation')" />
   <QueryFilterRootNode
     :filter="baseFilterDefault"
-    :options="baseFilterOptions"
+    :options="baseTableColumnsWithAttributes"
   />
-  <!-- <p class="text-overline q-mb-none q-mt-lg">
+  <p class="text-overline q-mb-none q-mt-lg">
     {{ t('filter.attributionFilter') }}
   </p>
   <QueryFilterRootNode
     :filter="attributionFilterDefault"
-    :options="attributionOptions"
-  /> -->
+    :options="attributionColumns"
+  />
 </template>
 
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 import QueryFilterRootNode from './QueryFilterRootNode.vue';
-import { useAttributionFilterOptions } from './useAttributionFilterOptions';
+import { useAttributes } from './useAttributes';
 import { computed, ref, watch } from 'vue';
 import { useQueryStore } from '../useQueryStore';
-import { getBaseFilterOptions } from './baseFilterOptions';
+import { getBaseTableColumns } from './baseTableColumns';
 import { BaseTable } from './queryTypes';
 import { getEntityName } from './getEntityName';
 
@@ -40,17 +40,20 @@ const entityName = computed(() =>
 const store = useQueryStore();
 
 const baseFilterDefault = computed(() => store.getBaseFilter);
+const attributionFilterDefault = computed(() => store.getAttributionFilter);
 
-const { fetchOptions: fetchAttributionFilterOptions } =
-  useAttributionFilterOptions({ tableLabel: t('filter.attribute') });
+const { fetchAsFilterRuleColumns: fetchAttributesAsColumns } = useAttributes({
+  tableLabel: t('filter.attribute'),
+});
 
-const { data: attributionFilterOptions, error } =
-  await fetchAttributionFilterOptions();
+const { data: attributesAsColumns, error } = await fetchAttributesAsColumns();
 
-const baseFilterOptions = ref([
-  ...getBaseFilterOptions({ baseTable: store.baseTable, t }),
-  ...attributionFilterOptions,
+const baseTableColumnsWithAttributes = ref([
+  ...getBaseTableColumns({ baseTable: store.baseTable, t }),
+  ...attributesAsColumns,
 ]);
+
+const attributionColumns = ref([]);
 
 watch(error, (error) => {
   if (error) {

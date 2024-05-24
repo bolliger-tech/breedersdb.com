@@ -26,15 +26,13 @@ type Attribute = Omit<
   } | null;
 };
 
-export function useAttributionFilterOptions({
-  tableLabel,
-}: {
-  tableLabel: string;
-}) {
-  return { fetchOptions: () => fetchOptions(tableLabel) };
+export function useAttributes({ tableLabel }: { tableLabel: string }) {
+  return {
+    fetchAsFilterRuleColumns: () => fetchAsFilterRuleColumns(tableLabel),
+  };
 }
 
-async function fetchOptions(tableLabel: string) {
+async function fetchAsFilterRuleColumns(tableLabel: string) {
   const { data, fetching, error } = await useQuery({
     query,
   });

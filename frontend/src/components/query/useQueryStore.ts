@@ -73,7 +73,7 @@ export const useQueryStore = defineStore('query', {
     //   );
     // },
 
-    // baseFilterOptions(state) {
+    // baseTableColumns(state) {
     //   const s = state as QueryState;
     //   if (!s.filterOptionSchemas || !s.baseFilter) {
     //     return [];
@@ -99,7 +99,7 @@ export const useQueryStore = defineStore('query', {
     // },
 
     getBaseFilter(state) {
-      // if (!this.baseFilterOptions) {
+      // if (!this.baseTableColumns) {
       //   return defaultBaseFilter;
       // }
 

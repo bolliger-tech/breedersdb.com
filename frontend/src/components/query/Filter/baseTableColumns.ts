@@ -5,7 +5,7 @@ import type { TFunc } from 'src/composables/useI18n';
 import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
 import { getEntityName } from './getEntityName';
 
-export function getBaseFilterOptions({
+export function getBaseTableColumns({
   baseTable,
   t,
 }: {

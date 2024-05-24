@@ -1,7 +1,7 @@
 export const filter = {
   attribute: 'Attribute',
-  attributionFilter: 'Filter criteria to select the attributions',
-  baseFilter: 'Filter criteria to select the {entityName}',
+  attributionFilter: 'Filter criteria to select the attributions (cell values)',
+  baseFilter: 'Filter criteria to select the {entityName} (rows)',
   id: 'ID',
   name: 'Name',
   commonName: 'Common Name',

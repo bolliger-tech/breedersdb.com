@@ -196,15 +196,15 @@ export class FilterRule {
     const data: FilterRuleJson =
       'string' === typeof json ? JSON.parse(json) : json;
 
-    const schema = columns.find(
+    const columnDefinition = columns.find(
       (col) =>
         col.tableName === data.column?.tableName &&
         col.tableColumnName === data.column?.tableColumnName,
-    )?.schema;
+    );
 
     const rule = new FilterRule({
       column: data.column
-        ? FilterRuleColumn.FromJSON(data.column, schema)
+        ? FilterRuleColumn.FromJSON(data.column, columnDefinition)
         : undefined,
       operator: data.operator
         ? FilterRuleOperator.FromJSON(data.operator)

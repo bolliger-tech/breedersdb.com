@@ -3,8 +3,6 @@ import type { FilterRuleTypeSchema } from './filterRule';
 export type FilterRuleColumnJson = {
   tableName: string;
   tableColumnName: string;
-  tableLabel: string;
-  tableColumnLabel: string;
 };
 
 export class FilterRuleColumn {
@@ -62,24 +60,34 @@ export class FilterRuleColumn {
     return {
       tableName: this.tableName,
       tableColumnName: this.tableColumnName,
-      tableLabel: this.tableLabel,
-      tableColumnLabel: this.tableColumnLabel,
     };
   }
 
   static FromJSON(
     json: string | FilterRuleColumnJson,
-    schema?: FilterRuleTypeSchema,
+    definition?: FilterRuleColumn,
   ) {
     const data: FilterRuleColumnJson =
       'string' === typeof json ? JSON.parse(json) : json;
 
+    if (
+      definition &&
+      (data.tableName !== definition.tableName ||
+        data.tableColumnName !== definition.tableColumnName)
+    ) {
+      throw new Error(
+        `Definition does not match JSON. JSON: ${JSON.stringify(data)}. Definition: ${JSON.stringify(definition)}`,
+      );
+    }
+
     return new FilterRuleColumn({
       tableName: data.tableName,
       tableColumnName: data.tableColumnName,
-      tableLabel: data.tableLabel,
-      tableColumnLabel: data.tableColumnLabel,
-      schema,
+      tableLabel: definition ? definition.tableLabel : data.tableName,
+      tableColumnLabel: definition
+        ? definition.tableColumnLabel
+        : data.tableColumnName,
+      schema: definition ? definition.schema : undefined,
     });
   }
 }

@@ -729,8 +729,6 @@ describe('FilterNode', () => {
                   column: {
                     tableName: 'table',
                     tableColumnName: 'column',
-                    tableLabel: 'Table',
-                    tableColumnLabel: 'Column',
                   },
                   operator: {
                     value: FilterOperatorValue.Equal,
@@ -745,8 +743,6 @@ describe('FilterNode', () => {
                   column: {
                     tableName: 'attributes',
                     tableColumnName: 'column',
-                    tableLabel: 'Attributes',
-                    tableColumnLabel: 'Column',
                   },
                   operator: {
                     value: FilterOperatorValue.Equal,

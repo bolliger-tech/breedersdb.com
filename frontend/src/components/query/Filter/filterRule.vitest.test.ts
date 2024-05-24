@@ -870,8 +870,6 @@ describe('FilterRule', () => {
       column: {
         tableName: 'attributes',
         tableColumnName: 'tableColumnName',
-        tableLabel: 'tableLabel',
-        tableColumnLabel: 'tableColumnLabel',
       },
       operator: {
         value: FilterOperatorValue.Equal,
@@ -911,8 +909,6 @@ describe('FilterRule', () => {
       column: {
         tableName: 'cultivars',
         tableColumnName: 'tableColumnName',
-        tableLabel: 'tableLabel',
-        tableColumnLabel: 'tableColumnLabel',
       },
       operator: {
         value: FilterOperatorValue.Equal,

@@ -1,8 +1,8 @@
 <template>
   <div v-if="isEmpty">
     <div
-      class="filter-tree-root__dummy-filter"
-      data-test="filter-tree-root__dummy-filter"
+      class="query-filter-tree-root__dummy-filter"
+      data-test="query-filter-tree-root__dummy-filter"
     >
       {{ t('filter.noFilter', { entity: entityName }) }}
     </div>
@@ -13,18 +13,24 @@
   </div>
 
   <template v-else>
-    <div v-if="isSimplifiable" class="filter-tree-root__notification--error">
+    <div
+      v-if="isSimplifiable"
+      class="query-filter-tree-root__notification--error"
+    >
       <q-icon name="warning" />
       {{ t('filter.simplifiable') }}
-      <button class="filter-tree-root__simplify" @click="simplify()">
+      <button class="query-filter-tree-root__simplify" @click="simplify()">
         {{ t('filter.simplify') }}
       </button>
     </div>
-    <div v-else-if="!isValid" class="filter-tree-root__notification--error">
+    <div
+      v-else-if="!isValid"
+      class="query-filter-tree-root__notification--error"
+    >
       <q-icon name="warning" />
       {{ t('filter.invalid') }}
     </div>
-    <div v-else class="filter-tree-root__notification--success">
+    <div v-else class="query-filter-tree-root__notification--success">
       <q-icon name="check" />
       {{ t('filter.valid') }}
     </div>
@@ -101,16 +107,16 @@ watch(
 );
 </script>
 
-<style lang="scss">
-.filter-tree-root__notification--error {
+<style scoped lang="scss">
+.query-filter-tree-root__notification--error {
   color: $negative;
 }
 
-.filter-tree-root__notification--success {
+.query-filter-tree-root__notification--success {
   color: $positive;
 }
 
-.filter-tree-root__simplify {
+.query-filter-tree-root__simplify {
   color: $negative;
   background: none;
   padding: 0;
@@ -119,13 +125,13 @@ watch(
   cursor: pointer;
 }
 
-.filter-tree-root__simplify:hover,
-.filter-tree-root__simplify:focus {
+.query-filter-tree-root__simplify:hover,
+.query-filter-tree-root__simplify:focus {
   filter: brightness(125%);
   text-decoration: none;
 }
 
-.filter-tree-root__dummy-filter {
+.query-filter-tree-root__dummy-filter {
   background: $grey-3;
   width: 100%;
   min-height: 48px;
@@ -136,9 +142,8 @@ watch(
 }
 
 .body--dark {
-  .filter-tree-root__dummy-filter {
+  .query-filter-tree-root__dummy-filter {
     background: $grey-9;
   }
 }
 </style>
-./filterRuleColumn

@@ -79,9 +79,13 @@ describe('AnalyzePage', () => {
       });
 
       expect(
-        wrapper.find('[data-test="filter-tree-root__dummy-filter"]').exists(),
+        wrapper
+          .find('[data-test="query-filter-tree-root__dummy-filter"]')
+          .exists(),
       ).toBe(true);
-      expect(wrapper.find('[data-test="filter-rule"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="query-filter-rule"]').exists()).toBe(
+        false,
+      );
     });
 
     it('should add filter rule', async () => {
@@ -91,23 +95,27 @@ describe('AnalyzePage', () => {
 
       // click + button
       await wrapper
-        .getComponent('[data-test="filter-tree__action-btn"]')
+        .getComponent('[data-test="query-filter-tree__action-btn"]')
         .get('a')
         .trigger('click');
 
       // click and term
       await wrapper
-        .getComponent('[data-test="filter-tree__action-btn-and"]')
+        .getComponent('[data-test="query-filter-tree__action-btn-and"]')
         .get('a')
         .trigger('click');
 
       await flushPromises();
 
       expect(
-        wrapper.find('[data-test="filter-tree-root__dummy-filter"]').exists(),
+        wrapper
+          .find('[data-test="query-filter-tree-root__dummy-filter"]')
+          .exists(),
       ).toBe(false);
 
-      expect(wrapper.find('[data-test="filter-rule"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="query-filter-rule"]').exists()).toBe(
+        true,
+      );
     });
   });
 
@@ -115,13 +123,13 @@ describe('AnalyzePage', () => {
     const addAndRule = async (wrapper: AsyncComponentWrapper) => {
       // click + button
       await wrapper
-        .getComponent('[data-test="filter-tree__action-btn"]')
+        .getComponent('[data-test="query-filter-tree__action-btn"]')
         .get('a')
         .trigger('click');
 
       // click and term
       await wrapper
-        .getComponent('[data-test="filter-tree__action-btn-and"]')
+        .getComponent('[data-test="query-filter-tree__action-btn-and"]')
         .get('a')
         .trigger('click');
     };

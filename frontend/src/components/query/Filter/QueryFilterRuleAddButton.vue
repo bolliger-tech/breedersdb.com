@@ -1,7 +1,7 @@
 <template>
   <q-fab
     v-model="actionsVisible"
-    data-test="filter-tree__action-btn"
+    data-test="query-filter-tree__action-btn"
     :label="t('filter.operators.add')"
     :color="conjunction === FilterConjunction.And ? 'primary' : 'accent'"
     icon="add"
@@ -9,8 +9,8 @@
     unelevated
     padding="xs"
     :hide-label="!actionButtonHover && !actionsVisible"
-    class="filter-tree__action-btn"
-    :class="{ 'filter-tree__action-btn--root': node.isRoot() }"
+    class="query-filter-tree__action-btn"
+    :class="{ 'query-filter-tree__action-btn--root': node.isRoot() }"
     vertical-actions-align="left"
     @mouseenter="actionButtonHover = true"
     @mouseleave="actionButtonHover = false"
@@ -19,14 +19,14 @@
       :label="t('filter.operators.andFilter')"
       color="primary"
       padding="xs"
-      data-test="filter-tree__action-btn-and"
+      data-test="query-filter-tree__action-btn-and"
       @click="addLeaf(FilterConjunction.And)"
     />
     <q-fab-action
       :label="t('filter.operators.orFilter')"
       color="accent"
       padding="xs"
-      data-test="filter-tree__action-btn-or"
+      data-test="query-filter-tree__action-btn-or"
       @click="addLeaf(FilterConjunction.Or)"
     />
   </q-fab>
@@ -57,11 +57,11 @@ function addLeaf(conjunction: FilterConjunction) {
 </script>
 
 <style scoped>
-.filter-tree__action-btn {
+.query-filter-tree__action-btn {
   transform: translateX(18px);
 }
 
-.filter-tree__action-btn--root {
+.query-filter-tree__action-btn--root {
   transform: translateX(-15px);
 }
 </style>

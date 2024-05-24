@@ -1,11 +1,11 @@
 <template>
   <div
-    class="filter-rule__drop"
+    class="query-filter-rule-tree__drop"
     :class="{
-      'filter-rule__drop--hover': markHover,
-      'filter-rule__drop--active': active,
-      'filter-rule__drop--primary': color === 'primary',
-      'filter-rule__drop--accent': color === 'accent',
+      'query-filter-rule-tree__drop--hover': markHover,
+      'query-filter-rule-tree__drop--active': active,
+      'query-filter-rule-tree__drop--primary': color === 'primary',
+      'query-filter-rule-tree__drop--accent': color === 'accent',
     }"
     @dragleave="mouseInDropZone = false"
     @dragenter="mouseInDropZone = true"
@@ -56,7 +56,7 @@ watch(
 </script>
 
 <style scoped>
-.filter-rule__drop {
+.query-filter-rule-tree__drop {
   height: 18px;
   width: 100%;
   opacity: 0.25;
@@ -66,20 +66,20 @@ watch(
   z-index: -1;
 }
 
-.filter-rule__drop--active {
+.query-filter-rule-tree__drop--active {
   display: block;
   z-index: 10;
 }
 
-.filter-rule__drop--primary {
+.query-filter-rule-tree__drop--primary {
   background-color: var(--q-primary);
 }
 
-.filter-rule__drop--accent {
+.query-filter-rule-tree__drop--accent {
   background-color: var(--q-accent);
 }
 
-.filter-rule__drop--hover {
+.query-filter-rule-tree__drop--hover {
   opacity: 1;
 }
 </style>

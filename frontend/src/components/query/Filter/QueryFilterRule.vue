@@ -1,13 +1,13 @@
 <template>
   <div
-    class="filter-rule"
-    :class="{ 'filter-rule--invalid': isInvalid }"
-    data-test="filter-rule"
+    class="query-filter-rule"
+    :class="{ 'query-filter-rule-tree--invalid': isInvalid }"
+    data-test="query-filter-rule"
   >
     <div
       :class="{
-        'filter-rule--and': conjunction === FilterConjunction.And,
-        'filter-rule--or': conjunction === FilterConjunction.Or,
+        'query-filter-rule-tree--and': conjunction === FilterConjunction.And,
+        'query-filter-rule-tree--or': conjunction === FilterConjunction.Or,
       }"
       class="row items-center"
     >
@@ -186,22 +186,22 @@ watch(
 </script>
 
 <style scoped lang="scss">
-.filter-rule {
+.query-filter-rule {
   padding: 4px 3px 4px 1px;
   background: $grey-3;
 }
 
 .body--dark {
-  .filter-rule {
+  .query-filter-rule {
     background: $grey-9;
   }
 }
 
-.filter-rule--and {
+.query-filter-rule-tree--and {
   border-left-color: var(--q-primary);
 }
 
-.filter-rule--or {
+.query-filter-rule-tree--or {
   border-left-color: var(--q-accent);
 }
 

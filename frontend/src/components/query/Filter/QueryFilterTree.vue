@@ -1,7 +1,7 @@
 <template>
   <div
-    class="filter-tree"
-    :class="{ 'filter-tree--dragging': !!dragging }"
+    class="query-filter-tree"
+    :class="{ 'query-filter-tree--dragging': !!dragging }"
     :draggable="!!dragging"
     @dragstart="dragStart"
     @dragend="dragEnd"
@@ -10,7 +10,7 @@
       :active="dragActive && canBeTarget"
       :color="dropConjunction === FilterConjunction.And ? 'primary' : 'accent'"
       :dragging="!!dragObj"
-      class="filter-rule__drop--before"
+      class="query-filter-rule-tree__drop--before"
       @drop.prevent="onDrop('before')"
     />
 
@@ -26,17 +26,19 @@
     <div v-else>
       <div class="row items-stretch">
         <div
-          class="filter-tree__drag-bg row items-center"
+          class="query-filter-tree__drag-bg row items-center"
           :class="{
-            'filter-tree__drag-bg--and': conjunction === FilterConjunction.And,
-            'filter-tree__drag-bg--or': conjunction === FilterConjunction.Or,
-            'filter-tree__drag-bg--root': node.isRoot(),
+            'query-filter-tree__drag-bg--and':
+              conjunction === FilterConjunction.And,
+            'query-filter-tree__drag-bg--or':
+              conjunction === FilterConjunction.Or,
+            'query-filter-tree__drag-bg--root': node.isRoot(),
           }"
         >
           <q-icon
             name="drag_indicator"
             size="md"
-            class="filter-tree__drag-handle"
+            class="query-filter-tree__drag-handle"
             @mousedown="setDragObj(node)"
             @mouseup="setDragObj(false)"
           />
@@ -57,11 +59,11 @@
             />
             <div
               v-if="idx + 1 < node.getChildCount()"
-              class="filter-tree__conjunction"
+              class="query-filter-tree__conjunction"
               :class="{
-                'filter-tree__conjunction--and':
+                'query-filter-tree__conjunction--and':
                   conjunction === FilterConjunction.And,
-                'filter-tree__conjunction--or':
+                'query-filter-tree__conjunction--or':
                   conjunction === FilterConjunction.Or,
               }"
             >
@@ -81,7 +83,7 @@
       :active="dragActive && canBeTarget"
       :color="dropConjunction === FilterConjunction.And ? 'primary' : 'accent'"
       :dragging="!!dragObj"
-      class="filter-rule__drop--after"
+      class="query-filter-rule-tree__drop--after"
       @drop.prevent="onDrop('after')"
     />
   </div>
@@ -178,70 +180,69 @@ function onDrop(position: 'before' | 'after') {
 }
 </script>
 
-<style lang="scss">
-.filter-tree {
+<style scoped lang="scss">
+.query-filter-tree {
   position: relative;
 }
 
-.filter-tree--dragging {
+.query-filter-tree--dragging {
   opacity: 0.4;
 }
 
-.filter-tree__drag-bg {
+.query-filter-tree__drag-bg {
   border-right-width: 3px;
   border-right-style: solid;
   background: $grey-3;
 }
 
 .body--dark {
-  .filter-tree__drag-bg {
+  .query-filter-tree__drag-bg {
     background: $grey-9;
   }
 }
 
-.filter-tree__drag-bg--and {
+.query-filter-tree__drag-bg--and {
   border-color: var(--q-primary);
 }
 
-.filter-tree__drag-bg--or {
+.query-filter-tree__drag-bg--or {
   border-color: var(--q-accent);
 }
 
-.filter-tree__drag-bg--root {
+.query-filter-tree__drag-bg--root {
   width: 0;
   overflow: hidden;
 }
 
-.filter-tree__drag-handle {
+.query-filter-tree__drag-handle {
   color: var(--q-text-muted);
   cursor: grab;
 }
 
-.filter-tree__drag-handle:hover {
+.query-filter-tree__drag-handle:hover {
   color: var(--q-primary);
 }
 
-.filter-tree__conjunction {
+.query-filter-tree__conjunction {
   text-transform: uppercase;
   font-size: 0.75rem;
   margin-left: 5px;
   font-weight: bold;
 }
 
-.filter-tree__conjunction--and {
+.query-filter-tree__conjunction--and {
   color: var(--q-primary);
 }
 
-.filter-tree__conjunction--or {
+.query-filter-tree__conjunction--or {
   color: var(--q-accent);
 }
 
-.filter-rule__drop--before {
+.query-filter-rule-tree__drop--before {
   top: -18px;
 }
 
-.filter-rule__drop--after {
+.query-filter-rule-tree__drop--after {
   bottom: -18px;
 }
 </style>
-./filterRuleColumn

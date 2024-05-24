@@ -9,7 +9,7 @@
   <template v-else>
     <q-icon name="warning" class="text-negative" />&nbsp;
     <span class="text-body2 text-negative">
-      {{ t('filter.invalidRule') }}
+      {{ t('filter.explainer.invalidRule') }}
     </span>
   </template>
 </template>
@@ -27,9 +27,10 @@ interface QueryFilterRuleExplainerProps {
 
 const props = defineProps<QueryFilterRuleExplainerProps>();
 
+const { t } = useI18n();
+
 const column = computed(() => {
-  const label = props.rule?.column?.label || '';
-  return label.split('>')[1] || label;
+  return props.rule?.column?.tableColumnLabel || '';
 });
 const operator = computed(() => {
   return props.rule?.operator?.labelKey ? t(props.rule.operator?.labelKey) : '';
@@ -38,9 +39,7 @@ const term = computed(() => {
   return props.rule?.term?.value || '';
 });
 
-const { t } = useI18n();
 const store = useQueryStore();
-
 const entityName = computed(() => {
   switch (store.baseTable) {
     case BaseTable.Crossings:

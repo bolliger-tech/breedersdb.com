@@ -48,7 +48,7 @@ export const filter = {
 
   column: 'Column',
   operator: 'Operator',
-  term: 'Term',
+  term: 'Value',
 
   withNoAttributions:
     'Include {entities} without {attributeName} attributions.',

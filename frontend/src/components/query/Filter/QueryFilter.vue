@@ -3,14 +3,14 @@
     {{ t('cultivars.analyze.filter.cultivarFilter') }}
   </p>
   <q-toggle v-model="store.explain" :label="t('filter.showExplanation')" />
-  <QueryFilterTreeRoot
+  <QueryFilterRootNode
     :filter="baseFilterDefault"
     :options="baseFilterOptions"
   />
   <!-- <p class="text-overline q-mb-none q-mt-lg">
     {{ t('filter.attributionFilter') }}
   </p>
-  <QueryFilterTreeRoot
+  <QueryFilterRootNode
     :filter="attributionFilterDefault"
     :options="attributionOptions"
   /> -->
@@ -18,7 +18,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import QueryFilterTreeRoot from './QueryFilterTreeRoot.vue';
+import QueryFilterRootNode from './QueryFilterRootNode.vue';
 import { useAttributionFilterOptions } from './useAttributionFilterOptions';
 import { computed, ref, watch } from 'vue';
 import { useQueryStore } from './queryStore';

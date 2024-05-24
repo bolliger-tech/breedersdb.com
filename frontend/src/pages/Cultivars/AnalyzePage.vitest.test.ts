@@ -80,7 +80,7 @@ describe('AnalyzePage', () => {
 
       expect(
         wrapper
-          .find('[data-test="query-filter-tree-root__dummy-filter"]')
+          .find('[data-test="query-filter-root-node__dummy-filter"]')
           .exists(),
       ).toBe(true);
       expect(wrapper.find('[data-test="query-filter-rule"]').exists()).toBe(
@@ -95,13 +95,13 @@ describe('AnalyzePage', () => {
 
       // click + button
       await wrapper
-        .getComponent('[data-test="query-filter-tree__action-btn"]')
+        .getComponent('[data-test="query-filter-node__action-btn"]')
         .get('a')
         .trigger('click');
 
       // click and term
       await wrapper
-        .getComponent('[data-test="query-filter-tree__action-btn-and"]')
+        .getComponent('[data-test="query-filter-node__action-btn-and"]')
         .get('a')
         .trigger('click');
 
@@ -109,7 +109,7 @@ describe('AnalyzePage', () => {
 
       expect(
         wrapper
-          .find('[data-test="query-filter-tree-root__dummy-filter"]')
+          .find('[data-test="query-filter-root-node__dummy-filter"]')
           .exists(),
       ).toBe(false);
 
@@ -123,13 +123,13 @@ describe('AnalyzePage', () => {
     const addAndRule = async (wrapper: AsyncComponentWrapper) => {
       // click + button
       await wrapper
-        .getComponent('[data-test="query-filter-tree__action-btn"]')
+        .getComponent('[data-test="query-filter-node__action-btn"]')
         .get('a')
         .trigger('click');
 
       // click and term
       await wrapper
-        .getComponent('[data-test="query-filter-tree__action-btn-and"]')
+        .getComponent('[data-test="query-filter-node__action-btn-and"]')
         .get('a')
         .trigger('click');
     };

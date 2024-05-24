@@ -1,8 +1,8 @@
 <template>
   <div v-if="isEmpty">
     <div
-      class="query-filter-tree-root__dummy-filter"
-      data-test="query-filter-tree-root__dummy-filter"
+      class="query-filter-root-node__dummy-filter"
+      data-test="query-filter-root-node__dummy-filter"
     >
       {{ t('filter.noFilter', { entity: entityName }) }}
     </div>
@@ -15,27 +15,27 @@
   <template v-else>
     <div
       v-if="isSimplifiable"
-      class="query-filter-tree-root__notification--error"
+      class="query-filter-root-node__notification--error"
     >
       <q-icon name="warning" />
       {{ t('filter.simplifiable') }}
-      <button class="query-filter-tree-root__simplify" @click="simplify()">
+      <button class="query-filter-root-node__simplify" @click="simplify()">
         {{ t('filter.simplify') }}
       </button>
     </div>
     <div
       v-else-if="!isValid"
-      class="query-filter-tree-root__notification--error"
+      class="query-filter-root-node__notification--error"
     >
       <q-icon name="warning" />
       {{ t('filter.invalid') }}
     </div>
-    <div v-else class="query-filter-tree-root__notification--success">
+    <div v-else class="query-filter-root-node__notification--success">
       <q-icon name="check" />
       {{ t('filter.valid') }}
     </div>
 
-    <QueryFilterTree
+    <QueryFilterNode
       :node="filter"
       :conjunction="filter.getChildrensConjunction() || FilterConjunction.And"
       :options="options"
@@ -45,7 +45,7 @@
 
 <script lang="ts" setup>
 import QueryFilterRuleAddButton from './QueryFilterRuleAddButton.vue';
-import QueryFilterTree from './QueryFilterTree.vue';
+import QueryFilterNode from './QueryFilterNode.vue';
 import { computed, watch } from 'vue';
 import { FilterNode, FilterConjunction, FilterType } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
@@ -58,12 +58,12 @@ const { t } = useI18n();
 const store = useQueryStore();
 const localStorageHelper = useQueryLocalStorageHelper();
 
-export interface QueryFilterTreeRootProps {
+export interface QueryFilterRootNodeProps {
   filter: FilterNode;
   options: FilterRuleColumn[];
 }
 
-const props = defineProps<QueryFilterTreeRootProps>();
+const props = defineProps<QueryFilterRootNodeProps>();
 
 const isSimplifiable = computed(() => props.filter.isSimplifiable());
 const isEmpty = computed(() => !props.filter.hasChildren());
@@ -108,15 +108,15 @@ watch(
 </script>
 
 <style scoped lang="scss">
-.query-filter-tree-root__notification--error {
+.query-filter-root-node__notification--error {
   color: $negative;
 }
 
-.query-filter-tree-root__notification--success {
+.query-filter-root-node__notification--success {
   color: $positive;
 }
 
-.query-filter-tree-root__simplify {
+.query-filter-root-node__simplify {
   color: $negative;
   background: none;
   padding: 0;
@@ -125,13 +125,13 @@ watch(
   cursor: pointer;
 }
 
-.query-filter-tree-root__simplify:hover,
-.query-filter-tree-root__simplify:focus {
+.query-filter-root-node__simplify:hover,
+.query-filter-root-node__simplify:focus {
   filter: brightness(125%);
   text-decoration: none;
 }
 
-.query-filter-tree-root__dummy-filter {
+.query-filter-root-node__dummy-filter {
   background: $grey-3;
   width: 100%;
   min-height: 48px;
@@ -142,7 +142,7 @@ watch(
 }
 
 .body--dark {
-  .query-filter-tree-root__dummy-filter {
+  .query-filter-root-node__dummy-filter {
     background: $grey-9;
   }
 }

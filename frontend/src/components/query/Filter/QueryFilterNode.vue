@@ -1,7 +1,7 @@
 <template>
   <div
-    class="query-filter-tree"
-    :class="{ 'query-filter-tree--dragging': !!dragging }"
+    class="query-filter-node"
+    :class="{ 'query-filter-node--dragging': !!dragging }"
     :draggable="!!dragging"
     @dragstart="dragStart"
     @dragend="dragEnd"
@@ -26,19 +26,19 @@
     <div v-else>
       <div class="row items-stretch">
         <div
-          class="query-filter-tree__drag-bg row items-center"
+          class="query-filter-node__drag-bg row items-center"
           :class="{
-            'query-filter-tree__drag-bg--and':
+            'query-filter-node__drag-bg--and':
               conjunction === FilterConjunction.And,
-            'query-filter-tree__drag-bg--or':
+            'query-filter-node__drag-bg--or':
               conjunction === FilterConjunction.Or,
-            'query-filter-tree__drag-bg--root': node.isRoot(),
+            'query-filter-node__drag-bg--root': node.isRoot(),
           }"
         >
           <q-icon
             name="drag_indicator"
             size="md"
-            class="query-filter-tree__drag-handle"
+            class="query-filter-node__drag-handle"
             @mousedown="setDragObj(node)"
             @mouseup="setDragObj(false)"
           />
@@ -48,7 +48,7 @@
             v-for="(tree, idx) in node.getChildren()"
             :key="tree.getId()"
           >
-            <QueryFilterTree
+            <QueryFilterNode
               :node="tree"
               :options="options"
               :conjunction="
@@ -59,11 +59,11 @@
             />
             <div
               v-if="idx + 1 < node.getChildCount()"
-              class="query-filter-tree__conjunction"
+              class="query-filter-node__conjunction"
               :class="{
-                'query-filter-tree__conjunction--and':
+                'query-filter-node__conjunction--and':
                   conjunction === FilterConjunction.And,
-                'query-filter-tree__conjunction--or':
+                'query-filter-node__conjunction--or':
                   conjunction === FilterConjunction.Or,
               }"
             >
@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { moveNode } from './filterNodeActions';
 import { useI18n } from 'src/composables/useI18n';
 import QueryFilterRule from './QueryFilterRule.vue';
@@ -101,20 +101,13 @@ import { FilterDragNode } from './queryTypes';
 import QueryFilterRuleDropZone from './QueryFilterRuleDropZone.vue';
 import { FilterRuleColumn } from './filterRuleColumn';
 
-const props = defineProps({
-  node: {
-    type: Object as PropType<FilterNode>,
-    required: true,
-  },
-  options: {
-    type: Object as PropType<FilterRuleColumn[]>,
-    required: true,
-  },
-  conjunction: {
-    type: String as PropType<FilterConjunction>,
-    required: true,
-  },
-});
+export interface QueryFilterNodeProps {
+  node: FilterNode;
+  options: FilterRuleColumn[];
+  conjunction: FilterConjunction;
+}
+
+const props = defineProps<QueryFilterNodeProps>();
 
 const { t } = useI18n();
 const store = useQueryStore();
@@ -180,60 +173,60 @@ function onDrop(position: 'before' | 'after') {
 </script>
 
 <style scoped lang="scss">
-.query-filter-tree {
+.query-filter-node {
   position: relative;
 }
 
-.query-filter-tree--dragging {
+.query-filter-node--dragging {
   opacity: 0.4;
 }
 
-.query-filter-tree__drag-bg {
+.query-filter-node__drag-bg {
   border-right-width: 3px;
   border-right-style: solid;
   background: $grey-3;
 }
 
 .body--dark {
-  .query-filter-tree__drag-bg {
+  .query-filter-node__drag-bg {
     background: $grey-9;
   }
 }
 
-.query-filter-tree__drag-bg--and {
+.query-filter-node__drag-bg--and {
   border-color: var(--q-primary);
 }
 
-.query-filter-tree__drag-bg--or {
+.query-filter-node__drag-bg--or {
   border-color: var(--q-accent);
 }
 
-.query-filter-tree__drag-bg--root {
+.query-filter-node__drag-bg--root {
   width: 0;
   overflow: hidden;
 }
 
-.query-filter-tree__drag-handle {
+.query-filter-node__drag-handle {
   color: var(--q-text-muted);
   cursor: grab;
 }
 
-.query-filter-tree__drag-handle:hover {
+.query-filter-node__drag-handle:hover {
   color: var(--q-primary);
 }
 
-.query-filter-tree__conjunction {
+.query-filter-node__conjunction {
   text-transform: uppercase;
   font-size: 0.75rem;
   margin-left: 5px;
   font-weight: bold;
 }
 
-.query-filter-tree__conjunction--and {
+.query-filter-node__conjunction--and {
   color: var(--q-primary);
 }
 
-.query-filter-tree__conjunction--or {
+.query-filter-node__conjunction--or {
   color: var(--q-accent);
 }
 

@@ -91,7 +91,7 @@
 
 <script setup lang="ts">
 import { computed, PropType, ref } from 'vue';
-import useFilterNodeActions from './useFilterNodeActions';
+import { moveNode } from './filterNodeActions';
 import { useI18n } from 'src/composables/useI18n';
 import QueryFilterRule from './QueryFilterRule.vue';
 import FilterRuleButtonAdd from './QueryFilterRuleAddButton.vue';
@@ -116,7 +116,6 @@ const props = defineProps({
   },
 });
 
-const filter = useFilterNodeActions();
 const { t } = useI18n();
 const store = useQueryStore();
 
@@ -173,7 +172,7 @@ function dragEnd() {
 
 function onDrop(position: 'before' | 'after') {
   if (canBeTarget.value && dragObj.value instanceof FilterNode) {
-    filter.moveNode(dragObj.value, props.node, position);
+    moveNode(dragObj.value, props.node, position);
   }
 
   dragEnd();

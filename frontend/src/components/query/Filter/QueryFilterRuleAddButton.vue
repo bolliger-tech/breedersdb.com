@@ -20,14 +20,14 @@
       color="primary"
       padding="xs"
       data-test="query-filter-tree__action-btn-and"
-      @click="addLeaf(FilterConjunction.And)"
+      @click="addLeafToCurrentNode(FilterConjunction.And)"
     />
     <q-fab-action
       :label="t('filter.operators.orFilter')"
       color="accent"
       padding="xs"
       data-test="query-filter-tree__action-btn-or"
-      @click="addLeaf(FilterConjunction.Or)"
+      @click="addLeafToCurrentNode(FilterConjunction.Or)"
     />
   </q-fab>
 </template>
@@ -36,7 +36,7 @@
 import { ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { FilterNode, FilterConjunction } from './filterNode';
-import useFilterNodeActions from './useFilterNodeActions';
+import { addLeaf } from './filterNodeActions';
 
 export interface QueryFilterRuleAddButtonProps {
   conjunction: FilterConjunction;
@@ -46,13 +46,12 @@ export interface QueryFilterRuleAddButtonProps {
 const props = defineProps<QueryFilterRuleAddButtonProps>();
 
 const { t } = useI18n();
-const filter = useFilterNodeActions();
 
 const actionsVisible = ref(false);
 const actionButtonHover = ref(false);
 
-function addLeaf(conjunction: FilterConjunction) {
-  filter.addLeaf(props.node, conjunction);
+function addLeafToCurrentNode(conjunction: FilterConjunction) {
+  addLeaf(props.node, conjunction);
 }
 </script>
 

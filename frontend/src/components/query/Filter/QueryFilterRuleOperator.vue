@@ -36,7 +36,7 @@ import {
   filterSelectOptions,
   FilterSelectOptionsUpdateFn,
 } from './selectOptionFilter';
-import { useInputBackground } from './useQueryRule';
+import { useInputBackground } from './useInputBackground';
 import { createGetFilterRuleOperators } from './createFilterRuleOperators';
 import { FilterRuleOperator } from './filterRuleOperator';
 import { computed } from 'vue';
@@ -74,5 +74,5 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
   );
 }
 
-const inputBgColor = useInputBackground();
+const { inputBgColor } = useInputBackground();
 </script>

@@ -16,7 +16,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryStore } from '../useQueryStore';
 import { computed } from 'vue';
-import { getEntityName } from './getEntityName';
+import { useEntityName } from 'src/composables/useEntityName';
 
 export interface QueryFilterRuleNoAttributionsPredicateProps {
   attributeName?: string;
@@ -32,7 +32,8 @@ defineEmits<{
 const { t } = useI18n();
 const store = useQueryStore();
 
+const { getEntityName } = useEntityName();
 const entitiesName = computed(() => {
-  return getEntityName({ t, table: store.baseTable, plural: true });
+  return getEntityName({ table: store.baseTable, plural: true });
 });
 </script>

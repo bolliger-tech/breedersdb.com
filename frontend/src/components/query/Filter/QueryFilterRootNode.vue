@@ -1,5 +1,9 @@
 <template>
-  <div v-if="isEmpty">
+  <div v-if="fetching" class="query-filter-root-node__filter-placeholder">
+    <q-spinner color="primary" />&nbsp;{{ t('base.loading') }}
+  </div>
+
+  <div v-else-if="isEmpty">
     <div
       class="query-filter-root-node__filter-placeholder"
       data-test="query-filter-root-node__filter-placeholder"
@@ -53,7 +57,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { useQueryStore } from '../useQueryStore';
 import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
 import { FilterRuleColumn } from './filterRuleColumn';
-import { getEntityName } from './getEntityName';
+import { useEntityName } from 'src/composables/useEntityName';
 
 const { t } = useI18n();
 const store = useQueryStore();
@@ -62,6 +66,7 @@ const localStorageHelper = useQueryLocalStorageHelper();
 export interface QueryFilterRootNodeProps {
   filter: FilterNode;
   options: FilterRuleColumn[];
+  fetching: boolean;
 }
 
 const props = defineProps<QueryFilterRootNodeProps>();
@@ -70,12 +75,13 @@ const isSimplifiable = computed(() => props.filter.isSimplifiable());
 const isEmpty = computed(() => !props.filter.hasChildren());
 const isValid = computed(() => props.filter.isValid());
 
+const { getEntityName } = useEntityName();
 const entityName = computed(() => {
   if (props.filter.getFilterType() === FilterType.Attribution) {
     return t('filter.attributions');
   }
 
-  return getEntityName({ t, table: store.baseTable, plural: true });
+  return getEntityName({ table: store.baseTable, plural: true });
 });
 
 function simplify() {

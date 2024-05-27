@@ -19,7 +19,7 @@ import { computed } from 'vue';
 import { FilterRule } from './filterRule';
 import { useQueryStore } from '../useQueryStore';
 import { useI18n } from 'src/composables/useI18n';
-import { getEntityName } from './getEntityName';
+import { useEntityName } from 'src/composables/useEntityName';
 
 interface QueryFilterRuleExplainerProps {
   rule?: FilterRule;
@@ -40,8 +40,9 @@ const term = computed(() => {
 });
 
 const store = useQueryStore();
+const { getEntityName } = useEntityName();
 const entityName = computed(() => {
-  return getEntityName({ t, table: store.baseTable, plural: true });
+  return getEntityName({ table: store.baseTable, plural: true });
 });
 
 const explainer = computed(() => {

@@ -46,7 +46,7 @@ import {
   filterSelectOptions,
   FilterSelectOptionsUpdateFn,
 } from './selectOptionFilter';
-import { useInputBackground } from './useQueryRule';
+import { useInputBackground } from './useInputBackground';
 import { FilterRuleColumn } from './filterRuleColumn';
 
 export interface QueryFilterRuleColumnProps {
@@ -74,5 +74,5 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
   );
 }
 
-const inputBgColor = useInputBackground();
+const { inputBgColor } = useInputBackground();
 </script>

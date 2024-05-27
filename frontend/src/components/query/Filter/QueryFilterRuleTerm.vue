@@ -72,7 +72,7 @@ import {
   filterSelectOptions,
   FilterSelectOptionsUpdateFn,
 } from './selectOptionFilter';
-import { useInputBackground } from './useQueryRule';
+import { useInputBackground } from './useInputBackground';
 import { FilterRuleType } from './filterRule';
 
 import { FilterRuleTerm } from './filterRuleTerm';

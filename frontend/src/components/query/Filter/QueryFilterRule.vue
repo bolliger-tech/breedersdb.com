@@ -39,6 +39,7 @@
             :disabled="operator === undefined"
             :hide="!requiresTerm"
             :model-value="term"
+            :operator-value="operator?.value"
             @update:model-value="updateTerm"
           />
         </div>

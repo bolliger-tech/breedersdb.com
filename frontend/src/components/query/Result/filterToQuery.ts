@@ -7,15 +7,17 @@ import type { FilterRule } from '../Filter/filterRule';
 import { FilterRuleType } from '../Filter/filterRule';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
 import type { BaseTable } from '../Filter/queryTypes';
+import { toCamelCase, toSnakeCase } from 'src/utils/stringUtils';
 
 type QueryVariable = {
   name: string;
   type: ReturnType<typeof filterRuleTypeToGraphQLType>; // GraphQL type
-  value: string | number | boolean; // TODO: handle other types
+  value: string | number | boolean;
 };
 type Comparison = {
   operator: GraphQLComparisonOperator;
   variable: QueryVariable;
+  negate: boolean;
 };
 type GraphQLWhereArgs = { conditions: string; variables: QueryVariable[] };
 
@@ -89,11 +91,12 @@ function filterToWhere(filter: FilterNode): GraphQLWhereArgs {
 }
 
 function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
+  const table = rule.tableName;
   const field = rule.columnName;
   const dataType = rule.type;
   const operator = rule.operator;
 
-  if (!(field && dataType && operator && rule.isValid)) {
+  if (!(table && field && dataType && operator && rule.isValid)) {
     return;
   }
 
@@ -107,6 +110,8 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
     return;
   }
 
+  let criterion: GraphQLWhereArgs;
+
   if (rule.isAttribute) {
     const attributeId = parseInt(field);
     const attributeIdCondition = `{ attribute_id: { _eq: ${attributeId} } }`;
@@ -117,15 +122,16 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
     const attributionCondition = `{ attributions_views: { _and: [ ${attributeIdCondition}, ${attributeValueCondition} ] } }`;
     if (rule.includeEntitiesWithoutAttributions) {
       const noAttributionsCondition = `{ attributions_views_aggregate: { count: { predicate: { _eq: 0 }, filter: ${attributeIdCondition} } } }`;
-      return {
+      criterion = {
         conditions: `{ _or: [ ${attributionCondition}, ${noAttributionsCondition} ] }`,
         variables: [comparison.variable],
       };
+    } else {
+      criterion = {
+        conditions: attributionCondition,
+        variables: [comparison.variable],
+      };
     }
-    return {
-      conditions: attributionCondition,
-      variables: [comparison.variable],
-    };
   } else {
     // if value can be null or empty string and it is one of both
     if (rule.canBeNullOrEmpty) {
@@ -136,18 +142,38 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
       const conditions = empty
         ? `{ _or: [ { ${field}: { _is_null: true } }, { ${field}: { _eq: "" } } ] }`
         : `{ _and: [ { ${field}: { _is_null: false } }, { ${field}: { _neq: "" } } ] }`;
-      return {
+      criterion = {
         conditions,
         variables: [],
       };
+    } else {
+      // otherwise
+      criterion = {
+        conditions: `{ ${field}: { ${comparison.operator}: $${comparison.variable.name} } }`,
+        variables: [comparison.variable],
+      };
     }
-
-    // otherwise
-    return {
-      conditions: `{ ${field}: { ${comparison.operator}: $${comparison.variable.name} } }`,
-      variables: [comparison.variable],
-    };
   }
+
+  // if table is nested
+  if (table.includes('.')) {
+    const tables = table.split('.');
+    tables.shift(); // remove base table
+    criterion.conditions = tables.reduceRight(
+      (acc, t) => `{ ${t}: ${acc} }`,
+      criterion.conditions,
+    );
+  }
+
+  if (comparison.negate) {
+    // apply negation to the whole criterion so nested tables without relation
+    // work as expected. e.g.
+    // - `tree.row.name is null` will also return trees without a row
+    // - `tree.row.name starts not with Z` will also return trees without a row
+    criterion.conditions = `{ _not: ${criterion.conditions} }`;
+  }
+
+  return criterion;
 }
 
 function toComparison({
@@ -172,81 +198,101 @@ function toComparison({
       return {
         operator: GraphQLComparisonOperator.Eq,
         variable: { name, type, value },
+        negate: false,
       };
     case FilterOperatorValue.NotEqual:
       return {
-        operator: GraphQLComparisonOperator.Neq,
+        operator: GraphQLComparisonOperator.Eq,
         variable: { name, type, value },
+        negate: true,
       };
     case FilterOperatorValue.Less:
       return {
         operator: GraphQLComparisonOperator.Lt,
         variable: { name, type, value },
+        negate: false,
       };
     case FilterOperatorValue.LessOrEqual:
       return {
         operator: GraphQLComparisonOperator.Lte,
         variable: { name, type, value },
+        negate: false,
       };
     case FilterOperatorValue.Greater:
       return {
         operator: GraphQLComparisonOperator.Gt,
         variable: { name, type, value },
+        negate: false,
       };
     case FilterOperatorValue.GreaterOrEqual:
       return {
         operator: GraphQLComparisonOperator.Gte,
         variable: { name, type, value },
+        negate: false,
       };
     case FilterOperatorValue.StartsWith:
       return {
         operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `${value}%` },
+        negate: false,
       };
     case FilterOperatorValue.StartsNotWith:
       return {
-        operator: GraphQLComparisonOperator.Nilike,
+        operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `${value}%` },
+        negate: true,
       };
     case FilterOperatorValue.Contains:
       return {
         operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `%${value}%` },
+        negate: false,
       };
     case FilterOperatorValue.NotContains:
       return {
-        operator: GraphQLComparisonOperator.Nilike,
+        operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `%${value}%` },
+        negate: true,
       };
     case FilterOperatorValue.EndsWith:
       return {
         operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `%${value}` },
+        negate: false,
       };
     case FilterOperatorValue.NotEndsWith:
       return {
-        operator: GraphQLComparisonOperator.Nilike,
+        operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `%${value}` },
+        negate: true,
       };
     case FilterOperatorValue.Empty:
-      return {
-        operator: GraphQLComparisonOperator.IsNull,
-        variable: { name, type: 'Boolean', value: true },
-      };
-    case FilterOperatorValue.NotEmpty:
+      // becuase it it easier to implement on nested tables
+      // we use double negation. see ruleToCriterion()
       return {
         operator: GraphQLComparisonOperator.IsNull,
         variable: { name, type: 'Boolean', value: false },
+        negate: true,
+      };
+    case FilterOperatorValue.NotEmpty:
+      // becuase it it easier to implement on nested tables
+      // we use double negation. see ruleToCriterion()
+      return {
+        operator: GraphQLComparisonOperator.IsNull,
+        variable: { name, type: 'Boolean', value: false },
+        negate: false,
       };
     case FilterOperatorValue.True:
       return {
         operator: GraphQLComparisonOperator.Eq,
         variable: { name, type: 'Boolean', value: true },
+        negate: false,
       };
     case FilterOperatorValue.False:
       return {
         operator: GraphQLComparisonOperator.Eq,
-        variable: { name, type: 'Boolean', value: false },
+        variable: { name, type: 'Boolean', value: true },
+        negate: true,
       };
     default:
       throw new Error(`Unknown operator: ${operator.value}`);
@@ -264,8 +310,7 @@ function cast({ term, type }: { term?: FilterRuleTerm; type: FilterRuleType }) {
     case FilterRuleType.Boolean:
       return String(term?.value).toLowerCase() === 'true';
     case FilterRuleType.Enum:
-      // TODO: handle enum
-      throw new Error('Not implemented');
+      return term?.value || '';
     case FilterRuleType.Date:
       if (!term) return undefined;
       return new Date(term.value).toISOString().split('T')[0];
@@ -293,7 +338,7 @@ function filterRuleTypeToGraphQLType(type: FilterRuleType) {
     case FilterRuleType.Boolean:
       return 'Boolean';
     case FilterRuleType.Enum:
-      throw new Error('Not implemented');
+      return 'String';
     case FilterRuleType.Date:
       return 'date';
     case FilterRuleType.DateTime:
@@ -353,14 +398,4 @@ function toAttributeValueCondition({
     default:
       throw new Error(`Unknown type: ${comparison.variable.type}`);
   }
-}
-
-function toSnakeCase(str: string) {
-  return str.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
-}
-
-function toCamelCase(str: string) {
-  return str.replace(/([-_][a-z])/gi, ($1) =>
-    $1.toUpperCase().replace('-', '').replace('_', ''),
-  );
 }

@@ -152,8 +152,8 @@ export class FilterRule {
       case FilterRuleType.DateTime:
       case FilterRuleType.Integer:
       case FilterRuleType.Float:
-      case FilterRuleType.Enum:
         return true;
+      case FilterRuleType.Enum:
       case FilterRuleType.String:
         return (
           this.operator?.value !== FilterOperatorValue.Empty &&

@@ -364,7 +364,7 @@ describe('FilterTerm', () => {
       expect(filterTerm.isValid).toBe(true);
     });
 
-    it('should not be in options', () => {
+    it('should not be in options but still be valid', () => {
       const value = 'option';
       const schema = {
         type: FilterRuleType.Enum as const,
@@ -377,7 +377,7 @@ describe('FilterTerm', () => {
       const filterTerm = new FilterRuleTerm({ value });
       filterTerm.schema = schema;
 
-      expect(filterTerm.isValid).toBe(false);
+      expect(filterTerm.isValid).toBe(true);
     });
   });
 

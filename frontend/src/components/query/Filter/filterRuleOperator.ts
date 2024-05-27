@@ -96,9 +96,13 @@ export class FilterRuleOperator {
       case FilterOperatorValue.EndsWith:
       case FilterOperatorValue.NotEndsWith:
       case FilterOperatorValue.Empty:
-        return [FilterRuleType.String];
+        return [FilterRuleType.String, FilterRuleType.Enum];
       case FilterOperatorValue.NotEmpty:
-        return [FilterRuleType.String, FilterRuleType.Photo];
+        return [
+          FilterRuleType.String,
+          FilterRuleType.Enum,
+          FilterRuleType.Photo,
+        ];
       case FilterOperatorValue.True:
       case FilterOperatorValue.False:
         return [FilterRuleType.Boolean];

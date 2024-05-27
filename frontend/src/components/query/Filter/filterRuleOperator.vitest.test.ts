@@ -199,7 +199,10 @@ describe('FilterRuleOperator', () => {
         value: FilterOperatorValue.StartsWith,
       });
 
-      expect(operator.suitableRuleTypes).toEqual([FilterRuleType.String]);
+      expect(operator.suitableRuleTypes).toEqual([
+        FilterRuleType.String,
+        FilterRuleType.Enum,
+      ]);
     });
 
     it('for StartsNotWith', () => {
@@ -207,7 +210,10 @@ describe('FilterRuleOperator', () => {
         value: FilterOperatorValue.StartsNotWith,
       });
 
-      expect(operator.suitableRuleTypes).toEqual([FilterRuleType.String]);
+      expect(operator.suitableRuleTypes).toEqual([
+        FilterRuleType.String,
+        FilterRuleType.Enum,
+      ]);
     });
 
     it('for Contains', () => {
@@ -215,7 +221,10 @@ describe('FilterRuleOperator', () => {
         value: FilterOperatorValue.Contains,
       });
 
-      expect(operator.suitableRuleTypes).toEqual([FilterRuleType.String]);
+      expect(operator.suitableRuleTypes).toEqual([
+        FilterRuleType.String,
+        FilterRuleType.Enum,
+      ]);
     });
 
     it('for NotContains', () => {
@@ -223,7 +232,10 @@ describe('FilterRuleOperator', () => {
         value: FilterOperatorValue.NotContains,
       });
 
-      expect(operator.suitableRuleTypes).toEqual([FilterRuleType.String]);
+      expect(operator.suitableRuleTypes).toEqual([
+        FilterRuleType.String,
+        FilterRuleType.Enum,
+      ]);
     });
 
     it('for EndsWith', () => {
@@ -231,7 +243,10 @@ describe('FilterRuleOperator', () => {
         value: FilterOperatorValue.EndsWith,
       });
 
-      expect(operator.suitableRuleTypes).toEqual([FilterRuleType.String]);
+      expect(operator.suitableRuleTypes).toEqual([
+        FilterRuleType.String,
+        FilterRuleType.Enum,
+      ]);
     });
 
     it('for NotEndsWith', () => {
@@ -239,7 +254,10 @@ describe('FilterRuleOperator', () => {
         value: FilterOperatorValue.NotEndsWith,
       });
 
-      expect(operator.suitableRuleTypes).toEqual([FilterRuleType.String]);
+      expect(operator.suitableRuleTypes).toEqual([
+        FilterRuleType.String,
+        FilterRuleType.Enum,
+      ]);
     });
 
     it('for Empty', () => {
@@ -247,7 +265,10 @@ describe('FilterRuleOperator', () => {
         value: FilterOperatorValue.Empty,
       });
 
-      expect(operator.suitableRuleTypes).toEqual([FilterRuleType.String]);
+      expect(operator.suitableRuleTypes).toEqual([
+        FilterRuleType.String,
+        FilterRuleType.Enum,
+      ]);
     });
 
     it('for NotEmpty', () => {
@@ -257,6 +278,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         FilterRuleType.String,
+        FilterRuleType.Enum,
         FilterRuleType.Photo,
       ]);
     });

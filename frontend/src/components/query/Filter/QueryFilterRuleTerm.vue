@@ -3,7 +3,7 @@
 
   <template v-else>
     <q-select
-      v-if="isEnum"
+      v-if="isEnum && !forceStringInputForEnum"
       ref="enumSelect"
       :bg-color="disabled ? 'transparent' : inputBgColor"
       :disable="disabled"
@@ -77,11 +77,13 @@ import { FilterRuleType } from './filterRule';
 
 import { FilterRuleTerm } from './filterRuleTerm';
 import { QSelect } from 'quasar';
+import { FilterOperatorValue } from './filterRuleOperator';
 
 export interface QueryFilterRuleTermProps {
   disabled: boolean;
   hide: boolean;
   modelValue?: FilterRuleTerm;
+  operatorValue?: FilterOperatorValue;
 }
 
 const { t } = useI18n();
@@ -159,6 +161,20 @@ const options = computed(() => {
   return validationOptions.value && 'options' in validationOptions.value
     ? localizedSort(validationOptions.value.options)
     : [];
+});
+
+const forceStringInputForEnum = computed(() => {
+  return !!(
+    props.operatorValue &&
+    [
+      FilterOperatorValue.StartsWith,
+      FilterOperatorValue.StartsNotWith,
+      FilterOperatorValue.Contains,
+      FilterOperatorValue.NotContains,
+      FilterOperatorValue.EndsWith,
+      FilterOperatorValue.NotEndsWith,
+    ].includes(props.operatorValue)
+  );
 });
 
 const filteredOptions = ref(options.value);

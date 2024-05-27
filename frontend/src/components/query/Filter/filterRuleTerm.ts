@@ -144,9 +144,9 @@ export class FilterRuleTerm {
 
   private isValidEnum() {
     if (this.schema?.type !== FilterRuleType.Enum) return false;
-    const validation = this.schema.validation;
-
-    return validation.options.includes(this.value);
+    // as we can also apply string functions (startsWith, contains, etc.) on
+    // enums there is not much we can validate
+    return true;
   }
 
   private isValidBoolean() {

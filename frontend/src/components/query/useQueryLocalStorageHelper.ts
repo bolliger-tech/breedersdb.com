@@ -1,6 +1,6 @@
 import { useQueryStore } from 'src/components/Query/useQueryStore';
 import { BaseTable } from 'src/components/Query/queryTypes';
-import { FilterNode } from './filterNode';
+import { FilterNode } from './Filter/filterNode';
 
 function setVisibleColumns(visibleColumns: string[]) {
   window.localStorage.setItem(

@@ -55,7 +55,7 @@ import { computed, watch } from 'vue';
 import { FilterNode, FilterConjunction, FilterType } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryStore } from '../useQueryStore';
-import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
+import useQueryLocalStorageHelper from './../useQueryLocalStorageHelper';
 import { FilterRuleColumn } from './filterRuleColumn';
 import { useEntityName } from 'src/composables/useEntityName';
 

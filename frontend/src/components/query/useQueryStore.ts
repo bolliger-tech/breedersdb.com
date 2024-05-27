@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { BaseTable } from './queryTypes';
 import { FilterNode, FilterConjunction, FilterType } from './Filter/filterNode';
 import { Attribute } from './Filter/formTypes';
-import useQueryLocalStorageHelper from './Filter/useQueryLocalStorageHelper';
+import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
 import { QueryGroup } from './Filter/queryGroupTypes';
 
 const localStorageHelper = useQueryLocalStorageHelper();

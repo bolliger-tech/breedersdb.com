@@ -1,48 +1,57 @@
+import { useI18n } from 'src/composables/useI18n';
+import { FilterRuleType } from '../filterRule';
+import type { FilterColumnConstructorData } from './useColumnDefinitions';
+import { FilterRuleColumn } from '../filterRuleColumn';
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
-import { FilterRuleColumn } from './filterRuleColumn';
-import { BaseTable } from './queryTypes';
-import type { TFunc } from 'src/composables/useI18n';
-import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
-import { getEntityName } from './getEntityName';
+import { BaseTable } from '../queryTypes';
+import { useEntityName } from 'src/composables/useEntityName';
+import { computed, ref } from 'vue';
 
-export function getBaseTableColumns({
-  baseTable,
-  t,
-}: {
-  baseTable: BaseTable;
-  t: TFunc;
-}) {
-  const tableLabel = getEntityName({ table: baseTable, t, capitalize: true });
+export function useCultivarColumns() {
+  const { t } = useI18n();
+  const { getEntityName } = useEntityName();
 
-  return options[baseTable].map((data) => {
-    return new FilterRuleColumn({
-      tableName: data.table,
-      tableColumnName: data.column,
-      tableLabel,
-      tableColumnLabel: uppercaseFirstLetter(t(data.labelKey)),
-      schema: data.schema,
+  const data = ref<FilterColumnConstructorData[] | undefined>(undefined);
+
+  const columns = computed(() => {
+    if (!data.value) {
+      return [];
+    }
+
+    const tableLabel = getEntityName({
+      table: BaseTable.Cultivars,
+      capitalize: true,
+    });
+
+    return data.value.map((data) => {
+      return new FilterRuleColumn({
+        tableName: data.table,
+        tableColumnName: data.column,
+        tableLabel,
+        tableColumnLabel: uppercaseFirstLetter(t(data.labelKey)),
+        schema: data.schema,
+      });
     });
   });
+
+  const fetching = ref(false);
+  const error = ref(undefined);
+
+  return {
+    activate: () => {
+      data.value = columnData;
+    },
+    data: columns,
+    fetching,
+    error,
+  };
 }
 
-type FilterColumnConstructorData = {
-  table: string;
-  column: string;
-  labelKey: Parameters<TFunc>[0];
-  schema: FilterRuleTypeSchema;
-};
-
-// TODO:
-const crossing: FilterColumnConstructorData[] = [];
-
-// TODO:
-const lot: FilterColumnConstructorData[] = [];
-
-const cultivar: FilterColumnConstructorData[] = [
+const columnData: FilterColumnConstructorData[] = [
   {
     table: 'cultivar',
     column: 'id',
-    labelKey: 'filter.id',
+    labelKey: 'entity.id',
     schema: {
       type: FilterRuleType.Integer,
       allowEmpty: false,
@@ -56,7 +65,7 @@ const cultivar: FilterColumnConstructorData[] = [
   {
     table: 'cultivar',
     column: 'name',
-    labelKey: 'filter.name',
+    labelKey: 'entity.name',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: false,
@@ -69,7 +78,7 @@ const cultivar: FilterColumnConstructorData[] = [
   {
     table: 'cultivar',
     column: 'common_name',
-    labelKey: 'filter.commonName',
+    labelKey: 'cultivars.columns.commonName',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: true,
@@ -82,7 +91,7 @@ const cultivar: FilterColumnConstructorData[] = [
   {
     table: 'cultivar',
     column: 'acronym',
-    labelKey: 'filter.acronym',
+    labelKey: 'cultivars.columns.acronym',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: true,
@@ -95,7 +104,7 @@ const cultivar: FilterColumnConstructorData[] = [
   {
     table: 'cultivar',
     column: 'breeder',
-    labelKey: 'filter.breeder',
+    labelKey: 'cultivars.columns.breeder',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: true,
@@ -108,7 +117,7 @@ const cultivar: FilterColumnConstructorData[] = [
   {
     table: 'cultivar',
     column: 'registration',
-    labelKey: 'filter.registration',
+    labelKey: 'cultivars.columns.registration',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: true,
@@ -121,7 +130,7 @@ const cultivar: FilterColumnConstructorData[] = [
   {
     table: 'cultivar',
     column: 'note',
-    labelKey: 'filter.note',
+    labelKey: 'entity.note',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: true,
@@ -134,20 +143,10 @@ const cultivar: FilterColumnConstructorData[] = [
   {
     table: 'cultivar',
     column: 'created',
-    labelKey: 'filter.created',
+    labelKey: 'entity.created',
     schema: {
       type: FilterRuleType.DateTime,
       allowEmpty: false,
     },
   },
 ];
-
-// TODO:
-const tree: FilterColumnConstructorData[] = [];
-
-const options = {
-  [BaseTable.Crossings]: crossing,
-  [BaseTable.Lots]: lot,
-  [BaseTable.Cultivars]: cultivar,
-  [BaseTable.Trees]: tree,
-};

@@ -1,15 +1,8 @@
 export const filter = {
-  attribute: 'Attribute',
   attributionFilter: 'Filter criteria to select the attributions (cell values)',
   baseFilter: 'Filter criteria to select the {entityName} (rows)',
-  id: 'ID',
-  name: 'Name',
-  commonName: 'Common Name',
-  acronym: 'Acronym',
-  breeder: 'Breeder',
-  registration: 'Registration',
-  note: 'Note',
-  created: 'Created',
+
+  attribute: 'Attribute',
 
   noFilter:
     'No filter defined. All {entity} will be selected. Click the plus button below to add some filter criteria.',
@@ -21,13 +14,6 @@ export const filter = {
 
   attributions: 'attributions',
   cultivarAndSubentities: 'cultivar, its groups or trees',
-
-  entityName: {
-    crossing: 'crossing | crossings',
-    lot: 'lot | lots',
-    cultivar: 'cultivar | cultivars',
-    tree: 'tree | trees',
-  },
 
   showExplanation: 'Explain filters',
   explainer: {

@@ -4,4 +4,11 @@ export const base = {
     reload: 'Reload page',
     title: 'Error',
   },
+
+  entityName: {
+    crossing: 'crossing | crossings',
+    lot: 'lot | lots',
+    cultivar: 'cultivar | cultivars',
+    tree: 'tree | trees',
+  },
 };

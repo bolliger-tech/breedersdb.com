@@ -1,9 +1,10 @@
 import { useQuery } from '@urql/vue';
 import { graphql, type ResultOf } from 'src/graphql';
-import { FilterRuleColumn } from './filterRuleColumn';
-import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
+import { FilterRuleColumn } from '../filterRuleColumn';
+import { FilterRuleType, type FilterRuleTypeSchema } from '../filterRule';
+import { computed, ref } from 'vue';
+import { useI18n } from 'src/composables/useI18n';
 
-// warning about unused fields is wrong. ignore it.
 const query = graphql(`
   query Attributes {
     attributes(where: { disabled: { _eq: false } }, order_by: { name: asc }) {
@@ -26,23 +27,36 @@ type Attribute = Omit<
   } | null;
 };
 
-export function useAttributes({ tableLabel }: { tableLabel: string }) {
-  return {
-    fetchAsFilterRuleColumns: () => fetchAsFilterRuleColumns(tableLabel),
-  };
-}
+export function useAttributesAsColumns() {
+  const { t } = useI18n();
+  const pause = ref(true);
 
-async function fetchAsFilterRuleColumns(tableLabel: string) {
-  const { data, fetching, error } = await useQuery({
+  const { data, fetching, error } = useQuery({
     query,
+    variables: undefined,
+    pause,
   });
 
-  const attributionOptions: FilterRuleColumn[] =
-    data.value?.attributes.map((attribute) =>
-      getFilterColumnFromAttribute(attribute as Attribute, tableLabel),
-    ) || [];
+  const columns = computed(() => {
+    if (error.value || !data.value) {
+      return [];
+    }
 
-  return { data: attributionOptions, fetching, error };
+    const tableLabel = t('filter.attribute');
+
+    return data.value.attributes.map((attribute) =>
+      getFilterColumnFromAttribute(attribute as Attribute, tableLabel),
+    );
+  });
+
+  return {
+    activate: () => {
+      pause.value = false;
+    },
+    data: columns,
+    fetching,
+    error,
+  };
 }
 
 function getFilterColumnFromAttribute(

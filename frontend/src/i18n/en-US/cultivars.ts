@@ -3,4 +3,11 @@ export const cultivars = {
   analyze: {
     title: 'Analyze',
   },
+
+  columns: {
+    commonName: 'Common Name',
+    acronym: 'Acronym',
+    breeder: 'Breeder',
+    registration: 'Registration',
+  },
 };

@@ -169,15 +169,31 @@ const applicableOperators = computed(() => {
   return [];
 });
 
+function setOperator() {
+  if (filterRule.value) {
+    filterRule.value.operator = applicableOperators.value
+      ? applicableOperators.value[0]
+      : undefined;
+  }
+}
+
+function setTerm() {
+  if (!filterRule.value) {
+    return;
+  }
+  if (filterRule.value.type === 'enum') {
+    filterRule.value.term = new FilterRuleTerm({ value: '' });
+    filterRule.value.term.schema = filterRule.value.column?.schema;
+  } else {
+    filterRule.value.term = undefined;
+  }
+}
+
 watch(
   () => filterRule.value?.type,
   () => {
-    if (filterRule.value) {
-      filterRule.value.operator = applicableOperators.value
-        ? applicableOperators.value[0]
-        : undefined;
-      filterRule.value.term = undefined;
-    }
+    setOperator();
+    setTerm();
   },
 );
 </script>

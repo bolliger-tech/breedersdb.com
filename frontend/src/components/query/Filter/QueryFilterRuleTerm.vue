@@ -4,9 +4,10 @@
   <template v-else>
     <q-select
       v-if="isEnum"
+      ref="enumSelect"
       :bg-color="disabled ? 'transparent' : inputBgColor"
       :disable="disabled"
-      :error="modelValue?.isValid === false"
+      :error="modelValue?.isValid === false && enumUpdated"
       :error-message="t('filter.error.term')"
       :label="t('filter.term')"
       :model-value="modelValue"
@@ -19,8 +20,15 @@
       fill-input
       hide-selected
       clearable
+      option-label="value"
       @filter="filterOptions"
-      @update:model-value="(value) => $emit('update:modelValue', value)"
+      @update:model-value="
+        (value) => {
+          updateTerm(value);
+          enumUpdated = true;
+        }
+      "
+      @clear="enumSelect?.updateInputValue('', true)"
     >
       <template #no-option>
         <q-item>
@@ -68,6 +76,7 @@ import { useInputBackground } from './useQueryRule';
 import { FilterRuleType } from './filterRule';
 
 import { FilterRuleTerm } from './filterRuleTerm';
+import { QSelect } from 'quasar';
 
 export interface QueryFilterRuleTermProps {
   disabled: boolean;
@@ -82,6 +91,8 @@ const emit = defineEmits<{
 }>();
 
 const props = defineProps<QueryFilterRuleTermProps>();
+
+const enumUpdated = ref(false);
 
 function updateTerm(value: string | number | null) {
   const term = props.modelValue ?? new FilterRuleTerm({ value: '' });
@@ -144,7 +155,7 @@ const pattern = computed<string | null | undefined>(() => {
 });
 
 const { localizedSort } = useLocalizedSort();
-const options = computed<string[]>(() => {
+const options = computed(() => {
   return validationOptions.value && 'options' in validationOptions.value
     ? localizedSort(validationOptions.value.options)
     : [];
@@ -176,7 +187,7 @@ const inputType = computed(() => {
 });
 
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
-  filterSelectOptions<string>(
+  filterSelectOptions(
     value,
     update,
     options.value,
@@ -185,5 +196,7 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
   );
 }
 
-const inputBgColor = useInputBackground();
+const enumSelect = ref<QSelect | undefined>();
+
+const { inputBgColor } = useInputBackground();
 </script>

@@ -1,4 +1,4 @@
-import { BaseTable } from '../queryTypes';
+import { BaseTable } from 'src/components/Query/queryTypes';
 import type { TFunc } from 'src/composables/useI18n';
 import { type FilterRuleTypeSchema } from '../filterRule';
 import { useCultivarColumns } from './useCultivarColumns';
@@ -9,7 +9,6 @@ import {
   type Ref,
   type MaybeRef,
 } from 'vue';
-import { useCrossingColumns } from './useCrossingColumns';
 import { useLotColumns } from './useLotColumns';
 import { useTreeColumns } from './useTreeColumns';
 import type { FilterRuleColumn } from '../filterRuleColumn';
@@ -21,7 +20,6 @@ export function useColumnDefinitions({
   currentEntity: MaybeRef<BaseTable | null> | ComputedRef<BaseTable | null>;
 }) {
   const entities: { [Property in BaseTable]: UseEntityColumns } = {
-    [BaseTable.Crossings]: useCrossingColumns(),
     [BaseTable.Lots]: useLotColumns(),
     [BaseTable.Cultivars]: useCultivarColumns(),
     [BaseTable.Trees]: useTreeColumns(),

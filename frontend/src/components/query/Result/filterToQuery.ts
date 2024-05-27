@@ -6,7 +6,7 @@ import {
 import type { FilterRule } from '../Filter/filterRule';
 import { FilterRuleType } from '../Filter/filterRule';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
-import type { BaseTable } from '../Filter/queryTypes';
+import type { BaseTable } from '../queryTypes';
 import { toCamelCase, toSnakeCase } from 'src/utils/stringUtils';
 
 type QueryVariable = {

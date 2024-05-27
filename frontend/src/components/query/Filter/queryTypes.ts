@@ -1,17 +1,7 @@
-import { FilterNode } from './filterNode';
 // import { AttributeSchema } from './attributeSchemaTypes';
 // import { TreeView } from 'src/models/tree';
 // import { VarietyView } from 'src/models/variety';
 // import { BatchView } from 'src/models/batch';
-
-export enum BaseTable {
-  Crossings = 'Crossings',
-  Lots = 'Lots',
-  Cultivars = 'Cultivars',
-  Trees = 'Trees',
-}
-
-export type FilterDragNode = FilterNode | false;
 
 // export type QueryResponseDebug = {
 //   sql: string;

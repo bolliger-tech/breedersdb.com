@@ -20,7 +20,7 @@
       :node="node"
       :conjunction="conjunction"
       @drag-mouse-down="setDragObj(node)"
-      @drag-mouse-up="setDragObj(false)"
+      @drag-mouse-up="setDragObj(undefined)"
     />
 
     <div v-else>
@@ -40,7 +40,7 @@
             size="md"
             class="query-filter-node__drag-handle"
             @mousedown="setDragObj(node)"
-            @mouseup="setDragObj(false)"
+            @mouseup="setDragObj(undefined)"
           />
         </div>
         <div class="col">
@@ -97,7 +97,6 @@ import QueryFilterRule from './QueryFilterRule.vue';
 import FilterRuleButtonAdd from './QueryFilterRuleAddButton.vue';
 import { FilterNode, FilterConjunction } from './filterNode';
 import { useQueryStore } from '../useQueryStore';
-import { FilterDragNode } from './queryTypes';
 import QueryFilterRuleDropZone from './QueryFilterRuleDropZone.vue';
 import { FilterRuleColumn } from './filterRuleColumn';
 
@@ -112,7 +111,7 @@ const props = defineProps<QueryFilterNodeProps>();
 const { t } = useI18n();
 const store = useQueryStore();
 
-const dragging = ref<FilterDragNode>(false);
+const dragging = ref<FilterNode | undefined>(undefined);
 
 const dragObj = computed(() => {
   return store.filterDragNode;
@@ -145,7 +144,7 @@ const dropConjunction = computed(() => {
   return props.node.getParent()?.getChildrensConjunction();
 });
 
-function setDragObj(node: FilterDragNode) {
+function setDragObj(node: FilterNode | undefined) {
   dragging.value = node;
   store.filterDragNode = node;
 }
@@ -160,7 +159,7 @@ function dragStart(event: DragEvent) {
 }
 
 function dragEnd() {
-  setDragObj(false);
+  setDragObj(undefined);
 }
 
 function onDrop(position: 'before' | 'after') {

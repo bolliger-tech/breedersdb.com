@@ -30,7 +30,7 @@ import { computed } from 'vue';
 import { filterToQuery } from 'src/components/Query/Result/filterToQuery';
 import { FilterNode } from 'src/components/Query/Filter/filterNode';
 import { useQuery } from '@urql/vue';
-import { BaseTable } from 'src/components/Query/Filter/queryTypes';
+import { BaseTable } from 'src/components/Query/queryTypes';
 
 const { t } = useI18n();
 const store = useQueryStore();

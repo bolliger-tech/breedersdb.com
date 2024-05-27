@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { BaseTable, FilterDragNode } from './Filter/queryTypes';
+import { BaseTable } from './queryTypes';
 import { FilterNode, FilterConjunction, FilterType } from './Filter/filterNode';
 import { Attribute } from './Filter/formTypes';
 import useQueryLocalStorageHelper from './Filter/useQueryLocalStorageHelper';
@@ -20,7 +20,7 @@ export interface QueryState {
   baseTable: BaseTable;
   baseFilter: FilterNode;
   attributionFilter: FilterNode;
-  filterDragNode: FilterDragNode;
+  filterDragNode: FilterNode | undefined;
   attributes: Attribute[];
   visibleColumns: string[];
   showRowsWithoutattributions: boolean;
@@ -41,7 +41,7 @@ export const useQueryStore = defineStore('query', {
     attributionFilter: localStorageHelper.getAttributionFilter(
       defaultAttributionFilter,
     ), // use getters and actions
-    filterDragNode: false,
+    filterDragNode: undefined,
     attributes: [],
     // filterOptionSchemas: undefined,
     visibleColumns: localStorageHelper.getVisibleColumns(),

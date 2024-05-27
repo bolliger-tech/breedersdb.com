@@ -6,7 +6,6 @@ export const base = {
   },
 
   entityName: {
-    crossing: 'crossing | crossings',
     lot: 'lot | lots',
     cultivar: 'cultivar | cultivars',
     tree: 'tree | trees',

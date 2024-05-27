@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
-import { BaseTable } from 'src/components/Query/Filter/queryTypes';
+import { BaseTable } from 'src/components/Query/queryTypes';
 import { useQueryStore } from 'src/components/Query/useQueryStore';
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
@@ -39,7 +39,7 @@ async function fireADifferentQuery() {
 }
 
 const state = useQueryStore();
-state.baseTable = BaseTable.Crossings;
+state.baseTable = BaseTable.Cultivars;
 
 const { t } = useI18n();
 </script>

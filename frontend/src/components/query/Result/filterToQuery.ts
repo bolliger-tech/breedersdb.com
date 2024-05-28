@@ -6,8 +6,7 @@ import {
 import type { FilterRule } from '../Filter/filterRule';
 import { FilterRuleType } from '../Filter/filterRule';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
-import type { BaseTable } from '../queryTypes';
-import { toCamelCase, toSnakeCase } from 'src/utils/stringUtils';
+import { toPascalCase, toSnakeCase } from 'src/utils/stringUtils';
 
 type QueryVariable = {
   name: string;
@@ -35,27 +34,24 @@ enum GraphQLComparisonOperator {
 
 let varCounter = 0;
 
-export function filterToQuery({
-  filter,
-  baseTable,
-}: {
-  filter: FilterNode;
-  baseTable: BaseTable;
-}) {
+export function filterToQuery({ filter }: { filter: FilterNode }) {
   const where = filterToWhere(filter);
   const inputVarDefs =
     where.variables.length > 0
       ? `( ${where.variables.map((v) => `$${v.name}: ${v.type}!`).join(', ')} )`
       : '';
 
+  const baseTable = filter.getBaseTable();
+
   const q = `
-  query ${toCamelCase(baseTable)}FilterResults${inputVarDefs} {
+  query ${toPascalCase(baseTable)}FilterResults${inputVarDefs} {
     ${toSnakeCase(baseTable)}(where: ${where.conditions}) {
       id
       name
     }
   }
 `;
+
   return {
     query: q,
     variables: Object.fromEntries(

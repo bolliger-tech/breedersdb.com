@@ -29,7 +29,7 @@ describe('VitestPage', () => {
       executeQuery: urqlResp(null),
     });
 
-    expect(wrapper.get('[data-test="state"]').text()).toBe('Cultivars');
+    expect(wrapper.get('[data-test="state"]').text()).toBe('cultivars');
   });
 
   it('should show translate keyed strings', async () => {

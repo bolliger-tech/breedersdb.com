@@ -28,20 +28,29 @@ import { useI18n } from 'src/composables/useI18n';
 import { useQueryStore } from 'src/components/Query/useQueryStore';
 import { computed } from 'vue';
 import { filterToQuery } from 'src/components/Query/Result/filterToQuery';
-import { FilterNode } from 'src/components/Query/Filter/filterNode';
+import {
+  FilterNode,
+  BaseTable,
+  FilterConjunction,
+} from 'src/components/Query/Filter/filterNode';
 import { useQuery } from '@urql/vue';
-import { BaseTable } from 'src/components/Query/queryTypes';
 
 const { t } = useI18n();
 const store = useQueryStore();
+const baseFilter = computed(
+  () =>
+    (store.baseFilter as FilterNode) ||
+    FilterNode.FilterRoot({
+      childrensConjunction: FilterConjunction.And,
+      baseTable: BaseTable.Cultivars,
+    }),
+);
 
-const queryData = computed(() => {
-  const { query, variables } = filterToQuery({
-    filter: store.baseFilter as FilterNode,
-    baseTable: store.baseTable,
-  });
-  return { query: query, variables: variables };
-});
+const queryData = computed(() =>
+  filterToQuery({
+    filter: baseFilter.value,
+  }),
+);
 
 const query = computed(() => queryData.value.query);
 const variables = computed(() => queryData.value.variables);

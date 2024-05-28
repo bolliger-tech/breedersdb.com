@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FilterConjunction, FilterNode, FilterType } from './filterNode';
+import { FilterConjunction, FilterNode, BaseTable } from './filterNode';
 import {
   FilterRule,
   FilterRuleType,
@@ -13,12 +13,12 @@ describe('FilterNode', () => {
   describe('constructor', () => {
     it('should construct a FilterRoot', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
 
       expect(root.getId()).toBeGreaterThanOrEqual(0);
-      expect(root.getFilterType()).toBe(FilterType.Base);
+      expect(root.getBaseTable()).toBe(BaseTable.Cultivars);
       expect(root.getLevel()).toBe(0);
       expect(root.getParent()).toBeNull();
       expect(root.getChildren()).toEqual([]);
@@ -36,7 +36,7 @@ describe('FilterNode', () => {
 
     it('should construct a FilterNode', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
 
@@ -46,7 +46,7 @@ describe('FilterNode', () => {
       });
 
       expect(node.getId()).toBeGreaterThan(root.getId());
-      expect(node.getFilterType()).toBe(root.getFilterType());
+      expect(node.getBaseTable()).toBe(root.getBaseTable());
       expect(node.getLevel()).toBe(1);
       expect(node.getParent()).toBe(root);
       expect(node.getChildren()).toEqual([]);
@@ -68,7 +68,7 @@ describe('FilterNode', () => {
 
     it('should construct a FilterLeaf', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -83,7 +83,7 @@ describe('FilterNode', () => {
       });
 
       expect(leaf.getId()).toBeGreaterThan(node.getId());
-      expect(leaf.getFilterType()).toBe(leaf.getFilterType());
+      expect(leaf.getBaseTable()).toBe(leaf.getBaseTable());
       expect(leaf.getLevel()).toBe(2);
       expect(leaf.getParent()).toBe(node);
       expect(leaf.getChildren()).toEqual([]);
@@ -108,7 +108,7 @@ describe('FilterNode', () => {
   describe('setParent', () => {
     it('should remove the parent if null', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -125,11 +125,11 @@ describe('FilterNode', () => {
 
     it('should correctly attach new parent', () => {
       const root1 = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const root2 = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -149,7 +149,7 @@ describe('FilterNode', () => {
 
     it('should correctly set the level', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node1 = FilterNode.FilterNode({
@@ -170,7 +170,7 @@ describe('FilterNode', () => {
   describe('setChildren', () => {
     it('should attach children', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -199,7 +199,7 @@ describe('FilterNode', () => {
   describe('appendChild', () => {
     it('should append a child', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -246,7 +246,7 @@ describe('FilterNode', () => {
       });
 
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       FilterNode.FilterLeaf({
@@ -287,7 +287,7 @@ describe('FilterNode', () => {
       invalidRule.term = new FilterRuleTerm({ value: '' });
 
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       FilterNode.FilterLeaf({
@@ -310,7 +310,7 @@ describe('FilterNode', () => {
   describe('remove', () => {
     it('should remove the node from the parent', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -327,7 +327,7 @@ describe('FilterNode', () => {
 
     it('should remove dangling intermediate nodes', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -353,7 +353,7 @@ describe('FilterNode', () => {
   describe('isDescendantOf', () => {
     it('should return true if the node is a direct descendant', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -366,7 +366,7 @@ describe('FilterNode', () => {
 
     it('should return true if the node is a distant descendant', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -383,7 +383,7 @@ describe('FilterNode', () => {
 
     it('should return false if the node is from a different branch', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node1 = FilterNode.FilterNode({
@@ -404,7 +404,7 @@ describe('FilterNode', () => {
 
     it('should return false for itself', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
 
@@ -415,7 +415,7 @@ describe('FilterNode', () => {
   describe('isSimplifiable', () => {
     it("should return false if it's the root", () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
 
@@ -424,7 +424,7 @@ describe('FilterNode', () => {
 
     it('should return false if it has only one child', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       FilterNode.FilterLeaf({
@@ -437,7 +437,7 @@ describe('FilterNode', () => {
 
     it('should return true if the child is unnecessarily nested', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -454,7 +454,7 @@ describe('FilterNode', () => {
 
     it('should return true if all nested children have the same conjunction operator', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       FilterNode.FilterLeaf({
@@ -479,7 +479,7 @@ describe('FilterNode', () => {
 
     it('should return false if nested children have different conjunction operator', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       FilterNode.FilterLeaf({
@@ -504,7 +504,7 @@ describe('FilterNode', () => {
 
     it('should return false if parent has different conjunction operator', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.Or,
       });
       const node1 = FilterNode.FilterNode({
@@ -539,7 +539,7 @@ describe('FilterNode', () => {
   describe('simplify', () => {
     it('should remove unnecessary intermediate nodes', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -558,7 +558,7 @@ describe('FilterNode', () => {
 
     it('should remove unnecessary intermediate nodes recursively', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node1 = FilterNode.FilterNode({
@@ -581,7 +581,7 @@ describe('FilterNode', () => {
 
     it('should merge children with the same conjunction operator', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node1 = FilterNode.FilterNode({
@@ -608,7 +608,7 @@ describe('FilterNode', () => {
 
     it('should merge children with different conjunction operators if only child', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.Or,
       });
       const node1 = FilterNode.FilterNode({
@@ -635,7 +635,7 @@ describe('FilterNode', () => {
 
     it('should not merge children with different conjunction operators if multiple children', () => {
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const leaf1 = FilterNode.FilterLeaf({
@@ -669,7 +669,7 @@ describe('FilterNode', () => {
         allowEmpty: true,
         validation: { maxLen: 55, pattern: '[a-z]+' },
       };
-      const baseTableRule = new FilterRule({
+      const baseTableRuleRule = new FilterRule({
         column: new FilterRuleColumn({
           tableName: 'table',
           tableColumnName: 'column',
@@ -698,7 +698,7 @@ describe('FilterNode', () => {
       const emptyRule = new FilterRule();
 
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -707,7 +707,7 @@ describe('FilterNode', () => {
       });
       FilterNode.FilterLeaf({
         parent: node,
-        filterRule: baseTableRule,
+        filterRule: baseTableRuleRule,
       });
       FilterNode.FilterLeaf({
         parent: node,
@@ -761,7 +761,7 @@ describe('FilterNode', () => {
           },
         ],
         childrensConjunction: FilterConjunction.And,
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
       });
     });
   });
@@ -773,7 +773,7 @@ describe('FilterNode', () => {
         allowEmpty: true,
         validation: { maxLen: 55, pattern: '[a-z]+' },
       };
-      const baseTableRule = new FilterRule({
+      const baseTableRuleRule = new FilterRule({
         column: new FilterRuleColumn({
           tableName: 'table',
           tableColumnName: 'column',
@@ -802,7 +802,7 @@ describe('FilterNode', () => {
       const emptyRule = new FilterRule();
 
       const root = FilterNode.FilterRoot({
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
         childrensConjunction: FilterConjunction.And,
       });
       const node = FilterNode.FilterNode({
@@ -811,7 +811,7 @@ describe('FilterNode', () => {
       });
       FilterNode.FilterLeaf({
         parent: node,
-        filterRule: baseTableRule,
+        filterRule: baseTableRuleRule,
       });
       FilterNode.FilterLeaf({
         parent: node,
@@ -827,7 +827,7 @@ describe('FilterNode', () => {
 
       const json = JSON.stringify(root);
       const deserialized = FilterNode.FromJSON(json, null, [
-        baseTableRule.column!,
+        baseTableRuleRule.column!,
         attributionRule.column!,
       ]);
 

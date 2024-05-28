@@ -1,223 +1,147 @@
 import { defineStore } from 'pinia';
-import { BaseTable } from './queryTypes';
-import { FilterNode, FilterConjunction, FilterType } from './Filter/filterNode';
-import { Attribute } from './Filter/formTypes';
-import useQueryLocalStorageHelper from './useQueryLocalStorageHelper';
-import { QueryGroup } from './Filter/queryGroupTypes';
+import { FilterNode, BaseTable } from './Filter/filterNode';
+import { LocalStorage } from 'quasar';
+import { computed, ref } from 'vue';
 
-const localStorageHelper = useQueryLocalStorageHelper();
+export const useQueryStore = defineStore('query', () => {
+  const baseFilter = ref<FilterNode | undefined>();
+  const attributionFilter = ref<FilterNode | undefined>();
 
-const defaultBaseFilter = FilterNode.FilterRoot({
-  childrensConjunction: FilterConjunction.And,
-  filterType: FilterType.Base,
+  const baseTable = computed(
+    () => baseFilter.value?.getBaseTable() || BaseTable.Cultivars,
+  );
+
+  const filterDragNode = ref<FilterNode | undefined>(undefined);
+
+  const _explainKey = computed(() => `query_explain--${baseTable.value}`);
+  const _explain = ref<boolean>(
+    LocalStorage.getItem(_explainKey.value) ?? true,
+  );
+  const explain = computed({
+    get: () => _explain.value,
+    set: (value: boolean) => {
+      _explain.value = value;
+      LocalStorage.set(_explainKey.value, value);
+    },
+  });
+
+  return {
+    baseFilter,
+    baseTable,
+    attributionFilter,
+    filterDragNode,
+    explain,
+  };
 });
-const defaultAttributionFilter = FilterNode.FilterRoot({
-  childrensConjunction: FilterConjunction.And,
-  filterType: FilterType.Attribution,
-});
 
-export interface QueryState {
-  baseTable: BaseTable;
-  baseFilter: FilterNode;
-  attributionFilter: FilterNode;
-  filterDragNode: FilterNode | undefined;
-  attributes: Attribute[];
-  visibleColumns: string[];
-  showRowsWithoutattributions: boolean;
-  queryGroups: QueryGroup[];
-  queryGroup: QueryGroup | null;
-  queryCode: string;
-  queryDescription: string;
-  attemptedToSaveQuery: boolean;
-  explain: boolean;
-}
+// export const useQueryStore = defineStore('query', {
+//   state: (): QueryState => ({
+//     _BaseTable: _BaseTable.Cultivars,
+//     baseFilter: defaultBaseFilter,
+//     attributionFilter: defaultAttributionFilter,
+//     filterDragNode: undefined,
+//     explain: useQueryLocalStorage().getExplain(false),
 
-export type QueryStore = ReturnType<typeof useQueryStore>;
+//     visibleColumns: useQueryLocalStorage().getVisibleColumns(),
+//     showRowsWithoutAttributions:
+//       useQueryLocalStorage().getShowRowsWithoutattributions(true),
 
-export const useQueryStore = defineStore('query', {
-  state: (): QueryState => ({
-    baseTable: localStorageHelper.getBaseTable(BaseTable.Cultivars),
-    baseFilter: localStorageHelper.getBaseFilter(defaultBaseFilter), // use getters and actions
-    attributionFilter: localStorageHelper.getAttributionFilter(
-      defaultAttributionFilter,
-    ), // use getters and actions
-    filterDragNode: undefined,
-    attributes: [],
-    // filterOptionSchemas: undefined,
-    visibleColumns: localStorageHelper.getVisibleColumns(),
-    showRowsWithoutattributions:
-      localStorageHelper.getShowRowsWithoutattributions(true),
-    queryGroups: [],
-    queryGroup: null,
-    queryCode: '',
-    queryDescription: '',
-    attemptedToSaveQuery: false,
-    explain: false, // TODO: get from local storage
-  }),
+//     queryGroups: [],
+//     queryGroup: null,
+//     queryCode: '',
+//     queryDescription: '',
+//     attemptedToSaveQuery: false,
+//   }),
 
-  getters: {
-    attributionsAvailable(state) {
-      const s = state as QueryState;
-      return (
-        s.baseTable === BaseTable.Lots ||
-        s.baseTable === BaseTable.Cultivars ||
-        s.baseTable === BaseTable.Trees
-      );
-    },
+//   getters: {
+//     attributionsAvailable(state) {
+//       const s = state as QueryState;
+//       return (
+//         s._BaseTable === _BaseTable.Lots ||
+//         s._BaseTable === _BaseTable.Cultivars ||
+//         s._BaseTable === _BaseTable.Trees
+//       );
+//     },
 
-    // attributionAttributeSchema(state) {
-    //   const s = state as QueryState;
-    //   return s.attributes.map(
-    //     (s) => s,
-    //     // attributeConverter.toAttributeSchema,
-    //   );
-    // },
+//     getVisibleColumns(state) {
+//       const columns = (state as QueryState).visibleColumns;
+//       const _BaseTable = (state as QueryState)._BaseTable;
+//       const attributionsAvailable = this.attributionsAvailable;
 
-    // baseTableColumns(state) {
-    //   const s = state as QueryState;
-    //   if (!s.filterOptionSchemas || !s.baseFilter) {
-    //     return [];
-    //   }
+//       return columns.filter((col: string): boolean => {
+//         if (col.startsWith(`${_BaseTable}View.`)) {
+//           return true;
+//         }
 
-    //   const options: AttributeSchema[] =
-    //     [...s.filterOptionSchemas[s.baseTable]] || [];
+//         return attributionsAvailable && col.startsWith('Attribution.');
+//       });
+//     },
 
-    //   if (this.attributionsAvailable) {
-    //     // options.push(...this.attributionAttributeSchema);
-    //   }
+//     hasVisibleAttributionColumns(): boolean {
+//       return (
+//         this.getVisibleColumns.find((col: string): boolean =>
+//           col.startsWith('Attribution.'),
+//         ) !== undefined
+//       );
+//     },
 
-    //   return options;
-    // },
+//     rowsWithAttributionsOnly(state) {
+//       if (!this.attributionsAvailable || !this.hasVisibleAttributionColumns) {
+//         return false;
+//       }
 
-    // attributionFilterOptions(state) {
-    //   const s = state as QueryState;
-    //   if (!s.filterOptionSchemas) {
-    //     return [];
-    //   }
+//       return !(state as QueryState).showRowsWithoutAttributions;
+//     },
+//   },
 
-    //   return s.filterOptionSchemas['attributions'] || [];
-    // },
+//   actions: {
+//     async maybeLoadQueryGroups() {
+//       if (!this.queryGroups.length) {
+//         await this.forceLoadQueryGroups();
+//       }
+//     },
 
-    getBaseFilter(state) {
-      // if (!this.baseTableColumns) {
-      //   return defaultBaseFilter;
-      // }
+//     async forceLoadQueryGroups() {
+//       console.log('loading query groups');
+//       // await useApi()
+//       //   .get<QueryGroup[]>('query-groups')
+//       //   .then((data) => (this.queryGroups = data as QueryGroup[]));
+//     },
 
-      return (state as QueryState).baseFilter;
-    },
+//     setBaseFilter(filter: FilterNode) {
+//       // use object assign to maintain reactivity
+//       Object.assign(this.baseFilter, filter);
+//     },
 
-    getAttributionFilter(state) {
-      // if (!this.attributionFilterOptions) {
-      //   return defaultAttributionFilter;
-      // }
+//     setAttributionFilter(filter: FilterNode) {
+//       // use object assign to maintain reactivity
+//       Object.assign(this.attributionFilter, filter);
+//     },
 
-      return (state as QueryState).attributionFilter;
-    },
+//     setVisibleColumns(columns: string[]) {
+//       this.visibleColumns = columns;
+//       useQueryLocalStorage().setVisibleColumns(columns);
+//     },
 
-    getVisibleColumns(state) {
-      const columns = (state as QueryState).visibleColumns;
-      const baseTable = (state as QueryState).baseTable;
-      const attributionsAvailable = this.attributionsAvailable;
+//     setShowRowsWithoutAttributions(show: boolean) {
+//       this.showRowsWithoutAttributions = show;
+//       useQueryLocalStorage().setShowRowsWithoutAttributions(show);
+//     },
 
-      return columns.filter((col: string): boolean => {
-        if (col.startsWith(`${baseTable}View.`)) {
-          return true;
-        }
+//     setExplain(explain: boolean) {
+//       this.explain = explain;
+//       useQueryLocalStorage().setExplain(explain);
+//     },
 
-        return attributionsAvailable && col.startsWith('Attribution.');
-      });
-    },
-
-    hasVisibleAttributionColumns(): boolean {
-      // noinspection JSIncompatibleTypesComparison
-      return (
-        this.getVisibleColumns.find((col: string): boolean =>
-          col.startsWith('Attribution.'),
-        ) !== undefined
-      );
-    },
-
-    rowsWithattributionsOnly(state) {
-      if (!this.attributionsAvailable || !this.hasVisibleAttributionColumns) {
-        return false;
-      }
-
-      return !(state as QueryState).showRowsWithoutattributions;
-    },
-  },
-
-  actions: {
-    async maybeLoadAttributes() {
-      if (!this.attributes.length) {
-        console.log('loading attribution form properties');
-        // await useApi()
-        //   .get<Attribute[]>('attribution-form-properties')
-        //   .then(
-        //     (data) => (this.attributes = data as Attribute[]),
-        //   );
-      }
-    },
-
-    async maybeLoadFilterOptionSchemas() {
-      // if (undefined === this.filterOptionSchemas) {
-      //   console.log('loading filter option schemas');
-      // await useApi()
-      //   .get<FilterOptionSchemas>('queries/get-filter-schemas')
-      //   .then(
-      //     (data) => (this.filterOptionSchemas = data as FilterOptionSchemas),
-      //   );
-      // }
-    },
-
-    async maybeLoadQueryGroups() {
-      if (!this.queryGroups.length) {
-        await this.forceLoadQueryGroups();
-      }
-    },
-
-    async forceLoadQueryGroups() {
-      console.log('loading query groups');
-      // await useApi()
-      //   .get<QueryGroup[]>('query-groups')
-      //   .then((data) => (this.queryGroups = data as QueryGroup[]));
-    },
-
-    async ensureSchemasLoaded() {
-      const base = this.maybeLoadFilterOptionSchemas();
-      const attribution = this.maybeLoadAttributes();
-
-      await Promise.all([base, attribution]);
-    },
-
-    setBaseFilter(filter: FilterNode) {
-      // use object assign to maintain reactivity
-      Object.assign(this.baseFilter, filter);
-    },
-
-    setAttributionFilter(filter: FilterNode) {
-      // use object assign to maintain reactivity
-      Object.assign(this.attributionFilter, filter);
-    },
-
-    setVisibleColumns(columns: string[]) {
-      this.visibleColumns = columns;
-      localStorageHelper.setVisibleColumns(columns);
-    },
-
-    setShowRowsWithoutattributions(show: boolean) {
-      this.showRowsWithoutattributions = show;
-      localStorageHelper.setShowRowsWithoutattributions(show);
-    },
-
-    async setQueryGroupById(id: number) {
-      await this.maybeLoadQueryGroups();
-      const candidates = this.queryGroups.filter(
-        (item: QueryGroup) => item.id === id,
-      );
-      if (!candidates.length) {
-        this.queryGroup = this.queryGroups[0];
-      }
-      this.queryGroup = candidates[0];
-    },
-  },
-});
+//     async setQueryGroupById(id: number) {
+//       await this.maybeLoadQueryGroups();
+//       const candidates = this.queryGroups.filter(
+//         (item: QueryGroup) => item.id === id,
+//       );
+//       if (!candidates.length) {
+//         this.queryGroup = this.queryGroups[0];
+//       }
+//       this.queryGroup = candidates[0];
+//     },
+//   },
+// });

@@ -1,5 +1,8 @@
 <template>
-  <div v-if="fetching" class="query-filter-root-node__filter-placeholder">
+  <div
+    v-if="fetching || !filter"
+    class="query-filter-root-node__filter-placeholder"
+  >
     <q-spinner color="primary" />&nbsp;{{ t('base.loading') }}
   </div>
 
@@ -51,58 +54,39 @@
 <script lang="ts" setup>
 import QueryFilterRuleAddButton from './QueryFilterRuleAddButton.vue';
 import QueryFilterNode from './QueryFilterNode.vue';
-import { computed, watch } from 'vue';
-import { FilterNode, FilterConjunction, FilterType } from './filterNode';
+import { computed } from 'vue';
+import { FilterNode, FilterConjunction } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryStore } from '../useQueryStore';
-import useQueryLocalStorageHelper from './../useQueryLocalStorageHelper';
 import { FilterRuleColumn } from './filterRuleColumn';
 import { useEntityName } from 'src/composables/useEntityName';
 
 const { t } = useI18n();
 const store = useQueryStore();
-const localStorageHelper = useQueryLocalStorageHelper();
 
 export interface QueryFilterRootNodeProps {
-  filter: FilterNode;
+  filter?: FilterNode;
   options: FilterRuleColumn[];
   fetching: boolean;
 }
 
 const props = defineProps<QueryFilterRootNodeProps>();
 
-const isSimplifiable = computed(() => props.filter.isSimplifiable());
-const isEmpty = computed(() => !props.filter.hasChildren());
-const isValid = computed(() => props.filter.isValid());
+const isSimplifiable = computed(() => props.filter?.isSimplifiable());
+const isEmpty = computed(() => !props.filter?.hasChildren());
+const isValid = computed(() => props.filter?.isValid());
 
 const { getEntityName } = useEntityName();
-const entityName = computed(() => {
-  if (props.filter.getFilterType() === FilterType.Attribution) {
-    return t('filter.attributions');
-  }
-
-  return getEntityName({ table: store.baseTable, plural: true });
-});
+const entityName = computed(() =>
+  getEntityName({ table: store.baseTable, plural: true }),
+);
 
 function simplify() {
   let maxIterations = 10;
   while (isSimplifiable.value && maxIterations--) {
-    props.filter.simplify();
+    props.filter?.simplify();
   }
 }
-
-watch(
-  () => props.filter,
-  (filter) => {
-    if (props.filter.getFilterType() === 'base') {
-      // TODO: check if this should be scoped to the base entity
-      localStorageHelper.setBaseFilter(filter);
-    } else {
-      // TODO: check if this should be scoped to the base entity
-      localStorageHelper.setAttributionFilter(filter);
-    }
-  },
-);
 </script>
 
 <style scoped lang="scss">

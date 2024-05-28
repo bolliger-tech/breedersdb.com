@@ -9,5 +9,6 @@ export const base = {
     lot: 'lot | lots',
     cultivar: 'cultivar | cultivars',
     tree: 'tree | trees',
+    attribution: 'attribution | attributions',
   },
 };

@@ -14,7 +14,7 @@ import { useQueryStore } from 'src/components/Query/useQueryStore';
 import {
   FilterNode,
   FilterConjunction,
-  FilterType,
+  BaseTable,
 } from 'src/components/Query/Filter/filterNode';
 import QueryFilterRuleColumn from 'src/components/Query/Filter/QueryFilterRuleColumn.vue';
 import QueryFilterRuleOperator from 'src/components/Query/Filter/QueryFilterRuleOperator.vue';
@@ -138,7 +138,7 @@ describe('AnalyzePage', () => {
       const store = useQueryStore();
       store.baseFilter = FilterNode.FilterRoot({
         childrensConjunction: FilterConjunction.And,
-        filterType: FilterType.Base,
+        baseTable: BaseTable.Cultivars,
       });
       const wrapper = await mountAsync(AnalyzePage, {
         executeQuery: queryMock,

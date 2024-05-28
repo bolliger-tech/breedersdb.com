@@ -12,7 +12,6 @@ export const filter = {
   invalid: 'Invalid filter rules. Rectify or delete them.',
   valid: 'Congrats, all rules are valid.',
 
-  attributions: 'attributions',
   cultivarAndSubentities: 'cultivar, its groups or trees',
 
   showExplanation: 'Explain filters',
@@ -87,7 +86,7 @@ export const filter = {
 
 //   query: 'Query',
 
-//   baseTable: 'Base',
+//   _BaseTable: 'Base',
 
 //   crossings: 'crossings',
 //   batches: 'batches',
@@ -117,7 +116,7 @@ export const filter = {
 //     'Invalid filter rules. Rectify or delete them to get results.',
 //   results: 'Results',
 //   addColumn: 'Add Column',
-//   showRowsWithoutattributions: 'Show rows without attributions',
+//   showRowsWithoutAttributions: 'Show rows without attributions',
 
 //   debugShow: 'Show debug info',
 //   debugHide: 'Hide debug info',

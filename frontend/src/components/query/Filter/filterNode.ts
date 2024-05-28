@@ -6,16 +6,18 @@ export enum FilterConjunction {
   Or = 'or',
 }
 
-export enum FilterType {
-  Base = 'base',
-  Attribution = 'attribution',
+export enum BaseTable {
+  Lots = 'lots',
+  Cultivars = 'cultivars',
+  Trees = 'trees',
+  Attributions = 'attributions',
 }
 
 type FilterNodeJson = {
   children?: FilterNodeJson[];
   childrensConjunction?: FilterConjunction | null;
   filterRule?: FilterRuleJson | null;
-  filterType?: FilterType;
+  baseTable?: BaseTable;
 };
 
 export class FilterNode {
@@ -24,19 +26,19 @@ export class FilterNode {
   private parent: FilterNode | null = null;
   private children: FilterNode[] = [];
   private childrensConjunction: FilterConjunction | null;
-  private readonly filterType: FilterType;
+  private readonly baseTable: BaseTable;
   private filterRule: FilterRule | null;
   private readonly root: FilterNode;
   private static nextId = 0;
 
   private constructor({
-    filterType,
+    baseTable,
     parent,
     childrensConjunction,
     filterRule,
     root,
   }: {
-    filterType: FilterType;
+    baseTable: BaseTable;
     parent: FilterNode | null;
     childrensConjunction: FilterConjunction | null;
     filterRule: FilterRule | null;
@@ -47,20 +49,20 @@ export class FilterNode {
 
     this.root = root || this;
 
-    this.filterType = filterType;
+    this.baseTable = baseTable;
     this.childrensConjunction = childrensConjunction;
     this.filterRule = filterRule;
   }
 
   static FilterRoot({
     childrensConjunction,
-    filterType,
+    baseTable,
   }: {
     childrensConjunction: FilterConjunction;
-    filterType: FilterType;
+    baseTable: BaseTable;
   }) {
     return new FilterNode({
-      filterType,
+      baseTable,
       parent: null,
       childrensConjunction,
       filterRule: null,
@@ -76,7 +78,7 @@ export class FilterNode {
     parent: FilterNode;
   }) {
     return new FilterNode({
-      filterType: parent.filterType,
+      baseTable: parent.baseTable,
       parent,
       childrensConjunction,
       filterRule: null,
@@ -92,7 +94,7 @@ export class FilterNode {
     filterRule: FilterRule;
   }) {
     return new FilterNode({
-      filterType: parent.filterType,
+      baseTable: parent.baseTable,
       parent,
       childrensConjunction: null,
       filterRule,
@@ -104,8 +106,8 @@ export class FilterNode {
     return this.id;
   }
 
-  getFilterType() {
-    return this.filterType;
+  getBaseTable() {
+    return this.baseTable;
   }
 
   getLevel() {
@@ -406,7 +408,7 @@ export class FilterNode {
         ? { childrensConjunction: this.getChildrensConjunction() }
         : {}),
       ...(this.isLeaf() ? { filterRule: this.getFilterRule() } : {}),
-      ...(this.isRoot() ? { filterType: this.getFilterType() } : {}),
+      ...(this.isRoot() ? { baseTable: this.getBaseTable() } : {}),
     };
   }
 
@@ -454,14 +456,14 @@ export class FilterNode {
       });
     } else {
       // Root
-      if (!data.filterType) {
+      if (!data.baseTable) {
         throw Error(
-          'Failed to deserialize FilterNodeJSON: Missing filterType on root node.',
+          'Failed to deserialize FilterNodeJSON: Missing baseTable on root node.',
         );
       }
       node = FilterNode.FilterRoot({
         childrensConjunction: data.childrensConjunction,
-        filterType: data.filterType,
+        baseTable: data.baseTable,
       });
     }
 

@@ -1,7 +1,7 @@
 <template>
   <h1>Page to test out unit testing features</h1>
   <p data-test="query-resp">{{ data }}</p>
-  <p data-test="state">{{ state.baseTable }}</p>
+  <p data-test="state">{{ store.baseTable }}</p>
   <p data-test="i18n">{{ t('nav.crossings.main') }}</p>
   <button data-test="change-message" @click="fireADifferentQuery">
     Change message
@@ -10,7 +10,11 @@
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
-import { BaseTable } from 'src/components/Query/queryTypes';
+import {
+  BaseTable,
+  FilterConjunction,
+  FilterNode,
+} from 'src/components/Query/Filter/filterNode';
 import { useQueryStore } from 'src/components/Query/useQueryStore';
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
@@ -38,8 +42,11 @@ async function fireADifferentQuery() {
   data.value = differentQuery.data.value;
 }
 
-const state = useQueryStore();
-state.baseTable = BaseTable.Cultivars;
+const store = useQueryStore();
+store.baseFilter = FilterNode.FilterRoot({
+  childrensConjunction: FilterConjunction.And,
+  baseTable: BaseTable.Cultivars,
+});
 
 const { t } = useI18n();
 </script>

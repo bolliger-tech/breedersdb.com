@@ -6,8 +6,8 @@ export function toSnakeCase(str: string) {
   return str.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
 }
 
-export function toCamelCase(str: string) {
-  return str.replace(/([-_][a-z])/gi, ($1) =>
-    $1.toUpperCase().replace('-', '').replace('_', ''),
+export function toPascalCase(str: string) {
+  return uppercaseFirstLetter(
+    str.replace(/([-_][a-z])/gi, ($1) => $1.replace(/[-_]/, '').toUpperCase()),
   );
 }

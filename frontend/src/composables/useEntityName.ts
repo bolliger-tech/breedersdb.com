@@ -1,6 +1,6 @@
-import { BaseTable } from 'src/components/Query/queryTypes';
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 import { useI18n } from './useI18n';
+import { BaseTable } from 'src/components/Query/Filter/filterNode';
 
 export function useEntityName() {
   const { t } = useI18n();
@@ -25,6 +25,9 @@ export function useEntityName() {
         break;
       case BaseTable.Trees:
         entityName = t('base.entityName.tree', count);
+        break;
+      case BaseTable.Attributions:
+        entityName = t('base.entityName.attribution', count);
         break;
       default:
         throw new Error(`Unknown table: ${table}`);

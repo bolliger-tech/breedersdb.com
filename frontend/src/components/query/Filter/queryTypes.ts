@@ -65,9 +65,9 @@
 // }
 
 // export interface AttributionQuery {
-//   baseTable: BaseTable;
+//   _BaseTable: _BaseTable;
 //   baseFilter: FilterNode;
 //   attributionFilter?: FilterNode;
 //   visibleColumns: string[];
-//   showRowsWithoutattributions: boolean;
+//   showRowsWithoutAttributions: boolean;
 // }

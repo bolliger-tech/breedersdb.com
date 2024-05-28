@@ -118,8 +118,8 @@ const dragObj = computed(() => {
 });
 
 const dragActive = computed(() => {
-  const currentNodeType = props.node.getFilterType();
-  const draggedNodeType = dragObj.value ? dragObj.value.getFilterType() : false;
+  const currentNodeType = props.node.getBaseTable();
+  const draggedNodeType = dragObj.value ? dragObj.value.getBaseTable() : false;
   return currentNodeType === draggedNodeType;
 });
 

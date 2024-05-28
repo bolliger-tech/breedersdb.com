@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FilterConjunction, FilterNode, FilterType } from './filterNode';
+import { FilterConjunction, FilterNode, BaseTable } from './filterNode';
 import { addLeaf, moveNode } from './filterNodeActions';
 import { FilterRule } from './filterRule';
 
@@ -7,7 +7,7 @@ describe('addLeaf', () => {
   it('should attach child directly if no children', () => {
     const parent = FilterNode.FilterRoot({
       childrensConjunction: FilterConjunction.And,
-      filterType: FilterType.Base,
+      baseTable: BaseTable.Cultivars,
     });
 
     addLeaf(parent, FilterConjunction.Or);
@@ -19,7 +19,7 @@ describe('addLeaf', () => {
   it('should attach child directly if one child but different conjunction', () => {
     const parent = FilterNode.FilterRoot({
       childrensConjunction: FilterConjunction.And,
-      filterType: FilterType.Base,
+      baseTable: BaseTable.Cultivars,
     });
     addLeaf(parent, FilterConjunction.And);
 
@@ -32,7 +32,7 @@ describe('addLeaf', () => {
   it('should attach child directly if many children but same conjunction', () => {
     const parent = FilterNode.FilterRoot({
       childrensConjunction: FilterConjunction.And,
-      filterType: FilterType.Base,
+      baseTable: BaseTable.Cultivars,
     });
     addLeaf(parent, FilterConjunction.And);
     addLeaf(parent, FilterConjunction.And);
@@ -46,7 +46,7 @@ describe('addLeaf', () => {
   it('should add intermediate node for existing children if many children but different conjunction', () => {
     const parent = FilterNode.FilterRoot({
       childrensConjunction: FilterConjunction.And,
-      filterType: FilterType.Base,
+      baseTable: BaseTable.Cultivars,
     });
     addLeaf(parent, FilterConjunction.And);
     addLeaf(parent, FilterConjunction.And);
@@ -69,7 +69,7 @@ describe('moveNode', () => {
   it('should throw if target is descendant of subject', () => {
     const root = FilterNode.FilterRoot({
       childrensConjunction: FilterConjunction.And,
-      filterType: FilterType.Base,
+      baseTable: BaseTable.Cultivars,
     });
     const child = FilterNode.FilterNode({
       childrensConjunction: FilterConjunction.And,
@@ -88,7 +88,7 @@ describe('moveNode', () => {
   it('should move subject before target', () => {
     const parent = FilterNode.FilterRoot({
       childrensConjunction: FilterConjunction.And,
-      filterType: FilterType.Base,
+      baseTable: BaseTable.Cultivars,
     });
     const target = FilterNode.FilterLeaf({
       parent,
@@ -107,7 +107,7 @@ describe('moveNode', () => {
   it('should move subject after target', () => {
     const parent = FilterNode.FilterRoot({
       childrensConjunction: FilterConjunction.And,
-      filterType: FilterType.Base,
+      baseTable: BaseTable.Cultivars,
     });
     const subject = FilterNode.FilterLeaf({
       parent,
@@ -126,7 +126,7 @@ describe('moveNode', () => {
   it('should move subject to different branch', () => {
     const parent = FilterNode.FilterRoot({
       childrensConjunction: FilterConjunction.And,
-      filterType: FilterType.Base,
+      baseTable: BaseTable.Cultivars,
     });
     const node1 = FilterNode.FilterNode({
       childrensConjunction: FilterConjunction.And,

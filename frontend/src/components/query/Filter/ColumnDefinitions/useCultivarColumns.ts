@@ -3,9 +3,9 @@ import { FilterRuleType } from '../filterRule';
 import type { FilterColumnConstructorData } from './useColumnDefinitions';
 import { FilterRuleColumn } from '../filterRuleColumn';
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
-import { BaseTable } from 'src/components/Query/queryTypes';
 import { useEntityName } from 'src/composables/useEntityName';
 import { computed, ref } from 'vue';
+import { BaseTable } from '../filterNode';
 
 export function useCultivarColumns() {
   const { t } = useI18n();

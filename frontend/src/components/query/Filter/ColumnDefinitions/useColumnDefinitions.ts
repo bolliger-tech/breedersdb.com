@@ -1,4 +1,3 @@
-import { BaseTable } from 'src/components/Query/queryTypes';
 import type { TFunc } from 'src/composables/useI18n';
 import { type FilterRuleTypeSchema } from '../filterRule';
 import { useCultivarColumns } from './useCultivarColumns';
@@ -13,25 +12,23 @@ import { useLotColumns } from './useLotColumns';
 import { useTreeColumns } from './useTreeColumns';
 import type { FilterRuleColumn } from '../filterRuleColumn';
 import type { CombinedError } from '@urql/vue';
+import { BaseTable } from '../filterNode';
+import { useAttributionViewColumns } from './useAttributionViewColumns';
 
 export function useColumnDefinitions({
-  currentEntity,
+  table,
 }: {
-  currentEntity: MaybeRef<BaseTable | null> | ComputedRef<BaseTable | null>;
+  table: MaybeRef<BaseTable> | ComputedRef<BaseTable>;
 }) {
   const entities: { [Property in BaseTable]: UseEntityColumns } = {
     [BaseTable.Lots]: useLotColumns(),
     [BaseTable.Cultivars]: useCultivarColumns(),
     [BaseTable.Trees]: useTreeColumns(),
+    [BaseTable.Attributions]: useAttributionViewColumns(),
   };
 
   const entityColumns = computed(() => {
-    const entity = unref(currentEntity);
-    if (!entity) {
-      return undefined;
-    }
-
-    return entities[entity];
+    return entities[unref(table)];
   });
 
   return entityColumns;

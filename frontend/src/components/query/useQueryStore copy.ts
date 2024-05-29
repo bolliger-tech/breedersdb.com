@@ -1,54 +1,37 @@
-import { defineStore } from 'pinia';
-import { FilterNode, BaseTable } from './Filter/filterNode';
-import { LocalStorage } from 'quasar';
-import { computed, ref } from 'vue';
+// import { defineStore } from 'pinia';
+// import { _BaseTable } from './queryTypes';
+// import { FilterNode, FilterConjunction, BaseTable } from './Filter/filterNode';
+// import useQueryLocalStorage from './useQueryLocalStorage';
+// import { QueryGroup } from './Filter/queryGroupTypes';
+// import { LocalStorage } from 'quasar';
 
-export const useQueryStore = defineStore('query', () => {
-  const baseFilter = ref<FilterNode | undefined>();
-  const attributionFilter = ref<FilterNode | undefined>();
+// const defaultBaseFilter = FilterNode.FilterRoot({
+//   childrensConjunction: FilterConjunction.And,
+//   baseTable: BaseTable.Cultivars,
+// });
+// const defaultAttributionFilter = FilterNode.FilterRoot({
+//   childrensConjunction: FilterConjunction.And,
+//   baseTable: BaseTable.Attribution,
+// });
 
-  const baseTable = computed(
-    () => baseFilter.value?.getBaseTable() || BaseTable.Cultivars,
-  );
+// export interface QueryState {
+//   _BaseTable: _BaseTable;
+//   baseFilter: FilterNode;
+//   attributionFilter: FilterNode;
+//   filterDragNode: FilterNode | undefined;
+//   explain: boolean;
 
-  const filterDragNode = ref<FilterNode | undefined>(undefined);
+//   visibleColumns: string[];
+//   showRowsWithoutAttributions: boolean;
 
-  const _explainKey = computed(() => `query_explain--${baseTable.value}`);
-  const _explain = ref<boolean>(
-    LocalStorage.getItem(_explainKey.value) ?? true,
-  );
-  const explain = computed({
-    get: () => _explain.value,
-    set: (value: boolean) => {
-      _explain.value = value;
-      LocalStorage.set(_explainKey.value, value);
-    },
-  });
+//   queryGroups: QueryGroup[];
+//   queryGroup: QueryGroup | null;
+//   queryCode: string;
+//   queryDescription: string;
+//   attemptedToSaveQuery: boolean;
+// }
 
-  // const _visibleColumnsKey = computed(
-  //   () => `query_visible_columns--${baseTable.value}`,
-  // );
-  // const _visibleColumns = ref<string[]>(
-  //   LocalStorage.getItem(_visibleColumnsKey.value) ?? [],
-  // );
-  // const visibleColumns = computed({
-  //   get: () => _visibleColumns.value,
-  //   set: (value: string[]) => {
-  //     _visibleColumns.value = value;
-  //     LocalStorage.set(_visibleColumnsKey.value, value);
-  //   },
-  // });
-
-  return {
-    baseFilter,
-    baseTable,
-    attributionFilter,
-    filterDragNode,
-    explain,
-
-    // visibleColumns,
-  };
-});
+// export type QueryStore = ReturnType<typeof useQueryStore>;
 
 // export const useQueryStore = defineStore('query', {
 //   state: (): QueryState => ({

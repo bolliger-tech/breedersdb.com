@@ -45,7 +45,7 @@ import { ref } from 'vue';
 import {
   filterSelectOptions,
   FilterSelectOptionsUpdateFn,
-} from './selectOptionFilter';
+} from 'src/utils/selectOptionFilter';
 import { useInputBackground } from './useInputBackground';
 import { FilterRuleColumn } from './filterRuleColumn';
 
@@ -65,13 +65,13 @@ const props = defineProps<QueryFilterRuleColumnProps>();
 const filteredOptions = ref(props.options);
 
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
-  filterSelectOptions<FilterRuleColumn>(
+  filterSelectOptions<FilterRuleColumn>({
     value,
     update,
-    props.options,
+    allOptions: props.options,
     filteredOptions,
-    (item) => item.label,
-  );
+    valueExtractorFn: (item) => item.label,
+  });
 }
 
 const { inputBgColor } = useInputBackground();

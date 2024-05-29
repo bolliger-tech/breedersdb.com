@@ -14,7 +14,7 @@ const { t } = useI18n();
 
 const items: NavLevel0Props['items'] = [
   {
-    label: t('nav.trees.main'),
+    label: t('trees.title', 2),
     to: '/trees',
     icon: 'tree',
     children: [
@@ -51,7 +51,7 @@ const items: NavLevel0Props['items'] = [
     ],
   },
   {
-    label: t('nav.groups.main'),
+    label: t('groups.title', 2),
     to: '/groups',
     icon: 'tree-group',
     children: [
@@ -78,7 +78,7 @@ const items: NavLevel0Props['items'] = [
     ],
   },
   {
-    label: t('nav.cultivars.main'),
+    label: t('cultivars.title', 2),
     icon: 'cultivar',
     to: '/cultivars',
     children: [
@@ -115,7 +115,7 @@ const items: NavLevel0Props['items'] = [
     ],
   },
   {
-    label: t('nav.lots.main'),
+    label: t('lots.title', 2),
     to: '/lots',
     icon: 'lot',
     children: [
@@ -142,7 +142,7 @@ const items: NavLevel0Props['items'] = [
     ],
   },
   {
-    label: t('nav.crossings.main'),
+    label: t('crossings.title', 2),
     to: '/crossings',
     icon: 'blossom',
     children: [
@@ -157,7 +157,7 @@ const items: NavLevel0Props['items'] = [
         to: 'new',
       },
       {
-        label: t('nav.crossings.motherTrees.main'),
+        label: t('motherTrees.title', 2),
         to: 'mother-trees',
         icon: 'female',
         children: [
@@ -172,7 +172,7 @@ const items: NavLevel0Props['items'] = [
         ],
       },
       {
-        label: t('nav.crossings.pollen.main'),
+        label: t('pollen.title', 2),
         to: 'pollen',
         icon: 'male',
         children: [
@@ -209,27 +209,27 @@ const items: NavLevel0Props['items'] = [
         ],
       },
       {
-        label: t('nav.more.rows'),
+        label: t('plantRows.title', 2),
         icon: 'rows',
         to: 'rows',
       },
       {
-        label: t('nav.more.orchards'),
+        label: t('orchards.title', 2),
         icon: 'orchard',
         to: 'orchards',
       },
       {
-        label: t('nav.more.rootstocks'),
+        label: t('rootstocks.title', 2),
         icon: 'rootstock',
         to: 'rootstocks',
       },
       {
-        label: t('nav.more.graftings'),
+        label: t('graftings.title', 2),
         icon: 'grafting',
         to: 'graftings',
       },
       {
-        label: t('nav.more.users'),
+        label: t('users.title', 2),
         icon: 'user',
         to: 'users',
       },

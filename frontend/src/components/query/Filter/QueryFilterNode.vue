@@ -16,7 +16,7 @@
 
     <QueryFilterRule
       v-if="node.isLeaf()"
-      :options="options"
+      :columns="columns"
       :node="node"
       :conjunction="conjunction"
       @drag-mouse-down="setDragObj(node)"
@@ -50,7 +50,7 @@
           >
             <QueryFilterNode
               :node="tree"
-              :options="options"
+              :columns="columns"
               :conjunction="
                 tree.getChildrensConjunction() ||
                 node.getChildrensConjunction() ||
@@ -102,7 +102,7 @@ import { FilterRuleColumn } from './filterRuleColumn';
 
 export interface QueryFilterNodeProps {
   node: FilterNode;
-  options: FilterRuleColumn[];
+  columns: FilterRuleColumn[];
   conjunction: FilterConjunction;
 }
 

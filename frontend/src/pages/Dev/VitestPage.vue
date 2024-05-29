@@ -2,7 +2,7 @@
   <h1>Page to test out unit testing features</h1>
   <p data-test="query-resp">{{ data }}</p>
   <p data-test="state">{{ store.baseTable }}</p>
-  <p data-test="i18n">{{ t('nav.crossings.main') }}</p>
+  <p data-test="i18n">{{ t('crossings.title', 2) }}</p>
   <button data-test="change-message" @click="fireADifferentQuery">
     Change message
   </button>

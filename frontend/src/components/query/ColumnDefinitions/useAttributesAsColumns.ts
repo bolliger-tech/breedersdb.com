@@ -1,9 +1,13 @@
 import { useQuery } from '@urql/vue';
-import { graphql, type ResultOf } from 'src/graphql';
-import { FilterRuleColumn } from '../filterRuleColumn';
-import { FilterRuleType, type FilterRuleTypeSchema } from '../filterRule';
+import { graphql, type AttributeDataTypes, type ResultOf } from 'src/graphql';
+import { FilterRuleColumn } from '../Filter/filterRuleColumn';
+import {
+  FilterRuleType,
+  type FilterRuleTypeSchema,
+} from '../Filter/filterRule';
 import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 const query = graphql(`
   query Attributes {
@@ -29,6 +33,7 @@ type Attribute = Omit<
 
 export function useAttributesAsColumns() {
   const { t } = useI18n();
+  const { localizedSortPredicate } = useLocalizedSort();
   const pause = ref(true);
 
   const { data, fetching, error } = useQuery({
@@ -44,9 +49,11 @@ export function useAttributesAsColumns() {
 
     const tableLabel = t('filter.attribute');
 
-    return data.value.attributes.map((attribute) =>
-      getFilterColumnFromAttribute(attribute as Attribute, tableLabel),
-    );
+    return data.value.attributes
+      .map((attribute) =>
+        getFilterColumnFromAttribute(attribute as Attribute, tableLabel),
+      )
+      .sort((a, b) => localizedSortPredicate(a.label, b.label));
   });
 
   return {
@@ -72,7 +79,9 @@ function getFilterColumnFromAttribute(
   });
 }
 
-function getFilterRuleTypeFromDataType(dataType: string): FilterRuleType {
+function getFilterRuleTypeFromDataType(
+  dataType: AttributeDataTypes,
+): FilterRuleType {
   const type = {
     TEXT: FilterRuleType.String,
     INTEGER: FilterRuleType.Integer,

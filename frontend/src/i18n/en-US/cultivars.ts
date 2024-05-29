@@ -1,10 +1,11 @@
 export const cultivars = {
-  entity: 'Cultivar',
+  title: 'Cultivar | Cultivars',
+
   analyze: {
     title: 'Analyze',
   },
 
-  columns: {
+  fields: {
     commonName: 'Common Name',
     acronym: 'Acronym',
     breeder: 'Breeder',

@@ -6,13 +6,19 @@ export type FilterSelectOptionsUpdateFn = (
   selectFn: (ref: QSelect) => void,
 ) => void;
 
-export function filterSelectOptions<T>(
-  value: string,
-  update: FilterSelectOptionsUpdateFn,
-  allOptions: Array<T>,
-  filteredOptions: Ref<Array<T>>,
-  valueExtractorFn: (item: T) => string,
-) {
+export function filterSelectOptions<T>({
+  value,
+  update,
+  allOptions,
+  filteredOptions,
+  valueExtractorFn,
+}: {
+  value: string;
+  update: FilterSelectOptionsUpdateFn;
+  allOptions: Array<T>;
+  filteredOptions: Ref<Array<T>>;
+  valueExtractorFn: (item: T) => string;
+}) {
   update(
     () =>
       setFilteredOptions(value, allOptions, filteredOptions, valueExtractorFn),

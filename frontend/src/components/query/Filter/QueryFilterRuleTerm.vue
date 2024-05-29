@@ -71,7 +71,7 @@ import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import {
   filterSelectOptions,
   FilterSelectOptionsUpdateFn,
-} from './selectOptionFilter';
+} from 'src/utils/selectOptionFilter';
 import { useInputBackground } from './useInputBackground';
 import { FilterRuleType } from './filterRule';
 
@@ -203,13 +203,13 @@ const inputType = computed(() => {
 });
 
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
-  filterSelectOptions(
+  filterSelectOptions({
     value,
     update,
-    options.value,
+    allOptions: options.value,
     filteredOptions,
-    (item) => item,
-  );
+    valueExtractorFn: (item) => item,
+  });
 }
 
 const enumSelect = ref<QSelect | undefined>();

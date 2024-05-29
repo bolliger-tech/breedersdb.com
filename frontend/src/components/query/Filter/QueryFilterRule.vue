@@ -22,7 +22,7 @@
         <div class="col-12 col-md-4">
           <QueryFilterRuleColumn
             :model-value="column"
-            :options="options"
+            :options="columns"
             @update:model-value="updateColumn"
           />
         </div>
@@ -87,7 +87,7 @@ import { createGetFilterRuleOperators } from './createFilterRuleOperators';
 import { useQueryStore } from '../useQueryStore';
 
 export interface QueryFilterRuleProps {
-  options: FilterRuleColumn[];
+  columns: FilterRuleColumn[];
   node: FilterNode;
   conjunction: FilterConjunction;
 }

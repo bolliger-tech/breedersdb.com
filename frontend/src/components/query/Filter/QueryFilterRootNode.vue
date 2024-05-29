@@ -46,7 +46,7 @@
     <QueryFilterNode
       :node="filter"
       :conjunction="filter.getChildrensConjunction() || FilterConjunction.And"
-      :options="options"
+      :columns="columns"
     />
   </template>
 </template>
@@ -66,7 +66,7 @@ const store = useQueryStore();
 
 export interface QueryFilterRootNodeProps {
   filter?: FilterNode;
-  options: FilterRuleColumn[];
+  columns: FilterRuleColumn[];
   fetching: boolean;
 }
 

@@ -21,8 +21,8 @@ export function useLocalizedSort({
   );
 
   return {
-    collator,
-    predicate: collator.value.compare,
+    localizedSortCollator: collator.value,
+    localizedSortPredicate: collator.value.compare,
     localizedSort: (array: string[]): string[] =>
       array.sort(collator.value.compare),
   };

@@ -35,7 +35,7 @@ import { QSelect } from 'quasar';
 import {
   filterSelectOptions,
   FilterSelectOptionsUpdateFn,
-} from './selectOptionFilter';
+} from 'src/utils/selectOptionFilter';
 import { useInputBackground } from './useInputBackground';
 import { createGetFilterRuleOperators } from './createFilterRuleOperators';
 import { FilterRuleOperator } from './filterRuleOperator';
@@ -65,13 +65,13 @@ const applicableOptions = computed(() => {
 
 const filteredOptions = ref(applicableOptions.value);
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
-  filterSelectOptions(
+  filterSelectOptions({
     value,
     update,
-    applicableOptions.value,
+    allOptions: applicableOptions.value,
     filteredOptions,
-    (item) => t(item.labelKey),
-  );
+    valueExtractorFn: (item) => t(item.labelKey),
+  });
 }
 
 const { inputBgColor } = useInputBackground();

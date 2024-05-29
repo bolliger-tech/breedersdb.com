@@ -1,39 +1,9 @@
-import { useI18n } from 'src/composables/useI18n';
-import { FilterRuleType } from '../filterRule';
-import type { FilterColumnConstructorData } from './useColumnDefinitions';
-import { FilterRuleColumn } from '../filterRuleColumn';
-import { uppercaseFirstLetter } from 'src/utils/stringUtils';
-import { useEntityName } from 'src/composables/useEntityName';
-import { computed, ref } from 'vue';
-import { BaseTable } from '../filterNode';
+import { FilterRuleType } from '../Filter/filterRule';
+import type { FilterColumnConstructorData } from './useFilterColumns';
+import { ref } from 'vue';
 
-export function useCultivarColumns() {
-  const { t } = useI18n();
-  const { getEntityName } = useEntityName();
-
-  const data = ref<FilterColumnConstructorData[] | undefined>(undefined);
-
-  const columns = computed(() => {
-    if (!data.value) {
-      return [];
-    }
-
-    const tableLabel = getEntityName({
-      table: BaseTable.Cultivars,
-      capitalize: true,
-    });
-
-    return data.value.map((data) => {
-      return new FilterRuleColumn({
-        tableName: data.table,
-        tableColumnName: data.column,
-        tableLabel,
-        tableColumnLabel: uppercaseFirstLetter(t(data.labelKey)),
-        schema: data.schema,
-      });
-    });
-  });
-
+export function useCultivarColumnDefinitions() {
+  const data = ref<FilterColumnConstructorData[]>([]);
   const fetching = ref(false);
   const error = ref(undefined);
 
@@ -41,7 +11,7 @@ export function useCultivarColumns() {
     activate: () => {
       data.value = columnData;
     },
-    data: columns,
+    data,
     fetching,
     error,
   };
@@ -49,7 +19,7 @@ export function useCultivarColumns() {
 
 const columnData: FilterColumnConstructorData[] = [
   {
-    table: 'cultivar',
+    table: 'cultivars',
     column: 'id',
     labelKey: 'entity.id',
     schema: {
@@ -63,7 +33,7 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'cultivar',
+    table: 'cultivars',
     column: 'name',
     labelKey: 'entity.name',
     schema: {
@@ -76,9 +46,9 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'cultivar',
+    table: 'cultivars',
     column: 'common_name',
-    labelKey: 'cultivars.columns.commonName',
+    labelKey: 'cultivars.fields.commonName',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: true,
@@ -89,9 +59,9 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'cultivar',
+    table: 'cultivars',
     column: 'acronym',
-    labelKey: 'cultivars.columns.acronym',
+    labelKey: 'cultivars.fields.acronym',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: true,
@@ -102,9 +72,9 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'cultivar',
+    table: 'cultivars',
     column: 'breeder',
-    labelKey: 'cultivars.columns.breeder',
+    labelKey: 'cultivars.fields.breeder',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: true,
@@ -115,9 +85,9 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'cultivar',
+    table: 'cultivars',
     column: 'registration',
-    labelKey: 'cultivars.columns.registration',
+    labelKey: 'cultivars.fields.registration',
     schema: {
       type: FilterRuleType.String,
       allowEmpty: true,
@@ -128,7 +98,7 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'cultivar',
+    table: 'cultivars',
     column: 'note',
     labelKey: 'entity.note',
     schema: {
@@ -141,7 +111,7 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'cultivar',
+    table: 'cultivars',
     column: 'created',
     labelKey: 'entity.created',
     schema: {

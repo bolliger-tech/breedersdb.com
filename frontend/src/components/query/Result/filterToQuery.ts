@@ -1,4 +1,4 @@
-import type { FilterNode } from '../Filter/filterNode';
+import type { BaseTable, FilterNode } from '../Filter/filterNode';
 import {
   FilterRuleOperator,
   FilterOperatorValue,
@@ -7,34 +7,24 @@ import type { FilterRule } from '../Filter/filterRule';
 import { FilterRuleType } from '../Filter/filterRule';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
 import { toPascalCase, toSnakeCase } from 'src/utils/stringUtils';
+import type { AttributeDataTypes, AttributeTypes } from 'src/graphql';
 
-type QueryVariable = {
-  name: string;
-  type: ReturnType<typeof filterRuleTypeToGraphQLType>; // GraphQL type
-  value: string | number | boolean;
+export type QueryResult = {
+  [K in BaseTable]: (
+    | { [key: string]: null | number | string }
+    | { [key: `attributes__${number}`]: QueryAttributionsViewFields[] }
+  )[];
 };
-type Comparison = {
-  operator: GraphQLComparisonOperator;
-  variable: QueryVariable;
-  negate: boolean;
-};
-type GraphQLWhereArgs = { conditions: string; variables: QueryVariable[] };
-
-enum GraphQLComparisonOperator {
-  Eq = '_eq',
-  Neq = '_neq',
-  Lt = '_lt',
-  Lte = '_lte',
-  Gt = '_gt',
-  Gte = '_gte',
-  Ilike = '_ilike',
-  Nilike = '_nilike',
-  IsNull = '_is_null',
-}
 
 let varCounter = 0;
 
-export function filterToQuery({ filter }: { filter: FilterNode }) {
+export function filterToQuery({
+  filter,
+  columns,
+}: {
+  filter: FilterNode;
+  columns: string[];
+}) {
   const where = filterToWhere(filter);
   const inputVarDefs =
     where.variables.length > 0
@@ -43,13 +33,16 @@ export function filterToQuery({ filter }: { filter: FilterNode }) {
 
   const baseTable = filter.getBaseTable();
 
+  const fields = columnsToFields({ columns, baseTable, indent: 4 });
+
   const q = `
-  query ${toPascalCase(baseTable)}FilterResults${inputVarDefs} {
-    ${toSnakeCase(baseTable)}(where: ${where.conditions}) {
-      id
-      name
-    }
+query ${toPascalCase(baseTable)}FilterResults${inputVarDefs} {
+  ${toSnakeCase(baseTable)}(where: ${where.conditions}) {
+    ${fields.trim()}
   }
+}
+
+${attributeFragment}
 `;
 
   return {
@@ -394,4 +387,236 @@ function toAttributeValueCondition({
     default:
       throw new Error(`Unknown type: ${comparison.variable.type}`);
   }
+}
+
+function columnsToFields({
+  columns,
+  baseTable,
+  indent,
+}: {
+  columns: string[];
+  baseTable: BaseTable | string;
+  indent: number;
+}) {
+  let fields = '';
+  const indentation = ' '.repeat(indent);
+
+  const baseColumns = columns.filter((column) =>
+    column.startsWith(`${baseTable}.`),
+  );
+
+  if (!baseColumns.find((column) => column === `${baseTable}.id`)) {
+    fields += `${indentation}id\n`;
+  }
+
+  // un-nested columns. e.g. `trees.id`
+  baseColumns
+    .filter((column) => column.split('.').length === 2)
+    .forEach((column) => {
+      const field = column.split('.')[1];
+      fields += `${indentation}${toSnakeCase(field)}\n`;
+    });
+
+  // nested columns. e.g. `trees.rows.name`
+  baseColumns
+    .filter((column) => column.split('.').length > 2)
+    .forEach((column) => {
+      const segments = column.split('.');
+      const field = segments.pop();
+      segments.shift(); // remove base table
+      const tables = segments;
+
+      if (!field || !tables.length) {
+        throw new Error(
+          `Invalid column. At least 3 segments expected: ${column}`,
+        );
+      }
+
+      // replace dots with double underscores for graphql compatibility
+      // e.g. trees.rows.name -> trees__rows__name
+      const alias = column.replaceAll('.', '__');
+
+      const query = tables.reduceRight(
+        (acc, table) => `${toSnakeCase(table)} { ${acc} }`,
+        toSnakeCase(field),
+      );
+
+      fields += `${indentation}${alias}: ${query}`;
+    });
+
+  // const nestedTables = baseColumns
+  //   .filter((column) => column.split('.').length > 2)
+  //   .reduce(
+  //     (acc, column) => {
+  //       const table = column.split('.')[1];
+  //       const field = column.replace(`${baseTable}.${table}.`, '');
+  //       if (!acc[table]) {
+  //         acc[table] = [];
+  //       }
+  //       acc[table].push(field);
+  //       return acc;
+  //     },
+  //     {} as { [key: string]: string[] },
+  //   );
+
+  // Object.entries(nestedTables).forEach(([nestedTable, nestedColumns]) => {
+  //   fields += `${indentation}${nestedTable} {\n  ${columnsToFields({ columns: nestedColumns, baseTable: nestedTable, indent: indent + 2 })}\n}`;
+  // });
+
+  // attributes
+  columns
+    .filter((column) => column.startsWith('attributes.'))
+    .map((column) => column.split('.')[1])
+    .forEach((attributeId) => {
+      fields += `
+${indentation}attributes__${attributeId}: attributions_views(where: { attribute_id: { _eq: ${attributeId} } }, order_by: { date_attributed: desc }) {
+${indentation}  ...AttributeFragment
+${indentation}}
+`;
+    });
+
+  return fields;
+}
+
+// IMPORTANT: adapt type `QueryAttributionsViewFields` if changing fragment
+const attributeFragment = `
+fragment AttributeFragment on attributions_view {
+  id
+  integer_value
+  float_value
+  text_value
+  boolean_value
+  date_value
+  note
+  exceptional_attribution
+  attribute_name
+  attribute_id
+  data_type
+  attribute_type
+  attribution_id
+  tree {
+    id
+    label_id
+    cultivar_name
+    date_grafted
+    date_planted
+    date_eliminated
+    plant_row {
+      id
+      name
+      orchard {
+        id
+        name
+      }
+    }
+    serial_in_plant_row
+    distance_plant_row_start
+    note
+  }
+  cultivar {
+    id
+    name
+    common_name
+    acronym
+    breeder
+    registration
+    note
+  }
+  lot {
+    id
+    name
+    date_sowed
+    numb_seeds_sowed
+    numb_seedlings_grown
+    seed_tray
+    date_planted
+    numb_seedlings_planted
+    patch
+    note
+  }
+  author
+  date_attributed
+}
+`;
+
+export type QueryAttributionsViewFields = {
+  id: number;
+  integer_value: number | null;
+  float_value: number | null;
+  text_value: string | null;
+  boolean_value: boolean | null;
+  date_value: string | null;
+  note: string | null;
+  exceptional_attribution: boolean;
+  attribute_name: string;
+  attribute_id: number;
+  data_type: AttributeDataTypes;
+  attribute_type: AttributeTypes;
+  attribution_id: number;
+  tree: {
+    id: number;
+    label_id: string;
+    cultivar_name: string;
+    date_grafted: string | null;
+    date_planted: string | null;
+    date_eliminated: string | null;
+    plant_row: {
+      id: number;
+      name: string;
+      orchard: {
+        id: number;
+        name: string;
+      };
+    } | null;
+    serial_in_plant_row: number | null;
+    distance_plant_row_start: number | null;
+    note: string | null;
+  } | null;
+  cultivar: {
+    id: number;
+    name: string;
+    common_name: string | null;
+    acronym: string | null;
+    breeder: string | null;
+    registration: string | null;
+    note: string | null;
+  } | null;
+  lot: {
+    id: number;
+    name: string;
+    date_sowed: string | null;
+    numb_seeds_sowed: number | null;
+    numb_seedlings_grown: number | null;
+    seed_tray: string | null;
+    date_planted: string | null;
+    numb_seedlings_planted: number | null;
+    patch: string | null;
+    note: string | null;
+  } | null;
+  author: string;
+  date_attributed: string;
+};
+
+type QueryVariable = {
+  name: string;
+  type: ReturnType<typeof filterRuleTypeToGraphQLType>; // GraphQL type
+  value: string | number | boolean;
+};
+type Comparison = {
+  operator: GraphQLComparisonOperator;
+  variable: QueryVariable;
+  negate: boolean;
+};
+type GraphQLWhereArgs = { conditions: string; variables: QueryVariable[] };
+
+enum GraphQLComparisonOperator {
+  Eq = '_eq',
+  Neq = '_neq',
+  Lt = '_lt',
+  Lte = '_lte',
+  Gt = '_gt',
+  Gte = '_gte',
+  Ilike = '_ilike',
+  Nilike = '_nilike',
+  IsNull = '_is_null',
 }

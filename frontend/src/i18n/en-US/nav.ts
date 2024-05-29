@@ -6,26 +6,15 @@ export const nav = {
     analyze: 'Analyze',
   },
   trees: {
-    main: 'Trees',
     plant: 'Plant',
     eliminate: 'Eliminate',
   },
-  groups: {
-    main: 'Groups',
-  },
   cultivars: {
-    main: 'Cultivars',
     new: {
       main: 'New',
-      breedersCultivar: 'breedersCultivar',
-      variety: 'variety',
+      breedersCultivar: 'Breeders Cultivar',
+      variety: 'Variety',
     },
-  },
-  lots: { main: 'Lots' },
-  crossings: {
-    main: 'Crossings',
-    motherTrees: { main: 'Mother trees' },
-    pollen: { main: 'Pollen' },
   },
   more: {
     main: 'More',
@@ -34,11 +23,6 @@ export const nav = {
       forms: 'Forms',
       attributes: 'Attributes',
     },
-    rows: 'Rows',
-    orchards: 'Orchards',
-    rootstocks: 'Rootstocks',
-    graftings: 'Graftings',
-    users: 'Users',
     settings: 'Settings',
     darkMode: { main: 'Dark mode', on: 'On', off: 'Off' },
     language: { main: 'Language' },

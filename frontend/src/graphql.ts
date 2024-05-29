@@ -16,3 +16,11 @@ export const graphql = initGraphQLTada<{
 
 export type { FragmentOf, ResultOf, VariablesOf } from 'gql.tada';
 export { readFragment } from 'gql.tada';
+
+export type AttributeDataTypes = ReturnType<
+  typeof graphql.scalar<'attribute_data_types_enum'>
+>;
+
+export type AttributeTypes = ReturnType<
+  typeof graphql.scalar<'attribute_types_enum'>
+>;

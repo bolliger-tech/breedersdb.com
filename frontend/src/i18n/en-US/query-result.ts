@@ -13,6 +13,8 @@ export const result = {
 
   yes: 'yes',
   no: 'no',
+
+  noData: 'No data.',
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -1,3 +1,3 @@
 export const plantRows = {
-  title: 'Rows | Rows',
+  title: 'Row | Rows',
 };

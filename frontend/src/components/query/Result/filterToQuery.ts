@@ -7,7 +7,7 @@ import type { FilterRule } from '../Filter/filterRule';
 import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
 import { toPascalCase, toSnakeCase } from 'src/utils/stringUtils';
-import type { AttributeDataTypes, AttributeTypes } from 'src/graphql';
+import type { AttributeDataTypes } from 'src/graphql';
 
 export type QueryResult = {
   [K in BaseTable]: (
@@ -487,55 +487,10 @@ fragment AttributeFragment on attributions_view {
   text_value
   boolean_value
   date_value
-  note
-  exceptional_attribution
-  attribute_name
-  attribute_id
+  tree_id
+  cultivar_id
+  lot_id
   data_type
-  attribute_type
-  attribution_id
-  tree {
-    id
-    label_id
-    cultivar_name
-    date_grafted
-    date_planted
-    date_eliminated
-    plant_row {
-      id
-      name
-      orchard {
-        id
-        name
-      }
-    }
-    serial_in_plant_row
-    distance_plant_row_start
-    note
-  }
-  cultivar {
-    id
-    name
-    common_name
-    acronym
-    breeder
-    registration
-    note
-  }
-  lot {
-    id
-    name
-    date_sowed
-    numb_seeds_sowed
-    numb_seedlings_grown
-    seed_tray
-    date_planted
-    numb_seedlings_planted
-    patch
-    note
-  }
-  author
-  date_attributed
 }
 `;
 
@@ -546,55 +501,10 @@ export type QueryAttributionsViewFields = {
   text_value: string | null;
   boolean_value: boolean | null;
   date_value: string | null;
-  note: string | null;
-  exceptional_attribution: boolean;
-  attribute_name: string;
-  attribute_id: number;
+  tree_id: number | null;
+  cultivar_id: number | null;
+  lot_id: number | null;
   data_type: AttributeDataTypes;
-  attribute_type: AttributeTypes;
-  attribution_id: number;
-  tree: {
-    id: number;
-    label_id: string;
-    cultivar_name: string;
-    date_grafted: string | null;
-    date_planted: string | null;
-    date_eliminated: string | null;
-    plant_row: {
-      id: number;
-      name: string;
-      orchard: {
-        id: number;
-        name: string;
-      };
-    } | null;
-    serial_in_plant_row: number | null;
-    distance_plant_row_start: number | null;
-    note: string | null;
-  } | null;
-  cultivar: {
-    id: number;
-    name: string;
-    common_name: string | null;
-    acronym: string | null;
-    breeder: string | null;
-    registration: string | null;
-    note: string | null;
-  } | null;
-  lot: {
-    id: number;
-    name: string;
-    date_sowed: string | null;
-    numb_seeds_sowed: number | null;
-    numb_seedlings_grown: number | null;
-    seed_tray: string | null;
-    date_planted: string | null;
-    numb_seedlings_planted: number | null;
-    patch: string | null;
-    note: string | null;
-  } | null;
-  author: string;
-  date_attributed: string;
 };
 
 type QueryVariable = {

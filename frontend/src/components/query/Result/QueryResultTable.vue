@@ -194,6 +194,7 @@ const orderedColumns = computed(() => {
 
 .query-result-table--fullscreen {
   height: 100vh;
+  max-height: 100vh;
 }
 
 .query-result-table thead tr:first-child th {

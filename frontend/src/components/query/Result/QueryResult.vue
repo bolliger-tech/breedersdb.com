@@ -111,6 +111,7 @@ const variables = computed(() => queryData.value.variables);
 const { data, fetching, error } = await useQuery<QueryResult>({
   query,
   variables,
+  pause: !isValid.value,
 });
 
 const rows = computed(() => {

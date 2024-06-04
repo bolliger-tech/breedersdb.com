@@ -7,7 +7,6 @@
     :loading="loading"
     :rows="rows"
     :rows-per-page-options="[10, 100, 1000]"
-    :title="t('queries.results')"
     :virtual-scroll-item-size="48"
     :virtual-scroll-sticky-size-start="48"
     :visible-columns="visibleColumns"
@@ -15,10 +14,19 @@
     binary-state-sort
     class="query-result-table"
     color="primary"
-    row-key="name"
+    row-key="id"
     virtual-scroll
     @request="(event) => $emit('requestData', event)"
   >
+    <template #top-left>
+      <div v-if="visibleColumns.length < 1" class="text-negative">
+        <q-icon name="warning" />&nbsp;&nbsp;{{ t('result.noColumnError') }}
+      </div>
+      <div v-else-if="!dataIsFresh" class="text-negative">
+        <q-icon name="warning" />&nbsp;&nbsp;{{ t('result.dataIsNotFresh') }}
+      </div>
+    </template>
+
     <template #top-right>
       <QueryResultTableColumnSelector
         v-model="visibleColumns"
@@ -53,11 +61,11 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 import { QTable, QTableColumn, QTableProps } from 'quasar';
-import { useI18n } from 'vue-i18n';
 import QueryResultTableColumnSelector from './QueryResultTableColumnSelector.vue';
 import QueryResultTableCell from './QueryResultTableCell.vue';
 import QueryResultTableHeaderCell from './QueryResultTableHeaderCell.vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
+import { useI18n } from 'src/composables/useI18n';
 
 export interface QueryResultTableProps {
   rows: (
@@ -66,6 +74,7 @@ export interface QueryResultTableProps {
   )[];
   loading: boolean;
   allColumns: QTableColumn[];
+  dataIsFresh: boolean;
 }
 
 export type QueryResultTableRequestDataParams = Parameters<
@@ -95,45 +104,44 @@ function hideColumn(name: string) {
   );
 }
 
-const columnOrder = ref<string[]>([]);
-
 function reorderColumns(
   targetColName: string,
   moveColName: string,
   pos: 'before' | 'after',
 ) {
-  let moveColIdx = columnOrder.value.indexOf(moveColName);
-  let targetColIdx = columnOrder.value.indexOf(targetColName);
+  let cols = [...visibleColumns.value];
 
-  if (
-    0 === columnOrder.value.length ||
-    -1 === moveColIdx ||
-    -1 === targetColIdx
-  ) {
-    columnOrder.value = props.allColumns.map((col) => col.name);
-    moveColIdx = columnOrder.value.indexOf(moveColName);
+  let moveColIdx = cols.indexOf(moveColName);
+  let targetColIdx = cols.indexOf(targetColName);
+
+  if (0 === cols.length || -1 === moveColIdx || -1 === targetColIdx) {
+    cols = props.allColumns.map((col) => col.name);
+    moveColIdx = cols.indexOf(moveColName);
   }
 
   // remove moveCol
-  columnOrder.value.splice(moveColIdx, 1);
+  cols.splice(moveColIdx, 1);
 
-  targetColIdx = columnOrder.value.indexOf(targetColName);
+  targetColIdx = cols.indexOf(targetColName);
 
   if ('after' === pos) {
     targetColIdx++;
   }
 
-  columnOrder.value.splice(targetColIdx, 0, moveColName);
+  cols.splice(targetColIdx, 0, moveColName);
+
+  visibleColumns.value = cols;
 }
 
 const orderedColumns = computed(() => {
-  if (0 === columnOrder.value.length) {
+  if (0 === visibleColumns.value.length) {
     return props.allColumns;
   }
 
   return [...props.allColumns].sort(
     (a, b) =>
-      columnOrder.value.indexOf(a.name) - columnOrder.value.indexOf(b.name),
+      visibleColumns.value.indexOf(a.name) -
+      visibleColumns.value.indexOf(b.name),
   );
 });
 
@@ -174,18 +182,14 @@ const orderedColumns = computed(() => {
 // watch(sortBy, (col) => (pagination.value.sortBy = col));
 // watch(descending, (order) => (pagination.value.descending = order));
 // watch(rowsPerPage, (limit) => (pagination.value.rowsPerPage = limit));
-
-// onMounted(() => {
-//   void store.maybeLoadMarkFormProperties();
-// });
 </script>
 
-<style>
+<style lang="scss">
 /* Do not scope this tag, else we loose the
    sticky definitions for the header and footer */
 
 .query-result-table {
-  height: calc(100vh - 100px);
+  max-height: calc(100vh - 100px);
 }
 
 .query-result-table--fullscreen {
@@ -193,13 +197,25 @@ const orderedColumns = computed(() => {
 }
 
 .query-result-table thead tr:first-child th {
-  /* bg color is important for th; just specify one */
-  background-color: #ffffff;
+  /* bg color is important for th to cover rows underneath (scrolling) */
+  background-color: #fff;
+}
+.body--dark {
+  .query-result-table thead tr:first-child th {
+    /* bg color is important for th to cover rows underneath (scrolling) */
+    background-color: var(--q-dark);
+  }
 }
 
 .query-result-table .q-table__bottom,
 .query-result-table .q-table__top {
-  background-color: #efefef;
+  background-color: $grey-3;
+}
+.body--dark {
+  .query-result-table .q-table__bottom,
+  .query-result-table .q-table__top {
+    background-color: $grey-9;
+  }
 }
 
 .query-result-table thead tr th {

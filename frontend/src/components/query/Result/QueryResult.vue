@@ -3,23 +3,15 @@
 
   <BaseGraphqlError v-if="error" :error="error" />
 
-  <template v-else-if="isValid">
+  <template v-else>
     <QueryResultTable
       v-model:visible-columns="visibleColumns"
       :loading="fetching || fetchingColumns"
       :rows="rows"
       :all-columns="availableColumns"
+      :data-is-fresh="isValid"
     />
     <!-- <ResultDownload :enabled="!fetching && !!result" /> -->
-  </template>
-
-  <template v-else>
-    <q-banner class="bg-grey-3">
-      <template #avatar>
-        <q-icon name="warning" />
-      </template>
-      {{ t('result.invalidNoResults') }}
-    </q-banner>
   </template>
 
   <details>
@@ -67,8 +59,8 @@ const store = useQueryStore();
 
 const isValid = computed(
   () =>
-    (store.baseFilter?.isValid || true) &&
-    (store.attributionFilter?.isValid || true),
+    (store.baseFilter?.isValid() ?? true) &&
+    (store.attributionFilter?.isValid() ?? true),
 );
 
 const baseFilter = computed(
@@ -81,18 +73,23 @@ const baseFilter = computed(
 );
 
 const $q = useQuasar();
-const lastSelectedColumns = computed(() => {
-  const cols: string[] =
-    $q.localStorage.getItem(`query_visible_columns--${props.baseTable}`) || [];
-  return cols.filter((c) => props.availableColumns.find((ac) => ac.name === c));
-});
-const selectedColumns = ref<string[] | undefined>(lastSelectedColumns.value);
+function getLastSelectedColumns() {
+  const cols: string[] | null = $q.localStorage.getItem(
+    `query_visible_columns--${props.baseTable}`,
+  );
+  return cols?.filter((c) =>
+    props.availableColumns.find((ac) => ac.name === c),
+  );
+}
+const selectedColumns = ref<string[]>([]);
 const defaultColumns = computed(() => {
   return props.availableColumns.slice(0, 5).map((c) => c.name);
 });
 const visibleColumns = computed({
   get: () =>
-    selectedColumns.value ? selectedColumns.value : defaultColumns.value,
+    selectedColumns.value.length > 0
+      ? selectedColumns.value
+      : getLastSelectedColumns() ?? defaultColumns.value,
   set: (cols: string[]) => {
     selectedColumns.value = cols;
     $q.localStorage.set(`query_visible_columns--${props.baseTable}`, cols);

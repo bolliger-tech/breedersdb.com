@@ -27,6 +27,7 @@ import { QTableColumn } from 'quasar';
 import { FilterRuleType } from './Filter/filterRule';
 import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from './Result/formatResultColumnValue';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 export interface QueryContainerProps {
   baseTable: BaseTable;
@@ -34,6 +35,7 @@ export interface QueryContainerProps {
 
 const props = defineProps<QueryContainerProps>();
 const { t } = useI18n();
+const { localizedSortPredicate } = useLocalizedSort();
 
 const {
   activate: fetchAttributesAsColumns,
@@ -62,7 +64,10 @@ const baseTableColumnsWithAttributes = computed(() => {
     baseTableColumns.value.length > 0 &&
     attributesAsColumns.value.length > 0
   ) {
-    return [...baseTableColumns.value, ...attributesAsColumns.value];
+    const sortedAttributesAsColumns = [...attributesAsColumns.value].sort(
+      (a, b) => localizedSortPredicate(a.label, b.label),
+    );
+    return [...baseTableColumns.value, ...sortedAttributesAsColumns];
   }
 
   return [];
@@ -101,18 +106,24 @@ const resultColumns = computed<QTableColumn[]>(() => {
       column.type === FilterRuleType.Integer ||
       column.type === FilterRuleType.Float;
 
+    const isAttribute = column.isAttribute;
+
     return {
       name: column.value,
       label: column.label,
-      field: column.value,
-      align: isNum ? 'right' : 'left',
+      field: isAttribute ? column.value : column.tableColumnName,
+      align: isAttribute ? 'center' : isNum ? 'right' : 'left',
       sortable: true,
-      format: (value: string | number | Date | null | undefined) =>
-        formatResultColumnValue({
-          value,
-          type: column.type ?? FilterRuleType.String,
-          t,
-        }),
+      // only format base table columns because attributions must be treated
+      // differently (see QueryResultTableCellAttribution.vue)
+      ...(!isAttribute && {
+        format: (value: string | number | Date | null | undefined) =>
+          formatResultColumnValue({
+            value,
+            type: column.type ?? FilterRuleType.String,
+            t,
+          }),
+      }),
     };
   });
 });

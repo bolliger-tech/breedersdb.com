@@ -72,7 +72,7 @@ import {
   filterSelectOptions,
   FilterSelectOptionsUpdateFn,
 } from 'src/utils/selectOptionFilter';
-import { useInputBackground } from './useInputBackground';
+import { useInputBackground } from 'src/composables/useInputBackground';
 import { FilterRuleType } from './filterRule';
 
 import { FilterRuleTerm } from './filterRuleTerm';

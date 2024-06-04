@@ -15,7 +15,6 @@ import type { CombinedError } from '@urql/vue';
 import { BaseTable } from '../Filter/filterNode';
 import { useAttributionViewColumnDefinitions } from './useAttributionViewColumnDefinitions';
 import { useEntityName } from 'src/composables/useEntityName';
-import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 
 export function useFilterColumns({
@@ -42,7 +41,6 @@ export function useFilterColumns({
   };
 
   const { getEntityName } = useEntityName();
-  const { localizedSortPredicate } = useLocalizedSort();
   const { t } = useI18n();
 
   const data = computed(() => {
@@ -51,17 +49,15 @@ export function useFilterColumns({
       capitalize: true,
     });
 
-    return entities[tableKey].data.value
-      .map((data) => {
-        return new FilterRuleColumn({
-          tableName: data.table,
-          tableColumnName: data.column,
-          tableLabel,
-          tableColumnLabel: uppercaseFirstLetter(t(data.labelKey)),
-          schema: data.schema,
-        });
-      })
-      .sort((a, b) => localizedSortPredicate(a.label, b.label));
+    return entities[tableKey].data.value.map((data) => {
+      return new FilterRuleColumn({
+        tableName: data.table,
+        tableColumnName: data.column,
+        tableLabel,
+        tableColumnLabel: uppercaseFirstLetter(t(data.labelKey)),
+        schema: data.schema,
+      });
+    });
   });
 
   return {

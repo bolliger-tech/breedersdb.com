@@ -6,7 +6,7 @@
     :options="filteredOptions"
     use-input
     dense
-    bg-color="white"
+    :bg-color="inputBgColor"
     autocomplete="off"
     hide-bottom-space
     outlined
@@ -22,6 +22,7 @@ import {
   FilterSelectOptionsUpdateFn,
   filterSelectOptions,
 } from 'src/utils/selectOptionFilter';
+import { useInputBackground } from 'src/composables/useInputBackground';
 
 export interface QueryResultTableColumnSelectorProps {
   allColumns: QTableColumn[];
@@ -57,4 +58,6 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
     valueExtractorFn: (item) => item.label,
   });
 }
+
+const { inputBgColor } = useInputBackground();
 </script>

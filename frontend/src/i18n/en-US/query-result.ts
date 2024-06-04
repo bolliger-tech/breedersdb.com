@@ -3,8 +3,9 @@ export const result = {
 
   addColumn: 'Add Column',
 
-  invalidNoResults:
-    'Invalid filter rules. Rectify or delete them to get results.',
+  dataIsNotFresh:
+    'Data may not be accurate because some filter rules are invalid.',
+  noColumnError: 'No columns selected. Add a column to see data.',
 
   altPhoto: 'Photo taken {date} by {author}',
   photo: 'Photo',

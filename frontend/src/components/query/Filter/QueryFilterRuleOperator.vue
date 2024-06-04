@@ -36,7 +36,7 @@ import {
   filterSelectOptions,
   FilterSelectOptionsUpdateFn,
 } from 'src/utils/selectOptionFilter';
-import { useInputBackground } from './useInputBackground';
+import { useInputBackground } from 'src/composables/useInputBackground';
 import { createGetFilterRuleOperators } from './createFilterRuleOperators';
 import { FilterRuleOperator } from './filterRuleOperator';
 import { computed } from 'vue';

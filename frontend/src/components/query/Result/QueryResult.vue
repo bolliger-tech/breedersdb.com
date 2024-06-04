@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import QueryResultTable, {
   QueryResultTableProps,
 } from 'components/Query/Result/QueryResultTable.vue';
@@ -45,6 +45,7 @@ import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { QTableColumn, useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
+import { debounce } from 'quasar';
 
 export interface QueryResultProps {
   baseTable: BaseTable;
@@ -96,18 +97,43 @@ const visibleColumns = computed({
   },
 });
 
-const queryData = computed(() =>
+const columnsToFetch = ref<string[]>([]);
+// use watch() instead of setting it in the visible columns setter
+// to avoid starting empty
+watch(visibleColumns, (newCols, oldCols) => {
+  if (
+    newCols.length > oldCols.length ||
+    !newCols.every((c) => oldCols.includes(c))
+  ) {
+    // only update columnsToFetch if columns were added but not if the order
+    // changed or columns were removed. so a refetch is only triggered
+    // when really needed.
+    columnsToFetch.value = newCols;
+  }
+});
+
+// debounce fetch queries
+const queryData = ref(
   filterToQuery({
     filter: baseFilter.value,
-    columns: visibleColumns.value,
+    columns: columnsToFetch.value,
   }),
+);
+watch(
+  [baseFilter, columnsToFetch],
+  debounce(() => {
+    queryData.value = filterToQuery({
+      filter: baseFilter.value,
+      columns: columnsToFetch.value,
+    });
+  }, 500),
+  { deep: true },
 );
 
 const query = computed(() => queryData.value.query);
 const variables = computed(() => queryData.value.variables);
 
 // TODO: update materialized view
-// TODO: debounce
 const { data, fetching, error } = await useQuery<QueryResult>({
   query,
   variables,

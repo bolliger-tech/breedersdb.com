@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, expect } from 'vitest';
+import { describe, it, beforeEach, expect, vi } from 'vitest';
 import AnalyzePage from './AnalyzePage.vue';
 import { setActivePinia, createPinia } from 'pinia';
 import {
@@ -99,7 +99,7 @@ describe('AnalyzePage', () => {
         .get('a')
         .trigger('click');
 
-      // click and term
+      // click add rule
       await wrapper
         .getComponent('[data-test="query-filter-node__action-btn-and"]')
         .get('a')
@@ -127,7 +127,7 @@ describe('AnalyzePage', () => {
         .get('a')
         .trigger('click');
 
-      // click and term
+      // click add rule
       await wrapper
         .getComponent('[data-test="query-filter-node__action-btn-and"]')
         .get('a')
@@ -148,7 +148,7 @@ describe('AnalyzePage', () => {
 
       const column = await wrapper.findComponent(QueryFilterRuleColumn);
       const currentColumn = column.vm.$props.options.find(
-        (col) => col.name === 'cultivar.id',
+        (col) => col.name === 'cultivars.id',
       );
       await column.setValue(currentColumn);
       const operator = await wrapper.findComponent(QueryFilterRuleOperator);
@@ -162,6 +162,11 @@ describe('AnalyzePage', () => {
 
       await flushPromises();
 
+      await vi.waitUntil(
+        // because we set the value with watch in the component
+        () => wrapper.get('[data-test="variables"]').text().length > 2,
+      );
+
       const queryIs = normalizeString(
         wrapper.get('[data-test="query"]').text(),
       );
@@ -174,7 +179,23 @@ query CultivarsFilterResults( $v0: Int! ) {
   cultivars(where: { _and: [ { id: { _gt: $v0 } } ] }) {
     id
     name
+    common_name
+    acronym
+    breeder
   }
+}
+
+fragment AttributeFragment on attributions_view {
+  id
+  integer_value
+  float_value
+  text_value
+  boolean_value
+  date_value
+  tree_id
+  cultivar_id
+  lot_id
+  data_type
 }`);
       const variablesShouldBe = normalizeString('{"v0": 1 }');
 

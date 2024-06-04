@@ -41,7 +41,6 @@ query ${toPascalCase(baseTable)}FilterResults${inputVarDefs} {
     ${fields.trim()}
   }
 }
-
 ${attributeFragment}
 `;
 

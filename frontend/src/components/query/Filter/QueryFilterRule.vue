@@ -30,7 +30,7 @@
           <QueryFilterRuleOperator
             :disabled="!column"
             :model-value="operator"
-            :rule-type="filterRule?.type"
+            :column-type="filterRule?.type"
             @update:model-value="updateOperator"
           />
         </div>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FilterRuleColumn } from './filterRuleColumn';
-import { FilterRuleType } from './filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 
 describe('FilterRuleColumn', () => {
   it('should create a new FilterRuleColumn', () => {
@@ -18,9 +18,9 @@ describe('FilterRuleColumn', () => {
     expect(filterRuleColumn.schema).toBeUndefined();
   });
 
-  it('should create a new FilterRuleColumn with FilterRuleTypeSchema', () => {
+  it('should create a new FilterRuleColumn with FilterRuleSchema', () => {
     const schema = {
-      type: FilterRuleType.String,
+      type: ColumnType.String,
       allowEmpty: true,
       validation: {
         maxLen: 10,
@@ -103,7 +103,7 @@ describe('FilterRuleColumn', () => {
       tableLabel: 'Table',
       tableColumnLabel: 'Column',
       schema: {
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         allowEmpty: true,
         validation: {
           maxLen: 10,
@@ -132,7 +132,7 @@ describe('FilterRuleColumn', () => {
       tableLabel: 'Table',
       tableColumnLabel: 'Column',
       schema: {
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         allowEmpty: true,
         validation: {
           maxLen: 10,
@@ -150,7 +150,7 @@ describe('FilterRuleColumn', () => {
       tableLabel: 'Table',
       tableColumnLabel: 'Column',
       schema: {
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         allowEmpty: false,
         validation: {
           maxLen: 10,
@@ -172,14 +172,14 @@ describe('FilterRuleColumn', () => {
     expect(filterRuleColumn.type).toBeUndefined();
   });
 
-  it('should return type: FilterRuleType.String when schema type is FilterRuleType.String', () => {
+  it('should return type: ColumnType.String when schema type is ColumnType.String', () => {
     const filterRuleColumn = new FilterRuleColumn({
       tableName: 'table',
       tableColumnName: 'column',
       tableLabel: 'Table',
       tableColumnLabel: 'Column',
       schema: {
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         allowEmpty: true,
         validation: {
           maxLen: 10,
@@ -187,7 +187,7 @@ describe('FilterRuleColumn', () => {
         },
       },
     });
-    expect(filterRuleColumn.type).toBe(FilterRuleType.String);
+    expect(filterRuleColumn.type).toBe(ColumnType.String);
   });
 
   it('should serialize toJSON', () => {
@@ -197,7 +197,7 @@ describe('FilterRuleColumn', () => {
       tableLabel: 'Table',
       tableColumnLabel: 'Column',
       schema: {
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         allowEmpty: true,
         validation: {
           maxLen: 10,
@@ -223,7 +223,7 @@ describe('FilterRuleColumn', () => {
         tableLabel: 'Table',
         tableColumnLabel: 'Column',
         schema: {
-          type: FilterRuleType.String,
+          type: ColumnType.String,
           allowEmpty: true,
           validation: {
             maxLen: 10,
@@ -237,7 +237,7 @@ describe('FilterRuleColumn', () => {
     expect(filterRuleColumn.tableLabel).toBe('Table');
     expect(filterRuleColumn.tableColumnLabel).toBe('Column');
     expect(filterRuleColumn.schema).toEqual({
-      type: FilterRuleType.String,
+      type: ColumnType.String,
       allowEmpty: true,
       validation: {
         maxLen: 10,

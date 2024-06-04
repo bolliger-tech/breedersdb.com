@@ -1,5 +1,5 @@
 import type { TFunc } from 'src/composables/useI18n';
-import { FilterRuleType } from '../Filter/filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 
 export function formatResultColumnValue({
   value,
@@ -7,7 +7,7 @@ export function formatResultColumnValue({
   t,
 }: {
   value: string | number | Date | null | boolean | undefined;
-  type: FilterRuleType;
+  type: ColumnType;
   t: TFunc;
 }) {
   if (null === value || undefined === value) {
@@ -18,9 +18,9 @@ export function formatResultColumnValue({
     return value.toLocaleString();
   } else if (typeof value === 'boolean') {
     return value ? t('result.yes') : t('result.no');
-  } else if (type === FilterRuleType.Integer || type === FilterRuleType.Float) {
+  } else if (type === ColumnType.Integer || type === ColumnType.Float) {
     return parseInt(value).toLocaleString();
-  } else if (type === FilterRuleType.Date) {
+  } else if (type === ColumnType.Date) {
     return new Date(value).toLocaleDateString();
   }
 

@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  FilterRule,
-  FilterRuleType,
-  type FilterRuleTypeSchema,
-} from './filterRule';
+import { FilterRule, type FilterRuleSchema } from './filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 import { FilterRuleColumn } from './filterRuleColumn';
 import { FilterOperatorValue, FilterRuleOperator } from './filterRuleOperator';
 import { FilterRuleTerm } from './filterRuleTerm';
@@ -76,9 +73,9 @@ describe('FilterRule', () => {
   });
 
   it('should set the operator schema', () => {
-    const schema: FilterRuleTypeSchema = {
+    const schema: FilterRuleSchema = {
       allowEmpty: false,
-      type: FilterRuleType.Boolean,
+      type: ColumnType.Boolean,
     };
 
     const column = new FilterRuleColumn({
@@ -106,7 +103,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: false,
-        type: FilterRuleType.Boolean,
+        type: ColumnType.Boolean,
       },
     });
     const operator = new FilterRuleOperator({
@@ -126,9 +123,9 @@ describe('FilterRule', () => {
   });
 
   it('should set the term schema', () => {
-    const schema: FilterRuleTypeSchema = {
+    const schema: FilterRuleSchema = {
       allowEmpty: false,
-      type: FilterRuleType.Boolean,
+      type: ColumnType.Boolean,
     };
 
     const column = new FilterRuleColumn({
@@ -154,7 +151,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: false,
-        type: FilterRuleType.Boolean,
+        type: ColumnType.Boolean,
       },
     });
     const term = new FilterRuleTerm({ value: 'value' });
@@ -207,13 +204,13 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.Boolean,
+        type: ColumnType.Boolean,
       },
     });
 
     const filterRule = new FilterRule({ column });
 
-    expect(filterRule.type).toBe(FilterRuleType.Boolean);
+    expect(filterRule.type).toBe(ColumnType.Boolean);
   });
 
   it('should not return type', () => {
@@ -266,7 +263,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -291,7 +288,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -316,7 +313,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -341,7 +338,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -366,7 +363,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: false,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -391,7 +388,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.Photo,
+        type: ColumnType.Photo,
       },
     });
 
@@ -424,7 +421,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -447,7 +444,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.Time,
+        type: ColumnType.Time,
       },
     });
 
@@ -464,7 +461,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.Date,
+        type: ColumnType.Date,
       },
     });
 
@@ -481,7 +478,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.DateTime,
+        type: ColumnType.DateTime,
       },
     });
 
@@ -498,7 +495,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.Integer,
+        type: ColumnType.Integer,
         validation: {
           min: 0,
           max: 100,
@@ -520,7 +517,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.Float,
+        type: ColumnType.Float,
         validation: {
           min: 0,
           max: 100,
@@ -542,7 +539,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.Enum,
+        type: ColumnType.Enum,
         validation: {
           options: ['option1', 'option2'],
         },
@@ -562,7 +559,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -587,7 +584,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -612,7 +609,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -637,7 +634,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.Boolean,
+        type: ColumnType.Boolean,
       },
     });
 
@@ -654,7 +651,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.Photo,
+        type: ColumnType.Photo,
       },
     });
 
@@ -690,7 +687,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -712,7 +709,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: false,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -736,7 +733,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: false,
-        type: FilterRuleType.Boolean,
+        type: ColumnType.Boolean,
       },
     });
     const operator = new FilterRuleOperator({
@@ -774,7 +771,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: false,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: null,
           pattern: null,
@@ -799,7 +796,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: false,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: 5,
           pattern: null,
@@ -824,7 +821,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: false,
-        type: FilterRuleType.String,
+        type: ColumnType.String,
         validation: {
           maxLen: 5,
           pattern: null,
@@ -850,7 +847,7 @@ describe('FilterRule', () => {
         tableColumnLabel: 'tableColumnLabel',
         schema: {
           allowEmpty: false,
-          type: FilterRuleType.String,
+          type: ColumnType.String,
           validation: {
             maxLen: 5,
             pattern: null,
@@ -890,7 +887,7 @@ describe('FilterRule', () => {
         tableColumnLabel: 'tableColumnLabel',
         schema: {
           allowEmpty: false,
-          type: FilterRuleType.String,
+          type: ColumnType.String,
           validation: {
             maxLen: 5,
             pattern: null,
@@ -928,7 +925,7 @@ describe('FilterRule', () => {
         tableColumnLabel: 'tableColumnLabel',
         schema: {
           allowEmpty: false,
-          type: FilterRuleType.String,
+          type: ColumnType.String,
           validation: {
             maxLen: 5,
             pattern: null,
@@ -942,7 +939,7 @@ describe('FilterRule', () => {
         tableColumnLabel: 'other',
         schema: {
           allowEmpty: false,
-          type: FilterRuleType.String,
+          type: ColumnType.String,
           validation: {
             maxLen: 5,
             pattern: null,

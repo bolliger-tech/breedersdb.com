@@ -24,7 +24,7 @@ import { useAttributesAsColumns } from './ColumnDefinitions/useAttributesAsColum
 import { computed, onMounted } from 'vue';
 import { useFilterColumns } from './ColumnDefinitions/useFilterColumns';
 import { QTableColumn } from 'quasar';
-import { FilterRuleType } from './Filter/filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from './Result/formatResultColumnValue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
@@ -103,8 +103,7 @@ const error = computed(
 const resultColumns = computed<QTableColumn[]>(() => {
   return baseTableColumnsWithAttributes.value.map((column) => {
     const isNum =
-      column.type === FilterRuleType.Integer ||
-      column.type === FilterRuleType.Float;
+      column.type === ColumnType.Integer || column.type === ColumnType.Float;
 
     const isAttribute = column.isAttribute;
 
@@ -120,7 +119,7 @@ const resultColumns = computed<QTableColumn[]>(() => {
         format: (value: string | number | Date | null | undefined) =>
           formatResultColumnValue({
             value,
-            type: column.type ?? FilterRuleType.String,
+            type: column.type ?? ColumnType.String,
             t,
           }),
       }),

@@ -1,5 +1,6 @@
 import type { TFunc } from 'src/composables/useI18n';
-import { FilterRuleType, type FilterRuleTypeSchema } from './filterRule';
+import { type FilterRuleSchema } from './filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 
 export type FilterRuleOperatorJson = {
   value: FilterOperatorValue;
@@ -7,7 +8,7 @@ export type FilterRuleOperatorJson = {
 
 export class FilterRuleOperator {
   public readonly value: FilterOperatorValue;
-  public schema: FilterRuleTypeSchema | undefined;
+  public schema: FilterRuleSchema | undefined;
 
   constructor({ value }: { value: FilterOperatorValue }) {
     this.value = value;
@@ -70,24 +71,24 @@ export class FilterRuleOperator {
       case FilterOperatorValue.Equal:
       case FilterOperatorValue.NotEqual:
         return [
-          FilterRuleType.String,
-          FilterRuleType.Integer,
-          FilterRuleType.Float,
-          FilterRuleType.Enum,
-          FilterRuleType.Date,
-          FilterRuleType.DateTime,
-          FilterRuleType.Time,
+          ColumnType.String,
+          ColumnType.Integer,
+          ColumnType.Float,
+          ColumnType.Enum,
+          ColumnType.Date,
+          ColumnType.DateTime,
+          ColumnType.Time,
         ];
       case FilterOperatorValue.Less:
       case FilterOperatorValue.LessOrEqual:
       case FilterOperatorValue.Greater:
       case FilterOperatorValue.GreaterOrEqual:
         return [
-          FilterRuleType.Integer,
-          FilterRuleType.Float,
-          FilterRuleType.Date,
-          FilterRuleType.DateTime,
-          FilterRuleType.Time,
+          ColumnType.Integer,
+          ColumnType.Float,
+          ColumnType.Date,
+          ColumnType.DateTime,
+          ColumnType.Time,
         ];
       case FilterOperatorValue.StartsWith:
       case FilterOperatorValue.StartsNotWith:
@@ -96,16 +97,12 @@ export class FilterRuleOperator {
       case FilterOperatorValue.EndsWith:
       case FilterOperatorValue.NotEndsWith:
       case FilterOperatorValue.Empty:
-        return [FilterRuleType.String, FilterRuleType.Enum];
+        return [ColumnType.String, ColumnType.Enum];
       case FilterOperatorValue.NotEmpty:
-        return [
-          FilterRuleType.String,
-          FilterRuleType.Enum,
-          FilterRuleType.Photo,
-        ];
+        return [ColumnType.String, ColumnType.Enum, ColumnType.Photo];
       case FilterOperatorValue.True:
       case FilterOperatorValue.False:
-        return [FilterRuleType.Boolean];
+        return [ColumnType.Boolean];
       default:
         throw new Error(`Unknown filter operator value: ${this.value}`);
     }

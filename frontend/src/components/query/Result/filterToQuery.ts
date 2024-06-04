@@ -4,7 +4,7 @@ import {
   FilterOperatorValue,
 } from '../Filter/filterRuleOperator';
 import type { FilterRule } from '../Filter/filterRule';
-import { FilterRuleType } from '../Filter/filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
 import { toPascalCase, toSnakeCase } from 'src/utils/stringUtils';
 import type { AttributeDataTypes, AttributeTypes } from 'src/graphql';
@@ -172,7 +172,7 @@ function toComparison({
 }: {
   operator: FilterRuleOperator;
   term?: FilterRuleTerm;
-  type: FilterRuleType;
+  type: ColumnType;
 }): Comparison | undefined {
   const name = `v${varCounter++}`;
   const value = cast({ term, type: filterRuleType });
@@ -288,53 +288,53 @@ function toComparison({
   }
 }
 
-function cast({ term, type }: { term?: FilterRuleTerm; type: FilterRuleType }) {
+function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnType }) {
   switch (type) {
-    case FilterRuleType.String:
+    case ColumnType.String:
       return term?.value || '';
-    case FilterRuleType.Integer:
+    case ColumnType.Integer:
       return term ? parseInt(term.value) : NaN;
-    case FilterRuleType.Float:
+    case ColumnType.Float:
       return term ? parseFloat(term.value) : NaN;
-    case FilterRuleType.Boolean:
+    case ColumnType.Boolean:
       return String(term?.value).toLowerCase() === 'true';
-    case FilterRuleType.Enum:
+    case ColumnType.Enum:
       return term?.value || '';
-    case FilterRuleType.Date:
+    case ColumnType.Date:
       if (!term) return undefined;
       return new Date(term.value).toISOString().split('T')[0];
-    case FilterRuleType.DateTime:
+    case ColumnType.DateTime:
       if (!term) return undefined;
       return new Date(term.value).toISOString();
-    case FilterRuleType.Time:
+    case ColumnType.Time:
       // TODO: handle time
       throw new Error('Not implemented');
-    case FilterRuleType.Photo:
+    case ColumnType.Photo:
       return true;
     default:
       throw new Error(`Unknown type: ${type}`);
   }
 }
 
-function filterRuleTypeToGraphQLType(type: FilterRuleType) {
+function filterRuleTypeToGraphQLType(type: ColumnType) {
   switch (type) {
-    case FilterRuleType.String:
+    case ColumnType.String:
       return 'String';
-    case FilterRuleType.Integer:
+    case ColumnType.Integer:
       return 'Int';
-    case FilterRuleType.Float:
+    case ColumnType.Float:
       return 'float8';
-    case FilterRuleType.Boolean:
+    case ColumnType.Boolean:
       return 'Boolean';
-    case FilterRuleType.Enum:
+    case ColumnType.Enum:
       return 'String';
-    case FilterRuleType.Date:
+    case ColumnType.Date:
       return 'date';
-    case FilterRuleType.DateTime:
+    case ColumnType.DateTime:
       return 'timestamptz';
-    case FilterRuleType.Time:
+    case ColumnType.Time:
       throw new Error('Not implemented');
-    case FilterRuleType.Photo:
+    case ColumnType.Photo:
       return 'String';
     default:
       throw new Error(`Unknown type: ${type}`);
@@ -348,7 +348,7 @@ function toAttributeValueCondition({
   comparison: Comparison;
   rule: FilterRule;
 }) {
-  const attributeDataType = rule.type || FilterRuleType.String;
+  const attributeDataType = rule.type || ColumnType.String;
   const graphQLDataType =
     comparison.operator === GraphQLComparisonOperator.IsNull
       ? filterRuleTypeToGraphQLType(attributeDataType)

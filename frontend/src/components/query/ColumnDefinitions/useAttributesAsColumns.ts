@@ -1,10 +1,8 @@
 import { useQuery } from '@urql/vue';
 import { graphql, type AttributeDataTypes, type ResultOf } from 'src/graphql';
 import { FilterRuleColumn } from '../Filter/filterRuleColumn';
-import {
-  FilterRuleType,
-  type FilterRuleTypeSchema,
-} from '../Filter/filterRule';
+import { type FilterRuleSchema } from '../Filter/filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
@@ -79,16 +77,14 @@ function getFilterColumnFromAttribute(
   });
 }
 
-function getFilterRuleTypeFromDataType(
-  dataType: AttributeDataTypes,
-): FilterRuleType {
+function getColumnTypeFromDataType(dataType: AttributeDataTypes): ColumnType {
   const type = {
-    TEXT: FilterRuleType.String,
-    INTEGER: FilterRuleType.Integer,
-    FLOAT: FilterRuleType.Float,
-    BOOLEAN: FilterRuleType.Boolean,
-    DATE: FilterRuleType.Date,
-    PHOTO: FilterRuleType.Photo,
+    TEXT: ColumnType.String,
+    INTEGER: ColumnType.Integer,
+    FLOAT: ColumnType.Float,
+    BOOLEAN: ColumnType.Boolean,
+    DATE: ColumnType.Date,
+    PHOTO: ColumnType.Photo,
   }[dataType];
 
   if (typeof type === 'undefined') {
@@ -98,11 +94,11 @@ function getFilterRuleTypeFromDataType(
   return type;
 }
 
-function getSchemaFromAttribute(attribute: Attribute): FilterRuleTypeSchema {
-  const type = getFilterRuleTypeFromDataType(attribute.data_type);
+function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
+  const type = getColumnTypeFromDataType(attribute.data_type);
 
   switch (type) {
-    case FilterRuleType.String:
+    case ColumnType.String:
       return {
         type,
         allowEmpty: false,
@@ -111,8 +107,8 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleTypeSchema {
           pattern: null,
         },
       };
-    case FilterRuleType.Integer:
-    case FilterRuleType.Float:
+    case ColumnType.Integer:
+    case ColumnType.Float:
       return {
         type,
         allowEmpty: false,
@@ -120,12 +116,12 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleTypeSchema {
           Attribute['validation_rule']
         >,
       };
-    case FilterRuleType.Photo:
+    case ColumnType.Photo:
       return {
         type,
         allowEmpty: true,
       };
-    case FilterRuleType.Enum:
+    case ColumnType.Enum:
       throw Error('Enum is not supported yet');
     default:
       return {

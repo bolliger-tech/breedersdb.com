@@ -1,10 +1,10 @@
 import { FilterOperatorValue, FilterRuleOperator } from './filterRuleOperator';
-import type { FilterRuleType } from './filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 
 export function createGetFilterRuleOperators() {
   const all = getAllFilterRuleOperators();
 
-  return (type: FilterRuleType, allowEmpty: boolean) => {
+  return (type: ColumnType, allowEmpty: boolean) => {
     return all
       .filter((operator) => {
         return operator.suitableRuleTypes.includes(type);

@@ -73,7 +73,7 @@ import {
   FilterSelectOptionsUpdateFn,
 } from 'src/utils/selectOptionFilter';
 import { useInputBackground } from 'src/composables/useInputBackground';
-import { FilterRuleType } from './filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 
 import { FilterRuleTerm } from './filterRuleTerm';
 import { QSelect } from 'quasar';
@@ -102,25 +102,12 @@ function updateTerm(value: string | number | null) {
   emit('update:modelValue', term);
 }
 
-const type = computed<null | FilterRuleType>(
-  () => props.modelValue?.type || null,
-);
+const type = computed<null | ColumnType>(() => props.modelValue?.type || null);
 
-const isEnum = computed<boolean>(() => {
-  return type.value === FilterRuleType.Enum;
-});
-
-const isDate = computed<boolean>(() => {
-  return type.value === FilterRuleType.Date;
-});
-
-const isTime = computed<boolean>(() => {
-  return type.value === FilterRuleType.Time;
-});
-
-const isDateTime = computed<boolean>(() => {
-  return type.value === FilterRuleType.DateTime;
-});
+const isEnum = computed<boolean>(() => type.value === ColumnType.Enum);
+const isDate = computed<boolean>(() => type.value === ColumnType.Date);
+const isTime = computed<boolean>(() => type.value === ColumnType.Time);
+const isDateTime = computed<boolean>(() => type.value === ColumnType.DateTime);
 
 const validationOptions = computed(() => {
   return props.modelValue?.validation;
@@ -181,20 +168,20 @@ const filteredOptions = ref(options.value);
 
 const inputType = computed(() => {
   switch (type.value) {
-    case FilterRuleType.Integer:
-    case FilterRuleType.Float:
+    case ColumnType.Integer:
+    case ColumnType.Float:
       return 'number';
-    case FilterRuleType.Boolean:
-    case FilterRuleType.Photo:
+    case ColumnType.Boolean:
+    case ColumnType.Photo:
       throw new Error('Boolean type is not supported');
-    case FilterRuleType.Date:
+    case ColumnType.Date:
       return 'date';
-    case FilterRuleType.DateTime:
+    case ColumnType.DateTime:
       return 'datetime-local';
-    case FilterRuleType.Time:
+    case ColumnType.Time:
       return 'time';
-    case FilterRuleType.String:
-    case FilterRuleType.Enum:
+    case ColumnType.String:
+    case ColumnType.Enum:
     case null:
       return 'text';
     default:

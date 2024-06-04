@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FilterRuleTerm } from './filterRuleTerm';
-import { FilterRuleType } from './filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 
 describe('FilterTerm', () => {
   it('should return undefined if no schema is provided', () => {
@@ -15,7 +15,7 @@ describe('FilterTerm', () => {
     it('should not be empty', () => {
       const value = '';
       const schema = {
-        type: FilterRuleType.String as const,
+        type: ColumnType.String as const,
         allowEmpty: false,
         validation: {
           maxLen: 3,
@@ -32,7 +32,7 @@ describe('FilterTerm', () => {
     it('should allow empty', () => {
       const value = '';
       const schema = {
-        type: FilterRuleType.String as const,
+        type: ColumnType.String as const,
         allowEmpty: true,
         validation: {
           maxLen: 3,
@@ -51,7 +51,7 @@ describe('FilterTerm', () => {
     it('should be too long', () => {
       const value = '1234';
       const schema = {
-        type: FilterRuleType.String as const,
+        type: ColumnType.String as const,
         allowEmpty: false,
         validation: {
           maxLen: 3,
@@ -68,7 +68,7 @@ describe('FilterTerm', () => {
     it('should fit', () => {
       const value = '123';
       const schema = {
-        type: FilterRuleType.String as const,
+        type: ColumnType.String as const,
         allowEmpty: false,
         validation: {
           maxLen: 3,
@@ -85,7 +85,7 @@ describe('FilterTerm', () => {
     it('should match pattern', () => {
       const value = '123';
       const schema = {
-        type: FilterRuleType.String as const,
+        type: ColumnType.String as const,
         allowEmpty: false,
         validation: {
           maxLen: 3,
@@ -102,7 +102,7 @@ describe('FilterTerm', () => {
     it('should not match pattern', () => {
       const value = '123';
       const schema = {
-        type: FilterRuleType.String as const,
+        type: ColumnType.String as const,
         allowEmpty: false,
         validation: {
           maxLen: 3,
@@ -121,7 +121,7 @@ describe('FilterTerm', () => {
     it('should not be a float', () => {
       const value = '1.1';
       const schema = {
-        type: FilterRuleType.Integer as const,
+        type: ColumnType.Integer as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -139,7 +139,7 @@ describe('FilterTerm', () => {
     it('should not be too small', () => {
       const value = '0';
       const schema = {
-        type: FilterRuleType.Integer as const,
+        type: ColumnType.Integer as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -157,7 +157,7 @@ describe('FilterTerm', () => {
     it('should not be too big', () => {
       const value = '4';
       const schema = {
-        type: FilterRuleType.Integer as const,
+        type: ColumnType.Integer as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -175,7 +175,7 @@ describe('FilterTerm', () => {
     it('should not be between the steps', () => {
       const value = '2';
       const schema = {
-        type: FilterRuleType.Integer as const,
+        type: ColumnType.Integer as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -193,7 +193,7 @@ describe('FilterTerm', () => {
     it('is a valid number', () => {
       const value = 'NaN';
       const schema = {
-        type: FilterRuleType.Integer as const,
+        type: ColumnType.Integer as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -211,7 +211,7 @@ describe('FilterTerm', () => {
     it('should fit', () => {
       const value = '3';
       const schema = {
-        type: FilterRuleType.Integer as const,
+        type: ColumnType.Integer as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -231,7 +231,7 @@ describe('FilterTerm', () => {
     it('should not be too small', () => {
       const value = '0.9';
       const schema = {
-        type: FilterRuleType.Float as const,
+        type: ColumnType.Float as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -249,7 +249,7 @@ describe('FilterTerm', () => {
     it('should not be too big', () => {
       const value = '3.1';
       const schema = {
-        type: FilterRuleType.Float as const,
+        type: ColumnType.Float as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -267,7 +267,7 @@ describe('FilterTerm', () => {
     it('should not be between the steps', () => {
       const value = '2.1';
       const schema = {
-        type: FilterRuleType.Float as const,
+        type: ColumnType.Float as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -285,7 +285,7 @@ describe('FilterTerm', () => {
     it('is a valid number', () => {
       const value = 'NaN';
       const schema = {
-        type: FilterRuleType.Float as const,
+        type: ColumnType.Float as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -303,7 +303,7 @@ describe('FilterTerm', () => {
     it('should fit', () => {
       const value = '2.1';
       const schema = {
-        type: FilterRuleType.Float as const,
+        type: ColumnType.Float as const,
         allowEmpty: false,
         validation: {
           min: 1,
@@ -323,7 +323,7 @@ describe('FilterTerm', () => {
     it('can be any string', () => {
       const value = 'true';
       const schema = {
-        type: FilterRuleType.Boolean as const,
+        type: ColumnType.Boolean as const,
         allowEmpty: false,
       };
 
@@ -336,7 +336,7 @@ describe('FilterTerm', () => {
     it('should not be empty', () => {
       const value = '';
       const schema = {
-        type: FilterRuleType.Boolean as const,
+        type: ColumnType.Boolean as const,
         allowEmpty: false,
       };
 
@@ -351,7 +351,7 @@ describe('FilterTerm', () => {
     it('should be in options', () => {
       const value = 'option';
       const schema = {
-        type: FilterRuleType.Enum as const,
+        type: ColumnType.Enum as const,
         allowEmpty: false,
         validation: {
           options: ['option'],
@@ -367,7 +367,7 @@ describe('FilterTerm', () => {
     it('should not be in options but still be valid', () => {
       const value = 'option';
       const schema = {
-        type: FilterRuleType.Enum as const,
+        type: ColumnType.Enum as const,
         allowEmpty: false,
         validation: {
           options: ['other'],
@@ -385,7 +385,7 @@ describe('FilterTerm', () => {
     it('should be a valid date', () => {
       const value = '2021-01-01';
       const schema = {
-        type: FilterRuleType.Date as const,
+        type: ColumnType.Date as const,
         allowEmpty: false,
       };
 
@@ -398,7 +398,7 @@ describe('FilterTerm', () => {
     it('should not be a valid date', () => {
       const value = '2021-01-32';
       const schema = {
-        type: FilterRuleType.Date as const,
+        type: ColumnType.Date as const,
         allowEmpty: false,
       };
 
@@ -411,7 +411,7 @@ describe('FilterTerm', () => {
     it('should not contain a time', () => {
       const value = '2021-01-31T00:00:00.000Z';
       const schema = {
-        type: FilterRuleType.Date as const,
+        type: ColumnType.Date as const,
         allowEmpty: false,
       };
 
@@ -426,7 +426,7 @@ describe('FilterTerm', () => {
     it('should be a valid date time', () => {
       const value = '2021-01-01T00:00:00';
       const schema = {
-        type: FilterRuleType.DateTime as const,
+        type: ColumnType.DateTime as const,
         allowEmpty: false,
       };
 
@@ -439,7 +439,7 @@ describe('FilterTerm', () => {
     it('should not be a valid date time', () => {
       const value = '2021-01-01T00:00:60';
       const schema = {
-        type: FilterRuleType.DateTime as const,
+        type: ColumnType.DateTime as const,
         allowEmpty: false,
       };
 
@@ -452,7 +452,7 @@ describe('FilterTerm', () => {
     it('should contain at least hours and minutes', () => {
       const value = '2021-01-01T00';
       const schema = {
-        type: FilterRuleType.DateTime as const,
+        type: ColumnType.DateTime as const,
         allowEmpty: false,
       };
 
@@ -467,7 +467,7 @@ describe('FilterTerm', () => {
     it('should be a valid time', () => {
       const value = '00:00:00';
       const schema = {
-        type: FilterRuleType.Time as const,
+        type: ColumnType.Time as const,
         allowEmpty: false,
       };
 
@@ -480,7 +480,7 @@ describe('FilterTerm', () => {
     it('should not be a valid time', () => {
       const value = '00:00:60';
       const schema = {
-        type: FilterRuleType.Time as const,
+        type: ColumnType.Time as const,
         allowEmpty: false,
       };
 
@@ -493,7 +493,7 @@ describe('FilterTerm', () => {
     it('should contain at least hours and minutes', () => {
       const value = '00';
       const schema = {
-        type: FilterRuleType.Time as const,
+        type: ColumnType.Time as const,
         allowEmpty: false,
       };
 
@@ -506,7 +506,7 @@ describe('FilterTerm', () => {
     it('should not contain a date', () => {
       const value = '2021-01-01T00:00:00.000Z';
       const schema = {
-        type: FilterRuleType.Time as const,
+        type: ColumnType.Time as const,
         allowEmpty: false,
       };
 
@@ -521,7 +521,7 @@ describe('FilterTerm', () => {
     it('should be a valid photo', () => {
       const value = 'some string';
       const schema = {
-        type: FilterRuleType.Photo as const,
+        type: ColumnType.Photo as const,
         allowEmpty: false,
       };
 
@@ -534,7 +534,7 @@ describe('FilterTerm', () => {
     it('should not be a valid photo', () => {
       const value = '';
       const schema = {
-        type: FilterRuleType.Photo as const,
+        type: ColumnType.Photo as const,
         allowEmpty: false,
       };
 
@@ -549,7 +549,7 @@ describe('FilterTerm', () => {
     it('should return the value only', () => {
       const value = 'value';
       const schema = {
-        type: FilterRuleType.String as const,
+        type: ColumnType.String as const,
         allowEmpty: true,
         validation: {
           maxLen: 3,

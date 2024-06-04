@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { FilterRuleType } from '../Filter/filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 import type { FilterColumnConstructorData } from './useFilterColumns';
 
 export function useAttributionViewColumnDefinitions() {
@@ -23,7 +23,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'id',
     labelKey: 'entity.id',
     schema: {
-      type: FilterRuleType.Integer,
+      type: ColumnType.Integer,
       allowEmpty: false,
       validation: {
         min: 1,
@@ -37,7 +37,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'note',
     labelKey: 'entity.note',
     schema: {
-      type: FilterRuleType.String,
+      type: ColumnType.String,
       allowEmpty: true,
       validation: {
         maxLen: 2047,
@@ -50,7 +50,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'exceptional_attribution',
     labelKey: 'attributions.columns.exceptional_attribution',
     schema: {
-      type: FilterRuleType.Boolean,
+      type: ColumnType.Boolean,
       allowEmpty: false,
     },
   },

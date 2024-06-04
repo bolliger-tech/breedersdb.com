@@ -1,5 +1,5 @@
 import { useI18n, type TFunc } from 'src/composables/useI18n';
-import { type FilterRuleTypeSchema } from '../Filter/filterRule';
+import { type FilterRuleSchema } from '../Filter/filterRule';
 import { useCultivarColumnDefinitions } from './useCultivarColumnDefinitions';
 import {
   computed,
@@ -74,5 +74,5 @@ export type FilterColumnConstructorData = {
   table: string;
   column: string;
   labelKey: Parameters<TFunc>[0];
-  schema: FilterRuleTypeSchema;
+  schema: FilterRuleSchema;
 };

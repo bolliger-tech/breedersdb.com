@@ -197,7 +197,7 @@ import { computed, ref } from 'vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from './formatResultColumnValue';
-import { FilterRuleType } from '../Filter/filterRule';
+import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 
 export interface QueryResultTableCellAttributionProps {
   attribution: QueryAttributionsViewFields;
@@ -219,19 +219,19 @@ const label = computed(() => {
     case 'DATE':
       return formatResultColumnValue({
         value: props.attribution.date_value,
-        type: FilterRuleType.Date,
+        type: ColumnType.Date,
         t,
       });
     case 'INTEGER':
       return formatResultColumnValue({
         value: props.attribution.integer_value,
-        type: FilterRuleType.Integer,
+        type: ColumnType.Integer,
         t,
       });
     case 'FLOAT':
       return formatResultColumnValue({
         value: props.attribution.float_value,
-        type: FilterRuleType.Float,
+        type: ColumnType.Float,
         t,
       });
     default:

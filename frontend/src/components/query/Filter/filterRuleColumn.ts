@@ -32,7 +32,7 @@ export class FilterRuleColumn {
     this.schema = schema;
   }
 
-  get value() {
+  get name() {
     return `${this.tableName}.${this.tableColumnName}`;
   }
 

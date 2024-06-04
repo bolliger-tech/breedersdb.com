@@ -49,7 +49,7 @@ describe('FilterRuleColumn', () => {
       tableColumnLabel: 'Column',
       schema: undefined,
     });
-    expect(filterRuleColumn.value).toBe('table.column');
+    expect(filterRuleColumn.name).toBe('table.column');
   });
 
   it('should return label', () => {

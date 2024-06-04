@@ -109,9 +109,9 @@ const resultColumns = computed<QTableColumn[]>(() => {
     const isAttribute = column.isAttribute;
 
     return {
-      name: column.value,
+      name: column.name,
       label: column.label,
-      field: isAttribute ? column.value : column.tableColumnName,
+      field: isAttribute ? column.name : column.tableColumnName,
       align: isAttribute ? 'center' : isNum ? 'right' : 'left',
       sortable: true,
       // only format base table columns because attributions must be treated

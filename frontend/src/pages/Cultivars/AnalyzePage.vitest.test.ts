@@ -148,7 +148,7 @@ describe('AnalyzePage', () => {
 
       const column = await wrapper.findComponent(QueryFilterRuleColumn);
       const currentColumn = column.vm.$props.options.find(
-        (col) => col.value === 'cultivar.id',
+        (col) => col.name === 'cultivar.id',
       );
       await column.setValue(currentColumn);
       const operator = await wrapper.findComponent(QueryFilterRuleOperator);

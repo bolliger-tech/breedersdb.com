@@ -1,27 +1,23 @@
 <template>
-  <div
-    v-if="'TEXT' === data.data_type"
-    class="result-table-cell-attribution__text text-body2 text-bold"
-  >
+  <div v-if="'TEXT' === data.data_type">
     {{ data.text_value }}
     <q-separator class="q-my-sm" dark />
   </div>
 
-  <div
-    v-if="'PHOTO' === data.data_type"
-    class="result-table-cell-attribution__photo-block"
-  >
-    <div class="result-table-cell-attribution__photo-wrapper">
-      <img
-        :alt="
-          t('result.altPhoto', {
-            date: localizeDate(data.date_attributed),
-            author: data.author,
-          })
-        "
-        :src="`/photos/view/${data.text_value}?h=400`"
-        class="result-table-cell-attribution__photo"
-      />
+  <div v-if="'PHOTO' === data.data_type" class="photo-block">
+    <div class="photo-wrapper">
+      <a :href="`/photos/view/${data.text_value}`" target="_blank">
+        <img
+          :alt="
+            t('result.altPhoto', {
+              date: localizeDate(data.date_attributed),
+              author: data.author,
+            })
+          "
+          :src="`/photos/view/${data.text_value}?h=564`"
+          class="photo"
+        />
+      </a>
     </div>
     <q-btn
       :href="`/photos/view/${data.text_value}`"
@@ -33,21 +29,40 @@
     />
   </div>
 
-  <q-icon name="person" />&nbsp;{{ data.author }}<br />
-  <q-icon name="today" />&nbsp;{{ localizeDate(data.date_attributed) }}
+  <div class="text-body2 row justify-between">
+    <div>
+      <q-icon name="person" class="text-grey-7" />&nbsp;{{ data.author }}
+    </div>
+    <div>
+      <q-icon name="today" class="text-grey-7" />&nbsp;{{
+        localizeDate(data.date_attributed)
+      }}
+    </div>
+  </div>
 
   <q-separator class="q-my-sm" dark />
 
   <template v-if="data.tree">
-    <div class="row no-wrap items-end">
-      <BaseSpriteIcon name="tree" color="white" size="lg" />
-      <div>
-        <strong>{{ data.tree.label_id }}</strong
-        ><br />
-        {{ data.tree.cultivar_name }}
+    <div class="row no-wrap items-center text-body2 q-pt-xs">
+      <BaseSpriteIcon name="tree" color="grey-7" size="lg" />
+      <div class="q-ml-sm">
+        <RouterLink :to="`/trees/${data.tree.id}`" class="link">
+          <BaseLabelId :label-id="data.tree.label_id" />
+        </RouterLink>
+        <br />
+        <RouterLink
+          v-if="data.cultivar"
+          :to="`/cultivars/${data.cultivar.id}`"
+          class="link"
+        >
+          {{ data.tree.cultivar_name }}
+        </RouterLink>
+        <template v-else>
+          {{ data.tree.cultivar_name }}
+        </template>
       </div>
     </div>
-    <table>
+    <table style="width: 100%" class="text-body2">
       <tr v-if="data.tree.date_planted">
         <th>{{ t('trees.fields.datePlanted') }}</th>
         <td>{{ localizeDate(data.tree.date_planted) }}</td>
@@ -87,13 +102,13 @@
   </template>
 
   <template v-else-if="data.cultivar">
-    <div class="row no-wrap items-end">
-      <BaseSpriteIcon name="cultivar" color="white" size="lg" />
-      <div>
+    <div class="row no-wrap items-center text-body2 q-pt-xs">
+      <BaseSpriteIcon name="cultivar" color="grey-7" size="lg" />
+      <RouterLink :to="`/cultivars/${data.cultivar.id}`" class="link q-ml-sm">
         {{ data.cultivar.name }}
-      </div>
+      </RouterLink>
     </div>
-    <table>
+    <table style="width: 100%" class="text-body2">
       <tr v-if="data.cultivar.common_name">
         <th>{{ t('cultivars.fields.commonName') }}</th>
         <td>{{ data.cultivar.common_name }}</td>
@@ -119,13 +134,13 @@
   </template>
 
   <template v-else-if="data.lot">
-    <div class="row no-wrap items-end">
-      <BaseSpriteIcon name="lot" color="white" size="lg" />
-      <div>
+    <div class="row no-wrap items-center text-body2 q-pt-xs">
+      <BaseSpriteIcon name="lot" color="grey-7" size="lg" />
+      <RouterLink :to="`/lots/${data.lot.id}`" class="link q-ml-sm">
         {{ data.lot.name }}
-      </div>
+      </RouterLink>
     </div>
-    <table>
+    <table style="width: 100%" class="text-body2">
       <tr v-if="data.lot.date_sowed">
         <th>{{ t('lots.fields.dateSowed') }}</th>
         <td>{{ localizeDate(data.lot.date_sowed) }}</td>
@@ -165,6 +180,7 @@
 
 <script lang="ts" setup>
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
+import BaseLabelId from 'src/components/Base/BaseLabelId.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { AttributionDetails } from './QueryResultTableCellAttributionOverlay.vue';
 
@@ -181,8 +197,8 @@ function localizeDate(strDate: string | null) {
 }
 </script>
 
-<style scoped>
-table {
+<style lang="scss" scoped>
+table:has(tr) {
   margin-top: 1em;
   border-spacing: 0;
 }
@@ -196,6 +212,7 @@ th {
   text-align: left;
   padding-right: 1em;
   padding-left: 0;
+  font-weight: bold;
 }
 
 td {
@@ -204,7 +221,7 @@ td {
   padding-right: 0;
 }
 
-.result-table-cell-attribution__photo-block {
+.photo-block {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -213,11 +230,21 @@ td {
   padding-bottom: 0.5rem;
 }
 
-.result-table-cell-attribution__photo-wrapper {
+.photo-wrapper {
   background: black;
   height: 200px;
   width: 100%;
   text-align: center;
+}
+
+.link {
+  color: #fff;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    color: var(--bdb-secondary-100);
+  }
 }
 
 img {

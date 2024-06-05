@@ -1,31 +1,30 @@
 <template>
-  <q-chip
-    :color="bgColor"
-    :label="label"
-    :outline="showOverlay && !autocloseOverlay"
+  <div
     class="result-table-cell-attribution__chip"
-    clickable
-    size="sm"
-    style="box-shadow: none"
+    :class="{
+      tree: props.attribution.tree_id,
+      cultivar: props.attribution.cultivar_id,
+      lot: props.attribution.lot_id,
+      open: showOverlay,
+    }"
     @click="toggleOverlay"
     @mouseenter="displayOverlay"
     @mouseleave="maybeCloseOverlay"
   >
+    {{ label }}
     <q-menu
       v-model="showOverlay"
       :offset="[0, 8]"
       anchor="bottom middle"
-      class="bg-grey-9 q-pa-sm"
+      class="result-table-cell-attribution__overlay bg-grey-9 q-pa-sm"
       dark
-      max-height="80vh"
-      max-width="80vw"
       no-parent-event
       self="top middle"
       @hide="autocloseOverlay = true"
     >
       <QueryResultTableCellAttributionOverlay :id="attribution.id" />
     </q-menu>
-  </q-chip>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -78,22 +77,6 @@ const label = computed(() => {
   }
 });
 
-const bgColor = computed(() => {
-  if (showOverlay.value && !autocloseOverlay.value) {
-    return 'accent';
-  }
-
-  if (props.attribution.tree_id) {
-    return 'green-2';
-  } else if (props.attribution.cultivar_id) {
-    return 'amber-2';
-  } else if (props.attribution.lot_id) {
-    return 'grey-2';
-  }
-
-  throw new Error('Unknown attribution type');
-});
-
 function maybeCloseOverlay() {
   if (autocloseOverlay.value) {
     showOverlay.value = false;
@@ -110,9 +93,55 @@ function toggleOverlay() {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
+@use 'sass:color';
+
 .result-table-cell-attribution__chip {
   max-width: 80px;
   cursor: pointer;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 0.625rem;
+  padding: 0.5em 0.9em;
+  border-radius: 2em;
+  line-height: 1;
+  margin: 4px;
+  display: inline-block;
+}
+
+.result-table-cell-attribution__chip.open {
+  background-color: $grey-9 !important;
+  color: white;
+}
+
+.result-table-cell-attribution__chip.tree {
+  background-color: $green-2;
+}
+.result-table-cell-attribution__chip.cultivar {
+  background-color: $amber-2;
+}
+.result-table-cell-attribution__chip.lot {
+  background-color: $blue-2;
+}
+
+.body--dark {
+  .result-table-cell-attribution__chip.tree {
+    background-color: color.scale($green-10, $alpha: -66%);
+  }
+  .result-table-cell-attribution__chip.cultivar {
+    background-color: color.scale($amber-10, $alpha: -66%);
+  }
+  .result-table-cell-attribution__chip.lot {
+    background-color: color.scale($blue-10, $alpha: -66%);
+  }
+}
+
+.body--dark {
+  .result-table-cell-attribution__overlay {
+    box-shadow: none;
+    width: 300px;
+    border: 1px solid $grey-7;
+  }
 }
 </style>

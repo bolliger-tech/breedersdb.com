@@ -84,12 +84,19 @@ function maybeCloseOverlay() {
 }
 
 function displayOverlay() {
+  blurAnyFocusedElement(); // prevent scroll jumps if a filter input is focused
   showOverlay.value = true;
 }
 
 function toggleOverlay() {
   showOverlay.value = autocloseOverlay.value;
   autocloseOverlay.value = !autocloseOverlay.value;
+}
+
+function blurAnyFocusedElement() {
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
 }
 </script>
 

@@ -1,4 +1,4 @@
-import type { BaseTable, FilterNode } from '../Filter/filterNode';
+import { BaseTable, type FilterNode } from '../Filter/filterNode';
 import {
   FilterRuleOperator,
   FilterOperatorValue,
@@ -62,7 +62,7 @@ query ${toPascalCase(baseTable)}FilterResults${inputVarDefs} {
   }
 }
 
-${attributeFragment}
+${attributionFragment}
 `;
 
   return {
@@ -82,6 +82,10 @@ function toPaginationString({
   pagination: QueryResultPagination;
   columns: string[];
 }) {
+  if (baseTable === BaseTable.Attributions) {
+    throw new Error('Pagination not supported for attributions');
+  }
+
   const limit = pagination.rowsPerPage || DEFAULT_PAGE_SIZE;
   const page = pagination.page || 1; // 1 indexed
   const offset = (page - 1) * limit;
@@ -480,31 +484,12 @@ function columnsToFields({
       const alias = column.replaceAll('.', '__');
 
       const query = tables.reduceRight(
-        (acc, table) => `${toSnakeCase(table)} { ${acc} }`,
+        (acc, table) => `${toSnakeCase(table)} { id ${acc} }`,
         toSnakeCase(field),
       );
 
       fields += `${indentation}${alias}: ${query}`;
     });
-
-  // const nestedTables = baseColumns
-  //   .filter((column) => column.split('.').length > 2)
-  //   .reduce(
-  //     (acc, column) => {
-  //       const table = column.split('.')[1];
-  //       const field = column.replace(`${baseTable}.${table}.`, '');
-  //       if (!acc[table]) {
-  //         acc[table] = [];
-  //       }
-  //       acc[table].push(field);
-  //       return acc;
-  //     },
-  //     {} as { [key: string]: string[] },
-  //   );
-
-  // Object.entries(nestedTables).forEach(([nestedTable, nestedColumns]) => {
-  //   fields += `${indentation}${nestedTable} {\n  ${columnsToFields({ columns: nestedColumns, baseTable: nestedTable, indent: indent + 2 })}\n}`;
-  // });
 
   // attributes
   columns
@@ -513,7 +498,7 @@ function columnsToFields({
     .forEach((attributeId) => {
       fields += `
 ${indentation}attributes__${attributeId}: attributions_views(where: { attribute_id: { _eq: ${attributeId} } }, order_by: { date_attributed: desc }) {
-${indentation}  ...AttributeFragment
+${indentation}  ...AttributionFragment
 ${indentation}}
 `;
     });
@@ -522,8 +507,8 @@ ${indentation}}
 }
 
 // IMPORTANT: adapt type `QueryAttributionsViewFields` if changing fragment
-const attributeFragment = `
-fragment AttributeFragment on attributions_view {
+const attributionFragment = `
+fragment AttributionFragment on attributions_view {
   id
   integer_value
   float_value

@@ -215,7 +215,7 @@ describe('AnalyzePage', () => {
   }
 }
 
-fragment AttributeFragment on attributions_view {
+fragment AttributionFragment on attributions_view {
   id
   integer_value
   float_value

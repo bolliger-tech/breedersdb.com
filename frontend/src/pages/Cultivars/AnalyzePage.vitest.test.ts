@@ -37,6 +37,7 @@ const queryMock: MockQuery = ({ query }) => {
         { id: 1, name: 'cultivar1' },
         { id: 2, name: 'cultivar2' },
       ],
+      cultivars_aggregate: { aggregate: { count: 2 } },
     })();
   }
   if ('Attributes' === queryName) {
@@ -78,12 +79,16 @@ const mutationMock: MockMutation = (params) => {
   throw new Error(`missing mutationMock for: ${queryName}`);
 };
 
-function normalizeString(str: string) {
-  return str
-    .replace(/(\W)\s+/g, '$1')
-    .replace(/\s+(\W)/g, '$1')
-    .replace(/(\w)\s+/g, '$1 ')
-    .trim();
+function prepareForRegex(str: string) {
+  return (
+    str
+      // escape all special characters
+      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      // add whitespace flexibility
+      .replace(/\s+/g, ' ')
+      .replace(/ /g, '\\s+')
+      .trim()
+  );
 }
 
 describe('AnalyzePage', () => {
@@ -189,21 +194,24 @@ describe('AnalyzePage', () => {
         () => wrapper.get('[data-test="variables"]').text().length > 2,
       );
 
-      const queryIs = normalizeString(
-        wrapper.get('[data-test="query"]').text(),
-      );
-      const variablesAre = normalizeString(
-        wrapper.get('[data-test="variables"]').text(),
-      );
+      const queryIs = wrapper.get('[data-test="query"]').text();
+      const variablesAre = wrapper.get('[data-test="variables"]').text();
 
-      const queryShouldBe = normalizeString(`
-query CultivarsFilterResults( $v0: Int! ) {
-  cultivars(where: { _and: [ { id: { _gt: $v0 } } ] }) {
+      const queryShouldBe = new RegExp(
+        prepareForRegex(
+          `query CultivarsFilterResults( $v000: Int! ) {
+  cultivars(where: { _and: [ { id: { _gt: $v000 } } ] }, limit: 100, offset: 0, order_by: { id: asc }) {
     id
     name
     common_name
     acronym
     breeder
+  }
+
+  cultivars_aggregate(where: { _and: [ { id: { _gt: $v000 } } ] }) {
+    aggregate {
+      count
+    }
   }
 }
 
@@ -218,11 +226,15 @@ fragment AttributeFragment on attributions_view {
   cultivar_id
   lot_id
   data_type
-}`);
-      const variablesShouldBe = normalizeString('{"v0": 1 }');
+}`,
+        ).replaceAll('$v000', '$v\\d+'),
+      );
+      const variablesShouldBe = new RegExp(
+        prepareForRegex('{ "v000": 1 }').replace('v000', 'v\\d+'),
+      );
 
-      expect(queryIs).toBe(queryShouldBe);
-      expect(variablesAre).toBe(variablesShouldBe);
+      expect(queryIs).toMatch(queryShouldBe);
+      expect(variablesAre).toMatch(variablesShouldBe);
     });
   });
 });

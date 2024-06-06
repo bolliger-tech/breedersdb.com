@@ -12,6 +12,13 @@
       :data-is-fresh="isValid"
     />
     <!-- <ResultDownload :enabled="!fetching && !!result" /> -->
+    <div v-if="lastRefreshDate" class="text-caption">
+      {{
+        t('result.lastRefresh', {
+          date: lastRefreshDate?.toLocaleString(),
+        })
+      }}
+    </div>
   </template>
 
   <details>
@@ -41,11 +48,12 @@ import QueryResultTable, {
 import { useQueryStore } from '../useQueryStore';
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
 import { QueryResult, filterToQuery } from './filterToQuery';
-import { useQuery } from '@urql/vue';
+import { useMutation, useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { QTableColumn, useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { debounce } from 'quasar';
+import { graphql } from 'gql.tada';
 
 export interface QueryResultProps {
   baseTable: BaseTable;
@@ -112,6 +120,31 @@ watch(visibleColumns, (newCols, oldCols) => {
   }
 });
 
+// refresh the attributions view
+const { executeMutation: refreshDbView } = useMutation(
+  graphql(`
+    mutation RefreshAttributionsView {
+      refresh_attributions_view(
+        where: { view_name: { _eq: "attributions_view" } }
+        order_by: { last_check: desc }
+        limit: 1
+      ) {
+        id
+        view_name
+        last_change
+        last_check
+      }
+    }
+  `),
+);
+const { data: lastRefresh, error: refreshError } = await refreshDbView({});
+
+const lastRefreshDate = computed(() => {
+  return lastRefresh?.refresh_attributions_view[0].last_check
+    ? new Date(lastRefresh.refresh_attributions_view[0].last_check as string)
+    : null;
+});
+
 // debounce fetch queries
 const queryData = ref(
   filterToQuery({
@@ -120,7 +153,7 @@ const queryData = ref(
   }),
 );
 watch(
-  [baseFilter, columnsToFetch],
+  [baseFilter, columnsToFetch, () => lastRefresh],
   debounce(() => {
     queryData.value = filterToQuery({
       filter: baseFilter.value,
@@ -133,8 +166,11 @@ watch(
 const query = computed(() => queryData.value.query);
 const variables = computed(() => queryData.value.variables);
 
-// TODO: update materialized view
-const { data, fetching, error } = await useQuery<QueryResult>({
+const {
+  data,
+  fetching,
+  error: queryError,
+} = await useQuery<QueryResult>({
   query,
   variables,
   pause: !isValid.value,
@@ -158,4 +194,6 @@ const rows = computed(() => {
     return Object.fromEntries(renamed) as QueryResultTableProps['rows'][0];
   });
 });
+
+const error = computed(() => refreshError || queryError.value);
 </script>

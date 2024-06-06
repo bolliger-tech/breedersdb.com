@@ -7,6 +7,7 @@ import {
   addQuasarPlugins,
   type MockQuery,
   type AsyncComponentWrapper,
+  type MockMutation,
 } from 'src/utils/testHelpers';
 import { flushPromises } from '@vue/test-utils';
 import { OperationDefinitionNode } from 'graphql';
@@ -59,6 +60,24 @@ const queryMock: MockQuery = ({ query }) => {
   throw new Error(`missing queryMock for: ${queryName}`);
 };
 
+const mutationMock: MockMutation = (params) => {
+  const queryName = (params.query.definitions[0] as OperationDefinitionNode)
+    .name?.value;
+  if ('RefreshAttributionsView' === queryName) {
+    return urqlResp({
+      refresh_attributions_view: [
+        {
+          id: 1,
+          view_name: 'AttributionsView',
+          last_change: '2024-06-06T11:43:12Z',
+          last_check: '2024-06-06T11:43:12Z',
+        },
+      ],
+    })();
+  }
+  throw new Error(`missing mutationMock for: ${queryName}`);
+};
+
 function normalizeString(str: string) {
   return str
     .replace(/(\W)\s+/g, '$1')
@@ -76,6 +95,7 @@ describe('AnalyzePage', () => {
     it('should mount without filter', async () => {
       const wrapper = await mountAsync(AnalyzePage, {
         executeQuery: queryMock,
+        executeMutation: mutationMock,
       });
 
       expect(
@@ -91,6 +111,7 @@ describe('AnalyzePage', () => {
     it('should add filter rule', async () => {
       const wrapper = await mountAsync(AnalyzePage, {
         executeQuery: queryMock,
+        executeMutation: mutationMock,
       });
 
       // click + button
@@ -142,6 +163,7 @@ describe('AnalyzePage', () => {
       });
       const wrapper = await mountAsync(AnalyzePage, {
         executeQuery: queryMock,
+        executeMutation: mutationMock,
       });
 
       await addAndRule(wrapper);

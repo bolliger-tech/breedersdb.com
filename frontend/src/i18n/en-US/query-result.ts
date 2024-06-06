@@ -15,6 +15,8 @@ export const result = {
   no: 'no',
 
   noData: 'No data.',
+
+  lastRefresh: 'Last data refresh: {date}',
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

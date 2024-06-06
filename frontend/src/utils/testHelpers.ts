@@ -3,13 +3,7 @@ import { vi } from 'vitest';
 import { never, fromValue, type Source } from 'wonka';
 import { defineComponent, type Component } from 'vue';
 import { i18n } from 'src/boot/i18n';
-import urql, {
-  Client,
-  CombinedError,
-  type AnyVariables,
-  type GraphQLRequest,
-  type OperationContext,
-} from '@urql/vue';
+import urql, { Client, CombinedError } from '@urql/vue';
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest';
 import { LocalStorage, SessionStorage } from 'quasar';
 
@@ -59,36 +53,37 @@ type MockFnReturnType<T> = Source<
     }
 >;
 export type MockQuery<T = unknown> = (
-  query: GraphQLRequest,
-  opts?: Partial<OperationContext> | undefined,
+  query: Parameters<Client['executeQuery']>[0],
+  opts?: Parameters<Client['executeQuery']>[1],
 ) => MockFnReturnType<T>;
-export type MockMutation<T = unknown, V extends AnyVariables = AnyVariables> = (
-  variables: V,
-  context?: Partial<OperationContext>,
+export type MockMutation<T = unknown> = (
+  query: Parameters<Client['executeQuery']>[0],
+  opts?: Parameters<Client['executeQuery']>[1],
 ) => MockFnReturnType<T>;
 export type MockSubscription<T = unknown> = (
-  opts?: Partial<OperationContext>,
+  query: Parameters<Client['executeQuery']>[0],
+  opts?: Parameters<Client['executeQuery']>[1],
 ) => MockFnReturnType<T>;
 
-export function mockQuery<T>(
+export function mockQuery(
   wrapper: VueWrapper | AsyncComponentWrapper,
-  mockFn: MockQuery<T>,
+  mockFn: MockQuery,
 ) {
   const client = wrapper.vm.$.appContext.provides.$urql.value;
   client.executeQuery = vi.fn(mockFn);
 }
 
-export function mockMutation<T, V extends AnyVariables>(
+export function mockMutation(
   wrapper: VueWrapper | AsyncComponentWrapper,
-  mockFn: MockMutation<T, V>,
+  mockFn: MockMutation,
 ) {
   const client = wrapper.vm.$.appContext.provides.$urql.value;
   client.executeMutation = vi.fn(mockFn);
 }
 
-export function mockSubscription<T>(
+export function mockSubscription(
   wrapper: VueWrapper | AsyncComponentWrapper,
-  mockFn: MockSubscription<T>,
+  mockFn: MockSubscription,
 ) {
   const client = wrapper.vm.$.appContext.provides.$urql.value;
   client.executeSubscription = vi.fn(mockFn);
@@ -120,18 +115,13 @@ function waitUntilMounted(wrapper: VueWrapper, Component: Component) {
   });
 }
 
-function createUrqlMockClient<
-  Q = unknown,
-  M = unknown,
-  S = unknown,
-  V extends AnyVariables = AnyVariables,
->({
+function createUrqlMockClient<Q = unknown, M = unknown, S = unknown>({
   executeQuery,
   executeMutation,
   executeSubscription,
 }: {
   executeQuery?: MockQuery<Q>;
-  executeMutation?: MockMutation<M, V>;
+  executeMutation?: MockMutation<M>;
   executeSubscription?: MockSubscription<S>;
 } = {}) {
   const client = new Client({

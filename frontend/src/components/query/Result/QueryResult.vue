@@ -6,7 +6,8 @@
   <template v-else>
     <QueryResultTable
       v-model:visible-columns="visibleColumns"
-      :loading="fetching || fetchingColumns"
+      v-model:pagination="pagination"
+      :loading="fetching || fetchingColumns || debouncedFetching"
       :rows="rows"
       :all-columns="availableColumns"
       :data-is-fresh="isValid"
@@ -35,7 +36,7 @@
 
   <details open>
     <summary><h3>Results</h3></summary>
-    <p>Count: {{ data?.cultivars.length || 0 }}</p>
+    <p>Count: {{ data?.cultivars_aggregate?.aggregate.count || 0 }}</p>
     <pre style="font-size: 12px">{{ fetching || error || data }}</pre>
   </details>
 </template>
@@ -120,6 +121,14 @@ watch(visibleColumns, (newCols, oldCols) => {
   }
 });
 
+const pagination = ref<QueryResultTableProps['pagination']>({
+  sortBy: null,
+  descending: false,
+  page: 1,
+  rowsPerPage: 100,
+  rowsNumber: 0,
+});
+
 // refresh the attributions view
 const { executeMutation: refreshDbView } = useMutation(
   graphql(`
@@ -146,20 +155,27 @@ const lastRefreshDate = computed(() => {
 });
 
 // debounce fetch queries
+const debouncedFetching = ref(false);
 const queryData = ref(
   filterToQuery({
     filter: baseFilter.value,
     columns: columnsToFetch.value,
+    pagination: pagination.value,
   }),
 );
 watch(
-  [baseFilter, columnsToFetch, () => lastRefresh],
-  debounce(() => {
-    queryData.value = filterToQuery({
-      filter: baseFilter.value,
-      columns: columnsToFetch.value,
-    });
-  }, 500),
+  [baseFilter, columnsToFetch, pagination, () => lastRefresh],
+  () => {
+    debouncedFetching.value = true;
+    debounce(() => {
+      queryData.value = filterToQuery({
+        filter: baseFilter.value,
+        columns: columnsToFetch.value,
+        pagination: pagination.value,
+      });
+      debouncedFetching.value = false;
+    }, 500)();
+  },
   { deep: true },
 );
 
@@ -196,4 +212,16 @@ const rows = computed(() => {
 });
 
 const error = computed(() => refreshError || queryError.value);
+
+const totalResults = computed(() => {
+  if (!data?.value) return 0;
+  return data.value[`${props.baseTable}_aggregate`].aggregate.count;
+});
+watch(
+  totalResults,
+  (newCount) => {
+    pagination.value.rowsNumber = newCount;
+  },
+  { immediate: true },
+);
 </script>

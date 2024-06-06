@@ -14,16 +14,27 @@ export type QueryResult = {
     | { [key: string]: null | number | string }
     | { [key: `attributes__${number}`]: QueryAttributionsViewFields[] }
   )[];
+} & { [K in `${BaseTable}_aggregate`]: { aggregate: { count: number } } };
+
+export type QueryResultPagination = {
+  sortBy?: string | null | undefined;
+  descending?: boolean | undefined;
+  page?: number | undefined;
+  rowsPerPage?: number | undefined;
 };
+
+const DEFAULT_PAGE_SIZE = 100;
 
 let varCounter = 0;
 
 export function filterToQuery({
   filter,
   columns,
+  pagination,
 }: {
   filter: FilterNode;
   columns: string[];
+  pagination: QueryResultPagination;
 }) {
   const where = filterToWhere(filter);
   const inputVarDefs =
@@ -32,15 +43,25 @@ export function filterToQuery({
       : '';
 
   const baseTable = filter.getBaseTable();
-
+  const paginationString = toPaginationString({
+    baseTable,
+    pagination,
+    columns,
+  });
   const fields = columnsToFields({ columns, baseTable, indent: 4 });
 
   const q = `
 query ${toPascalCase(baseTable)}FilterResults${inputVarDefs} {
-  ${toSnakeCase(baseTable)}(where: ${where.conditions}) {
+  ${toSnakeCase(baseTable)}(where: ${where.conditions}, ${paginationString}) {
     ${fields.trim()}
   }
+  ${toSnakeCase(baseTable)}_aggregate(where: ${where.conditions}) {
+    aggregate {
+      count
+    }
+  }
 }
+
 ${attributeFragment}
 `;
 
@@ -50,6 +71,29 @@ ${attributeFragment}
       where.variables.map((v) => [v.name, v.value]),
     ),
   };
+}
+
+function toPaginationString({
+  baseTable,
+  pagination,
+  columns,
+}: {
+  baseTable: BaseTable;
+  pagination: QueryResultPagination;
+  columns: string[];
+}) {
+  const limit = pagination.rowsPerPage || DEFAULT_PAGE_SIZE;
+  const page = pagination.page || 1; // 1 indexed
+  const offset = (page - 1) * limit;
+
+  const order = pagination.descending ? 'desc' : 'asc';
+  const orderByColumn = pagination.sortBy || columns[0] || 'id';
+  const orderBy = orderByColumn
+    .replace(`${baseTable}.`, '')
+    .split('.')
+    .reduceRight((acc, column) => `{ ${column}: ${acc} }`, order);
+
+  return `limit: ${limit}, offset: ${offset}, order_by: ${orderBy}`;
 }
 
 function filterToWhere(filter: FilterNode): GraphQLWhereArgs {

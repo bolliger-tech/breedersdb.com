@@ -1,22 +1,19 @@
 <template>
-  <!-- v-model:pagination="pagination" -->
   <q-table
+    v-model:pagination="pagination"
     :class="{ 'query-result-table--fullscreen': fullscreen }"
     :columns="orderedColumns"
     :fullscreen="fullscreen"
     :loading="loading"
     :rows="rows"
     :rows-per-page-options="[10, 100, 1000]"
-    :virtual-scroll-item-size="48"
-    :virtual-scroll-sticky-size-start="48"
     :visible-columns="visibleColumns"
     :wrap-cells="true"
     binary-state-sort
     class="query-result-table"
     color="primary"
     row-key="id"
-    virtual-scroll
-    @request="(event) => $emit('requestData', event)"
+    @request="(event) => (pagination = event.pagination)"
   >
     <template #top-left>
       <div v-if="visibleColumns.length < 1" class="text-negative">
@@ -67,7 +64,13 @@ import QueryResultTableHeaderCell from './QueryResultTableHeaderCell.vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
 
-export interface QueryResultTableProps {
+export interface QueryResultTableProps
+  extends QueryResultTablePropsWithoutModel {
+  visibleColumns: string[];
+  pagination: NonNullable<QTableProps['pagination']>;
+}
+
+interface QueryResultTablePropsWithoutModel {
   rows: (
     | { [key: string]: null | number | string }
     | { [key: `attributes.${number}`]: QueryAttributionsViewFields[] }
@@ -81,18 +84,15 @@ export type QueryResultTableRequestDataParams = Parameters<
   NonNullable<QTableProps['onRequest']>
 >[0];
 
-const props = withDefaults(defineProps<QueryResultTableProps>(), {
+const props = withDefaults(defineProps<QueryResultTablePropsWithoutModel>(), {
   loading: false,
 });
 const visibleColumns = defineModel<string[]>('visibleColumns', {
   required: true,
 });
-
-defineEmits<{
-  requestData: [data: QueryResultTableRequestDataParams];
-}>();
-
-// const ROWS_PER_PAGE = 100;
+const pagination = defineModel<QTableProps['pagination']>('pagination', {
+  required: true,
+});
 
 const { t } = useI18n();
 
@@ -144,44 +144,6 @@ const orderedColumns = computed(() => {
       visibleColumns.value.indexOf(b.name),
   );
 });
-
-// const totalRowsDB = computed<number>(() => {
-//   return props.result?.count || 0;
-// });
-
-// const offset = computed<number>(() => {
-//   return props.result?.offset || 0;
-// });
-
-// const page = computed<number>(() => {
-//   return 1 + offset.value / rowsPerPage.value;
-// });
-
-// const sortBy = computed<string>(() => {
-//   return props.result?.sortBy || '';
-// });
-
-// const descending = computed<boolean>(() => {
-//   return props.result?.order === 'desc';
-// });
-
-// const rowsPerPage = computed<number>(() => {
-//   return props.result?.limit || ROWS_PER_PAGE;
-// });
-
-// const pagination = ref({
-//   sortBy: sortBy.value,
-//   descending: descending.value,
-//   page: page.value,
-//   rowsPerPage: rowsPerPage.value,
-//   rowsNumber: totalRowsDB.value,
-// });
-
-// watch(totalRowsDB, (count) => (pagination.value.rowsNumber = count));
-// watch(page, (num) => (pagination.value.page = num));
-// watch(sortBy, (col) => (pagination.value.sortBy = col));
-// watch(descending, (order) => (pagination.value.descending = order));
-// watch(rowsPerPage, (limit) => (pagination.value.rowsPerPage = limit));
 </script>
 
 <style lang="scss">

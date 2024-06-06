@@ -112,7 +112,7 @@ const resultColumns = computed<QTableColumn[]>(() => {
       label: column.label,
       field: isAttribute ? column.name : column.tableColumnName,
       align: isAttribute ? 'center' : isNum ? 'right' : 'left',
-      sortable: true,
+      sortable: isAttribute ? false : true,
       // only format base table columns because attributions must be treated
       // differently (see QueryResultTableCellAttribution.vue)
       ...(!isAttribute && {

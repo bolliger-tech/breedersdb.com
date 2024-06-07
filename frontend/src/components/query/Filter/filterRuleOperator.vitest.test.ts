@@ -267,7 +267,12 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnType.String,
+        ColumnType.Integer,
+        ColumnType.Float,
         ColumnType.Enum,
+        ColumnType.Date,
+        ColumnType.DateTime,
+        ColumnType.Time,
       ]);
     });
 
@@ -278,7 +283,12 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnType.String,
+        ColumnType.Integer,
+        ColumnType.Float,
         ColumnType.Enum,
+        ColumnType.Date,
+        ColumnType.DateTime,
+        ColumnType.Time,
         ColumnType.Photo,
       ]);
     });

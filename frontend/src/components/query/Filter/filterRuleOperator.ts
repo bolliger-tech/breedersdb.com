@@ -96,10 +96,28 @@ export class FilterRuleOperator {
       case FilterOperatorValue.NotContains:
       case FilterOperatorValue.EndsWith:
       case FilterOperatorValue.NotEndsWith:
-      case FilterOperatorValue.Empty:
         return [ColumnType.String, ColumnType.Enum];
+      case FilterOperatorValue.Empty:
+        return [
+          ColumnType.String,
+          ColumnType.Integer,
+          ColumnType.Float,
+          ColumnType.Enum,
+          ColumnType.Date,
+          ColumnType.DateTime,
+          ColumnType.Time,
+        ];
       case FilterOperatorValue.NotEmpty:
-        return [ColumnType.String, ColumnType.Enum, ColumnType.Photo];
+        return [
+          ColumnType.String,
+          ColumnType.Integer,
+          ColumnType.Float,
+          ColumnType.Enum,
+          ColumnType.Date,
+          ColumnType.DateTime,
+          ColumnType.Time,
+          ColumnType.Photo,
+        ];
       case FilterOperatorValue.True:
       case FilterOperatorValue.False:
         return [ColumnType.Boolean];

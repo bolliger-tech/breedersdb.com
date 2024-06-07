@@ -151,6 +151,7 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
   if (rule.isAttribute) {
     const attributeId = parseInt(field);
     const attributeIdCondition = `{ attribute_id: { _eq: ${attributeId} } }`;
+    comparison.negate = false; // negation is handled in toAttributeValueCondition
     const attributeValueCondition = toAttributeValueCondition({
       comparison,
       rule,
@@ -171,13 +172,14 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
   } else {
     // if value can be null or empty string and it is one of both
     if (rule.canBeNullOrEmpty) {
-      const empty =
+      const isEmpty =
         (rule.operator?.value === FilterOperatorValue.Equal &&
           rule.term?.value === '') ||
         rule.operator?.value === FilterOperatorValue.Empty;
-      const conditions = empty
-        ? `{ _or: [ { ${field}: { _is_null: true } }, { ${field}: { _eq: "" } } ] }`
-        : `{ _and: [ { ${field}: { _is_null: false } }, { ${field}: { _neq: "" } } ] }`;
+      const emptyCondition = `{ _or: [ { ${field}: { _is_null: true } }, { ${field}: { _eq: "" } } ] }`;
+      const notEmptyCondition = `{ _and: [ { ${field}: { _is_null: false } }, { ${field}: { _neq: "" } } ] }`;
+      const conditions =
+        isEmpty != comparison.negate ? emptyCondition : notEmptyCondition;
       criterion = {
         conditions,
         variables: [],
@@ -215,15 +217,15 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
 function toComparison({
   operator,
   term,
-  type: filterRuleType,
+  type: columnType,
 }: {
   operator: FilterRuleOperator;
   term?: FilterRuleTerm;
   type: ColumnType;
 }): Comparison | undefined {
   const name = `v${varCounter++}`;
-  const value = cast({ term, type: filterRuleType });
-  const type = filterRuleTypeToGraphQLType(filterRuleType);
+  const value = cast({ term, type: columnType });
+  const type = columnTypeToGraphQLType(columnType);
 
   if (undefined === value) {
     return;
@@ -237,6 +239,8 @@ function toComparison({
         negate: false,
       };
     case FilterOperatorValue.NotEqual:
+      // becuase it it easier to implement on nested tables
+      // we use double negation. see ruleToCriterion()
       return {
         operator: GraphQLComparisonOperator.Eq,
         variable: { name, type, value },
@@ -273,6 +277,8 @@ function toComparison({
         negate: false,
       };
     case FilterOperatorValue.StartsNotWith:
+      // becuase it it easier to implement on nested tables
+      // we use double negation. see ruleToCriterion()
       return {
         operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `${value}%` },
@@ -285,6 +291,8 @@ function toComparison({
         negate: false,
       };
     case FilterOperatorValue.NotContains:
+      // becuase it it easier to implement on nested tables
+      // we use double negation. see ruleToCriterion()
       return {
         operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `%${value}%` },
@@ -297,6 +305,8 @@ function toComparison({
         negate: false,
       };
     case FilterOperatorValue.NotEndsWith:
+      // becuase it it easier to implement on nested tables
+      // we use double negation. see ruleToCriterion()
       return {
         operator: GraphQLComparisonOperator.Ilike,
         variable: { name, type, value: `%${value}` },
@@ -305,19 +315,29 @@ function toComparison({
     case FilterOperatorValue.Empty:
       // becuase it it easier to implement on nested tables
       // we use double negation. see ruleToCriterion()
-      return {
-        operator: GraphQLComparisonOperator.IsNull,
-        variable: { name, type: 'Boolean', value: false },
-        negate: true,
-      };
+      return columnType === ColumnType.String
+        ? {
+            operator: GraphQLComparisonOperator.Neq,
+            variable: { name, type: 'String', value: '' },
+            negate: true,
+          }
+        : {
+            operator: GraphQLComparisonOperator.IsNull,
+            variable: { name, type: 'Boolean', value: false },
+            negate: true,
+          };
     case FilterOperatorValue.NotEmpty:
-      // becuase it it easier to implement on nested tables
-      // we use double negation. see ruleToCriterion()
-      return {
-        operator: GraphQLComparisonOperator.IsNull,
-        variable: { name, type: 'Boolean', value: false },
-        negate: false,
-      };
+      return columnType === ColumnType.String
+        ? {
+            operator: GraphQLComparisonOperator.Neq,
+            variable: { name, type: 'String', value: '' },
+            negate: false,
+          }
+        : {
+            operator: GraphQLComparisonOperator.IsNull,
+            variable: { name, type: 'Boolean', value: false },
+            negate: false,
+          };
     case FilterOperatorValue.True:
       return {
         operator: GraphQLComparisonOperator.Eq,
@@ -325,6 +345,8 @@ function toComparison({
         negate: false,
       };
     case FilterOperatorValue.False:
+      // becuase it it easier to implement on nested tables
+      // we use double negation. see ruleToCriterion()
       return {
         operator: GraphQLComparisonOperator.Eq,
         variable: { name, type: 'Boolean', value: true },
@@ -363,7 +385,7 @@ function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnType }) {
   }
 }
 
-function filterRuleTypeToGraphQLType(type: ColumnType) {
+function columnTypeToGraphQLType(type: ColumnType) {
   switch (type) {
     case ColumnType.String:
       return 'String';
@@ -398,8 +420,11 @@ function toAttributeValueCondition({
   const attributeDataType = rule.type || ColumnType.String;
   const graphQLDataType =
     comparison.operator === GraphQLComparisonOperator.IsNull
-      ? filterRuleTypeToGraphQLType(attributeDataType)
+      ? columnTypeToGraphQLType(attributeDataType)
       : comparison.variable.type;
+
+  if (comparison.negate)
+    throw new Error('Negation not supported for attributes');
 
   switch (graphQLDataType) {
     case 'String':
@@ -537,7 +562,7 @@ export type QueryAttributionsViewFields = {
 
 type QueryVariable = {
   name: string;
-  type: ReturnType<typeof filterRuleTypeToGraphQLType>; // GraphQL type
+  type: ReturnType<typeof columnTypeToGraphQLType>; // GraphQL type
   value: string | number | boolean;
 };
 type Comparison = {

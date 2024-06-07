@@ -141,7 +141,6 @@ export class FilterRule {
       case ColumnType.DateTime:
       case ColumnType.Integer:
       case ColumnType.Float:
-        return true;
       case ColumnType.Enum:
       case ColumnType.String:
         return (

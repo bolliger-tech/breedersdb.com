@@ -317,6 +317,24 @@ describe('FilterTerm', () => {
 
       expect(filterTerm.isValid).toBe(true);
     });
+
+    it('should fit 0 > x < 1', () => {
+      const value = '0.5';
+      const schema = {
+        type: ColumnType.Float as const,
+        allowEmpty: false,
+        validation: {
+          min: 0,
+          max: 1,
+          step: 0.1,
+        },
+      };
+
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
+
+      expect(filterTerm.isValid).toBe(true);
+    });
   });
 
   describe('Boolean', () => {

@@ -119,14 +119,28 @@ export class FilterRuleTerm {
     if (value < validation.min) return false;
     if (value > validation.max) return false;
 
-    const reminder = (value - validation.min) % validation.step;
-    const significantDigits =
-      validation.step.toString().split('.')[1]?.length || 0;
-    const roundedReminder = Number(reminder.toFixed(significantDigits));
+    const remainder = this.modulo(value - validation.min, validation.step);
 
-    if (roundedReminder !== 0) return false;
+    if (remainder !== 0) return false;
 
     return true;
+  }
+
+  private modulo(n: number, d: number) {
+    const nPrecision = n.toString().split('.')[1]?.length || 0;
+    const dPrecision = d.toString().split('.')[1]?.length || 0;
+    const precision = Math.max(nPrecision, dPrecision);
+    const power = Math.pow(10, precision);
+
+    // make integers out of the floats
+    // beacuse float operations may lead to wrong results
+    // (e.g. 0.5 % 0.1 = 0.09999999999999998)
+    const nInt = n * power;
+    const dInt = d * power;
+
+    // get the modulo instead of the remainder.
+    // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder
+    return ((nInt % dInt) + dInt) % dInt;
   }
 
   private isValidDate() {

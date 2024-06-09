@@ -44,8 +44,13 @@
     <template #header-cell="cellProps">
       <QueryResultTableHeaderCell
         :cell-props="cellProps"
+        :possible-drop-target="
+          !!draggedColumn && cellProps.col.name !== draggedColumn
+        "
         @col-dropped="reorderColumns"
         @hide-column="hideColumn"
+        @drag-end="draggedColumn = null"
+        @drag-start="draggedColumn = cellProps.col.name"
       />
     </template>
 
@@ -95,6 +100,8 @@ const pagination = defineModel<QTableProps['pagination']>('pagination', {
 });
 
 const { t } = useI18n();
+
+const draggedColumn = ref<string | null>(null);
 
 const fullscreen = ref(false);
 

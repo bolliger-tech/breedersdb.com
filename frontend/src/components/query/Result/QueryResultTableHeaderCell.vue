@@ -2,42 +2,61 @@
   <q-th
     :props="cellProps"
     :draggable="dragging"
-    @dragend="dragging = false"
+    class="query-result-table-header-cell"
+    @dragend="dragEnd"
     @dragstart="dragStart"
   >
-    <div
-      class="drop-zone drop-before"
-      :class="{ 'drop-zone-active': dragOverBefore && !dragging }"
-      @dragenter="dragOverBefore = true"
-      @dragleave="dragOverBefore = false"
-      @drop.prevent="(e) => drop(e, 'before')"
-      @dragover.prevent="setDropEffectMove"
-    ></div>
-    <q-icon
-      class="drag-handle"
-      name="drag_indicator"
-      size="xs"
-      @mousedown="dragging = true"
-      @mouseup="dragging = false"
-      @click.prevent.stop=""
-    />
-    {{ cellProps.col.label }}
-    <div
-      class="drop-zone drop-after"
-      :class="{ 'drop-zone-active': dragOverAfter && !dragging }"
-      @dragenter="dragOverAfter = true"
-      @dragleave="dragOverAfter = false"
-      @drop.prevent="(e) => drop(e, 'after')"
-      @dragover.prevent="setDropEffectMove"
-    ></div>
-    <q-btn
-      dense
-      flat
-      icon="close"
-      round
-      size="xs"
-      @click.stop="$emit('hideColumn', colName)"
-    />
+    <div class="query-result-table-header-cell__content">
+      <q-btn
+        dense
+        flat
+        icon="drag_indicator"
+        round
+        size="sm"
+        class="text-primary query-result-table-header-cell__drag-handle"
+        @mousedown="dragging = true"
+        @mouseup="dragging = false"
+        @click.prevent.stop=""
+      />
+      <span class="text-muted"
+        >{{
+          cellProps.col.label.split(' > ')[0]
+        }}&nbsp;&nbsp;>&nbsp;&nbsp;</span
+      >{{ cellProps.col.label.split(' > ')[1] }}
+      <q-btn
+        dense
+        flat
+        icon="close"
+        round
+        size="xs"
+        class="text-primary"
+        @click.stop="$emit('hideColumn', colName)"
+      />
+    </div>
+    <template v-if="possibleDropTarget">
+      <div
+        class="query-result-table-header-cell__drop-zone query-result-table-header-cell__drop-zone--before"
+        :class="{
+          'query-result-table-header-cell__drop-zone-active':
+            dragOverBefore && !dragging,
+        }"
+        @dragenter="dragOverBefore = true"
+        @dragleave="dragOverBefore = false"
+        @drop.prevent="(e) => drop(e, 'before')"
+        @dragover.prevent="setDropEffectMove"
+      ></div>
+      <div
+        class="query-result-table-header-cell__drop-zone query-result-table-header-cell__drop-zone--after"
+        :class="{
+          'query-result-table-header-cell__drop-zone-active':
+            dragOverAfter && !dragging,
+        }"
+        @dragenter="dragOverAfter = true"
+        @dragleave="dragOverAfter = false"
+        @drop.prevent="(e) => drop(e, 'after')"
+        @dragover.prevent="setDropEffectMove"
+      ></div>
+    </template>
   </q-th>
 </template>
 
@@ -47,6 +66,7 @@ import { QTableSlots } from 'quasar';
 
 export interface QueryResultTableHeaderCellProps {
   cellProps: Parameters<QTableSlots['header-cell']>[0];
+  possibleDropTarget: boolean;
 }
 
 const props = defineProps<QueryResultTableHeaderCellProps>();
@@ -58,6 +78,8 @@ const emit = defineEmits<{
     droppedColName: string,
     pos: 'before' | 'after',
   ];
+  dragStart: [colName: string];
+  dragEnd: [colName: string];
 }>();
 
 const dragging = ref(false);
@@ -74,6 +96,12 @@ function dragStart(e: DragEvent) {
   }
   e.dataTransfer.dropEffect = 'move';
   e.dataTransfer.setData('text/plain', colName.value);
+  emit('dragStart', colName.value);
+}
+
+function dragEnd() {
+  dragging.value = false;
+  emit('dragEnd', colName.value);
 }
 
 function drop(e: DragEvent, pos: 'before' | 'after') {
@@ -96,21 +124,28 @@ function setDropEffectMove(e: DragEvent) {
 }
 </script>
 
-<style scoped>
-th {
+<style>
+.query-result-table-header-cell {
   white-space: nowrap;
 }
 
-.drag-handle {
-  color: rgba(0, 0, 0, 0.4);
+.query-result-table-header-cell__content {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  transform: translateX(-8px);
+}
+
+.query-result-table-header-cell__drag-handle {
   cursor: grab;
 }
 
-.drag-handle:hover {
+.query-result-table-header-cell__drag-handle:hover {
   color: var(--q-primary);
 }
 
-.drop-zone {
+.query-result-table-header-cell__drop-zone {
   height: 48px;
   width: 50%;
   border: 0 solid transparent;
@@ -119,17 +154,27 @@ th {
   top: 0;
 }
 
-.drop-before {
+.query-result-table-header-cell__drop-zone--before {
   left: 0;
   border-left-width: 4px;
 }
 
-.drop-after {
+.query-result-table-header-cell__drop-zone--after {
   right: 0;
   border-right-width: 4px;
 }
 
-.drop-zone-active {
+.query-result-table-header-cell__drop-zone-active {
   border-color: var(--q-primary);
+  background: color-mix(in srgb, var(--q-primary) 20%, transparent);
+}
+
+.q-table__sort-icon {
+  position: absolute;
+  top: 15px;
+  right: 8px;
+}
+.q-table__sort-icon:hover {
+  color: var(--q-primary);
 }
 </style>

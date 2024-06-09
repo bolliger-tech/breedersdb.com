@@ -34,6 +34,11 @@ const filterRootArgs = {
   baseTable: BaseTable.Cultivars,
 };
 
+const emptyAttributionFilter = FilterNode.FilterRoot({
+  childrensConjunction: FilterConjunction.And,
+  baseTable: BaseTable.Attributions,
+});
+
 const filterRules = {
   id: new FilterRule({
     column: new FilterRuleColumn({
@@ -215,7 +220,8 @@ describe('filterToQuery', () => {
         });
 
         const { query } = filterToQuery({
-          filter,
+          baseFilter: filter,
+          attributionFilter: emptyAttributionFilter,
           columns: [],
           pagination: basicPagination,
         });
@@ -246,7 +252,8 @@ cultivars(where: { _and: [
         });
 
         const { query } = filterToQuery({
-          filter,
+          baseFilter: filter,
+          attributionFilter: emptyAttributionFilter,
           columns: [],
           pagination: basicPagination,
         });
@@ -291,7 +298,8 @@ cultivars(where: { _or: [
         });
 
         const { query } = filterToQuery({
-          filter,
+          baseFilter: filter,
+          attributionFilter: emptyAttributionFilter,
           columns: [],
           pagination: basicPagination,
         });
@@ -339,7 +347,8 @@ cultivars(where: { _or: [
         });
 
         const { query } = filterToQuery({
-          filter,
+          baseFilter: filter,
+          attributionFilter: emptyAttributionFilter,
           columns: [],
           pagination: basicPagination,
         });
@@ -388,7 +397,8 @@ cultivars(where: { _or: [
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -430,7 +440,8 @@ cultivars(where: { _or: [
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -472,7 +483,8 @@ cultivars(where: { _or: [
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -515,7 +527,8 @@ cultivars(where: { _or: [
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -558,7 +571,8 @@ cultivars(where: { _or: [
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -595,7 +609,8 @@ cultivars(where: { _or: [
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -633,7 +648,8 @@ cultivars(where: { _or: [
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -662,7 +678,8 @@ cultivars(where: { _or: [
           });
 
           const { query, variables } = filterToQuery({
-            filter,
+            baseFilter: filter,
+            attributionFilter: emptyAttributionFilter,
             columns: [],
             pagination: basicPagination,
           });
@@ -700,7 +717,8 @@ cultivars(where: { _and: [ { _or: [
           });
 
           const { query, variables } = filterToQuery({
-            filter,
+            baseFilter: filter,
+            attributionFilter: emptyAttributionFilter,
             columns: [],
             pagination: basicPagination,
           });
@@ -733,7 +751,8 @@ cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq
           });
 
           const { query, variables } = filterToQuery({
-            filter,
+            baseFilter: filter,
+            attributionFilter: emptyAttributionFilter,
             columns: [],
             pagination: basicPagination,
           });
@@ -765,7 +784,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -796,7 +816,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -827,7 +848,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -858,7 +880,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -889,7 +912,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -920,7 +944,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -951,7 +976,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -982,7 +1008,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1013,7 +1040,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1044,7 +1072,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1075,7 +1104,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1106,7 +1136,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1136,7 +1167,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1167,7 +1199,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1194,7 +1227,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1221,7 +1255,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1252,7 +1287,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1279,7 +1315,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1306,7 +1343,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1336,7 +1374,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1366,7 +1405,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             });
 
             const { query, variables } = filterToQuery({
-              filter,
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
               columns: [],
               pagination: basicPagination,
             });
@@ -1407,7 +1447,8 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
         });
 
         const { query } = filterToQuery({
-          filter,
+          baseFilter: filter,
+          attributionFilter: emptyAttributionFilter,
           columns: ['cultivars.id', 'cultivars.name', 'cultivars.created'],
           pagination: basicPagination,
         });
@@ -1432,7 +1473,8 @@ cultivars(where: { _and: [
       const filter = FilterNode.FilterRoot(filterRootArgs);
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: [],
         pagination: {},
       });
@@ -1445,7 +1487,8 @@ cultivars(where: { _and: [
       const filter = FilterNode.FilterRoot(filterRootArgs);
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: [],
         pagination: {},
       });
@@ -1459,7 +1502,8 @@ cultivars(where: { _and: [
       const filter = FilterNode.FilterRoot(filterRootArgs);
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: ['cultivars.name'],
         pagination: {},
       });
@@ -1477,7 +1521,8 @@ cultivars(where: { _and: [
       });
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: [],
         pagination,
       });
@@ -1492,7 +1537,8 @@ cultivars(where: { _and: [
       });
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: [],
         pagination,
       });
@@ -1508,7 +1554,8 @@ cultivars(where: { _and: [
       });
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: ['cultivars.name'],
         pagination,
       });
@@ -1526,7 +1573,8 @@ cultivars(where: { _and: [
       });
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: ['cultivars.name'],
         pagination,
       });
@@ -1543,7 +1591,8 @@ cultivars(where: { _and: [
       });
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: ['cultivars.id', 'cultivars.lot.name'],
         pagination,
       });
@@ -1559,7 +1608,8 @@ cultivars(where: { _and: [
       const filter = FilterNode.FilterRoot(filterRootArgs);
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: ['cultivars.name', 'cultivars.breeder'],
         pagination: basicPagination,
       });
@@ -1579,7 +1629,8 @@ cultivars(where: { _and: [
       const filter = FilterNode.FilterRoot(filterRootArgs);
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: ['cultivars.name'],
         pagination: basicPagination,
       });
@@ -1598,7 +1649,8 @@ cultivars(where: { _and: [
       const filter = FilterNode.FilterRoot(filterRootArgs);
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: ['cultivars.id'],
         pagination: basicPagination,
       });
@@ -1616,7 +1668,8 @@ cultivars(where: { _and: [
       const filter = FilterNode.FilterRoot(filterRootArgs);
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: ['cultivars.id', 'cultivars.lot.name'],
         pagination: basicPagination,
       });
@@ -1630,7 +1683,8 @@ cultivars(where: { _and: [
       const filter = FilterNode.FilterRoot(filterRootArgs);
 
       const { query } = filterToQuery({
-        filter,
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
         columns: ['cultivars.id', 'attributes.1', 'attributes.255'],
         pagination: basicPagination,
       });
@@ -1638,15 +1692,65 @@ cultivars(where: { _and: [
       expect(query).toMatch(
         new RegExp(
           prepareForRegex(`
-attributes__1: attributions_views(where: { attribute_id: { _eq: 1 } }, order_by: { date_attributed: desc }) {
+attributes__1: attributions_views(where: { _and: [ { attribute_id: { _eq: 1 } } ] }, order_by: { date_attributed: desc }) {
   ...AttributionFragment
 }
-attributes__255: attributions_views(where: { attribute_id: { _eq: 255 } }, order_by: { date_attributed: desc }) {
+attributes__255: attributions_views(where: { _and: [ { attribute_id: { _eq: 255 } } ] }, order_by: { date_attributed: desc }) {
   ...AttributionFragment
 }`),
         ),
       );
     });
+  });
+
+  it('should return the filtered attribution fields', () => {
+    const filter = FilterNode.FilterRoot(filterRootArgs);
+    const attributionFilter = FilterNode.FilterRoot({
+      childrensConjunction: FilterConjunction.And,
+      baseTable: BaseTable.Attributions,
+    });
+    FilterNode.FilterLeaf({
+      parent: attributionFilter,
+      filterRule: new FilterRule({
+        column: new FilterRuleColumn({
+          tableName: 'attributions_views',
+          tableColumnName: 'author',
+          tableLabel: 'Attributions',
+          tableColumnLabel: 'Author',
+          schema: {
+            allowEmpty: false,
+            type: ColumnType.String,
+            validation: {
+              maxLen: 255,
+              pattern: null,
+            },
+          },
+        }),
+        operator: new FilterRuleOperator({
+          value: FilterOperatorValue.Equal,
+        }),
+        term: new FilterRuleTerm({ value: 'Hugo' }),
+      }),
+    });
+
+    const { query } = filterToQuery({
+      baseFilter: filter,
+      attributionFilter,
+      columns: ['cultivars.id', 'attributes.1', 'attributes.255'],
+      pagination: basicPagination,
+    });
+
+    expect(query).toMatch(
+      new RegExp(
+        prepareForRegex(`
+attributes__1: attributions_views(where: { _and: [ { attribute_id: { _eq: 1 } }, { _and: [ { author: { _eq: $v000 } } ] } ] }, order_by: { date_attributed: desc }) {
+...AttributionFragment
+}
+attributes__255: attributions_views(where: { _and: [ { attribute_id: { _eq: 255 } }, { _and: [ { author: { _eq: $v000 } } ] } ] }, order_by: { date_attributed: desc }) {
+...AttributionFragment
+}`).replaceAll('$v000', '$v\\d+'),
+      ),
+    );
   });
 
   it('should contain aggregation query', () => {
@@ -1657,7 +1761,8 @@ attributes__255: attributions_views(where: { attribute_id: { _eq: 255 } }, order
     });
 
     const { query } = filterToQuery({
-      filter,
+      baseFilter: filter,
+      attributionFilter: emptyAttributionFilter,
       columns: ['cultivars.id', 'cultivars.name'],
       pagination: basicPagination,
     });
@@ -1678,7 +1783,8 @@ cultivars_aggregate(where: { _and: [ { id: { _gt: $v000 } } ] }) {
     const filter = FilterNode.FilterRoot(filterRootArgs);
 
     const { query } = filterToQuery({
-      filter,
+      baseFilter: filter,
+      attributionFilter: emptyAttributionFilter,
       columns: ['cultivars.id', 'cultivars.name'],
       pagination: basicPagination,
     });

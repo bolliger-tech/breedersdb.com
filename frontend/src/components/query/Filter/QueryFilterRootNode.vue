@@ -11,7 +11,13 @@
       class="query-filter-root-node__filter-placeholder"
       data-test="query-filter-root-node__filter-placeholder"
     >
-      {{ t('filter.noFilter', { entity: entityName }) }}
+      {{
+        t('filter.noFilter', {
+          entity: isAttributionsFilter
+            ? t('base.entityName.attribution', 2)
+            : entityName,
+        })
+      }}
     </div>
     <QueryFilterRuleAddButton
       :node="filter"
@@ -55,7 +61,7 @@
 import QueryFilterRuleAddButton from './QueryFilterRuleAddButton.vue';
 import QueryFilterNode from './QueryFilterNode.vue';
 import { computed } from 'vue';
-import { FilterNode, FilterConjunction } from './filterNode';
+import { FilterNode, FilterConjunction, BaseTable } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryStore } from '../useQueryStore';
 import { FilterRuleColumn } from './filterRuleColumn';
@@ -75,6 +81,9 @@ const props = defineProps<QueryFilterRootNodeProps>();
 const isSimplifiable = computed(() => props.filter?.isSimplifiable());
 const isEmpty = computed(() => !props.filter?.hasChildren());
 const isValid = computed(() => props.filter?.isValid());
+const isAttributionsFilter = computed(
+  () => props.filter?.getBaseTable() === BaseTable.Attributions,
+);
 
 const { getEntityName } = useEntityName();
 const entityName = computed(() =>

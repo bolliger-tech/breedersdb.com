@@ -81,6 +81,14 @@ const baseFilter = computed(
       baseTable: BaseTable.Cultivars,
     }),
 );
+const attributionFilter = computed(
+  () =>
+    (store.attributionFilter as FilterNode) ||
+    FilterNode.FilterRoot({
+      childrensConjunction: FilterConjunction.And,
+      baseTable: BaseTable.Attributions,
+    }),
+);
 
 const $q = useQuasar();
 function getLastSelectedColumns() {
@@ -158,18 +166,26 @@ const lastRefreshDate = computed(() => {
 const debouncedFetching = ref(false);
 const queryData = ref(
   filterToQuery({
-    filter: baseFilter.value,
+    baseFilter: baseFilter.value,
+    attributionFilter: attributionFilter.value,
     columns: columnsToFetch.value,
     pagination: pagination.value,
   }),
 );
 watch(
-  [baseFilter, columnsToFetch, pagination, () => lastRefresh],
+  [
+    baseFilter,
+    attributionFilter,
+    columnsToFetch,
+    pagination,
+    () => lastRefresh,
+  ],
   () => {
     debouncedFetching.value = true;
     debounce(() => {
       queryData.value = filterToQuery({
-        filter: baseFilter.value,
+        baseFilter: baseFilter.value,
+        attributionFilter: attributionFilter.value,
         columns: columnsToFetch.value,
         pagination: pagination.value,
       });

@@ -5,7 +5,7 @@ export const filter = {
   attribute: 'Attribute',
 
   noFilter:
-    'No filter defined. All {entity} will be selected. Click the plus button below to add some filter criteria.',
+    'No filter defined. All {entity} will be shown. Click the plus button below to add some filter criteria.',
 
   simplifiable: 'Unnecessary complexity detected.',
   simplify: 'Simplify filter',

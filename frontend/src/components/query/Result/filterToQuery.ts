@@ -28,34 +28,52 @@ const DEFAULT_PAGE_SIZE = 100;
 let varCounter = 0;
 
 export function filterToQuery({
-  filter,
+  baseFilter,
+  attributionFilter,
   columns,
   pagination,
 }: {
-  filter: FilterNode;
+  baseFilter: FilterNode;
+  attributionFilter: FilterNode;
   columns: string[];
   pagination: QueryResultPagination;
 }) {
-  const where = filterToWhere(filter);
-  const inputVarDefs =
-    where.variables.length > 0
-      ? `( ${where.variables.map((v) => `$${v.name}: ${v.type}!`).join(', ')} )`
-      : '';
+  const where = filterToWhere(baseFilter);
+  const whereString =
+    where.conditions.length > 0 ? `where: ${where.conditions}` : '';
 
-  const baseTable = filter.getBaseTable();
+  const baseTable = baseFilter.getBaseTable();
   const paginationString = toPaginationString({
     baseTable,
     pagination,
     columns,
   });
-  const fields = columnsToFields({ columns, baseTable, indent: 4 });
+
+  const queryArgs = [whereString, paginationString].filter(Boolean).join(', ');
+  const queryArgsString = queryArgs.length > 0 ? `(${queryArgs})` : '';
+  const aggQueryArgsString =
+    where.conditions.length > 0 ? `(where: ${where.conditions})` : '';
+
+  const attributionWhere = filterToWhere(attributionFilter);
+  const fields = columnsToFields({
+    baseTable,
+    columns,
+    attributionWhere,
+    indent: 4,
+  });
+
+  const inputVars = [...where.variables, ...attributionWhere.variables];
+  const inputVarDefs =
+    inputVars.length > 0
+      ? `( ${inputVars.map((v) => `$${v.name}: ${v.type}!`).join(', ')} )`
+      : '';
 
   const q = `
 query ${toPascalCase(baseTable)}FilterResults${inputVarDefs} {
-  ${toSnakeCase(baseTable)}(where: ${where.conditions}, ${paginationString}) {
+  ${toSnakeCase(baseTable)}${queryArgsString} {
     ${fields.trim()}
   }
-  ${toSnakeCase(baseTable)}_aggregate(where: ${where.conditions}) {
+  ${toSnakeCase(baseTable)}_aggregate${aggQueryArgsString} {
     aggregate {
       count
     }
@@ -67,9 +85,7 @@ ${attributionFragment}
 
   return {
     query: q,
-    variables: Object.fromEntries(
-      where.variables.map((v) => [v.name, v.value]),
-    ),
+    variables: Object.fromEntries(inputVars.map((v) => [v.name, v.value])),
   };
 }
 
@@ -104,7 +120,7 @@ function filterToWhere(filter: FilterNode): GraphQLWhereArgs {
   const conjunction =
     filter.getChildrensConjunction() === 'and' ? '_and' : '_or';
 
-  const term = filter
+  const where = filter
     .getChildren()
     .map((node) => {
       const rule = node.getFilterRule();
@@ -116,13 +132,14 @@ function filterToWhere(filter: FilterNode): GraphQLWhereArgs {
         return filterToWhere(node);
       }
     })
-    .filter(Boolean) as GraphQLWhereArgs[];
+    .filter((c) => c && c.conditions.length > 0) as GraphQLWhereArgs[];
 
-  const termString = term.map((c) => c.conditions).join(', ');
+  const whereString = where.map((c) => c.conditions).join(', ');
 
   return {
-    conditions: `{ ${conjunction}: [ ${termString} ] }`,
-    variables: term.map((c) => c.variables).flat(),
+    conditions:
+      whereString.length > 0 ? `{ ${conjunction}: [ ${whereString} ] }` : '',
+    variables: where.map((c) => c.variables).flat(),
   };
 }
 
@@ -462,12 +479,14 @@ function toAttributeValueCondition({
 }
 
 function columnsToFields({
-  columns,
   baseTable,
+  columns,
+  attributionWhere,
   indent,
 }: {
-  columns: string[];
   baseTable: BaseTable | string;
+  columns: string[];
+  attributionWhere: GraphQLWhereArgs;
   indent: number;
 }) {
   let fields = '';
@@ -521,8 +540,11 @@ function columnsToFields({
     .filter((column) => column.startsWith('attributes.'))
     .map((column) => column.split('.')[1])
     .forEach((attributeId) => {
+      const filterConditions = attributionWhere.conditions
+        ? `, ${attributionWhere.conditions}`
+        : '';
       fields += `
-${indentation}attributes__${attributeId}: attributions_views(where: { attribute_id: { _eq: ${attributeId} } }, order_by: { date_attributed: desc }) {
+${indentation}attributes__${attributeId}: attributions_views(where: { _and: [ { attribute_id: { _eq: ${attributeId} } }${filterConditions} ] }, order_by: { date_attributed: desc }) {
 ${indentation}  ...AttributionFragment
 ${indentation}}
 `;

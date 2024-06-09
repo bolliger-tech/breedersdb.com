@@ -20,20 +20,6 @@ export function useAttributionViewColumnDefinitions() {
 const columnData: FilterColumnConstructorData[] = [
   {
     table: 'attributions_view',
-    column: 'id',
-    labelKey: 'entity.id',
-    schema: {
-      type: ColumnType.Integer,
-      allowEmpty: false,
-      validation: {
-        min: 1,
-        max: Number.MAX_SAFE_INTEGER,
-        step: 1,
-      },
-    },
-  },
-  {
-    table: 'attributions_view',
     column: 'note',
     labelKey: 'entity.note',
     schema: {
@@ -51,6 +37,28 @@ const columnData: FilterColumnConstructorData[] = [
     labelKey: 'attributions.columns.exceptional_attribution',
     schema: {
       type: ColumnType.Boolean,
+      allowEmpty: false,
+    },
+  },
+  {
+    table: 'attributions_view',
+    column: 'author',
+    labelKey: 'attributions.columns.author',
+    schema: {
+      type: ColumnType.String,
+      allowEmpty: false,
+      validation: {
+        maxLen: 45,
+        pattern: null,
+      },
+    },
+  },
+  {
+    table: 'attributions_view',
+    column: 'date_attributed',
+    labelKey: 'attributions.columns.date_attributed',
+    schema: {
+      type: ColumnType.Date,
       allowEmpty: false,
     },
   },

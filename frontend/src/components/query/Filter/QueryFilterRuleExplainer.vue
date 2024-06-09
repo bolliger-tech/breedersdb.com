@@ -20,6 +20,7 @@ import { FilterRule } from './filterRule';
 import { useQueryStore } from '../useQueryStore';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityName } from 'src/composables/useEntityName';
+import { ColumnType } from '../ColumnDefinitions/columnTypes';
 
 interface QueryFilterRuleExplainerProps {
   rule?: FilterRule;
@@ -36,12 +37,41 @@ const operator = computed(() => {
   return props.rule?.operator?.labelKey ? t(props.rule.operator?.labelKey) : '';
 });
 const term = computed(() => {
-  return props.rule?.term?.value || '';
+  switch (props.rule?.type) {
+    case ColumnType.String:
+    case ColumnType.Integer:
+    case ColumnType.Float:
+    case ColumnType.Enum:
+      return props.rule?.term?.value || '';
+    case ColumnType.Date:
+      try {
+        return new Date(props.rule?.term?.value as string).toLocaleDateString();
+      } catch (e) {
+        return '';
+      }
+    case ColumnType.DateTime:
+      try {
+        return new Date(props.rule?.term?.value as string).toLocaleString();
+      } catch (e) {
+        return '';
+      }
+    case ColumnType.Time:
+      try {
+        return new Date(props.rule?.term?.value as string).toLocaleTimeString();
+      } catch (e) {
+        return '';
+      }
+    default:
+      return '';
+  }
 });
 
 const store = useQueryStore();
 const { getEntityName } = useEntityName();
 const entityName = computed(() => {
+  if (props.rule?.tableName === 'attributions_view') {
+    return t('base.entityName.attribution', 2);
+  }
   return getEntityName({ table: store.baseTable, plural: true });
 });
 

@@ -1,6 +1,8 @@
 export const result = {
   title: 'Results',
 
+  fullscreen: 'Fullscreen',
+  exitFullscreen: 'Exit fullscreen',
   addColumn: 'Add Column',
 
   dataIsNotFresh:

@@ -12,7 +12,19 @@
     outlined
     @filter="filterOptions"
     @update:model-value="(option) => addColumn(option.value)"
-  />
+  >
+    <template #option="{ opt, itemProps }">
+      <q-item v-bind="itemProps">
+        <q-item-section>
+          <q-item-label>
+            <span class="text-muted"
+              >{{ opt.label.split(' > ')[0] }}&nbsp;&nbsp;>&nbsp;&nbsp;</span
+            >{{ opt.label.split(' > ')[1] }}</q-item-label
+          >
+        </q-item-section>
+      </q-item>
+    </template>
+  </q-select>
 </template>
 <script lang="ts" setup>
 import { computed, ref } from 'vue';

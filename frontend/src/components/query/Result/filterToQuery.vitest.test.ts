@@ -56,6 +56,7 @@ const filterRules = {
     }),
     term: new FilterRuleTerm({ value: '10' }),
   }),
+
   name: new FilterRule({
     column: new FilterRuleColumn({
       tableName: 'cultivars',
@@ -76,6 +77,7 @@ const filterRules = {
     }),
     term: new FilterRuleTerm({ value: 'ab' }),
   }),
+
   created: new FilterRule({
     column: new FilterRuleColumn({
       tableName: 'cultivars',
@@ -92,6 +94,7 @@ const filterRules = {
     }),
     term: new FilterRuleTerm({ value: '2021-01-01' }),
   }),
+
   nestedBoolean: new FilterRule({
     column: new FilterRuleColumn({
       tableName: 'cultivars.lots',
@@ -108,6 +111,7 @@ const filterRules = {
     }),
     term: undefined,
   }),
+
   nestedStringAllowEmpty: new FilterRule({
     column: new FilterRuleColumn({
       tableName: 'cultivars.lots',
@@ -127,6 +131,7 @@ const filterRules = {
       value: FilterOperatorValue.Empty,
     }),
   }),
+
   nestedIntegerAllowEmpty: new FilterRule({
     column: new FilterRuleColumn({
       tableName: 'cultivars.lots',
@@ -147,6 +152,7 @@ const filterRules = {
       value: FilterOperatorValue.Empty,
     }),
   }),
+
   nestedStringWithValue: new FilterRule({
     column: new FilterRuleColumn({
       tableName: 'cultivars.lots',
@@ -166,6 +172,7 @@ const filterRules = {
       value: FilterOperatorValue.NotEmpty,
     }),
   }),
+
   attribute: new FilterRule({
     column: new FilterRuleColumn({
       tableName: 'attributes',
@@ -193,45 +200,163 @@ const filterRules = {
 describe('filterToQuery', () => {
   describe('where', () => {
     describe('conjunction', () => {
-      it('should return: _and', () => {});
+      it('should return: _and', () => {
+        const filter = FilterNode.FilterRoot({
+          childrensConjunction: FilterConjunction.And,
+          baseTable: BaseTable.Cultivars,
+        });
+        FilterNode.FilterLeaf({
+          parent: filter,
+          filterRule: filterRules.id,
+        });
+        FilterNode.FilterLeaf({
+          parent: filter,
+          filterRule: filterRules.name,
+        });
 
-      it('should return: _or', () => {});
-    });
+        const { query } = filterToQuery({
+          filter,
+          columns: [],
+          pagination: basicPagination,
+        });
 
-    describe('comparison', () => {
-      it('should return: Equal', () => {});
+        expect(query).toMatch(
+          new RegExp(
+            prepareForRegex(`
+cultivars(where: { _and: [
+  { id: { _gt: $v000 } },
+  { name: { _ilike: $v000 } }
+] }`).replaceAll('$v000', '$v\\d+'),
+          ),
+        );
+      });
 
-      it('should return: NotEqual', () => {});
+      it('should return: _or', () => {
+        const filter = FilterNode.FilterRoot({
+          childrensConjunction: FilterConjunction.Or,
+          baseTable: BaseTable.Cultivars,
+        });
+        FilterNode.FilterLeaf({
+          parent: filter,
+          filterRule: filterRules.id,
+        });
+        FilterNode.FilterLeaf({
+          parent: filter,
+          filterRule: filterRules.name,
+        });
 
-      it('should return: Less', () => {});
+        const { query } = filterToQuery({
+          filter,
+          columns: [],
+          pagination: basicPagination,
+        });
 
-      it('should return: LessOrEqual', () => {});
+        expect(query).toMatch(
+          new RegExp(
+            prepareForRegex(`
+cultivars(where: { _or: [
+  { id: { _gt: $v000 } },
+  { name: { _ilike: $v000 } }
+] }`).replaceAll('$v000', '$v\\d+'),
+          ),
+        );
+      });
 
-      it('should return: Greater', () => {});
+      it('should return: outer _or, inner _and (nested)', () => {
+        const filter = FilterNode.FilterRoot({
+          childrensConjunction: FilterConjunction.Or,
+          baseTable: BaseTable.Cultivars,
+        });
+        FilterNode.FilterLeaf({
+          parent: filter,
+          filterRule: new FilterRule({
+            column: filterRules.created.column,
+            operator: new FilterRuleOperator({
+              value: FilterOperatorValue.Greater,
+            }),
+            term: new FilterRuleTerm({ value: '2021-01-01' }),
+          }),
+        });
+        const child = FilterNode.FilterNode({
+          childrensConjunction: FilterConjunction.And,
+          parent: filter,
+        });
+        FilterNode.FilterLeaf({
+          parent: child,
+          filterRule: filterRules.id,
+        });
+        FilterNode.FilterLeaf({
+          parent: child,
+          filterRule: filterRules.name,
+        });
 
-      it('should return: GreaterOrEqual', () => {});
+        const { query } = filterToQuery({
+          filter,
+          columns: [],
+          pagination: basicPagination,
+        });
 
-      it('should return: StartsWith', () => {});
+        expect(query).toMatch(
+          new RegExp(
+            prepareForRegex(`
+  cultivars(where: { _or: [
+    { created: { _gt: $v000 } },
+    { _and: [
+      { id: { _gt: $v000 } },
+      { name: { _ilike: $v000 } }
+    ] }
+  ] }`).replaceAll('$v000', '$v\\d+'),
+          ),
+        );
+      });
 
-      it('should return: StartsNotWith', () => {});
+      it('should return: outer _and, inner _or (nested)', () => {
+        const filter = FilterNode.FilterRoot({
+          childrensConjunction: FilterConjunction.And,
+          baseTable: BaseTable.Cultivars,
+        });
+        FilterNode.FilterLeaf({
+          parent: filter,
+          filterRule: new FilterRule({
+            column: filterRules.created.column,
+            operator: new FilterRuleOperator({
+              value: FilterOperatorValue.Greater,
+            }),
+            term: new FilterRuleTerm({ value: '2021-01-01' }),
+          }),
+        });
+        const child = FilterNode.FilterNode({
+          childrensConjunction: FilterConjunction.Or,
+          parent: filter,
+        });
+        FilterNode.FilterLeaf({
+          parent: child,
+          filterRule: filterRules.id,
+        });
+        FilterNode.FilterLeaf({
+          parent: child,
+          filterRule: filterRules.name,
+        });
 
-      it('should return: Contains', () => {});
+        const { query } = filterToQuery({
+          filter,
+          columns: [],
+          pagination: basicPagination,
+        });
 
-      it('should return: NotContains', () => {});
-
-      it('should return: EndsWith', () => {});
-
-      it('should return: NotEndsWith', () => {});
-
-      it('should return: Empty', () => {});
-
-      it('should return: NotEmpty', () => {});
-
-      it('should return: True', () => {});
-
-      it('should return: False', () => {});
-
-      it('should throw', () => {});
+        expect(query).toMatch(
+          new RegExp(
+            prepareForRegex(`
+  cultivars(where: { _and: [
+    { created: { _gt: $v000 } },
+    { _or: [
+      { id: { _gt: $v000 } },
+      { name: { _ilike: $v000 } }
+    ] }
+  ] }`).replaceAll('$v000', '$v\\d+'),
+          ),
+        );
+      });
     });
 
     describe('field', () => {
@@ -261,11 +386,13 @@ describe('filterToQuery', () => {
                 }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
@@ -301,11 +428,13 @@ describe('filterToQuery', () => {
                 term: new FilterRuleTerm({ value: '' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
@@ -341,11 +470,13 @@ describe('filterToQuery', () => {
                 term: new FilterRuleTerm({ value: 'asdf' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
@@ -382,11 +513,13 @@ describe('filterToQuery', () => {
                 term: new FilterRuleTerm({ value: '9' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
@@ -423,11 +556,13 @@ describe('filterToQuery', () => {
                 term: new FilterRuleTerm({ value: '0.5' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
@@ -458,11 +593,13 @@ describe('filterToQuery', () => {
                 }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
@@ -494,11 +631,13 @@ describe('filterToQuery', () => {
                 term: new FilterRuleTerm({ value: '2024-06-07' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
@@ -521,11 +660,13 @@ describe('filterToQuery', () => {
               includeEntitiesWithoutAttributions: true,
             }),
           });
+
           const { query, variables } = filterToQuery({
             filter,
             columns: [],
             pagination: basicPagination,
           });
+
           expect(query).toMatch(
             new RegExp(
               prepareForRegex(`
@@ -557,11 +698,13 @@ cultivars(where: { _and: [ { _or: [
               includeEntitiesWithoutAttributions: false,
             }),
           });
+
           const { query, variables } = filterToQuery({
             filter,
             columns: [],
             pagination: basicPagination,
           });
+
           expect(query).toMatch(
             new RegExp(
               prepareForRegex(`
@@ -588,11 +731,13 @@ cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq
               term: new FilterRuleTerm({ value: '10' }),
             }),
           });
+
           const { query, variables } = filterToQuery({
             filter,
             columns: [],
             pagination: basicPagination,
           });
+
           expect(query).toMatch(
             new RegExp(
               prepareForRegex(`
@@ -618,11 +763,13 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 term: new FilterRuleTerm({ value: '10' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
@@ -647,11 +794,13 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 term: new FilterRuleTerm({ value: '10' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
@@ -676,11 +825,13 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 term: new FilterRuleTerm({ value: '10' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
@@ -705,11 +856,13 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 term: new FilterRuleTerm({ value: '10' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
@@ -734,11 +887,13 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 term: new FilterRuleTerm({ value: '10' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
@@ -763,11 +918,13 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 term: new FilterRuleTerm({ value: '10' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
@@ -977,11 +1134,13 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
@@ -1006,11 +1165,13 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 term: new FilterRuleTerm({ value: '' }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
@@ -1031,11 +1192,13 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 }),
               }),
             });
+
             const { query, variables } = filterToQuery({
               filter,
               columns: [],
               pagination: basicPagination,
             });
+
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
@@ -1308,7 +1471,6 @@ cultivars(where: { _and: [
 
     it('should return limit', () => {
       const filter = FilterNode.FilterRoot(filterRootArgs);
-
       const pagination = Object.assign({}, basicPagination, {
         rowsPerPage: 10,
         page: 10,
@@ -1325,7 +1487,6 @@ cultivars(where: { _and: [
 
     it('should return offset', () => {
       const filter = FilterNode.FilterRoot(filterRootArgs);
-
       const pagination = Object.assign({}, basicPagination, {
         rowsPerPage: 10,
       });
@@ -1341,7 +1502,6 @@ cultivars(where: { _and: [
 
     it('should return orderBy asc', () => {
       const filter = FilterNode.FilterRoot(filterRootArgs);
-
       const pagination = Object.assign({}, basicPagination, {
         sortBy: 'cultivars.name',
         descending: false,
@@ -1360,7 +1520,6 @@ cultivars(where: { _and: [
 
     it('should return orderBy desc', () => {
       const filter = FilterNode.FilterRoot(filterRootArgs);
-
       const pagination = Object.assign({}, basicPagination, {
         sortBy: 'cultivars.name',
         descending: true,
@@ -1379,7 +1538,6 @@ cultivars(where: { _and: [
 
     it('should return orderBy nested field', () => {
       const filter = FilterNode.FilterRoot(filterRootArgs);
-
       const pagination = Object.assign({}, basicPagination, {
         sortBy: 'cultivars.lot.name',
       });

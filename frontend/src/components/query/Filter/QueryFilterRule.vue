@@ -182,12 +182,8 @@ function setTerm() {
   if (!filterRule.value) {
     return;
   }
-  if (filterRule.value.type === 'enum') {
-    filterRule.value.term = new FilterRuleTerm({ value: '' });
-    filterRule.value.term.schema = filterRule.value.column?.schema;
-  } else {
-    filterRule.value.term = undefined;
-  }
+  filterRule.value.term = new FilterRuleTerm({ value: '' });
+  filterRule.value.term.schema = filterRule.value.column?.schema;
 }
 
 watch(

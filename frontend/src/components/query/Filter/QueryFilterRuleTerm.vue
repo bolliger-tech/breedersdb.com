@@ -43,7 +43,7 @@
       v-else
       :bg-color="disabled ? 'transparent' : inputBgColor"
       :disable="disabled"
-      :error="modelValue?.isValid === false"
+      :error="modelValue?.isValid === false && inputUpdated"
       :error-message="t('filter.error.term')"
       :label="t('filter.term')"
       :max="maxValue"
@@ -95,11 +95,13 @@ const emit = defineEmits<{
 const props = defineProps<QueryFilterRuleTermProps>();
 
 const enumUpdated = ref(false);
+const inputUpdated = ref(false);
 
 function updateTerm(value: string | number | null) {
   const term = props.modelValue ?? new FilterRuleTerm({ value: '' });
   term.value = (value || '').toString().trim();
   emit('update:modelValue', term);
+  inputUpdated.value = true;
 }
 
 const type = computed<null | ColumnType>(() => props.modelValue?.type || null);

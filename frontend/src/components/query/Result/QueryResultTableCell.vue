@@ -43,5 +43,3 @@ const cellValue = computed(() => {
   return null === value || undefined === value ? '' : value;
 });
 </script>
-
-<style scoped></style>

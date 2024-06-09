@@ -21,24 +21,6 @@
       }}
     </div>
   </template>
-
-  <details>
-    <summary><h3>Base Filter</h3></summary>
-    <pre style="font-size: 12px">{{
-      JSON.stringify(store.baseFilter, undefined, 2)
-    }}</pre>
-  </details>
-  <details open>
-    <summary><h3>Query</h3></summary>
-    <pre style="font-size: 12px" data-test="query">{{ query }}</pre>
-    <pre style="font-size: 12px" data-test="variables">{{ variables }}</pre>
-  </details>
-
-  <details open>
-    <summary><h3>Results</h3></summary>
-    <p>Count: {{ data?.cultivars_aggregate?.aggregate.count || 0 }}</p>
-    <pre style="font-size: 12px">{{ fetching || error || data }}</pre>
-  </details>
 </template>
 
 <script lang="ts" setup>

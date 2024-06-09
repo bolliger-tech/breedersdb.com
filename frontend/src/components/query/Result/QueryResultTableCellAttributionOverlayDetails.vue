@@ -94,7 +94,7 @@
         </tr>
       </template>
     </table>
-    <div v-if="data.tree.note" class="q-mt-sm">
+    <div v-if="data.tree.note" class="q-mt-sm text-body2">
       <strong>{{ t('entity.note') }}</strong
       ><br />
       <span style="white-space: pre-line">{{ data.tree.note }}</span>
@@ -126,7 +126,7 @@
         <td>{{ data.cultivar.registration }}</td>
       </tr>
     </table>
-    <div v-if="data.cultivar.note" class="q-mt-sm">
+    <div v-if="data.cultivar.note" class="q-mt-sm text-body2">
       <strong>{{ t('entity.note') }}</strong
       ><br />
       <span style="white-space: pre-line">{{ data.cultivar.note }}</span>
@@ -170,7 +170,7 @@
         <td>{{ data.lot.patch }}</td>
       </tr>
     </table>
-    <div v-if="data.lot.note" class="q-mt-sm">
+    <div v-if="data.lot.note" class="q-mt-sm text-body2">
       <strong>{{ t('entity.note') }}</strong
       ><br />
       <span style="white-space: pre-line">{{ data.lot.note }}</span>

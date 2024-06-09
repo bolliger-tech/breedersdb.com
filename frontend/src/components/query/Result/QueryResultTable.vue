@@ -32,13 +32,21 @@
       />
 
       <q-btn
-        :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
         class="q-ml-md"
         dense
         flat
-        round
+        no-caps
         @click="fullscreen = !fullscreen"
-      />
+      >
+        <div class="column items-center">
+          <q-icon :name="fullscreen ? 'fullscreen_exit' : 'fullscreen'" />
+          <div class="text-caption">
+            {{
+              fullscreen ? t('result.exitFullscreen') : t('result.fullscreen')
+            }}
+          </div>
+        </div>
+      </q-btn>
     </template>
 
     <template #header-cell="cellProps">

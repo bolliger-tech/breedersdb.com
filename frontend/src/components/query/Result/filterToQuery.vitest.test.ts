@@ -1807,4 +1807,84 @@ fragment AttributionFragment on attributions_view {
       ),
     );
   });
+
+  it('should not contain attribution variables if there are no attribution columns', () => {
+    const filter = FilterNode.FilterRoot(filterRootArgs);
+    const attributionFilter = FilterNode.FilterRoot({
+      childrensConjunction: FilterConjunction.And,
+      baseTable: BaseTable.Attributions,
+    });
+    FilterNode.FilterLeaf({
+      parent: attributionFilter,
+      filterRule: new FilterRule({
+        column: new FilterRuleColumn({
+          tableName: 'attributions_views',
+          tableColumnName: 'author',
+          tableLabel: 'Attributions',
+          tableColumnLabel: 'Author',
+          schema: {
+            allowEmpty: false,
+            type: ColumnType.String,
+            validation: {
+              maxLen: 255,
+              pattern: null,
+            },
+          },
+        }),
+        operator: new FilterRuleOperator({
+          value: FilterOperatorValue.Equal,
+        }),
+        term: new FilterRuleTerm({ value: 'Hugo' }),
+      }),
+    });
+
+    const { variables } = filterToQuery({
+      baseFilter: filter,
+      attributionFilter: attributionFilter,
+      columns: ['cultivars.id'],
+      pagination: basicPagination,
+    });
+
+    expect(Object.keys(variables).length).toBe(0);
+  });
+
+  it('should contain attribution variables if there are attribution columns', () => {
+    const filter = FilterNode.FilterRoot(filterRootArgs);
+    const attributionFilter = FilterNode.FilterRoot({
+      childrensConjunction: FilterConjunction.And,
+      baseTable: BaseTable.Attributions,
+    });
+    FilterNode.FilterLeaf({
+      parent: attributionFilter,
+      filterRule: new FilterRule({
+        column: new FilterRuleColumn({
+          tableName: 'attributions_views',
+          tableColumnName: 'author',
+          tableLabel: 'Attributions',
+          tableColumnLabel: 'Author',
+          schema: {
+            allowEmpty: false,
+            type: ColumnType.String,
+            validation: {
+              maxLen: 255,
+              pattern: null,
+            },
+          },
+        }),
+        operator: new FilterRuleOperator({
+          value: FilterOperatorValue.Equal,
+        }),
+        term: new FilterRuleTerm({ value: 'Hugo' }),
+      }),
+    });
+
+    const { variables } = filterToQuery({
+      baseFilter: filter,
+      attributionFilter: attributionFilter,
+      columns: ['cultivars.id', 'attributes.1'],
+      pagination: basicPagination,
+    });
+
+    expect(Object.values(variables)[0]).toBe('Hugo');
+  });
 });

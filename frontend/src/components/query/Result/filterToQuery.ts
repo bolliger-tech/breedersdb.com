@@ -62,7 +62,12 @@ export function filterToQuery({
     indent: 4,
   });
 
-  const inputVars = [...where.variables, ...attributionWhere.variables];
+  const hasAttributionColumns = columns.some((column) =>
+    column.startsWith('attributes.'),
+  );
+  const inputVars = hasAttributionColumns
+    ? [...where.variables, ...attributionWhere.variables] // only add attribution variables if there are attribution columns, else we get an unexpected variables error
+    : where.variables;
   const inputVarDefs =
     inputVars.length > 0
       ? `( ${inputVars.map((v) => `$${v.name}: ${v.type}!`).join(', ')} )`

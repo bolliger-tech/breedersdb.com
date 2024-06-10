@@ -37,6 +37,7 @@ import { QTableColumn, useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { debounce } from 'quasar';
 import { graphql } from 'gql.tada';
+import { AttributionAggregation } from './attributionAggregationTypes';
 
 export interface QueryResultProps {
   baseTable: BaseTable;
@@ -100,14 +101,25 @@ const columnsToFetch = ref<string[]>([]);
 // use watch() instead of setting it in the visible columns setter
 // to avoid starting empty
 watch(visibleColumns, (newCols, oldCols) => {
+  // fetch raw values for aggregation columns
+  // e.g. `attributes.123.count` -> `attributes.123`
+  const colsWithoutAggregates = newCols.map((c) => {
+    const parts = c.split('.');
+    const last = parts[parts.length - 1];
+    return (Object.values(AttributionAggregation) as string[]).includes(last)
+      ? parts.slice(0, -1).join('.')
+      : c;
+  });
+  const uniqueNewCols = [...new Set(colsWithoutAggregates)];
+
   if (
-    newCols.length > oldCols.length ||
-    !newCols.every((c) => oldCols.includes(c))
+    uniqueNewCols.length > oldCols.length ||
+    !uniqueNewCols.every((c) => oldCols.includes(c))
   ) {
     // only update columnsToFetch if columns were added but not if the order
     // changed or columns were removed. so a refetch is only triggered
     // when really needed.
-    columnsToFetch.value = newCols;
+    columnsToFetch.value = uniqueNewCols;
   }
 });
 

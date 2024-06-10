@@ -11,4 +11,11 @@ export const base = {
     tree: 'tree | trees',
     attribution: 'attribution | attributions',
   },
+
+  timespan: {
+    second: 'second | seconds',
+    minute: 'minute | minutes',
+    hour: 'hour | hours',
+    day: 'day | days',
+  },
 };

@@ -18,11 +18,13 @@
         @mouseup="dragging = false"
         @click.prevent.stop=""
       />
-      <span class="text-muted"
-        >{{
-          cellProps.col.label.split(' > ')[0]
-        }}&nbsp;&nbsp;>&nbsp;&nbsp;</span
-      >{{ cellProps.col.label.split(' > ')[1] }}
+      <div class="column align-center">
+        <div class="text-muted">{{ colLabelParts.table }}</div>
+        {{ colLabelParts.column }}
+        <AggregationLabelChip v-if="colLabelParts.aggregation" class="q-mt-xs">
+          {{ colLabelParts.aggregation }}
+        </AggregationLabelChip>
+      </div>
       <q-btn
         dense
         flat
@@ -63,6 +65,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { QTableSlots } from 'quasar';
+import AggregationLabelChip from 'src/components/Query/Result/AggregationLabelChip.vue';
 
 export interface QueryResultTableHeaderCellProps {
   cellProps: Parameters<QTableSlots['header-cell']>[0];
@@ -88,6 +91,15 @@ const dragOverAfter = ref(false);
 
 const colName = computed<string>(() => {
   return props.cellProps.col.name;
+});
+
+const colLabelParts = computed<{
+  table: string;
+  column: string;
+  aggregation?: string;
+}>(() => {
+  const [table, column, aggregation] = props.cellProps.col.label.split(' > ');
+  return { table, column, aggregation };
 });
 
 function dragStart(e: DragEvent) {
@@ -124,7 +136,7 @@ function setDropEffectMove(e: DragEvent) {
 }
 </script>
 
-<style>
+<style lang="scss">
 .query-result-table-header-cell {
   white-space: nowrap;
 }
@@ -171,7 +183,7 @@ function setDropEffectMove(e: DragEvent) {
 
 .q-table__sort-icon {
   position: absolute;
-  top: 15px;
+  top: calc(50% - 8px);
   right: 8px;
 }
 .q-table__sort-icon:hover {

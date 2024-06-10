@@ -9,6 +9,23 @@ export const result = {
     'Data may not be accurate because some filter rules are invalid.',
   noColumnError: 'No columns selected. Add a column to see data.',
 
+  aggregations: {
+    count: 'Count',
+    max: 'Max',
+    min: 'Min',
+    mean: 'Mean',
+    median: 'Median',
+    stdDev: 'SD',
+    theCount: 'the count',
+    theMax: 'the max',
+    theMin: 'the min',
+    theMean: 'the mean',
+    theMedian: 'the median',
+    theStdDev: 'the standard deviation',
+  },
+
+  aggTitle: '{value} is {theAggregation} of:',
+
   altPhoto: 'Photo taken {date} by {author}',
   photo: 'Photo',
   downloadPhoto: 'Download photo',

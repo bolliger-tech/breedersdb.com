@@ -16,11 +16,16 @@
     <template #option="{ opt, itemProps }">
       <q-item v-bind="itemProps">
         <q-item-section>
-          <q-item-label>
+          <q-item-label class="row align-center no-wrap">
             <span class="text-muted"
               >{{ opt.label.split(' > ')[0] }}&nbsp;&nbsp;>&nbsp;&nbsp;</span
-            >{{ opt.label.split(' > ')[1] }}</q-item-label
-          >
+            >{{ opt.label.split(' > ')[1] }}
+            <AggregationLabelChip
+              v-if="opt.label.split(' > ').length > 2"
+              class="q-ml-sm"
+              >{{ opt.label.split(' > ')[2] }}</AggregationLabelChip
+            >
+          </q-item-label>
         </q-item-section>
       </q-item>
     </template>
@@ -35,6 +40,7 @@ import {
   filterSelectOptions,
 } from 'src/utils/selectOptionFilter';
 import { useInputBackground } from 'src/composables/useInputBackground';
+import AggregationLabelChip from 'src/components/Query/Result/AggregationLabelChip.vue';
 
 export interface QueryResultTableColumnSelectorProps {
   allColumns: QTableColumn[];
@@ -46,7 +52,7 @@ const visibleColumns = defineModel<string[]>({ required: true });
 const { t } = useI18n();
 
 function addColumn(name: string) {
-  if (-1 === visibleColumns.value.indexOf(name)) {
+  if (!visibleColumns.value.find((c) => c === name)) {
     visibleColumns.value = [...visibleColumns.value, name];
   }
 }

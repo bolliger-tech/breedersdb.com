@@ -28,6 +28,7 @@ import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
 import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from './Result/formatResultColumnValue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
+import { AttributionAggregation } from './Result/attributionAggregationTypes';
 
 export interface QueryContainerProps {
   baseTable: BaseTable;
@@ -101,28 +102,77 @@ const error = computed(
 );
 
 const resultColumns = computed<QTableColumn[]>(() => {
-  return baseTableColumnsWithAttributes.value.map((column) => {
+  return baseTableColumnsWithAttributes.value.flatMap((column) => {
     const isNum =
       column.type === ColumnType.Integer || column.type === ColumnType.Float;
 
-    const isAttribute = column.isAttribute;
+    if (column.isAttribute) {
+      const attributions: QTableColumn[] = [
+        // individual attribution values (non aggregated)
+        {
+          name: column.name,
+          label: column.label,
+          field: column.name,
+          align: 'center',
+          sortable: false,
+          // only format base table columns because attributions must be treated
+          // differently (see QueryResultTableCellAttribution.vue)
+        },
+      ];
+
+      if (isNum || column.type === ColumnType.Date) {
+        // add aggregations for numeric and date columns
+        const aggs = [
+          {
+            type: AttributionAggregation.Count,
+            label: t('result.aggregations.count'),
+          },
+          {
+            type: AttributionAggregation.Max,
+            label: t('result.aggregations.max'),
+          },
+          {
+            type: AttributionAggregation.Min,
+            label: t('result.aggregations.min'),
+          },
+          {
+            type: AttributionAggregation.Mean,
+            label: t('result.aggregations.mean'),
+          },
+          {
+            type: AttributionAggregation.Median,
+            label: t('result.aggregations.median'),
+          },
+          {
+            type: AttributionAggregation.StdDev,
+            label: t('result.aggregations.stdDev'),
+          },
+        ];
+        aggs.forEach((agg) => {
+          attributions.push({
+            name: `${column.name}.${agg.type}`,
+            label: `${column.label} > ${agg.label}`,
+            field: column.name,
+            align: 'center',
+            sortable: false,
+          });
+        });
+      }
+      return attributions;
+    }
 
     return {
       name: column.name,
       label: column.label,
-      field: isAttribute ? column.name : column.tableColumnName,
-      align: isAttribute ? 'center' : isNum ? 'right' : 'left',
-      sortable: isAttribute ? false : true,
-      // only format base table columns because attributions must be treated
-      // differently (see QueryResultTableCellAttribution.vue)
-      ...(!isAttribute && {
-        format: (value: string | number | Date | null | undefined) =>
-          formatResultColumnValue({
-            value,
-            type: column.type ?? ColumnType.String,
-            t,
-          }),
-      }),
+      field: column.tableColumnName,
+      align: isNum ? 'right' : 'left',
+      sortable: true,
+      format: (value: string | number | Date | null | undefined) =>
+        formatResultColumnValue({
+          value,
+          type: column.type ?? ColumnType.String,
+          t,
+        }),
     };
   });
 });

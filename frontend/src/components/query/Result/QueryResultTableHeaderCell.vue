@@ -139,6 +139,11 @@ function setDropEffectMove(e: DragEvent) {
 <style lang="scss">
 .query-result-table-header-cell {
   white-space: nowrap;
+  height: 72px; /* must correspond to next rule */
+}
+
+.query-result-table.q-table--loading thead tr:last-child th {
+  top: 72px !important; /* must correspond to previous rule */
 }
 
 .query-result-table-header-cell__content {

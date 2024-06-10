@@ -91,7 +91,7 @@ const label = computed(() => {
     case AttributionAggregation.StdDev:
       if (type === ColumnType.Date) {
         const stdDev = getStdDev(props.attributions, type);
-        return stdDev ? toTimespan(stdDev) : '';
+        return stdDev === null ? '' : toTimespan(stdDev);
       }
       return formatResultColumnValue({
         value: getStdDev(props.attributions, type),

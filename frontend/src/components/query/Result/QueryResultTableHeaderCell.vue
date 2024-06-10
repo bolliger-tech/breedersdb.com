@@ -137,13 +137,15 @@ function setDropEffectMove(e: DragEvent) {
 </script>
 
 <style lang="scss">
+$header-height: 72px;
+
 .query-result-table-header-cell {
   white-space: nowrap;
-  height: 72px; /* must correspond to next rule */
+  height: $header-height;
 }
 
 .query-result-table.q-table--loading thead tr:last-child th {
-  top: 72px !important; /* must correspond to previous rule */
+  top: $header-height !important;
 }
 
 .query-result-table-header-cell__content {
@@ -163,7 +165,7 @@ function setDropEffectMove(e: DragEvent) {
 }
 
 .query-result-table-header-cell__drop-zone {
-  height: 48px;
+  height: $header-height;
   width: 50%;
   border: 0 solid transparent;
   display: inline-block;

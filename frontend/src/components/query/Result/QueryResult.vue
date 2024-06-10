@@ -20,6 +20,12 @@
         })
       }}
     </div>
+
+    <div style="display: none">
+      <!-- leave for testing and debugging -->
+      <pre data-test="query">{{ query }}</pre>
+      <pre data-test="variables">{{ variables }}</pre>
+    </div>
   </template>
 </template>
 

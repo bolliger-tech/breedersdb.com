@@ -10,7 +10,7 @@
       <i18n-t
         keypath="result.aggTitle"
         tag="h4"
-        class="text-body2 text-weight-bold q-ma-none q-mb-sm title"
+        class="text-body2 text-weight-bold title"
       >
         <template #value>
           <span class="chip">{{ label }}</span
@@ -244,5 +244,6 @@ const aggregationName = computed(() => {
 
 .title {
   text-wrap: balance;
+  margin: 0 4px 0.75em;
 }
 </style>

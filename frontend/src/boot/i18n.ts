@@ -23,19 +23,20 @@ declare module 'vue-i18n' {
 }
 /* eslint-enable @typescript-eslint/no-empty-interface */
 
-export default boot(({ app }) => {
-  /**
-   * if not all languages contain all keys, this will fail
-   *
-   * @ts-ignore: No overload matches this call. */
-  const i18n = createI18n({
-    locale: 'en-US',
-    fallbackLocale: 'en-US',
-    legacy: false,
-    messages,
-    datetimeFormats,
-  });
+// export for testing
+/**
+ * if not all languages contain all keys, this will fail
+ *
+ * @ts-ignore: No overload matches this call. */
+export const i18n = createI18n({
+  locale: 'en-US',
+  fallbackLocale: 'en-US',
+  legacy: false,
+  messages,
+  datetimeFormats,
+});
 
+export default boot(({ app }) => {
   // Set i18n instance on app
   app.use(i18n);
 });

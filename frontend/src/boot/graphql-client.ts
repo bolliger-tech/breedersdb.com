@@ -1,6 +1,7 @@
 import { boot } from 'quasar/wrappers';
 import urql, {
   cacheExchange,
+  Client,
   fetchExchange,
   mapExchange,
   type MapExchangeOpts,
@@ -9,7 +10,7 @@ import { retryExchange } from '@urql/exchange-retry';
 import { requestPolicyExchange } from '@urql/exchange-request-policy';
 import { LoadingBar } from 'quasar';
 
-export default boot(({ app }) => {
+export function createUrqlClient() {
   const url = process.env.HASURA_GRAPHQL_URL;
 
   if (!url) {
@@ -23,7 +24,7 @@ export default boot(({ app }) => {
 
   const loadingBarTriggers: MapExchangeOpts = {
     onOperation: (operation) => {
-      if (operation.kind !== 'teardown') {
+      if (['query', 'mutation'].includes(operation.kind)) {
         LoadingBar.start();
       }
     },
@@ -35,7 +36,7 @@ export default boot(({ app }) => {
     },
   };
 
-  app.use(urql, {
+  return new Client({
     url,
     exchanges: [
       requestPolicyExchange({
@@ -53,4 +54,8 @@ export default boot(({ app }) => {
       },
     },
   });
+}
+
+export default boot(({ app }) => {
+  app.use(urql, createUrqlClient());
 });

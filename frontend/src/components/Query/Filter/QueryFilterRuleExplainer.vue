@@ -1,0 +1,96 @@
+<template>
+  <template v-if="rule && rule.isValid">
+    <q-icon name="info" />&nbsp;
+    <span class="text-body2">
+      <strong>{{ t('filter.explainer.title') }}</strong>
+      {{ explainer }}
+    </span>
+  </template>
+  <template v-else>
+    <q-icon name="warning" class="text-negative" />&nbsp;
+    <span class="text-body2 text-negative">
+      {{ t('filter.explainer.invalidRule') }}
+    </span>
+  </template>
+</template>
+
+<script lang="ts" setup>
+import { computed } from 'vue';
+import { FilterRule } from './filterRule';
+import { useQueryStore } from '../useQueryStore';
+import { useI18n } from 'src/composables/useI18n';
+import { useEntityName } from 'src/composables/useEntityName';
+import { ColumnType } from '../ColumnDefinitions/columnTypes';
+
+interface QueryFilterRuleExplainerProps {
+  rule?: FilterRule;
+}
+
+const props = defineProps<QueryFilterRuleExplainerProps>();
+
+const { t } = useI18n();
+
+const column = computed(() => {
+  return props.rule?.column?.tableColumnLabel || '';
+});
+const operator = computed(() => {
+  return props.rule?.operator?.labelKey ? t(props.rule.operator?.labelKey) : '';
+});
+const term = computed(() => {
+  switch (props.rule?.type) {
+    case ColumnType.String:
+    case ColumnType.Integer:
+    case ColumnType.Float:
+    case ColumnType.Enum:
+      return props.rule?.term?.value || '';
+    case ColumnType.Date:
+      try {
+        return new Date(props.rule?.term?.value as string).toLocaleDateString();
+      } catch (e) {
+        return '';
+      }
+    case ColumnType.DateTime:
+      try {
+        return new Date(props.rule?.term?.value as string).toLocaleString();
+      } catch (e) {
+        return '';
+      }
+    case ColumnType.Time:
+      try {
+        return new Date(props.rule?.term?.value as string).toLocaleTimeString();
+      } catch (e) {
+        return '';
+      }
+    default:
+      return '';
+  }
+});
+
+const store = useQueryStore();
+const { getEntityName } = useEntityName();
+const entityName = computed(() => {
+  if (props.rule?.tableName === 'attributions_view') {
+    return t('base.entityName.attribution', 2);
+  }
+  return getEntityName({ table: store.baseTable, plural: true });
+});
+
+const explainer = computed(() => {
+  const args = {
+    entity: props.rule?.isAttribute
+      ? t('filter.cultivarAndSubentities')
+      : entityName.value,
+    column: column.value,
+    operator: operator.value,
+    term: term.value,
+  };
+  if (props.rule?.isAttribute) {
+    if (props.rule.includeEntitiesWithoutAttributions) {
+      return t('filter.explainer.attributeWithNoAttributions', args);
+    } else {
+      return t('filter.explainer.attribute', args);
+    }
+  }
+  return t('filter.explainer.entity', args);
+});
+</script>

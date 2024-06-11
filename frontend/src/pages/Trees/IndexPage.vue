@@ -1,5 +1,5 @@
 <template>
-  <PageLayout :title="t('trees.list.title')">
+  <PageLayout :title="t('trees.title', 2)">
     <ExampleTreesTable />
   </PageLayout>
 </template>

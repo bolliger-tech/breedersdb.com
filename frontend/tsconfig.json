@@ -24,7 +24,10 @@
             "x-hasura-admin-secret": "changeForProduction"
           }
         },
-        "tadaOutputLocation": "./src/graphql-env.d.ts"
+        "tadaOutputLocation": "./src/graphql-env.d.ts",
+        // disable tracking of field usage due to too many false positives
+        // (it checks only for usages in the same file…)
+        "trackFieldUsage": false
       }
     ]
   },

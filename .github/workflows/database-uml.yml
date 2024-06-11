@@ -80,6 +80,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ env.BRANCH_NAME }}-DB-UML
+          base: ${{ github.ref }}
           title: 'Update database UML'
           body: |
             Updates the database UML files.

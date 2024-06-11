@@ -20,11 +20,11 @@ import QueryResultTableCellAttribution from './QueryResultTableCellAttribution.v
 import { useQuasar } from 'quasar';
 import { dataTypeToColumnType } from './dataTypeToColumnType';
 
-export interface QueryResultTableCellAttributionProps {
+export interface QueryResultTableCellAttributionValueProps {
   attribution: QueryAttributionsViewFields;
 }
 
-const props = defineProps<QueryResultTableCellAttributionProps>();
+const props = defineProps<QueryResultTableCellAttributionValueProps>();
 
 const { t } = useI18n();
 

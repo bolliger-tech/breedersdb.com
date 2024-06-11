@@ -41,12 +41,13 @@ import { useQuasar } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
 import { dataTypeToColumnType } from './dataTypeToColumnType';
 
-export interface QueryResultTableCellAttributionProps {
+export interface QueryResultTableCellAttributionValueAggregatedProps {
   attributions: QueryAttributionsViewFields[];
   aggregation: AttributionAggregation;
 }
 
-const props = defineProps<QueryResultTableCellAttributionProps>();
+const props =
+  defineProps<QueryResultTableCellAttributionValueAggregatedProps>();
 
 const { t } = useI18n();
 

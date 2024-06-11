@@ -157,7 +157,7 @@ const { executeMutation: refreshDbView } = useMutation(
 const { data: lastRefresh, error: refreshError } = await refreshDbView({});
 
 const lastRefreshDate = computed(() => {
-  return lastRefresh?.refresh_attributions_view[0].last_check
+  return lastRefresh?.refresh_attributions_view[0]?.last_check
     ? new Date(lastRefresh.refresh_attributions_view[0].last_check as string)
     : null;
 });

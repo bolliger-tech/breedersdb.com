@@ -13,6 +13,12 @@ the Quasar CLI with Vite and TypeScript.
    curl -fsSL https://bun.sh/install | bash
    ```
 
+1. Create `.env`:
+
+   ```bash
+   cp .env.example .env
+   ```
+
 1. Install the dependencies:
 
    ```bash

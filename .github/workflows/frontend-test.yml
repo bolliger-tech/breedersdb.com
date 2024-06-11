@@ -26,7 +26,7 @@ jobs:
         uses: oven-sh/setup-bun@v1
 
       - name: Install dependencies
-        run: bun install --cwd=frontend
+        run: bun --cwd=frontend install
 
       - name: Run frontend tests
-        run: bun run test:unit
+        run: bun --cwd=frontend run test:unit

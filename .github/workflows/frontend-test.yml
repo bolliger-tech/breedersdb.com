@@ -29,4 +29,4 @@ jobs:
         run: bun --cwd=frontend install
 
       - name: Run frontend tests
-        run: bun --cwd=frontend run test:unit
+        run: bun --cwd=frontend run test:unit:ci

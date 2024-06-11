@@ -201,10 +201,4 @@ const orderedColumns = computed(() => {
   z-index: 1;
   top: 0;
 }
-
-/* this is when the loading indicator appears */
-.query-result-table.q-table--loading thead tr:last-child th {
-  /* height of all previous header rows */
-  top: 48px;
-}
 </style>

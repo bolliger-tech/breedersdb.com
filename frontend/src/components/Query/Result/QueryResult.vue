@@ -12,7 +12,7 @@
       :all-columns="availableColumns"
       :data-is-fresh="isValid"
     />
-    <!-- <ResultDownload :enabled="!fetching && !!result" /> -->
+    <!-- TODO: <ResultDownload :enabled="!fetching && !!result" /> -->
     <div v-if="lastRefreshDate" class="text-caption">
       {{
         t('result.lastRefresh', {

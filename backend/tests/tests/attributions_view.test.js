@@ -100,12 +100,12 @@ const queryByAttributeIdAndTreeId = /* GraphQL */ `
 const insertLot = /* GraphQL */ `
   mutation InsertLot(
     $crossing_name: String!
-    $lot_segment_name: String!
+    $lot_name_segment: String!
     $orchard_name: String! = "Orchard 1"
   ) {
     insert_lots_one(
       object: {
-        segment_name: $lot_segment_name
+        name_segment: $lot_name_segment
         crossing: { data: { name: $crossing_name } }
         orchard: { data: { name: $orchard_name } }
       }
@@ -116,9 +116,9 @@ const insertLot = /* GraphQL */ `
 `;
 
 const insertCultivar = /* GraphQL */ `
-  mutation InsertCultivar($segment_name: String!, $lot_id: Int!) {
+  mutation InsertCultivar($name_segment: String!, $lot_id: Int!) {
     insert_cultivars_one(
-      object: { segment_name: $segment_name, lot_id: $lot_id }
+      object: { name_segment: $name_segment, lot_id: $lot_id }
     ) {
       id
     }
@@ -276,8 +276,8 @@ async function insert_attribute_value_with_associated_data({
   is_cultivar = false,
   is_tree = false,
   crossing_name = 'Cross1',
-  lot_segment_name = '24A',
-  cultivar_segment_name = '001',
+  lot_name_segment = '24A',
+  cultivar_name_segment = '001',
   tree_label_id = '00000001',
   attribution_form_name = 'Form 1',
   attribute_name = 'Attribute 1',
@@ -305,14 +305,14 @@ async function insert_attribute_value_with_associated_data({
     query: insertLot,
     variables: {
       crossing_name,
-      lot_segment_name,
+      lot_name_segment,
     },
   });
 
   const cultivar = await post({
     query: insertCultivar,
     variables: {
-      segment_name: cultivar_segment_name,
+      name_segment: cultivar_name_segment,
       lot_id: lot.data.insert_lots_one.id,
     },
   });

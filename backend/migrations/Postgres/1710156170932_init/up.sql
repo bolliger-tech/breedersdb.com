@@ -105,7 +105,7 @@ create table lots
 (
     id                     integer primary key generated always as identity,
     crossing_id            int                      not null references crossings,
-    segment_name           varchar(3)               not null check ( segment_name ~ '^(\d{2}[A-Z]|000)$' ),
+    name_segment           varchar(3)               not null check ( name_segment ~ '^(\d{2}[A-Z]|000)$' ),
     full_name              varchar(12)              not null unique,
     name_override          varchar(45) unique check ( name_override ~ '^[^\n\.]{1,45}$' ),
     display_name           varchar(45) generated always as ( coalesce(name_override, full_name) ) stored unique,
@@ -128,7 +128,7 @@ comment on column lots.display_name is 'Generated.';
 create index on lots (crossing_id);
 create index on lots (display_name);
 create index on lots using gin (display_name gin_trgm_ops);
-create unique index on lots (crossing_id, segment_name);
+create unique index on lots (crossing_id, name_segment);
 create index on lots (date_sowed);
 create index on lots (seed_tray);
 create index on lots (date_planted);
@@ -143,22 +143,22 @@ create trigger update_lots_modified
 execute function modified_column();
 
 create trigger trim_lots
-    before insert or update of segment_name, name_override, seed_tray, plot, note
+    before insert or update of name_segment, name_override, seed_tray, plot, note
     on lots
     for each row
-execute function trim_strings('segment_name', 'name_override', 'seed_tray', 'plot', 'note');
+execute function trim_strings('name_segment', 'name_override', 'seed_tray', 'plot', 'note');
 
 -- set crossing lot for changes on lots table
 create or replace function lots_set_full_name() returns trigger as
 $$
 begin
-    new.full_name := (select c.name from crossings c where c.id = new.crossing_id) || '.' || new.segment_name;
+    new.full_name := (select c.name from crossings c where c.id = new.crossing_id) || '.' || new.name_segment;
     return new;
 end;
 $$ language plpgsql;
 
 create trigger set_full_name
-    before insert or update of crossing_id, segment_name, full_name
+    before insert or update of crossing_id, name_segment, full_name
     on lots
     for each row
 execute function lots_set_full_name();
@@ -167,7 +167,7 @@ execute function lots_set_full_name();
 create or replace function crossings_update_full_name() returns trigger as
 $$
 begin
-    update lots set full_name = new.name || '.' || segment_name where crossing_id = new.id;
+    update lots set full_name = new.name || '.' || name_segment where crossing_id = new.id;
     return new;
 end;
 $$ language plpgsql;
@@ -182,7 +182,7 @@ create table cultivars
 (
     id            integer primary key generated always as identity,
     lot_id        int                      not null references lots,
-    segment_name  varchar(45)              not null check ( segment_name ~ '^[-_\w\d]{1,45}$' ),
+    name_segment  varchar(45)              not null check ( name_segment ~ '^[-_\w\d]{1,45}$' ),
     full_name     varchar(58)              not null unique,
     name_override varchar(45) unique check ( name_override ~ '^[^\n\.]{1,45}$' ),
     display_name  varchar(45) generated always as ( coalesce(name_override, full_name) ) stored unique,
@@ -201,7 +201,7 @@ create index on cultivars (lot_id);
 create index on cultivars (display_name);
 create index on cultivars using gin (display_name gin_trgm_ops);
 create index on cultivars (acronym);
-create unique index on cultivars (lot_id, segment_name);
+create unique index on cultivars (lot_id, name_segment);
 create index on cultivars (created);
 
 create trigger update_cultivars_modified
@@ -211,22 +211,22 @@ create trigger update_cultivars_modified
 execute function modified_column();
 
 create trigger trim_cultivars
-    before insert or update of segment_name, name_override, acronym, breeder, registration, note
+    before insert or update of name_segment, name_override, acronym, breeder, registration, note
     on cultivars
     for each row
-execute function trim_strings('segment_name', 'name_override', 'acronym', 'breeder', 'registration', 'note');
+execute function trim_strings('name_segment', 'name_override', 'acronym', 'breeder', 'registration', 'note');
 
 -- set full_name for changes on cultivars table
 create or replace function cultivars_set_full_name() returns trigger as
 $$
 begin
-    new.full_name := (select lots.display_name from lots where lots.id = new.lot_id) || '.' || new.segment_name;
+    new.full_name := (select lots.display_name from lots where lots.id = new.lot_id) || '.' || new.name_segment;
     return new;
 end;
 $$ language plpgsql;
 
 create trigger set_full_name
-    before insert or update of lot_id, segment_name, full_name
+    before insert or update of lot_id, name_segment, full_name
     on cultivars
     for each row
 execute function cultivars_set_full_name();
@@ -235,7 +235,7 @@ execute function cultivars_set_full_name();
 create or replace function lots_update_full_name() returns trigger as
 $$
 begin
-    update cultivars set full_name = new.display_name || '.' || segment_name where lot_id = new.id;
+    update cultivars set full_name = new.display_name || '.' || name_segment where lot_id = new.id;
     return new;
 end;
 $$ language plpgsql;

@@ -9,8 +9,8 @@ const insertMutation = /* GraphQL */ `
     $note: String
     $crossing_name: String!
     $orchard_name: String! = "Orchard 1"
-    $lot_segment_name: String!
-    $cultivar_segment_name: String!
+    $lot_name_segment: String!
+    $cultivar_name_segment: String!
   ) {
     insert_pollen_one(
       object: {
@@ -19,10 +19,10 @@ const insertMutation = /* GraphQL */ `
         note: $note
         cultivar: {
           data: {
-            segment_name: $cultivar_segment_name
+            name_segment: $cultivar_name_segment
             lot: {
               data: {
-                segment_name: $lot_segment_name
+                name_segment: $lot_name_segment
                 orchard: { data: { name: $orchard_name } }
                 crossing: { data: { name: $crossing_name } }
               }
@@ -80,8 +80,8 @@ test('insert', async () => {
       date_harvested: '2021-01-01',
       note: 'note',
       crossing_name: 'Cross1',
-      lot_segment_name: '24A',
-      cultivar_segment_name: '001',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
     },
   });
 
@@ -102,8 +102,8 @@ test('name is unique', async () => {
     variables: {
       name: 'Pollen 1',
       crossing_name: 'Cross1',
-      lot_segment_name: '24A',
-      cultivar_segment_name: '001',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
     },
   });
   const resp2 = await post({
@@ -111,8 +111,8 @@ test('name is unique', async () => {
     variables: {
       name: 'Pollen 1',
       crossing_name: 'Cross2',
-      lot_segment_name: '24A',
-      cultivar_segment_name: '001',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
     },
   });
 
@@ -126,8 +126,8 @@ test('name is required', async () => {
     variables: {
       name: '',
       crossing_name: 'Cross1',
-      lot_segment_name: '24A',
-      cultivar_segment_name: '001',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
     },
   });
 
@@ -140,8 +140,8 @@ test('modified', async () => {
     variables: {
       name: 'Pollen 1',
       crossing_name: 'Cross1',
-      lot_segment_name: '24A',
-      cultivar_segment_name: '001',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
     },
   });
 

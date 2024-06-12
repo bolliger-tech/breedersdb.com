@@ -57,7 +57,7 @@ insert_permissions:
       columns:
         - acronym
         - lot_id
-        - segment_name
+        - name_segment
         - note
         - name_override
         - breeder
@@ -68,7 +68,7 @@ select_permissions:
     permission:
       columns:
         - acronym
-        - segment_name
+        - name_segment
         - lot_id
         - id
         - note
@@ -87,7 +87,7 @@ update_permissions:
       columns:
         - acronym
         - lot_id
-        - segment_name
+        - name_segment
         - note
         - name_override
         - breeder

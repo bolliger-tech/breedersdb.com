@@ -40,7 +40,7 @@ insert_permissions:
         - crossing_id
         - date_planted
         - date_sowed
-        - segment_name
+        - name_segment
         - name_override
         - note
         - numb_seedlings_grown
@@ -70,7 +70,7 @@ select_permissions:
         - orchard_id
         - plot
         - seed_tray
-        - segment_name
+        - name_segment
       filter: {}
     comment: ""
 update_permissions:
@@ -80,7 +80,7 @@ update_permissions:
         - crossing_id
         - date_planted
         - date_sowed
-        - segment_name
+        - name_segment
         - name_override
         - note
         - numb_seedlings_grown

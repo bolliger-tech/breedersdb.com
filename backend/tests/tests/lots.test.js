@@ -5,7 +5,7 @@ import { iso8601dateRegex } from '../utils';
 const insertMutation = /* GraphQL */ `
   mutation InsertLot(
     $crossing_name: String
-    $segment_name: String
+    $name_segment: String
     $name_override: String
     $date_sowed: date
     $numb_seeds_sowed: Int
@@ -22,7 +22,7 @@ const insertMutation = /* GraphQL */ `
         name: $crossing_name
         lots: {
           data: {
-            segment_name: $segment_name
+            name_segment: $name_segment
             name_override: $name_override
             date_sowed: $date_sowed
             numb_seeds_sowed: $numb_seeds_sowed
@@ -41,7 +41,7 @@ const insertMutation = /* GraphQL */ `
       name
       lots {
         id
-        segment_name
+        name_segment
         full_name
         name_override
         display_name
@@ -84,7 +84,7 @@ test('insert', async () => {
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
-      segment_name: '24A',
+      name_segment: '24A',
       date_sowed: date,
       numb_seeds_sowed: 100,
       numb_seedlings_grown: 90,
@@ -98,7 +98,7 @@ test('insert', async () => {
   });
 
   expect(resp.data.insert_crossings_one.lots[0].id).toBeGreaterThan(0);
-  expect(resp.data.insert_crossings_one.lots[0].segment_name).toBe('24A');
+  expect(resp.data.insert_crossings_one.lots[0].name_segment).toBe('24A');
   expect(resp.data.insert_crossings_one.lots[0].full_name).toBe('Abcd.24A');
   expect(resp.data.insert_crossings_one.lots[0].display_name).toBe('Abcd.24A');
   expect(resp.data.insert_crossings_one.lots[0].date_sowed).toBe(date);
@@ -122,7 +122,7 @@ test('crossing_name is unique', async () => {
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
-      segment_name: '24A',
+      name_segment: '24A',
       orchard_name: 'Orchard 1',
     },
   });
@@ -130,7 +130,7 @@ test('crossing_name is unique', async () => {
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
-      segment_name: '24A',
+      name_segment: '24A',
       orchard_name: 'Orchard 2',
     },
   });
@@ -139,13 +139,13 @@ test('crossing_name is unique', async () => {
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
 
-test('segment_name is required', async () => {
+test('name_segment is required', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
       orchard_name: 'Orchard1',
-      segment_name: '',
+      name_segment: '',
     },
   });
 
@@ -158,7 +158,7 @@ test('updated full_name crossing', async () => {
     variables: {
       crossing_name: 'Abcd',
       orchard_name: 'Orchard1',
-      segment_name: '24A',
+      name_segment: '24A',
     },
   });
 
@@ -189,20 +189,20 @@ test('updated full_name lot', async () => {
     variables: {
       crossing_name: 'Abcd',
       orchard_name: 'Orchard1',
-      segment_name: '24A',
+      name_segment: '24A',
     },
   });
 
   const updated = await post({
-    query: `mutation UpdateLot($id: Int!, $segment_name: String!) {
-      update_lots_by_pk(pk_columns: {id: $id}, _set: {segment_name: $segment_name}) {
+    query: `mutation UpdateLot($id: Int!, $name_segment: String!) {
+      update_lots_by_pk(pk_columns: {id: $id}, _set: {name_segment: $name_segment}) {
         id
         full_name
       }
     }`,
     variables: {
       id: resp.data.insert_crossings_one.lots[0].id,
-      segment_name: '24Z',
+      name_segment: '24Z',
     },
   });
 
@@ -214,7 +214,7 @@ test('display_name contains full_name', async () => {
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
-      segment_name: '24A',
+      name_segment: '24A',
       orchard_name: 'Orchard1',
     },
   });
@@ -229,7 +229,7 @@ test('display_name contains name_override', async () => {
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
-      segment_name: '24A',
+      name_segment: '24A',
       name_override: 'The lot name',
       orchard_name: 'Orchard1',
     },
@@ -250,26 +250,26 @@ test('modified', async () => {
     variables: {
       crossing_name: 'Abcd',
       orchard_name: 'Orchard1',
-      segment_name: '24A',
+      name_segment: '24A',
     },
   });
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateLot($id: Int!, $segment_name: String) {
+      mutation UpdateLot($id: Int!, $name_segment: String) {
         update_lots_by_pk(
           pk_columns: { id: $id }
-          _set: { segment_name: $segment_name }
+          _set: { name_segment: $name_segment }
         ) {
           id
-          segment_name
+          name_segment
           modified
         }
       }
     `,
     variables: {
       id: resp.data.insert_crossings_one.lots[0].id,
-      segment_name: '24Z',
+      name_segment: '24Z',
     },
   });
 

@@ -88,7 +88,7 @@ create table lots
     seed_tray              varchar(255),
     date_planted           date,
     numb_seedlings_planted int,
-    patch                  varchar(255),
+    plot                   varchar(255),
     note                   varchar(2047),
     created                timestamp with time zone not null default now(),
     modified               timestamp with time zone
@@ -105,7 +105,7 @@ create unique index on lots (crossing_id, name_segment);
 create index on lots (date_sowed);
 create index on lots (seed_tray);
 create index on lots (date_planted);
-create index on lots (patch);
+create index on lots (plot);
 create index on lots (created);
 
 create trigger update_lots_modified
@@ -115,10 +115,10 @@ create trigger update_lots_modified
 execute function modified_column();
 
 create trigger trim_lots
-    before insert or update of name_segment, seed_tray, patch, note
+    before insert or update of name_segment, seed_tray, plot, note
     on lots
     for each row
-execute function trim_strings('name_segment', 'seed_tray', 'patch', 'note');
+execute function trim_strings('name_segment', 'seed_tray', 'plot', 'note');
 
 -- set crossing lot for changes on lots table
 create or replace function lots_set_name() returns trigger as

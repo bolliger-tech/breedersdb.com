@@ -165,9 +165,9 @@
         <th>{{ t('lots.fields.numbSeedlingsPlanted') }}</th>
         <td>{{ data.lot.numb_seedlings_planted }}</td>
       </tr>
-      <tr v-if="data.lot.patch">
-        <th>{{ t('lots.fields.patch') }}</th>
-        <td>{{ data.lot.patch }}</td>
+      <tr v-if="data.lot.plot">
+        <th>{{ t('lots.fields.plot') }}</th>
+        <td>{{ data.lot.plot }}</td>
       </tr>
     </table>
     <div v-if="data.lot.note" class="q-mt-sm text-body2">

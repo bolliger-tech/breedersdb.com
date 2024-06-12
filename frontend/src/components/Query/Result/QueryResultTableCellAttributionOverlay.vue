@@ -77,7 +77,7 @@ const query = graphql(`
         seed_tray
         date_planted
         numb_seedlings_planted
-        patch
+        plot
         note
       }
       author

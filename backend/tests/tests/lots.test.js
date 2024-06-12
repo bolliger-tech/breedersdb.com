@@ -12,7 +12,7 @@ const insertMutation = /* GraphQL */ `
     $seed_tray: String
     $date_planted: date
     $numb_seedlings_planted: Int
-    $patch: String
+    $plot: String
     $note: String
   ) {
     insert_crossings_one(
@@ -27,7 +27,7 @@ const insertMutation = /* GraphQL */ `
             seed_tray: $seed_tray
             date_planted: $date_planted
             numb_seedlings_planted: $numb_seedlings_planted
-            patch: $patch
+            plot: $plot
             note: $note
           }
         }
@@ -45,7 +45,7 @@ const insertMutation = /* GraphQL */ `
         seed_tray
         date_planted
         numb_seedlings_planted
-        patch
+        plot
         note
         created
         modified
@@ -82,7 +82,7 @@ test('insert', async () => {
       seed_tray: 'A1',
       date_planted: date,
       numb_seedlings_planted: 80,
-      patch: 'Patch1',
+      plot: 'Plot1',
       note: 'This is a note',
     },
   });
@@ -98,7 +98,7 @@ test('insert', async () => {
   expect(resp.data.insert_crossings_one.lots[0].numb_seedlings_planted).toBe(
     80,
   );
-  expect(resp.data.insert_crossings_one.lots[0].patch).toBe('Patch1');
+  expect(resp.data.insert_crossings_one.lots[0].plot).toBe('Plot1');
   expect(resp.data.insert_crossings_one.lots[0].note).toBe('This is a note');
   expect(resp.data.insert_crossings_one.lots[0].created).toMatch(
     iso8601dateRegex,

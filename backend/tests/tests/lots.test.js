@@ -40,7 +40,7 @@ const insertMutation = /* GraphQL */ `
       lots {
         id
         segment_name
-        name
+        display_name
         date_sowed
         numb_seeds_sowed
         numb_seedlings_grown
@@ -95,7 +95,7 @@ test('insert', async () => {
 
   expect(resp.data.insert_crossings_one.lots[0].id).toBeGreaterThan(0);
   expect(resp.data.insert_crossings_one.lots[0].segment_name).toBe('24A');
-  expect(resp.data.insert_crossings_one.lots[0].name).toBe('Abcd.24A');
+  expect(resp.data.insert_crossings_one.lots[0].display_name).toBe('Abcd.24A');
   expect(resp.data.insert_crossings_one.lots[0].date_sowed).toBe(date);
   expect(resp.data.insert_crossings_one.lots[0].numb_seeds_sowed).toBe(100);
   expect(resp.data.insert_crossings_one.lots[0].numb_seedlings_grown).toBe(90);
@@ -163,7 +163,7 @@ test('updated name crossing', async () => {
         id
         lots {
           id
-          name
+          display_name
         }
       }
     }`,
@@ -173,7 +173,9 @@ test('updated name crossing', async () => {
     },
   });
 
-  expect(updated.data.update_crossings_by_pk.lots[0].name).toBe('Efgh.24A');
+  expect(updated.data.update_crossings_by_pk.lots[0].display_name).toBe(
+    'Efgh.24A',
+  );
 });
 
 test('updated name lot', async () => {
@@ -190,7 +192,7 @@ test('updated name lot', async () => {
     query: `mutation UpdateLot($id: Int!, $segment_name: String!) {
       update_lots_by_pk(pk_columns: {id: $id}, _set: {segment_name: $segment_name}) {
         id
-        name
+        display_name
       }
     }`,
     variables: {
@@ -199,7 +201,7 @@ test('updated name lot', async () => {
     },
   });
 
-  expect(updated.data.update_lots_by_pk.name).toBe('Abcd.24Z');
+  expect(updated.data.update_lots_by_pk.display_name).toBe('Abcd.24Z');
 });
 
 test('modified', async () => {

@@ -54,7 +54,7 @@ const insertMutation = /* GraphQL */ `
         name
         cultivar {
           id
-          name
+          display_name
         }
       }
       crossing {
@@ -62,11 +62,11 @@ const insertMutation = /* GraphQL */ `
         name
         mother_cultivar {
           id
-          name
+          display_name
         }
         father_cultivar {
           id
-          name
+          display_name
         }
       }
       created
@@ -104,10 +104,10 @@ const insertTreeMutation = /* GraphQL */ `
       cultivar_name
       cultivar {
         id
-        name
+        display_name
         lot {
           id
-          name
+          display_name
           crossing {
             id
             name
@@ -147,7 +147,7 @@ const insertPollenMutation = /* GraphQL */ `
       name
       cultivar {
         id
-        name
+        display_name
       }
     }
   }
@@ -268,7 +268,7 @@ test('insert with contradicting tree cultivar', async () => {
           }
         ) {
           id
-          name
+          display_name
         }
       }
     `,
@@ -326,7 +326,7 @@ test('insert with contradicting pollen cultivar', async () => {
           }
         ) {
           id
-          name
+          display_name
         }
       }
     `,

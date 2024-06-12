@@ -38,11 +38,11 @@ const insertMutation = /* GraphQL */ `
       }
       cultivar {
         id
-        name
+        display_name
       }
       lot {
         id
-        name
+        display_name
       }
       geo_location
       geo_location_accuracy

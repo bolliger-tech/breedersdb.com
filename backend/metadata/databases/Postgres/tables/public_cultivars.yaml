@@ -59,7 +59,7 @@ insert_permissions:
         - lot_id
         - segment_name
         - note
-        - common_name
+        - name_override
         - breeder
         - registration
     comment: ""
@@ -72,12 +72,13 @@ select_permissions:
         - lot_id
         - id
         - note
-        - common_name
         - breeder
         - registration
         - created
         - modified
-        - name
+        - full_name
+        - display_name
+        - name_override
       filter: {}
     comment: ""
 update_permissions:
@@ -88,7 +89,7 @@ update_permissions:
         - lot_id
         - segment_name
         - note
-        - common_name
+        - name_override
         - breeder
         - registration
       filter: {}

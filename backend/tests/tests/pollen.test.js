@@ -37,7 +37,7 @@ const insertMutation = /* GraphQL */ `
       note
       cultivar {
         id
-        name
+        display_name
       }
       created
       modified
@@ -89,7 +89,9 @@ test('insert', async () => {
   expect(resp.data.insert_pollen_one.name).toBe('Pollen 1');
   expect(resp.data.insert_pollen_one.date_harvested).toBe('2021-01-01');
   expect(resp.data.insert_pollen_one.note).toBe('note');
-  expect(resp.data.insert_pollen_one.cultivar.name).toBe('Cross1.24A.001');
+  expect(resp.data.insert_pollen_one.cultivar.display_name).toBe(
+    'Cross1.24A.001',
+  );
   expect(resp.data.insert_pollen_one.created).toMatch(iso8601dateRegex);
   expect(resp.data.insert_pollen_one.modified).toBeNull();
 });

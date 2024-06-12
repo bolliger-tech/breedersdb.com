@@ -20,11 +20,11 @@ const attributionsViewFields = /* GraphQL */ `
     note
     lot {
       id
-      name
+      display_name
     }
     cultivar {
       id
-      name
+      display_name
     }
     tree {
       id

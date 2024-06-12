@@ -63,7 +63,7 @@ const label = computed(() => {
 const $q = useQuasar();
 const color = computed(() => {
   let baseColor = '';
-  if (props.attribution.tree_id) {
+  if (props.attribution.plant_id) {
     baseColor = '#c8e6c9'; // green-2
   } else if (props.attribution.cultivar_id) {
     baseColor = '#ffecb3'; // amber-2

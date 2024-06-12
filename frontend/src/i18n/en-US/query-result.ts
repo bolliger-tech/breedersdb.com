@@ -61,8 +61,8 @@ export const result = {
 //   crossings: 'crossings',
 //   batches: 'batches',
 //   varieties: 'varieties',
-//   trees: 'trees',
-//   motherTrees: 'mother trees',
+//   plants: 'plants',
+//   motherPlants: 'mother plants',
 //   scionsBundles: 'scions bundles',
 
 //   attributions: 'attributions',
@@ -71,7 +71,7 @@ export const result = {
 //   defaultFilter: 'Filter criteria',
 //   batchFilter: 'Filter criteria to select the batches',
 //   varietyFilter: 'Filter criteria to select the varieties',
-//   treeFilter: 'Filter criteria to select the trees',
+//   plantFilter: 'Filter criteria to select the plants',
 //   markFilter: 'Filter criteria to select the attributions',
 
 //   noFilter:

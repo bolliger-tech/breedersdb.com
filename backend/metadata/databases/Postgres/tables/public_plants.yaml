@@ -1,5 +1,5 @@
 table:
-  name: trees
+  name: plants
   schema: public
 object_relationships:
   - name: cultivar
@@ -18,7 +18,7 @@ array_relationships:
   - name: attributions
     using:
       foreign_key_constraint_on:
-        column: tree_id
+        column: plant_id
         table:
           name: attributions
           schema: public
@@ -26,17 +26,17 @@ array_relationships:
     using:
       manual_configuration:
         column_mapping:
-          id: tree_id
+          id: plant_id
         insertion_order: null
         remote_table:
           name: attributions_view
           schema: public
-  - name: mother_trees
+  - name: mother_plants
     using:
       foreign_key_constraint_on:
-        column: tree_id
+        column: plant_id
         table:
-          name: mother_trees
+          name: mother_plants
           schema: public
 insert_permissions:
   - role: user

@@ -12,7 +12,7 @@ lots {
   cultivars {
     id
     name_segment
-    trees {
+    plants {
       id
       label_id
       cultivar_name
@@ -54,7 +54,7 @@ lots {
 
 // no #graphql tag here, because the syntax checker fails on the interpolation
 const insertMutation = `
-mutation InsertTree(
+mutation InsertPlant(
   $crossing_name: String!,
   $lot_name_segment: String!,
   $cultivar_name_segment: String!,
@@ -83,7 +83,7 @@ mutation InsertTree(
       }}
       cultivars: {data: {
         name_segment: $cultivar_name_segment,
-        trees: {data: {
+        plants: {data: {
           label_id: $label_id,
           serial_in_plant_row: $serial_in_plant_row,
           distance_plant_row_start: $distance_plant_row_start,
@@ -116,7 +116,7 @@ mutation InsertTree(
 
 // no #graphql tag here, because the syntax checker fails on the interpolation
 const insertMutationMinimal = `
-mutation InsertTree(
+mutation InsertPlant(
   $crossing_name: String!,
   $lot_name_segment: String!,
   $lot_orchard_name: String! = "Lot Orchard 1"
@@ -131,7 +131,7 @@ mutation InsertTree(
       orchard: { data: { name: $lot_orchard_name } }
       cultivars: {data: {
         name_segment: $cultivar_name_segment,
-        trees: {data: {
+        plants: {data: {
           label_id: $label_id,
           date_eliminated: $date_eliminated
         }}
@@ -144,7 +144,7 @@ mutation InsertTree(
 
 // no #graphql tag here, because the syntax checker fails on the interpolation
 const insertMutationPlantRow = `
-mutation InsertTree(
+mutation InsertPlant(
   $crossing_name: String!,
   $lot_name_segment: String!,
   $lot_orchard_name: String! = "Lot Orchard 1"
@@ -161,7 +161,7 @@ mutation InsertTree(
       orchard: { data: { name: $lot_orchard_name } }
       cultivars: {data: {
         name_segment: $cultivar_name_segment,
-        trees: {data: {
+        plants: {data: {
           label_id: $label_id,
           date_eliminated: $date_eliminated
           plant_row_id: $plant_row_id
@@ -177,8 +177,8 @@ mutation InsertTree(
 afterEach(async () => {
   await post({
     query: /* GraphQL */ `
-      mutation DeleteAllTrees {
-        delete_trees(where: {}) {
+      mutation DeleteAllPlants {
+        delete_plants(where: {}) {
           affected_rows
         }
         delete_plant_rows(where: {}) {
@@ -233,28 +233,28 @@ test('insert', async () => {
     },
   });
 
-  const tree = resp.data.insert_crossings_one.lots[0].cultivars[0].trees[0];
+  const plant = resp.data.insert_crossings_one.lots[0].cultivars[0].plants[0];
 
-  expect(tree.id).toBeGreaterThan(0);
-  expect(tree.label_id).toBe('00000001');
-  expect(tree.cultivar_name).toBe('Abcd.24A.001');
-  expect(tree.serial_in_plant_row).toBe(1);
-  expect(tree.distance_plant_row_start).toBe(0.5);
-  expect(tree.geo_location.coordinates).toEqual([
+  expect(plant.id).toBeGreaterThan(0);
+  expect(plant.label_id).toBe('00000001');
+  expect(plant.cultivar_name).toBe('Abcd.24A.001');
+  expect(plant.serial_in_plant_row).toBe(1);
+  expect(plant.distance_plant_row_start).toBe(0.5);
+  expect(plant.geo_location.coordinates).toEqual([
     7.470518977340019, 47.13866030575061,
   ]);
-  expect(tree.geo_location_accuracy).toBe(0.5);
-  expect(tree.date_grafted).toBe('2024-03-21');
-  expect(tree.date_planted).toBe('2024-03-22');
-  expect(tree.date_labeled).toBe('2024-03-24');
-  expect(tree.note).toBe('This is a note');
-  expect(tree.rootstock.name).toBe('Rootstock1');
-  expect(tree.grafting.name).toBe('Grafting1');
-  expect(tree.plant_row.name).toBe('PlantRow1');
-  expect(tree.plant_row.orchard.name).toBe('Orchard1');
-  expect(tree.disabled).toBe(false);
-  expect(tree.created).toMatch(iso8601dateRegex);
-  expect(tree.modified).toBeNull();
+  expect(plant.geo_location_accuracy).toBe(0.5);
+  expect(plant.date_grafted).toBe('2024-03-21');
+  expect(plant.date_planted).toBe('2024-03-22');
+  expect(plant.date_labeled).toBe('2024-03-24');
+  expect(plant.note).toBe('This is a note');
+  expect(plant.rootstock.name).toBe('Rootstock1');
+  expect(plant.grafting.name).toBe('Grafting1');
+  expect(plant.plant_row.name).toBe('PlantRow1');
+  expect(plant.plant_row.orchard.name).toBe('Orchard1');
+  expect(plant.disabled).toBe(false);
+  expect(plant.created).toMatch(iso8601dateRegex);
+  expect(plant.modified).toBeNull();
 });
 
 test('eliminating prefixes label_id and sets disabled', async () => {
@@ -270,8 +270,8 @@ test('eliminating prefixes label_id and sets disabled', async () => {
 
   const eliminated = await post({
     query: /* GraphQL */ `
-      mutation EliminateTree($id: Int!, $date_eliminated: date) {
-        update_trees_by_pk(
+      mutation EliminatePlant($id: Int!, $date_eliminated: date) {
+        update_plants_by_pk(
           pk_columns: { id: $id }
           _set: { date_eliminated: $date_eliminated }
         ) {
@@ -281,13 +281,13 @@ test('eliminating prefixes label_id and sets disabled', async () => {
       }
     `,
     variables: {
-      id: resp.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
+      id: resp.data.insert_crossings_one.lots[0].cultivars[0].plants[0].id,
       date_eliminated: '2024-03-23',
     },
   });
 
-  expect(eliminated.data.update_trees_by_pk.label_id).toBe('#00000001');
-  expect(eliminated.data.update_trees_by_pk.disabled).toBe(true);
+  expect(eliminated.data.update_plants_by_pk.label_id).toBe('#00000001');
+  expect(eliminated.data.update_plants_by_pk.disabled).toBe(true);
 });
 
 test('prevent insertion of non-prefixed label_id if eliminated', async () => {
@@ -303,7 +303,7 @@ test('prevent insertion of non-prefixed label_id if eliminated', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toMatch(
-    "Cannot insert or update a tree with a label_id that is prefixed with a '#' but has no date_eliminated.",
+    "Cannot insert or update a plant with a label_id that is prefixed with a '#' but has no date_eliminated.",
   );
 });
 
@@ -319,7 +319,7 @@ test('prevent insertion of prefixed label_id if not eliminated', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toMatch(
-    "Cannot insert or update a tree with a label_id that is prefixed with a '#' but has no date_eliminated.",
+    "Cannot insert or update a plant with a label_id that is prefixed with a '#' but has no date_eliminated.",
   );
 });
 
@@ -337,8 +337,8 @@ test('removal of elimination date removes prefix and unsets disabled', async () 
 
   const eliminated = await post({
     query: /* GraphQL */ `
-      mutation EliminateTree($id: Int!, $date_eliminated: date) {
-        update_trees_by_pk(
+      mutation EliminatePlant($id: Int!, $date_eliminated: date) {
+        update_plants_by_pk(
           pk_columns: { id: $id }
           _set: { date_eliminated: $date_eliminated }
         ) {
@@ -348,13 +348,13 @@ test('removal of elimination date removes prefix and unsets disabled', async () 
       }
     `,
     variables: {
-      id: resp.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
+      id: resp.data.insert_crossings_one.lots[0].cultivars[0].plants[0].id,
       date_eliminated: null,
     },
   });
 
-  expect(eliminated.data.update_trees_by_pk.label_id).toBe('00000001');
-  expect(eliminated.data.update_trees_by_pk.disabled).toBe(false);
+  expect(eliminated.data.update_plants_by_pk.label_id).toBe('00000001');
+  expect(eliminated.data.update_plants_by_pk.disabled).toBe(false);
 });
 
 test('label_id is unique', async () => {
@@ -378,7 +378,7 @@ test('label_id is unique', async () => {
   });
 
   expect(
-    resp1.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
+    resp1.data.insert_crossings_one.lots[0].cultivars[0].plants[0].id,
   ).toBeGreaterThan(0);
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
@@ -408,10 +408,10 @@ test('deleted label_id is not unique', async () => {
   });
 
   expect(
-    resp1.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
+    resp1.data.insert_crossings_one.lots[0].cultivars[0].plants[0].id,
   ).toBeGreaterThan(0);
   expect(
-    resp2.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
+    resp2.data.insert_crossings_one.lots[0].cultivars[0].plants[0].id,
   ).toBeGreaterThan(0);
 });
 
@@ -476,7 +476,7 @@ test('updated cultivar_name cultivar', async () => {
           _set: { name_segment: $name_segment }
         ) {
           id
-          trees {
+          plants {
             id
             cultivar_name
           }
@@ -489,12 +489,12 @@ test('updated cultivar_name cultivar', async () => {
     },
   });
 
-  expect(updated.data.update_cultivars_by_pk.trees[0].cultivar_name).toBe(
+  expect(updated.data.update_cultivars_by_pk.plants[0].cultivar_name).toBe(
     'Abcd.24A.999',
   );
 });
 
-test('updated cultivar_name tree cultivar_id change', async () => {
+test('updated cultivar_name plant cultivar_id change', async () => {
   const initial = await post({
     query: insertMutationMinimal,
     variables: {
@@ -517,10 +517,10 @@ test('updated cultivar_name tree cultivar_id change', async () => {
     },
   });
 
-  const updatedTree = await post({
+  const updatedPlant = await post({
     query: /* GraphQL */ `
-      mutation UpdateTree($id: Int!, $cultivar_id: Int!) {
-        update_trees_by_pk(
+      mutation UpdatePlant($id: Int!, $cultivar_id: Int!) {
+        update_plants_by_pk(
           pk_columns: { id: $id }
           _set: { cultivar_id: $cultivar_id }
         ) {
@@ -530,7 +530,7 @@ test('updated cultivar_name tree cultivar_id change', async () => {
       }
     `,
     variables: {
-      id: initial.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
+      id: initial.data.insert_crossings_one.lots[0].cultivars[0].plants[0].id,
       cultivar_id: newCultivar.data.insert_cultivars_one.id,
     },
   });
@@ -549,8 +549,8 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateTree($id: Int!, $label_id: String!) {
-        update_trees_by_pk(
+      mutation UpdatePlant($id: Int!, $label_id: String!) {
+        update_plants_by_pk(
           pk_columns: { id: $id }
           _set: { label_id: $label_id }
         ) {
@@ -560,12 +560,12 @@ test('modified', async () => {
       }
     `,
     variables: {
-      id: resp.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
+      id: resp.data.insert_crossings_one.lots[0].cultivars[0].plants[0].id,
       label_id: '01234567',
     },
   });
 
-  expect(updated.data.update_trees_by_pk.modified).toMatch(iso8601dateRegex);
+  expect(updated.data.update_plants_by_pk.modified).toMatch(iso8601dateRegex);
 });
 
 test('row / serial combo is unique if not eliminated', async () => {
@@ -609,7 +609,7 @@ test('row / serial combo is unique if not eliminated', async () => {
   });
 
   expect(
-    resp1.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
+    resp1.data.insert_crossings_one.lots[0].cultivars[0].plants[0].id,
   ).toBeGreaterThan(0);
   expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
 });
@@ -659,9 +659,9 @@ test('row / serial combo not unique if is eliminated', async () => {
   });
 
   expect(
-    resp1.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
+    resp1.data.insert_crossings_one.lots[0].cultivars[0].plants[0].id,
   ).toBeGreaterThan(0);
   expect(
-    resp2.data.insert_crossings_one.lots[0].cultivars[0].trees[0].id,
+    resp2.data.insert_crossings_one.lots[0].cultivars[0].plants[0].id,
   ).toBeGreaterThan(0);
 });

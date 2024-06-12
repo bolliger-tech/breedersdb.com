@@ -42,12 +42,12 @@
 
   <q-separator class="q-my-sm" dark />
 
-  <template v-if="data.tree">
+  <template v-if="data.plant">
     <div class="row no-wrap items-center text-body2 q-pt-xs">
       <BaseSpriteIcon name="tree" color="grey-7" size="lg" />
       <div class="q-ml-sm">
-        <RouterLink :to="`/trees/${data.tree.id}`" class="link">
-          <BaseLabelId :label-id="data.tree.label_id" />
+        <RouterLink :to="`/plants/${data.plant.id}`" class="link">
+          <BaseLabelId :label-id="data.plant.label_id" />
         </RouterLink>
         <br />
         <RouterLink
@@ -55,49 +55,49 @@
           :to="`/cultivars/${data.cultivar.id}`"
           class="link"
         >
-          {{ data.tree.cultivar_name }}
+          {{ data.plant.cultivar_name }}
         </RouterLink>
         <template v-else>
-          {{ data.tree.cultivar_name }}
+          {{ data.plant.cultivar_name }}
         </template>
       </div>
     </div>
     <table style="width: 100%" class="text-body2">
-      <tr v-if="data.tree.date_planted">
-        <th>{{ t('trees.fields.datePlanted') }}</th>
-        <td>{{ localizeDate(data.tree.date_planted) }}</td>
+      <tr v-if="data.plant.date_planted">
+        <th>{{ t('plants.fields.datePlanted') }}</th>
+        <td>{{ localizeDate(data.plant.date_planted) }}</td>
       </tr>
-      <tr v-if="data.tree.date_grafted">
-        <th>{{ t('trees.fields.dateGrafted') }}</th>
-        <td>{{ localizeDate(data.tree.date_grafted) }}</td>
+      <tr v-if="data.plant.date_grafted">
+        <th>{{ t('plants.fields.dateGrafted') }}</th>
+        <td>{{ localizeDate(data.plant.date_grafted) }}</td>
       </tr>
-      <tr v-if="data.tree.date_eliminated">
-        <th>{{ t('trees.fields.dateEliminated') }}</th>
-        <td>{{ localizeDate(data.tree.date_eliminated) }}</td>
+      <tr v-if="data.plant.date_eliminated">
+        <th>{{ t('plants.fields.dateEliminated') }}</th>
+        <td>{{ localizeDate(data.plant.date_eliminated) }}</td>
       </tr>
-      <template v-if="data.tree.plant_row">
+      <template v-if="data.plant.plant_row">
         <tr>
           <th>{{ t('orchards.title', 1) }}</th>
-          <td>{{ data.tree.plant_row.orchard.name }}</td>
+          <td>{{ data.plant.plant_row.orchard.name }}</td>
         </tr>
         <tr>
           <th>{{ t('plantRows.title', 1) }}</th>
-          <td>{{ data.tree.plant_row.name }}</td>
+          <td>{{ data.plant.plant_row.name }}</td>
         </tr>
-        <tr v-if="data.tree.serial_in_plant_row">
-          <th>{{ t('trees.fields.serialInPlantRow') }}</th>
-          <td>{{ data.tree.serial_in_plant_row }}</td>
+        <tr v-if="data.plant.serial_in_plant_row">
+          <th>{{ t('plants.fields.serialInPlantRow') }}</th>
+          <td>{{ data.plant.serial_in_plant_row }}</td>
         </tr>
-        <tr v-if="data.tree.distance_plant_row_start">
-          <th>{{ t('trees.fields.distancePlantRowStart') }}</th>
-          <td>{{ data.tree.distance_plant_row_start }}</td>
+        <tr v-if="data.plant.distance_plant_row_start">
+          <th>{{ t('plants.fields.distancePlantRowStart') }}</th>
+          <td>{{ data.plant.distance_plant_row_start }}</td>
         </tr>
       </template>
     </table>
-    <div v-if="data.tree.note" class="q-mt-sm text-body2">
+    <div v-if="data.plant.note" class="q-mt-sm text-body2">
       <strong>{{ t('entity.note') }}</strong
       ><br />
-      <span style="white-space: pre-line">{{ data.tree.note }}</span>
+      <span style="white-space: pre-line">{{ data.plant.note }}</span>
     </div>
   </template>
 

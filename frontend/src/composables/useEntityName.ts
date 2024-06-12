@@ -23,8 +23,8 @@ export function useEntityName() {
       case BaseTable.Lots:
         entityName = t('base.entityName.lot', count);
         break;
-      case BaseTable.Trees:
-        entityName = t('base.entityName.tree', count);
+      case BaseTable.Plants:
+        entityName = t('base.entityName.plant', count);
         break;
       case BaseTable.Attributions:
         entityName = t('base.entityName.attribution', count);

@@ -228,8 +228,8 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
   if (comparison.negate) {
     // apply negation to the whole criterion so nested tables without relation
     // work as expected. e.g.
-    // - `tree.row.name is null` will also return trees without a row
-    // - `tree.row.name starts not with Z` will also return trees without a row
+    // - `plant.row.name is null` will also return plants without a row
+    // - `plant.row.name starts not with Z` will also return plants without a row
     criterion.conditions = `{ _not: ${criterion.conditions} }`;
   }
 
@@ -505,7 +505,7 @@ function columnsToFields({
     fields += `${indentation}id\n`;
   }
 
-  // un-nested columns. e.g. `trees.id`
+  // un-nested columns. e.g. `plants.id`
   baseColumns
     .filter((column) => column.split('.').length === 2)
     .forEach((column) => {
@@ -513,7 +513,7 @@ function columnsToFields({
       fields += `${indentation}${toSnakeCase(field)}\n`;
     });
 
-  // nested columns. e.g. `trees.rows.name`
+  // nested columns. e.g. `plants.rows.name`
   baseColumns
     .filter((column) => column.split('.').length > 2)
     .forEach((column) => {
@@ -529,7 +529,7 @@ function columnsToFields({
       }
 
       // replace dots with double underscores for graphql compatibility
-      // e.g. trees.rows.name -> trees__rows__name
+      // e.g. plants.rows.name -> plants__rows__name
       const alias = column.replaceAll('.', '__');
 
       const query = tables.reduceRight(
@@ -567,7 +567,7 @@ fragment AttributionFragment on attributions_view {
   text_value
   boolean_value
   date_value
-  tree_id
+  plant_id
   cultivar_id
   lot_id
   data_type
@@ -581,7 +581,7 @@ export type QueryAttributionsViewFields = {
   text_value: string | null;
   boolean_value: boolean | null;
   date_value: string | null;
-  tree_id: number | null;
+  plant_id: number | null;
   cultivar_id: number | null;
   lot_id: number | null;
   data_type: AttributeDataTypes;

@@ -14,8 +14,8 @@ const { t } = useI18n();
 
 const items: NavLevel0Props['items'] = [
   {
-    label: t('trees.title', 2),
-    to: '/trees',
+    label: t('plants.title', 2),
+    to: '/plants',
     icon: 'tree',
     children: [
       {
@@ -29,12 +29,12 @@ const items: NavLevel0Props['items'] = [
         to: 'new',
       },
       {
-        label: t('nav.trees.plant'),
+        label: t('nav.plants.plant'),
         icon: 'shovel',
         to: 'plant',
       },
       {
-        label: t('nav.trees.eliminate'),
+        label: t('nav.plants.eliminate'),
         icon: 'trash',
         to: 'eliminate',
       },
@@ -157,8 +157,8 @@ const items: NavLevel0Props['items'] = [
         to: 'new',
       },
       {
-        label: t('motherTrees.title', 2),
-        to: 'mother-trees',
+        label: t('motherPlants.title', 2),
+        to: 'mother-plants',
         icon: 'female',
         children: [
           {

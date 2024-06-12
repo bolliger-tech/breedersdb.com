@@ -1,7 +1,7 @@
 import { base } from './base';
 import { nav } from './nav';
 import { errorNotFound } from './error-not-found';
-import { trees } from './trees';
+import { plants } from './plants';
 import { cultivars } from './cultivars';
 import { filter } from './query-filter';
 import { result } from './query-result';
@@ -11,7 +11,7 @@ import { attributions } from './attributions';
 import { crossings } from './crossings';
 import { lots } from './lots';
 import { groups } from './groups';
-import { motherTrees } from './mother-trees';
+import { motherPlants } from './mother-plants';
 import { pollen } from './pollen';
 import { graftings } from './graftings';
 import { orchards } from './orchards';
@@ -29,8 +29,8 @@ const messages = {
   lots,
   groups,
   cultivars,
-  trees,
-  motherTrees,
+  plants,
+  motherPlants,
   pollen,
   attributions,
   graftings,

@@ -40,7 +40,7 @@ const query = graphql(`
       data_type
       attribute_type
       attribution_id
-      tree {
+      plant {
         id
         label_id
         cultivar_name

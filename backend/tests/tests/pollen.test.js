@@ -52,7 +52,7 @@ afterEach(async () => {
         delete_pollen(where: {}) {
           affected_rows
         }
-        delete_trees(where: {}) {
+        delete_plants(where: {}) {
           affected_rows
         }
         delete_cultivars(where: {}) {

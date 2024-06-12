@@ -31,7 +31,7 @@ const insertMutation = /* GraphQL */ `
 `;
 
 const my_query = {
-  baseTable: 'Trees',
+  baseTable: 'Plants',
   baseFilter: {
     id: 23,
     level: 0,
@@ -45,7 +45,7 @@ const my_query = {
             level: 2,
             children: [],
             filterRule: {
-              column: 'TreesView.convar',
+              column: 'PlantsView.convar',
               isValid: true,
               criteria: '18A',
               comparator: {
@@ -60,7 +60,7 @@ const my_query = {
             level: 2,
             children: [],
             filterRule: {
-              column: 'TreesView.convar',
+              column: 'PlantsView.convar',
               isValid: true,
               criteria: '18B',
               comparator: {
@@ -80,7 +80,7 @@ const my_query = {
         level: 1,
         children: [],
         filterRule: {
-          column: 'TreesView.label_id',
+          column: 'PlantsView.label_id',
           isValid: true,
           criteria: '#',
           comparator: {
@@ -122,10 +122,10 @@ const my_query = {
     childrensOperand: 'and',
   },
   visibleColumns: [
-    'TreesView.convar',
-    'TreesView.label_id',
-    'TreesView.row',
-    'TreesView.offset',
+    'PlantsView.convar',
+    'PlantsView.label_id',
+    'PlantsView.row',
+    'PlantsView.offset',
     'Attribution.5-none',
     'Attribution.5-mean',
     'Attribution.183-none',

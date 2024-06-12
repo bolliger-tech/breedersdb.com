@@ -43,12 +43,12 @@ array_relationships:
         table:
           name: pollen
           schema: public
-  - name: trees
+  - name: plants
     using:
       foreign_key_constraint_on:
         column: cultivar_id
         table:
-          name: trees
+          name: plants
           schema: public
 insert_permissions:
   - role: user

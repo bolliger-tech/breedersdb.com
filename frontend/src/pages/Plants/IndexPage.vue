@@ -1,11 +1,11 @@
 <template>
-  <PageLayout :title="t('trees.title', 2)">
-    <ExampleTreesTable />
+  <PageLayout :title="t('plants.title', 2)">
+    <ExamplePlantsTable />
   </PageLayout>
 </template>
 
 <script setup lang="ts">
-import ExampleTreesTable from 'src/components/ExampleTreesTable.vue';
+import ExamplePlantsTable from 'src/components/ExamplePlantsTable.vue';
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
 

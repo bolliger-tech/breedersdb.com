@@ -16,12 +16,12 @@ array_relationships:
         table:
           name: lots
           schema: public
-  - name: mother_trees
+  - name: mother_plants
     using:
       foreign_key_constraint_on:
         column: crossing_id
         table:
-          name: mother_trees
+          name: mother_plants
           schema: public
 insert_permissions:
   - role: user

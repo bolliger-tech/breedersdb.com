@@ -61,8 +61,7 @@ const query = graphql(`
       }
       cultivar {
         id
-        name
-        common_name
+        display_name
         acronym
         breeder
         registration
@@ -70,7 +69,7 @@ const query = graphql(`
       }
       lot {
         id
-        name
+        display_name
         date_sowed
         numb_seeds_sowed
         numb_seedlings_grown

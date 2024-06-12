@@ -105,14 +105,10 @@
     <div class="row no-wrap items-center text-body2 q-pt-xs">
       <BaseSpriteIcon name="cultivar" color="grey-7" size="lg" />
       <RouterLink :to="`/cultivars/${data.cultivar.id}`" class="link q-ml-sm">
-        {{ data.cultivar.name }}
+        {{ data.cultivar.display_name }}
       </RouterLink>
     </div>
     <table style="width: 100%" class="text-body2">
-      <tr v-if="data.cultivar.common_name">
-        <th>{{ t('cultivars.fields.commonName') }}</th>
-        <td>{{ data.cultivar.common_name }}</td>
-      </tr>
       <tr v-if="data.cultivar.acronym">
         <th>{{ t('cultivars.fields.acronym') }}</th>
         <td>{{ data.cultivar.acronym }}</td>
@@ -137,7 +133,7 @@
     <div class="row no-wrap items-center text-body2 q-pt-xs">
       <BaseSpriteIcon name="lot" color="grey-7" size="lg" />
       <RouterLink :to="`/lots/${data.lot.id}`" class="link q-ml-sm">
-        {{ data.lot.name }}
+        {{ data.lot.display_name }}
       </RouterLink>
     </div>
     <table style="width: 100%" class="text-body2">

@@ -322,7 +322,7 @@ test('data type is immutable after insert of attribute_values', async () => {
                 attribution_form: { data: { name: "Attribution Form 1" } }
                 lot: {
                   data: {
-                    name_segment: "24A"
+                    segment_name: "24A"
                     crossing: { data: { name: "Cross1" } }
                     orchard: { data: { name: "Orchard1" } }
                   }

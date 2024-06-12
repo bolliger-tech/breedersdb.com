@@ -8,10 +8,10 @@ id
 name
 lots {
   id
-  name_segment
+  segment_name
   cultivars {
     id
-    name_segment
+    segment_name
     trees {
       id
       label_id
@@ -56,8 +56,8 @@ lots {
 const insertMutation = `
 mutation InsertTree(
   $crossing_name: String!,
-  $lot_name_segment: String!,
-  $cultivar_name_segment: String!,
+  $lot_segment_name: String!,
+  $cultivar_segment_name: String!,
   $rootstock_name: String,
   $grafting_name: String,
   $orchard_name: String,
@@ -77,12 +77,12 @@ mutation InsertTree(
   insert_crossings_one(object: {
     name: $crossing_name,
     lots: {data: {
-      name_segment: $lot_name_segment,
+      segment_name: $lot_segment_name,
       orchard: {data: {
         name: $lot_orchard_name
       }}
       cultivars: {data: {
-        name_segment: $cultivar_name_segment,
+        segment_name: $cultivar_segment_name,
         trees: {data: {
           label_id: $label_id,
           serial_in_plant_row: $serial_in_plant_row,
@@ -118,19 +118,19 @@ mutation InsertTree(
 const insertMutationMinimal = `
 mutation InsertTree(
   $crossing_name: String!,
-  $lot_name_segment: String!,
+  $lot_segment_name: String!,
   $lot_orchard_name: String! = "Lot Orchard 1"
-  $cultivar_name_segment: String!,
+  $cultivar_segment_name: String!,
   $label_id: String!,
   $date_eliminated: date
   ) {
   insert_crossings_one(object: {
     name: $crossing_name,
     lots: {data: {
-      name_segment: $lot_name_segment,
+      segment_name: $lot_segment_name,
       orchard: { data: { name: $lot_orchard_name } }
       cultivars: {data: {
-        name_segment: $cultivar_name_segment,
+        segment_name: $cultivar_segment_name,
         trees: {data: {
           label_id: $label_id,
           date_eliminated: $date_eliminated
@@ -146,9 +146,9 @@ mutation InsertTree(
 const insertMutationPlantRow = `
 mutation InsertTree(
   $crossing_name: String!,
-  $lot_name_segment: String!,
+  $lot_segment_name: String!,
   $lot_orchard_name: String! = "Lot Orchard 1"
-  $cultivar_name_segment: String!,
+  $cultivar_segment_name: String!,
   $label_id: String!,
   $date_eliminated: date,
   $plant_row_id: Int!,
@@ -157,10 +157,10 @@ mutation InsertTree(
   insert_crossings_one(object: {
     name: $crossing_name,
     lots: {data: {
-      name_segment: $lot_name_segment,
+      segment_name: $lot_segment_name,
       orchard: { data: { name: $lot_orchard_name } }
       cultivars: {data: {
-        name_segment: $cultivar_name_segment,
+        segment_name: $cultivar_segment_name,
         trees: {data: {
           label_id: $label_id,
           date_eliminated: $date_eliminated
@@ -212,8 +212,8 @@ test('insert', async () => {
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '00000001',
       serial_in_plant_row: 1,
       distance_plant_row_start: 0.5,
@@ -262,8 +262,8 @@ test('eliminating prefixes label_id and sets disabled', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '00000001',
     },
   });
@@ -295,8 +295,8 @@ test('prevent insertion of non-prefixed label_id if eliminated', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '00000001',
       date_eliminated: '2024-03-23',
     },
@@ -312,8 +312,8 @@ test('prevent insertion of prefixed label_id if not eliminated', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '#00000001',
     },
   });
@@ -328,8 +328,8 @@ test('removal of elimination date removes prefix and unsets disabled', async () 
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '#00000001',
       date_eliminated: '2024-03-23',
     },
@@ -362,8 +362,8 @@ test('label_id is unique', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '00000001',
     },
   });
@@ -371,8 +371,8 @@ test('label_id is unique', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Defg',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '00000001',
     },
   });
@@ -388,9 +388,9 @@ test('deleted label_id is not unique', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       lot_orchard_name: 'Orchard 1',
-      cultivar_name_segment: '001',
+      cultivar_segment_name: '001',
       label_id: '#00000001',
       date_eliminated: '2024-03-23',
     },
@@ -399,9 +399,9 @@ test('deleted label_id is not unique', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Defg',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       lot_orchard_name: 'Orchard 2',
-      cultivar_name_segment: '001',
+      cultivar_segment_name: '001',
       label_id: '#00000001',
       date_eliminated: '2024-03-23',
     },
@@ -420,8 +420,8 @@ test('label_id is no shorter than 8 digits', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '1234567',
     },
   });
@@ -434,8 +434,8 @@ test('label_id is no longer than 8 digits', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '123456789',
     },
   });
@@ -448,8 +448,8 @@ test('label_id is digits only', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '1234567a',
     },
   });
@@ -462,18 +462,18 @@ test('updated cultivar_name cultivar', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '12345678',
     },
   });
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateCultivar($id: Int!, $name_segment: String!) {
+      mutation UpdateCultivar($id: Int!, $segment_name: String!) {
         update_cultivars_by_pk(
           pk_columns: { id: $id }
-          _set: { name_segment: $name_segment }
+          _set: { segment_name: $segment_name }
         ) {
           id
           trees {
@@ -485,7 +485,7 @@ test('updated cultivar_name cultivar', async () => {
     `,
     variables: {
       id: resp.data.insert_crossings_one.lots[0].cultivars[0].id,
-      name_segment: '999',
+      segment_name: '999',
     },
   });
 
@@ -499,21 +499,21 @@ test('updated cultivar_name tree cultivar_id change', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '12345678',
     },
   });
 
   const newCultivar = await post({
-    query: `mutation InsertCultivar($lot_id: Int!, $name_segment: String!) {
-      insert_cultivars_one(object: {lot_id: $lot_id, name_segment: $name_segment}) {
+    query: `mutation InsertCultivar($lot_id: Int!, $segment_name: String!) {
+      insert_cultivars_one(object: {lot_id: $lot_id, segment_name: $segment_name}) {
         id
       }
     }`,
     variables: {
       lot_id: initial.data.insert_crossings_one.lots[0].id,
-      name_segment: '999',
+      segment_name: '999',
     },
   });
 
@@ -541,8 +541,8 @@ test('modified', async () => {
     query: insertMutationMinimal,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '12345678',
     },
   });
@@ -589,8 +589,8 @@ test('row / serial combo is unique if not eliminated', async () => {
     query: insertMutationPlantRow,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '00000001',
       plant_row_id: plantRow.data.insert_plant_rows_one.id,
       serial_in_plant_row: 1,
@@ -600,8 +600,8 @@ test('row / serial combo is unique if not eliminated', async () => {
     query: insertMutationPlantRow,
     variables: {
       crossing_name: 'Defg',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      lot_segment_name: '24A',
+      cultivar_segment_name: '001',
       label_id: '00000002',
       plant_row_id: plantRow.data.insert_plant_rows_one.id,
       serial_in_plant_row: 1,
@@ -635,9 +635,9 @@ test('row / serial combo not unique if is eliminated', async () => {
     query: insertMutationPlantRow,
     variables: {
       crossing_name: 'Abcd',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       lot_orchard_name: 'Orchard 1',
-      cultivar_name_segment: '001',
+      cultivar_segment_name: '001',
       label_id: '#00000001',
       date_eliminated: '2024-03-23',
       plant_row_id: plantRow.data.insert_plant_rows_one.id,
@@ -648,9 +648,9 @@ test('row / serial combo not unique if is eliminated', async () => {
     query: insertMutationPlantRow,
     variables: {
       crossing_name: 'Defg',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       lot_orchard_name: 'Orchard 2',
-      cultivar_name_segment: '001',
+      cultivar_segment_name: '001',
       label_id: '#00000002',
       date_eliminated: '2024-03-23',
       plant_row_id: plantRow.data.insert_plant_rows_one.id,

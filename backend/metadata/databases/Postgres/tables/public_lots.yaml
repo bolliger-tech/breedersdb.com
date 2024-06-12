@@ -40,7 +40,7 @@ insert_permissions:
         - crossing_id
         - date_planted
         - date_sowed
-        - name_segment
+        - segment_name
         - note
         - numb_seedlings_grown
         - numb_seedlings_planted
@@ -60,7 +60,7 @@ select_permissions:
         - id
         - modified
         - name
-        - name_segment
+        - segment_name
         - note
         - numb_seedlings_grown
         - numb_seedlings_planted
@@ -77,7 +77,7 @@ update_permissions:
         - crossing_id
         - date_planted
         - date_sowed
-        - name_segment
+        - segment_name
         - note
         - numb_seedlings_grown
         - numb_seedlings_planted

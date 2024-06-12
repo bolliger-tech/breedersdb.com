@@ -65,7 +65,7 @@ const insertAttributionMutation = /* GraphQL */ `
     $author: String
     $date_attributed: date
     $attribution_form_name: String
-    $lot_name_segment: String
+    $lot_segment_name: String
     $orchard_name: String! = "Orchard 1"
     $crossing_name: String
   ) {
@@ -76,7 +76,7 @@ const insertAttributionMutation = /* GraphQL */ `
         attribution_form: { data: { name: $attribution_form_name } }
         lot: {
           data: {
-            name_segment: $lot_name_segment
+            segment_name: $lot_segment_name
             orchard: { data: { name: $orchard_name } }
             crossing: { data: { name: $crossing_name } }
           }
@@ -125,7 +125,7 @@ test('insert', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -172,7 +172,7 @@ test('insert with offline data', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -237,7 +237,7 @@ test('insert INTEGER valid low', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -266,7 +266,7 @@ test('insert INTEGER valid high', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -295,7 +295,7 @@ test('insert INTEGER too low', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -325,7 +325,7 @@ test('insert INTEGER too high', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -355,7 +355,7 @@ test('insert INTEGER invalid step', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -385,7 +385,7 @@ test('insert INTEGER invalid value data type', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -415,7 +415,7 @@ test('insert INTEGER wrong column', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -445,7 +445,7 @@ test('insert FLOAT valid low', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -474,7 +474,7 @@ test('insert FLOAT valid high', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -503,7 +503,7 @@ test('insert FLOAT too low', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -533,7 +533,7 @@ test('insert FLOAT too high', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -563,7 +563,7 @@ test('insert FLOAT invalid value data type', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -593,7 +593,7 @@ test('insert FLOAT wrong column', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -623,7 +623,7 @@ test('insert TEXT valid', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -651,7 +651,7 @@ test('insert TEXT too long', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -680,7 +680,7 @@ test('insert TEXT empty', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -709,7 +709,7 @@ test('insert TEXT wrong column', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -738,7 +738,7 @@ test('insert BOOLEAN valid', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -766,7 +766,7 @@ test('insert BOOLEAN invalid value data type', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -795,7 +795,7 @@ test('insert BOOLEAN wrong column', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -824,7 +824,7 @@ test('insert DATE valid', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -852,7 +852,7 @@ test('insert DATE out of range date', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -879,7 +879,7 @@ test('insert DATE invalid date format', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -906,7 +906,7 @@ test('insert DATE timestamp', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -934,7 +934,7 @@ test('insert DATE invalid value data type', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -961,7 +961,7 @@ test('insert DATE wrong column', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -990,7 +990,7 @@ test('insert PHOTO jpg', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -1020,7 +1020,7 @@ test('insert PHOTO jpeg', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -1050,7 +1050,7 @@ test('insert PHOTO avif', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -1080,7 +1080,7 @@ test('insert PHOTO png invalid', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -1109,7 +1109,7 @@ test('insert PHOTO name invalid', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -1138,7 +1138,7 @@ test('insert PHOTO empty', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -1167,7 +1167,7 @@ test('insert PHOTO wrong column', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -1196,7 +1196,7 @@ test('modified', async () => {
       author: 'Attribution Author',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      lot_name_segment: '24A',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });

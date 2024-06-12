@@ -55,8 +55,8 @@ const insertMutation = /* GraphQL */ `
 const insertTreeMutation = /* GraphQL */ `
   mutation InsertTree(
     $label_id: String!
-    $cultivar_name_segment: String!
-    $lot_name_segment: String!
+    $cultivar_segment_name: String!
+    $lot_segment_name: String!
     $crossing_name: String!
     $orchard_name: String! = "Orchard 1"
   ) {
@@ -65,10 +65,10 @@ const insertTreeMutation = /* GraphQL */ `
         label_id: $label_id
         cultivar: {
           data: {
-            name_segment: $cultivar_name_segment
+            segment_name: $cultivar_segment_name
             lot: {
               data: {
-                name_segment: $lot_name_segment
+                segment_name: $lot_segment_name
                 orchard: { data: { name: $orchard_name } }
                 crossing: { data: { name: $crossing_name } }
               }
@@ -123,8 +123,8 @@ test('insert', async () => {
     query: insertTreeMutation,
     variables: {
       label_id: '00000001',
-      cultivar_name_segment: '001',
-      lot_name_segment: '24A',
+      cultivar_segment_name: '001',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -169,8 +169,8 @@ test('author is required', async () => {
     query: insertTreeMutation,
     variables: {
       label_id: '00000001',
-      cultivar_name_segment: '001',
-      lot_name_segment: '24A',
+      cultivar_segment_name: '001',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -193,8 +193,8 @@ test('date_attributed is required', async () => {
     query: insertTreeMutation,
     variables: {
       label_id: '00000001',
-      cultivar_name_segment: '001',
-      lot_name_segment: '24A',
+      cultivar_segment_name: '001',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -217,8 +217,8 @@ test('has attribution object', async () => {
     query: insertTreeMutation,
     variables: {
       label_id: '00000001',
-      cultivar_name_segment: '001',
-      lot_name_segment: '24A',
+      cultivar_segment_name: '001',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -242,8 +242,8 @@ test('has exclusively one tree', async () => {
     query: insertTreeMutation,
     variables: {
       label_id: '00000001',
-      cultivar_name_segment: '001',
-      lot_name_segment: '24A',
+      cultivar_segment_name: '001',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -269,8 +269,8 @@ test('has exclusively one cultivar', async () => {
     query: insertTreeMutation,
     variables: {
       label_id: '00000001',
-      cultivar_name_segment: '001',
-      lot_name_segment: '24A',
+      cultivar_segment_name: '001',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -296,8 +296,8 @@ test('has exclusively one lot', async () => {
     query: insertTreeMutation,
     variables: {
       label_id: '00000001',
-      cultivar_name_segment: '001',
-      lot_name_segment: '24A',
+      cultivar_segment_name: '001',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });
@@ -323,8 +323,8 @@ test('modified', async () => {
     query: insertTreeMutation,
     variables: {
       label_id: '00000001',
-      cultivar_name_segment: '001',
-      lot_name_segment: '24A',
+      cultivar_segment_name: '001',
+      lot_segment_name: '24A',
       crossing_name: 'Cross1',
     },
   });

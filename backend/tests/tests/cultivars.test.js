@@ -175,7 +175,7 @@ test('segment_name is required', async () => {
   expect(resp.errors[0].message).toMatch(/Check constraint violation/);
 });
 
-test('updated name crossing', async () => {
+test('updated full_name crossing', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
@@ -211,7 +211,7 @@ test('updated name crossing', async () => {
   ).toBe('Efgh.24A.001');
 });
 
-test('updated name lot', async () => {
+test('updated full_name lot', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
@@ -247,7 +247,7 @@ test('updated name lot', async () => {
   );
 });
 
-test('updated name cultivar', async () => {
+test('updated full_name cultivar', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
@@ -276,6 +276,77 @@ test('updated name cultivar', async () => {
   });
 
   expect(updated.data.update_cultivars_by_pk.full_name).toBe('Abcd.24A.999');
+});
+
+test('display_name contains full_name', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_segment_name: '24A',
+      segment_name: '001',
+    },
+  });
+
+  const cultivar = resp.data.insert_crossings_one.lots[0].cultivars[0];
+
+  expect(cultivar.full_name).toBe('Abcd.24A.001');
+  expect(cultivar.display_name).toBe('Abcd.24A.001');
+  expect(cultivar.name_override).toBe(null);
+});
+
+test('display_name contains name_override', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_segment_name: '24A',
+      segment_name: '001',
+      name_override: 'Jonagold',
+    },
+  });
+
+  const cultivar = resp.data.insert_crossings_one.lots[0].cultivars[0];
+
+  expect(cultivar.full_name).toBe('Abcd.24A.001');
+  expect(cultivar.display_name).toBe('Jonagold');
+  expect(cultivar.name_override).toBe('Jonagold');
+});
+
+test('display_name is updated when lot display_name is updated', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_segment_name: '24A',
+      segment_name: '001',
+    },
+  });
+
+  const updated = await post({
+    query: /* GraphQL */ `
+      mutation UpdateLot($id: Int!, $segment_name: String!) {
+        update_lots_by_pk(
+          pk_columns: { id: $id }
+          _set: { segment_name: $segment_name }
+        ) {
+          id
+          cultivars {
+            id
+            display_name
+          }
+        }
+      }
+    `,
+    variables: {
+      id: resp.data.insert_crossings_one.lots[0].id,
+      segment_name: '24Z',
+    },
+  });
+
+  expect(updated.data.update_lots_by_pk.cultivars[0].display_name).toBe(
+    'Abcd.24Z.001',
+  );
 });
 
 test('modified', async () => {

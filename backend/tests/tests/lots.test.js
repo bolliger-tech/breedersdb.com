@@ -6,6 +6,7 @@ const insertMutation = /* GraphQL */ `
   mutation InsertLot(
     $crossing_name: String
     $segment_name: String
+    $name_override: String
     $date_sowed: date
     $numb_seeds_sowed: Int
     $numb_seedlings_grown: Int
@@ -22,6 +23,7 @@ const insertMutation = /* GraphQL */ `
         lots: {
           data: {
             segment_name: $segment_name
+            name_override: $name_override
             date_sowed: $date_sowed
             numb_seeds_sowed: $numb_seeds_sowed
             numb_seedlings_grown: $numb_seedlings_grown
@@ -40,6 +42,8 @@ const insertMutation = /* GraphQL */ `
       lots {
         id
         segment_name
+        full_name
+        name_override
         display_name
         date_sowed
         numb_seeds_sowed
@@ -95,6 +99,7 @@ test('insert', async () => {
 
   expect(resp.data.insert_crossings_one.lots[0].id).toBeGreaterThan(0);
   expect(resp.data.insert_crossings_one.lots[0].segment_name).toBe('24A');
+  expect(resp.data.insert_crossings_one.lots[0].full_name).toBe('Abcd.24A');
   expect(resp.data.insert_crossings_one.lots[0].display_name).toBe('Abcd.24A');
   expect(resp.data.insert_crossings_one.lots[0].date_sowed).toBe(date);
   expect(resp.data.insert_crossings_one.lots[0].numb_seeds_sowed).toBe(100);
@@ -147,7 +152,7 @@ test('segment_name is required', async () => {
   expect(resp.errors[0].message).toMatch(/Check constraint violation/);
 });
 
-test('updated name crossing', async () => {
+test('updated full_name crossing', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
@@ -163,7 +168,7 @@ test('updated name crossing', async () => {
         id
         lots {
           id
-          display_name
+          full_name
         }
       }
     }`,
@@ -173,12 +178,12 @@ test('updated name crossing', async () => {
     },
   });
 
-  expect(updated.data.update_crossings_by_pk.lots[0].display_name).toBe(
+  expect(updated.data.update_crossings_by_pk.lots[0].full_name).toBe(
     'Efgh.24A',
   );
 });
 
-test('updated name lot', async () => {
+test('updated full_name lot', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
@@ -192,7 +197,7 @@ test('updated name lot', async () => {
     query: `mutation UpdateLot($id: Int!, $segment_name: String!) {
       update_lots_by_pk(pk_columns: {id: $id}, _set: {segment_name: $segment_name}) {
         id
-        display_name
+        full_name
       }
     }`,
     variables: {
@@ -201,7 +206,42 @@ test('updated name lot', async () => {
     },
   });
 
-  expect(updated.data.update_lots_by_pk.display_name).toBe('Abcd.24Z');
+  expect(updated.data.update_lots_by_pk.full_name).toBe('Abcd.24Z');
+});
+
+test('display_name contains full_name', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      segment_name: '24A',
+      orchard_name: 'Orchard1',
+    },
+  });
+
+  expect(resp.data.insert_crossings_one.lots[0].full_name).toBe('Abcd.24A');
+  expect(resp.data.insert_crossings_one.lots[0].display_name).toBe('Abcd.24A');
+  expect(resp.data.insert_crossings_one.lots[0].name_override).toBe(null);
+});
+
+test('display_name contains name_override', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      segment_name: '24A',
+      name_override: 'The lot name',
+      orchard_name: 'Orchard1',
+    },
+  });
+
+  expect(resp.data.insert_crossings_one.lots[0].full_name).toBe('Abcd.24A');
+  expect(resp.data.insert_crossings_one.lots[0].display_name).toBe(
+    'The lot name',
+  );
+  expect(resp.data.insert_crossings_one.lots[0].display_name).toBe(
+    'The lot name',
+  );
 });
 
 test('modified', async () => {

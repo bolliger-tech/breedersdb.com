@@ -76,6 +76,31 @@ create trigger trim_crossings
     for each row
 execute function trim_strings('name', 'note');
 
+create table orchards
+(
+    id       integer primary key generated always as identity,
+    name     varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
+    disabled boolean                           default false not null,
+    created  timestamp with time zone not null default now(),
+    modified timestamp with time zone
+);
+
+create index on orchards (name);
+create index on orchards (disabled);
+create index on orchards (created);
+
+create trigger update_orchards_modified
+    before update
+    on orchards
+    for each row
+execute function modified_column();
+
+create trigger trim_orchards
+    before insert or update of name
+    on orchards
+    for each row
+execute function trim_strings('name');
+
 create table lots
 (
     id                     integer primary key generated always as identity,
@@ -89,6 +114,7 @@ create table lots
     date_planted           date,
     numb_seedlings_planted int,
     plot                   varchar(255),
+    orchard_id             int                      not null references orchards,
     note                   varchar(2047),
     created                timestamp with time zone not null default now(),
     modified               timestamp with time zone
@@ -106,6 +132,7 @@ create index on lots (date_sowed);
 create index on lots (seed_tray);
 create index on lots (date_planted);
 create index on lots (plot);
+create index on lots (orchard_id);
 create index on lots (created);
 
 create trigger update_lots_modified
@@ -283,31 +310,6 @@ execute function modified_column();
 create trigger trim_rootstocks
     before insert or update of name
     on rootstocks
-    for each row
-execute function trim_strings('name');
-
-create table orchards
-(
-    id       integer primary key generated always as identity,
-    name     varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
-    disabled boolean                           default false not null,
-    created  timestamp with time zone not null default now(),
-    modified timestamp with time zone
-);
-
-create index on orchards (name);
-create index on orchards (disabled);
-create index on orchards (created);
-
-create trigger update_orchards_modified
-    before update
-    on orchards
-    for each row
-execute function modified_column();
-
-create trigger trim_orchards
-    before insert or update of name
-    on orchards
     for each row
 execute function trim_strings('name');
 

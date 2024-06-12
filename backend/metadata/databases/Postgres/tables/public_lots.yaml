@@ -5,6 +5,9 @@ object_relationships:
   - name: crossing
     using:
       foreign_key_constraint_on: crossing_id
+  - name: orchard
+    using:
+      foreign_key_constraint_on: orchard_id
 array_relationships:
   - name: attributions
     using:
@@ -34,14 +37,15 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - name_segment
         - crossing_id
         - date_planted
         - date_sowed
+        - name_segment
         - note
-        - numb_seeds_sowed
         - numb_seedlings_grown
         - numb_seedlings_planted
+        - numb_seeds_sowed
+        - orchard_id
         - plot
         - seed_tray
     comment: ""
@@ -49,34 +53,36 @@ select_permissions:
   - role: user
     permission:
       columns:
-        - name_segment
+        - created
+        - crossing_id
         - date_planted
         - date_sowed
-        - crossing_id
         - id
-        - numb_seeds_sowed
-        - numb_seedlings_grown
-        - numb_seedlings_planted
-        - note
-        - plot
-        - seed_tray
-        - created
         - modified
         - name
+        - name_segment
+        - note
+        - numb_seedlings_grown
+        - numb_seedlings_planted
+        - numb_seeds_sowed
+        - orchard_id
+        - plot
+        - seed_tray
       filter: {}
     comment: ""
 update_permissions:
   - role: user
     permission:
       columns:
-        - name_segment
         - crossing_id
         - date_planted
         - date_sowed
+        - name_segment
         - note
-        - numb_seeds_sowed
         - numb_seedlings_grown
         - numb_seedlings_planted
+        - numb_seeds_sowed
+        - orchard_id
         - plot
         - seed_tray
       filter: {}

@@ -6,6 +6,7 @@ const insertMutation = /* GraphQL */ `
   mutation InsertCultivar(
     $crossing_name: String!
     $lot_name_segment: String!
+    $orchard_name: String! = "Orchard 1"
     $name_segment: String!
     $common_name: String
     $acronym: String
@@ -29,6 +30,7 @@ const insertMutation = /* GraphQL */ `
                 note: $note
               }
             }
+            orchard: { data: { name: $orchard_name } }
           }
         }
       }
@@ -66,6 +68,9 @@ afterEach(async () => {
           affected_rows
         }
         delete_crossings(where: {}) {
+          affected_rows
+        }
+        delete_orchards(where: {}) {
           affected_rows
         }
       }
@@ -109,6 +114,7 @@ test('name is unique', async () => {
         insert_lots_one(
           object: {
             name_segment: $lot_name_segment
+            orchard: { data: { name: "Orchard 2" } }
             crossing: { data: { name: $crossing_name } }
           }
         ) {

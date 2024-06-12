@@ -61,6 +61,7 @@ mutation InsertTree(
   $rootstock_name: String,
   $grafting_name: String,
   $orchard_name: String,
+  $lot_orchard_name: String! = "Lot Orchard 1"
   $plant_row_name: String,
   $label_id: String!,
   $serial_in_plant_row: Int,
@@ -77,6 +78,9 @@ mutation InsertTree(
     name: $crossing_name,
     lots: {data: {
       name_segment: $lot_name_segment,
+      orchard: {data: {
+        name: $lot_orchard_name
+      }}
       cultivars: {data: {
         name_segment: $cultivar_name_segment,
         trees: {data: {
@@ -115,6 +119,7 @@ const insertMutationMinimal = `
 mutation InsertTree(
   $crossing_name: String!,
   $lot_name_segment: String!,
+  $lot_orchard_name: String! = "Lot Orchard 1"
   $cultivar_name_segment: String!,
   $label_id: String!,
   $date_eliminated: date
@@ -123,6 +128,7 @@ mutation InsertTree(
     name: $crossing_name,
     lots: {data: {
       name_segment: $lot_name_segment,
+      orchard: { data: { name: $lot_orchard_name } }
       cultivars: {data: {
         name_segment: $cultivar_name_segment,
         trees: {data: {
@@ -141,6 +147,7 @@ const insertMutationPlantRow = `
 mutation InsertTree(
   $crossing_name: String!,
   $lot_name_segment: String!,
+  $lot_orchard_name: String! = "Lot Orchard 1"
   $cultivar_name_segment: String!,
   $label_id: String!,
   $date_eliminated: date,
@@ -151,6 +158,7 @@ mutation InsertTree(
     name: $crossing_name,
     lots: {data: {
       name_segment: $lot_name_segment,
+      orchard: { data: { name: $lot_orchard_name } }
       cultivars: {data: {
         name_segment: $cultivar_name_segment,
         trees: {data: {
@@ -182,9 +190,6 @@ afterEach(async () => {
         delete_graftings(where: {}) {
           affected_rows
         }
-        delete_orchards(where: {}) {
-          affected_rows
-        }
         delete_cultivars(where: {}) {
           affected_rows
         }
@@ -192,6 +197,9 @@ afterEach(async () => {
           affected_rows
         }
         delete_crossings(where: {}) {
+          affected_rows
+        }
+        delete_orchards(where: {}) {
           affected_rows
         }
       }
@@ -381,6 +389,7 @@ test('deleted label_id is not unique', async () => {
     variables: {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
+      lot_orchard_name: 'Orchard 1',
       cultivar_name_segment: '001',
       label_id: '#00000001',
       date_eliminated: '2024-03-23',
@@ -391,6 +400,7 @@ test('deleted label_id is not unique', async () => {
     variables: {
       crossing_name: 'Defg',
       lot_name_segment: '24A',
+      lot_orchard_name: 'Orchard 2',
       cultivar_name_segment: '001',
       label_id: '#00000001',
       date_eliminated: '2024-03-23',
@@ -626,6 +636,7 @@ test('row / serial combo not unique if is eliminated', async () => {
     variables: {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
+      lot_orchard_name: 'Orchard 1',
       cultivar_name_segment: '001',
       label_id: '#00000001',
       date_eliminated: '2024-03-23',
@@ -638,6 +649,7 @@ test('row / serial combo not unique if is eliminated', async () => {
     variables: {
       crossing_name: 'Defg',
       lot_name_segment: '24A',
+      lot_orchard_name: 'Orchard 2',
       cultivar_name_segment: '001',
       label_id: '#00000002',
       date_eliminated: '2024-03-23',

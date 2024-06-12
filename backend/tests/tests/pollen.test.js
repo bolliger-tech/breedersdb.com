@@ -8,6 +8,7 @@ const insertMutation = /* GraphQL */ `
     $date_harvested: date
     $note: String
     $crossing_name: String!
+    $orchard_name: String! = "Orchard 1"
     $lot_name_segment: String!
     $cultivar_name_segment: String!
   ) {
@@ -22,6 +23,7 @@ const insertMutation = /* GraphQL */ `
             lot: {
               data: {
                 name_segment: $lot_name_segment
+                orchard: { data: { name: $orchard_name } }
                 crossing: { data: { name: $crossing_name } }
               }
             }
@@ -60,6 +62,9 @@ afterEach(async () => {
           affected_rows
         }
         delete_crossings(where: {}) {
+          affected_rows
+        }
+        delete_orchards(where: {}) {
           affected_rows
         }
       }

@@ -81,6 +81,7 @@ const insertTreeMutation = /* GraphQL */ `
     $lot_name_segment: String!
     $cultivar_name_segment: String!
     $label_id: String!
+    $orchard_name: String! = "Orchard 1"
   ) {
     insert_trees_one(
       object: {
@@ -91,6 +92,7 @@ const insertTreeMutation = /* GraphQL */ `
             lot: {
               data: {
                 name_segment: $lot_name_segment
+                orchard: { data: { name: $orchard_name } }
                 crossing: { data: { name: $crossing_name } }
               }
             }
@@ -122,6 +124,7 @@ const insertPollenMutation = /* GraphQL */ `
     $crossing_name: String!
     $lot_name_segment: String!
     $cultivar_name_segment: String!
+    $orchard_name: String! = "Orchard 1"
   ) {
     insert_pollen_one(
       object: {
@@ -133,6 +136,7 @@ const insertPollenMutation = /* GraphQL */ `
               data: {
                 name_segment: $lot_name_segment
                 crossing: { data: { name: $crossing_name } }
+                orchard: { data: { name: $orchard_name } }
               }
             }
           }
@@ -171,6 +175,9 @@ afterEach(async () => {
         delete_crossings(where: {}) {
           affected_rows
         }
+        delete_orchards(where: {}) {
+          affected_rows
+        }
       }
     `,
   });
@@ -181,6 +188,7 @@ test('insert', async () => {
     query: insertTreeMutation,
     variables: {
       crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
       label_id: '00000001',
@@ -192,6 +200,7 @@ test('insert', async () => {
     variables: {
       name: 'Pollen 1',
       crossing_name: 'C2',
+      orchard_name: 'Orchard 2',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
     },
@@ -250,7 +259,11 @@ test('insert with contradicting tree cultivar', async () => {
           object: {
             name_segment: $name_segment
             lot: {
-              data: { name_segment: "24A", crossing: { data: { name: "C0" } } }
+              data: {
+                name_segment: "24A"
+                crossing: { data: { name: "C0" } }
+                orchard: { data: { name: "Orchard 1" } }
+              }
             }
           }
         ) {
@@ -268,6 +281,7 @@ test('insert with contradicting tree cultivar', async () => {
     query: insertTreeMutation,
     variables: {
       crossing_name: 'C1',
+      orchard_name: 'Orchard 2',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
       label_id: '00000001',
@@ -303,7 +317,11 @@ test('insert with contradicting pollen cultivar', async () => {
           object: {
             name_segment: $name_segment
             lot: {
-              data: { name_segment: "24A", crossing: { data: { name: "C0" } } }
+              data: {
+                name_segment: "24A"
+                crossing: { data: { name: "C0" } }
+                orchard: { data: { name: "Orchard 1" } }
+              }
             }
           }
         ) {
@@ -321,6 +339,7 @@ test('insert with contradicting pollen cultivar', async () => {
     query: insertTreeMutation,
     variables: {
       crossing_name: 'C1',
+      orchard_name: 'Orchard 2',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
       label_id: '00000001',
@@ -332,6 +351,7 @@ test('insert with contradicting pollen cultivar', async () => {
     variables: {
       name: 'Pollen 1',
       crossing_name: 'C2',
+      orchard_name: 'Orchard 3',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',
     },

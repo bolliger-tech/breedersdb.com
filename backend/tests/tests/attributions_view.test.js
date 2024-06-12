@@ -98,11 +98,16 @@ const queryByAttributeIdAndTreeId = /* GraphQL */ `
 `;
 
 const insertLot = /* GraphQL */ `
-  mutation InsertLot($crossing_name: String!, $lot_name_segment: String!) {
+  mutation InsertLot(
+    $crossing_name: String!
+    $lot_name_segment: String!
+    $orchard_name: String! = "Orchard 1"
+  ) {
     insert_lots_one(
       object: {
         name_segment: $lot_name_segment
         crossing: { data: { name: $crossing_name } }
+        orchard: { data: { name: $orchard_name } }
       }
     ) {
       id
@@ -257,6 +262,9 @@ afterEach(async () => {
           affected_rows
         }
         delete_attributes(where: {}) {
+          affected_rows
+        }
+        delete_orchards(where: {}) {
           affected_rows
         }
       }`,

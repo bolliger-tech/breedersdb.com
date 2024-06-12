@@ -13,6 +13,7 @@ const insertMutation = /* GraphQL */ `
     $date_planted: date
     $numb_seedlings_planted: Int
     $plot: String
+    $orchard_name: String
     $note: String
   ) {
     insert_crossings_one(
@@ -28,6 +29,7 @@ const insertMutation = /* GraphQL */ `
             date_planted: $date_planted
             numb_seedlings_planted: $numb_seedlings_planted
             plot: $plot
+            orchard: { data: { name: $orchard_name } }
             note: $note
           }
         }
@@ -64,6 +66,9 @@ afterEach(async () => {
         delete_crossings(where: {}) {
           affected_rows
         }
+        delete_orchards(where: {}) {
+          affected_rows
+        }
       }
     `,
   });
@@ -83,6 +88,7 @@ test('insert', async () => {
       date_planted: date,
       numb_seedlings_planted: 80,
       plot: 'Plot1',
+      orchard_name: 'Orchard1',
       note: 'This is a note',
     },
   });
@@ -112,6 +118,7 @@ test('crossing_name is unique', async () => {
     variables: {
       crossing_name: 'Abcd',
       name_segment: '24A',
+      orchard_name: 'Orchard 1',
     },
   });
   const resp2 = await post({
@@ -119,6 +126,7 @@ test('crossing_name is unique', async () => {
     variables: {
       crossing_name: 'Abcd',
       name_segment: '24A',
+      orchard_name: 'Orchard 2',
     },
   });
 
@@ -131,6 +139,7 @@ test('name_segment is required', async () => {
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
+      orchard_name: 'Orchard1',
       name_segment: '',
     },
   });
@@ -143,6 +152,7 @@ test('updated name crossing', async () => {
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
+      orchard_name: 'Orchard1',
       name_segment: '24A',
     },
   });
@@ -171,6 +181,7 @@ test('updated name lot', async () => {
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
+      orchard_name: 'Orchard1',
       name_segment: '24A',
     },
   });
@@ -196,6 +207,7 @@ test('modified', async () => {
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
+      orchard_name: 'Orchard1',
       name_segment: '24A',
     },
   });

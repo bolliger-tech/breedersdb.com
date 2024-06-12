@@ -202,10 +202,10 @@ describe('AnalyzePage', () => {
           `query CultivarsFilterResults( $v000: Int! ) {
   cultivars(where: { _and: [ { id: { _gt: $v000 } } ] }, limit: 100, offset: 0, order_by: { id: asc }) {
     id
-    name
-    common_name
+    display_name
+    full_name
+    name_override
     acronym
-    breeder
   }
 
   cultivars_aggregate(where: { _and: [ { id: { _gt: $v000 } } ] }) {

@@ -47,11 +47,11 @@ const columnData: FilterColumnConstructorData[] = [
   },
   {
     table: 'cultivars',
-    column: 'name_override',
-    labelKey: 'entity.nameOverride',
+    column: 'full_name',
+    labelKey: 'entity.fullName',
     schema: {
       type: ColumnType.String,
-      allowEmpty: true,
+      allowEmpty: false,
       validation: {
         maxLen: 58,
         pattern: null,
@@ -60,11 +60,11 @@ const columnData: FilterColumnConstructorData[] = [
   },
   {
     table: 'cultivars',
-    column: 'full_name',
-    labelKey: 'entity.fullName',
+    column: 'name_override',
+    labelKey: 'entity.nameOverride',
     schema: {
       type: ColumnType.String,
-      allowEmpty: false,
+      allowEmpty: true,
       validation: {
         maxLen: 58,
         pattern: null,

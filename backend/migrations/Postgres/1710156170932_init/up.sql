@@ -156,6 +156,7 @@ execute function trim_strings('name_segment', 'name_override', 'seed_tray', 'plo
 create or replace function lots_set_full_name() returns trigger as
 $$
 begin
+    -- logic must correspond to crossings_update_full_name()
     new.full_name := (select c.name from crossings c where c.id = new.crossing_id) || '.' || new.name_segment;
     return new;
 end;
@@ -171,6 +172,7 @@ execute function lots_set_full_name();
 create or replace function crossings_update_full_name() returns trigger as
 $$
 begin
+    -- logic must correspond to lots_set_full_name()
     update lots set full_name = new.name || '.' || name_segment where crossing_id = new.id;
     return new;
 end;
@@ -228,6 +230,7 @@ execute function trim_strings('name_segment', 'name_override', 'acronym', 'breed
 create or replace function cultivars_set_full_name() returns trigger as
 $$
 begin
+    -- logic must correspond to lots_update_full_name()
     new.full_name := (select lots.display_name from lots where lots.id = new.lot_id) || '.' || new.name_segment;
     return new;
 end;
@@ -243,6 +246,7 @@ execute function cultivars_set_full_name();
 create or replace function lots_update_full_name() returns trigger as
 $$
 begin
+    -- logic must correspond to cultivars_set_full_name()
     update cultivars set full_name = new.display_name || '.' || name_segment where lot_id = new.id;
     return new;
 end;

@@ -126,6 +126,10 @@ comment on column lots.full_name is 'Set by triggers.';
 comment on column lots.display_name is 'Generated.';
 
 create index on lots (crossing_id);
+create index on lots (full_name);
+create index on lots using gin (full_name gin_trgm_ops);
+create index on lots (name_override);
+create index on lots using gin (name_override gin_trgm_ops);
 create index on lots (display_name);
 create index on lots using gin (display_name gin_trgm_ops);
 create unique index on lots (crossing_id, name_segment);
@@ -198,6 +202,10 @@ comment on column cultivars.full_name is 'Set by triggers.';
 comment on column cultivars.display_name is 'Generated.';
 
 create index on cultivars (lot_id);
+create index on cultivars (full_name);
+create index on cultivars using gin (full_name gin_trgm_ops);
+create index on cultivars (name_override);
+create index on cultivars using gin (name_override gin_trgm_ops);
 create index on cultivars (display_name);
 create index on cultivars using gin (display_name gin_trgm_ops);
 create index on cultivars (acronym);

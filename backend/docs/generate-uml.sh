@@ -18,7 +18,7 @@ docker run --add-host=host.docker.internal:host-gateway --rm -v \
   "$PG_DATABASE_URL"
 
 echo "Injecting colors..."
-sed -i -E 's/entity "\*\*(crossings|lots|cultivars)\*\*"/entity "**\1**" #ffff0012 ##888800/g' "$base_dir/database.puml"
+sed -i -E 's/entity "\*\*(crossings|lots|cultivars|plant_groups)\*\*"/entity "**\1**" #ffff0012 ##888800/g' "$base_dir/database.puml"
 sed -i -E 's/entity "\*\*(plants|graftings|rootstocks|orchards|plant_rows)\*\*"/entity "**\1**" #0000ff12 ##000088/g' "$base_dir/database.puml"
 sed -i -E 's/entity "\*\*(mother_plants|pollen)\*\*"/entity "**\1**" #0000ff06/g' "$base_dir/database.puml"
 sed -i -E 's/entity "\*\*(attributions|attribute_values|attribution_form_fields|attributes|attribution_forms|attribute_types|attribute_data_types)\*\*"/entity "**\1**" #00ff0012 ##008800/g' "$base_dir/database.puml"

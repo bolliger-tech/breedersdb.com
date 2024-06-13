@@ -2,12 +2,12 @@ table:
   name: plants
   schema: public
 object_relationships:
-  - name: cultivar
-    using:
-      foreign_key_constraint_on: cultivar_id
   - name: grafting
     using:
       foreign_key_constraint_on: grafting_id
+  - name: plant_group
+    using:
+      foreign_key_constraint_on: plant_group_id
   - name: plant_row
     using:
       foreign_key_constraint_on: plant_row_id
@@ -56,7 +56,7 @@ insert_permissions:
         - label_id
         - rootstock_id
         - serial_in_plant_row
-        - cultivar_id
+        - plant_group_id
     comment: ""
 select_permissions:
   - role: user
@@ -64,6 +64,7 @@ select_permissions:
       columns:
         - created
         - cultivar_name
+        - plant_group_name
         - date_eliminated
         - date_grafted
         - date_labeled
@@ -80,7 +81,7 @@ select_permissions:
         - label_id
         - rootstock_id
         - serial_in_plant_row
-        - cultivar_id
+        - plant_group_id
       filter: {}
     comment: ""
 update_permissions:
@@ -100,7 +101,7 @@ update_permissions:
         - label_id
         - rootstock_id
         - serial_in_plant_row
-        - cultivar_id
+        - plant_group_id
       filter: {}
       check: {}
     comment: ""

@@ -14,6 +14,9 @@ object_relationships:
   - name: plant
     using:
       foreign_key_constraint_on: plant_id
+  - name: plant_group
+    using:
+      foreign_key_constraint_on: plant_group_id
 array_relationships:
   - name: attribute_values
     using:
@@ -27,47 +30,50 @@ insert_permissions:
     permission:
       check: {}
       columns:
+        - attribution_form_id
         - author
+        - cultivar_id
         - date_attributed
         - geo_location
         - geo_location_accuracy
         - lot_id
-        - attribution_form_id
         - offline_id
+        - plant_group_id
         - plant_id
-        - cultivar_id
     comment: ""
 select_permissions:
   - role: user
     permission:
       columns:
+        - attribution_form_id
         - author
+        - created
+        - cultivar_id
         - date_attributed
+        - geo_location
+        - geo_location_accuracy
         - id
         - lot_id
-        - attribution_form_id
-        - plant_id
-        - cultivar_id
-        - created
         - modified
         - offline_id
-        - geo_location_accuracy
-        - geo_location
+        - plant_group_id
+        - plant_id
       filter: {}
     comment: ""
 update_permissions:
   - role: user
     permission:
       columns:
+        - attribution_form_id
         - author
+        - cultivar_id
         - date_attributed
         - geo_location
         - geo_location_accuracy
         - lot_id
-        - attribution_form_id
         - offline_id
+        - plant_group_id
         - plant_id
-        - cultivar_id
       filter: {}
       check: null
     comment: ""

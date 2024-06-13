@@ -1,4 +1,5 @@
 import { RouteRecordRaw } from 'vue-router';
+import zitadelAuth from '../services/zitadelAuth';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -27,6 +28,13 @@ const routes: RouteRecordRaw[] = [
         children: [
           { path: '', component: () => import('pages/Dev/IndexPage.vue') },
           { path: 'typo', component: () => import('pages/Dev/TypoPage.vue') },
+          {
+            path: 'user',
+            meta: {
+              authName: zitadelAuth.oidcAuth.authName,
+            },
+            component: () => import('pages/Dev/UserPage.vue'),
+          },
         ],
       },
 

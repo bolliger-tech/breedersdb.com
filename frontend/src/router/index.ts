@@ -5,6 +5,7 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
+import zitadelAuth from '../services/zitadelAuth';
 
 import routes from './routes';
 
@@ -33,6 +34,8 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
+
+  zitadelAuth.oidcAuth.useRouter(Router);
 
   return Router;
 });

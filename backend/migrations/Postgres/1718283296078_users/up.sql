@@ -4,7 +4,7 @@ create table users
     email              varchar(255) not null,
     password_hash      varchar(64) not null,
     salt               varchar(64) not null,
-    lang               varchar(2) not null,
+    locale             varchar(5) not null default 'de-CH',
     last_login         timestamp with time zone,
     signin_attempts    integer not null default 0,
     created            timestamp with time zone not null default now(),

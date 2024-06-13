@@ -74,6 +74,7 @@ entity "**attributions**" #00ff0012 ##008800 {
   *""date_attributed"": //date //
   *""attribution_form_id"": //integer [FK]//
   ""plant_id"": //integer [FK]//
+  ""plant_group_id"": //integer [FK]//
   ""cultivar_id"": //integer [FK]//
   ""lot_id"": //integer [FK]//
   ""geo_location"": //geography(Point,4326)  : SRID:4326//
@@ -173,6 +174,22 @@ entity "**orchards**" #0000ff12 ##000088 {
   ""modified"": //timestamp with time zone //
 }
 
+entity "**plant_groups**" #ffff0012 ##888800 {
+  + ""id"": //integer [PK]//
+  --
+  ""label_id"": //character varying(9)  : Generated.//
+  *""cultivar_id"": //integer [FK]//
+  *""cultivar_name"": //character varying(51)  : Set by triggers.//
+  *""name_segment"": //character varying(25) //
+  ""full_name"": //character varying(77)  : Generated.//
+  ""name_override"": //character varying(77) //
+  ""display_name"": //character varying(77) //
+  ""note"": //character varying(2047) //
+  *""disabled"": //boolean //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
 entity "**plant_rows**" #0000ff12 ##000088 {
   + ""id"": //integer [PK]//
   --
@@ -190,8 +207,9 @@ entity "**plants**" #0000ff12 ##000088 {
   + ""id"": //integer [PK]//
   --
   *""label_id"": //character varying(9) //
-  *""cultivar_id"": //integer [FK]//
-  *""cultivar_name"": //character varying(58)  : Set by triggers.//
+  *""plant_group_id"": //integer [FK]//
+  *""plant_group_name"": //character varying(77)  : Set by triggers.//
+  *""cultivar_name"": //character varying(51)  : Set by triggers.//
   ""plant_row_id"": //integer [FK]//
   ""serial_in_plant_row"": //integer //
   ""distance_plant_row_start"": //double precision  : Meters//
@@ -266,6 +284,8 @@ entity "**rootstocks**" #0000ff12 ##000088 {
 
 "**attributions**"   }--  "**lots**"
 
+"**attributions**"   }--  "**plant_groups**"
+
 "**attributions**"   }--  "**plants**"
 
 "**crossings**"   }--  "**cultivars**"
@@ -284,11 +304,13 @@ entity "**rootstocks**" #0000ff12 ##000088 {
 
 "**mother_plants**"   }--  "**pollen**"
 
+"**plant_groups**"   }--  "**cultivars**"
+
 "**plant_rows**"   }--  "**orchards**"
 
-"**plants**"   }--  "**cultivars**"
-
 "**plants**"   }--  "**graftings**"
+
+"**plants**"   }--  "**plant_groups**"
 
 "**plants**"   }--  "**plant_rows**"
 

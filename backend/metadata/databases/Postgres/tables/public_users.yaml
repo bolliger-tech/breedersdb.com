@@ -1,0 +1,46 @@
+table:
+  name: users
+  schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - email
+        - locale
+        - password_hash
+        - salt
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - email
+        - locale
+        - password_hash
+        - salt
+        - id
+        - signin_attempts
+        - created
+        - last_login
+        - modified
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - email
+        - locale
+        - password_hash
+        - salt
+      filter: {}
+      check: null
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        id:
+          _neq: X-Hasura-User-Id
+    comment: ""

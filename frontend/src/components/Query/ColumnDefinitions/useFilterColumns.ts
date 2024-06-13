@@ -9,7 +9,7 @@ import {
   type MaybeRef,
 } from 'vue';
 import { useLotColumnDefinitions } from './useLotColumnDefinitions';
-import { useTreeColumnDefinitions } from './useTreeColumnDefinitions';
+import { usePlantColumnDefinitions } from './usePlantColumnDefinitions';
 import { FilterRuleColumn } from '../Filter/filterRuleColumn';
 import type { CombinedError } from '@urql/vue';
 import { BaseTable } from '../Filter/filterNode';
@@ -36,7 +36,7 @@ export function useFilterColumns({
   } = {
     [BaseTable.Lots]: useLotColumnDefinitions(),
     [BaseTable.Cultivars]: useCultivarColumnDefinitions(),
-    [BaseTable.Trees]: useTreeColumnDefinitions(),
+    [BaseTable.Plants]: usePlantColumnDefinitions(),
     [BaseTable.Attributions]: useAttributionViewColumnDefinitions(),
   };
 

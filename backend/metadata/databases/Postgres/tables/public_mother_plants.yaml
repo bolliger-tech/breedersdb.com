@@ -1,5 +1,5 @@
 table:
-  name: mother_trees
+  name: mother_plants
   schema: public
 object_relationships:
   - name: crossing
@@ -8,9 +8,9 @@ object_relationships:
   - name: pollen
     using:
       foreign_key_constraint_on: pollen_id
-  - name: tree
+  - name: plant
     using:
-      foreign_key_constraint_on: tree_id
+      foreign_key_constraint_on: plant_id
 insert_permissions:
   - role: user
     permission:
@@ -25,7 +25,7 @@ insert_permissions:
         - numb_fruits
         - numb_seeds
         - pollen_id
-        - tree_id
+        - plant_id
     comment: ""
 select_permissions:
   - role: user
@@ -40,7 +40,7 @@ select_permissions:
         - numb_fruits
         - numb_seeds
         - pollen_id
-        - tree_id
+        - plant_id
         - note
         - created
         - modified
@@ -59,7 +59,7 @@ update_permissions:
         - numb_fruits
         - numb_seeds
         - pollen_id
-        - tree_id
+        - plant_id
       filter: {}
       check: {}
     comment: ""

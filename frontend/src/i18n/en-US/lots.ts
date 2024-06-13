@@ -8,6 +8,6 @@ export const lots = {
     seedTray: 'Seed tray',
     datePlanted: 'Date planted',
     numbSeedlingsPlanted: 'Number of seedlings planted',
-    patch: 'Patch',
+    plot: 'Plot',
   },
 };

@@ -1,8 +1,8 @@
 <template>
   <q-table
     v-model:pagination="pagination"
-    title="Trees"
-    :rows="data?.trees || []"
+    title="Plants"
+    :rows="data?.plants || []"
     :columns="columns"
     :visible-columns="visibleColumns"
     row-key="id"
@@ -14,7 +14,7 @@
     @request="onRequest"
   >
     <template #top-right>
-      <q-toggle v-model="showDisabled" label="Show eliminated trees" />
+      <q-toggle v-model="showDisabled" label="Show eliminated plants" />
       <q-input
         v-model="filter"
         borderless
@@ -40,18 +40,18 @@ import { useI18n } from 'src/composables/useI18n';
 const { d } = useI18n();
 
 const query = graphql(`
-  query Trees(
+  query Plants(
     $limit: Int!
     $offset: Int!
-    $orderBy: [trees_order_by!]
-    $where: trees_bool_exp = { disabled: { _eq: false } }
+    $orderBy: [plants_order_by!]
+    $where: plants_bool_exp = { disabled: { _eq: false } }
   ) {
-    trees_aggregate(where: $where) {
+    plants_aggregate(where: $where) {
       aggregate {
         count
       }
     }
-    trees(where: $where, limit: $limit, offset: $offset, order_by: $orderBy) {
+    plants(where: $where, limit: $limit, offset: $offset, order_by: $orderBy) {
       id
       label_id
       cultivar_name
@@ -152,11 +152,11 @@ const { data, fetching, error } = await useQuery({
   variables,
 });
 
-const treesCount = computed(
-  () => data.value?.trees_aggregate?.aggregate?.count || 0,
+const plantsCount = computed(
+  () => data.value?.plants_aggregate?.aggregate?.count || 0,
 );
 
-type Tree = ResultOf<typeof query>['trees'][0];
+type Plant = ResultOf<typeof query>['plants'][0];
 
 const columns = [
   {
@@ -178,28 +178,28 @@ const columns = [
     name: 'rootstock',
     label: 'Rootstock',
     align: 'left' as const,
-    field: (row: Tree) => row.rootstock?.name,
+    field: (row: Plant) => row.rootstock?.name,
     sortable: true,
   },
   {
     name: 'grafting',
     label: 'Grafting',
     align: 'left' as const,
-    field: (row: Tree) => row.grafting?.name,
+    field: (row: Plant) => row.grafting?.name,
     sortable: true,
   },
   {
     name: 'plant_row',
     label: 'Plant Row',
     align: 'left' as const,
-    field: (row: Tree) => row.plant_row?.name,
+    field: (row: Plant) => row.plant_row?.name,
     sortable: true,
   },
   {
     name: 'created',
     label: 'Created',
     align: 'left' as const,
-    field: (row: Tree) => d(row.created as string, 'ymdHis'),
+    field: (row: Plant) => d(row.created as string, 'ymdHis'),
     sortable: true,
   },
 ];
@@ -218,8 +218,8 @@ watch(error, (error) => {
   }
 });
 
-watch(treesCount, () => {
-  pagination.value.rowsNumber = treesCount.value;
+watch(plantsCount, () => {
+  pagination.value.rowsNumber = plantsCount.value;
 });
 
 watch(filter, (val) => {
@@ -229,6 +229,6 @@ watch(filter, (val) => {
 });
 
 onMounted(() => {
-  pagination.value.rowsNumber = treesCount.value;
+  pagination.value.rowsNumber = plantsCount.value;
 });
 </script>

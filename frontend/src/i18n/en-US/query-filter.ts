@@ -12,7 +12,7 @@ export const filter = {
   invalid: 'Invalid filter rules. Rectify or delete them.',
   valid: 'Congrats, all rules are valid.',
 
-  cultivarAndSubentities: 'cultivar, its groups or trees',
+  cultivarAndSubentities: 'cultivar, its groups or plants',
 
   showExplanation: 'Explain filters',
   explainer: {
@@ -91,8 +91,8 @@ export const filter = {
 //   crossings: 'crossings',
 //   batches: 'batches',
 //   varieties: 'varieties',
-//   trees: 'trees',
-//   motherTrees: 'mother trees',
+//   plants: 'plants',
+//   motherPlants: 'mother plants',
 //   scionsBundles: 'scions bundles',
 
 //   attributions: 'attributions',
@@ -101,7 +101,7 @@ export const filter = {
 //   defaultFilter: 'Filter criteria',
 //   batchFilter: 'Filter criteria to select the batches',
 //   varietyFilter: 'Filter criteria to select the varieties',
-//   treeFilter: 'Filter criteria to select the trees',
+//   plantFilter: 'Filter criteria to select the plants',
 //   markFilter: 'Filter criteria to select the attributions',
 
 //   noFilter:

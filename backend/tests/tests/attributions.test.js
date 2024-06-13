@@ -7,7 +7,7 @@ const insertMutation = /* GraphQL */ `
     $author: String
     $date_attributed: date
     $attribution_form_name: String
-    $tree_id: Int
+    $plant_id: Int
     $cultivar_id: Int
     $lot_id: Int
     $geo_location: geography
@@ -18,7 +18,7 @@ const insertMutation = /* GraphQL */ `
         author: $author
         date_attributed: $date_attributed
         attribution_form: { data: { name: $attribution_form_name } }
-        tree_id: $tree_id
+        plant_id: $plant_id
         cultivar_id: $cultivar_id
         lot_id: $lot_id
         geo_location: $geo_location
@@ -32,17 +32,17 @@ const insertMutation = /* GraphQL */ `
         id
         name
       }
-      tree {
+      plant {
         id
         label_id
       }
       cultivar {
         id
-        name
+        display_name
       }
       lot {
         id
-        name
+        display_name
       }
       geo_location
       geo_location_accuracy
@@ -52,14 +52,15 @@ const insertMutation = /* GraphQL */ `
   }
 `;
 
-const insertTreeMutation = /* GraphQL */ `
-  mutation InsertTree(
+const insertPlantMutation = /* GraphQL */ `
+  mutation InsertPlant(
     $label_id: String!
     $cultivar_name_segment: String!
     $lot_name_segment: String!
     $crossing_name: String!
+    $orchard_name: String! = "Orchard 1"
   ) {
-    insert_trees_one(
+    insert_plants_one(
       object: {
         label_id: $label_id
         cultivar: {
@@ -68,6 +69,7 @@ const insertTreeMutation = /* GraphQL */ `
             lot: {
               data: {
                 name_segment: $lot_name_segment
+                orchard: { data: { name: $orchard_name } }
                 crossing: { data: { name: $crossing_name } }
               }
             }
@@ -96,7 +98,7 @@ afterEach(async () => {
         delete_attribution_forms(where: {}) {
           affected_rows
         }
-        delete_trees(where: {}) {
+        delete_plants(where: {}) {
           affected_rows
         }
         delete_cultivars(where: {}) {
@@ -108,14 +110,17 @@ afterEach(async () => {
         delete_crossings(where: {}) {
           affected_rows
         }
+        delete_orchards(where: {}) {
+          affected_rows
+        }
       }
     `,
   });
 });
 
 test('insert', async () => {
-  const tree = await post({
-    query: insertTreeMutation,
+  const plant = await post({
+    query: insertPlantMutation,
     variables: {
       label_id: '00000001',
       cultivar_name_segment: '001',
@@ -130,7 +135,7 @@ test('insert', async () => {
       author: 'Author 1',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      tree_id: tree.data.insert_trees_one.id,
+      plant_id: plant.data.insert_plants_one.id,
       cultivar_id: null,
       lot_id: null,
       geo_location: {
@@ -147,7 +152,7 @@ test('insert', async () => {
   expect(resp.data.insert_attributions_one.attribution_form.name).toBe(
     'Attribution Form 1',
   );
-  expect(resp.data.insert_attributions_one.tree.label_id).toBe('00000001');
+  expect(resp.data.insert_attributions_one.plant.label_id).toBe('00000001');
   expect(resp.data.insert_attributions_one.cultivar).toBeNull();
   expect(resp.data.insert_attributions_one.lot).toBeNull();
   expect(resp.data.insert_attributions_one.geo_location).toMatchObject({
@@ -160,8 +165,8 @@ test('insert', async () => {
 });
 
 test('author is required', async () => {
-  const tree = await post({
-    query: insertTreeMutation,
+  const plant = await post({
+    query: insertPlantMutation,
     variables: {
       label_id: '00000001',
       cultivar_name_segment: '001',
@@ -176,7 +181,7 @@ test('author is required', async () => {
       author: '',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      tree_id: tree.data.insert_trees_one.id,
+      plant_id: plant.data.insert_plants_one.id,
     },
   });
 
@@ -184,8 +189,8 @@ test('author is required', async () => {
 });
 
 test('date_attributed is required', async () => {
-  const tree = await post({
-    query: insertTreeMutation,
+  const plant = await post({
+    query: insertPlantMutation,
     variables: {
       label_id: '00000001',
       cultivar_name_segment: '001',
@@ -200,7 +205,7 @@ test('date_attributed is required', async () => {
       author: '',
       date_attributed: null,
       attribution_form_name: 'Attribution Form 1',
-      tree_id: tree.data.insert_trees_one.id,
+      plant_id: plant.data.insert_plants_one.id,
     },
   });
 
@@ -208,8 +213,8 @@ test('date_attributed is required', async () => {
 });
 
 test('has attribution object', async () => {
-  const tree = await post({
-    query: insertTreeMutation,
+  const plant = await post({
+    query: insertPlantMutation,
     variables: {
       label_id: '00000001',
       cultivar_name_segment: '001',
@@ -228,13 +233,13 @@ test('has attribution object', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'An attribution must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.',
+    'An attribution must be associated with exactly one plant, cultivar or lot, but not with none or more than one of them.',
   );
 });
 
-test('has exclusively one tree', async () => {
-  const tree = await post({
-    query: insertTreeMutation,
+test('has exclusively one plant', async () => {
+  const plant = await post({
+    query: insertPlantMutation,
     variables: {
       label_id: '00000001',
       cultivar_name_segment: '001',
@@ -249,19 +254,19 @@ test('has exclusively one tree', async () => {
       author: 'Author 1',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      tree_id: tree.data.insert_trees_one.id,
-      cultivar_id: tree.data.insert_trees_one.cultivar.id,
+      plant_id: plant.data.insert_plants_one.id,
+      cultivar_id: plant.data.insert_plants_one.cultivar.id,
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'An attribution must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.',
+    'An attribution must be associated with exactly one plant, cultivar or lot, but not with none or more than one of them.',
   );
 });
 
 test('has exclusively one cultivar', async () => {
-  const tree = await post({
-    query: insertTreeMutation,
+  const plant = await post({
+    query: insertPlantMutation,
     variables: {
       label_id: '00000001',
       cultivar_name_segment: '001',
@@ -276,19 +281,19 @@ test('has exclusively one cultivar', async () => {
       author: 'Author 1',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      cultivar_id: tree.data.insert_trees_one.cultivar.id,
-      lot_id: tree.data.insert_trees_one.cultivar.lot.id,
+      cultivar_id: plant.data.insert_plants_one.cultivar.id,
+      lot_id: plant.data.insert_plants_one.cultivar.lot.id,
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'An attribution must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.',
+    'An attribution must be associated with exactly one plant, cultivar or lot, but not with none or more than one of them.',
   );
 });
 
 test('has exclusively one lot', async () => {
-  const tree = await post({
-    query: insertTreeMutation,
+  const plant = await post({
+    query: insertPlantMutation,
     variables: {
       label_id: '00000001',
       cultivar_name_segment: '001',
@@ -303,19 +308,19 @@ test('has exclusively one lot', async () => {
       author: 'Author 1',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      tree_id: tree.data.insert_trees_one.id,
-      lot_id: tree.data.insert_trees_one.cultivar.lot.id,
+      plant_id: plant.data.insert_plants_one.id,
+      lot_id: plant.data.insert_plants_one.cultivar.lot.id,
     },
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'An attribution must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.',
+    'An attribution must be associated with exactly one plant, cultivar or lot, but not with none or more than one of them.',
   );
 });
 
 test('modified', async () => {
-  const tree = await post({
-    query: insertTreeMutation,
+  const plant = await post({
+    query: insertPlantMutation,
     variables: {
       label_id: '00000001',
       cultivar_name_segment: '001',
@@ -330,7 +335,7 @@ test('modified', async () => {
       author: 'Author 1',
       date_attributed: '2021-01-01',
       attribution_form_name: 'Attribution Form 1',
-      tree_id: tree.data.insert_trees_one.id,
+      plant_id: plant.data.insert_plants_one.id,
     },
   });
 

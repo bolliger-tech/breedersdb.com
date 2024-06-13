@@ -76,36 +76,64 @@ create trigger trim_crossings
     for each row
 execute function trim_strings('name', 'note');
 
+create table orchards
+(
+    id       integer primary key generated always as identity,
+    name     varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
+    disabled boolean                           default false not null,
+    created  timestamp with time zone not null default now(),
+    modified timestamp with time zone
+);
+
+create index on orchards (name);
+create index on orchards (disabled);
+create index on orchards (created);
+
+create trigger update_orchards_modified
+    before update
+    on orchards
+    for each row
+execute function modified_column();
+
+create trigger trim_orchards
+    before insert or update of name
+    on orchards
+    for each row
+execute function trim_strings('name');
+
 create table lots
 (
     id                     integer primary key generated always as identity,
     crossing_id            int                      not null references crossings,
     name_segment           varchar(3)               not null check ( name_segment ~ '^(\d{2}[A-Z]|000)$' ),
-    name                   varchar(12)              not null unique,
+    full_name              varchar(12)              not null unique,
+    name_override          varchar(25) unique check ( name_override ~ '^[^\n\.]{1,25}$' ),
+    display_name           varchar(25) generated always as ( coalesce(name_override, full_name) ) stored unique,
     date_sowed             date,
     numb_seeds_sowed       int,
     numb_seedlings_grown   int,
     seed_tray              varchar(255),
     date_planted           date,
     numb_seedlings_planted int,
-    patch                  varchar(255),
+    plot                   varchar(255),
+    orchard_id             int                      not null references orchards,
     note                   varchar(2047),
     created                timestamp with time zone not null default now(),
     modified               timestamp with time zone
 );
 
-comment on column lots.name is 'Set by triggers.';
+comment on column lots.full_name is 'Set by triggers.';
+comment on column lots.display_name is 'Generated.';
 
 create index on lots (crossing_id);
-create index on lots (name_segment);
-create index on lots using gin (name_segment gin_trgm_ops);
-create index on lots (name);
-create index on lots using gin (name gin_trgm_ops);
+create index on lots (display_name);
+create index on lots using gin (display_name gin_trgm_ops);
 create unique index on lots (crossing_id, name_segment);
 create index on lots (date_sowed);
 create index on lots (seed_tray);
 create index on lots (date_planted);
-create index on lots (patch);
+create index on lots (plot);
+create index on lots (orchard_id);
 create index on lots (created);
 
 create trigger update_lots_modified
@@ -115,64 +143,65 @@ create trigger update_lots_modified
 execute function modified_column();
 
 create trigger trim_lots
-    before insert or update of name_segment, seed_tray, patch, note
+    before insert or update of name_segment, name_override, seed_tray, plot, note
     on lots
     for each row
-execute function trim_strings('name_segment', 'seed_tray', 'patch', 'note');
+execute function trim_strings('name_segment', 'name_override', 'seed_tray', 'plot', 'note');
 
 -- set crossing lot for changes on lots table
-create or replace function lots_set_name() returns trigger as
+create or replace function lots_set_full_name() returns trigger as
 $$
 begin
-    new.name := (select c.name from crossings c where c.id = new.crossing_id) || '.' || new.name_segment;
+    -- logic must correspond to crossings_update_full_name()
+    new.full_name := (select c.name from crossings c where c.id = new.crossing_id) || '.' || new.name_segment;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger set_name
-    before insert or update of crossing_id, name_segment, name
+create trigger set_full_name
+    before insert or update of crossing_id, name_segment, full_name
     on lots
     for each row
-execute function lots_set_name();
+execute function lots_set_full_name();
 
 -- set crossing lot for updates on crossings table
-create or replace function crossings_update_name() returns trigger as
+create or replace function crossings_update_full_name() returns trigger as
 $$
 begin
-    update lots set name = new.name || '.' || name_segment where crossing_id = new.id;
+    -- logic must correspond to lots_set_full_name()
+    update lots set full_name = new.name || '.' || name_segment where crossing_id = new.id;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger update_name
+create trigger update_full_name
     after update of name
     on crossings
     for each row
-execute function crossings_update_name();
+execute function crossings_update_full_name();
 
 create table cultivars
 (
-    id           integer primary key generated always as identity,
-    lot_id       int                      not null references lots,
-    name_segment varchar(45)              not null check ( name_segment ~ '^[-_\w\d]{1,45}$' ),
-    name         varchar(58)              not null unique,
-    common_name  varchar(255),
-    acronym      varchar(10),
-    breeder      varchar(255),
-    registration varchar(255),
-    note         varchar(2047),
-    created      timestamp with time zone not null default now(),
-    modified     timestamp with time zone
+    id            integer primary key generated always as identity,
+    lot_id        int                      not null references lots,
+    name_segment  varchar(25)              not null check ( name_segment ~ '^[-_\w\d]{1,25}$' ),
+    full_name     varchar(51)              not null unique,
+    name_override varchar(51) unique check ( name_override ~ '^[^\n\.]{1,51}$' ),
+    display_name  varchar(51) generated always as ( coalesce(name_override, full_name) ) stored unique,
+    acronym       varchar(10),
+    breeder       varchar(255),
+    registration  varchar(255),
+    note          varchar(2047),
+    created       timestamp with time zone not null default now(),
+    modified      timestamp with time zone
 );
 
-comment on column cultivars.name is 'Set by triggers.';
+comment on column cultivars.full_name is 'Set by triggers.';
+comment on column cultivars.display_name is 'Generated.';
 
 create index on cultivars (lot_id);
-create index on cultivars (name_segment);
-create index on cultivars using gin (name_segment gin_trgm_ops);
-create index on cultivars (name);
-create index on cultivars using gin (name gin_trgm_ops);
-create index on cultivars (common_name);
+create index on cultivars (display_name);
+create index on cultivars using gin (display_name gin_trgm_ops);
 create index on cultivars (acronym);
 create unique index on cultivars (lot_id, name_segment);
 create index on cultivars (created);
@@ -184,40 +213,42 @@ create trigger update_cultivars_modified
 execute function modified_column();
 
 create trigger trim_cultivars
-    before insert or update of name_segment, common_name, acronym, breeder, registration, note
+    before insert or update of name_segment, name_override, acronym, breeder, registration, note
     on cultivars
     for each row
-execute function trim_strings('name_segment', 'common_name', 'acronym', 'breeder', 'registration', 'note');
+execute function trim_strings('name_segment', 'name_override', 'acronym', 'breeder', 'registration', 'note');
 
--- set name for changes on cultivars table
-create or replace function cultivars_set_cultivar() returns trigger as
+-- set full_name for changes on cultivars table
+create or replace function cultivars_set_full_name() returns trigger as
 $$
 begin
-    new.name := (select lots.name from lots where lots.id = new.lot_id) || '.' || new.name_segment;
+    -- logic must correspond to lots_update_full_name()
+    new.full_name := (select lots.display_name from lots where lots.id = new.lot_id) || '.' || new.name_segment;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger set_cultivar
-    before insert or update of lot_id, name_segment, name
+create trigger set_full_name
+    before insert or update of lot_id, name_segment, full_name
     on cultivars
     for each row
-execute function cultivars_set_cultivar();
+execute function cultivars_set_full_name();
 
--- set name for changes on lots table
-create or replace function lots_update_cultivar() returns trigger as
+-- set full_name for changes on lots table
+create or replace function lots_update_full_name() returns trigger as
 $$
 begin
-    update cultivars set name = new.name || '.' || name_segment where lot_id = new.id;
+    -- logic must correspond to cultivars_set_full_name()
+    update cultivars set full_name = new.display_name || '.' || name_segment where lot_id = new.id;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger update_cultivars_cultivar
-    after update of name, name_segment
+create trigger update_cultivars_full_name
+    after update of display_name
     on lots
     for each row
-execute function lots_update_cultivar();
+execute function lots_update_full_name();
 
 -- add foreign key constraint to crossings table
 alter table crossings
@@ -239,7 +270,7 @@ alter table crossings
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- TREES
+-- PLANTS
 ------------------------------------------------------------------------------------------------------------------------
 
 create table graftings
@@ -286,31 +317,6 @@ create trigger trim_rootstocks
     for each row
 execute function trim_strings('name');
 
-create table orchards
-(
-    id       integer primary key generated always as identity,
-    name     varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
-    disabled boolean                           default false not null,
-    created  timestamp with time zone not null default now(),
-    modified timestamp with time zone
-);
-
-create index on orchards (name);
-create index on orchards (disabled);
-create index on orchards (created);
-
-create trigger update_orchards_modified
-    before update
-    on orchards
-    for each row
-execute function modified_column();
-
-create trigger trim_orchards
-    before insert or update of name
-    on orchards
-    for each row
-execute function trim_strings('name');
-
 create table plant_rows
 (
     id              integer primary key generated always as identity,
@@ -347,7 +353,7 @@ create trigger trim_plant_rows
     for each row
 execute function trim_strings('name', 'note');
 
-create table trees
+create table plants
 (
     id                       integer primary key generated always as identity,
     label_id                 varchar(9)               not null check ( label_id ~ '^#?[[:digit:]]{8}$' ),
@@ -370,38 +376,38 @@ create table trees
     modified                 timestamp with time zone
 );
 
-comment on column trees.cultivar_name is 'Set by triggers.';
-comment on column trees.distance_plant_row_start is 'Meters';
-comment on column trees.geo_location_accuracy is 'Meters';
-comment on column trees.geo_location is 'SRID:4326'; -- default for GPS coordinates
-comment on column trees.disabled is 'Derived from date_eliminated.';
+comment on column plants.cultivar_name is 'Set by triggers.';
+comment on column plants.distance_plant_row_start is 'Meters';
+comment on column plants.geo_location_accuracy is 'Meters';
+comment on column plants.geo_location is 'SRID:4326'; -- default for GPS coordinates
+comment on column plants.disabled is 'Derived from date_eliminated.';
 
-create index on trees (label_id);
-create unique index on trees (label_id) where label_id not like '#%';
-create index on trees (cultivar_id);
-create index on trees (cultivar_name);
-create index on trees using gin (cultivar_name gin_trgm_ops);
-create index on trees (plant_row_id);
-create unique index on trees (serial_in_plant_row, plant_row_id) where date_eliminated is null;
-create index on trees using gist (geo_location);
-create index on trees (date_grafted);
-create index on trees (date_planted);
-create index on trees (date_eliminated);
-create index on trees (date_labeled);
-create index on trees (rootstock_id);
-create index on trees (grafting_id);
-create index on trees (disabled);
-create index on trees (created);
+create index on plants (label_id);
+create unique index on plants (label_id) where label_id not like '#%';
+create index on plants (cultivar_id);
+create index on plants (cultivar_name);
+create index on plants using gin (cultivar_name gin_trgm_ops);
+create index on plants (plant_row_id);
+create unique index on plants (serial_in_plant_row, plant_row_id) where date_eliminated is null;
+create index on plants using gist (geo_location);
+create index on plants (date_grafted);
+create index on plants (date_planted);
+create index on plants (date_eliminated);
+create index on plants (date_labeled);
+create index on plants (rootstock_id);
+create index on plants (grafting_id);
+create index on plants (disabled);
+create index on plants (created);
 
-create trigger update_trees_modified
+create trigger update_plants_modified
     before update
-    on trees
+    on plants
     for each row
 execute function modified_column();
 
-create trigger trim_trees
+create trigger trim_plants
     before insert or update of label_id, note
-    on trees
+    on plants
     for each row
 execute function trim_strings('label_id', 'note');
 
@@ -416,7 +422,7 @@ $$ language plpgsql;
 
 create trigger prefix_label_id
     before update of label_id, date_eliminated
-    on trees
+    on plants
     for each row
 execute function prefix_label_id_on_elimination();
 
@@ -433,17 +439,17 @@ $$ language plpgsql;
 
 create trigger remove_prefix
     before update of label_id, date_eliminated
-    on trees
+    on plants
     for each row
 execute function remove_label_id_prefix_on_revival();
 
--- prevent insertion or update of a tree with a label_id that is prefixed with a '#' but has no date_eliminated
+-- prevent insertion or update of a plant with a label_id that is prefixed with a '#' but has no date_eliminated
 create or replace function prevent_invalid_label_id() returns trigger as
 $$
 begin
     if new.label_id like '#%' and new.date_eliminated is null or
        new.label_id not like '#%' and new.date_eliminated is not null then
-        raise exception 'Cannot insert or update a tree with a label_id that is prefixed with a ''#'' but has no date_eliminated.';
+        raise exception 'Cannot insert or update a plant with a label_id that is prefixed with a ''#'' but has no date_eliminated.';
     end if;
     return new;
 end;
@@ -451,36 +457,36 @@ $$ language plpgsql;
 
 create trigger prevent_invalid_label_id
     before insert -- update handled by triggers prefix_label_id and remove_prefix
-    on trees
+    on plants
     for each row
 execute function prevent_invalid_label_id();
 
--- set cultivar_name for changes on trees table
-create or replace function trees_set_cultivar_name() returns trigger as
+-- set cultivar_name for changes on plants table
+create or replace function plants_set_cultivar_name() returns trigger as
 $$
 begin
-    new.cultivar_name := (select cultivars.name from cultivars where cultivars.id = new.cultivar_id);
+    new.cultivar_name := (select cultivars.display_name from cultivars where cultivars.id = new.cultivar_id);
     return new;
 end;
 $$ language plpgsql;
 
 create trigger set_cultivar_name
     before insert or update of cultivar_id, cultivar_name
-    on trees
+    on plants
     for each row
-execute function trees_set_cultivar_name();
+execute function plants_set_cultivar_name();
 
 -- set cultivar_name for changes on cultivars table
 create or replace function cultivars_update_name() returns trigger as
 $$
 begin
-    update trees set cultivar_name = new.name where cultivar_id = new.id;
+    update plants set cultivar_name = new.display_name where cultivar_id = new.id;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger update_tree_cultivar_name
-    after update of name_segment, name
+create trigger update_plant_cultivar_name
+    after update of display_name
     on cultivars
     for each row
 execute function cultivars_update_name();
@@ -516,7 +522,7 @@ create trigger trim_pollen
 execute function trim_strings('name', 'note');
 
 
-create table mother_trees
+create table mother_plants
 (
     id                    integer primary key generated always as identity,
     name                  varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
@@ -526,62 +532,62 @@ create table mother_trees
     numb_fruits           int,
     numb_seeds            int,
     note                  varchar(2047),
-    tree_id               int                      not null references trees,
+    plant_id              int                      not null references plants,
     pollen_id             int references pollen,
     crossing_id           int                      not null references crossings,
     created               timestamp with time zone not null default now(),
     modified              timestamp with time zone
 );
 
-create index on mother_trees (name);
-create index on mother_trees using gin (name gin_trgm_ops);
-create index on mother_trees (date_impregnated);
-create index on mother_trees (date_fruits_harvested);
-create index on mother_trees (tree_id);
-create index on mother_trees (pollen_id);
-create index on mother_trees (crossing_id);
-create index on mother_trees (created);
+create index on mother_plants (name);
+create index on mother_plants using gin (name gin_trgm_ops);
+create index on mother_plants (date_impregnated);
+create index on mother_plants (date_fruits_harvested);
+create index on mother_plants (plant_id);
+create index on mother_plants (pollen_id);
+create index on mother_plants (crossing_id);
+create index on mother_plants (created);
 
-create trigger update_mother_trees_modified
+create trigger update_mother_plants_modified
     before update
-    on mother_trees
+    on mother_plants
     for each row
 execute function modified_column();
 
-create trigger trim_mother_trees
+create trigger trim_mother_plants
     before insert or update of name, note
-    on mother_trees
+    on mother_plants
     for each row
 execute function trim_strings('name', 'note');
 
-create or replace function check_crossing_tree_cultivar() returns trigger as
+create or replace function check_crossing_plant_cultivar() returns trigger as
 $$
 declare
     crossing_mother_cultivar_id int;
 begin
-    if new.tree_id is not null then
+    if new.plant_id is not null then
         select mother_cultivar_id into crossing_mother_cultivar_id from crossings where id = new.crossing_id;
         if crossing_mother_cultivar_id is not null and
-           (select cultivar_id from trees where id = new.tree_id) != crossing_mother_cultivar_id then
-            raise exception 'The cultivar of the mother tree must match the mother cultivar of the crossing. (id: %)', new.id;
+           (select cultivar_id from plants where id = new.plant_id) != crossing_mother_cultivar_id then
+            raise exception 'The cultivar of the mother plant must match the mother cultivar of the crossing. (id: %)', new.id;
         end if;
     end if;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger check_crossing_tree_cultivar
-    before insert or update of tree_id, crossing_id
-    on mother_trees
+create trigger check_crossing_plant_cultivar
+    before insert or update of plant_id, crossing_id
+    on mother_plants
     for each row
-execute function check_crossing_tree_cultivar();
+execute function check_crossing_plant_cultivar();
 
 create or replace function check_crossing_pollen_cultivar() returns trigger as
 $$
 declare
     crossing_father_cultivar_id int;
 begin
-    if new.tree_id is not null then
+    if new.plant_id is not null then
         select father_cultivar_id into crossing_father_cultivar_id from crossings where id = new.crossing_id;
         if crossing_father_cultivar_id is not null and new.pollen_id is not null and
            (select cultivar_id from pollen where id = new.pollen_id) != crossing_father_cultivar_id then
@@ -594,7 +600,7 @@ $$ language plpgsql;
 
 create trigger check_crossing_pollen_cultivar
     before insert or update of pollen_id, crossing_id
-    on mother_trees
+    on mother_plants
     for each row
 execute function check_crossing_pollen_cultivar();
 
@@ -794,7 +800,7 @@ create table attributions
     author                varchar(45)              not null check (author ~ '^[^\n]{1,45}$'),
     date_attributed       date                     not null,
     attribution_form_id   int                      not null references attribution_forms,
-    tree_id               int references trees,
+    plant_id              int references plants,
     cultivar_id           int references cultivars,
     lot_id                int references lots,
     geo_location          geography(point, 4326),
@@ -810,7 +816,7 @@ comment on column attributions.geo_location is 'SRID:4326'; -- default for GPS c
 create index on attributions (author);
 create index on attributions (date_attributed);
 create index on attributions (attribution_form_id);
-create index on attributions (tree_id);
+create index on attributions (plant_id);
 create index on attributions (cultivar_id);
 create index on attributions (lot_id);
 create index on attributions using gist (geo_location);
@@ -832,15 +838,15 @@ execute function trim_strings('author');
 create or replace function check_attribution_object() returns trigger as
 $$
 begin
-    if num_nonnulls(new.tree_id, new.cultivar_id, new.lot_id) <> 1 then
-        raise exception 'An attribution must be associated with exactly one tree, cultivar or lot, but not with none or more than one of them.';
+    if num_nonnulls(new.plant_id, new.cultivar_id, new.lot_id) <> 1 then
+        raise exception 'An attribution must be associated with exactly one plant, cultivar or lot, but not with none or more than one of them.';
     end if;
     return new;
 end;
 $$ language plpgsql;
 
 create trigger check_attribution_object
-    before insert or update of tree_id, cultivar_id, lot_id
+    before insert or update of plant_id, cultivar_id, lot_id
     on attributions
     for each row
 execute function check_attribution_object();
@@ -1037,7 +1043,7 @@ create unique index on materialized_view_refreshes (view_name, last_change);
 
 drop materialized view if exists attributions_view;
 create materialized view attributions_view as
-with tree_cultivar as (select id, cultivar_id from trees)
+with plant_cultivar as (select id, cultivar_id from plants)
 select attribute_values.id,
        attribute_values.integer_value,
        attribute_values.float_value,
@@ -1046,15 +1052,15 @@ select attribute_values.id,
        attribute_values.date_value,
        attribute_values.note,
        attribute_values.exceptional_attribution,
-       attributes.name                                               as attribute_name,
-       attributes.id                                                 as attribute_id,
+       attributes.name                                                as attribute_name,
+       attributes.id                                                  as attribute_id,
        attributes.data_type,
        attributes.attribute_type,
-       attributions.id                                               as attribution_id,
-       attributions.tree_id,
+       attributions.id                                                as attribution_id,
+       attributions.plant_id,
        attributions.cultivar_id,
        attributions.lot_id,
-       coalesce(attributions.cultivar_id, tree_cultivar.cultivar_id) as combined_cultivar_id,
+       coalesce(attributions.cultivar_id, plant_cultivar.cultivar_id) as combined_cultivar_id,
        attributions.created,
        attributions.modified,
        attributions.author,
@@ -1064,7 +1070,7 @@ select attribute_values.id,
 from attribute_values
          inner join attributions on attributions.id = attribute_values.attribution_id
          inner join attributes on attribute_values.attribute_id = attributes.id
-         left join tree_cultivar on attributions.tree_id = tree_cultivar.id;
+         left join plant_cultivar on attributions.plant_id = plant_cultivar.id;
 
 
 create unique index on attributions_view (id);
@@ -1081,7 +1087,7 @@ create index on attributions_view (attribute_id);
 create index on attributions_view (data_type);
 create index on attributions_view (attribute_type);
 create index on attributions_view (attribution_id);
-create index on attributions_view (tree_id);
+create index on attributions_view (plant_id);
 create index on attributions_view (cultivar_id);
 create index on attributions_view (lot_id);
 create index on attributions_view (combined_cultivar_id);

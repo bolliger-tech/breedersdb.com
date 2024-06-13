@@ -11,9 +11,9 @@ object_relationships:
   - name: lot
     using:
       foreign_key_constraint_on: lot_id
-  - name: tree
+  - name: plant
     using:
-      foreign_key_constraint_on: tree_id
+      foreign_key_constraint_on: plant_id
 array_relationships:
   - name: attribute_values
     using:
@@ -34,7 +34,7 @@ insert_permissions:
         - lot_id
         - attribution_form_id
         - offline_id
-        - tree_id
+        - plant_id
         - cultivar_id
     comment: ""
 select_permissions:
@@ -46,7 +46,7 @@ select_permissions:
         - id
         - lot_id
         - attribution_form_id
-        - tree_id
+        - plant_id
         - cultivar_id
         - created
         - modified
@@ -66,7 +66,7 @@ update_permissions:
         - lot_id
         - attribution_form_id
         - offline_id
-        - tree_id
+        - plant_id
         - cultivar_id
       filter: {}
       check: null

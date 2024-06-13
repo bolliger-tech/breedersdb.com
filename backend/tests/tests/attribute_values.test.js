@@ -66,6 +66,7 @@ const insertAttributionMutation = /* GraphQL */ `
     $date_attributed: date
     $attribution_form_name: String
     $lot_name_segment: String
+    $orchard_name: String! = "Orchard 1"
     $crossing_name: String
   ) {
     insert_attributions_one(
@@ -76,6 +77,7 @@ const insertAttributionMutation = /* GraphQL */ `
         lot: {
           data: {
             name_segment: $lot_name_segment
+            orchard: { data: { name: $orchard_name } }
             crossing: { data: { name: $crossing_name } }
           }
         }
@@ -106,6 +108,9 @@ afterEach(async () => {
           affected_rows
         }
         delete_attributes(where: {}) {
+          affected_rows
+        }
+        delete_orchards(where: {}) {
           affected_rows
         }
       }

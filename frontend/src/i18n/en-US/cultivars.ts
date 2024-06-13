@@ -6,7 +6,6 @@ export const cultivars = {
   },
 
   fields: {
-    commonName: 'Common Name',
     acronym: 'Acronym',
     breeder: 'Breeder',
     registration: 'Registration',

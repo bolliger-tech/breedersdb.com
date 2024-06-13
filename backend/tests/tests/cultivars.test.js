@@ -6,8 +6,9 @@ const insertMutation = /* GraphQL */ `
   mutation InsertCultivar(
     $crossing_name: String!
     $lot_name_segment: String!
+    $orchard_name: String! = "Orchard 1"
     $name_segment: String!
-    $common_name: String
+    $name_override: String
     $acronym: String
     $breeder: String
     $registration: String
@@ -22,13 +23,14 @@ const insertMutation = /* GraphQL */ `
             cultivars: {
               data: {
                 name_segment: $name_segment
-                common_name: $common_name
+                name_override: $name_override
                 acronym: $acronym
                 breeder: $breeder
                 registration: $registration
                 note: $note
               }
             }
+            orchard: { data: { name: $orchard_name } }
           }
         }
       }
@@ -41,8 +43,9 @@ const insertMutation = /* GraphQL */ `
         cultivars {
           id
           name_segment
-          name
-          common_name
+          name_override
+          full_name
+          display_name
           acronym
           breeder
           registration
@@ -68,6 +71,9 @@ afterEach(async () => {
         delete_crossings(where: {}) {
           affected_rows
         }
+        delete_orchards(where: {}) {
+          affected_rows
+        }
       }
     `,
   });
@@ -80,7 +86,6 @@ test('insert', async () => {
       crossing_name: 'Abcd',
       lot_name_segment: '24A',
       name_segment: '001',
-      common_name: 'This is an official name',
       acronym: 'TIAN',
       breeder: 'Poma Culta',
       registration: '123456',
@@ -92,8 +97,8 @@ test('insert', async () => {
 
   expect(cultivar.id).toBeGreaterThan(0);
   expect(cultivar.name_segment).toBe('001');
-  expect(cultivar.name).toBe('Abcd.24A.001');
-  expect(cultivar.common_name).toBe('This is an official name');
+  expect(cultivar.full_name).toBe('Abcd.24A.001');
+  expect(cultivar.display_name).toBe('Abcd.24A.001');
   expect(cultivar.acronym).toBe('TIAN');
   expect(cultivar.breeder).toBe('Poma Culta');
   expect(cultivar.registration).toBe('123456');
@@ -109,6 +114,7 @@ test('name is unique', async () => {
         insert_lots_one(
           object: {
             name_segment: $lot_name_segment
+            orchard: { data: { name: "Orchard 2" } }
             crossing: { data: { name: $crossing_name } }
           }
         ) {
@@ -169,7 +175,7 @@ test('name_segment is required', async () => {
   expect(resp.errors[0].message).toMatch(/Check constraint violation/);
 });
 
-test('updated name crossing', async () => {
+test('updated full_name crossing', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
@@ -188,7 +194,7 @@ test('updated name crossing', async () => {
             id
             cultivars {
               id
-              name
+              full_name
             }
           }
         }
@@ -200,12 +206,12 @@ test('updated name crossing', async () => {
     },
   });
 
-  expect(updated.data.update_crossings_by_pk.lots[0].cultivars[0].name).toBe(
-    'Efgh.24A.001',
-  );
+  expect(
+    updated.data.update_crossings_by_pk.lots[0].cultivars[0].full_name,
+  ).toBe('Efgh.24A.001');
 });
 
-test('updated name lot', async () => {
+test('updated full_name lot', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
@@ -225,7 +231,7 @@ test('updated name lot', async () => {
           id
           cultivars {
             id
-            name
+            full_name
           }
         }
       }
@@ -236,10 +242,12 @@ test('updated name lot', async () => {
     },
   });
 
-  expect(updated.data.update_lots_by_pk.cultivars[0].name).toBe('Abcd.24Z.001');
+  expect(updated.data.update_lots_by_pk.cultivars[0].full_name).toBe(
+    'Abcd.24Z.001',
+  );
 });
 
-test('updated name cultivar', async () => {
+test('updated full_name cultivar', async () => {
   const resp = await post({
     query: insertMutation,
     variables: {
@@ -257,7 +265,7 @@ test('updated name cultivar', async () => {
           _set: { name_segment: $name_segment }
         ) {
           id
-          name
+          full_name
         }
       }
     `,
@@ -267,7 +275,78 @@ test('updated name cultivar', async () => {
     },
   });
 
-  expect(updated.data.update_cultivars_by_pk.name).toBe('Abcd.24A.999');
+  expect(updated.data.update_cultivars_by_pk.full_name).toBe('Abcd.24A.999');
+});
+
+test('display_name contains full_name', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      name_segment: '001',
+    },
+  });
+
+  const cultivar = resp.data.insert_crossings_one.lots[0].cultivars[0];
+
+  expect(cultivar.full_name).toBe('Abcd.24A.001');
+  expect(cultivar.display_name).toBe('Abcd.24A.001');
+  expect(cultivar.name_override).toBe(null);
+});
+
+test('display_name contains name_override', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      name_segment: '001',
+      name_override: 'Jonagold',
+    },
+  });
+
+  const cultivar = resp.data.insert_crossings_one.lots[0].cultivars[0];
+
+  expect(cultivar.full_name).toBe('Abcd.24A.001');
+  expect(cultivar.display_name).toBe('Jonagold');
+  expect(cultivar.name_override).toBe('Jonagold');
+});
+
+test('display_name is updated when lot display_name is updated', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      name_segment: '001',
+    },
+  });
+
+  const updated = await post({
+    query: /* GraphQL */ `
+      mutation UpdateLot($id: Int!, $name_segment: String!) {
+        update_lots_by_pk(
+          pk_columns: { id: $id }
+          _set: { name_segment: $name_segment }
+        ) {
+          id
+          cultivars {
+            id
+            display_name
+          }
+        }
+      }
+    `,
+    variables: {
+      id: resp.data.insert_crossings_one.lots[0].id,
+      name_segment: '24Z',
+    },
+  });
+
+  expect(updated.data.update_lots_by_pk.cultivars[0].display_name).toBe(
+    'Abcd.24Z.001',
+  );
 });
 
 test('modified', async () => {

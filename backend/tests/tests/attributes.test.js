@@ -55,6 +55,9 @@ afterEach(async () => {
         delete_attributes(where: {}) {
           affected_rows
         }
+        delete_orchards(where: {}) {
+          affected_rows
+        }
       }
     `,
   });
@@ -321,6 +324,7 @@ test('data type is immutable after insert of attribute_values', async () => {
                   data: {
                     name_segment: "24A"
                     crossing: { data: { name: "Cross1" } }
+                    orchard: { data: { name: "Orchard1" } }
                   }
                 }
               }

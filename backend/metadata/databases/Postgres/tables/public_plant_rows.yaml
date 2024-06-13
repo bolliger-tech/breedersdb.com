@@ -6,12 +6,12 @@ object_relationships:
     using:
       foreign_key_constraint_on: orchard_id
 array_relationships:
-  - name: trees
+  - name: plants
     using:
       foreign_key_constraint_on:
         column: plant_row_id
         table:
-          name: trees
+          name: plants
           schema: public
 insert_permissions:
   - role: user

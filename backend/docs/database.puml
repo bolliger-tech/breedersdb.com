@@ -73,7 +73,7 @@ entity "**attributions**" #00ff0012 ##008800 {
   *""author"": //character varying(45) //
   *""date_attributed"": //date //
   *""attribution_form_id"": //integer [FK]//
-  ""tree_id"": //integer [FK]//
+  ""plant_id"": //integer [FK]//
   ""cultivar_id"": //integer [FK]//
   ""lot_id"": //integer [FK]//
   ""geo_location"": //geography(Point,4326)  : SRID:4326//
@@ -98,9 +98,10 @@ entity "**cultivars**" #ffff0012 ##888800 {
   + ""id"": //integer [PK]//
   --
   *""lot_id"": //integer [FK]//
-  *""name_segment"": //character varying(45) //
-  *""name"": //character varying(58)  : Set by triggers.//
-  ""common_name"": //character varying(255) //
+  *""name_segment"": //character varying(25) //
+  *""full_name"": //character varying(51)  : Set by triggers.//
+  ""name_override"": //character varying(51) //
+  ""display_name"": //character varying(51)  : Generated.//
   ""acronym"": //character varying(10) //
   ""breeder"": //character varying(255) //
   ""registration"": //character varying(255) //
@@ -122,14 +123,17 @@ entity "**lots**" #ffff0012 ##888800 {
   --
   *""crossing_id"": //integer [FK]//
   *""name_segment"": //character varying(3) //
-  *""name"": //character varying(12)  : Set by triggers.//
+  *""full_name"": //character varying(12)  : Set by triggers.//
+  ""name_override"": //character varying(25) //
+  ""display_name"": //character varying(25)  : Generated.//
   ""date_sowed"": //date //
   ""numb_seeds_sowed"": //integer //
   ""numb_seedlings_grown"": //integer //
   ""seed_tray"": //character varying(255) //
   ""date_planted"": //date //
   ""numb_seedlings_planted"": //integer //
-  ""patch"": //character varying(255) //
+  ""plot"": //character varying(255) //
+  *""orchard_id"": //integer [FK]//
   ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
@@ -143,7 +147,7 @@ entity "**materialized_view_refreshes**" {
   ""last_check"": //timestamp with time zone //
 }
 
-entity "**mother_trees**" #0000ff06 {
+entity "**mother_plants**" #0000ff06 {
   + ""id"": //integer [PK]//
   --
   *""name"": //character varying(45) //
@@ -153,7 +157,7 @@ entity "**mother_trees**" #0000ff06 {
   ""numb_fruits"": //integer //
   ""numb_seeds"": //integer //
   ""note"": //character varying(2047) //
-  *""tree_id"": //integer [FK]//
+  *""plant_id"": //integer [FK]//
   ""pollen_id"": //integer [FK]//
   *""crossing_id"": //integer [FK]//
   *""created"": //timestamp with time zone //
@@ -177,6 +181,29 @@ entity "**plant_rows**" #0000ff12 ##000088 {
   ""note"": //character varying(2047) //
   ""date_created"": //date //
   ""date_eliminated"": //date //
+  *""disabled"": //boolean  : Derived from date_eliminated.//
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
+entity "**plants**" #0000ff12 ##000088 {
+  + ""id"": //integer [PK]//
+  --
+  *""label_id"": //character varying(9) //
+  *""cultivar_id"": //integer [FK]//
+  *""cultivar_name"": //character varying(58)  : Set by triggers.//
+  ""plant_row_id"": //integer [FK]//
+  ""serial_in_plant_row"": //integer //
+  ""distance_plant_row_start"": //double precision  : Meters//
+  ""geo_location"": //geography(Point,4326)  : SRID:4326//
+  ""geo_location_accuracy"": //double precision  : Meters//
+  ""date_grafted"": //date //
+  ""date_planted"": //date //
+  ""date_eliminated"": //date //
+  ""date_labeled"": //date //
+  ""note"": //character varying(2047) //
+  ""rootstock_id"": //integer [FK]//
+  ""grafting_id"": //integer [FK]//
   *""disabled"": //boolean  : Derived from date_eliminated.//
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
@@ -221,29 +248,6 @@ entity "**rootstocks**" #0000ff12 ##000088 {
   ""modified"": //timestamp with time zone //
 }
 
-entity "**trees**" #0000ff12 ##000088 {
-  + ""id"": //integer [PK]//
-  --
-  *""label_id"": //character varying(9) //
-  *""cultivar_id"": //integer [FK]//
-  *""cultivar_name"": //character varying(58)  : Set by triggers.//
-  ""plant_row_id"": //integer [FK]//
-  ""serial_in_plant_row"": //integer //
-  ""distance_plant_row_start"": //double precision  : Meters//
-  ""geo_location"": //geography(Point,4326)  : SRID:4326//
-  ""geo_location_accuracy"": //double precision  : Meters//
-  ""date_grafted"": //date //
-  ""date_planted"": //date //
-  ""date_eliminated"": //date //
-  ""date_labeled"": //date //
-  ""note"": //character varying(2047) //
-  ""rootstock_id"": //integer [FK]//
-  ""grafting_id"": //integer [FK]//
-  *""disabled"": //boolean  : Derived from date_eliminated.//
-  *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-}
-
 "**attribute_values**"   }--  "**attributes**"
 
 "**attribute_values**"   }--  "**attributions**"
@@ -262,7 +266,7 @@ entity "**trees**" #0000ff12 ##000088 {
 
 "**attributions**"   }--  "**lots**"
 
-"**attributions**"   }--  "**trees**"
+"**attributions**"   }--  "**plants**"
 
 "**crossings**"   }--  "**cultivars**"
 
@@ -272,23 +276,25 @@ entity "**trees**" #0000ff12 ##000088 {
 
 "**lots**"   }--  "**crossings**"
 
-"**mother_trees**"   }--  "**crossings**"
+"**lots**"   }--  "**orchards**"
 
-"**mother_trees**"   }--  "**pollen**"
+"**mother_plants**"   }--  "**crossings**"
 
-"**mother_trees**"   }--  "**trees**"
+"**mother_plants**"   }--  "**plants**"
+
+"**mother_plants**"   }--  "**pollen**"
 
 "**plant_rows**"   }--  "**orchards**"
+
+"**plants**"   }--  "**cultivars**"
+
+"**plants**"   }--  "**graftings**"
+
+"**plants**"   }--  "**plant_rows**"
+
+"**plants**"   }--  "**rootstocks**"
 
 "**pollen**"   }--  "**cultivars**"
 
 "**queries**"   }--  "**query_groups**"
-
-"**trees**"   }--  "**cultivars**"
-
-"**trees**"   }--  "**graftings**"
-
-"**trees**"   }--  "**plant_rows**"
-
-"**trees**"   }--  "**rootstocks**"
 @enduml

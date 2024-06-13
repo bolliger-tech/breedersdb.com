@@ -5,7 +5,7 @@ export const nav = {
     addAttribute: 'Add attribute',
     analyze: 'Analyze',
   },
-  trees: {
+  plants: {
     plant: 'Plant',
     eliminate: 'Eliminate',
   },

@@ -8,7 +8,7 @@ export const base = {
   entityName: {
     lot: 'lot | lots',
     cultivar: 'cultivar | cultivars',
-    tree: 'tree | trees',
+    plant: 'plant | plants',
     attribution: 'attribution | attributions',
   },
 

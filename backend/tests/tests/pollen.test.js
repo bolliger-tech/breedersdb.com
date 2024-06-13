@@ -8,6 +8,7 @@ const insertMutation = /* GraphQL */ `
     $date_harvested: date
     $note: String
     $crossing_name: String!
+    $orchard_name: String! = "Orchard 1"
     $lot_name_segment: String!
     $cultivar_name_segment: String!
   ) {
@@ -22,6 +23,7 @@ const insertMutation = /* GraphQL */ `
             lot: {
               data: {
                 name_segment: $lot_name_segment
+                orchard: { data: { name: $orchard_name } }
                 crossing: { data: { name: $crossing_name } }
               }
             }
@@ -35,7 +37,7 @@ const insertMutation = /* GraphQL */ `
       note
       cultivar {
         id
-        name
+        display_name
       }
       created
       modified
@@ -50,7 +52,7 @@ afterEach(async () => {
         delete_pollen(where: {}) {
           affected_rows
         }
-        delete_trees(where: {}) {
+        delete_plants(where: {}) {
           affected_rows
         }
         delete_cultivars(where: {}) {
@@ -60,6 +62,9 @@ afterEach(async () => {
           affected_rows
         }
         delete_crossings(where: {}) {
+          affected_rows
+        }
+        delete_orchards(where: {}) {
           affected_rows
         }
       }
@@ -84,7 +89,9 @@ test('insert', async () => {
   expect(resp.data.insert_pollen_one.name).toBe('Pollen 1');
   expect(resp.data.insert_pollen_one.date_harvested).toBe('2021-01-01');
   expect(resp.data.insert_pollen_one.note).toBe('note');
-  expect(resp.data.insert_pollen_one.cultivar.name).toBe('Cross1.24A.001');
+  expect(resp.data.insert_pollen_one.cultivar.display_name).toBe(
+    'Cross1.24A.001',
+  );
   expect(resp.data.insert_pollen_one.created).toMatch(iso8601dateRegex);
   expect(resp.data.insert_pollen_one.modified).toBeNull();
 });

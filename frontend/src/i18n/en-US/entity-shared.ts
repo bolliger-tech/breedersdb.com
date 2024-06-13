@@ -3,4 +3,7 @@ export const entity = {
   name: 'Name',
   note: 'Note',
   created: 'Created',
+  displayName: 'Name',
+  nameOverride: 'Common name',
+  fullName: 'Breeding name',
 };

@@ -6,12 +6,12 @@ object_relationships:
     using:
       foreign_key_constraint_on: cultivar_id
 array_relationships:
-  - name: mother_trees
+  - name: mother_plants
     using:
       foreign_key_constraint_on:
         column: pollen_id
         table:
-          name: mother_trees
+          name: mother_plants
           schema: public
 insert_permissions:
   - role: user

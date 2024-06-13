@@ -40,7 +40,7 @@ const query = graphql(`
       data_type
       attribute_type
       attribution_id
-      tree {
+      plant {
         id
         label_id
         cultivar_name
@@ -61,8 +61,7 @@ const query = graphql(`
       }
       cultivar {
         id
-        name
-        common_name
+        display_name
         acronym
         breeder
         registration
@@ -70,14 +69,14 @@ const query = graphql(`
       }
       lot {
         id
-        name
+        display_name
         date_sowed
         numb_seeds_sowed
         numb_seedlings_grown
         seed_tray
         date_planted
         numb_seedlings_planted
-        patch
+        plot
         note
       }
       author

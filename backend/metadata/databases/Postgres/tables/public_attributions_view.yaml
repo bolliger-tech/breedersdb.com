@@ -29,14 +29,14 @@ object_relationships:
         remote_table:
           name: lots
           schema: public
-  - name: tree
+  - name: plant
     using:
       manual_configuration:
         column_mapping:
-          tree_id: id
+          plant_id: id
         insertion_order: null
         remote_table:
-          name: trees
+          name: plants
           schema: public
 select_permissions:
   - role: user
@@ -64,7 +64,7 @@ select_permissions:
         - modified
         - note
         - text_value
-        - tree_id
+        - plant_id
       filter: {}
       allow_aggregations: true
     comment: ""

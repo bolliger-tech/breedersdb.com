@@ -43,12 +43,12 @@ array_relationships:
         table:
           name: pollen
           schema: public
-  - name: trees
+  - name: plants
     using:
       foreign_key_constraint_on:
         column: cultivar_id
         table:
-          name: trees
+          name: plants
           schema: public
 insert_permissions:
   - role: user
@@ -59,7 +59,7 @@ insert_permissions:
         - lot_id
         - name_segment
         - note
-        - common_name
+        - name_override
         - breeder
         - registration
     comment: ""
@@ -72,12 +72,13 @@ select_permissions:
         - lot_id
         - id
         - note
-        - common_name
         - breeder
         - registration
         - created
         - modified
-        - name
+        - full_name
+        - display_name
+        - name_override
       filter: {}
     comment: ""
 update_permissions:
@@ -88,7 +89,7 @@ update_permissions:
         - lot_id
         - name_segment
         - note
-        - common_name
+        - name_override
         - breeder
         - registration
       filter: {}

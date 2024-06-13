@@ -202,10 +202,10 @@ describe('AnalyzePage', () => {
           `query CultivarsFilterResults( $v000: Int! ) {
   cultivars(where: { _and: [ { id: { _gt: $v000 } } ] }, limit: 100, offset: 0, order_by: { id: asc }) {
     id
-    name
-    common_name
+    display_name
+    full_name
+    name_override
     acronym
-    breeder
   }
 
   cultivars_aggregate(where: { _and: [ { id: { _gt: $v000 } } ] }) {
@@ -222,7 +222,7 @@ fragment AttributionFragment on attributions_view {
   text_value
   boolean_value
   date_value
-  tree_id
+  plant_id
   cultivar_id
   lot_id
   data_type

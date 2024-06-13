@@ -9,7 +9,7 @@ export enum FilterConjunction {
 export enum BaseTable {
   Lots = 'lots',
   Cultivars = 'cultivars',
-  Trees = 'trees',
+  Plants = 'plants',
   Attributions = 'attributions',
 }
 

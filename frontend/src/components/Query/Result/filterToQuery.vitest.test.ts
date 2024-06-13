@@ -1799,7 +1799,7 @@ fragment AttributionFragment on attributions_view {
   text_value
   boolean_value
   date_value
-  tree_id
+  plant_id
   cultivar_id
   lot_id
   data_type

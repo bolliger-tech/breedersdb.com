@@ -184,7 +184,7 @@ describe('FilterRule', () => {
 
   it('should not return isAttribute', () => {
     const column = new FilterRuleColumn({
-      tableName: 'trees',
+      tableName: 'plants',
       tableColumnName: 'tableColumnName',
       tableLabel: 'tableLabel',
       tableColumnLabel: 'tableColumnLabel',

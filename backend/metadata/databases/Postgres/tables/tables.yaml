@@ -13,6 +13,7 @@
 - "!include public_materialized_view_refreshes.yaml"
 - "!include public_mother_plants.yaml"
 - "!include public_orchards.yaml"
+- "!include public_plant_groups.yaml"
 - "!include public_plant_rows.yaml"
 - "!include public_plants.yaml"
 - "!include public_pollen.yaml"

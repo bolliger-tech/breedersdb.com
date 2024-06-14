@@ -1,5 +1,5 @@
 import { test, expect, afterEach } from 'bun:test';
-import { post } from '../fetch';
+import { post, postOrFail } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
@@ -86,14 +86,19 @@ const insertPlantMutation = /* GraphQL */ `
     insert_plants_one(
       object: {
         label_id: $label_id
-        cultivar: {
+        plant_group: {
           data: {
-            name_segment: $cultivar_name_segment
-            lot: {
+            name_segment: "A"
+            cultivar: {
               data: {
-                name_segment: $lot_name_segment
-                orchard: { data: { name: $orchard_name } }
-                crossing: { data: { name: $crossing_name } }
+                name_segment: $cultivar_name_segment
+                lot: {
+                  data: {
+                    name_segment: $lot_name_segment
+                    orchard: { data: { name: $orchard_name } }
+                    crossing: { data: { name: $crossing_name } }
+                  }
+                }
               }
             }
           }
@@ -102,15 +107,17 @@ const insertPlantMutation = /* GraphQL */ `
     ) {
       id
       cultivar_name
-      cultivar {
-        id
-        display_name
-        lot {
+      plant_group {
+        cultivar {
           id
           display_name
-          crossing {
+          lot {
             id
-            name
+            display_name
+            crossing {
+              id
+              name
+            }
           }
         }
       }
@@ -154,7 +161,7 @@ const insertPollenMutation = /* GraphQL */ `
 `;
 
 afterEach(async () => {
-  await post({
+  await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAllMotherPlants {
         delete_mother_plants(where: {}) {
@@ -164,6 +171,9 @@ afterEach(async () => {
           affected_rows
         }
         delete_plants(where: {}) {
+          affected_rows
+        }
+        delete_plant_groups(where: {}) {
           affected_rows
         }
         delete_cultivars(where: {}) {
@@ -184,7 +194,7 @@ afterEach(async () => {
 });
 
 test('insert', async () => {
-  const plant = await post({
+  const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
       crossing_name: 'C1',
@@ -195,7 +205,7 @@ test('insert', async () => {
     },
   });
 
-  const pollen = await post({
+  const pollen = await postOrFail({
     query: insertPollenMutation,
     variables: {
       name: 'Pollen 1',
@@ -206,7 +216,7 @@ test('insert', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Mother plant 1',
@@ -219,7 +229,8 @@ test('insert', async () => {
       plant_id: plant.data.insert_plants_one.id,
       pollen_id: pollen.data.insert_pollen_one.id,
       crossing_name: 'C3',
-      crossing_mother_cultivar_id: plant.data.insert_plants_one.cultivar.id,
+      crossing_mother_cultivar_id:
+        plant.data.insert_plants_one.plant_group.cultivar.id,
       crossing_father_cultivar_id: pollen.data.insert_pollen_one.cultivar.id,
     },
   });
@@ -244,7 +255,7 @@ test('insert', async () => {
   );
   expect(resp.data.insert_mother_plants_one.crossing.name).toBe('C3');
   expect(resp.data.insert_mother_plants_one.crossing.mother_cultivar.id).toBe(
-    plant.data.insert_plants_one.cultivar.id,
+    plant.data.insert_plants_one.plant_group.cultivar.id,
   );
   expect(resp.data.insert_mother_plants_one.crossing.father_cultivar.id).toBe(
     pollen.data.insert_pollen_one.cultivar.id,
@@ -254,7 +265,7 @@ test('insert', async () => {
 });
 
 test('insert with contradicting plant cultivar', async () => {
-  const cultivar = await post({
+  const cultivar = await postOrFail({
     query: /* GraphQL */ `
       mutation InsertCultivar($name_segment: String!) {
         insert_cultivars_one(
@@ -279,7 +290,7 @@ test('insert with contradicting plant cultivar', async () => {
     },
   });
 
-  const plant = await post({
+  const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
       crossing_name: 'C1',
@@ -312,7 +323,7 @@ test('insert with contradicting plant cultivar', async () => {
 });
 
 test('insert with contradicting pollen cultivar', async () => {
-  const cultivar = await post({
+  const cultivar = await postOrFail({
     query: /* GraphQL */ `
       mutation InsertCultivar($name_segment: String!) {
         insert_cultivars_one(
@@ -337,7 +348,7 @@ test('insert with contradicting pollen cultivar', async () => {
     },
   });
 
-  const plant = await post({
+  const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
       crossing_name: 'C1',
@@ -348,7 +359,7 @@ test('insert with contradicting pollen cultivar', async () => {
     },
   });
 
-  const pollen = await post({
+  const pollen = await postOrFail({
     query: insertPollenMutation,
     variables: {
       name: 'Pollen 1',
@@ -372,7 +383,8 @@ test('insert with contradicting pollen cultivar', async () => {
       plant_id: plant.data.insert_plants_one.id,
       pollen_id: pollen.data.insert_pollen_one.id,
       crossing_name: 'C3',
-      crossing_mother_cultivar_id: plant.data.insert_plants_one.cultivar.id,
+      crossing_mother_cultivar_id:
+        plant.data.insert_plants_one.plant_group.cultivar_id,
       crossing_father_cultivar_id: cultivar.data.insert_cultivars_one.id,
     },
   });
@@ -383,7 +395,7 @@ test('insert with contradicting pollen cultivar', async () => {
 });
 
 test('insert name is unique', async () => {
-  const plant = await post({
+  const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
       crossing_name: 'C1',
@@ -393,13 +405,14 @@ test('insert name is unique', async () => {
     },
   });
 
-  const resp1 = await post({
+  const resp1 = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Mother plant 1',
       plant_id: plant.data.insert_plants_one.id,
       crossing_name: 'C2',
-      crossing_mother_cultivar_id: plant.data.insert_plants_one.cultivar.id,
+      crossing_mother_cultivar_id:
+        plant.data.insert_plants_one.plant_group.cultivar_id,
     },
   });
 
@@ -409,7 +422,8 @@ test('insert name is unique', async () => {
       name: 'Mother plant 1',
       plant_id: plant.data.insert_plants_one.id,
       crossing_name: 'C2',
-      crossing_mother_cultivar_id: plant.data.insert_plants_one.cultivar.id,
+      crossing_mother_cultivar_id:
+        plant.data.insert_plants_one.plant_group.cultivar_id,
     },
   });
 
@@ -418,7 +432,7 @@ test('insert name is unique', async () => {
 });
 
 test('insert name is required', async () => {
-  const plant = await post({
+  const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
       crossing_name: 'C1',
@@ -434,7 +448,8 @@ test('insert name is required', async () => {
       name: '',
       plant_id: plant.data.insert_plants_one.id,
       crossing_name: 'C2',
-      crossing_mother_cultivar_id: plant.data.insert_plants_one.cultivar.id,
+      crossing_mother_cultivar_id:
+        plant.data.insert_plants_one.plant_group.cultivar_id,
     },
   });
 
@@ -442,7 +457,7 @@ test('insert name is required', async () => {
 });
 
 test('modified', async () => {
-  const plant = await post({
+  const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
       crossing_name: 'C1',
@@ -452,17 +467,18 @@ test('modified', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Mother plant 1',
       plant_id: plant.data.insert_plants_one.id,
       crossing_name: 'C2',
-      crossing_mother_cultivar_id: plant.data.insert_plants_one.cultivar.id,
+      crossing_mother_cultivar_id:
+        plant.data.insert_plants_one.plant_group.cultivar_id,
     },
   });
 
-  const updated = await post({
+  const updated = await postOrFail({
     query: /* GraphQL */ `
       mutation UpdateMotherPlant($id: Int!, $name: String) {
         update_mother_plants_by_pk(

@@ -36,19 +36,19 @@ array_relationships:
         table:
           name: crossings
           schema: public
+  - name: plant_groups
+    using:
+      foreign_key_constraint_on:
+        column: cultivar_id
+        table:
+          name: plant_groups
+          schema: public
   - name: pollens
     using:
       foreign_key_constraint_on:
         column: cultivar_id
         table:
           name: pollen
-          schema: public
-  - name: plants
-    using:
-      foreign_key_constraint_on:
-        column: cultivar_id
-        table:
-          name: plants
           schema: public
 insert_permissions:
   - role: user

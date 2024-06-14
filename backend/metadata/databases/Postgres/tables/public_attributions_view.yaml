@@ -38,13 +38,27 @@ object_relationships:
         remote_table:
           name: plants
           schema: public
+  - name: plant_group
+    using:
+      manual_configuration:
+        column_mapping:
+          combined_plant_group_id: id
+        insertion_order: null
+        remote_table:
+          name: plant_groups
+          schema: public
 select_permissions:
   - role: user
     permission:
       columns:
+        - attribute_id
+        - attribute_name
+        - attribute_type
+        - attribution_id
         - author
         - boolean_value
         - combined_cultivar_id
+        - combined_plant_group_id
         - created
         - cultivar_id
         - data_type
@@ -57,14 +71,11 @@ select_permissions:
         - id
         - integer_value
         - lot_id
-        - attribute_id
-        - attribute_name
-        - attribution_id
-        - attribute_type
         - modified
         - note
-        - text_value
+        - plant_group_id
         - plant_id
+        - text_value
       filter: {}
       allow_aggregations: true
     comment: ""

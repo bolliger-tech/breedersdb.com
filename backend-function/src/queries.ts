@@ -24,3 +24,36 @@ export const UserQuery = /* GraphQL */ `
     }
   }
 `;
+
+export const InsertUserTokenMutation = /* GraphQL */ `
+  mutation InsertUserTokenMutation(
+    $user_id: Int
+    $token: String!
+    $type: String!
+  ) {
+    insert_user_tokens_one(
+      object: { user_id: $user_id, token: $token, type: $type }
+    ) {
+      id
+    }
+  }
+`;
+
+export const DeleteUserTokenMutation = /* GraphQL */ `
+  mutation DeleteUserTokenMutation($token: String!) {
+    delete_user_tokens(where: { token: { _eq: $token } }) {
+      affected_rows
+    }
+  }
+`;
+
+export const UserTokenQuery = /* GraphQL */ `
+  query UserTokenQuery($token: String!) {
+    user_tokens(where: { token: { _eq: $token } }) {
+      user_id
+      type
+      created
+      last_verify
+    }
+  }
+`;

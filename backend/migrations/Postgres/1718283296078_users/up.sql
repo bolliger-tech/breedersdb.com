@@ -22,7 +22,7 @@ create table user_tokens
 (
     id                 integer primary key generated always as identity,
     user_id            integer not null references users,
-    token              varchar(64) not null,
+    token              varchar(64) not null unique,
     type               varchar(10) not null check (type in ('cookie', 'api')),
     created            timestamp with time zone not null default now(),
     last_verify        timestamp with time zone

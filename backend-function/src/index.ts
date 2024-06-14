@@ -1,12 +1,28 @@
 import * as ff from '@google-cloud/functions-framework';
 
-import { verifyPassword } from './crypto';
+import { generateToken, verifyPassword } from './crypto';
 import { handleActions } from './actions';
-import { UserQuery } from './queries';
+import {
+  DeleteUserTokenMutation,
+  InsertUserTokenMutation,
+  UserQuery,
+  UserTokenQuery,
+} from './queries';
 import { config } from './config';
+import {
+  clearAuthCookies,
+  getTokenFromCookie,
+  setAuthCookies,
+} from './cookies';
+import { fetchGraphQL } from './fetch';
 
 async function signIn(req: ff.Request, res: ff.Response) {
-  const data = req.body;
+  // validate request
+  let data = req.body;
+  // in development, allow query params
+  if (config.NODE_ENV === 'development' && Object.keys(data).length === 0) {
+    data = req.query;
+  }
   if (!data) {
     return res.status(400).send('Bad Request');
   }
@@ -15,57 +31,91 @@ async function signIn(req: ff.Request, res: ff.Response) {
     return res.status(400).send('Bad Request');
   }
 
-  const user = await fetch(config.HASURA_GRAPHQL_URL, {
-    method: 'POST',
-    headers: {
-      'x-hasura-admin-secret': config.HASURA_GRAPHQL_ADMIN_SECRET,
+  // get user
+  const user = await fetchGraphQL({
+    query: UserQuery,
+    variables: {
+      email,
     },
-    body: JSON.stringify({
-      query: UserQuery,
-      variables: {
-        email,
-      },
-    }),
-  })
-    .then((res) => res.json())
-    .then((data) => data.data.users[0]);
-
+  }).then((data) => data.data.users[0]);
   if (!user) {
     return res.status(404).send('Not Found');
   }
 
+  // verify password
   const verified = await verifyPassword(password, user.password_hash);
-
   if (!verified) {
     return res.status(401).send('Unauthorized');
   }
 
-  // TODO: generate & save token
-  // TODO: set cookie
+  // generate & save token
+  const token = generateToken();
+
+  const result = await fetchGraphQL({
+    query: InsertUserTokenMutation,
+    variables: {
+      user_id: user.id,
+      token: token,
+      type: 'cookie',
+    },
+  });
+  if (result.errors) {
+    console.error(result.errors);
+    return res.status(500).send('Internal Server Error');
+  }
+
+  // set cookies
+  setAuthCookies(res, token, email);
+
   res.send('Welcome!');
 }
 
-function signOut(req: ff.Request, res: ff.Response) {
-  // TODO: delete token
-  // TODO: clear cookie
+async function signOut(req: ff.Request, res: ff.Response) {
+  const token = getTokenFromCookie(req);
+  if (!token) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const result = await fetchGraphQL({
+    query: DeleteUserTokenMutation,
+    variables: {
+      token,
+    },
+  });
+  if (result.errors) {
+    console.error(result.errors);
+    return res.status(500).send('Internal Server Error');
+  }
+
+  clearAuthCookies(res);
+
   res.send('Goodbye!');
 }
 
-function authenticateHasuraRequest(req: ff.Request, res: ff.Response) {
-  console.log('auth:', req.headers);
-  // TODO:
-  // read token
-  // search in DB
-  // respond with X-Hasura-User-Id & X-Hasura-Role
-  //return res.send({
-  //  'X-Hasura-User-Id': '1',
-  //  'X-Hasura-Role': 'user',
-  //});
-  return res.status(401).send('Unauthorized');
+async function authenticateHasuraRequest(req: ff.Request, res: ff.Response) {
+  const token = getTokenFromCookie(req);
+  if (!token) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const dbToken = await fetchGraphQL({
+    query: UserTokenQuery,
+    variables: {
+      token,
+    },
+  }).then((data) => data.data.user_tokens[0]);
+
+  if (!dbToken) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  return res.send({
+    'X-Hasura-User-Id': dbToken.user_id.toString(),
+    'X-Hasura-Role': 'user',
+  });
 }
 
 ff.http('auth', (req: ff.Request, res: ff.Response) => {
-  console.log('req to:', req.url);
   switch (req.url.split('/')[1].split('?')[0]) {
     case 'sign-in':
       return signIn(req, res);

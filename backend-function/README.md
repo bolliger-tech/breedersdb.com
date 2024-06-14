@@ -15,8 +15,8 @@ This folder contains code intended to run as Google Cloud Function.
    cp .env.example .env
    ```
 
-1. Set `HASURA_GRAPHQL_ADMIN_SECRET` and `HASURA_GRAPHQL_JWT_SECRET` in `.env`.
-   Ensure they match the `.env` of the frontend.
+1. Set `HASURA_GRAPHQL_ADMIN_SECRET` in `.env`.
+   Ensure it matches the `.env` of the frontend.
 
 1. Install the dependencies:
 
@@ -33,7 +33,7 @@ This folder contains code intended to run as Google Cloud Function.
 
 ## Notes
 
-- Inserting a user is done by running the `InsertUser` mutation in hasura.
+- Inserting the first user is done by running the `InsertUser` mutation in hasura (x-hasura-admin-secret)
   ```graphql
   mutation InsertUser {
     InsertUser(email: "tester@breedersdb.com", password: "asdfasdf") {
@@ -41,4 +41,8 @@ This folder contains code intended to run as Google Cloud Function.
     }
   }
   ```
-- In the folder `dev/` there are example queries which will be integrated into the frontend. Run `dev/signIn.sh` to get a token.
+- Run `dev/signIn.sh` to test sign-in and running a graphql query.
+  ```bash
+  ./dev/signIn.sh
+  ```
+- Testing sign-in is also possible (with NODE_ENV=development) by opening http://localhost:8090/sign-in?email=tester@breedersdb.com&password=asdfasdf in a browser. You can check the received cookies in the developer tools.

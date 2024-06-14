@@ -3,14 +3,15 @@ import { hashAndSaltPassword } from './crypto';
 import { InsertUserMutation } from './queries';
 import { WrappedError } from './errors';
 import { config } from './config';
+import { fetchGraphQL } from './fetch';
 
 /*
-Action: {
+body: {
   action: { name: 'InsertUser' },
-  input: { email: 'asdf@asdf.com', password: 'asdf' },
+  input: { email: 'tester@breedersdb.com', password: 'asdfasdf' },
   request_query: 'mutation InsertUser {\n' +
     '\n' +
-    '  InsertUser(email: "asdf@asdf.com", password: "asdf") {email}\n' +
+    '  InsertUser(email: "tester@breedersdb.com", password: "asdfasdf") {email}\n' +
     '}\n',
   session_variables: { 'x-hasura-role': 'admin' }
 }
@@ -23,19 +24,13 @@ async function InsertUserAction(body: any) {
 
   const passwordHash = await hashAndSaltPassword(input.password);
 
-  const data = await fetch(config.HASURA_GRAPHQL_URL, {
-    method: 'POST',
-    headers: {
-      'x-hasura-admin-secret': config.HASURA_GRAPHQL_ADMIN_SECRET,
+  const data = await fetchGraphQL({
+    query: InsertUserMutation,
+    variables: {
+      email: input.email,
+      password_hash: passwordHash,
     },
-    body: JSON.stringify({
-      query: InsertUserMutation,
-      variables: {
-        email: input.email,
-        password_hash: passwordHash,
-      },
-    }),
-  }).then((res) => res.json());
+  });
 
   // TODO: cleanup error handling
   if (data.errors) {

@@ -1,4 +1,5 @@
 import sodium from 'libsodium-wrappers-sumo';
+import crypto from 'crypto';
 
 export async function hashAndSaltPassword(password: string): Promise<string> {
   await sodium.ready;
@@ -17,4 +18,8 @@ export async function verifyPassword(
   await sodium.ready;
 
   return sodium.crypto_pwhash_str_verify(passwordAndSalt, inputPassword);
+}
+
+export function generateToken(): string {
+  return crypto.randomBytes(32).toString('hex');
 }

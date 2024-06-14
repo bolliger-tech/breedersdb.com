@@ -5,12 +5,12 @@ object_relationships:
   - name: crossing
     using:
       foreign_key_constraint_on: crossing_id
-  - name: pollen
-    using:
-      foreign_key_constraint_on: pollen_id
   - name: plant
     using:
       foreign_key_constraint_on: plant_id
+  - name: pollen
+    using:
+      foreign_key_constraint_on: pollen_id
 insert_permissions:
   - role: user
     permission:

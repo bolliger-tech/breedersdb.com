@@ -1,0 +1,68 @@
+table:
+  name: plant_groups
+  schema: public
+object_relationships:
+  - name: cultivar
+    using:
+      foreign_key_constraint_on: cultivar_id
+array_relationships:
+  - name: attributions
+    using:
+      foreign_key_constraint_on:
+        column: plant_group_id
+        table:
+          name: attributions
+          schema: public
+  - name: plants
+    using:
+      foreign_key_constraint_on:
+        column: plant_group_id
+        table:
+          name: plants
+          schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - cultivar_id
+        - disabled
+        - name_override
+        - name_segment
+        - note
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - disabled
+        - display_name
+        - name_override
+        - name_segment
+        - note
+        - cultivar_id
+        - id
+        - created
+        - modified
+        - full_name
+        - label_id
+        - cultivar_name
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - cultivar_id
+        - disabled
+        - name_override
+        - name_segment
+        - note
+      filter: {}
+      check: null
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

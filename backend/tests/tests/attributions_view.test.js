@@ -1,5 +1,5 @@
 import { test, expect, afterEach, describe } from 'bun:test';
-import { post } from '../fetch';
+import { postOrFail } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const attributionsViewFields = /* GraphQL */ `
@@ -23,6 +23,10 @@ const attributionsViewFields = /* GraphQL */ `
       display_name
     }
     cultivar {
+      id
+      display_name
+    }
+    plant_group {
       id
       display_name
     }
@@ -63,6 +67,20 @@ const queryByAttributeIdAndLotId = /* GraphQL */ `
   query attributionsView($attribute_id: Int!, $lot_id: Int!) {
     attributions_view(
       where: { attribute_id: { _eq: $attribute_id }, lot_id: { _eq: $lot_id } }
+    ) {
+      ...attributionsViewFields
+    }
+  }
+`;
+
+const queryByAttributeIdAndPlantGroupId = /* GraphQL */ `
+  ${attributionsViewFields}
+  query attributionsView($attribute_id: Int!, $plant_group_id: Int!) {
+    attributions_view(
+      where: {
+        attribute_id: { _eq: $attribute_id }
+        combined_plant_group_id: { _eq: $plant_group_id }
+      }
     ) {
       ...attributionsViewFields
     }
@@ -125,10 +143,20 @@ const insertCultivar = /* GraphQL */ `
   }
 `;
 
+const insertPlantGroup = /* GraphQL */ `
+  mutation InsertPlantGroup($name_segment: String!, $cultivar_id: Int!) {
+    insert_plant_groups_one(
+      object: { name_segment: $name_segment, cultivar_id: $cultivar_id }
+    ) {
+      id
+    }
+  }
+`;
+
 const insertPlant = /* GraphQL */ `
-  mutation InsertPlant($label_id: String!, $cultivar_id: Int!) {
+  mutation InsertPlant($label_id: String!, $plant_group_id: Int!) {
     insert_plants_one(
-      object: { label_id: $label_id, cultivar_id: $cultivar_id }
+      object: { label_id: $label_id, plant_group_id: $plant_group_id }
     ) {
       id
     }
@@ -170,6 +198,7 @@ const insertAttribution = /* GraphQL */ `
     $attribution_form_id: Int!
     $lot_id: Int
     $cultivar_id: Int
+    $plant_group_id: Int
     $plant_id: Int
     $geo_location: geography
     $geo_location_accuracy: float8
@@ -181,6 +210,7 @@ const insertAttribution = /* GraphQL */ `
         attribution_form_id: $attribution_form_id
         lot_id: $lot_id
         cultivar_id: $cultivar_id
+        plant_group_id: $plant_group_id
         plant_id: $plant_id
         geo_location: $geo_location
         geo_location_accuracy: $geo_location_accuracy
@@ -222,7 +252,7 @@ const insertAttributeValue = /* GraphQL */ `
 `;
 
 async function refreshattributionsView() {
-  return await post({
+  return await postOrFail({
     /* GraphQL */
     query: `
       mutation RefreshattributionsView {
@@ -236,9 +266,8 @@ async function refreshattributionsView() {
 }
 
 afterEach(async () => {
-  await post({
-    /* GraphQL */
-    query: `
+  await postOrFail({
+    query: /* GraphQL */ `
       mutation DeleteAll {
         delete_attribute_values(where: {}) {
           affected_rows
@@ -250,6 +279,9 @@ afterEach(async () => {
           affected_rows
         }
         delete_plants(where: {}) {
+          affected_rows
+        }
+        delete_plant_groups(where: {}) {
           affected_rows
         }
         delete_cultivars(where: {}) {
@@ -267,16 +299,19 @@ afterEach(async () => {
         delete_orchards(where: {}) {
           affected_rows
         }
-      }`,
+      }
+    `,
   });
 });
 
-async function insert_attribute_value_with_associated_data({
+async function insertAttributeValueWithAssociatedData({
   is_lot = false,
   is_cultivar = false,
+  is_plant_group = false,
   is_plant = false,
   crossing_name = 'Cross1',
   lot_name_segment = '24A',
+  plant_group_name_segment = 'A',
   cultivar_name_segment = '001',
   plant_label_id = '00000001',
   attribution_form_name = 'Form 1',
@@ -296,12 +331,18 @@ async function insert_attribute_value_with_associated_data({
   note = 'Note 1',
   exceptional_attribution = false,
 }) {
-  const objects = (is_lot ? 1 : 0) + (is_cultivar ? 1 : 0) + (is_plant ? 1 : 0);
+  const objects =
+    (is_lot ? 1 : 0) +
+    (is_cultivar ? 1 : 0) +
+    (is_plant_group ? 1 : 0) +
+    (is_plant ? 1 : 0);
   if (objects !== 1) {
-    throw new Error('Exactly one of lot, cultivar, plant must be true');
+    throw new Error(
+      'Exactly one of lot, cultivar, plant_group, plant must be true',
+    );
   }
 
-  const lot = await post({
+  const lot = await postOrFail({
     query: insertLot,
     variables: {
       crossing_name,
@@ -309,7 +350,7 @@ async function insert_attribute_value_with_associated_data({
     },
   });
 
-  const cultivar = await post({
+  const cultivar = await postOrFail({
     query: insertCultivar,
     variables: {
       name_segment: cultivar_name_segment,
@@ -317,22 +358,30 @@ async function insert_attribute_value_with_associated_data({
     },
   });
 
-  const plant = await post({
-    query: insertPlant,
+  const plant_group = await postOrFail({
+    query: insertPlantGroup,
     variables: {
-      label_id: plant_label_id,
+      name_segment: plant_group_name_segment,
       cultivar_id: cultivar.data.insert_cultivars_one.id,
     },
   });
 
-  const form = await post({
+  const plant = await postOrFail({
+    query: insertPlant,
+    variables: {
+      label_id: plant_label_id,
+      plant_group_id: plant_group.data.insert_plant_groups_one.id,
+    },
+  });
+
+  const form = await postOrFail({
     query: insertAttributionForm,
     variables: {
       name: attribution_form_name,
     },
   });
 
-  const attribute = await post({
+  const attribute = await postOrFail({
     query: insertAttribute,
     variables: {
       name: attribute_name,
@@ -344,7 +393,7 @@ async function insert_attribute_value_with_associated_data({
     },
   });
 
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttribution,
     variables: {
       author: attribution_author,
@@ -352,13 +401,16 @@ async function insert_attribute_value_with_associated_data({
       attribution_form_id: form.data.insert_attribution_forms_one.id,
       lot_id: is_lot ? lot.data.insert_lots_one.id : null,
       cultivar_id: is_cultivar ? cultivar.data.insert_cultivars_one.id : null,
+      plant_group_id: is_plant_group
+        ? plant_group.data.insert_plant_groups_one.id
+        : null,
       plant_id: is_plant ? plant.data.insert_plants_one.id : null,
       geo_location: attribution_geo_location,
       geo_location_accuracy: attribution_geo_location_accuracy,
     },
   });
 
-  const value = await post({
+  const value = await postOrFail({
     query: insertAttributeValue,
     variables: {
       attribute_id: attribute.data.insert_attributes_one.id,
@@ -376,6 +428,7 @@ async function insert_attribute_value_with_associated_data({
   return {
     lot_id: lot.data.insert_lots_one.id,
     cultivar_id: cultivar.data.insert_cultivars_one.id,
+    plant_group_id: plant_group.data.insert_plant_groups_one.id,
     plant_id: plant.data.insert_plants_one.id,
     form_id: form.data.insert_attribution_forms_one.id,
     attribute_id: attribute.data.insert_attributes_one.id,
@@ -385,13 +438,13 @@ async function insert_attribute_value_with_associated_data({
 }
 
 test('view contains new value after update', async () => {
-  const { value_id } = await insert_attribute_value_with_associated_data({
+  const { value_id } = await insertAttributeValueWithAssociatedData({
     is_lot: true,
   });
 
   await refreshattributionsView();
 
-  const { data } = await post({ query: queryAll });
+  const { data } = await postOrFail({ query: queryAll });
 
   expect(data.attributions_view).toHaveLength(1);
   expect(data.attributions_view[0].id).toBe(value_id);
@@ -400,7 +453,7 @@ test('view contains new value after update', async () => {
 describe('non aggregated values are correct', async () => {
   test('common columns', async () => {
     const { attribute_id, value_id } =
-      await insert_attribute_value_with_associated_data({
+      await insertAttributeValueWithAssociatedData({
         is_lot: true,
         attribute_name: 'Attribute 1',
         attribute_data_type: 'INTEGER',
@@ -416,7 +469,7 @@ describe('non aggregated values are correct', async () => {
 
     await refreshattributionsView();
 
-    const { data } = await post({ query: queryAll });
+    const { data } = await postOrFail({ query: queryAll });
 
     expect(data.attributions_view).toHaveLength(1);
     expect(data.attributions_view[0].id).toBe(value_id);
@@ -435,66 +488,108 @@ describe('non aggregated values are correct', async () => {
   });
 
   test('attribution: lot', async () => {
-    const { lot_id, value_id } =
-      await insert_attribute_value_with_associated_data({
-        is_lot: true,
-      });
+    const { lot_id, value_id } = await insertAttributeValueWithAssociatedData({
+      is_lot: true,
+    });
 
     await refreshattributionsView();
 
-    const { data } = await post({ query: queryAll });
+    const { data } = await postOrFail({ query: queryAll });
 
     expect(data.attributions_view).toHaveLength(1);
     expect(data.attributions_view[0].id).toBe(value_id);
     expect(data.attributions_view[0].lot.id).toBe(lot_id);
     expect(data.attributions_view[0].cultivar).toBeNull();
+    expect(data.attributions_view[0].plant_group).toBeNull();
     expect(data.attributions_view[0].plant).toBeNull();
   });
 
   test('attribution: cultivar', async () => {
     const { cultivar_id, value_id } =
-      await insert_attribute_value_with_associated_data({
+      await insertAttributeValueWithAssociatedData({
         is_cultivar: true,
       });
 
     await refreshattributionsView();
 
-    const { data } = await post({ query: queryAll });
+    const { data } = await postOrFail({ query: queryAll });
 
     expect(data.attributions_view).toHaveLength(1);
     expect(data.attributions_view[0].id).toBe(value_id);
     expect(data.attributions_view[0].lot).toBeNull();
     expect(data.attributions_view[0].cultivar.id).toBe(cultivar_id);
+    expect(data.attributions_view[0].plant_group).toBeNull();
+    expect(data.attributions_view[0].plant).toBeNull();
+  });
+
+  test('attribution: plant_group', async () => {
+    const { plant_group_id, cultivar_id, value_id } =
+      await insertAttributeValueWithAssociatedData({
+        is_plant_group: true,
+      });
+
+    await refreshattributionsView();
+
+    const { data } = await postOrFail({ query: queryAll });
+
+    expect(data.attributions_view).toHaveLength(1);
+    expect(data.attributions_view[0].id).toBe(value_id);
+    expect(data.attributions_view[0].lot).toBeNull();
+    expect(data.attributions_view[0].cultivar.id).toBe(cultivar_id);
+    expect(data.attributions_view[0].plant_group.id).toBe(plant_group_id);
     expect(data.attributions_view[0].plant).toBeNull();
   });
 
   test('attribution: plant', async () => {
-    const { plant_id, cultivar_id, value_id } =
-      await insert_attribute_value_with_associated_data({
+    const { plant_id, plant_group_id, cultivar_id, value_id } =
+      await insertAttributeValueWithAssociatedData({
         is_plant: true,
       });
 
     await refreshattributionsView();
 
-    const { data } = await post({ query: queryAll });
+    const { data } = await postOrFail({ query: queryAll });
 
     expect(data.attributions_view).toHaveLength(1);
     expect(data.attributions_view[0].id).toBe(value_id);
     expect(data.attributions_view[0].lot).toBeNull();
     expect(data.attributions_view[0].cultivar.id).toBe(cultivar_id);
+    expect(data.attributions_view[0].plant_group.id).toBe(plant_group_id);
     expect(data.attributions_view[0].plant.id).toBe(plant_id);
   });
 });
 
+test('cultivar contains attributions of plant_groups', async () => {
+  const { cultivar_id, plant_group_id, value_id, attribute_id } =
+    await insertAttributeValueWithAssociatedData({
+      is_plant_group: true,
+    });
+
+  await refreshattributionsView();
+
+  const { data } = await postOrFail({
+    query: queryByAttributeIdAndCultivarId,
+    variables: {
+      attribute_id: attribute_id,
+      cultivar_id: cultivar_id,
+    },
+  });
+
+  expect(data.attributions_view).toHaveLength(1);
+  expect(data.attributions_view[0].id).toBe(value_id);
+  expect(data.attributions_view[0].cultivar.id).toBe(cultivar_id);
+  expect(data.attributions_view[0].plant_group.id).toBe(plant_group_id);
+});
+
 test('cultivar contains attributions of plants', async () => {
   const { cultivar_id, plant_id, value_id, attribute_id } =
-    await insert_attribute_value_with_associated_data({
+    await insertAttributeValueWithAssociatedData({
       is_plant: true,
     });
 
   await refreshattributionsView();
 
-  const { data } = await post({
+  const { data } = await postOrFail({
     query: queryByAttributeIdAndCultivarId,
     variables: {
       attribute_id: attribute_id,
@@ -508,15 +603,75 @@ test('cultivar contains attributions of plants', async () => {
   expect(data.attributions_view[0].plant.id).toBe(plant_id);
 });
 
-test('plants do not contain cultivar attributions', async () => {
-  const { plant_id, value_id, attribute_id } =
-    await insert_attribute_value_with_associated_data({
+test('plant_groups contains attributions of plants', async () => {
+  const { plant_group_id, plant_id, value_id, attribute_id } =
+    await insertAttributeValueWithAssociatedData({
+      is_plant: true,
+    });
+
+  await refreshattributionsView();
+
+  const { data } = await postOrFail({
+    query: queryByAttributeIdAndPlantGroupId,
+    variables: {
+      attribute_id: attribute_id,
+      plant_group_id: plant_group_id,
+    },
+  });
+
+  expect(data.attributions_view).toHaveLength(1);
+  expect(data.attributions_view[0].id).toBe(value_id);
+  expect(data.attributions_view[0].plant_group.id).toBe(plant_group_id);
+  expect(data.attributions_view[0].plant.id).toBe(plant_id);
+});
+
+test('plant_groups do not contain cultivar attributions', async () => {
+  const { plant_group_id, value_id, attribute_id } =
+    await insertAttributeValueWithAssociatedData({
       is_cultivar: true,
     });
 
   await refreshattributionsView();
 
-  const { data } = await post({
+  const { data } = await postOrFail({
+    query: queryByAttributeIdAndPlantGroupId,
+    variables: {
+      attribute_id,
+      plant_group_id,
+    },
+  });
+
+  expect(data.attributions_view).toHaveLength(0);
+});
+
+test('plants do not contain plant_group attributions', async () => {
+  const { plant_id, value_id, attribute_id } =
+    await insertAttributeValueWithAssociatedData({
+      is_plant_group: true,
+    });
+
+  await refreshattributionsView();
+
+  const { data } = await postOrFail({
+    query: queryByAttributeIdAndPlantId,
+    variables: {
+      attribute_id: attribute_id,
+      plant_id: plant_id,
+    },
+  });
+
+  expect(data.attributions_view).toHaveLength(0);
+});
+
+test('plants do not contain cultivar attributions', async () => {
+  const { plant_id, value_id, attribute_id } =
+    await insertAttributeValueWithAssociatedData({
+      is_cultivar: true,
+    });
+
+  await refreshattributionsView();
+
+  const { data } = await postOrFail({
     query: queryByAttributeIdAndPlantId,
     variables: {
       attribute_id: attribute_id,

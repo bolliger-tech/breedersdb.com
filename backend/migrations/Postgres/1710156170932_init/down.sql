@@ -1,6 +1,7 @@
 drop table if exists crossings cascade;
 drop table if exists lots cascade;
 drop table if exists cultivars cascade;
+drop table if exists plant_groups cascade;
 drop table if exists graftings cascade;
 drop table if exists rootstocks cascade;
 drop table if exists orchards cascade;

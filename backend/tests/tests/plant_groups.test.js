@@ -263,4 +263,5 @@ test('modified is updated', async () => {
   });
 
   expect(data2.update_plant_groups_by_pk.modified).toMatch(iso8601dateRegex);
+  expect(data1.insert_plant_groups_one.modified).toBe(null);
 });

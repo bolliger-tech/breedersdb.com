@@ -314,6 +314,7 @@ create table plant_groups
 comment on column plant_groups.label_id is 'Generated.';
 comment on column plant_groups.cultivar_name is 'Set by triggers.';
 comment on column plant_groups.full_name is 'Generated.';
+comment on column plant_groups.display_name is 'Generated.';
 
 create index on plant_groups (label_id);
 create index on plant_groups using gin (label_id gin_trgm_ops);

@@ -24,6 +24,7 @@ async function InsertUserAction(body: any) {
 
   const passwordHash = await hashAndSaltPassword(input.password);
 
+  // save user to db
   const data = await fetchGraphQL({
     query: InsertUserMutation,
     variables: {
@@ -31,7 +32,6 @@ async function InsertUserAction(body: any) {
       password_hash: passwordHash,
     },
   });
-
   // TODO: cleanup error handling
   if (data.errors) {
     console.error(data.errors);
@@ -58,11 +58,11 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
       case 'InsertUser':
         return res.send(await InsertUserAction(body));
       default:
-        return res.status(400).send('Bad Request');
+        throw new WrappedError(400, 'Bad Request');
     }
   } catch (err) {
+    // TODO: error must be json
     if (err instanceof WrappedError) {
-      // TODO: error must be json
       res.status(err.status).send(err.message);
     } else {
       console.error(err);

@@ -74,7 +74,7 @@
       </CRUDListTableHeaderCell>
     </template>
 
-    <template #body-cell="cellProps">
+    <template v-if="$slots['body-cell']" #body-cell="cellProps">
       <slot name="body-cell" v-bind="cellProps">
         {{ cellProps.value }}
       </slot>

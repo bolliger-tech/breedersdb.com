@@ -183,7 +183,7 @@ entity "**plant_groups**" #ffff0012 ##888800 {
   *""name_segment"": //character varying(25) //
   ""full_name"": //character varying(77)  : Generated.//
   ""name_override"": //character varying(77) //
-  ""display_name"": //character varying(77) //
+  ""display_name"": //character varying(77)  : Generated.//
   ""note"": //character varying(2047) //
   *""disabled"": //boolean //
   *""created"": //timestamp with time zone //

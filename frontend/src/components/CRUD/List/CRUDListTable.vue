@@ -13,6 +13,7 @@
     class="crud-list-table"
     color="primary"
     row-key="id"
+    flat
     v-on="handleEvents"
   >
     <template #top-left>
@@ -222,16 +223,17 @@ const orderedColumns = computed(() => {
 
 :global(.crud-list-table .q-table__bottom),
 :global(.crud-list-table .q-table__top) {
-  background-color: $grey-3;
-}
-:global(.body--dark .crud-list-table .q-table__bottom),
-:global(.body--dark .crud-list-table .q-table__top) {
-  background-color: $grey-9;
+  background-color: var(--q-shade);
 }
 
 :global(.crud-list-table thead tr th) {
   position: sticky;
   z-index: 1;
   top: 0;
+}
+
+:global(.body--light .crud-list-table .q-table__middle) {
+  border-left: 1px solid var(--q-shade);
+  border-right: 1px solid var(--q-shade);
 }
 </style>

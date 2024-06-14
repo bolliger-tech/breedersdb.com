@@ -1,41 +1,54 @@
 <template>
-  <q-table
-    v-model:pagination="pagination"
-    title="Plants"
-    :rows="data?.plants || []"
-    :columns="columns"
-    :visible-columns="visibleColumns"
-    row-key="id"
-    :loading="fetching"
-    :rows-per-page-options="[10, 100, 1000]"
-    flat
-    binary-state-sort
-    :filter="filter"
-    @request="onRequest"
-  >
-    <template #top-right>
-      <q-toggle v-model="showDisabled" label="Show eliminated plants" />
+  <q-btn to="/plants/new" primary unelevated color="primary">Add new</q-btn>
+
+  <q-card class="bg-shade q-my-md" flat>
+    <q-card-section>
       <q-input
         v-model="filter"
-        borderless
+        outlined
+        :bg-color="inputBgColor"
         dense
         debounce="300"
-        placeholder="Search by Public ID or Cultivar Name"
+        placeholder="Search by Label ID or Cultivar Name"
       >
         <template #append>
           <q-icon name="search" />
         </template>
       </q-input>
-    </template>
-  </q-table>
+    </q-card-section>
+  </q-card>
+
+  <q-tabs
+    v-model="subset"
+    class="q-ml-xs"
+    breakpoint="320"
+    align="left"
+    no-caps
+    dense
+    active-bg-color="shade"
+  >
+    <q-tab class="tab" name="active" label="Active" />
+    <q-tab class="tab" name="disabled" label="Disabled" />
+    <q-tab class="tab" name="all" label="All" />
+  </q-tabs>
+
+  <CRUDListTable
+    v-model:pagination="pagination"
+    :visible-columns="visibleColumns"
+    :rows="data?.plants || []"
+    :loading="fetching"
+    :all-columns="columns"
+    :row-click-navigates-to="(row) => `/plants/${row.id}`"
+  ></CRUDListTable>
 </template>
 
 <script setup lang="ts">
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { QTable } from 'quasar';
 import { computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
+import CRUDListTable from './CRUD/List/CRUDListTable.vue';
+import { useInputBackground } from 'src/composables/useInputBackground';
 
 const { d } = useI18n();
 
@@ -55,6 +68,7 @@ const query = graphql(`
       id
       label_id
       cultivar_name
+      plant_group_name
       serial_in_plant_row
       distance_plant_row_start
       geo_location
@@ -86,13 +100,13 @@ const query = graphql(`
 `);
 
 const filter = ref('');
-const showDisabled = ref(false);
+const subset = ref<'active' | 'disabled' | 'all'>('active');
 
 const pagination = ref({
   sortBy: 'label_id',
   descending: false,
   page: 1,
-  rowsPerPage: 10,
+  rowsPerPage: 100,
   rowsNumber: 0,
 });
 
@@ -110,8 +124,10 @@ const orderBy = computed(() => {
 const where = computed(() => {
   const where: UseQueryArgs<typeof query>['variables'] = { _and: [] };
 
-  if (!showDisabled.value) {
+  if (subset.value === 'active') {
     where._and.push({ disabled: { _eq: false } });
+  } else if (subset.value === 'disabled') {
+    where._and.push({ disabled: { _eq: true } });
   }
 
   if (filter.value) {
@@ -175,6 +191,13 @@ const columns = [
     sortable: true,
   },
   {
+    name: 'plant_group_name',
+    label: 'Group Name',
+    align: 'left' as const,
+    field: 'plant_group_name',
+    sortable: true,
+  },
+  {
     name: 'rootstock',
     label: 'Rootstock',
     align: 'left' as const,
@@ -206,12 +229,6 @@ const columns = [
 
 const visibleColumns = columns.map((column) => column.name);
 
-function onRequest({
-  pagination: params,
-}: Parameters<Required<QTable>['onRequest']>[0]) {
-  pagination.value = Object.assign(pagination.value, params);
-}
-
 watch(error, (error) => {
   if (error) {
     throw error;
@@ -223,12 +240,20 @@ watch(plantsCount, () => {
 });
 
 watch(filter, (val) => {
-  if (val.startsWith('#')) {
-    showDisabled.value = true;
+  if (val.startsWith('#') && subset.value === 'active') {
+    subset.value = 'all';
   }
 });
 
 onMounted(() => {
   pagination.value.rowsNumber = plantsCount.value;
 });
+
+const { inputBgColor } = useInputBackground();
 </script>
+
+<style scoped lang="scss">
+.tab {
+  border-radius: 3px 3px 0 0;
+}
+</style>

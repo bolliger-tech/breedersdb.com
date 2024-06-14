@@ -577,6 +577,7 @@ begin
     into _plant_group_name, _cultivar_name
     from plant_groups
     where plant_groups.id = new.plant_group_id;
+
     new.plant_group_name := _plant_group_name;
     new.cultivar_name := _cultivar_name;
     return new;

@@ -183,13 +183,7 @@ function onDrop(position: 'before' | 'after') {
 .query-filter-node__drag-bg {
   border-right-width: 3px;
   border-right-style: solid;
-  background: $grey-3;
-}
-
-.body--dark {
-  .query-filter-node__drag-bg {
-    background: $grey-9;
-  }
+  background: var(--q-shade);
 }
 
 .query-filter-node__drag-bg--and {

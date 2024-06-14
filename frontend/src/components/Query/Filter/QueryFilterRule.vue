@@ -198,13 +198,7 @@ watch(
 <style scoped lang="scss">
 .query-filter-rule {
   padding: 4px 3px 4px 1px;
-  background: $grey-3;
-}
-
-.body--dark {
-  .query-filter-rule {
-    background: $grey-9;
-  }
+  background: var(--q-shade);
 }
 
 .query-filter-rule__tree--and {

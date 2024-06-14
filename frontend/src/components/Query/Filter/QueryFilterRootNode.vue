@@ -115,18 +115,12 @@ function simplify() {
 }
 
 .query-filter-root-node__filter-placeholder {
-  background: $grey-3;
+  background: var(--q-shade);
   width: 100%;
   min-height: 48px;
   border-left: solid 3px var(--q-primary);
   display: flex;
   align-items: center;
   padding: 4px 12px;
-}
-
-.body--dark {
-  .query-filter-root-node__filter-placeholder {
-    background: $grey-9;
-  }
 }
 </style>

@@ -13,7 +13,7 @@
     class="crud-list-table"
     color="primary"
     row-key="id"
-    @request="(event) => (pagination = event.pagination)"
+    v-on="handleEvents"
   >
     <template #top-left>
       <div v-if="visibleColumns.length < 1" class="text-negative">
@@ -94,6 +94,7 @@ import {
 import CRUDListTableColumnSelector from './CRUDListTableColumnSelector.vue';
 import CRUDListTableHeaderCell from './CRUDListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
+import { RouteLocationRaw, useRouter } from 'vue-router';
 
 export interface CRUDListTableProps extends CRUDListTablePropsWithoutModel {
   pagination?: QTableProps['pagination'];
@@ -106,6 +107,7 @@ interface CRUDListTablePropsWithoutModel {
   allColumns: QTableColumn[];
   dataIsFresh?: boolean;
   headerHeight?: string;
+  rowClickNavigatesTo?: (row: QTableProps['rows'][0]) => RouteLocationRaw;
 }
 
 export type CRUDListTableRequestDataParams = Parameters<
@@ -116,6 +118,7 @@ const props = withDefaults(defineProps<CRUDListTablePropsWithoutModel>(), {
   loading: false,
   dataIsFresh: true,
   headerHeight: undefined,
+  rowClickNavigatesTo: undefined,
 });
 const visibleColumns = defineModel<string[]>('visibleColumns', {
   required: true,
@@ -129,6 +132,20 @@ defineSlots<{
   'column-selector-option': QSelectSlots['option'];
   'header-cell-label': QTableSlots['header-cell'];
 }>();
+
+const router = useRouter();
+const handleEvents = computed(() => {
+  const onRequest = (
+    event: Parameters<NonNullable<QTableProps['onRequest']>>[0],
+  ) => (pagination.value = event.pagination);
+
+  const getUrlFn = props.rowClickNavigatesTo;
+  const onRowClick = getUrlFn
+    ? (...[, row]: Parameters<NonNullable<QTableProps['onRowClick']>>) =>
+        router.push(getUrlFn(row))
+    : undefined;
+  return { request: onRequest, rowClick: onRowClick };
+});
 
 const { t } = useI18n();
 

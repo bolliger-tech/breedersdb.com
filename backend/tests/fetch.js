@@ -15,3 +15,21 @@ export async function post(query) {
   });
   return resp.json();
 }
+
+export async function postOrFail(query) {
+  const resp = await fetch(apiUrl, {
+    method: 'POST',
+    headers: defaultHeaders,
+    body: JSON.stringify(query),
+  });
+
+  const json = await resp.json();
+
+  if (json.errors) {
+    const error =
+      json.errors[0].extensions?.internal?.error ?? json.errors[0].message;
+    throw new Error(JSON.stringify(error));
+  }
+
+  return json;
+}

@@ -126,6 +126,10 @@ comment on column lots.full_name is 'Set by triggers.';
 comment on column lots.display_name is 'Generated.';
 
 create index on lots (crossing_id);
+create index on lots (full_name);
+create index on lots using gin (full_name gin_trgm_ops);
+create index on lots (name_override);
+create index on lots using gin (name_override gin_trgm_ops);
 create index on lots (display_name);
 create index on lots using gin (display_name gin_trgm_ops);
 create unique index on lots (crossing_id, name_segment);
@@ -200,6 +204,10 @@ comment on column cultivars.full_name is 'Set by triggers.';
 comment on column cultivars.display_name is 'Generated.';
 
 create index on cultivars (lot_id);
+create index on cultivars (full_name);
+create index on cultivars using gin (full_name gin_trgm_ops);
+create index on cultivars (name_override);
+create index on cultivars using gin (name_override gin_trgm_ops);
 create index on cultivars (display_name);
 create index on cultivars using gin (display_name gin_trgm_ops);
 create index on cultivars (acronym);
@@ -267,6 +275,100 @@ alter table crossings
             -- deferrable: allow to insert crossings with circular references
             -- father_cultivar_id depends on cultivars which depends on lots which depends on crossings
             deferrable initially deferred;
+
+------------------------------------------------------------------------------------------------------------------------
+-- PLANT_GROUPS
+------------------------------------------------------------------------------------------------------------------------
+
+-- to_char is not immutable and thus not allowed in generated columns.
+-- However, it is immutable in this case, that's why we extracted it into
+-- it's own immutable function. See https://stackoverflow.com/a/5974303
+create or replace function generate_plant_label(id int)
+    returns text
+as
+$body$
+select ('G' || to_char($1, 'FM00000000'));
+$body$
+    language sql immutable;
+
+
+create table plant_groups
+(
+    id            integer primary key generated always as identity,
+    label_id      varchar(9) generated always as (generate_plant_label(id)) stored unique,
+    cultivar_id   int                      not null references cultivars,
+    cultivar_name varchar(51)              not null,
+    name_segment  varchar(25)              not null check ( name_segment ~ '^[-_\w\d]{1,25}$' ),
+    -- must correspond to display_name. see comment there.
+    full_name     varchar(77) generated always as ( cultivar_name || '.' || name_segment ) stored unique,
+    name_override varchar(77) unique check ( name_override ~ '^[^\n\.]{1,77}$' ),
+    -- the second argument of coalesce is actually the full_name,
+    -- but as it is not allowed to reference a generated column in the same table, we repeat ourselves here.
+    display_name  varchar(77) generated always as ( coalesce(name_override, cultivar_name || '.' || name_segment) ) stored unique,
+    note          varchar(2047),
+    disabled      boolean                  not null default false,
+    created       timestamp with time zone not null default now(),
+    modified      timestamp with time zone
+);
+
+comment on column plant_groups.label_id is 'Generated.';
+comment on column plant_groups.cultivar_name is 'Set by triggers.';
+comment on column plant_groups.full_name is 'Generated.';
+comment on column plant_groups.display_name is 'Generated.';
+
+create index on plant_groups (label_id);
+create index on plant_groups using gin (label_id gin_trgm_ops);
+create index on plant_groups (cultivar_id);
+create index on plant_groups (full_name);
+create index on plant_groups using gin (full_name gin_trgm_ops);
+create index on plant_groups (name_override);
+create index on plant_groups using gin (name_override gin_trgm_ops);
+create index on plant_groups (display_name);
+create index on plant_groups using gin (display_name gin_trgm_ops);
+create index on plant_groups (disabled);
+create index on plant_groups (created);
+
+create trigger update_plant_groups_modified
+    before update
+    on plant_groups
+    for each row
+execute function modified_column();
+
+create trigger trim_plant_groups
+    before insert or update of name_segment, name_override, note
+    on cultivars
+    for each row
+execute function trim_strings('name_segment', 'name_override', 'note');
+
+-- set cultivar_name for changes on plant_groups table
+create or replace function plant_groups_set_cultivar_name() returns trigger as
+$$
+begin
+    new.cultivar_name := (select cultivars.display_name from cultivars where cultivars.id = new.cultivar_id);
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger set_cultivar_name
+    before insert or update of cultivar_id
+    on plant_groups
+    for each row
+execute function plant_groups_set_cultivar_name();
+
+-- set cultivar_name for changes on cultivars table
+create or replace function cultivars_update_plant_groups_cultivar_name() returns trigger as
+$$
+begin
+    update plant_groups set cultivar_name = new.display_name where cultivar_id = new.id;
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger update_plant_groups_cultivar_name
+    after update of display_name
+    on cultivars
+    for each row
+execute function cultivars_update_plant_groups_cultivar_name();
 
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -357,8 +459,9 @@ create table plants
 (
     id                       integer primary key generated always as identity,
     label_id                 varchar(9)               not null check ( label_id ~ '^#?[[:digit:]]{8}$' ),
-    cultivar_id              int                      not null references cultivars,
-    cultivar_name            varchar(58)              not null,
+    plant_group_id           int                      not null references plant_groups,
+    plant_group_name         varchar(77)              not null,
+    cultivar_name            varchar(51)              not null,
     plant_row_id             int references plant_rows,
     serial_in_plant_row      int,
     distance_plant_row_start double precision,
@@ -376,6 +479,7 @@ create table plants
     modified                 timestamp with time zone
 );
 
+comment on column plants.plant_group_name is 'Set by triggers.';
 comment on column plants.cultivar_name is 'Set by triggers.';
 comment on column plants.distance_plant_row_start is 'Meters';
 comment on column plants.geo_location_accuracy is 'Meters';
@@ -384,7 +488,9 @@ comment on column plants.disabled is 'Derived from date_eliminated.';
 
 create index on plants (label_id);
 create unique index on plants (label_id) where label_id not like '#%';
-create index on plants (cultivar_id);
+create index on plants (plant_group_id);
+create index on plants (plant_group_name);
+create index on plants using gin (plant_group_name gin_trgm_ops);
 create index on plants (cultivar_name);
 create index on plants using gin (cultivar_name gin_trgm_ops);
 create index on plants (plant_row_id);
@@ -461,35 +567,47 @@ create trigger prevent_invalid_label_id
     for each row
 execute function prevent_invalid_label_id();
 
--- set cultivar_name for changes on plants table
-create or replace function plants_set_cultivar_name() returns trigger as
+-- set plant_group_name and cultivar_name for changes on plants table
+create or replace function plants_set_plant_group_and_cultivar_names() returns trigger as
 $$
+declare
+    _cultivar_name    varchar(51);
+    _plant_group_name varchar(77);
 begin
-    new.cultivar_name := (select cultivars.display_name from cultivars where cultivars.id = new.cultivar_id);
+    select display_name, cultivar_name
+    into _plant_group_name, _cultivar_name
+    from plant_groups
+    where plant_groups.id = new.plant_group_id;
+
+    new.plant_group_name := _plant_group_name;
+    new.cultivar_name := _cultivar_name;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger set_cultivar_name
-    before insert or update of cultivar_id, cultivar_name
+create trigger set_plant_group_and_cultivar_name
+    before insert or update of plant_group_id, plant_group_name, cultivar_name
     on plants
     for each row
-execute function plants_set_cultivar_name();
+execute function plants_set_plant_group_and_cultivar_names();
 
--- set cultivar_name for changes on cultivars table
-create or replace function cultivars_update_name() returns trigger as
+-- set plant_group_name and cultivar_name for changes on plant_groups table
+create or replace function plant_groups_update_plant_group_and_cultivar_name() returns trigger as
 $$
 begin
-    update plants set cultivar_name = new.display_name where cultivar_id = new.id;
+    update plants
+    set plant_group_name = new.display_name,
+        cultivar_name    = new.cultivar_name
+    where plant_group_id = new.id;
     return new;
 end;
 $$ language plpgsql;
 
-create trigger update_plant_cultivar_name
-    after update of display_name
-    on cultivars
+create trigger update_plant_group_name
+    after update of display_name, cultivar_id
+    on plant_groups
     for each row
-execute function cultivars_update_name();
+execute function plant_groups_update_plant_group_and_cultivar_name();
 
 
 create table pollen
@@ -568,12 +686,15 @@ begin
     if new.plant_id is not null then
         select mother_cultivar_id into crossing_mother_cultivar_id from crossings where id = new.crossing_id;
         if crossing_mother_cultivar_id is not null and
-           (select cultivar_id from plants where id = new.plant_id) != crossing_mother_cultivar_id then
+           (select cultivar_id
+            from plants
+                     join plant_groups on plants.plant_group_id = plant_groups.id
+            where plants.id = new.plant_id) != crossing_mother_cultivar_id then
             raise exception 'The cultivar of the mother plant must match the mother cultivar of the crossing. (id: %)', new.id;
         end if;
     end if;
     return new;
-end;
+end ;
 $$ language plpgsql;
 
 create trigger check_crossing_plant_cultivar
@@ -801,6 +922,7 @@ create table attributions
     date_attributed       date                     not null,
     attribution_form_id   int                      not null references attribution_forms,
     plant_id              int references plants,
+    plant_group_id        int references plant_groups,
     cultivar_id           int references cultivars,
     lot_id                int references lots,
     geo_location          geography(point, 4326),
@@ -817,6 +939,7 @@ create index on attributions (author);
 create index on attributions (date_attributed);
 create index on attributions (attribution_form_id);
 create index on attributions (plant_id);
+create index on attributions (plant_group_id);
 create index on attributions (cultivar_id);
 create index on attributions (lot_id);
 create index on attributions using gist (geo_location);
@@ -838,15 +961,15 @@ execute function trim_strings('author');
 create or replace function check_attribution_object() returns trigger as
 $$
 begin
-    if num_nonnulls(new.plant_id, new.cultivar_id, new.lot_id) <> 1 then
-        raise exception 'An attribution must be associated with exactly one plant, cultivar or lot, but not with none or more than one of them.';
+    if num_nonnulls(new.plant_id, new.plant_group_id, new.cultivar_id, new.lot_id) <> 1 then
+        raise exception 'An attribution must be associated with exactly one plant, plant_group, cultivar or lot, but not with none or more than one of them.';
     end if;
     return new;
 end;
 $$ language plpgsql;
 
 create trigger check_attribution_object
-    before insert or update of plant_id, cultivar_id, lot_id
+    before insert or update of plant_id, plant_group_id, cultivar_id, lot_id
     on attributions
     for each row
 execute function check_attribution_object();
@@ -1043,7 +1166,8 @@ create unique index on materialized_view_refreshes (view_name, last_change);
 
 drop materialized view if exists attributions_view;
 create materialized view attributions_view as
-with plant_cultivar as (select id, cultivar_id from plants)
+with plant_group_group as (select id, plant_group_id from plants),
+     plant_group_cultivar as (select id, cultivar_id from plant_groups)
 select attribute_values.id,
        attribute_values.integer_value,
        attribute_values.float_value,
@@ -1052,15 +1176,18 @@ select attribute_values.id,
        attribute_values.date_value,
        attribute_values.note,
        attribute_values.exceptional_attribution,
-       attributes.name                                                as attribute_name,
-       attributes.id                                                  as attribute_id,
+       attributes.name                                                         as attribute_name,
+       attributes.id                                                           as attribute_id,
        attributes.data_type,
        attributes.attribute_type,
-       attributions.id                                                as attribution_id,
+       attributions.id                                                         as attribution_id,
        attributions.plant_id,
+       attributions.plant_group_id,
        attributions.cultivar_id,
        attributions.lot_id,
-       coalesce(attributions.cultivar_id, plant_cultivar.cultivar_id) as combined_cultivar_id,
+       -- read the comment on plant_group_cultivar join expression below before making changes to combined_plant_group_id
+       coalesce(attributions.plant_group_id, plant_group_group.plant_group_id) as combined_plant_group_id,
+       coalesce(attributions.cultivar_id, plant_group_cultivar.cultivar_id)    as combined_cultivar_id,
        attributions.created,
        attributions.modified,
        attributions.author,
@@ -1070,7 +1197,10 @@ select attribute_values.id,
 from attribute_values
          inner join attributions on attributions.id = attribute_values.attribution_id
          inner join attributes on attribute_values.attribute_id = attributes.id
-         left join plant_cultivar on attributions.plant_id = plant_cultivar.id;
+         left join plant_group_group on attributions.plant_id = plant_group_group.id
+    -- the coalesce() is actually the combined_plant_group_id, which we are not allowed to reference here.
+         left join plant_group_cultivar
+                   on plant_group_cultivar.id = coalesce(attributions.plant_group_id, plant_group_group.plant_group_id);
 
 
 create unique index on attributions_view (id);
@@ -1088,8 +1218,10 @@ create index on attributions_view (data_type);
 create index on attributions_view (attribute_type);
 create index on attributions_view (attribution_id);
 create index on attributions_view (plant_id);
+create index on attributions_view (plant_group_id);
 create index on attributions_view (cultivar_id);
 create index on attributions_view (lot_id);
+create index on attributions_view (combined_plant_group_id);
 create index on attributions_view (combined_cultivar_id);
 create index on attributions_view (created);
 create index on attributions_view (author);

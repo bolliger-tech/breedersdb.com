@@ -1,6 +1,16 @@
-actions: []
+actions:
+  - name: InsertUser
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}'
+      headers:
+        - name: ACTIONS_SECRET
+          value_from_env: ACTIONS_SECRET
+    permissions:
+      - role: user
 custom_types:
   enums: []
   input_objects: []
-  objects: []
+  objects:
+    - name: InsertUserOutput
   scalars: []

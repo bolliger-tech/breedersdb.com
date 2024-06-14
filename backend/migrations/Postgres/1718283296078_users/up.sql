@@ -1,9 +1,10 @@
+create extension if not exists "citext";
+
 create table users
 (
     id                 integer primary key generated always as identity,
-    email              varchar(255) not null,
-    password_hash      varchar(64) not null,
-    salt               varchar(64) not null,
+    email              citext not null unique,
+    password_hash      varchar(128) not null,
     locale             varchar(5) not null default 'de-CH',
     last_login         timestamp with time zone,
     signin_attempts    integer not null default 0,

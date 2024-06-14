@@ -1,0 +1,17 @@
+type Mutation {
+  InsertUser(
+    email: citext!
+    password: String!
+  ): InsertUserOutput
+}
+
+type InsertUserOutput {
+  created: timestamptz!
+  email: citext!
+  id: Int!
+  last_login: timestamptz
+  locale: String!
+  modified: timestamptz
+  signin_attempts: Int!
+}
+

@@ -1,16 +1,6 @@
 table:
   name: users
   schema: public
-insert_permissions:
-  - role: user
-    permission:
-      check: {}
-      columns:
-        - email
-        - locale
-        - password_hash
-        - salt
-    comment: ""
 select_permissions:
   - role: user
     permission:
@@ -18,7 +8,6 @@ select_permissions:
         - email
         - locale
         - password_hash
-        - salt
         - id
         - signin_attempts
         - created
@@ -32,8 +21,6 @@ update_permissions:
       columns:
         - email
         - locale
-        - password_hash
-        - salt
       filter: {}
       check: null
     comment: ""

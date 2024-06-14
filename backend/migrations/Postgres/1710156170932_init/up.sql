@@ -306,7 +306,7 @@ create table plant_groups
     -- but as it is not allowed to reference a generated column in the same table, we repeat ourselves here.
     display_name  varchar(77) generated always as ( coalesce(name_override, cultivar_name || '.' || name_segment) ) stored unique,
     note          varchar(2047),
-    disabled      boolean                           default false not null,
+    disabled      boolean                  not null default false,
     created       timestamp with time zone not null default now(),
     modified      timestamp with time zone
 );

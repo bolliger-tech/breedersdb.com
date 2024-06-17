@@ -1,6 +1,6 @@
 import * as ff from '@google-cloud/functions-framework';
 
-import { generateToken, verifyPassword } from './crypto';
+import { generateToken, hashToken, verifyPassword } from './crypto';
 import { handleActions } from './actions';
 import {
   DeleteUserTokenMutation,
@@ -48,14 +48,15 @@ async function signIn(req: ff.Request, res: ff.Response) {
     return res.status(401).send('Unauthorized');
   }
 
-  // generate & save token
+  // token
   const token = generateToken();
+  const tokenHash = hashToken(token);
 
   const result = await fetchGraphQL({
     query: InsertUserTokenMutation,
     variables: {
       user_id: user.id,
-      token: token,
+      token_hash: tokenHash,
       type: 'cookie',
     },
   });
@@ -76,10 +77,12 @@ async function signOut(req: ff.Request, res: ff.Response) {
     return res.status(401).send('Unauthorized');
   }
 
+  const tokenHash = hashToken(token);
+
   const result = await fetchGraphQL({
     query: DeleteUserTokenMutation,
     variables: {
-      token,
+      token_hash: tokenHash,
     },
   });
   if (result.errors) {
@@ -98,10 +101,12 @@ async function authenticateHasuraRequest(req: ff.Request, res: ff.Response) {
     return res.status(401).send('Unauthorized');
   }
 
+  const tokenHash = hashToken(token);
+
   const dbToken = await fetchGraphQL({
     query: UserTokenQuery,
     variables: {
-      token,
+      token_hash: tokenHash,
     },
   }).then((data) => data.data.user_tokens[0]);
 

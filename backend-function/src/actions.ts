@@ -55,15 +55,17 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
         result = await SignOut(props);
         break;
       default:
-        console.log(body);
+        console.error('unknown action:', body);
         throw new ErrorWithStatus(404, 'Not Found');
+    }
+    if (config.LOG_REQUESTS) {
+      console.log('action result:', result);
     }
     if (result.headers) {
       for (const [key, value] of Object.entries(result.headers)) {
         res.setHeader(key, value);
       }
     }
-    console.log(result);
     return res.send(result.response);
   } catch (err) {
     if (err instanceof ErrorWithStatus) {

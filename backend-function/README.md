@@ -41,6 +41,7 @@ This folder contains code intended to run as Google Cloud Function.
     }
   }
   ```
+- For testing you might want to set `LOG_REQUESTS=true` in the `.env` file and restart `npm run dev` (.env file is not watched). This will log the incoming requests and the outgoing responses.
 - Run `dev/test.sh` to test signIn, running a graphql query and signOut.
   ```bash
   ./dev/test.sh

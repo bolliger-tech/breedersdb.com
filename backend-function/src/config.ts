@@ -15,4 +15,5 @@ export const config = {
   HASURA_GRAPHQL_ADMIN_SECRET: process.env.HASURA_GRAPHQL_ADMIN_SECRET,
   ACTIONS_SECRET: process.env.ACTIONS_SECRET,
   NODE_ENV: process.env.NODE_ENV || 'production',
+  LOG_REQUESTS: process.env.LOG_REQUESTS === 'true',
 };

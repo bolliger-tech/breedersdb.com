@@ -60,4 +60,18 @@ This folder contains code intended to run as Google Cloud Function.
       user_id
     }
   }
+
+  query Me {
+    Me {
+      id
+      user {
+        id
+        email
+        locale
+        last_login
+        signin_attempts
+        created
+      }
+    }
+  }
   ```

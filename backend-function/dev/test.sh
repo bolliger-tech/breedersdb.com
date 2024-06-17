@@ -42,6 +42,16 @@ curl -X POST \
   http://localhost:8080/v1/graphql
 
 echo
+echo "Me"
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Cookie: breedersdb.id.token=$token" \
+  -d '{"query":"query Me {Me {id user{id email locale created}}}"}' \
+  http://localhost:8080/v1/graphql
+
+
+echo
 echo "Trying to sign out..."
 
 # sign out

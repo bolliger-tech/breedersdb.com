@@ -6,6 +6,10 @@ type Mutation {
   ): InsertUserOutput
 }
 
+type Query {
+  Me: MeOutput!
+}
+
 type Mutation {
   SignIn(
     email: citext!
@@ -33,5 +37,9 @@ type SignInOutput {
 
 type SignOutOutput {
   user_id: Int!
+}
+
+type MeOutput {
+  id: Int!
 }
 

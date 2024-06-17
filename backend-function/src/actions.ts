@@ -6,6 +6,7 @@ import { InsertUserAction } from './actions/InsertUser';
 import { SignIn } from './actions/SignIn';
 import type { ActionProps } from './actions/types';
 import { SignOut } from './actions/SignOut';
+import { Me } from './actions/Me';
 
 /* example request
 body: {
@@ -54,12 +55,16 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
       case 'SignOut':
         result = await SignOut(props);
         break;
+      case 'Me':
+        result = await Me(props);
+        break;
       default:
         console.error('unknown action:', body);
         throw new ErrorWithStatus(404, 'Not Found');
     }
     if (config.LOG_REQUESTS) {
       console.log('action result:', result);
+      console.log('------------------------');
     }
     if (result.headers) {
       for (const [key, value] of Object.entries(result.headers)) {

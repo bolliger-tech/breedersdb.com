@@ -8,6 +8,17 @@ actions:
           value_from_env: ACTIONS_SECRET
     permissions:
       - role: user
+  - name: Me
+    definition:
+      kind: ""
+      handler: '{{ACTIONS_URL}}'
+      forward_client_headers: true
+      headers:
+        - name: X-Actions-Secret
+          value_from_env: ACTIONS_SECRET
+    permissions:
+      - role: user
+      - role: unauthorized
   - name: SignIn
     definition:
       kind: synchronous
@@ -36,4 +47,14 @@ custom_types:
     - name: InsertUserOutput
     - name: SignInOutput
     - name: SignOutOutput
+    - name: MeOutput
+      relationships:
+        - field_mapping:
+            id: id
+          name: user
+          remote_table:
+            name: users
+            schema: public
+          source: Postgres
+          type: object
   scalars: []

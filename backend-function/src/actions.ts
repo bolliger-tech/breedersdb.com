@@ -28,8 +28,11 @@ async function InsertUserAction(body: any) {
   const data = await fetchGraphQL({
     query: InsertUserMutation,
     variables: {
-      email: input.email,
-      password_hash: passwordHash,
+      user_object: {
+        email: input.email,
+        password_hash: passwordHash,
+        ...(input.locale && { locale: input.locale }),
+      },
     },
   });
   // TODO: cleanup error handling

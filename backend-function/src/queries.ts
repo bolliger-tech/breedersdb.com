@@ -1,6 +1,6 @@
 export const InsertUserMutation = /* GraphQL */ `
-  mutation InsertUserMutation($email: citext, $password_hash: String) {
-    insert_users_one(object: { email: $email, password_hash: $password_hash }) {
+  mutation InsertUserMutation($user_object: users_insert_input!) {
+    insert_users_one(object: $user_object) {
       email
       locale
       password_hash

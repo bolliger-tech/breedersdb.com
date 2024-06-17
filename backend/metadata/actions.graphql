@@ -2,6 +2,7 @@ type Mutation {
   InsertUser(
     email: citext!
     password: String!
+    locale: String
   ): InsertUserOutput
 }
 

@@ -1,5 +1,6 @@
 <template>
-  <PageLayout :title="t('cultivars.analyze.title')">
+  <PageLayout>
+    <h1>{{ t('cultivars.analyze.title') }}</h1>
     <QueryContainer :base-table="BaseTable.Cultivars" />
   </PageLayout>
 </template>

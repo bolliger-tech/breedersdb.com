@@ -3,6 +3,10 @@
 import * as ff from '@google-cloud/functions-framework';
 import { config } from './config';
 
+// As of Chrome release M104 (August 2022) cookies can no longer set an
+// expiration date more than 400 days in the future.
+const MAX_AGE = 399 * 24 * 60 * 60; // 399 days in seconds
+
 // TODO: check SameSite
 // TODO: check domain
 function cookieOptions(httpOnly: boolean, maxAge: number) {
@@ -13,13 +17,10 @@ function cookieOptions(httpOnly: boolean, maxAge: number) {
 // set 2 cookies
 // one is httpOnly and defining for auth
 // the other is for information purposes for the frontend
-// Note: As of Chrome release M104 (August 2022) cookies can no longer set an
-// expiration date more than 400 days in the future.
 export function setAuthCookies(res: ff.Response, token: string, email: string) {
-  const maxAge = 399 * 24 * 60 * 60; // 399 days in seconds
   res.setHeader('Set-Cookie', [
-    `token=${token}; ${cookieOptions(true, maxAge)}`,
-    `email=${email}; ${cookieOptions(false, maxAge)}`,
+    `token=${token}; ${cookieOptions(true, MAX_AGE)}`,
+    `email=${email}; ${cookieOptions(false, MAX_AGE)}`,
   ]);
 }
 

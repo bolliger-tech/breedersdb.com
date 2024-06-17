@@ -1,7 +1,7 @@
 import * as ff from '@google-cloud/functions-framework';
 import { hashAndSaltPassword } from './crypto';
 import { InsertUserMutation } from './queries';
-import { WrappedError } from './errors';
+import { ErrorWithStatus } from './errors';
 import { config } from './config';
 import { fetchGraphQL } from './fetch';
 
@@ -19,7 +19,7 @@ body: {
 async function InsertUserAction(body: any) {
   const input = body.input;
   if (!input || !input.email || !input.password) {
-    throw new WrappedError(400, 'Bad Request');
+    throw new ErrorWithStatus(400, 'Bad Request');
   }
 
   const passwordHash = await hashAndSaltPassword(input.password);
@@ -36,7 +36,7 @@ async function InsertUserAction(body: any) {
   if (data.errors) {
     console.error(data.errors);
     const firstError = data.errors[0];
-    throw new WrappedError(500, firstError.message);
+    throw new ErrorWithStatus(500, firstError.message);
   }
 
   return data.data.insert_users_one;
@@ -58,11 +58,11 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
       case 'InsertUser':
         return res.send(await InsertUserAction(body));
       default:
-        throw new WrappedError(400, 'Bad Request');
+        throw new ErrorWithStatus(400, 'Bad Request');
     }
   } catch (err) {
     // TODO: error must be json
-    if (err instanceof WrappedError) {
+    if (err instanceof ErrorWithStatus) {
       res.status(err.status).send(err.message);
     } else {
       console.error(err);

@@ -214,6 +214,12 @@ const orderedColumns = computed(() => {
 .crud-list-table--fullscreen {
   height: 100vh;
   max-height: 100vh;
+  width: 100vw;
+  max-width: 100vw;
+  left: 0;
+  top: 0;
+  z-index: 10000;
+  border-radius: 0;
 }
 
 :global(.crud-list-table thead tr:first-child th) {

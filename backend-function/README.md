@@ -41,8 +41,22 @@ This folder contains code intended to run as Google Cloud Function.
     }
   }
   ```
-- Run `dev/signIn.sh` to test sign-in and running a graphql query.
+- Run `dev/test.sh` to test signIn, running a graphql query and signOut.
   ```bash
-  ./dev/signIn.sh
+  ./dev/test.sh
   ```
-- Testing sign-in is also possible (with NODE_ENV=development) by opening http://localhost:8090/sign-in?email=tester@breedersdb.com&password=asdfasdf in a browser. You can check the received cookies in the developer tools.
+- Testing is also possible in the hasura console. Be sure to remove the checkmark `x-hasura-admin-secret` to run the queries first unauthenticated, then with the received cookie. Check out the cookies in the dev console of the browser.
+
+  ```graphql
+  mutation SignIn {
+    SignIn(email: "tester@breedersdb.com", password: "asdfasdf") {
+      user_id
+    }
+  }
+
+  mutation SignOut {
+    SignOut {
+      user_id
+    }
+  }
+  ```

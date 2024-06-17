@@ -6,6 +6,17 @@ type Mutation {
   ): InsertUserOutput
 }
 
+type Mutation {
+  SignIn(
+    email: citext!
+    password: String!
+  ): SignInOutput!
+}
+
+type Mutation {
+  SignOut: SignOutOutput!
+}
+
 type InsertUserOutput {
   created: timestamptz!
   email: citext!
@@ -14,5 +25,13 @@ type InsertUserOutput {
   locale: String!
   modified: timestamptz
   signin_attempts: Int!
+}
+
+type SignInOutput {
+  user_id: Int!
+}
+
+type SignOutOutput {
+  user_id: Int!
 }
 

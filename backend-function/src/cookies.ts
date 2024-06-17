@@ -1,6 +1,5 @@
 // 🍪😋🍪
 
-import * as ff from '@google-cloud/functions-framework';
 import { config } from './config';
 
 // As of Chrome release M104 (August 2022) cookies can no longer set an
@@ -20,29 +19,25 @@ function cookieOptions(httpOnly: boolean, maxAge: number) {
 // set 2 cookies
 // one is httpOnly and defining for auth
 // the other is for information purposes for the frontend
-export function setAuthCookies(
-  res: ff.Response,
-  tokenId: string,
+export function createAuthCookies(
+  tokenId: number,
   token: string,
   email: string,
 ) {
-  res.setHeader('Set-Cookie', [
+  return [
     `${TOKEN_COOKIE_NAME}=${tokenId}.${token}; ${cookieOptions(true, MAX_AGE)}`,
     `${FE_COOKIE_NAME}=${JSON.stringify({ email })}; ${cookieOptions(false, MAX_AGE)}`,
-  ]);
+  ];
 }
 
-// clear cookies
-export function clearAuthCookies(res: ff.Response) {
-  res.setHeader('Set-Cookie', [
+export function createClearAuthCookies() {
+  return [
     `${TOKEN_COOKIE_NAME}=; ${cookieOptions(true, 0)}`,
     `${FE_COOKIE_NAME}=; ${cookieOptions(false, 0)}`,
-  ]);
+  ];
 }
 
-// get token from cookie
-export function getTokenFromCookie(req: ff.Request) {
-  const cookies = req.headers.cookie;
+export function getTokenFromCookies(cookies: string | undefined) {
   if (!cookies) {
     return null;
   }

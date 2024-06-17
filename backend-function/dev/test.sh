@@ -14,18 +14,20 @@ if [ -z "$password" ]; then
 fi
 
 # POST username and password to the server
+  #-d '{"email": "'$email'", "password": "'$password'"}' \
 response=$(curl -X POST \
   -H "Content-Type: application/json" \
-  -d '{"email": "'$email'", "password": "'$password'"}' \
+  -d '{"query":"mutation SignIn {SignIn(email: \"'$email'\", password: \"'$password'\") {user_id}}"}' \
   -i \
   -s \
-  http://localhost:8090/sign-in)
+  http://localhost:8080/v1/graphql)
 
 # Extract the token from the response headers
 token=$(echo "$response" | grep -i 'Set-Cookie: breedersdb.id.token=' | awk -F'=' '{print $2}' | awk -F';' '{print $1}')
 
 if [ -z "$token" ]; then
   echo "Error: No token received from the server"
+  echo "Response: $response"
 else
   echo "Received token: $token"
 fi
@@ -37,4 +39,14 @@ curl -X POST \
   -H "Content-Type: application/json" \
   -H "Cookie: breedersdb.id.token=$token" \
   -d '{"query":"query GetCrossings {crossings {id name created}}"}' \
+  http://localhost:8080/v1/graphql
+
+echo
+echo "Trying to sign out..."
+
+# sign out
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Cookie: breedersdb.id.token=$token" \
+  -d '{"query":"mutation SignOut {SignOut {user_id}}"}' \
   http://localhost:8080/v1/graphql

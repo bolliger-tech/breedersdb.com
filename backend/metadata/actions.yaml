@@ -8,9 +8,32 @@ actions:
           value_from_env: ACTIONS_SECRET
     permissions:
       - role: user
+  - name: SignIn
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}'
+      forward_client_headers: true
+      headers:
+        - name: X-Actions-Secret
+          value_from_env: ACTIONS_SECRET
+    permissions:
+      - role: user
+      - role: unauthorized
+  - name: SignOut
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}'
+      forward_client_headers: true
+      headers:
+        - name: X-Actions-Secret
+          value_from_env: ACTIONS_SECRET
+    permissions:
+      - role: user
 custom_types:
   enums: []
   input_objects: []
   objects:
     - name: InsertUserOutput
+    - name: SignInOutput
+    - name: SignOutOutput
   scalars: []

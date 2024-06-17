@@ -1,11 +1,13 @@
 import * as ff from '@google-cloud/functions-framework';
-import { hashAndSaltPassword, timingSafeEqual } from './crypto';
-import { InsertUserMutation } from './queries';
+import { timingSafeEqual } from './crypto';
 import { ErrorWithStatus } from './errors';
 import { config } from './config';
-import { fetchGraphQL } from './fetch';
+import { InsertUserAction } from './actions/InsertUser';
+import { SignIn } from './actions/SignIn';
+import type { ActionProps } from './actions/types';
+import { SignOut } from './actions/SignOut';
 
-/*
+/* example request
 body: {
   action: { name: 'InsertUser' },
   input: { email: 'tester@breedersdb.com', password: 'asdfasdf' },
@@ -16,36 +18,11 @@ body: {
   session_variables: { 'x-hasura-role': 'admin' }
 }
 */
-async function InsertUserAction(body: any) {
-  const input = body.input;
-  if (!input || !input.email || !input.password) {
-    throw new ErrorWithStatus(400, 'Bad Request');
-  }
-
-  const passwordHash = await hashAndSaltPassword(input.password);
-
-  // save user to db
-  const data = await fetchGraphQL({
-    query: InsertUserMutation,
-    variables: {
-      user_object: {
-        email: input.email,
-        password_hash: passwordHash,
-        ...(input.locale && { locale: input.locale }),
-      },
-    },
-  });
-  if (data.errors) {
-    const firstError = data.errors[0];
-    throw new ErrorWithStatus(400, firstError.message);
-  }
-
-  return data.data.insert_users_one;
-}
 
 // hasura only allows 2xx or 4xx status codes
 export async function handleActions(req: ff.Request, res: ff.Response) {
   try {
+    // only access from hasura is allowed
     if (
       typeof req.headers['x-actions-secret'] !== 'string' ||
       !timingSafeEqual(req.headers['x-actions-secret'], config.ACTIONS_SECRET)
@@ -58,12 +35,36 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
       throw new ErrorWithStatus(400, 'Bad Request');
     }
 
+    const props: ActionProps = {
+      input: body.input,
+      ctx: {
+        req: { headers: { cookie: req.headers.cookie } },
+        sessionVariables: body.session_variables,
+      },
+    };
+
+    let result;
     switch (body.action.name) {
       case 'InsertUser':
-        return res.send(await InsertUserAction(body));
+        result = await InsertUserAction(props);
+        break;
+      case 'SignIn':
+        result = await SignIn(props);
+        break;
+      case 'SignOut':
+        result = await SignOut(props);
+        break;
       default:
+        console.log(body);
         throw new ErrorWithStatus(404, 'Not Found');
     }
+    if (result.headers) {
+      for (const [key, value] of Object.entries(result.headers)) {
+        res.setHeader(key, value);
+      }
+    }
+    console.log(result);
+    return res.send(result.response);
   } catch (err) {
     if (err instanceof ErrorWithStatus) {
       res.status(err.status).send(err.toGraphQL());

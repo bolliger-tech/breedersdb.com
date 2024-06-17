@@ -26,7 +26,7 @@
     </template>
 
     <template #top-right>
-      <CRUDListTableColumnSelector
+      <EntityListTableColumnSelector
         v-model="visibleColumns"
         :all-columns="allColumns"
         class="q-ml-lg"
@@ -37,7 +37,7 @@
             v-bind="columnSelectorOptionProps"
           ></slot>
         </template>
-      </CRUDListTableColumnSelector>
+      </EntityListTableColumnSelector>
 
       <q-btn
         class="q-ml-md"
@@ -60,7 +60,7 @@
     </template>
 
     <template #header-cell="cellProps">
-      <CRUDListTableHeaderCell
+      <EntityListTableHeaderCell
         :cell-props="cellProps"
         :possible-drop-target="
           !!draggedColumn && cellProps.col.name !== draggedColumn
@@ -72,7 +72,7 @@
         @drag-start="draggedColumn = cellProps.col.name"
       >
         <slot name="header-cell-label" v-bind="cellProps"></slot>
-      </CRUDListTableHeaderCell>
+      </EntityListTableHeaderCell>
     </template>
 
     <template v-if="$slots['body-cell']" #body-cell="cellProps">
@@ -92,18 +92,18 @@ import {
   QTableProps,
   QTableSlots,
 } from 'quasar';
-import CRUDListTableColumnSelector from './CRUDListTableColumnSelector.vue';
-import CRUDListTableHeaderCell from './CRUDListTableHeaderCell.vue';
+import EntityListTableColumnSelector from './EntityListTableColumnSelector.vue';
+import EntityListTableHeaderCell from './EntityListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { RouteLocationRaw, useRouter } from 'vue-router';
 import { useQueryArg } from 'src/composables/useQueryArg';
 
-export interface CRUDListTableProps extends CRUDListTablePropsWithoutModel {
+export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
   pagination?: QTableProps['pagination'];
   visibleColumns: string[];
 }
 
-interface CRUDListTablePropsWithoutModel {
+interface EntityListTablePropsWithoutModel {
   rows: QTableProps['rows'];
   loading?: boolean;
   allColumns: QTableColumn[];
@@ -112,11 +112,11 @@ interface CRUDListTablePropsWithoutModel {
   rowClickNavigatesTo?: (row: QTableProps['rows'][0]) => RouteLocationRaw;
 }
 
-export type CRUDListTableRequestDataParams = Parameters<
+export type EntityListTableRequestDataParams = Parameters<
   NonNullable<QTableProps['onRequest']>
 >[0];
 
-const props = withDefaults(defineProps<CRUDListTablePropsWithoutModel>(), {
+const props = withDefaults(defineProps<EntityListTablePropsWithoutModel>(), {
   loading: false,
   dataIsFresh: true,
   headerHeight: undefined,

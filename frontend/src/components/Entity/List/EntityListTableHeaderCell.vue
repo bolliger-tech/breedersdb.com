@@ -67,13 +67,13 @@
 import { ref } from 'vue';
 import { QTableSlots } from 'quasar';
 
-export interface CRUDListTableHeaderCellProps {
+export interface EntityListTableHeaderCellProps {
   cellProps: Parameters<QTableSlots['header-cell']>[0];
   possibleDropTarget: boolean;
   height?: string;
 }
 
-const props = withDefaults(defineProps<CRUDListTableHeaderCellProps>(), {
+const props = withDefaults(defineProps<EntityListTableHeaderCellProps>(), {
   height: '48px',
 });
 

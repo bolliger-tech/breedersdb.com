@@ -1,5 +1,5 @@
 <template>
-  <CRUDListTable
+  <EntityListTable
     v-model:pagination="pagination"
     :visible-columns="visibleColumns"
     :rows="rows"
@@ -28,14 +28,14 @@
     <template #body-cell="cellProps">
       <QueryResultTableCell :cell-props="cellProps" />
     </template>
-  </CRUDListTable>
+  </EntityListTable>
 </template>
 
 <script lang="ts" setup>
 import { QTableColumn, QTableProps } from 'quasar';
 import QueryResultTableCell from './QueryResultTableCell.vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
-import CRUDListTable from 'src/components/CRUD/List/CRUDListTable.vue';
+import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
 import QueryResultTableColumnLabel from 'src/components/Query/Result/QueryResultTableColumnLabel.vue';
 
 export interface QueryResultTableProps

@@ -37,16 +37,16 @@ import {
 } from 'src/utils/selectOptionFilter';
 import { useInputBackground } from 'src/composables/useInputBackground';
 
-export interface CRUDListTableColumnSelectorProps
-  extends CRUDListTableColumnSelectorPropsWithoutModel {
+export interface EntityListTableColumnSelectorProps
+  extends EntityListTableColumnSelectorPropsWithoutModel {
   visibleColumns: string[];
 }
 
-interface CRUDListTableColumnSelectorPropsWithoutModel {
+interface EntityListTableColumnSelectorPropsWithoutModel {
   allColumns: QTableColumn[];
 }
 
-const props = defineProps<CRUDListTableColumnSelectorPropsWithoutModel>();
+const props = defineProps<EntityListTableColumnSelectorPropsWithoutModel>();
 const visibleColumns = defineModel<string[]>({ required: true });
 
 defineSlots<{

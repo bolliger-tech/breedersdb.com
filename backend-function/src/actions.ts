@@ -35,44 +35,42 @@ async function InsertUserAction(body: any) {
       },
     },
   });
-  // TODO: cleanup error handling
   if (data.errors) {
-    console.error(data.errors);
     const firstError = data.errors[0];
-    throw new ErrorWithStatus(500, firstError.message);
+    throw new ErrorWithStatus(400, firstError.message);
   }
 
   return data.data.insert_users_one;
 }
 
-// TODO: error must be json
+// hasura only allows 2xx or 4xx status codes
 export async function handleActions(req: ff.Request, res: ff.Response) {
-  if (
-    typeof req.headers['x-actions-secret'] !== 'string' ||
-    !timingSafeEqual(req.headers['x-actions-secret'], config.ACTIONS_SECRET)
-  ) {
-    return res.status(401).send('Unauthorized');
-  }
-
-  const body = req.body;
-  if (!body) {
-    return res.status(400).send('Bad Request');
-  }
-
   try {
+    if (
+      typeof req.headers['x-actions-secret'] !== 'string' ||
+      !timingSafeEqual(req.headers['x-actions-secret'], config.ACTIONS_SECRET)
+    ) {
+      throw new ErrorWithStatus(401, 'Unauthorized');
+    }
+
+    const body = req.body;
+    if (!body) {
+      throw new ErrorWithStatus(400, 'Bad Request');
+    }
+
     switch (body.action.name) {
       case 'InsertUser':
         return res.send(await InsertUserAction(body));
       default:
-        throw new ErrorWithStatus(400, 'Bad Request');
+        throw new ErrorWithStatus(404, 'Not Found');
     }
   } catch (err) {
-    // TODO: error must be json
     if (err instanceof ErrorWithStatus) {
-      res.status(err.status).send(err.message);
+      res.status(err.status).send(err.toGraphQL());
     } else {
-      console.error(err);
-      res.status(500).send('Internal Server Error');
+      console.error('Unknown error in handleActions:', err);
+      const error = new ErrorWithStatus(400, 'Internal Server Error');
+      res.status(error.status).send(error.toGraphQL());
     }
   }
 }

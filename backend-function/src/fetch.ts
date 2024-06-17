@@ -14,5 +14,12 @@ export async function fetchGraphQL({
     },
     body: JSON.stringify({ query, variables }),
   });
-  return await response.json();
+
+  const result = await response.json();
+
+  if (result.errors) {
+    console.error(result.errors);
+  }
+
+  return result;
 }

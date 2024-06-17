@@ -47,7 +47,7 @@ async function signIn(req: ff.Request, res: ff.Response) {
     variables: {
       email,
     },
-  }).then((data) => data.data.users[0]);
+  }).then((data) => data?.data?.users?.[0]);
   if (!user) {
     return res.status(404).send('Not Found');
   }
@@ -62,25 +62,20 @@ async function signIn(req: ff.Request, res: ff.Response) {
   const token = generateToken();
   const tokenHash = hashToken(token);
 
-  const result = await fetchGraphQL({
+  const dbToken = await fetchGraphQL({
     query: InsertUserTokenMutation,
     variables: {
       user_id: user.id,
       token_hash: tokenHash,
       type: 'cookie',
     },
-  });
-  if (result.errors) {
-    console.error(result.errors);
-    return res.status(500).send('Internal Server Error');
-  }
-  const tokenId = result.data.insert_user_tokens_one.id;
-  if (!tokenId) {
+  }).then((data) => data?.data?.insert_user_tokens_one);
+  if (!dbToken?.id) {
     return res.status(500).send('Internal Server Error');
   }
 
   // set cookies
-  setAuthCookies(res, tokenId, token, email);
+  setAuthCookies(res, dbToken.id, token, email);
 
   res.send('Welcome!');
 }
@@ -93,17 +88,12 @@ async function authenticateRequest(
     return null;
   }
 
-  const result = await fetchGraphQL({
+  const dbToken = await fetchGraphQL({
     query: UserTokenQuery,
     variables: {
       token_id: cookiePayload.tokenId,
     },
-  });
-  if (result.errors) {
-    console.error(result.errors);
-    return null;
-  }
-  const dbToken = result.data.user_tokens[0];
+  }).then((data) => data?.data?.user_tokens?.[0]);
   if (!dbToken) {
     return null;
   }
@@ -133,7 +123,6 @@ async function signOut(req: ff.Request, res: ff.Response) {
     },
   });
   if (result.errors) {
-    console.error(result.errors);
     return res.status(500).send('Internal Server Error');
   }
 

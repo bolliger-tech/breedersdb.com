@@ -44,7 +44,7 @@ async function InsertUserAction(body: any) {
 
 // TODO: error must be json
 export async function handleActions(req: ff.Request, res: ff.Response) {
-  if (req.headers['actions_secret'] !== config.ACTIONS_SECRET) {
+  if (req.headers['X-Actions-Secret'] !== config.ACTIONS_SECRET) {
     return res.status(401).send('Unauthorized');
   }
 

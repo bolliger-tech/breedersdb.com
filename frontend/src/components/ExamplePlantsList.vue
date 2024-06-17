@@ -48,7 +48,9 @@ import { ResultOf, graphql } from 'src/graphql';
 import { computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import CRUDListTable from './CRUD/List/CRUDListTable.vue';
+import { usePagination } from './CRUD/List/usePagination';
 import { useInputBackground } from 'src/composables/useInputBackground';
+import { useQueryArg } from 'src/composables/useQueryArg';
 
 const { d } = useI18n();
 
@@ -100,9 +102,12 @@ const query = graphql(`
 `);
 
 const filter = ref('');
-const subset = ref<'active' | 'disabled' | 'all'>('active');
+const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
+  key: 'tab',
+  defaultValue: 'active',
+});
 
-const pagination = ref({
+const { pagination } = usePagination({
   sortBy: 'label_id',
   descending: false,
   page: 1,

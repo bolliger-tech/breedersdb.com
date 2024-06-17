@@ -96,6 +96,7 @@ import CRUDListTableColumnSelector from './CRUDListTableColumnSelector.vue';
 import CRUDListTableHeaderCell from './CRUDListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { RouteLocationRaw, useRouter } from 'vue-router';
+import { useQueryArg } from 'src/composables/useQueryArg';
 
 export interface CRUDListTableProps extends CRUDListTablePropsWithoutModel {
   pagination?: QTableProps['pagination'];
@@ -152,7 +153,10 @@ const { t } = useI18n();
 
 const draggedColumn = ref<string | null>(null);
 
-const fullscreen = ref(false);
+const { queryArg: fullscreen } = useQueryArg<boolean>({
+  key: 'fullscreen',
+  defaultValue: false,
+});
 
 function hideColumn(name: string) {
   visibleColumns.value = visibleColumns.value.filter(

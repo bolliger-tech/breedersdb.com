@@ -1,5 +1,5 @@
 import * as ff from '@google-cloud/functions-framework';
-import { hashAndSaltPassword } from './crypto';
+import { hashAndSaltPassword, timingSafeEqual } from './crypto';
 import { InsertUserMutation } from './queries';
 import { ErrorWithStatus } from './errors';
 import { config } from './config';
@@ -44,7 +44,10 @@ async function InsertUserAction(body: any) {
 
 // TODO: error must be json
 export async function handleActions(req: ff.Request, res: ff.Response) {
-  if (req.headers['X-Actions-Secret'] !== config.ACTIONS_SECRET) {
+  if (
+    typeof req.headers['x-actions-secret'] !== 'string' ||
+    !timingSafeEqual(req.headers['x-actions-secret'], config.ACTIONS_SECRET)
+  ) {
     return res.status(401).send('Unauthorized');
   }
 

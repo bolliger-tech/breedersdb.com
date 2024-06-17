@@ -22,7 +22,7 @@ response=$(curl -X POST \
   http://localhost:8090/sign-in)
 
 # Extract the token from the response headers
-token=$(echo "$response" | grep -i 'Set-Cookie: token=' | awk -F'=' '{print $2}' | awk -F';' '{print $1}')
+token=$(echo "$response" | grep -i 'Set-Cookie: breedersdb.id.token=' | awk -F'=' '{print $2}' | awk -F';' '{print $1}')
 
 if [ -z "$token" ]; then
   echo "Error: No token received from the server"
@@ -35,6 +35,6 @@ echo "Trying to run a query with the token..."
 # run graphql query
 curl -X POST \
   -H "Content-Type: application/json" \
-  -H "Cookie: token=$token" \
+  -H "Cookie: breedersdb.id.token=$token" \
   -d '{"query":"query GetCrossings {crossings {id name created}}"}' \
   http://localhost:8080/v1/graphql

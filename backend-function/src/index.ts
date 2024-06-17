@@ -1,6 +1,11 @@
 import * as ff from '@google-cloud/functions-framework';
 
-import { generateToken, hashToken, verifyPassword } from './crypto';
+import {
+  generateToken,
+  hashToken,
+  timingSafeEqual,
+  verifyPassword,
+} from './crypto';
 import { handleActions } from './actions';
 import {
   DeleteUserTokenMutation,
@@ -17,6 +22,11 @@ import {
 import { fetchGraphQL } from './fetch';
 
 async function signIn(req: ff.Request, res: ff.Response) {
+  const auth = await authenticateRequest(req);
+  if (auth) {
+    return res.status(200).send('Already signed in');
+  }
+
   // validate request
   let data = req.body;
   // in development, allow query params
@@ -64,25 +74,62 @@ async function signIn(req: ff.Request, res: ff.Response) {
     console.error(result.errors);
     return res.status(500).send('Internal Server Error');
   }
+  const tokenId = result.data.insert_user_tokens_one.id;
+  if (!tokenId) {
+    return res.status(500).send('Internal Server Error');
+  }
 
   // set cookies
-  setAuthCookies(res, token, email);
+  setAuthCookies(res, tokenId, token, email);
 
   res.send('Welcome!');
 }
 
-async function signOut(req: ff.Request, res: ff.Response) {
-  const token = getTokenFromCookie(req);
-  if (!token) {
-    return res.status(401).send('Unauthorized');
+async function authenticateRequest(
+  req: ff.Request,
+): Promise<{ userId: number; tokenId: number } | null> {
+  const cookiePayload = getTokenFromCookie(req);
+  if (!cookiePayload) {
+    return null;
   }
 
-  const tokenHash = hashToken(token);
+  const result = await fetchGraphQL({
+    query: UserTokenQuery,
+    variables: {
+      token_id: cookiePayload.tokenId,
+    },
+  });
+  if (result.errors) {
+    console.error(result.errors);
+    return null;
+  }
+  const dbToken = result.data.user_tokens[0];
+  if (!dbToken) {
+    return null;
+  }
+
+  const tokenHash = hashToken(cookiePayload.token);
+
+  if (!timingSafeEqual(dbToken.token_hash, tokenHash)) {
+    return null;
+  }
+
+  return {
+    userId: dbToken.user_id,
+    tokenId: cookiePayload.tokenId,
+  };
+}
+
+async function signOut(req: ff.Request, res: ff.Response) {
+  const auth = await authenticateRequest(req);
+  if (!auth) {
+    return res.status(401).send('Unauthorized');
+  }
 
   const result = await fetchGraphQL({
     query: DeleteUserTokenMutation,
     variables: {
-      token_hash: tokenHash,
+      token_id: auth.tokenId,
     },
   });
   if (result.errors) {
@@ -96,26 +143,13 @@ async function signOut(req: ff.Request, res: ff.Response) {
 }
 
 async function authenticateHasuraRequest(req: ff.Request, res: ff.Response) {
-  const token = getTokenFromCookie(req);
-  if (!token) {
-    return res.status(401).send('Unauthorized');
-  }
-
-  const tokenHash = hashToken(token);
-
-  const dbToken = await fetchGraphQL({
-    query: UserTokenQuery,
-    variables: {
-      token_hash: tokenHash,
-    },
-  }).then((data) => data.data.user_tokens[0]);
-
-  if (!dbToken) {
+  const auth = await authenticateRequest(req);
+  if (!auth) {
     return res.status(401).send('Unauthorized');
   }
 
   return res.send({
-    'X-Hasura-User-Id': dbToken.user_id.toString(),
+    'X-Hasura-User-Id': auth.userId.toString(),
     'X-Hasura-Role': 'user',
   });
 }

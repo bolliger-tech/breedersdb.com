@@ -40,16 +40,17 @@ export const InsertUserTokenMutation = /* GraphQL */ `
 `;
 
 export const DeleteUserTokenMutation = /* GraphQL */ `
-  mutation DeleteUserTokenMutation($token_hash: String!) {
-    delete_user_tokens(where: { token_hash: { _eq: $token_hash } }) {
+  mutation DeleteUserTokenMutation($token_id: Int!) {
+    delete_user_tokens(where: { id: { _eq: $token_id } }) {
       affected_rows
     }
   }
 `;
 
 export const UserTokenQuery = /* GraphQL */ `
-  query UserTokenQuery($token_hash: String!) {
-    user_tokens(where: { token_hash: { _eq: $token_hash } }) {
+  query UserTokenQuery($token_id: Int!) {
+    user_tokens(where: { id: { _eq: $token_id } }) {
+      token_hash
       user_id
       type
       created

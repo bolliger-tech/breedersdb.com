@@ -6,4 +6,7 @@ export const entity = {
   displayName: 'Name',
   nameOverride: 'Common name',
   fullName: 'Breeding name',
+
+  add: 'Add new',
+  search: 'Search list',
 };

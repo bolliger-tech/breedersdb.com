@@ -1,45 +1,23 @@
 <template>
-  <q-btn to="/plants/new" primary unelevated color="primary">Add new</q-btn>
-
-  <q-card class="bg-shade q-my-md" flat>
-    <q-card-section>
-      <q-input
-        v-model="filter"
-        outlined
-        :bg-color="inputBgColor"
-        dense
-        debounce="300"
-        placeholder="Search by Label ID or Cultivar Name"
-      >
-        <template #append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-    </q-card-section>
-  </q-card>
-
-  <q-tabs
-    v-model="subset"
-    class="q-ml-xs"
-    breakpoint="320"
-    align="left"
-    no-caps
-    dense
-    active-bg-color="shade"
+  <EntityList
+    v-model:tab="subset"
+    v-model:filter="filter"
+    :tabs="tabs"
+    :title="t('plants.title', 2)"
+    filter-placeholder="Search by label ID or cultivar name"
+    to-new-entity="/plants/new"
   >
-    <q-tab class="tab" name="active" label="Active" />
-    <q-tab class="tab" name="disabled" label="Disabled" />
-    <q-tab class="tab" name="all" label="All" />
-  </q-tabs>
-
-  <CRUDListTable
-    v-model:pagination="pagination"
-    :visible-columns="visibleColumns"
-    :rows="data?.plants || []"
-    :loading="fetching"
-    :all-columns="columns"
-    :row-click-navigates-to="(row) => `/plants/${row.id}`"
-  ></CRUDListTable>
+    <template #default>
+      <EntityListTable
+        v-model:pagination="pagination"
+        :visible-columns="visibleColumns"
+        :rows="data?.plants || []"
+        :loading="fetching"
+        :all-columns="columns"
+        :row-click-navigates-to="(row) => `/plants/${row.id}`"
+      ></EntityListTable>
+    </template>
+  </EntityList>
 </template>
 
 <script setup lang="ts">
@@ -49,10 +27,11 @@ import { computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import EntityList from './Entity/List/EntityList.vue';
 import { usePagination } from './Entity/List/usePagination';
-import { useInputBackground } from 'src/composables/useInputBackground';
 import { useQueryArg } from 'src/composables/useQueryArg';
+import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
+import { UnwrapRef } from 'vue';
 
-const { d } = useI18n();
+const { t, d } = useI18n();
 
 const query = graphql(`
   query Plants(
@@ -102,10 +81,16 @@ const query = graphql(`
 `);
 
 const filter = ref('');
+
 const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
   key: 'tab',
   defaultValue: 'active',
 });
+const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
+  { value: 'active', label: 'Active' },
+  { value: 'disabled', label: 'Disabled' },
+  { value: 'all', label: 'All' },
+];
 
 const { pagination } = usePagination({
   sortBy: 'label_id',
@@ -253,12 +238,4 @@ watch(filter, (val) => {
 onMounted(() => {
   pagination.value.rowsNumber = plantsCount.value;
 });
-
-const { inputBgColor } = useInputBackground();
 </script>
-
-<style scoped lang="scss">
-.tab {
-  border-radius: 3px 3px 0 0;
-}
-</style>

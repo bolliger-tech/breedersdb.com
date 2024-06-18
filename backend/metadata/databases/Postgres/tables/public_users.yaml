@@ -2,6 +2,20 @@ table:
   name: users
   schema: public
 select_permissions:
+  - role: unauthorized
+    permission:
+      columns:
+        - created
+        - email
+        - id
+        - last_login
+        - locale
+        - modified
+        - signin_attempts
+      filter:
+        id:
+          _eq: -1
+    comment: Dummy to ensure User type is available if not signed in
   - role: user
     permission:
       columns:

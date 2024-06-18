@@ -1,4 +1,11 @@
 type Mutation {
+  ChangePassword(
+    user_id: Int!
+    password: String!
+  ): UserOutput!
+}
+
+type Mutation {
   InsertUser(
     email: citext!
     password: String!
@@ -40,6 +47,10 @@ type SignOutOutput {
 }
 
 type MeOutput {
+  id: Int!
+}
+
+type UserOutput {
   id: Int!
 }
 

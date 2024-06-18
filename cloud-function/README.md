@@ -60,6 +60,15 @@ This folder contains code intended to run as Google Cloud Function.
     }
   }
 
+  mutation ChangePassword {
+    ChangePassword(user_id: 1, password: "Asdfasdf.2") {
+      id
+      user {
+        modified
+      }
+    }
+  }
+
   query Me {
     Me {
       id
@@ -70,6 +79,7 @@ This folder contains code intended to run as Google Cloud Function.
         last_login
         signin_attempts
         created
+        modified
       }
     }
   }

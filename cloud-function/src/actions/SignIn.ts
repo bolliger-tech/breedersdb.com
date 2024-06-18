@@ -14,7 +14,10 @@ export async function SignIn({
 }: ActionProps): Promise<ActionResult> {
   // admin in hasura console is not allowed to signIn/SignOut
   if (ctx.sessionVariables?.['x-hasura-role'] === 'admin') {
-    throw new ErrorWithStatus(403, 'Forbidden');
+    throw new ErrorWithStatus(
+      403,
+      'Forbidden: Admins are not allowed to sign in',
+    );
   }
 
   const auth = await authenticateRequest(ctx.req.headers.cookie);
@@ -28,7 +31,7 @@ export async function SignIn({
   }
 
   if (!input || !input.email || !input.password) {
-    throw new ErrorWithStatus(400, 'Bad Request');
+    throw new ErrorWithStatus(400, 'Bad Request: Missing email or password');
   }
 
   // get user
@@ -39,13 +42,13 @@ export async function SignIn({
     },
   }).then((data) => data?.data?.users?.[0]);
   if (!user) {
-    throw new ErrorWithStatus(404, 'Not Found');
+    throw new ErrorWithStatus(404, 'Not Found: User not found');
   }
 
   // verify password
   const verified = await verifyPassword(input.password, user.password_hash);
   if (!verified) {
-    throw new ErrorWithStatus(401, 'Unauthorized');
+    throw new ErrorWithStatus(401, 'Unauthorized: Invalid password');
   }
 
   // token
@@ -61,7 +64,10 @@ export async function SignIn({
     },
   }).then((data) => data?.data?.insert_user_tokens_one);
   if (!dbToken?.id) {
-    throw new ErrorWithStatus(401, 'Unauthorized');
+    throw new ErrorWithStatus(
+      500,
+      'Internal Server Error: Token creation failed',
+    );
   }
 
   // create cookies

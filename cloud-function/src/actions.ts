@@ -7,6 +7,7 @@ import { SignIn } from './actions/SignIn';
 import type { ActionProps } from './actions/types';
 import { SignOut } from './actions/SignOut';
 import { Me } from './actions/Me';
+import { ChangePassword } from './actions/ChangePassword';
 
 /* example request
 body: {
@@ -57,6 +58,9 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
         break;
       case 'Me':
         result = await Me(props);
+        break;
+      case 'ChangePassword':
+        result = await ChangePassword(props);
         break;
       default:
         console.error('unknown action:', body);

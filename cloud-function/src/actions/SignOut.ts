@@ -24,7 +24,10 @@ export async function SignOut({ ctx }: ActionProps): Promise<ActionResult> {
     },
   });
   if (result.errors) {
-    throw new ErrorWithStatus(500, 'Internal Server Error');
+    throw new ErrorWithStatus(
+      500,
+      'Internal Server Error: Token deletion failed',
+    );
   }
 
   // create clear cookies

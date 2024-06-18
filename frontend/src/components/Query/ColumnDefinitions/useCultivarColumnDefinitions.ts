@@ -21,7 +21,7 @@ const columnData: FilterColumnConstructorData[] = [
   {
     table: 'cultivars',
     column: 'id',
-    labelKey: 'entity.id',
+    labelKey: 'entity.commonColumns.id',
     schema: {
       type: ColumnType.Integer,
       allowEmpty: false,
@@ -35,7 +35,7 @@ const columnData: FilterColumnConstructorData[] = [
   {
     table: 'cultivars',
     column: 'display_name',
-    labelKey: 'entity.displayName',
+    labelKey: 'entity.commonColumns.displayName',
     schema: {
       type: ColumnType.String,
       allowEmpty: false,
@@ -48,7 +48,7 @@ const columnData: FilterColumnConstructorData[] = [
   {
     table: 'cultivars',
     column: 'full_name',
-    labelKey: 'entity.fullName',
+    labelKey: 'entity.commonColumns.fullName',
     schema: {
       type: ColumnType.String,
       allowEmpty: false,
@@ -61,7 +61,7 @@ const columnData: FilterColumnConstructorData[] = [
   {
     table: 'cultivars',
     column: 'name_override',
-    labelKey: 'entity.nameOverride',
+    labelKey: 'entity.commonColumns.nameOverride',
     schema: {
       type: ColumnType.String,
       allowEmpty: true,
@@ -113,7 +113,7 @@ const columnData: FilterColumnConstructorData[] = [
   {
     table: 'cultivars',
     column: 'note',
-    labelKey: 'entity.note',
+    labelKey: 'entity.commonColumns.note',
     schema: {
       type: ColumnType.String,
       allowEmpty: true,
@@ -126,7 +126,7 @@ const columnData: FilterColumnConstructorData[] = [
   {
     table: 'cultivars',
     column: 'created',
-    labelKey: 'entity.created',
+    labelKey: 'entity.commonColumns.created',
     schema: {
       type: ColumnType.DateTime,
       allowEmpty: false,

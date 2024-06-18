@@ -6,7 +6,6 @@ import { cultivars } from './cultivars';
 import { filter } from './query-filter';
 import { result } from './query-result';
 import { datetimeFormats } from './datetime-formats';
-import { entity } from './entity-shared';
 import { attributions } from './attributions';
 import { crossings } from './crossings';
 import { lots } from './lots';
@@ -39,8 +38,6 @@ const messages = {
   plantRows,
   rootstocks,
   users,
-
-  entity,
 
   filter,
   result,

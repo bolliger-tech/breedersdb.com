@@ -8,6 +8,7 @@ This folder contains code intended to run as Google Cloud Function.
 
    - [nodejs](https://nodejs.org)
    - [gcloud cli](https://cloud.google.com/sdk/docs/install) (optional, for deploying)
+     MacOS: `brew cask install google-cloud-sdk`
 
 1. Create `.env`:
 
@@ -28,6 +29,39 @@ This folder contains code intended to run as Google Cloud Function.
    ```bash
     npm install
     npm run dev
+   ```
+
+## Deploy
+
+1. Login to gcloud:
+
+   Choose project `breedersdb`.
+
+   ```bash
+   gcloud init
+   ```
+
+1. Prepare ENVs:
+   > Extracted from the [`gcloud functions deploy`](https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--env-vars-file) docs:
+   >
+   > `--env-vars-file=FILE_PATH`
+   >
+   > Path to a local YAML file with definitions for all environment variables. All existing environment variables will be removed before the new environment variables are added.
+
+Copy `.env` to `env.yaml`, replace `=` with `: `, make bools to strings and adapt the values for prod.
+
+1. Deploy:
+
+   ```bash
+   gcloud functions deploy auth \
+   --env-vars-file .env.yaml \
+   --gen2 \
+   --region=europe-west6 \
+   --runtime=nodejs20 \
+   --source=./ \
+   --entry-point=auth \
+   --trigger-http \
+   --allow-unauthenticated
    ```
 
 ## Notes
@@ -96,4 +130,36 @@ This folder contains code intended to run as Google Cloud Function.
       }
     }
   }
+  ```
+
+- This is the log of the first deployment, showing which APIs needed to be enabled:
+
+  ```bash
+    gcloud functions deploy auth \
+      --gen2 \
+      --region=europe-west6 \
+      --runtime=nodejs20 \
+      --source=./ \
+      --entry-point=auth \
+      --trigger-http
+  API [cloudfunctions.googleapis.com] not enabled on project [breedersdb]. Would you like to enable and retry (this will
+  take a few minutes)? (y/N)?  y
+
+  Enabling service [cloudfunctions.googleapis.com] on project [breedersdb]...
+  Operation "operations/acf.p2-690834946633-5ea2ade1-0b47-4011-8908-7144f41dc0a6" finished successfully.
+  Created .gcloudignore file. See `gcloud topic gcloudignore` for details.
+  API [run.googleapis.com] not enabled on project [breedersdb]. Would you like to enable and retry (this will take a few
+  minutes)? (y/N)?  y
+
+  Enabling service [run.googleapis.com] on project [breedersdb]...
+  Operation "operations/acf.p2-690834946633-d716c304-b0e3-41cd-9c96-be824bae1c46" finished successfully.
+  API [cloudbuild.googleapis.com] not enabled on project [breedersdb]. Would you like to enable and retry (this will take
+  a few minutes)? (y/N)?  y
+
+  Enabling service [cloudbuild.googleapis.com] on project [breedersdb]...
+  Operation "operations/acf.p2-690834946633-08895f08-5b6e-49d4-b4cc-c7ebc634d50f" finished successfully.
+  Allow unauthenticated invocations of new function [auth]? (y/N)?  y
+
+  Preparing function...done.
+  X Deploying function...
   ```

@@ -2,13 +2,13 @@
   <q-th
     :props="cellProps"
     :draggable="dragging"
-    class="crud-list-table-header-cell"
+    class="entity-list-table-header-cell"
     @dragend="dragEnd"
     @dragstart="dragStart"
   >
     <div
       v-ripple="props.cellProps.col.sortable"
-      class="crud-list-table-header-cell__content"
+      class="entity-list-table-header-cell__content"
     >
       <q-btn
         dense
@@ -16,7 +16,7 @@
         icon="drag_indicator"
         round
         size="sm"
-        class="text-primary crud-list-table-header-cell__drag-handle"
+        class="text-primary entity-list-table-header-cell__drag-handle"
         @mousedown="dragging = true"
         @mouseup="dragging = false"
         @click.prevent.stop=""
@@ -38,9 +38,9 @@
     </div>
     <template v-if="possibleDropTarget">
       <div
-        class="crud-list-table-header-cell__drop-zone crud-list-table-header-cell__drop-zone--before"
+        class="entity-list-table-header-cell__drop-zone entity-list-table-header-cell__drop-zone--before"
         :class="{
-          'crud-list-table-header-cell__drop-zone-active':
+          'entity-list-table-header-cell__drop-zone-active':
             dragOverBefore && !dragging,
         }"
         @dragenter="dragOverBefore = true"
@@ -49,9 +49,9 @@
         @dragover.prevent="setDropEffectMove"
       ></div>
       <div
-        class="crud-list-table-header-cell__drop-zone crud-list-table-header-cell__drop-zone--after"
+        class="entity-list-table-header-cell__drop-zone entity-list-table-header-cell__drop-zone--after"
         :class="{
-          'crud-list-table-header-cell__drop-zone-active':
+          'entity-list-table-header-cell__drop-zone-active':
             dragOverAfter && !dragging,
         }"
         @dragenter="dragOverAfter = true"
@@ -131,17 +131,17 @@ function setDropEffectMove(e: DragEvent) {
 </script>
 
 <style lang="scss" scoped>
-.crud-list-table-header-cell {
+.entity-list-table-header-cell {
   white-space: nowrap;
   height: v-bind(height);
   padding-right: 25px;
 }
 
-:global(.crud-list-table.q-table--loading thead tr:last-child th) {
+:global(.entity-list-table.q-table--loading thead tr:last-child th) {
   top: v-bind(height) !important;
 }
 
-.crud-list-table-header-cell__content {
+.entity-list-table-header-cell__content {
   display: inline-flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -149,11 +149,11 @@ function setDropEffectMove(e: DragEvent) {
   transform: translateX(-8px);
 }
 
-.crud-list-table-header-cell__drag-handle {
+.entity-list-table-header-cell__drag-handle {
   cursor: grab;
 }
 
-.crud-list-table-header-cell__drop-zone {
+.entity-list-table-header-cell__drop-zone {
   height: v-bind(height);
   width: 50%;
   border: 0 solid transparent;
@@ -162,17 +162,17 @@ function setDropEffectMove(e: DragEvent) {
   top: 0;
 }
 
-.crud-list-table-header-cell__drop-zone--before {
+.entity-list-table-header-cell__drop-zone--before {
   left: 0;
   border-left-width: 4px;
 }
 
-.crud-list-table-header-cell__drop-zone--after {
+.entity-list-table-header-cell__drop-zone--after {
   right: 0;
   border-right-width: 4px;
 }
 
-.crud-list-table-header-cell__drop-zone-active {
+.entity-list-table-header-cell__drop-zone-active {
   border-color: var(--q-primary);
   background: color-mix(in srgb, var(--q-primary) 20%, transparent);
 }
@@ -189,7 +189,7 @@ function setDropEffectMove(e: DragEvent) {
 }
 
 :global(.q-table__sort-icon:hover),
-:global(.crud-list-table th.sortable:hover .q-table__sort-icon) {
+:global(.entity-list-table th.sortable:hover .q-table__sort-icon) {
   background: color-mix(in srgb, currentColor 15%, transparent);
 }
 </style>

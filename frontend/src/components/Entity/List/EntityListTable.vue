@@ -1,7 +1,7 @@
 <template>
   <q-table
     v-model:pagination="pagination"
-    :class="{ 'crud-list-table--fullscreen': fullscreen }"
+    :class="{ 'entity-list-table--fullscreen': fullscreen }"
     :columns="orderedColumns"
     :fullscreen="fullscreen"
     no-route-fullscreen-exit
@@ -11,7 +11,7 @@
     :visible-columns="visibleColumns"
     :wrap-cells="true"
     binary-state-sort
-    class="crud-list-table"
+    class="entity-list-table"
     color="primary"
     row-key="id"
     flat
@@ -19,10 +19,14 @@
   >
     <template #top-left>
       <div v-if="visibleColumns.length < 1" class="text-negative">
-        <q-icon name="warning" />&nbsp;&nbsp;{{ t('crud.list.noColumnError') }}
+        <q-icon name="warning" />&nbsp;&nbsp;{{
+          t('entity.list.noColumnError')
+        }}
       </div>
       <div v-else-if="!dataIsFresh" class="text-negative">
-        <q-icon name="warning" />&nbsp;&nbsp;{{ t('crud.list.dataIsNotFresh') }}
+        <q-icon name="warning" />&nbsp;&nbsp;{{
+          t('entity.list.dataIsNotFresh')
+        }}
       </div>
     </template>
 
@@ -52,8 +56,8 @@
           <div class="text-caption">
             {{
               fullscreen
-                ? t('crud.list.exitFullscreen')
-                : t('crud.list.fullscreen')
+                ? t('entity.list.exitFullscreen')
+                : t('entity.list.fullscreen')
             }}
           </div>
         </div>
@@ -208,11 +212,11 @@ const orderedColumns = computed(() => {
 </script>
 
 <style scoped lang="scss">
-.crud-list-table {
+.entity-list-table {
   max-height: calc(100vh - 100px);
 }
 
-.crud-list-table--fullscreen {
+.entity-list-table--fullscreen {
   height: 100vh;
   max-height: 100vh;
   width: 100vw;
@@ -223,27 +227,27 @@ const orderedColumns = computed(() => {
   border-radius: 0;
 }
 
-:global(.crud-list-table thead tr:first-child th) {
+:global(.entity-list-table thead tr:first-child th) {
   /* bg color is important for th to cover rows underneath (scrolling) */
   background-color: #fff;
 }
-:global(.body--dark .crud-list-table thead tr:first-child th) {
+:global(.body--dark .entity-list-table thead tr:first-child th) {
   /* bg color is important for th to cover rows underneath (scrolling) */
   background-color: var(--q-dark);
 }
 
-:global(.crud-list-table .q-table__bottom),
-:global(.crud-list-table .q-table__top) {
+:global(.entity-list-table .q-table__bottom),
+:global(.entity-list-table .q-table__top) {
   background-color: var(--q-shade);
 }
 
-:global(.crud-list-table thead tr th) {
+:global(.entity-list-table thead tr th) {
   position: sticky;
   z-index: 1;
   top: 0;
 }
 
-:global(.body--light .crud-list-table .q-table__middle) {
+:global(.body--light .entity-list-table .q-table__middle) {
   border-left: 1px solid var(--q-shade);
   border-right: 1px solid var(--q-shade);
 }

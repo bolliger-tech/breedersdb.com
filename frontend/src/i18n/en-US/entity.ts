@@ -1,4 +1,4 @@
-export const crud = {
+export const entity = {
   list: {
     fullscreen: 'Fullscreen',
     exitFullscreen: 'Exit fullscreen',

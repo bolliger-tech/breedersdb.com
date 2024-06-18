@@ -1,7 +1,7 @@
 <template>
   <q-select
     :disable="possibleOptions.length === 0"
-    :label="t('crud.list.addColumn')"
+    :label="t('entity.list.addColumn')"
     :model-value="null"
     :options="filteredOptions"
     use-input

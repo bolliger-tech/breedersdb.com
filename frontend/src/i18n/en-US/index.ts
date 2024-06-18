@@ -18,7 +18,7 @@ import { orchards } from './orchards';
 import { plantRows } from './plant-rows';
 import { rootstocks } from './rootstocks';
 import { users } from './users';
-import { crud } from './crud';
+import { entity } from './entity';
 
 const messages = {
   base,
@@ -40,7 +40,7 @@ const messages = {
   rootstocks,
   users,
 
-  crud,
+  entity,
 
   filter,
   result,

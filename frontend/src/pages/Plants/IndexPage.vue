@@ -2,6 +2,7 @@
   <PageLayout>
     <ExamplePlantsList />
   </PageLayout>
+  <router-view name="modal" />
 </template>
 
 <script setup lang="ts">

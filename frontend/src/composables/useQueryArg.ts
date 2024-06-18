@@ -1,7 +1,9 @@
 import { ref, watch, type UnwrapRef } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute, useRouter, type LocationQueryValue } from 'vue-router';
 
-export function useQueryArg<T extends string | number | boolean>({
+export function useQueryArg<
+  T extends string | string[] | number | number[] | boolean | boolean[],
+>({
   key,
   defaultValue,
   replace = false,
@@ -13,41 +15,55 @@ export function useQueryArg<T extends string | number | boolean>({
   const route = useRoute();
   const router = useRouter();
 
-  function toDefaultValueType(value: string | undefined): T | undefined {
-    if (typeof defaultValue === 'undefined') {
-      return undefined;
+  function toDefaultValueType(
+    value: LocationQueryValue | LocationQueryValue[],
+  ): T | undefined {
+    if (Array.isArray(defaultValue) && !Array.isArray(value)) {
+      value = [value];
     }
 
-    if (typeof defaultValue === 'number' && Number.isInteger(defaultValue)) {
-      return value ? (parseInt(value, 10) as unknown as T) : defaultValue;
-    }
-
-    if (typeof defaultValue === 'number') {
-      return value ? (parseFloat(value) as unknown as T) : defaultValue;
-    }
-
-    if (typeof defaultValue === 'boolean') {
-      return value ? ((value === 'true') as unknown as T) : defaultValue;
-    }
-
-    return value as unknown as T;
+    return Array.isArray(value)
+      ? (value
+          .map((v) => toDefaultValueTypeSingle(v))
+          .filter((v) => v !== undefined) as T | undefined)
+      : (toDefaultValueTypeSingle(value) as T | undefined);
   }
 
-  const queryArg = ref(
-    toDefaultValueType(route.query[key]?.toString()) || defaultValue,
-  );
+  function toDefaultValueTypeSingle(value: LocationQueryValue) {
+    if (value === null || value === undefined) {
+      return undefined;
+    }
+    switch (typeof defaultValue) {
+      case 'undefined':
+        return undefined;
+      case 'number':
+        return Number.isInteger(defaultValue)
+          ? parseInt(value.toString(), 10)
+          : parseFloat(value.toString());
+      case 'boolean':
+        return value === 'true';
+      default:
+        return value;
+    }
+  }
+
+  const queryArg = ref(toDefaultValueType(route.query[key]) || defaultValue);
 
   watch(queryArg, (value) => {
+    const stringified = Array.isArray(value)
+      ? value.map((v) => v.toString())
+      : value.toString();
+
     const query = {
       ...route.query,
-      [key]: value.toString(),
+      [key]: stringified,
     };
 
     router.push({ query, replace });
   });
 
   watch(route, (value) => {
-    const converted = toDefaultValueType(value.query[key]?.toString());
+    const converted = toDefaultValueType(value.query[key]);
     if (typeof converted === 'undefined') {
       return;
     }

@@ -195,7 +195,7 @@ function reorderColumns(
 
 const orderedColumns = computed(() => {
   if (0 === visibleColumns.value.length) {
-    return props.allColumns;
+    return [];
   }
 
   return [...props.allColumns].sort(

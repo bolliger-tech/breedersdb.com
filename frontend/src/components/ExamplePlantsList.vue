@@ -10,12 +10,12 @@
     <template #default>
       <EntityListTable
         v-model:pagination="pagination"
-        :visible-columns="visibleColumns"
+        v-model:visible-columns="visibleColumns"
         :rows="data?.plants || []"
         :loading="fetching"
         :all-columns="columns"
         :row-click-navigates-to="(row) => `/plants/${row.id}`"
-      ></EntityListTable>
+      />
     </template>
   </EntityList>
 </template>
@@ -171,7 +171,6 @@ const columns = [
     align: 'left' as const,
     field: 'label_id',
     sortable: true,
-    required: true,
   },
   {
     name: 'cultivar_name',
@@ -217,7 +216,10 @@ const columns = [
   },
 ];
 
-const visibleColumns = columns.map((column) => column.name);
+const { queryArg: visibleColumns } = useQueryArg<string[]>({
+  key: 'col',
+  defaultValue: columns.map((column) => column.name).slice(0, 5),
+});
 
 watch(error, (error) => {
   if (error) {

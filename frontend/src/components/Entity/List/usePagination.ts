@@ -56,23 +56,19 @@ export function usePagination({
       descending: descendingArg.value,
       page: pageArg.value,
       rowsPerPage: rowsPerPageArg.value,
-      rowsNumber: rowsNumber || defaults.rowsNumber,
+      rowsNumber: pagination.value.rowsNumber,
     };
   });
 
-  watch(pagination, (value) => {
-    sortByArg.value = value.sortBy;
-    descendingArg.value = value.descending;
-    pageArg.value = value.page;
-    rowsPerPageArg.value = value.rowsPerPage;
-  });
+  function setQueryArgs(_pagination: typeof pagination.value) {
+    sortByArg.value = _pagination.sortBy;
+    descendingArg.value = _pagination.descending;
+    pageArg.value = _pagination.page;
+    rowsPerPageArg.value = _pagination.rowsPerPage;
+  }
 
-  onMounted(() => {
-    sortByArg.value = pagination.value.sortBy;
-    descendingArg.value = pagination.value.descending;
-    pageArg.value = pagination.value.page;
-    rowsPerPageArg.value = pagination.value.rowsPerPage;
-  });
+  watch(pagination, setQueryArgs);
+  onMounted(() => setQueryArgs(pagination.value));
 
   return {
     pagination,

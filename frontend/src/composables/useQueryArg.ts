@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue';
+import { ref, watch, type UnwrapRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 export function useQueryArg<T extends string | number | boolean>({
@@ -44,6 +44,15 @@ export function useQueryArg<T extends string | number | boolean>({
     };
 
     router.push({ query, replace });
+  });
+
+  watch(route, (value) => {
+    const converted = toDefaultValueType(value.query[key]?.toString());
+    if (typeof converted === 'undefined') {
+      return;
+    }
+
+    queryArg.value = converted as UnwrapRef<T>;
   });
 
   return {

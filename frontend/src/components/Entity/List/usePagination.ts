@@ -1,5 +1,5 @@
-import { ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useQueryArg } from 'src/composables/useQueryArg';
+import { onMounted, ref, watch } from 'vue';
 
 const defaults = {
   descending: false,
@@ -21,31 +21,57 @@ export function usePagination({
   rowsPerPage?: number;
   rowsNumber?: number;
 }) {
-  const route = useRoute();
-  const router = useRouter();
+  const { queryArg: sortByArg } = useQueryArg({
+    key: 'sortBy',
+    defaultValue: sortBy,
+    replace: true,
+  });
+  const { queryArg: descendingArg } = useQueryArg({
+    key: 'desc',
+    defaultValue: descending,
+    replace: true,
+  });
+  const { queryArg: pageArg } = useQueryArg({
+    key: 'page',
+    defaultValue: page,
+    replace: true,
+  });
+  const { queryArg: rowsPerPageArg } = useQueryArg({
+    key: 'rowsPerPage',
+    defaultValue: rowsPerPage,
+    replace: true,
+  });
 
   const pagination = ref({
-    sortBy: route.query.sortBy?.toString() || sortBy,
-    descending:
-      route.query.desc === 'true' || descending || defaults.descending,
-    page: parseInt(route.query.page as string, 10) || page || defaults.page,
-    rowsPerPage:
-      parseInt(route.query.rowsPerPage as string, 10) ||
-      rowsPerPage ||
-      defaults.rowsPerPage,
+    sortBy: sortByArg.value,
+    descending: descendingArg.value,
+    page: pageArg.value,
+    rowsPerPage: rowsPerPageArg.value,
     rowsNumber: rowsNumber || defaults.rowsNumber,
   });
 
-  watch(pagination, (value) => {
-    const query = {
-      ...route.query,
-      sortBy: value.sortBy,
-      desc: value.descending.toString(),
-      page: value.page,
-      rowsPerPage: value.rowsPerPage,
+  watch([sortByArg, descendingArg, pageArg, rowsPerPageArg], () => {
+    pagination.value = {
+      sortBy: sortByArg.value,
+      descending: descendingArg.value,
+      page: pageArg.value,
+      rowsPerPage: rowsPerPageArg.value,
+      rowsNumber: rowsNumber || defaults.rowsNumber,
     };
+  });
 
-    router.replace({ query });
+  watch(pagination, (value) => {
+    sortByArg.value = value.sortBy;
+    descendingArg.value = value.descending;
+    pageArg.value = value.page;
+    rowsPerPageArg.value = value.rowsPerPage;
+  });
+
+  onMounted(() => {
+    sortByArg.value = pagination.value.sortBy;
+    descendingArg.value = pagination.value.descending;
+    pageArg.value = pagination.value.page;
+    rowsPerPageArg.value = pagination.value.rowsPerPage;
   });
 
   return {

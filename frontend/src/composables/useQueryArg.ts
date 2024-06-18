@@ -69,18 +69,14 @@ export function useQueryArg<
     router.push({ query, replace });
   }
 
-  watch(queryArg, (value) => syncToRoute(value), { immediate: true });
+  watch(queryArg, (value) => syncToRoute(value));
 
-  watch(
-    route,
-    (value) => {
-      const converted = castToDefaultValueType(value.query[key]);
-      queryArg.value = (
-        typeof converted === 'undefined' ? defaultValue : converted
-      ) as UnwrapRef<T>;
-    },
-    { immediate: true },
-  );
+  watch(route, (value) => {
+    const converted = castToDefaultValueType(value.query[key]);
+    queryArg.value = (
+      typeof converted === 'undefined' ? defaultValue : converted
+    ) as UnwrapRef<T>;
+  });
 
   return {
     queryArg,

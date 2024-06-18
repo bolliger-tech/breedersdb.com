@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, ref, watch, onMounted } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import EntityList from './Entity/List/EntityList.vue';
 import { usePagination } from './Entity/List/usePagination';
@@ -224,23 +224,23 @@ const { queryArg: visibleColumns } = useQueryArg<string[]>({
   defaultValue: columns.map((column) => column.name).slice(0, 5),
 });
 
-watch(error, (error) => {
-  if (error) {
-    throw error;
+watch(error, (newValue) => {
+  if (newValue) {
+    throw newValue;
   }
 });
 
-watch(plantsCount, () => {
-  pagination.value.rowsNumber = plantsCount.value;
-});
+watch(
+  plantsCount,
+  (newValue) => {
+    pagination.value.rowsNumber = newValue;
+  },
+  { immediate: true },
+);
 
-watch(filter, (val) => {
-  if (val.startsWith('#') && subset.value === 'active') {
+watch(filter, (newValue) => {
+  if (newValue.startsWith('#') && subset.value === 'active') {
     subset.value = 'all';
   }
-});
-
-onMounted(() => {
-  pagination.value.rowsNumber = plantsCount.value;
 });
 </script>

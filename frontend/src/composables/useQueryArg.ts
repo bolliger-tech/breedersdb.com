@@ -15,9 +15,14 @@ export function useQueryArg<
   const route = useRoute();
   const router = useRouter();
 
-  function toDefaultValueType(
+  function castToDefaultValueType(
     value: LocationQueryValue | LocationQueryValue[],
   ): T | undefined {
+    if (value === undefined) {
+      // not in url
+      return undefined;
+    }
+
     if (Array.isArray(defaultValue) && !Array.isArray(value)) {
       value = [value];
     }
@@ -47,12 +52,14 @@ export function useQueryArg<
     }
   }
 
-  const queryArg = ref(toDefaultValueType(route.query[key]) || defaultValue);
+  const queryArg = ref(
+    castToDefaultValueType(route.query[key]) ?? defaultValue,
+  );
 
-  watch(queryArg, (value) => {
-    const stringified = Array.isArray(value)
-      ? value.map((v) => v.toString())
-      : value.toString();
+  function syncToRoute(arg: UnwrapRef<T>) {
+    const stringified = Array.isArray(arg)
+      ? arg.map((v) => v.toString())
+      : arg.toString();
 
     const query = {
       ...route.query,
@@ -60,16 +67,20 @@ export function useQueryArg<
     };
 
     router.push({ query, replace });
-  });
+  }
 
-  watch(route, (value) => {
-    const converted = toDefaultValueType(value.query[key]);
-    if (typeof converted === 'undefined') {
-      return;
-    }
+  watch(queryArg, (value) => syncToRoute(value), { immediate: true });
 
-    queryArg.value = converted as UnwrapRef<T>;
-  });
+  watch(
+    route,
+    (value) => {
+      const converted = castToDefaultValueType(value.query[key]);
+      queryArg.value = (
+        typeof converted === 'undefined' ? defaultValue : converted
+      ) as UnwrapRef<T>;
+    },
+    { immediate: true },
+  );
 
   return {
     queryArg,

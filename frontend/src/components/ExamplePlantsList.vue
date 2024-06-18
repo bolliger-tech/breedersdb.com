@@ -80,7 +80,10 @@ const query = graphql(`
   }
 `);
 
-const filter = ref('');
+const { queryArg: filter } = useQueryArg<string>({
+  key: 's',
+  defaultValue: '',
+});
 
 const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
   key: 'tab',

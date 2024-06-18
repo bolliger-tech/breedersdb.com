@@ -1,10 +1,10 @@
 <template>
   <EntityList
     v-model:tab="subset"
-    v-model:filter="filter"
+    v-model:search="search"
     :tabs="tabs"
     :title="t('plants.title', 2)"
-    filter-placeholder="Search by label ID or cultivar name"
+    :search-placeholder="t('plants.searchPlaceholder')"
     to-new-entity="/plants/new"
   >
     <template #default>
@@ -80,7 +80,7 @@ const query = graphql(`
   }
 `);
 
-const { queryArg: filter } = useQueryArg<string>({
+const { queryArg: search } = useQueryArg<string>({
   key: 's',
   defaultValue: '',
 });
@@ -123,24 +123,24 @@ const where = computed(() => {
     where._and.push({ disabled: { _eq: true } });
   }
 
-  if (filter.value) {
+  if (search.value) {
     const or: UseQueryArgs<typeof query>['variables'] = { _or: [] };
 
     or._or.push({
-      cultivar_name: { _ilike: `%${filter.value.replaceAll('.', '%.%')}%` },
+      cultivar_name: { _ilike: `%${search.value.replaceAll('.', '%.%')}%` },
     });
 
-    if (filter.value.match(/^\d+$/)) {
-      or._or.push({ label_id: { _eq: `${filter.value.padStart(8, '0')}` } });
+    if (search.value.match(/^\d+$/)) {
+      or._or.push({ label_id: { _eq: `${search.value.padStart(8, '0')}` } });
     }
 
-    if (filter.value.match(/^#\d+$/)) {
+    if (search.value.match(/^#\d+$/)) {
       or._or.push({
-        label_id: { _eq: `#${filter.value.replace('#', '').padStart(8, '0')}` },
+        label_id: { _eq: `#${search.value.replace('#', '').padStart(8, '0')}` },
       });
     }
 
-    if (filter.value === '#') {
+    if (search.value === '#') {
       or._or.push({ label_id: { _like: '#%' } });
     }
 
@@ -238,7 +238,7 @@ watch(
   { immediate: true },
 );
 
-watch(filter, (newValue) => {
+watch(search, (newValue) => {
   if (newValue.startsWith('#') && subset.value === 'active') {
     subset.value = 'all';
   }

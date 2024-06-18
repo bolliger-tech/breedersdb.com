@@ -6,16 +6,16 @@
     }}</q-btn>
   </div>
 
-  <q-card v-if="filter !== undefined" class="bg-shade q-my-md" flat>
+  <q-card v-if="search !== undefined" class="bg-shade q-my-md" flat>
     <q-card-section>
       <q-input
-        :model-value="filter"
+        :model-value="search"
         outlined
         :bg-color="inputBgColor"
         dense
         debounce="300"
-        :placeholder="filterPlaceholder || t('entity.search')"
-        @update:model-value="(val) => $emit('update:filter', val as string)"
+        :placeholder="searchPlaceholder || t('entity.search')"
+        @update:model-value="(val) => $emit('update:search', val as string)"
       >
         <template #append>
           <q-icon name="search" />
@@ -55,25 +55,25 @@ import { useInputBackground } from 'src/composables/useInputBackground';
 
 export interface EntityListProps extends EntityListPropsWithoutModels {
   tab?: string;
-  filter?: string;
+  search?: string;
 }
 
 interface EntityListPropsWithoutModels {
   title: string;
   tabs?: { value: string; label: string }[];
-  filterPlaceholder?: string;
+  searchPlaceholder?: string;
   toNewEntity: string;
 }
 
 defineProps<EntityListProps>();
 defineModel('tab', { type: String });
-defineModel('filter', { type: String });
+defineModel('search', { type: String });
 defineSlots<{
   default: void;
 }>();
 defineEmits<{
   'update:tab': [value: string];
-  'update:filter': [value: string];
+  'update:search': [value: string];
 }>();
 
 const { t } = useI18n();

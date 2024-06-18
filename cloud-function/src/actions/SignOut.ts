@@ -1,7 +1,7 @@
 import { authenticateRequest } from '..';
-import { createClearAuthCookies } from '../cookies';
-import { ErrorWithStatus } from '../errors';
-import { fetchGraphQL } from '../fetch';
+import { createClearAuthCookies } from '../lib/cookies';
+import { ErrorWithStatus } from '../lib/errors';
+import { fetchGraphQL } from '../lib/fetch';
 import { DeleteUserTokenMutation } from '../queries';
 import type { ActionProps, ActionResult } from './types';
 

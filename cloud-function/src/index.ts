@@ -1,11 +1,11 @@
 import * as ff from '@google-cloud/functions-framework';
 
-import { hashToken, timingSafeEqual } from './crypto';
+import { hashToken, timingSafeEqual } from './lib/crypto';
 import { handleActions } from './actions';
 import { UserTokenQuery } from './queries';
-import { getTokenFromCookies } from './cookies';
-import { fetchGraphQL } from './fetch';
-import { config } from './config';
+import { getTokenFromCookies } from './lib/cookies';
+import { fetchGraphQL } from './lib/fetch';
+import { config } from './lib/config';
 
 // check actions/SignIn.ts for more details
 export async function authenticateRequest(

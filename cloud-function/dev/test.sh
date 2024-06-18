@@ -6,11 +6,11 @@ if [ -z "$email" ]; then
   email="tester@breedersdb.com"
 fi
 
-echo -n "Password (empty for: asdfasdf):"
+echo -n "Password (empty for: Asdfasdf.1):"
 read -s password
 echo
 if [ -z "$password" ]; then
-  password="asdfasdf"
+  password="Asdfasdf.1"
 fi
 
 # POST username and password to the server

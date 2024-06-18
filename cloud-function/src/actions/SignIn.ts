@@ -1,8 +1,8 @@
 import { authenticateRequest } from '..';
-import { createAuthCookies } from '../cookies';
-import { generateToken, hashToken, verifyPassword } from '../crypto';
-import { ErrorWithStatus } from '../errors';
-import { fetchGraphQL } from '../fetch';
+import { createAuthCookies } from '../lib/cookies';
+import { generateToken, hashToken, verifyPassword } from '../lib/crypto';
+import { ErrorWithStatus } from '../lib/errors';
+import { fetchGraphQL } from '../lib/fetch';
 import { InsertUserTokenMutation, UserQuery } from '../queries';
 import type { ActionProps, ActionResult } from './types';
 

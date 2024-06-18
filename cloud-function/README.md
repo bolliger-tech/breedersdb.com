@@ -35,7 +35,7 @@ This folder contains code intended to run as Google Cloud Function.
 - Inserting the first user is done by running the `InsertUser` mutation in hasura (x-hasura-admin-secret)
   ```graphql
   mutation InsertUser {
-    InsertUser(email: "tester@breedersdb.com", password: "asdfasdf") {
+    InsertUser(email: "tester@breedersdb.com", password: "Asdfasdf.1") {
       email
     }
   }
@@ -49,7 +49,7 @@ This folder contains code intended to run as Google Cloud Function.
 
   ```graphql
   mutation SignIn {
-    SignIn(email: "tester@breedersdb.com", password: "asdfasdf") {
+    SignIn(email: "tester@breedersdb.com", password: "Asdfasdf.1") {
       user_id
     }
   }

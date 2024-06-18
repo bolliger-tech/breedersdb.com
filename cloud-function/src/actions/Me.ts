@@ -1,5 +1,5 @@
 import { authenticateRequest } from '..';
-import { ErrorWithStatus } from '../errors';
+import { ErrorWithStatus } from '../lib/errors';
 import type { ActionProps, ActionResult } from './types';
 
 export async function Me({ ctx }: ActionProps): Promise<ActionResult> {

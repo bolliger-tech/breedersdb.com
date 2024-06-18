@@ -1,7 +1,7 @@
 import * as ff from '@google-cloud/functions-framework';
-import { timingSafeEqual } from './crypto';
-import { ErrorWithStatus } from './errors';
-import { config } from './config';
+import { timingSafeEqual } from './lib/crypto';
+import { ErrorWithStatus } from './lib/errors';
+import { config } from './lib/config';
 import { InsertUserAction } from './actions/InsertUser';
 import { SignIn } from './actions/SignIn';
 import type { ActionProps } from './actions/types';
@@ -11,10 +11,10 @@ import { Me } from './actions/Me';
 /* example request
 body: {
   action: { name: 'InsertUser' },
-  input: { email: 'tester@breedersdb.com', password: 'asdfasdf' },
+  input: { email: 'tester@breedersdb.com', password: 'Asdfasdf.1' },
   request_query: 'mutation InsertUser {\n' +
     '\n' +
-    '  InsertUser(email: "tester@breedersdb.com", password: "asdfasdf") {email}\n' +
+    '  InsertUser(email: "tester@breedersdb.com", password: "Asdfasdf.1") {email}\n' +
     '}\n',
   session_variables: { 'x-hasura-role': 'admin' }
 }

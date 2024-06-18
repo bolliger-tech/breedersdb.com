@@ -11,9 +11,18 @@ const FE_COOKIE_NAME = 'breedersdb.user';
 
 // TODO: check SameSite
 // TODO: check domain
+// eg. (true, MAX_AGE): HttpOnly; SameSite=None; Max-Age=34473600; Path=/
+// eg. (false, MAX_AGE): SameSite=None; Max-Age=34473600; Path=/
 function cookieOptions(httpOnly: boolean, maxAge: number) {
-  const secure = config.NODE_ENV !== 'development' ? ' Secure;' : '';
-  return `${httpOnly ? 'HttpOnly; ' : ''}SameSite=None;${secure} Max-Age=${maxAge}; Path=/`;
+  return [
+    httpOnly ? 'HttpOnly' : null,
+    'SameSite=None',
+    config.NODE_ENV !== 'development' ? ' Secure' : null,
+    `Max-Age=${maxAge}`,
+    'Path=/',
+  ]
+    .filter(Boolean)
+    .join('; ');
 }
 
 // set 2 cookies

@@ -6,7 +6,7 @@ import { fetchGraphQL } from '../lib/fetch';
 import {
   IncUserSigninAttemptsMutation,
   InsertUserTokenMutations,
-  UserQuery,
+  UserQueryByEmail,
 } from '../queries';
 import type { ActionProps, ActionResult } from './types';
 
@@ -40,7 +40,7 @@ export async function SignIn({
 
   // get user
   const user = await fetchGraphQL({
-    query: UserQuery,
+    query: UserQueryByEmail,
     variables: {
       email: input.email,
     },

@@ -6,6 +6,8 @@ import { config } from './config';
 // expiration date more than 400 days in the future.
 const MAX_AGE = 399 * 24 * 60 * 60; // 399 days in seconds
 
+export const ROLL_EVERY_SECONDS = 60 * 60; // 1 hour
+
 const TOKEN_COOKIE_NAME = 'breedersdb.id.token';
 const FE_COOKIE_NAME = 'breedersdb.user';
 

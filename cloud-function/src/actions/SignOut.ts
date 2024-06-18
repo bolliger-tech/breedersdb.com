@@ -23,7 +23,7 @@ export async function SignOut({ ctx }: ActionProps): Promise<ActionResult> {
   const result = await fetchGraphQL({
     query: DeleteUserTokenMutation,
     variables: {
-      token_id: auth.tokenId,
+      token_id: auth.dbToken.id,
     },
   });
   if (result.errors) {

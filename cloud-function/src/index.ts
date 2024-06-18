@@ -2,15 +2,27 @@ import * as ff from '@google-cloud/functions-framework';
 
 import { hashToken, timingSafeEqual } from './lib/crypto';
 import { handleActions } from './actions';
-import { UserTokenQuery } from './queries';
-import { getTokenFromCookies } from './lib/cookies';
+import { RollTokenLastVerifyMutation, UserTokenQuery } from './queries';
+import {
+  ROLL_EVERY_SECONDS,
+  createAuthCookies,
+  getTokenFromCookies,
+} from './lib/cookies';
 import { fetchGraphQL } from './lib/fetch';
 import { config } from './lib/config';
 
 // check actions/SignIn.ts for more details
-export async function authenticateRequest(
-  cookie: string | undefined,
-): Promise<{ userId: number; tokenId: number } | null> {
+export async function authenticateRequest(cookie: string | undefined): Promise<{
+  userId: number;
+  dbToken: {
+    id: number;
+    token_hash: string;
+    user_id: number;
+    type: string;
+    last_verify: string;
+  };
+  cookiePayload: { tokenId: number; token: string };
+} | null> {
   const cookiePayload = getTokenFromCookies(cookie);
   if (!cookiePayload) {
     return null;
@@ -34,7 +46,8 @@ export async function authenticateRequest(
 
   return {
     userId: dbToken.user_id,
-    tokenId: cookiePayload.tokenId,
+    dbToken: dbToken,
+    cookiePayload,
   };
 }
 
@@ -45,6 +58,32 @@ async function authenticateHasuraRequest(req: ff.Request, res: ff.Response) {
     return res.send({
       'X-Hasura-Role': 'unauthorized',
     });
+  }
+
+  // roll cookie expiration forward
+  try {
+    const secondsSinceLastVerify = Math.floor(
+      (Date.now() - new Date(auth.dbToken.last_verify).getTime()) / 1000,
+    );
+    if (secondsSinceLastVerify > ROLL_EVERY_SECONDS) {
+      const rollResultUser = await fetchGraphQL({
+        query: RollTokenLastVerifyMutation,
+        variables: {
+          token_id: auth.cookiePayload.tokenId,
+        },
+      }).then((data) => data?.data?.update_user_tokens_by_pk?.user);
+      if (!rollResultUser) {
+        throw new Error('RollTokenLastVerifyMutation failed');
+      }
+      const newCookies = createAuthCookies(
+        auth.cookiePayload.tokenId,
+        auth.cookiePayload.token,
+        rollResultUser.email,
+      );
+      res.setHeader('Set-Cookie', newCookies);
+    }
+  } catch (e) {
+    console.error('Error rolling cookie expiration:', e);
   }
 
   return res.send({

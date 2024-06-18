@@ -83,4 +83,17 @@ This folder contains code intended to run as Google Cloud Function.
       }
     }
   }
+
+  query AdminsOnlyUsersMaxLastVerify {
+    users {
+      id
+      user_tokens_aggregate {
+        aggregate {
+          max {
+            last_verify
+          }
+        }
+      }
+    }
+  }
   ```

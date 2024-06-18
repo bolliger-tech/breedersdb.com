@@ -1,5 +1,5 @@
 import { useQueryArg } from 'src/composables/useQueryArg';
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const defaults = {
   descending: false,
@@ -60,15 +60,16 @@ export function usePagination({
     };
   });
 
-  function setQueryArgs(_pagination: typeof pagination.value) {
-    sortByArg.value = _pagination.sortBy;
-    descendingArg.value = _pagination.descending;
-    pageArg.value = _pagination.page;
-    rowsPerPageArg.value = _pagination.rowsPerPage;
-  }
-
-  watch(pagination, setQueryArgs);
-  onMounted(() => setQueryArgs(pagination.value));
+  watch(
+    pagination,
+    (newValue) => {
+      sortByArg.value = newValue.sortBy;
+      descendingArg.value = newValue.descending;
+      pageArg.value = newValue.page;
+      rowsPerPageArg.value = newValue.rowsPerPage;
+    },
+    { immediate: true },
+  );
 
   return {
     pagination,

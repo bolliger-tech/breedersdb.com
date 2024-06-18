@@ -41,7 +41,7 @@ export const InsertUserTokenMutation = /* GraphQL */ `
 
 export const DeleteUserTokenMutation = /* GraphQL */ `
   mutation DeleteUserTokenMutation($token_id: Int!) {
-    delete_user_tokens(where: { id: { _eq: $token_id } }) {
+    delete_user_tokens_by_pk(id: $token_id) {
       affected_rows
     }
   }
@@ -49,7 +49,7 @@ export const DeleteUserTokenMutation = /* GraphQL */ `
 
 export const UserTokenQuery = /* GraphQL */ `
   query UserTokenQuery($token_id: Int!) {
-    user_tokens(where: { id: { _eq: $token_id } }) {
+    user_tokens_by_pk(id: $token_id) {
       token_hash
       user_id
       type

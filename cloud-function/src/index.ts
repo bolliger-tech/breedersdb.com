@@ -21,7 +21,7 @@ export async function authenticateRequest(
     variables: {
       token_id: cookiePayload.tokenId,
     },
-  }).then((data) => data?.data?.user_tokens?.[0]);
+  }).then((data) => data?.data?.user_tokens_by_pk);
   if (!dbToken) {
     return null;
   }

@@ -25,14 +25,31 @@ export const UserQuery = /* GraphQL */ `
   }
 `;
 
-export const InsertUserTokenMutation = /* GraphQL */ `
-  mutation InsertUserTokenMutation(
-    $user_id: Int
+export const InsertUserTokenMutations = /* GraphQL */ `
+  mutation InsertUserTokenMutations(
+    $user_id: Int!
     $token_hash: String!
     $type: String!
   ) {
     insert_user_tokens_one(
       object: { user_id: $user_id, token_hash: $token_hash, type: $type }
+    ) {
+      id
+    }
+    update_users_by_pk(
+      pk_columns: { id: $user_id }
+      _set: { last_login: "now()", signin_attempts: 0 }
+    ) {
+      id
+    }
+  }
+`;
+
+export const IncUserSigninAttemptsMutation = /* GraphQL */ `
+  mutation IncUserSigninAttemptsMutation($user_id: Int!) {
+    update_users_by_pk(
+      pk_columns: { id: $user_id }
+      _inc: { signin_attempts: 1 }
     ) {
       id
     }
@@ -42,7 +59,7 @@ export const InsertUserTokenMutation = /* GraphQL */ `
 export const DeleteUserTokenMutation = /* GraphQL */ `
   mutation DeleteUserTokenMutation($token_id: Int!) {
     delete_user_tokens_by_pk(id: $token_id) {
-      affected_rows
+      id
     }
   }
 `;

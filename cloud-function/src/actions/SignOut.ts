@@ -8,7 +8,10 @@ import type { ActionProps, ActionResult } from './types';
 export async function SignOut({ ctx }: ActionProps): Promise<ActionResult> {
   // admin in hasura console is not allowed to signIn/SignOut
   if (ctx.sessionVariables?.['x-hasura-role'] === 'admin') {
-    throw new ErrorWithStatus(403, 'Forbidden');
+    throw new ErrorWithStatus(
+      403,
+      'Forbidden: Admins are not allowed to sign out',
+    );
   }
 
   const auth = await authenticateRequest(ctx.req.headers.cookie);

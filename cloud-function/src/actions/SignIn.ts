@@ -3,7 +3,11 @@ import { createAuthCookies } from '../lib/cookies';
 import { generateToken, hashToken, verifyPassword } from '../lib/crypto';
 import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
-import { InsertUserTokenMutation, UserQuery } from '../queries';
+import {
+  IncUserSigninAttemptsMutation,
+  InsertUserTokenMutations,
+  UserQuery,
+} from '../queries';
 import type { ActionProps, ActionResult } from './types';
 
 // checking if the user is already signed in is not necessary
@@ -48,6 +52,13 @@ export async function SignIn({
   // verify password
   const verified = await verifyPassword(input.password, user.password_hash);
   if (!verified) {
+    // increment signin attempts
+    await fetchGraphQL({
+      query: IncUserSigninAttemptsMutation,
+      variables: {
+        user_id: user.id,
+      },
+    });
     throw new ErrorWithStatus(401, 'Unauthorized: Invalid password');
   }
 
@@ -56,7 +67,7 @@ export async function SignIn({
   const tokenHash = hashToken(token);
 
   const dbToken = await fetchGraphQL({
-    query: InsertUserTokenMutation,
+    query: InsertUserTokenMutations,
     variables: {
       user_id: user.id,
       token_hash: tokenHash,

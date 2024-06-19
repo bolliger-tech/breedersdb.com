@@ -3,9 +3,10 @@
 .gcloudignore
 .git
 .gitignore
-.env
 .env.example
+.env
 .env.yaml
 
-node_modules
+# This includes .gitignore
+
 #!include:.gitignore

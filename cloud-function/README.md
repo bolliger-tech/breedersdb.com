@@ -110,8 +110,8 @@ Copy `.env` to `env.yaml`, replace `=` with `: `, make bools to strings and adap
         id
         email
         locale
-        last_login
-        signin_attempts
+        last_signin
+        failed_signin_attempts
         created
         modified
       }
@@ -121,6 +121,8 @@ Copy `.env` to `env.yaml`, replace `=` with `: `, make bools to strings and adap
   query AdminsOnlyUsersMaxLastVerify {
     users {
       id
+      failed_signin_attempts
+      last_signin
       user_tokens_aggregate {
         aggregate {
           max {

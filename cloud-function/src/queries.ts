@@ -3,8 +3,8 @@ const UserFields = /* GraphQL */ `
   email
   locale
   password_hash
-  signin_attempts
-  last_login
+  failed_signin_attempts
+  last_signin
   created
   modified
 `;
@@ -43,7 +43,7 @@ export const InsertUserTokenMutations = /* GraphQL */ `
     }
     update_users_by_pk(
       pk_columns: { id: $user_id }
-      _set: { last_login: "now()", signin_attempts: 0 }
+      _set: { last_signin: "now()", failed_signin_attempts: 0 }
     ) {
       id
     }
@@ -68,7 +68,7 @@ export const IncUserSigninAttemptsMutation = /* GraphQL */ `
   mutation IncUserSigninAttemptsMutation($user_id: Int!) {
     update_users_by_pk(
       pk_columns: { id: $user_id }
-      _inc: { signin_attempts: 1 }
+      _inc: { failed_signin_attempts: 1 }
     ) {
       id
     }

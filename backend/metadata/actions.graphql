@@ -32,10 +32,10 @@ type InsertUserOutput {
   created: timestamptz!
   email: citext!
   id: Int!
-  last_login: timestamptz
+  last_signin: timestamptz
   locale: String!
   modified: timestamptz
-  signin_attempts: Int!
+  failed_signin_attempts: Int!
 }
 
 type SignInOutput {

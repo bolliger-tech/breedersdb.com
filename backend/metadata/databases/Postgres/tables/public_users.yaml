@@ -16,10 +16,10 @@ select_permissions:
         - created
         - email
         - id
-        - last_login
+        - last_signin
         - locale
         - modified
-        - signin_attempts
+        - failed_signin_attempts
       filter:
         id:
           _eq: -1
@@ -30,9 +30,9 @@ select_permissions:
         - email
         - locale
         - id
-        - signin_attempts
+        - failed_signin_attempts
         - created
-        - last_login
+        - last_signin
         - modified
       filter: {}
     comment: ""

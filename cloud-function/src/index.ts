@@ -101,7 +101,7 @@ ff.http('auth', (req: ff.Request, res: ff.Response) => {
       return authenticateHasuraRequest(req, res);
     case 'actions':
       return handleActions(req, res);
-    case 'test':
+    case 'health':
       return res.send('🫛🌱🌳🍎');
     default:
       return res.status(404).send('Not Found');

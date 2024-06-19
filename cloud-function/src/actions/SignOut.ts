@@ -5,7 +5,13 @@ import { fetchGraphQL } from '../lib/fetch';
 import { DeleteUserTokenMutation } from '../queries';
 import type { ActionProps, ActionResult } from './types';
 
-export async function SignOut({ ctx }: ActionProps): Promise<ActionResult> {
+type SignOutOutput = {
+  user_id: number;
+};
+
+export async function SignOut({
+  ctx,
+}: ActionProps): Promise<ActionResult<SignOutOutput>> {
   // admin in hasura console is not allowed to signIn/SignOut
   if (ctx.sessionVariables?.['x-hasura-role'] === 'admin') {
     throw new ErrorWithStatus(

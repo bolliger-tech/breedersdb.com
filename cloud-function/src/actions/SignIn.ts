@@ -10,12 +10,16 @@ import {
 } from '../queries';
 import type { ActionProps, ActionResult } from './types';
 
+type SignInInput = {
+  user_id: number;
+};
+
 // checking if the user is already signed in is not necessary
 // because this action is protected by hasura permissions
 export async function SignIn({
   input,
   ctx,
-}: ActionProps): Promise<ActionResult> {
+}: ActionProps): Promise<ActionResult<SignInInput>> {
   // admin in hasura console is not allowed to signIn/SignOut
   if (ctx.sessionVariables?.['x-hasura-role'] === 'admin') {
     throw new ErrorWithStatus(

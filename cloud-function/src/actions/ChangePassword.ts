@@ -2,12 +2,12 @@ import { hashAndSaltPassword } from '../lib/crypto';
 import { ChangePasswordMutation } from '../queries';
 import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
-import type { ActionProps, ActionResult } from './types';
+import type { ActionProps, ActionResult, UserOutput } from './types';
 import { validatePassword } from '../lib/validation';
 
 export async function ChangePassword({
   input,
-}: ActionProps): Promise<ActionResult> {
+}: ActionProps): Promise<ActionResult<UserOutput>> {
   if (!input || !input.user_id || !input.password) {
     throw new ErrorWithStatus(400, 'Bad Request: Missing user_id or password');
   }

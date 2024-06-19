@@ -12,9 +12,13 @@ export type ActionProps = {
   };
 };
 
-export type ActionResult = {
-  response: any;
+export type ActionResult<T> = {
+  response: T;
   headers?: {
     [key: string]: string[];
   };
+};
+
+export type UserOutput = {
+  id: number;
 };

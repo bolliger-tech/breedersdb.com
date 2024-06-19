@@ -56,7 +56,7 @@ async function authenticateHasuraRequest(req: ff.Request, res: ff.Response) {
   const auth = await authenticateRequest(req.headers.cookie);
   if (!auth) {
     return res.send({
-      'X-Hasura-Role': 'unauthorized',
+      'X-Hasura-Role': 'public',
     });
   }
 

@@ -10,7 +10,7 @@ array_relationships:
           name: user_tokens
           schema: public
 select_permissions:
-  - role: unauthorized
+  - role: public
     permission:
       columns:
         - created

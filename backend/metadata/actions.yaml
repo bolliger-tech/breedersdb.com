@@ -28,7 +28,7 @@ actions:
           value_from_env: ACTIONS_SECRET
     permissions:
       - role: user
-      - role: unauthorized
+      - role: public
   - name: SignIn
     definition:
       kind: synchronous
@@ -39,7 +39,7 @@ actions:
           value_from_env: ACTIONS_SECRET
     permissions:
       - role: user
-      - role: unauthorized
+      - role: public
   - name: SignOut
     definition:
       kind: synchronous

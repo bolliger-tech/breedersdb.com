@@ -134,6 +134,8 @@ Copy `.env` to `env.yaml`, replace `=` with `: `, make bools to strings and adap
   }
   ```
 
+- Regarding `forward_client_headers = true` in [actions.yaml](../backend/metadata/actions.yaml). This is only needed if the action here needs to be able to determine which user is making the request. For now this is only needed for `Me, SignIn`, and `SignOut`. The other actions are protected by the hasura permissions.
+
 - This is the log of the first deployment, showing which APIs needed to be enabled:
 
   ```bash

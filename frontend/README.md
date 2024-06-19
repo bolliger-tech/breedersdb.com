@@ -13,6 +13,14 @@ the Quasar CLI with Vite and TypeScript.
    curl -fsSL https://bun.sh/install | bash
    ```
 
+   Or node with nvm and yarn:
+
+   ```bash
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+   nvm install
+   npm install -g yarn
+   ```
+
 1. Create `.env`:
 
    ```bash
@@ -23,30 +31,40 @@ the Quasar CLI with Vite and TypeScript.
 
    ```bash
    bun install
+   # or
+   yarn
    ```
 
 1. Start the frontend (development mode with hot reloading, etc.)
 
    ```bash
    bun --bun run dev
+   # or
+   yarn dev
    ```
 
 ### Lint the files
 
 ```bash
 bun --bun lint
+# or
+yarn lint
 ```
 
 ### Build the app for production
 
 ```bash
 bun run build
+# or
+yarn build
 ```
 
 ### Preview the app in production mode
 
 ```bash
 bun run serve
+# or
+yarn serve
 ```
 
 ### Customize the configuration

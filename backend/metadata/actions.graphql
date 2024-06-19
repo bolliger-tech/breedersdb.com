@@ -10,7 +10,7 @@ type Mutation {
     email: citext!
     password: String!
     locale: String
-  ): InsertUserOutput
+  ): InsertUserOutput!
 }
 
 type Query {

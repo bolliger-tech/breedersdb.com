@@ -78,7 +78,13 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
     return res.send(result.response);
   } catch (err) {
     if (err instanceof ErrorWithStatus) {
-      res.status(err.status).send(err.toGraphQL());
+      let status = err.status;
+      // hasura expects 2xx or 4xx status codes
+      if (status < 200 || (status >= 300 && status < 400) || status >= 500) {
+        console.error(err);
+        status = 400;
+      }
+      res.status(status).send(err.toGraphQL());
     } else {
       console.error('Unknown error in handleActions:', err);
       const error = new ErrorWithStatus(400, 'Internal Server Error');

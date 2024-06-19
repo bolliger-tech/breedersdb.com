@@ -37,7 +37,7 @@
     "@quasar/cli": "^2.4.1",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^1.0.0",
     "@sentry/cli": "^2.32.1",
-    "@types/node": "^20.5.9",
+    "@types/node": "^20.14.6",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
     "@vue/test-utils": "^2.4.4",

@@ -57,6 +57,8 @@
     "yarn": ">= 1.21.1"
   },
   "trustedDependencies": [
-    "@sentry/cli"
+    "@sentry/cli",
+    "esbuild",
+    "vue-demi"
   ]
 }

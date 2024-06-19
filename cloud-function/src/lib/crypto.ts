@@ -13,11 +13,11 @@ export async function hashAndSaltPassword(password: string): Promise<string> {
 
 export async function verifyPassword(
   inputPassword: string,
-  passwordAndSalt: string,
+  passwordHash: string,
 ): Promise<boolean> {
   await sodium.ready;
 
-  return sodium.crypto_pwhash_str_verify(passwordAndSalt, inputPassword);
+  return sodium.crypto_pwhash_str_verify(passwordHash, inputPassword);
 }
 
 export function generateToken(): string {

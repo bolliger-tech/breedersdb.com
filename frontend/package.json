@@ -25,7 +25,7 @@
     "dotenv": "^16.4.5",
     "gql.tada": "^1.4.3",
     "pinia": "^2.0.11",
-    "quasar": "^2.6.0",
+    "quasar": "^2.16.4",
     "vue": "^3.4.18",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.0.12"
@@ -33,7 +33,7 @@
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.9.1",
     "@intlify/unplugin-vue-i18n": "^4.0.0",
-    "@quasar/app-vite": "^2.0.0-beta.5",
+    "@quasar/app-vite": "^2.0.0-beta.14",
     "@quasar/cli": "^2.4.1",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^1.0.0",
     "@sentry/cli": "^2.32.1",

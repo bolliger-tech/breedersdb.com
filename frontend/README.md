@@ -28,7 +28,7 @@ the Quasar CLI with Vite and TypeScript.
 1. Start the frontend (development mode with hot reloading, etc.)
 
    ```bash
-   bun --bun run quasar dev
+   bun --bun run dev
    ```
 
 ### Lint the files
@@ -40,7 +40,13 @@ bun --bun lint
 ### Build the app for production
 
 ```bash
-bun run quasar build
+bun run build
+```
+
+### Preview the app in production mode
+
+```bash
+bun run serve
 ```
 
 ### Customize the configuration

@@ -282,8 +282,8 @@ entity "**users**" {
   *""email"": //citext //
   *""password_hash"": //character varying(128) //
   *""locale"": //character varying(5) //
-  ""last_login"": //timestamp with time zone //
-  *""signin_attempts"": //integer //
+  ""last_signin"": //timestamp with time zone  : Successful signin.//
+  *""failed_signin_attempts"": //integer  : Failed attempts only. Reset on successful signin.//
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
 }

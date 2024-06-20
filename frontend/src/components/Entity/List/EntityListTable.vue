@@ -241,6 +241,11 @@ const orderedColumns = computed(() => {
   background-color: var(--q-shade);
 }
 
+:global(.entity-list-table .q-table__top) {
+  /* fixes safari columns shining throu */
+  transform: translateY(1px);
+}
+
 :global(.entity-list-table thead tr th) {
   position: sticky;
   z-index: 1;

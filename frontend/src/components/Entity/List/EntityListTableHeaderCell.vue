@@ -18,7 +18,9 @@
         size="sm"
         class="text-primary entity-list-table-header-cell__drag-handle"
         @mousedown="dragging = true"
+        @touchstart="dragging = true"
         @mouseup="dragging = false"
+        @touchend="dragging = false"
         @click.prevent.stop=""
       />
       <div class="column align-center">
@@ -135,6 +137,7 @@ function setDropEffectMove(e: DragEvent) {
   white-space: nowrap;
   height: v-bind(height);
   padding-right: 25px;
+  padding: 0 25px 0 16px;
 }
 
 :global(.entity-list-table.q-table--loading thead tr:last-child th) {
@@ -147,6 +150,7 @@ function setDropEffectMove(e: DragEvent) {
   flex-wrap: nowrap;
   align-items: center;
   transform: translateX(-8px);
+  height: v-bind(height);
 }
 
 .entity-list-table-header-cell__drag-handle {

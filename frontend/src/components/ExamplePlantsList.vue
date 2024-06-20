@@ -78,11 +78,13 @@ const query = graphql(`
 const { queryArg: search } = useQueryArg<string>({
   key: 's',
   defaultValue: '',
+  replace: true,
 });
 
 const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
   key: 'tab',
   defaultValue: 'active',
+  replace: true,
 });
 const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
   { value: 'active', label: 'Active' },
@@ -217,6 +219,7 @@ const columns = [
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
   defaultValue: columns.map((column) => column.name).slice(0, 5),
+  replace: true,
 });
 
 watch(error, (newValue) => {

@@ -28,6 +28,9 @@ services:
       HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS: 'false'
     env_file:
       - ./.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 
 volumes:
   db_data:

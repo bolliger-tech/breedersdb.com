@@ -1,5 +1,6 @@
 /migrate
 .env
+.env.yaml
 node_modules
 .sentryclirc
 /tmp

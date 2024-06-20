@@ -6,10 +6,8 @@ const defaultHeaders = {
   'Content-Type': 'application/json',
 };
 
-const apiUrl = 'http://localhost:8080/v1/graphql';
-
 export async function post(query: any) {
-  const resp = await fetch(apiUrl, {
+  const resp = await fetch(config.HASURA_GRAPHQL_URL, {
     method: 'POST',
     headers: defaultHeaders,
     body: JSON.stringify(query),
@@ -21,7 +19,7 @@ export async function postOrFail(
   query: any,
   headers: HeadersInit = defaultHeaders,
 ) {
-  const resp = await fetch(apiUrl, {
+  const resp = await fetch(config.HASURA_GRAPHQL_URL, {
     method: 'POST',
     headers,
     body: JSON.stringify(query),

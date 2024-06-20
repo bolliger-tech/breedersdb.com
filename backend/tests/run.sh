@@ -109,7 +109,7 @@ function start_cloud_function_in_bg() {
   echo "Starting cloud-function..."
   cd "${base_dir}/../../cloud-function"
   # because "bun run" spawns a child process, we create a subshell
-  ( bun run start & echo $! >&3 ) 3>cf_pid.tmp &
+  ( bun --env-file="${base_dir}/../.env" run start & echo $! >&3 ) 3>cf_pid.tmp &
   cf_pid=$(cat cf_pid.tmp)
   rm cf_pid.tmp
   sleep 1

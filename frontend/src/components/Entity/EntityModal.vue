@@ -1,7 +1,6 @@
 <template>
   <q-dialog
     v-model="visible"
-    full-height
     no-route-dismiss
     no-refocus
     @before-hide="() => $emit('before-hide')"

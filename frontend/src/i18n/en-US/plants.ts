@@ -1,13 +1,7 @@
 export const plants = {
   title: 'Plant | Plants',
 
-  list: {
-    // empty: 'No plants found',
-    // add: 'Add plant',
-    // search: 'Search plants',
-    // searchPlaceholder: 'Search plants...',
-    // searchNoResults: 'No plants found',
-  },
+  searchPlaceholder: 'Search by label ID or cultivar name',
 
   fields: {
     labelId: 'Label ID',

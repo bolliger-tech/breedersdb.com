@@ -1,43 +1,37 @@
 <template>
-  <q-table
-    v-model:pagination="pagination"
-    title="Plants"
-    :rows="data?.plants || []"
-    :columns="columns"
-    :visible-columns="visibleColumns"
-    row-key="id"
-    :loading="fetching"
-    :rows-per-page-options="[10, 100, 1000]"
-    flat
-    binary-state-sort
-    :filter="filter"
-    @request="onRequest"
+  <EntityList
+    v-model:tab="subset"
+    v-model:search="search"
+    :tabs="tabs"
+    :title="t('plants.title', 2)"
+    :search-placeholder="t('plants.searchPlaceholder')"
+    to-new-entity="/plants/new"
   >
-    <template #top-right>
-      <q-toggle v-model="showDisabled" label="Show eliminated plants" />
-      <q-input
-        v-model="filter"
-        borderless
-        dense
-        debounce="300"
-        placeholder="Search by Public ID or Cultivar Name"
-      >
-        <template #append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
+    <template #default>
+      <EntityListTable
+        v-model:pagination="pagination"
+        v-model:visible-columns="visibleColumns"
+        :rows="data?.plants || []"
+        :loading="fetching"
+        :all-columns="columns"
+        :row-click-navigates-to="(row) => `/plants/${row.id}`"
+      />
     </template>
-  </q-table>
+  </EntityList>
 </template>
 
 <script setup lang="ts">
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { QTable } from 'quasar';
-import { computed, ref, watch, onMounted } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
+import EntityList from './Entity/List/EntityList.vue';
+import { usePagination } from './Entity/List/usePagination';
+import { useQueryArg } from 'src/composables/useQueryArg';
+import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
+import { UnwrapRef } from 'vue';
 
-const { d } = useI18n();
+const { t, d } = useI18n();
 
 const query = graphql(`
   query Plants(
@@ -55,6 +49,7 @@ const query = graphql(`
       id
       label_id
       cultivar_name
+      plant_group_name
       serial_in_plant_row
       distance_plant_row_start
       geo_location
@@ -85,14 +80,28 @@ const query = graphql(`
   }
 `);
 
-const filter = ref('');
-const showDisabled = ref(false);
+const { queryArg: search } = useQueryArg<string>({
+  key: 's',
+  defaultValue: '',
+  replace: true,
+});
 
-const pagination = ref({
+const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
+  key: 'tab',
+  defaultValue: 'active',
+  replace: true,
+});
+const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
+  { value: 'active', label: 'Active' },
+  { value: 'disabled', label: 'Disabled' },
+  { value: 'all', label: 'All' },
+];
+
+const { pagination } = usePagination({
   sortBy: 'label_id',
   descending: false,
   page: 1,
-  rowsPerPage: 10,
+  rowsPerPage: 100,
   rowsNumber: 0,
 });
 
@@ -110,28 +119,30 @@ const orderBy = computed(() => {
 const where = computed(() => {
   const where: UseQueryArgs<typeof query>['variables'] = { _and: [] };
 
-  if (!showDisabled.value) {
+  if (subset.value === 'active') {
     where._and.push({ disabled: { _eq: false } });
+  } else if (subset.value === 'disabled') {
+    where._and.push({ disabled: { _eq: true } });
   }
 
-  if (filter.value) {
+  if (search.value) {
     const or: UseQueryArgs<typeof query>['variables'] = { _or: [] };
 
     or._or.push({
-      cultivar_name: { _ilike: `%${filter.value.replaceAll('.', '%.%')}%` },
+      cultivar_name: { _ilike: `%${search.value.replaceAll('.', '%.%')}%` },
     });
 
-    if (filter.value.match(/^\d+$/)) {
-      or._or.push({ label_id: { _eq: `${filter.value.padStart(8, '0')}` } });
+    if (search.value.match(/^\d+$/)) {
+      or._or.push({ label_id: { _eq: `${search.value.padStart(8, '0')}` } });
     }
 
-    if (filter.value.match(/^#\d+$/)) {
+    if (search.value.match(/^#\d+$/)) {
       or._or.push({
-        label_id: { _eq: `#${filter.value.replace('#', '').padStart(8, '0')}` },
+        label_id: { _eq: `#${search.value.replace('#', '').padStart(8, '0')}` },
       });
     }
 
-    if (filter.value === '#') {
+    if (search.value === '#') {
       or._or.push({ label_id: { _like: '#%' } });
     }
 
@@ -165,13 +176,19 @@ const columns = [
     align: 'left' as const,
     field: 'label_id',
     sortable: true,
-    required: true,
   },
   {
     name: 'cultivar_name',
     label: 'Cultivar Name',
     align: 'left' as const,
     field: 'cultivar_name',
+    sortable: true,
+  },
+  {
+    name: 'plant_group_name',
+    label: 'Group Name',
+    align: 'left' as const,
+    field: 'plant_group_name',
     sortable: true,
   },
   {
@@ -204,31 +221,29 @@ const columns = [
   },
 ];
 
-const visibleColumns = columns.map((column) => column.name);
+const { queryArg: visibleColumns } = useQueryArg<string[]>({
+  key: 'col',
+  defaultValue: columns.map((column) => column.name).slice(0, 5),
+  replace: true,
+});
 
-function onRequest({
-  pagination: params,
-}: Parameters<Required<QTable>['onRequest']>[0]) {
-  pagination.value = Object.assign(pagination.value, params);
-}
-
-watch(error, (error) => {
-  if (error) {
-    throw error;
+watch(error, (newValue) => {
+  if (newValue) {
+    throw newValue;
   }
 });
 
-watch(plantsCount, () => {
-  pagination.value.rowsNumber = plantsCount.value;
-});
+watch(
+  plantsCount,
+  (newValue) => {
+    pagination.value.rowsNumber = newValue;
+  },
+  { immediate: true },
+);
 
-watch(filter, (val) => {
-  if (val.startsWith('#')) {
-    showDisabled.value = true;
+watch(search, (newValue) => {
+  if (newValue.startsWith('#') && subset.value === 'active') {
+    subset.value = 'all';
   }
-});
-
-onMounted(() => {
-  pagination.value.rowsNumber = plantsCount.value;
 });
 </script>

@@ -10,6 +10,20 @@ import { retryExchange } from '@urql/exchange-retry';
 import { requestPolicyExchange } from '@urql/exchange-request-policy';
 import { LoadingBar } from 'quasar';
 
+function startLoadingBar() {
+  LoadingBar.start();
+}
+
+function stopLoadingBar() {
+  // for some very strange reason we must sometimes call stop multiple times
+  // to actually stop the loading bar. so this is a very dirty hack to solve
+  // that.
+  const timeout = Date.now() + 100; // 100ms
+  while (LoadingBar.isActive && Date.now() < timeout) {
+    LoadingBar.stop();
+  }
+}
+
 export function createUrqlClient() {
   const url = process.env.HASURA_GRAPHQL_URL;
 
@@ -25,14 +39,14 @@ export function createUrqlClient() {
   const loadingBarTriggers: MapExchangeOpts = {
     onOperation: (operation) => {
       if (['query', 'mutation'].includes(operation.kind)) {
-        LoadingBar.start();
+        startLoadingBar();
       }
     },
     onResult: () => {
-      LoadingBar.stop();
+      stopLoadingBar();
     },
     onError: () => {
-      LoadingBar.stop();
+      stopLoadingBar();
     },
   };
 

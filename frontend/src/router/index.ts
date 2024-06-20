@@ -25,7 +25,18 @@ export default route(function (/* { store, ssrContext } */) {
       : createWebHashHistory;
 
   const Router = createRouter({
-    scrollBehavior: () => ({ left: 0, top: 0 }),
+    scrollBehavior: (to, from, savedPosition) => {
+      if (to.path === from.path) {
+        // Keep scroll position when only query parameters change
+        return undefined;
+      }
+      if (savedPosition) {
+        // Keep scroll position when navigating back
+        return savedPosition;
+      }
+      // Scroll to the top when navigating to a new page
+      return { left: 0, top: 0 };
+    },
     routes,
 
     // Leave this as is and make changes in quasar.config.ts instead!

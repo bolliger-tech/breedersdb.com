@@ -1,17 +1,14 @@
-if (!process.env.HASURA_GRAPHQL_ADMIN_SECRET) {
-  console.error('HASURA_GRAPHQL_ADMIN_SECRET is not set');
-  process.exit(1);
-}
+import { config } from './config';
 
 const defaultHeaders = {
-  'X-Hasura-Admin-Secret': process.env.HASURA_GRAPHQL_ADMIN_SECRET,
+  'X-Hasura-Admin-Secret': config.HASURA_GRAPHQL_ADMIN_SECRET,
   'X-Hasura-Role': 'user',
   'Content-Type': 'application/json',
 };
 
 const apiUrl = 'http://localhost:8080/v1/graphql';
 
-export async function post(query) {
+export async function post(query: any) {
   const resp = await fetch(apiUrl, {
     method: 'POST',
     headers: defaultHeaders,
@@ -20,7 +17,10 @@ export async function post(query) {
   return resp.json();
 }
 
-export async function postOrFail(query, headers = defaultHeaders) {
+export async function postOrFail(
+  query: any,
+  headers: HeadersInit = defaultHeaders,
+) {
   const resp = await fetch(apiUrl, {
     method: 'POST',
     headers,

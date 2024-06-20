@@ -1,5 +1,6 @@
 import { test, expect, beforeAll } from 'bun:test';
 import { postOrFail } from '../fetch';
+import { config } from '../config';
 
 const deleteAllUsersMutation = /* GraphQL */ `
   mutation DeleteAllUsers {
@@ -34,7 +35,7 @@ const user1 = {
 };
 
 const adminHeaders = {
-  'X-Hasura-Admin-Secret': process.env.HASURA_GRAPHQL_ADMIN_SECRET,
+  'X-Hasura-Admin-Secret': config.HASURA_GRAPHQL_ADMIN_SECRET,
 };
 
 beforeAll(async () => {

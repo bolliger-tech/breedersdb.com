@@ -30,8 +30,11 @@ jobs:
       - name: Install bun
         uses: oven-sh/setup-bun@v1
 
-      - name: Install dependencies
+      - name: Install dependencies for tests
         run: bun install --cwd=backend/tests
+
+      - name: Install dependencies for cloud-function
+        run: bun install --cwd=cloud-function
 
       - name: Run backend tests
         run: ./backend/tests/run.sh

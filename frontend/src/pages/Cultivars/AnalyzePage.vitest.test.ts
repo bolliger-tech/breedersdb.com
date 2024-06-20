@@ -25,6 +25,10 @@ import {
   FilterOperatorValue,
 } from 'src/components/Query/Filter/filterRuleOperator';
 import { FilterRuleTerm } from 'src/components/Query/Filter/filterRuleTerm';
+import { useRoute } from 'vue-router';
+import { reactive } from 'vue';
+
+vi.mock('vue-router');
 
 addQuasarPlugins();
 
@@ -79,6 +83,18 @@ const mutationMock: MockMutation = (params) => {
   throw new Error(`missing mutationMock for: ${queryName}`);
 };
 
+const useRouteMock = reactive({
+  query: {},
+  matched: [],
+  fullPath: '',
+  hash: '',
+  params: {},
+  redirectedFrom: undefined,
+  name: '',
+  meta: {},
+  path: '',
+});
+
 function prepareForRegex(str: string) {
   return (
     str
@@ -94,6 +110,7 @@ function prepareForRegex(str: string) {
 describe('AnalyzePage', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
+    vi.mocked(useRoute).mockReturnValue(useRouteMock);
   });
 
   describe('filter ui basics', () => {

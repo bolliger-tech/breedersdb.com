@@ -9,7 +9,18 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'plants',
         children: [
-          { path: '', component: () => import('pages/Plants/IndexPage.vue') },
+          {
+            path: '',
+            component: () => import('pages/Plants/IndexPage.vue'),
+            children: [
+              {
+                path: ':id(\\d+)',
+                components: {
+                  modal: () => import('pages/Plants/ViewPage.vue'),
+                },
+              },
+            ],
+          },
         ],
       },
       {

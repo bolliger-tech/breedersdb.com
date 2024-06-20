@@ -1,4 +1,4 @@
-<template>VIEW: {{ entityId }} {{ typeof entityId }}</template>
+<template>EDIT: {{ entityId }} {{ typeof entityId }}</template>
 
 <script setup lang="ts">
 defineProps<{ entityId: number | string }>();

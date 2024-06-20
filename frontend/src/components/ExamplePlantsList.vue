@@ -1,23 +1,19 @@
 <template>
-  <EntityList
+  <EntityContainer
     v-model:tab="subset"
     v-model:search="search"
-    :tabs="tabs"
+    v-model:pagination="pagination"
+    v-model:visible-columns="visibleColumns"
     :title="t('plants.title', 2)"
+    :tabs="tabs"
     :search-placeholder="t('plants.searchPlaceholder')"
-    to-new-entity="/plants/new"
-  >
-    <template #default>
-      <EntityListTable
-        v-model:pagination="pagination"
-        v-model:visible-columns="visibleColumns"
-        :rows="data?.plants || []"
-        :loading="fetching"
-        :all-columns="columns"
-        :row-click-navigates-to="(row) => `/plants/${row.id}`"
-      />
-    </template>
-  </EntityList>
+    :rows="data?.plants || []"
+    :loading="fetching"
+    :all-columns="columns"
+    list-entities-path="/plants"
+    add-entity-path="/plants/new"
+    :view-entity-path-getter="(id) => `/plants/${id}`"
+  />
 </template>
 
 <script setup lang="ts">
@@ -25,11 +21,10 @@ import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
 import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import EntityList from './Entity/List/EntityList.vue';
 import { usePagination } from './Entity/List/usePagination';
 import { useQueryArg } from 'src/composables/useQueryArg';
-import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
 import { UnwrapRef } from 'vue';
+import EntityContainer from './Entity/EntityContainer.vue';
 
 const { t, d } = useI18n();
 

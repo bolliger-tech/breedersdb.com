@@ -9,8 +9,8 @@ the Quasar CLI with Vite and TypeScript.
 
 1. Install [bun](https://bun.sh) OR [node](nodejs.org) with [nvm](https://github.com/nvm-sh/nvm) and [yarn](https://yarnpkg.com/).
 
-> [!NOTE]
-> Support for bun is experimental. Currently node and yarn are recommended.
+   > [!NOTE]
+   > Support for bun is experimental. Currently node and yarn are recommended.
 
 1. Create `.env`:
 

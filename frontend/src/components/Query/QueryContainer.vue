@@ -61,17 +61,10 @@ const {
 onMounted(() => fetchBaseTableColumns());
 
 const baseTableColumnsWithAttributes = computed(() => {
-  if (
-    baseTableColumns.value.length > 0 &&
-    attributesAsColumns.value.length > 0
-  ) {
-    const sortedAttributesAsColumns = [...attributesAsColumns.value].sort(
-      (a, b) => localizedSortPredicate(a.label, b.label),
-    );
-    return [...baseTableColumns.value, ...sortedAttributesAsColumns];
-  }
-
-  return [];
+  const sortedAttributesAsColumns = [...attributesAsColumns.value].sort(
+    (a, b) => localizedSortPredicate(a.label, b.label),
+  );
+  return [...baseTableColumns.value, ...sortedAttributesAsColumns];
 });
 
 const attributionColumnLoader = useFilterColumns({

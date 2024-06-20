@@ -59,7 +59,7 @@ bun run build
 yarn build
 ```
 
-> [!NOTE]
+> [!WARNING]
 > Weird things happen when you build with bun, so use yarn instead.
 > If you really want to use bun, run `yarn build` first, bun should work
 > afterwards.

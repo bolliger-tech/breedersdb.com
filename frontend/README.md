@@ -7,19 +7,10 @@ the Quasar CLI with Vite and TypeScript.
 
 1. Start the backend (see [backend/README.md](/backend/README.md))
 
-1. Install [bun](https://bun.sh):
+1. Install [bun](https://bun.sh) OR [node](nodejs.org) with [nvm](https://github.com/nvm-sh/nvm) and [yarn](https://yarnpkg.com/).
 
-   ```bash
-   curl -fsSL https://bun.sh/install | bash
-   ```
-
-   Or node with nvm and yarn:
-
-   ```bash
-   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-   nvm install
-   npm install -g yarn
-   ```
+> [!NOTE]
+> Support for bun is experimental. Currently node and yarn are recommended.
 
 1. Create `.env`:
 

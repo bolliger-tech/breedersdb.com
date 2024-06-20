@@ -18,7 +18,9 @@
         size="sm"
         class="text-primary entity-list-table-header-cell__drag-handle"
         @mousedown="dragging = true"
+        @touchstart="dragging = true"
         @mouseup="dragging = false"
+        @touchend="dragging = false"
         @click.prevent.stop=""
       />
       <div class="column align-center">

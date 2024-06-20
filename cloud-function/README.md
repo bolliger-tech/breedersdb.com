@@ -6,7 +6,7 @@ This folder contains code intended to run as Google Cloud Function.
 
 1. Install:
 
-   - [nodejs](https://nodejs.org)
+   - [nodejs](https://nodejs.org) or [bun](https://bun.sh)
    - [gcloud cli](https://cloud.google.com/sdk/docs/install) (optional, for deploying)
      MacOS: `brew cask install google-cloud-sdk`
 
@@ -27,8 +27,9 @@ This folder contains code intended to run as Google Cloud Function.
 1. Run:
 
    ```bash
-    npm install
     npm run dev
+    # or
+    bun run dev
    ```
 
 ## Deploy

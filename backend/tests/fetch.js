@@ -20,10 +20,10 @@ export async function post(query) {
   return resp.json();
 }
 
-export async function postOrFail(query) {
+export async function postOrFail(query, headers = defaultHeaders) {
   const resp = await fetch(apiUrl, {
     method: 'POST',
-    headers: defaultHeaders,
+    headers,
     body: JSON.stringify(query),
   });
 

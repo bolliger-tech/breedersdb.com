@@ -221,10 +221,6 @@ const orderedColumns = computed(() => {
   max-height: 100vh;
   width: 100vw;
   max-width: 100vw;
-  left: 0;
-  top: 0;
-  z-index: 10000;
-  border-radius: 0;
 }
 
 :global(.entity-list-table thead tr:first-child th) {

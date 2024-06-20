@@ -1,5 +1,6 @@
 <template>
-  <PageLayout title="Dev">
+  <PageLayout>
+    <h1>Dev</h1>
     <RouterLink to="/dev/typo">Typography</RouterLink>
   </PageLayout>
 </template>

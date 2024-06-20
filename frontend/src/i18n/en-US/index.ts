@@ -6,7 +6,6 @@ import { cultivars } from './cultivars';
 import { filter } from './query-filter';
 import { result } from './query-result';
 import { datetimeFormats } from './datetime-formats';
-import { entity } from './entity-shared';
 import { attributions } from './attributions';
 import { crossings } from './crossings';
 import { lots } from './lots';
@@ -18,6 +17,7 @@ import { orchards } from './orchards';
 import { plantRows } from './plant-rows';
 import { rootstocks } from './rootstocks';
 import { users } from './users';
+import { entity } from './entity';
 
 const messages = {
   base,

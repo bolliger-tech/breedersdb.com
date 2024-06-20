@@ -34,7 +34,7 @@ export function useAttributesAsColumns() {
   const { localizedSortPredicate } = useLocalizedSort();
   const pause = ref(true);
 
-  const { data, fetching, error } = useQuery({
+  const { data, fetching, error, executeQuery } = useQuery({
     query,
     variables: undefined,
     pause,
@@ -57,6 +57,7 @@ export function useAttributesAsColumns() {
   return {
     activate: () => {
       pause.value = false;
+      executeQuery();
     },
     data: columns,
     fetching,

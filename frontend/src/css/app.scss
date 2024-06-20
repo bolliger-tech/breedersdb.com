@@ -22,13 +22,17 @@
   background-color: var(--q-bg-muted);
 }
 
+.bg-shade {
+  background-color: var(--q-shade);
+}
+
 @each $type in primary secondary accent {
   @for $i from 1 through 9 {
     .text-#{$type}-#{$i}00 {
       color: var(--bdb-#{$type}-#{$i}00);
     }
     .bg-#{$type}-#{$i}00 {
-      color: var(--bdb-#{$type}-#{$i}00);
+      background-color: var(--bdb-#{$type}-#{$i}00);
     }
   }
 }

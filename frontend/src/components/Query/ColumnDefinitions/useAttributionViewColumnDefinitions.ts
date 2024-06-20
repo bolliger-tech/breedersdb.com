@@ -21,7 +21,7 @@ const columnData: FilterColumnConstructorData[] = [
   {
     table: 'attributions_view',
     column: 'note',
-    labelKey: 'entity.note',
+    labelKey: 'entity.commonColumns.note',
     schema: {
       type: ColumnType.String,
       allowEmpty: true,

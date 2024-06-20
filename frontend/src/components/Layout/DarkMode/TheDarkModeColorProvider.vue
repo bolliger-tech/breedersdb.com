@@ -33,6 +33,7 @@ function setColors(isDark: boolean) {
     'link-color-hover',
     isDark ? 'var(--bdb-secondary-100)' : 'var(--bdb-secondary-500)',
   );
+  setCssVar('shade', isDark ? '#424242' : '#eeeeee');
 }
 
 watch(

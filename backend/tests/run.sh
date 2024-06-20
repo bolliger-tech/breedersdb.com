@@ -122,6 +122,8 @@ function stop_cloud_function() {
   fi
 }
 
+trap stop_cloud_function EXIT
+
 function run_tests() {
   cd "${base_dir}"
 
@@ -159,4 +161,4 @@ else
   echo
 fi
 
-run_tests || stop_cloud_function
+run_tests

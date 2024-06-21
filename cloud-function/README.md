@@ -6,7 +6,8 @@ This folder contains code intended to run as Google Cloud Function.
 
 1. Install:
 
-   - [nodejs](https://nodejs.org) or [bun](https://bun.sh)
+   - [Docker](https://www.docker.com/) with [Docker
+     Compose V2](https://docs.docker.com/compose/)
    - [gcloud cli](https://cloud.google.com/sdk/docs/install) (optional, for deploying)
      MacOS: `brew cask install google-cloud-sdk`
 
@@ -18,19 +19,13 @@ This folder contains code intended to run as Google Cloud Function.
 
 1. Set `HASURA_GRAPHQL_ADMIN_SECRET` in `.env`. Ensure it matches the `.env` of the frontend. Also set `ACTIONS_SECRET` and ensure it matches the `.env` of the backend.
 
-1. Install the dependencies:
+1. Start the container in watch mode
 
    ```bash
-   npm install
+   docker compose up --watch --build
    ```
 
-1. Run:
-
-   ```bash
-    npm run dev
-    # or
-    bun run dev
-   ```
+Check out [localhost:8090/health](http://localhost:8090/health) to see if it's running.
 
 ## Deploy
 

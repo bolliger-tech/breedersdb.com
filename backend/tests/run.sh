@@ -70,9 +70,13 @@ EOF
 }
 
 function prepare_test_environment() {
-  cd "${base_dir}/.."
-
   echo "Preparing test environment..."
+
+  # starting cloud function
+  cd "${base_dir}/../../cloud-function"
+  docker compose up --build --watch -d
+
+  cd "${base_dir}/.."
 
   # stop hasura
   docker compose stop hasura
@@ -104,26 +108,6 @@ EOF
   bun install
 }
 
-cf_pid=0
-function start_cloud_function_in_bg() {
-  echo "Starting cloud-function..."
-  cd "${base_dir}/../../cloud-function"
-  # because "bun run" spawns a child process, we create a subshell
-  ( bun --env-file="${base_dir}/../.env" run start & echo $! >&3 ) 3>cf_pid.tmp &
-  cf_pid=$(cat cf_pid.tmp)
-  rm cf_pid.tmp
-  sleep 1
-}
-function stop_cloud_function() {
-  echo "Stopping cloud-function..."
-  if [ $cf_pid -ne 0 ]; then
-    # Kill the entire process group
-    kill -SIGTERM -- -$(ps -o pgid= $cf_pid | grep -o '[0-9]*')
-  fi
-}
-
-trap stop_cloud_function EXIT
-
 function run_tests() {
   cd "${base_dir}"
 
@@ -148,7 +132,6 @@ done
 check_bash_version
 check_bun_installed
 ensure_postgres_is_running
-start_cloud_function_in_bg
 
 cd "${base_dir}/.."
 if ! docker compose exec hasura bash -c '[[ "${PG_DATABASE_URL}" == */test ]]' \

@@ -50,7 +50,6 @@ test('insert user', async () => {
     },
     adminHeaders,
   );
-  console.log(result);
   expect(result.data.InsertUser.email).toBe(user1.email);
 });
 
@@ -59,6 +58,5 @@ test('sign in', async () => {
     query: signinMutation,
     variables: user1,
   });
-  console.log(result);
   expect(result.data.SignIn.user_id).toBeGreaterThan(0);
 });

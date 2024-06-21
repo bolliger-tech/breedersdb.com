@@ -4,6 +4,8 @@ services:
     command: npm run dev
     ports:
       - '8090:8090'
+    networks:
+      - breedersdb_net
     develop:
       watch:
         - action: rebuild
@@ -17,3 +19,8 @@ services:
           target: /app
           ignore:
             - node_modules/
+            - README.md
+
+networks:
+  breedersdb_net:
+    name: breedersdb_net

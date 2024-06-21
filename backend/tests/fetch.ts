@@ -6,10 +6,10 @@ const defaultHeaders = {
   'Content-Type': 'application/json',
 };
 
-export async function post(query: any) {
+export async function post(query: any, headers: HeadersInit = defaultHeaders) {
   const resp = await fetch(config.HASURA_GRAPHQL_URL, {
     method: 'POST',
-    headers: defaultHeaders,
+    headers,
     body: JSON.stringify(query),
   });
   return resp.json();

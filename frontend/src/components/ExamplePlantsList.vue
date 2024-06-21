@@ -25,55 +25,36 @@ import { usePagination } from './Entity/List/usePagination';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { UnwrapRef } from 'vue';
 import EntityContainer from './Entity/EntityContainer.vue';
+import { plantFragment } from './Plant/plantFragment';
 
 const { t, d } = useI18n();
 
-const query = graphql(`
-  query Plants(
-    $limit: Int!
-    $offset: Int!
-    $orderBy: [plants_order_by!]
-    $where: plants_bool_exp = { disabled: { _eq: false } }
-  ) {
-    plants_aggregate(where: $where) {
-      aggregate {
-        count
-      }
-    }
-    plants(where: $where, limit: $limit, offset: $offset, order_by: $orderBy) {
-      id
-      label_id
-      cultivar_name
-      plant_group_name
-      serial_in_plant_row
-      distance_plant_row_start
-      geo_location
-      geo_location_accuracy
-      date_grafted
-      date_planted
-      date_eliminated
-      date_labeled
-      note
-      rootstock {
-        id
-        name
-      }
-      grafting {
-        id
-        name
-      }
-      plant_row {
-        id
-        name
-        orchard {
-          id
-          name
+const query = graphql(
+  `
+    query Plants(
+      $limit: Int!
+      $offset: Int!
+      $orderBy: [plants_order_by!]
+      $where: plants_bool_exp = { disabled: { _eq: false } }
+      $includeAttributions: Boolean = false
+    ) {
+      plants_aggregate(where: $where) {
+        aggregate {
+          count
         }
       }
-      created
+      plants(
+        where: $where
+        limit: $limit
+        offset: $offset
+        order_by: $orderBy
+      ) {
+        ...plantFragment
+      }
     }
-  }
-`);
+  `,
+  [plantFragment],
+);
 
 const { queryArg: search } = useQueryArg<string>({
   key: 's',
@@ -222,11 +203,15 @@ const { queryArg: visibleColumns } = useQueryArg<string[]>({
   replace: true,
 });
 
-watch(error, (newValue) => {
-  if (newValue) {
-    throw newValue;
-  }
-});
+watch(
+  error,
+  (newValue) => {
+    if (newValue) {
+      throw newValue;
+    }
+  },
+  { immediate: true },
+);
 
 watch(
   plantsCount,

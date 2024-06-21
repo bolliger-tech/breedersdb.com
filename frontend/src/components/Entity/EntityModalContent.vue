@@ -1,7 +1,9 @@
 <template>
   <q-card>
     <q-card-section class="row items-center q-py-sm">
-      <h4 class="q-my-sm">{{ title }}</h4>
+      <slot name="title"
+        ><h4 class="q-my-sm">{{ title }}</h4></slot
+      >
       <q-space />
       <q-btn v-close-popup icon="close" flat round dense />
     </q-card-section>
@@ -25,7 +27,13 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  title: string;
+export interface EntityModalContentProps {
+  title?: string;
+}
+
+defineProps<EntityModalContentProps>();
+defineSlots<{
+  title: [];
+  default: [];
 }>();
 </script>

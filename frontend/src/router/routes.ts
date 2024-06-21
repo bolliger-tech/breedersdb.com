@@ -15,17 +15,17 @@ const routes: RouteRecordRaw[] = [
             children: [
               {
                 path: ':entityId(\\d+)',
-                component: () => import('pages/Plants/ViewPage.vue'),
+                component: () => import('pages/Plants/ViewModal.vue'),
                 props: true,
               },
               {
                 path: ':entityId/edit',
-                component: () => import('pages/Plants/EditPage.vue'),
+                component: () => import('pages/Plants/EditModal.vue'),
                 props: true,
               },
               {
                 path: 'new',
-                component: () => import('pages/Plants/EditPage.vue'),
+                component: () => import('pages/Plants/EditModal.vue'),
                 props: { entityId: 'new' },
               },
             ],

@@ -27,7 +27,7 @@ jobs:
           echo "HASURA_GRAPHQL_ADMIN_SECRET=$HASURA_GRAPHQL_ADMIN_SECRET" >> backend/.env
           echo "ACTIONS_SECRET=$ACTIONS_SECRET" >> backend/.env
           echo "HASURA_GRAPHQL_AUTH_HOOK=http://cloud-function:8090/authenticate-hasura-request" >> backend/.env
-          echo "ACTIONS_URL=http:/cloud-function:8090/actions" >> backend/.env
+          echo "ACTIONS_URL=http://cloud-function:8090/actions" >> backend/.env
           # cloud-function
           echo "HASURA_GRAPHQL_ADMIN_SECRET=$HASURA_GRAPHQL_ADMIN_SECRET" >> cloud-function/.env
           echo "ACTIONS_SECRET=$ACTIONS_SECRET" >> cloud-function/.env

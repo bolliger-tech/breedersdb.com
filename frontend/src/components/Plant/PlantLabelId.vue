@@ -7,11 +7,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-export interface BaseLabelIdProps {
+export interface PlantLabelIdProps {
   labelId: string;
 }
 
-const props = defineProps<BaseLabelIdProps>();
+const props = defineProps<PlantLabelIdProps>();
 
 const hashLessLabelId = computed(() => props.labelId.replace(/^#/, ''));
 const isZeroPrefixed = computed(() => /^0\d{7}$/.test(hashLessLabelId.value));

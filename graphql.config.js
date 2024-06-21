@@ -8,5 +8,8 @@ module.exports = {
       },
     },
   ],
-  documents: ['/backend/tests/**/*.{js,ts}'],
+  documents: ['/backend/tests/**/*.{js,ts}', 'frontend/src/**/*.{js,ts}'],
+  extensions: {
+    customDirectives: ['@_unmask'],
+  },
 };

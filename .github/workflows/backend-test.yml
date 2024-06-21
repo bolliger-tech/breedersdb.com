@@ -31,7 +31,7 @@ jobs:
           # cloud-function
           echo "HASURA_GRAPHQL_ADMIN_SECRET=$HASURA_GRAPHQL_ADMIN_SECRET" >> cloud-function/.env
           echo "ACTIONS_SECRET=$ACTIONS_SECRET" >> cloud-function/.env
-          echo "HASURA_GRAPHQL_URL=http://localhost:8080/v1/graphql" >> cloud-function/.env
+          echo "HASURA_GRAPHQL_URL=http://hasura:8080/v1/graphql" >> cloud-function/.env
           echo "NODE_ENV=production" >> cloud-function/.env
 
       - name: Install Hasura-CLI
@@ -40,11 +40,8 @@ jobs:
       - name: Install bun
         uses: oven-sh/setup-bun@v1
 
-      - name: Install dependencies for tests
+      - name: Install dependencies for backend/tests
         run: bun install --cwd=backend/tests
-
-      - name: Install dependencies for cloud-function
-        run: bun install --cwd=cloud-function
 
       - name: Run backend tests
         run: ./backend/tests/run.sh

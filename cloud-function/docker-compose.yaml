@@ -1,0 +1,19 @@
+services:
+  cloud-function:
+    build: .
+    command: npm run dev
+    ports:
+      - '8090:8090'
+    develop:
+      watch:
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: .env
+        - action: rebuild
+          path: Dockerfile
+        - action: sync
+          path: ./
+          target: /app
+          ignore:
+            - node_modules/

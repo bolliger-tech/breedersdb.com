@@ -38,6 +38,10 @@ const routes: RouteRecordRaw[] = [
         children: [
           { path: '', component: () => import('pages/Dev/IndexPage.vue') },
           { path: 'typo', component: () => import('pages/Dev/TypoPage.vue') },
+          {
+            path: 'upload',
+            component: () => import('pages/Dev/ImageUploadPage.vue'),
+          },
         ],
       },
 

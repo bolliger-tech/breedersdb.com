@@ -1,6 +1,6 @@
 <template>
   <PageLayout>
-    <h1>Upload an image ⬆️☁️</h1>
+    <h1>📸⬆️☁️⬇️🏞️</h1>
     <form @submit.prevent="onSubmit">
       <input ref="fileInput" type="file" required />
       <button type="submit">Upload</button>
@@ -35,6 +35,8 @@
         URL:
         <a :href="uploadedFile.url" target="_blank">{{ uploadedFile.url }}</a>
       </p>
+      <h3>File Downloaded:</h3>
+      <img :src="uploadedFile.url" alt="Uploaded file" />
     </div>
   </PageLayout>
 </template>

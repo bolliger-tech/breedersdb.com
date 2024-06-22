@@ -39,8 +39,8 @@ const routes: RouteRecordRaw[] = [
           { path: '', component: () => import('pages/Dev/IndexPage.vue') },
           { path: 'typo', component: () => import('pages/Dev/TypoPage.vue') },
           {
-            path: 'upload',
-            component: () => import('pages/Dev/ImageUploadPage.vue'),
+            path: 'images',
+            component: () => import('pages/Dev/ImageUpDownloadPage.vue'),
           },
         ],
       },

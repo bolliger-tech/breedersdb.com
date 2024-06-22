@@ -308,3 +308,54 @@ gcloud compute forwarding-rules create $HTTPS_FORWARDING_RULE_NAME \
   --ports=443 \
   --load-balancing-scheme=EXTERNAL_MANAGED
 ```
+
+
+## Storage
+
+```bash
+export INSTANCE=beta
+export REGION=europe-west6
+export PROJECT_ID=breedersdb
+export BUCKET_NAME=${INSTANCE}-breedersdb
+
+gcloud services enable \
+  storage-component.googleapis.com
+
+gcloud storage buckets create gs://$BUCKET_NAME \
+  --location=$REGION \
+  --default-storage-class=STANDARD \
+  --uniform-bucket-level-access \
+  --project=$PROJECT_ID
+
+# add service account
+export STORAGE_SERVICE_ACCOUNT_NAME=${PROJECT_ID}-storage-serv-acc
+gcloud iam service-accounts create $STORAGE_SERVICE_ACCOUNT_NAME \
+    --display-name $STORAGE_SERVICE_ACCOUNT_NAME
+
+export STORAGE_SERVICE_ACCOUNT_EMAIL=$(gcloud iam service-accounts list | grep $STORAGE_SERVICE_ACCOUNT_NAME | awk '{print $2}')
+
+gcloud iam service-accounts keys create ${STORAGE_SERVICE_ACCOUNT_NAME}-key.json \
+    --iam-account=$STORAGE_SERVICE_ACCOUNT_EMAIL
+
+# grant all permissions on all buckets of project
+# gcloud projects add-iam-policy-binding $PPROJECT_ID \
+#     --member="serviceAccount:${STORAGE_SERVICE_ACCOUNT_EMAIL}" \
+#     --role="roles/storage.objectAdmin"
+
+# https://cloud.google.com/storage/docs/access-control/iam-roles
+# grant only write and read, no delete nor overwrite on the bucket
+# gsutil iam ch \
+#   "serviceAccount:${STORAGE_SERVICE_ACCOUNT_EMAIL}:roles/storage.# objectViewer" \
+#   gs://${BUCKET_NAME}
+# gsutil iam ch \
+#   "serviceAccount:${STORAGE_SERVICE_ACCOUNT_EMAIL}:roles/storage.# objectCreator" \
+#   gs://${BUCKET_NAME}
+
+# grant write, overwrite, delete and read permissions
+gsutil iam ch \
+  "serviceAccount:${STORAGE_SERVICE_ACCOUNT_EMAIL}:roles/storage.objectUser" \
+  gs://${BUCKET_NAME}
+
+# list permissions
+gsutil iam get gs://${BUCKET_NAME}
+```

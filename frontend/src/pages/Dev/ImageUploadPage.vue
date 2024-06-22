@@ -91,7 +91,7 @@ const onSubmit = async () => {
     message.value = 'Upload successful 🎉';
     uploadedFile.value = response;
   } catch (error) {
-    console.error('Upload failed:', error);
+    console.warn('Upload failed:', error);
   }
 };
 

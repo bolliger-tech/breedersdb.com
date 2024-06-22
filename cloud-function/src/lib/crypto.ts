@@ -31,3 +31,7 @@ export function hashToken(token: string): string {
 export function timingSafeEqual(a: String, b: String): boolean {
   return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
 }
+
+export function hashFile(file: Buffer): string {
+  return crypto.createHash('sha256').update(file).digest('hex');
+}

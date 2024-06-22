@@ -10,6 +10,7 @@ import {
 } from './lib/cookies';
 import { fetchGraphQL } from './lib/fetch';
 import { config } from './lib/config';
+import { handleUpload } from './upload/endpoint';
 
 // check actions/SignIn.ts for more details
 export async function authenticateRequest(cookie: string | undefined): Promise<{
@@ -103,6 +104,8 @@ ff.http('auth', (req: ff.Request, res: ff.Response) => {
       return handleActions(req, res);
     case 'health':
       return res.send('🫛🌱🌳🍎');
+    case 'upload':
+      return handleUpload(req, res);
     default:
       return res.status(404).send('Not Found');
   }

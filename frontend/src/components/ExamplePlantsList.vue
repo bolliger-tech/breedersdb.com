@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, nextTick, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { usePagination } from './Entity/List/usePagination';
 import { useQueryArg } from 'src/composables/useQueryArg';

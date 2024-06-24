@@ -31,6 +31,7 @@ const usersQuery = /* GraphQL */ `
       failed_signin_attempts
       last_signin
       locale
+      password_hash
       user_tokens_aggregate {
         aggregate {
           max {
@@ -99,6 +100,11 @@ const cookieReqHeaderFromRespHeader = (cookies: string) =>
     )
     .join('; ');
 
+// ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+// Warning: These tests are not independent but describe a sequence of actions
+// that depend on each other. They should be run in the order they are defined.
+// ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+
 const user1 = {
   email: 'tester1@breedersdb.com',
   password: 'Asdfasdf1!',
@@ -146,6 +152,31 @@ test('insert users', async () => {
   expect(result2.data.InsertUser.email).toBe(user2.email);
 });
 
+test('email uniqueness', async () => {
+  const result = await post({
+    query: insertUserMutation,
+    variables: { email: user1.email, password: user1.password },
+  });
+  expect(result.errors).not.toBe(undefined);
+  expect(result.errors[0].message).toContain('Uniqueness violation.');
+  expect(result.data).toBe(undefined);
+});
+
+test('email uniqueness not case sensitive', async () => {
+  const result = await post({
+    query: insertUserMutation,
+    variables: {
+      email: [...user1.email]
+        .map((c, i) => (i % 2 === 0 ? c.toUpperCase() : c))
+        .join(''),
+      password: user1.password,
+    },
+  });
+  expect(result.errors).not.toBe(undefined);
+  expect(result.errors[0].message).toContain('Uniqueness violation.');
+  expect(result.data).toBe(undefined);
+});
+
 test('get users', async () => {
   const result = await postOrFail({ query: usersQuery }, adminHeaders);
   expect(result.data.users.length).toBe(2);
@@ -156,6 +187,7 @@ test('get users', async () => {
   expect(result.data.users[0].failed_signin_attempts).toBe(0);
   expect(result.data.users[0].last_signin).toBe(null);
   expect(result.data.users[0].locale).not.toBe(null);
+  expect(result.data.users[0].password_hash).not.toContain(user1.password);
 
   expect(result.data.users[1].email).toBe(user2.email);
   expect(result.data.users[1].failed_signin_attempts).toBe(0);
@@ -187,6 +219,7 @@ test('sign in', async () => {
     throw new Error('No cookies');
   }
   user1CookiesReqHeader = cookieReqHeaderFromRespHeader(respCookies);
+  expect(user1CookiesReqHeader).not.toContain(user1.password);
 });
 
 test('sign in user2', async () => {
@@ -343,4 +376,26 @@ test('user token last verify', async () => {
   expect(
     result.data.users[1].user_tokens_aggregate.aggregate.max.last_verify,
   ).not.toBe(null); // still signed in
+});
+
+test('sign-in with new password', async () => {
+  const { json, resp } = await postOrFailRaw({
+    query: signinMutation,
+    variables: { email: user1.email, password: user1.password2 },
+  });
+  expect(json.data.SignIn.user_id).toBe(user1Id);
+
+  const respCookies = resp?.headers?.get('Set-Cookie');
+  expect(respCookies).toMatch('breedersdb.id.token=');
+  expect(respCookies).toMatch('breedersdb.user=');
+  if (!respCookies) {
+    throw new Error('No cookies');
+  }
+  user1CookiesReqHeader = cookieReqHeaderFromRespHeader(respCookies);
+
+  const result = await postOrFail(
+    { query: meQuery },
+    { cookie: user1CookiesReqHeader },
+  );
+  expect(result.data.Me.user.email).toBe(user1.email);
 });

@@ -9,7 +9,7 @@ This folder contains code intended to run as Google Cloud Function.
    - [Docker](https://www.docker.com/) with [Docker
      Compose V2](https://docs.docker.com/compose/)
    - [gcloud cli](https://cloud.google.com/sdk/docs/install) (optional, for deploying)
-     MacOS: `brew cask install google-cloud-sdk`
+     MacOS: `brew install google-cloud-sdk`
 
 1. Create `.env`:
 

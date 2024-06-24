@@ -72,11 +72,10 @@ EOF
 function prepare_test_environment() {
   echo "Preparing test environment..."
 
-  # starting cloud function
-  cd "${base_dir}/../../cloud-function"
-  docker compose up --build --watch -d
-
   cd "${base_dir}/.."
+
+  # starting cloud function
+  docker compose --file="${base_dir}/../../cloud-function/docker-compose.yaml" up --build --watch -d
 
   # stop hasura
   docker compose stop hasura

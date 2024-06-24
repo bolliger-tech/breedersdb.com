@@ -4,10 +4,10 @@ import { config } from '../config';
 
 const deleteAllUsersMutation = /* GraphQL */ `
   mutation DeleteAllUsers {
-    delete_user_tokens(where: { id: { _is_null: false } }) {
+    delete_user_tokens(where: {}) {
       affected_rows
     }
-    delete_users(where: { id: { _is_null: false } }) {
+    delete_users(where: {}) {
       affected_rows
     }
   }

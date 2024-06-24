@@ -1,8 +1,17 @@
-import { type FragmentOf, graphql } from 'src/graphql';
+import {
+  type FragmentOf,
+  graphql,
+  type AttributeDataTypes,
+  type AttributeTypes,
+} from 'src/graphql';
 
-export type EntityAttributionsViewFragment = FragmentOf<
-  typeof entityAttributionsViewFragment
->;
+export type EntityAttributionsViewFragment = Omit<
+  FragmentOf<typeof entityAttributionsViewFragment>,
+  'data_type' | 'attribute_type'
+> & {
+  data_type: AttributeDataTypes;
+  attribute_type: AttributeTypes;
+};
 
 export const entityAttributionsViewFragment = graphql(`
   fragment entityAttributionsViewFragment on attributions_view @_unmask {

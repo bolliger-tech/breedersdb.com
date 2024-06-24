@@ -21,8 +21,31 @@
 
     <template #default>
       <PlantEntityTable :plant="plant" />
+      <q-separator />
 
-      <!-- <pre>{{ JSON.stringify(plant, undefined, 2) }}</pre> -->
+      <!-- images: Carousel -->
+      <q-separator />
+      <EntityViewAttributionsTable
+        :rows="observations"
+        :title="t('attributions.observations')"
+      />
+      <q-separator />
+      <EntityViewAttributionsTable
+        :rows="treatments"
+        :title="t('attributions.treatments')"
+      />
+      <q-separator />
+      <EntityViewAttributionsTable
+        :rows="samples"
+        :title="t('attributions.samples')"
+      />
+      <q-separator />
+      <EntityViewAttributionsTable
+        :rows="other"
+        :title="t('attributions.others')"
+      />
+
+      <pre>{{ JSON.stringify(plant.attributions_views, undefined, 2) }}</pre>
     </template>
   </EntityModalContent>
 
@@ -43,6 +66,9 @@ import { computed } from 'vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
+import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
+import { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
+import { useI18n } from 'src/composables/useI18n';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -67,4 +93,23 @@ const { data, error } = useQuery({
 });
 
 const plant = computed(() => data.value?.plants_by_pk);
+const attributions = computed(
+  () =>
+    (plant.value?.attributions_views || []) as EntityAttributionsViewFragment[],
+);
+
+const { t } = useI18n();
+
+const observations = computed(() =>
+  attributions.value.filter((row) => row.attribute_type === 'OBSERVATION'),
+);
+const treatments = computed(() =>
+  attributions.value.filter((row) => row.attribute_type === 'TREATMENT'),
+);
+const samples = computed(() =>
+  attributions.value.filter((row) => row.attribute_type === 'SAMPLE'),
+);
+const other = computed(() =>
+  attributions.value.filter((row) => row.attribute_type === 'OTHER'),
+);
 </script>

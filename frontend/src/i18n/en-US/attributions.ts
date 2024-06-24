@@ -8,4 +8,9 @@ export const attributions = {
     value: 'Value',
     attributeName: 'Attribute',
   },
+
+  observations: 'Observations',
+  treatments: 'Treatments',
+  samples: 'Samples',
+  others: 'Others',
 };

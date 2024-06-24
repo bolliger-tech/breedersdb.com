@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 import type { FilterColumnConstructorData } from './useFilterColumns';
 
 export function useAttributionViewColumnDefinitions() {
@@ -23,7 +23,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'note',
     labelKey: 'entity.commonColumns.note',
     schema: {
-      type: ColumnType.String,
+      type: ColumnTypes.String,
       allowEmpty: true,
       validation: {
         maxLen: 2047,
@@ -34,9 +34,9 @@ const columnData: FilterColumnConstructorData[] = [
   {
     table: 'attributions_view',
     column: 'exceptional_attribution',
-    labelKey: 'attributions.columns.exceptional_attribution',
+    labelKey: 'attributions.columns.exceptionalAttribution',
     schema: {
-      type: ColumnType.Boolean,
+      type: ColumnTypes.Boolean,
       allowEmpty: false,
     },
   },
@@ -45,7 +45,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'author',
     labelKey: 'attributions.columns.author',
     schema: {
-      type: ColumnType.String,
+      type: ColumnTypes.String,
       allowEmpty: false,
       validation: {
         maxLen: 45,
@@ -56,9 +56,9 @@ const columnData: FilterColumnConstructorData[] = [
   {
     table: 'attributions_view',
     column: 'date_attributed',
-    labelKey: 'attributions.columns.date_attributed',
+    labelKey: 'attributions.columns.dateAttributed',
     schema: {
-      type: ColumnType.Date,
+      type: ColumnTypes.Date,
       allowEmpty: false,
     },
   },

@@ -1,6 +1,6 @@
 import type { TFunc } from 'src/composables/useI18n';
 import { type FilterRuleSchema } from './filterRule';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 
 export type FilterRuleOperatorJson = {
   value: FilterOperatorValue;
@@ -71,24 +71,24 @@ export class FilterRuleOperator {
       case FilterOperatorValue.Equal:
       case FilterOperatorValue.NotEqual:
         return [
-          ColumnType.String,
-          ColumnType.Integer,
-          ColumnType.Float,
-          ColumnType.Enum,
-          ColumnType.Date,
-          ColumnType.DateTime,
-          ColumnType.Time,
+          ColumnTypes.String,
+          ColumnTypes.Integer,
+          ColumnTypes.Float,
+          ColumnTypes.Enum,
+          ColumnTypes.Date,
+          ColumnTypes.DateTime,
+          ColumnTypes.Time,
         ];
       case FilterOperatorValue.Less:
       case FilterOperatorValue.LessOrEqual:
       case FilterOperatorValue.Greater:
       case FilterOperatorValue.GreaterOrEqual:
         return [
-          ColumnType.Integer,
-          ColumnType.Float,
-          ColumnType.Date,
-          ColumnType.DateTime,
-          ColumnType.Time,
+          ColumnTypes.Integer,
+          ColumnTypes.Float,
+          ColumnTypes.Date,
+          ColumnTypes.DateTime,
+          ColumnTypes.Time,
         ];
       case FilterOperatorValue.StartsWith:
       case FilterOperatorValue.StartsNotWith:
@@ -96,31 +96,31 @@ export class FilterRuleOperator {
       case FilterOperatorValue.NotContains:
       case FilterOperatorValue.EndsWith:
       case FilterOperatorValue.NotEndsWith:
-        return [ColumnType.String, ColumnType.Enum];
+        return [ColumnTypes.String, ColumnTypes.Enum];
       case FilterOperatorValue.Empty:
         return [
-          ColumnType.String,
-          ColumnType.Integer,
-          ColumnType.Float,
-          ColumnType.Enum,
-          ColumnType.Date,
-          ColumnType.DateTime,
-          ColumnType.Time,
+          ColumnTypes.String,
+          ColumnTypes.Integer,
+          ColumnTypes.Float,
+          ColumnTypes.Enum,
+          ColumnTypes.Date,
+          ColumnTypes.DateTime,
+          ColumnTypes.Time,
         ];
       case FilterOperatorValue.NotEmpty:
         return [
-          ColumnType.String,
-          ColumnType.Integer,
-          ColumnType.Float,
-          ColumnType.Enum,
-          ColumnType.Date,
-          ColumnType.DateTime,
-          ColumnType.Time,
-          ColumnType.Photo,
+          ColumnTypes.String,
+          ColumnTypes.Integer,
+          ColumnTypes.Float,
+          ColumnTypes.Enum,
+          ColumnTypes.Date,
+          ColumnTypes.DateTime,
+          ColumnTypes.Time,
+          ColumnTypes.Photo,
         ];
       case FilterOperatorValue.True:
       case FilterOperatorValue.False:
-        return [ColumnType.Boolean];
+        return [ColumnTypes.Boolean];
       default:
         throw new Error(`Unknown filter operator value: ${this.value}`);
     }

@@ -2,8 +2,10 @@ export const attributions = {
   title: 'Attribution | Attributions',
 
   columns: {
-    exceptional_attribution: 'Exceptional attribution',
+    exceptionalAttribution: 'Exceptional attribution',
     author: 'Author',
-    date_attributed: 'Date',
+    dateAttributed: 'Date',
+    value: 'Value',
+    attributeName: 'Attribute',
   },
 };

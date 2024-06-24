@@ -4,7 +4,7 @@ import {
   FilterOperatorValue,
 } from '../Filter/filterRuleOperator';
 import type { FilterRule } from '../Filter/filterRule';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
 import { toPascalCase, toSnakeCase } from 'src/utils/stringUtils';
 import type { AttributeDataTypes } from 'src/graphql';
@@ -243,7 +243,7 @@ function toComparison({
 }: {
   operator: FilterRuleOperator;
   term?: FilterRuleTerm;
-  type: ColumnType;
+  type: ColumnTypes;
 }): Comparison | undefined {
   const name = `v${varCounter++}`;
   const value = cast({ term, type: columnType });
@@ -337,7 +337,7 @@ function toComparison({
     case FilterOperatorValue.Empty:
       // becuase it it easier to implement on nested tables
       // we use double negation. see ruleToCriterion()
-      return columnType === ColumnType.String
+      return columnType === ColumnTypes.String
         ? {
             operator: GraphQLComparisonOperator.Neq,
             variable: { name, type: 'String', value: '' },
@@ -349,7 +349,7 @@ function toComparison({
             negate: true,
           };
     case FilterOperatorValue.NotEmpty:
-      return columnType === ColumnType.String
+      return columnType === ColumnTypes.String
         ? {
             operator: GraphQLComparisonOperator.Neq,
             variable: { name, type: 'String', value: '' },
@@ -379,53 +379,53 @@ function toComparison({
   }
 }
 
-function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnType }) {
+function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnTypes }) {
   switch (type) {
-    case ColumnType.String:
+    case ColumnTypes.String:
       return term?.value || '';
-    case ColumnType.Integer:
+    case ColumnTypes.Integer:
       return term ? parseInt(term.value) : NaN;
-    case ColumnType.Float:
+    case ColumnTypes.Float:
       return term ? parseFloat(term.value) : NaN;
-    case ColumnType.Boolean:
+    case ColumnTypes.Boolean:
       return String(term?.value).toLowerCase() === 'true';
-    case ColumnType.Enum:
+    case ColumnTypes.Enum:
       return term?.value || '';
-    case ColumnType.Date:
+    case ColumnTypes.Date:
       if (!term) return undefined;
       return new Date(term.value).toISOString().split('T')[0];
-    case ColumnType.DateTime:
+    case ColumnTypes.DateTime:
       if (!term) return undefined;
       return new Date(term.value).toISOString();
-    case ColumnType.Time:
+    case ColumnTypes.Time:
       // TODO: handle time
       throw new Error('Not implemented');
-    case ColumnType.Photo:
+    case ColumnTypes.Photo:
       return true;
     default:
       throw new Error(`Unknown type: ${type}`);
   }
 }
 
-function columnTypeToGraphQLType(type: ColumnType) {
+function columnTypeToGraphQLType(type: ColumnTypes) {
   switch (type) {
-    case ColumnType.String:
+    case ColumnTypes.String:
       return 'String';
-    case ColumnType.Integer:
+    case ColumnTypes.Integer:
       return 'Int';
-    case ColumnType.Float:
+    case ColumnTypes.Float:
       return 'float8';
-    case ColumnType.Boolean:
+    case ColumnTypes.Boolean:
       return 'Boolean';
-    case ColumnType.Enum:
+    case ColumnTypes.Enum:
       return 'String';
-    case ColumnType.Date:
+    case ColumnTypes.Date:
       return 'date';
-    case ColumnType.DateTime:
+    case ColumnTypes.DateTime:
       return 'timestamptz';
-    case ColumnType.Time:
+    case ColumnTypes.Time:
       throw new Error('Not implemented');
-    case ColumnType.Photo:
+    case ColumnTypes.Photo:
       return 'String';
     default:
       throw new Error(`Unknown type: ${type}`);
@@ -439,7 +439,7 @@ function toAttributeValueCondition({
   comparison: Comparison;
   rule: FilterRule;
 }) {
-  const attributeDataType = rule.type || ColumnType.String;
+  const attributeDataType = rule.type || ColumnTypes.String;
   const graphQLDataType =
     comparison.operator === GraphQLComparisonOperator.IsNull
       ? columnTypeToGraphQLType(attributeDataType)

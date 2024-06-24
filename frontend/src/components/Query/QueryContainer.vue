@@ -24,9 +24,9 @@ import { useAttributesAsColumns } from './ColumnDefinitions/useAttributesAsColum
 import { computed, onMounted } from 'vue';
 import { useFilterColumns } from './ColumnDefinitions/useFilterColumns';
 import { QTableColumn } from 'quasar';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 import { useI18n } from 'src/composables/useI18n';
-import { formatResultColumnValue } from './Result/formatResultColumnValue';
+import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { AttributionAggregation } from './Result/attributionAggregationTypes';
 
@@ -97,7 +97,7 @@ const error = computed(
 const resultColumns = computed<QTableColumn[]>(() => {
   return baseTableColumnsWithAttributes.value.flatMap((column) => {
     const isNum =
-      column.type === ColumnType.Integer || column.type === ColumnType.Float;
+      column.type === ColumnTypes.Integer || column.type === ColumnTypes.Float;
 
     if (column.isAttribute) {
       const attributions: QTableColumn[] = [
@@ -113,7 +113,7 @@ const resultColumns = computed<QTableColumn[]>(() => {
         },
       ];
 
-      if (isNum || column.type === ColumnType.Date) {
+      if (isNum || column.type === ColumnTypes.Date) {
         // add aggregations for numeric and date columns
         const aggs = [
           {
@@ -163,7 +163,7 @@ const resultColumns = computed<QTableColumn[]>(() => {
       format: (value: string | number | Date | null | undefined) =>
         formatResultColumnValue({
           value,
-          type: column.type ?? ColumnType.String,
+          type: column.type ?? ColumnTypes.String,
           t,
         }),
     };

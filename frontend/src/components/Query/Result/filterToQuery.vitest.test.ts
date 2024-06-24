@@ -3,7 +3,7 @@ import { filterToQuery } from './filterToQuery';
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
 import { FilterRule } from '../Filter/filterRule';
 import { FilterRuleColumn } from '../Filter/filterRuleColumn';
-import { ColumnType } from '../ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 import {
   FilterOperatorValue,
   FilterRuleOperator,
@@ -48,7 +48,7 @@ const filterRules = {
       tableColumnLabel: 'ID',
       schema: {
         allowEmpty: false,
-        type: ColumnType.Integer,
+        type: ColumnTypes.Integer,
         validation: {
           min: 0,
           max: Number.MAX_SAFE_INTEGER,
@@ -70,7 +70,7 @@ const filterRules = {
       tableColumnLabel: 'Name',
       schema: {
         allowEmpty: false,
-        type: ColumnType.String,
+        type: ColumnTypes.String,
         validation: {
           maxLen: 255,
           pattern: null,
@@ -91,7 +91,7 @@ const filterRules = {
       tableColumnLabel: 'Created',
       schema: {
         allowEmpty: false,
-        type: ColumnType.Date,
+        type: ColumnTypes.Date,
       },
     }),
     operator: new FilterRuleOperator({
@@ -108,7 +108,7 @@ const filterRules = {
       tableColumnLabel: 'Boolean',
       schema: {
         allowEmpty: false,
-        type: ColumnType.Boolean,
+        type: ColumnTypes.Boolean,
       },
     }),
     operator: new FilterRuleOperator({
@@ -125,7 +125,7 @@ const filterRules = {
       tableColumnLabel: 'String Allow Empty',
       schema: {
         allowEmpty: true,
-        type: ColumnType.String,
+        type: ColumnTypes.String,
         validation: {
           maxLen: 255,
           pattern: null,
@@ -145,7 +145,7 @@ const filterRules = {
       tableColumnLabel: 'Integer Allow Empty',
       schema: {
         allowEmpty: true,
-        type: ColumnType.Integer,
+        type: ColumnTypes.Integer,
         validation: {
           min: 0,
           max: 255,
@@ -166,7 +166,7 @@ const filterRules = {
       tableColumnLabel: 'String',
       schema: {
         allowEmpty: false,
-        type: ColumnType.String,
+        type: ColumnTypes.String,
         validation: {
           maxLen: 255,
           pattern: null,
@@ -186,7 +186,7 @@ const filterRules = {
       tableColumnLabel: 'Scab',
       schema: {
         allowEmpty: false,
-        type: ColumnType.Integer,
+        type: ColumnTypes.Integer,
         validation: {
           min: 0,
           max: 9,
@@ -383,7 +383,7 @@ cultivars(where: { _or: [
                   tableColumnLabel: 'String',
                   schema: {
                     allowEmpty: true,
-                    type: ColumnType.String,
+                    type: ColumnTypes.String,
                     validation: {
                       maxLen: 255,
                       pattern: null,
@@ -425,7 +425,7 @@ cultivars(where: { _or: [
                   tableColumnLabel: 'String',
                   schema: {
                     allowEmpty: true,
-                    type: ColumnType.String,
+                    type: ColumnTypes.String,
                     validation: {
                       maxLen: 255,
                       pattern: null,
@@ -468,7 +468,7 @@ cultivars(where: { _or: [
                   tableColumnLabel: 'String',
                   schema: {
                     allowEmpty: false,
-                    type: ColumnType.String,
+                    type: ColumnTypes.String,
                     validation: {
                       maxLen: 255,
                       pattern: null,
@@ -511,7 +511,7 @@ cultivars(where: { _or: [
                   tableColumnLabel: 'Integer',
                   schema: {
                     allowEmpty: false,
-                    type: ColumnType.Integer,
+                    type: ColumnTypes.Integer,
                     validation: {
                       min: 1,
                       max: 9,
@@ -555,7 +555,7 @@ cultivars(where: { _or: [
                   tableColumnLabel: 'Float',
                   schema: {
                     allowEmpty: false,
-                    type: ColumnType.Float,
+                    type: ColumnTypes.Float,
                     validation: {
                       min: 0,
                       max: 1,
@@ -599,7 +599,7 @@ cultivars(where: { _or: [
                   tableColumnLabel: 'Boolean',
                   schema: {
                     allowEmpty: false,
-                    type: ColumnType.Boolean,
+                    type: ColumnTypes.Boolean,
                   },
                 }),
                 operator: new FilterRuleOperator({
@@ -637,7 +637,7 @@ cultivars(where: { _or: [
                   tableColumnLabel: 'Date',
                   schema: {
                     allowEmpty: false,
-                    type: ColumnType.Date,
+                    type: ColumnTypes.Date,
                   },
                 }),
                 operator: new FilterRuleOperator({
@@ -1719,7 +1719,7 @@ attributes__255: attributions_views(where: { _and: [ { attribute_id: { _eq: 255 
           tableColumnLabel: 'Author',
           schema: {
             allowEmpty: false,
-            type: ColumnType.String,
+            type: ColumnTypes.String,
             validation: {
               maxLen: 255,
               pattern: null,
@@ -1824,7 +1824,7 @@ fragment AttributionFragment on attributions_view {
           tableColumnLabel: 'Author',
           schema: {
             allowEmpty: false,
-            type: ColumnType.String,
+            type: ColumnTypes.String,
             validation: {
               maxLen: 255,
               pattern: null,
@@ -1864,7 +1864,7 @@ fragment AttributionFragment on attributions_view {
           tableColumnLabel: 'Author',
           schema: {
             allowEmpty: false,
-            type: ColumnType.String,
+            type: ColumnTypes.String,
             validation: {
               maxLen: 255,
               pattern: null,

@@ -1,4 +1,4 @@
-export enum ColumnType {
+export enum ColumnTypes {
   String = 'string',
   Integer = 'integer',
   Float = 'double',

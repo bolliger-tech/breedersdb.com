@@ -13,12 +13,12 @@
 import { computed } from 'vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
-import { formatResultColumnValue } from './formatResultColumnValue';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { formatResultColumnValue } from 'src/utils/attributeUtils';
+import { ColumnTypes } from 'src/utils/columnTypes';
 import QueryResultTableCellAttributionOverlay from './QueryResultTableCellAttributionOverlay.vue';
 import QueryResultTableCellAttribution from './QueryResultTableCellAttribution.vue';
 import { useQuasar } from 'quasar';
-import { dataTypeToColumnType } from './dataTypeToColumnType';
+import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 
 export interface QueryResultTableCellAttributionValueProps {
   attribution: QueryAttributionsViewFields;
@@ -29,30 +29,30 @@ const props = defineProps<QueryResultTableCellAttributionValueProps>();
 const { t } = useI18n();
 
 const label = computed(() => {
-  const type = dataTypeToColumnType(props.attribution.data_type);
+  const type = dataTypeToColumnTypes(props.attribution.data_type);
   switch (type) {
-    case ColumnType.String:
+    case ColumnTypes.String:
       return props.attribution.text_value || undefined;
-    case ColumnType.Photo:
+    case ColumnTypes.Photo:
       return t('result.photo');
-    case ColumnType.Boolean:
+    case ColumnTypes.Boolean:
       return props.attribution.boolean_value ? t('result.yes') : t('result.no');
-    case ColumnType.Date:
+    case ColumnTypes.Date:
       return formatResultColumnValue({
         value: props.attribution.date_value,
         type,
         t,
       });
-    case ColumnType.Integer:
+    case ColumnTypes.Integer:
       return formatResultColumnValue({
         value: props.attribution.integer_value,
         type,
         t,
       });
-    case ColumnType.Float:
+    case ColumnTypes.Float:
       return formatResultColumnValue({
         value: props.attribution.float_value,
-        type: ColumnType.Float,
+        type: ColumnTypes.Float,
         t,
       });
     default:

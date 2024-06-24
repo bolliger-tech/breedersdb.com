@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FilterOperatorValue, FilterRuleOperator } from './filterRuleOperator';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 
 describe('FilterRuleOperator', () => {
   it('should create a new FilterRuleOperator', () => {
@@ -36,7 +36,7 @@ describe('FilterRuleOperator', () => {
     });
     operator.schema = {
       allowEmpty: true,
-      type: ColumnType.Boolean,
+      type: ColumnTypes.Boolean,
     };
 
     expect(operator.isValid).toBe(false);
@@ -48,7 +48,7 @@ describe('FilterRuleOperator', () => {
     });
     operator.schema = {
       allowEmpty: true,
-      type: ColumnType.Boolean,
+      type: ColumnTypes.Boolean,
     };
 
     expect(operator.isValid).toBe(true);
@@ -68,10 +68,10 @@ describe('FilterRuleOperator', () => {
     });
     operator.schema = {
       allowEmpty: true,
-      type: ColumnType.Boolean,
+      type: ColumnTypes.Boolean,
     };
 
-    expect(operator.type).toBe(ColumnType.Boolean);
+    expect(operator.type).toBe(ColumnTypes.Boolean);
   });
 
   it('should return allowEmpty: undefined when no schema', () => {
@@ -88,7 +88,7 @@ describe('FilterRuleOperator', () => {
     });
     operator.schema = {
       allowEmpty: true,
-      type: ColumnType.Boolean,
+      type: ColumnTypes.Boolean,
     };
 
     expect(operator.allowEmpty).toBe(true);
@@ -112,13 +112,13 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.String,
-        ColumnType.Integer,
-        ColumnType.Float,
-        ColumnType.Enum,
-        ColumnType.Date,
-        ColumnType.DateTime,
-        ColumnType.Time,
+        ColumnTypes.String,
+        ColumnTypes.Integer,
+        ColumnTypes.Float,
+        ColumnTypes.Enum,
+        ColumnTypes.Date,
+        ColumnTypes.DateTime,
+        ColumnTypes.Time,
       ]);
     });
 
@@ -128,13 +128,13 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.String,
-        ColumnType.Integer,
-        ColumnType.Float,
-        ColumnType.Enum,
-        ColumnType.Date,
-        ColumnType.DateTime,
-        ColumnType.Time,
+        ColumnTypes.String,
+        ColumnTypes.Integer,
+        ColumnTypes.Float,
+        ColumnTypes.Enum,
+        ColumnTypes.Date,
+        ColumnTypes.DateTime,
+        ColumnTypes.Time,
       ]);
     });
 
@@ -144,11 +144,11 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.Integer,
-        ColumnType.Float,
-        ColumnType.Date,
-        ColumnType.DateTime,
-        ColumnType.Time,
+        ColumnTypes.Integer,
+        ColumnTypes.Float,
+        ColumnTypes.Date,
+        ColumnTypes.DateTime,
+        ColumnTypes.Time,
       ]);
     });
 
@@ -158,11 +158,11 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.Integer,
-        ColumnType.Float,
-        ColumnType.Date,
-        ColumnType.DateTime,
-        ColumnType.Time,
+        ColumnTypes.Integer,
+        ColumnTypes.Float,
+        ColumnTypes.Date,
+        ColumnTypes.DateTime,
+        ColumnTypes.Time,
       ]);
     });
 
@@ -172,11 +172,11 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.Integer,
-        ColumnType.Float,
-        ColumnType.Date,
-        ColumnType.DateTime,
-        ColumnType.Time,
+        ColumnTypes.Integer,
+        ColumnTypes.Float,
+        ColumnTypes.Date,
+        ColumnTypes.DateTime,
+        ColumnTypes.Time,
       ]);
     });
 
@@ -186,11 +186,11 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.Integer,
-        ColumnType.Float,
-        ColumnType.Date,
-        ColumnType.DateTime,
-        ColumnType.Time,
+        ColumnTypes.Integer,
+        ColumnTypes.Float,
+        ColumnTypes.Date,
+        ColumnTypes.DateTime,
+        ColumnTypes.Time,
       ]);
     });
 
@@ -200,8 +200,8 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.String,
-        ColumnType.Enum,
+        ColumnTypes.String,
+        ColumnTypes.Enum,
       ]);
     });
 
@@ -211,8 +211,8 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.String,
-        ColumnType.Enum,
+        ColumnTypes.String,
+        ColumnTypes.Enum,
       ]);
     });
 
@@ -222,8 +222,8 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.String,
-        ColumnType.Enum,
+        ColumnTypes.String,
+        ColumnTypes.Enum,
       ]);
     });
 
@@ -233,8 +233,8 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.String,
-        ColumnType.Enum,
+        ColumnTypes.String,
+        ColumnTypes.Enum,
       ]);
     });
 
@@ -244,8 +244,8 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.String,
-        ColumnType.Enum,
+        ColumnTypes.String,
+        ColumnTypes.Enum,
       ]);
     });
 
@@ -255,8 +255,8 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.String,
-        ColumnType.Enum,
+        ColumnTypes.String,
+        ColumnTypes.Enum,
       ]);
     });
 
@@ -266,13 +266,13 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.String,
-        ColumnType.Integer,
-        ColumnType.Float,
-        ColumnType.Enum,
-        ColumnType.Date,
-        ColumnType.DateTime,
-        ColumnType.Time,
+        ColumnTypes.String,
+        ColumnTypes.Integer,
+        ColumnTypes.Float,
+        ColumnTypes.Enum,
+        ColumnTypes.Date,
+        ColumnTypes.DateTime,
+        ColumnTypes.Time,
       ]);
     });
 
@@ -282,14 +282,14 @@ describe('FilterRuleOperator', () => {
       });
 
       expect(operator.suitableRuleTypes).toEqual([
-        ColumnType.String,
-        ColumnType.Integer,
-        ColumnType.Float,
-        ColumnType.Enum,
-        ColumnType.Date,
-        ColumnType.DateTime,
-        ColumnType.Time,
-        ColumnType.Photo,
+        ColumnTypes.String,
+        ColumnTypes.Integer,
+        ColumnTypes.Float,
+        ColumnTypes.Enum,
+        ColumnTypes.Date,
+        ColumnTypes.DateTime,
+        ColumnTypes.Time,
+        ColumnTypes.Photo,
       ]);
     });
 
@@ -298,7 +298,7 @@ describe('FilterRuleOperator', () => {
         value: FilterOperatorValue.True,
       });
 
-      expect(operator.suitableRuleTypes).toEqual([ColumnType.Boolean]);
+      expect(operator.suitableRuleTypes).toEqual([ColumnTypes.Boolean]);
     });
 
     it('for False', () => {
@@ -306,7 +306,7 @@ describe('FilterRuleOperator', () => {
         value: FilterOperatorValue.False,
       });
 
-      expect(operator.suitableRuleTypes).toEqual([ColumnType.Boolean]);
+      expect(operator.suitableRuleTypes).toEqual([ColumnTypes.Boolean]);
     });
   });
 

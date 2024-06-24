@@ -33,13 +33,13 @@
 import { computed } from 'vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
-import { formatResultColumnValue } from './formatResultColumnValue';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { formatResultColumnValue } from 'src/utils/attributeUtils';
+import { ColumnTypes } from 'src/utils/columnTypes';
 import QueryResultTableCellAttribution from './QueryResultTableCellAttribution.vue';
 import QueryResultTableCellAttributionValue from './QueryResultTableCellAttributionValue.vue';
 import { useQuasar } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
-import { dataTypeToColumnType } from './dataTypeToColumnType';
+import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 
 export interface QueryResultTableCellAttributionValueAggregatedProps {
   attributions: QueryAttributionsViewFields[];
@@ -56,7 +56,7 @@ const label = computed(() => {
     return '';
   }
 
-  const type = dataTypeToColumnType(props.attributions[0].data_type);
+  const type = dataTypeToColumnTypes(props.attributions[0].data_type);
 
   switch (props.aggregation) {
     case AttributionAggregation.Count:
@@ -80,23 +80,23 @@ const label = computed(() => {
     case AttributionAggregation.Mean:
       return formatResultColumnValue({
         value: getMean(props.attributions, type),
-        type: type === ColumnType.Integer ? ColumnType.Float : type,
+        type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
         t,
       });
     case AttributionAggregation.Median:
       return formatResultColumnValue({
         value: getMedian(props.attributions, type),
-        type: type === ColumnType.Integer ? ColumnType.Float : type,
+        type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
         t,
       });
     case AttributionAggregation.StdDev:
-      if (type === ColumnType.Date) {
+      if (type === ColumnTypes.Date) {
         const stdDev = getStdDev(props.attributions, type);
         return stdDev === null ? '' : toTimespan(stdDev);
       }
       return formatResultColumnValue({
         value: getStdDev(props.attributions, type),
-        type: type === ColumnType.Integer ? ColumnType.Float : type,
+        type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
         t,
       });
     default:
@@ -104,31 +104,37 @@ const label = computed(() => {
   }
 });
 
-function getMin(attributions: QueryAttributionsViewFields[], type: ColumnType) {
+function getMin(
+  attributions: QueryAttributionsViewFields[],
+  type: ColumnTypes,
+) {
   const min = Math.min(...getValuesAsNumbers(attributions, type));
-  return type === ColumnType.Date ? new Date(min) : min;
+  return type === ColumnTypes.Date ? new Date(min) : min;
 }
 
-function getMax(attributions: QueryAttributionsViewFields[], type: ColumnType) {
+function getMax(
+  attributions: QueryAttributionsViewFields[],
+  type: ColumnTypes,
+) {
   const min = Math.max(...getValuesAsNumbers(attributions, type));
-  return type === ColumnType.Date ? new Date(min) : min;
+  return type === ColumnTypes.Date ? new Date(min) : min;
 }
 
 function getMean(
   attributions: QueryAttributionsViewFields[],
-  type: ColumnType,
+  type: ColumnTypes,
 ) {
   const values = getValuesAsNumbers(attributions, type);
   if (!values.length) {
     return null;
   }
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
-  return type === ColumnType.Date ? new Date(mean) : mean;
+  return type === ColumnTypes.Date ? new Date(mean) : mean;
 }
 
 function getMedian(
   attributions: QueryAttributionsViewFields[],
-  type: ColumnType,
+  type: ColumnTypes,
 ) {
   const sortedValues = getValuesAsNumbers(attributions, type).sort(
     (a, b) => a - b,
@@ -143,12 +149,12 @@ function getMedian(
         2
       : sortedValues[Math.floor(sortedValues.length / 2)];
 
-  return type === ColumnType.Date ? new Date(median) : median;
+  return type === ColumnTypes.Date ? new Date(median) : median;
 }
 
 function getStdDev(
   attributions: QueryAttributionsViewFields[],
-  type: ColumnType,
+  type: ColumnTypes,
 ) {
   const values = getValuesAsNumbers(attributions, type);
   if (!values.length) {
@@ -157,26 +163,28 @@ function getStdDev(
   const mean = getMean(attributions, type) as number;
   const variance =
     values.reduce((a, b) => a + (b - mean) ** 2, 0) / values.length;
-  return type === ColumnType.Date
+  return type === ColumnTypes.Date
     ? Math.sqrt(variance) / 1000 // seconds
     : Math.sqrt(variance);
 }
 
 function getValuesAsNumbers(
   attributions: QueryAttributionsViewFields[],
-  type: ColumnType,
+  type: ColumnTypes,
 ) {
-  if (![ColumnType.Integer, ColumnType.Float, ColumnType.Date].includes(type)) {
+  if (
+    ![ColumnTypes.Integer, ColumnTypes.Float, ColumnTypes.Date].includes(type)
+  ) {
     throw new Error(`Aggregation not available for: ${type}`);
   }
   return attributions
     .map((a) => {
       switch (type) {
-        case ColumnType.Integer:
+        case ColumnTypes.Integer:
           return a.integer_value;
-        case ColumnType.Float:
+        case ColumnTypes.Float:
           return a.float_value;
-        case ColumnType.Date:
+        case ColumnTypes.Date:
           return a.date_value ? new Date(a.date_value).getTime() : null;
         default:
           throw new Error(`Unsupported type: ${type}`);

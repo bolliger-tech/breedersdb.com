@@ -20,7 +20,7 @@ import { FilterRule } from './filterRule';
 import { useQueryStore } from '../useQueryStore';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityName } from 'src/composables/useEntityName';
-import { ColumnType } from '../ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 
 interface QueryFilterRuleExplainerProps {
   rule?: FilterRule;
@@ -38,24 +38,24 @@ const operator = computed(() => {
 });
 const term = computed(() => {
   switch (props.rule?.type) {
-    case ColumnType.String:
-    case ColumnType.Integer:
-    case ColumnType.Float:
-    case ColumnType.Enum:
+    case ColumnTypes.String:
+    case ColumnTypes.Integer:
+    case ColumnTypes.Float:
+    case ColumnTypes.Enum:
       return props.rule?.term?.value || '';
-    case ColumnType.Date:
+    case ColumnTypes.Date:
       try {
         return new Date(props.rule?.term?.value as string).toLocaleDateString();
       } catch (e) {
         return '';
       }
-    case ColumnType.DateTime:
+    case ColumnTypes.DateTime:
       try {
         return new Date(props.rule?.term?.value as string).toLocaleString();
       } catch (e) {
         return '';
       }
-    case ColumnType.Time:
+    case ColumnTypes.Time:
       try {
         return new Date(props.rule?.term?.value as string).toLocaleTimeString();
       } catch (e) {

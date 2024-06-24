@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, watch } from 'vue';
+import { computed, nextTick, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { usePagination } from './Entity/List/usePagination';
 import { useQueryArg } from 'src/composables/useQueryArg';
@@ -224,7 +224,8 @@ watch(
 
 watch(search, (newValue) => {
   if (newValue.startsWith('#') && subset.value === 'active') {
-    subset.value = 'all';
+    // give the browser a moment to update the URL before changing again (race condition)
+    window.setTimeout(() => (subset.value = 'all'), 20);
   }
 });
 </script>

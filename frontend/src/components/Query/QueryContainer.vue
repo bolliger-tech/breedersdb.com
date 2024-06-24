@@ -164,7 +164,6 @@ const resultColumns = computed<QTableColumn[]>(() => {
         formatResultColumnValue({
           value,
           type: column.type ?? ColumnTypes.String,
-          t,
         }),
     };
   });

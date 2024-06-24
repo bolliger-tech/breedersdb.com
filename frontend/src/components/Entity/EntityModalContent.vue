@@ -1,5 +1,5 @@
 <template>
-  <q-card>
+  <q-card style="width: clamp(310px, 90vw, 1000px); max-width: unset">
     <q-card-section class="row items-center q-py-sm">
       <slot name="title"
         ><h4 class="q-my-sm">{{ title }}</h4></slot
@@ -10,10 +10,7 @@
 
     <q-separator />
 
-    <q-card-section
-      style="max-height: calc(100vh - 160px); max-width: calc(100vw - 160px)"
-      class="scroll"
-    >
+    <q-card-section style="max-height: calc(100vh - 200px)" class="scroll">
       <slot></slot>
     </q-card-section>
 

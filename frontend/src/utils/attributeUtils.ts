@@ -1,5 +1,4 @@
 import type { AttributeDataTypes } from 'src/graphql';
-import type { TFunc } from 'src/composables/useI18n';
 import { ColumnTypes } from './columnTypes';
 
 export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
@@ -22,11 +21,9 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
 export function formatResultColumnValue({
   value,
   type,
-  t,
 }: {
   value: string | number | Date | null | boolean | undefined;
   type: ColumnTypes;
-  t: TFunc;
 }) {
   if (null === value || undefined === value) {
     return '';
@@ -35,7 +32,7 @@ export function formatResultColumnValue({
   } else if (typeof value === 'number') {
     return value.toLocaleString();
   } else if (typeof value === 'boolean') {
-    return value ? t('result.yes') : t('result.no');
+    return value ? '✓' : '✕';
   } else if (type === ColumnTypes.Integer || type === ColumnTypes.Float) {
     return parseInt(value).toLocaleString();
   } else if (type === ColumnTypes.Date) {

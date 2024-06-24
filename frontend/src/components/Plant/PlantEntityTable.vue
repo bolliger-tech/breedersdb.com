@@ -75,12 +75,17 @@ const { t } = useI18n();
 <style lang="scss" scoped>
 tr {
   white-space: nowrap;
-  line-height: 1.75em;
-  border-bottom: 1px solid $grey-3;
+  border-bottom: 1px solid $grey-4;
+}
+tr:hover {
+  background: rgba(0, 0, 0, 0.03);
 }
 .body--dark tr,
 .plant-entity-table--dark tr {
   border-color: $grey-8;
+}
+.body--dark tr:hover {
+  background: rgba(255, 255, 255, 0.07);
 }
 tr:last-child {
   border-bottom: none;
@@ -88,7 +93,7 @@ tr:last-child {
 
 .plant-entity-table__note {
   padding-top: 0.375em;
-  border-top: 1px solid $grey-3;
+  border-top: 1px solid $grey-4;
 }
 .plant-entity-table__note--dark,
 .body--dark .plant-entity-table__note {
@@ -97,15 +102,19 @@ tr:last-child {
 
 th {
   text-align: left;
-  padding-right: 1em;
-  padding-left: 0;
+  padding: 4px 8px;
   font-weight: bold;
 }
 
 td {
   text-align: right;
-  padding-left: 1em;
-  padding-right: 0;
+  padding: 4px 8px;
+}
+th:first-child {
+  padding-left: 16px;
+}
+td:last-child {
+  padding-right: 16px;
 }
 
 .plant-entity-table {

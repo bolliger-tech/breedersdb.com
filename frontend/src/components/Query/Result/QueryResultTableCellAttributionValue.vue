@@ -36,24 +36,21 @@ const label = computed(() => {
     case ColumnTypes.Photo:
       return t('result.photo');
     case ColumnTypes.Boolean:
-      return props.attribution.boolean_value ? t('result.yes') : t('result.no');
+      return props.attribution.boolean_value ? '✓' : '✕';
     case ColumnTypes.Date:
       return formatResultColumnValue({
         value: props.attribution.date_value,
         type,
-        t,
       });
     case ColumnTypes.Integer:
       return formatResultColumnValue({
         value: props.attribution.integer_value,
         type,
-        t,
       });
     case ColumnTypes.Float:
       return formatResultColumnValue({
         value: props.attribution.float_value,
         type: ColumnTypes.Float,
-        t,
       });
     default:
       throw new Error(`Column type not implemented: ${type}`);

@@ -1,14 +1,17 @@
 <template>
-  <div class="q-pa-md">
-    <q-table
-      flat
-      :title="title"
-      dense
-      :rows="rows"
-      :columns="columns"
-      row-key="name"
-    />
-  </div>
+  <q-table
+    class="q-mt-md"
+    flat
+    :title="title"
+    dense
+    :rows="rows"
+    :columns="columns"
+    row-key="name"
+    :rows-per-page-options="[0]"
+    hide-pagination
+    wrap-cells
+  >
+  </q-table>
 </template>
 
 <script setup lang="ts">
@@ -44,6 +47,7 @@ const columns = [
     field: (row: EntityAttributionsViewFragment) => getValue(row),
     align: 'left' as const,
     sortable: true,
+    style: 'max-width: clamp(100px, 20vw, 300px);',
   },
   {
     name: 'date_attributed',
@@ -66,7 +70,7 @@ const columns = [
     field: 'exceptional_attribution',
     align: 'left' as const,
     sortable: true,
-    format: (val: boolean) => (val ? '☑' : ''),
+    format: (val: boolean) => (val ? '✓' : ''),
   },
 ];
 
@@ -80,6 +84,8 @@ function getValue(row: EntityAttributionsViewFragment) {
     row.date_value ??
     row.boolean_value;
 
-  return formatResultColumnValue({ value, type, t });
+  // TODO: photo
+
+  return formatResultColumnValue({ value, type });
 }
 </script>

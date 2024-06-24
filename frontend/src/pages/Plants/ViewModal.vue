@@ -21,10 +21,9 @@
 
     <template #default>
       <PlantEntityTable :plant="plant" />
-      <q-separator />
 
       <!-- images: Carousel -->
-      <q-separator />
+
       <EntityViewAttributionsTable
         :rows="observations"
         :title="t('attributions.observations')"

@@ -63,31 +63,26 @@ const label = computed(() => {
       return formatResultColumnValue({
         value: props.attributions.length,
         type,
-        t,
       });
     case AttributionAggregation.Min:
       return formatResultColumnValue({
         value: getMin(props.attributions, type),
         type,
-        t,
       });
     case AttributionAggregation.Max:
       return formatResultColumnValue({
         value: getMax(props.attributions, type),
         type,
-        t,
       });
     case AttributionAggregation.Mean:
       return formatResultColumnValue({
         value: getMean(props.attributions, type),
         type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
-        t,
       });
     case AttributionAggregation.Median:
       return formatResultColumnValue({
         value: getMedian(props.attributions, type),
         type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
-        t,
       });
     case AttributionAggregation.StdDev:
       if (type === ColumnTypes.Date) {
@@ -97,7 +92,6 @@ const label = computed(() => {
       return formatResultColumnValue({
         value: getStdDev(props.attributions, type),
         type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
-        t,
       });
     default:
       throw new Error(`Unsupported aggregation: ${props.aggregation}`);

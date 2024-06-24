@@ -1,6 +1,79 @@
-actions: []
+actions:
+  - name: ChangePassword
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}'
+      headers:
+        - name: X-Actions-Secret
+          value_from_env: ACTIONS_SECRET
+    permissions:
+      - role: user
+  - name: InsertUser
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}'
+      headers:
+        - name: X-Actions-Secret
+          value_from_env: ACTIONS_SECRET
+    permissions:
+      - role: user
+  - name: Me
+    definition:
+      kind: ""
+      handler: '{{ACTIONS_URL}}'
+      forward_client_headers: true
+      headers:
+        - name: X-Actions-Secret
+          value_from_env: ACTIONS_SECRET
+    permissions:
+      - role: user
+      - role: public
+  - name: SignIn
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}'
+      forward_client_headers: true
+      headers:
+        - name: X-Actions-Secret
+          value_from_env: ACTIONS_SECRET
+    permissions:
+      - role: user
+      - role: public
+  - name: SignOut
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}'
+      forward_client_headers: true
+      headers:
+        - name: X-Actions-Secret
+          value_from_env: ACTIONS_SECRET
+    permissions:
+      - role: user
 custom_types:
   enums: []
   input_objects: []
-  objects: []
+  objects:
+    - name: InsertUserOutput
+    - name: SignInOutput
+    - name: SignOutOutput
+    - name: MeOutput
+      relationships:
+        - field_mapping:
+            id: id
+          name: user
+          remote_table:
+            name: users
+            schema: public
+          source: Postgres
+          type: object
+    - name: UserOutput
+      relationships:
+        - field_mapping:
+            id: id
+          name: user
+          remote_table:
+            name: users
+            schema: public
+          source: Postgres
+          type: object
   scalars: []

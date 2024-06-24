@@ -35,6 +35,10 @@ The application follows a client-server pattern. The backend (server) is a Graph
 
 See the [backend README](/backend/README.md).
 
+### Cloud Function
+
+See the [cloud-function README](/cloud-function/README.md).
+
 ### Frontend
 
 See the [frontend README](/frontend/README.md).

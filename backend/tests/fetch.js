@@ -1,7 +1,11 @@
-import get_hasura_jwt from './auth.js';
+if (!process.env.HASURA_GRAPHQL_ADMIN_SECRET) {
+  console.error('HASURA_GRAPHQL_ADMIN_SECRET is not set');
+  process.exit(1);
+}
 
 const defaultHeaders = {
-  Authorization: `Bearer ${await get_hasura_jwt()}`,
+  'X-Hasura-Admin-Secret': process.env.HASURA_GRAPHQL_ADMIN_SECRET,
+  'X-Hasura-Role': 'user',
   'Content-Type': 'application/json',
 };
 

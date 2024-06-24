@@ -1,0 +1,54 @@
+table:
+  name: users
+  schema: public
+array_relationships:
+  - name: user_tokens
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: user_tokens
+          schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns:
+        - created
+        - email
+        - id
+        - last_signin
+        - locale
+        - modified
+        - failed_signin_attempts
+      filter:
+        id:
+          _eq: -1
+    comment: Dummy to ensure User type is available if not signed in
+  - role: user
+    permission:
+      columns:
+        - email
+        - locale
+        - id
+        - failed_signin_attempts
+        - created
+        - last_signin
+        - modified
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - email
+        - locale
+      filter: {}
+      check: null
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        id:
+          _neq: X-Hasura-User-Id
+    comment: ""

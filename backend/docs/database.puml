@@ -266,6 +266,28 @@ entity "**rootstocks**" #0000ff12 ##000088 {
   ""modified"": //timestamp with time zone //
 }
 
+entity "**user_tokens**" {
+  + ""id"": //integer [PK]//
+  --
+  *""user_id"": //integer [FK]//
+  *""token_hash"": //character varying(64) //
+  *""type"": //character varying(10) //
+  *""created"": //timestamp with time zone //
+  ""last_verify"": //timestamp with time zone //
+}
+
+entity "**users**" {
+  + ""id"": //integer [PK]//
+  --
+  *""email"": //citext //
+  *""password_hash"": //character varying(128) //
+  *""locale"": //character varying(5) //
+  ""last_signin"": //timestamp with time zone  : Successful signin.//
+  *""failed_signin_attempts"": //integer  : Failed attempts only. Reset on successful signin.//
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
 "**attribute_values**"   }--  "**attributes**"
 
 "**attribute_values**"   }--  "**attributions**"
@@ -319,4 +341,6 @@ entity "**rootstocks**" #0000ff12 ##000088 {
 "**pollen**"   }--  "**cultivars**"
 
 "**queries**"   }--  "**query_groups**"
+
+"**user_tokens**"   }--  "**users**"
 @enduml

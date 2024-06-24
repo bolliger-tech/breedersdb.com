@@ -1,7 +1,7 @@
 <template>
   <EntityListTable
     v-model:pagination="pagination"
-    :visible-columns="visibleColumns"
+    v-model:visible-columns="visibleColumns"
     :rows="rows"
     :loading="loading"
     :all-columns="allColumns"

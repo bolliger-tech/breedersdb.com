@@ -1,3 +1,3 @@
-export const groups = {
+export const plantGroups = {
   title: 'Group | Groups',
 };

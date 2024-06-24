@@ -29,7 +29,8 @@ const query = graphql(
   `
     query QueryResultTableCellAttributionDetails(
       $id: Int!
-      $includeAttributions: Boolean! = false
+      $withAttributions: Boolean! = false
+      $withSegments: Boolean! = true
     ) {
       attributions_view(where: { id: { _eq: $id } }) {
         id

@@ -10,6 +10,25 @@ export const plantFragment = graphql(
       label_id
       cultivar_name
       plant_group_name
+      plant_group @include(if: $withSegments) {
+        id
+        name_segment
+        name_override
+        cultivar {
+          id
+          name_segment
+          name_override
+          lot {
+            id
+            name_segment
+            name_override
+            crossing {
+              id
+              name
+            }
+          }
+        }
+      }
       serial_in_plant_row
       distance_plant_row_start
       geo_location
@@ -36,7 +55,7 @@ export const plantFragment = graphql(
         }
       }
       created
-      attributions_views @include(if: $includeAttributions) {
+      attributions_views @include(if: $withAttributions) {
         ...entityAttributionsViewFragment
       }
     }

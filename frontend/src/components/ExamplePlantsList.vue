@@ -36,7 +36,8 @@ const query = graphql(
       $offset: Int!
       $orderBy: [plants_order_by!]
       $where: plants_bool_exp = { disabled: { _eq: false } }
-      $includeAttributions: Boolean = false
+      $withAttributions: Boolean = false
+      $withSegments: Boolean = false
     ) {
       plants_aggregate(where: $where) {
         aggregate {

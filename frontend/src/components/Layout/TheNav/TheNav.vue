@@ -51,8 +51,8 @@ const items: NavLevel0Props['items'] = [
     ],
   },
   {
-    label: t('groups.title', 2),
-    to: '/groups',
+    label: t('plantGroups.title', 2),
+    to: '/plant-groups',
     icon: 'tree-group',
     children: [
       {

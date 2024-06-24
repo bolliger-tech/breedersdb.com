@@ -6,9 +6,17 @@
   <EntityModalContent v-else-if="plant">
     <template #title>
       <BaseSpriteIcon name="tree" color="grey-7" size="lg" />
-      <h4 class="q-ma-sm">
-        <PlantLabelId :label-id="plant.label_id" />
-      </h4>
+      <div class="q-ma-sm">
+        <h4 class="q-ma-none">
+          <PlantLabelId :label-id="plant.label_id" />
+        </h4>
+        <EntityName
+          :plant-group="plant.plant_group"
+          :cultivar="plant.plant_group?.cultivar"
+          :lot="plant.plant_group?.cultivar.lot"
+          :crossing="plant.plant_group?.cultivar.lot.crossing"
+        />
+      </div>
     </template>
 
     <template #default>
@@ -34,12 +42,17 @@ import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
 import { computed } from 'vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
+import EntityName from 'src/components/Entity/EntityName.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query Plant($id: Int!, $includeAttributions: Boolean = true) {
+    query Plant(
+      $id: Int!
+      $withAttributions: Boolean = true
+      $withSegments: Boolean = true
+    ) {
       plants_by_pk(id: $id) {
         ...plantFragment
       }

@@ -9,7 +9,7 @@ import { datetimeFormats } from './datetime-formats';
 import { attributions } from './attributions';
 import { crossings } from './crossings';
 import { lots } from './lots';
-import { groups } from './groups';
+import { plantGroups } from './plant-groups';
 import { motherPlants } from './mother-plants';
 import { pollen } from './pollen';
 import { graftings } from './graftings';
@@ -27,7 +27,7 @@ const messages = {
   entity,
   crossings,
   lots,
-  groups,
+  plantGroups,
   cultivars,
   plants,
   motherPlants,

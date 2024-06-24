@@ -50,20 +50,17 @@
           <PlantLabelId :label-id="data.plant.label_id" />
         </RouterLink>
         <br />
-        <RouterLink
-          v-if="data.cultivar"
-          :to="`/cultivars/${data.cultivar.id}`"
-          class="link"
-        >
-          {{ data.plant.cultivar_name }}
-        </RouterLink>
-        <template v-else>
-          {{ data.plant.cultivar_name }}
-        </template>
+        <EntityName
+          :plant-group="data.plant.plant_group"
+          :cultivar="data.plant.plant_group?.cultivar"
+          :lot="data.plant.plant_group?.cultivar.lot"
+          :crossing="data.plant.plant_group?.cultivar.lot.crossing"
+          dark
+        />
       </div>
     </div>
-    <div class="q-mt-sm">
-      <PlantEntityTable :plant="data.plant" />
+    <div class="q-mt-sm text-body2">
+      <PlantEntityTable :plant="data.plant" dark />
     </div>
   </template>
 
@@ -147,6 +144,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { AttributionDetails } from './QueryResultTableCellAttributionOverlay.vue';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import { localizeDate } from 'src/utils/dateUtils';
+import EntityName from 'src/components/Entity/EntityName.vue';
 
 export interface QueryResultTableCellAttributionOverlayDetailsProps {
   data: AttributionDetails;

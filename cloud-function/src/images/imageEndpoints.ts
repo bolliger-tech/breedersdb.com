@@ -4,8 +4,12 @@ import { hashFile } from '../lib/crypto';
 import { config } from '../lib/config';
 import { downloadFile, uploadFile } from '../lib/storage';
 import { buffer } from 'node:stream/consumers';
+import sharp from 'sharp';
 
-// TODO body parser size limit
+const IMG_MAX_SIZE_MB = 16;
+
+// Max uncompressed HTTP request size: 32MB
+// https://cloud.google.com/functions/quotas#resource_limits
 export async function handleUpload(req: ff.Request, res: ff.Response) {
   if (['POST', 'OPTIONS'].includes(req.method) === false) {
     return res.status(405).send('Method Not Allowed');
@@ -36,10 +40,28 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
     console.log('received:', file);
   }
 
-  // TODO validate file
-  const suffix =
-    (req.headers?.['x-file-name'] as string)?.split('.').pop() || 'unknown';
-  const fileName = `${hashFile(file)}.${suffix}`;
+  // validate and convert image
+  let image;
+  try {
+    image = await sharp(req.body)
+      .rotate() // auto rotate based on exif data
+      .jpeg({ quality: 90 }) // convert to jpeg
+      .toBuffer();
+  } catch (e) {
+    console.error('Error parsing image', e);
+  }
+  if (!image) {
+    res.status(500).send('Error parsing image');
+    return;
+  }
+
+  // check image size
+  if (image.length > IMG_MAX_SIZE_MB * 1024 * 1024) {
+    res.status(400).send(`Image too large, max ${IMG_MAX_SIZE_MB}MB`);
+    return;
+  }
+
+  const fileName = `${hashFile(image)}.jpeg`;
 
   try {
     await uploadFile(file, fileName);

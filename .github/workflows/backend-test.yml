@@ -21,8 +21,18 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "HASURA_GRAPHQL_ADMIN_SECRET=$(openssl rand -hex 16)" >> backend/.env
-          echo "HASURA_GRAPHQL_JWT_SECRET='{\"audience\":\"breedersDB\",\"type\":\"HS256\",\"key\":\"$(openssl rand -hex 16)\"}'" >> backend/.env
+          HASURA_GRAPHQL_ADMIN_SECRET=$(openssl rand -hex 16)
+          ACTIONS_SECRET=$(openssl rand -hex 16)
+          # backend
+          echo "HASURA_GRAPHQL_ADMIN_SECRET=$HASURA_GRAPHQL_ADMIN_SECRET" >> backend/.env
+          echo "ACTIONS_SECRET=$ACTIONS_SECRET" >> backend/.env
+          echo "HASURA_GRAPHQL_AUTH_HOOK=http://cloud-function:8090/authenticate-hasura-request" >> backend/.env
+          echo "ACTIONS_URL=http://cloud-function:8090/actions" >> backend/.env
+          # cloud-function
+          echo "HASURA_GRAPHQL_ADMIN_SECRET=$HASURA_GRAPHQL_ADMIN_SECRET" >> cloud-function/.env
+          echo "ACTIONS_SECRET=$ACTIONS_SECRET" >> cloud-function/.env
+          echo "HASURA_GRAPHQL_URL=http://hasura:8080/v1/graphql" >> cloud-function/.env
+          echo "NODE_ENV=production" >> cloud-function/.env
 
       - name: Install Hasura-CLI
         run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
@@ -30,7 +40,7 @@ jobs:
       - name: Install bun
         uses: oven-sh/setup-bun@v1
 
-      - name: Install dependencies
+      - name: Install dependencies for backend/tests
         run: bun install --cwd=backend/tests
 
       - name: Run backend tests

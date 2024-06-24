@@ -1,5 +1,12 @@
 {
-  "dependencies": {
-    "jose": "^5.2.3"
+  "name": "tests",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20.14.6",
+    "prettier": "^3.3.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   }
 }

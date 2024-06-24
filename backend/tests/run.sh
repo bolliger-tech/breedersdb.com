@@ -14,7 +14,7 @@ NC="\e[0m"
 
 function usage() {
   cat << EOF
-Usage: 
+Usage:
   $0 [options]
 
 Options:
@@ -39,6 +39,13 @@ Description:
 EOF
 }
 
+function check_bash_version() {
+  if [ "${BASH_VERSINFO[0]}" -lt 5 ]; then
+    echo "ERROR: Bash 5 or later is required to run this script."
+    exit 1
+  fi
+}
+
 function check_bun_installed() {
   if ! command -v bun &> /dev/null; then
     echo "ERROR: 'bun' is not installed. See https://bun.sh/ for installation instructions."
@@ -52,7 +59,7 @@ function ensure_postgres_is_running() {
   if ! docker compose ps | grep -q postgres; then
     echo "Starting PostgreSQL..."
     POSTGRESQL_DATABASE=${postgresql_database} docker compose up -d postgres
-    
+
     cat << EOF | timeout --foreground 30s sh
 while ! docker compose exec -T postgres pg_isready -q -U postgres; do
   sleep 1
@@ -63,9 +70,12 @@ EOF
 }
 
 function prepare_test_environment() {
+  echo "Preparing test environment..."
+
   cd "${base_dir}/.."
 
-  echo "Preparing test environment..."
+  # starting cloud function
+  docker compose --file="${base_dir}/../../cloud-function/docker-compose.yaml" up --build --watch -d
 
   # stop hasura
   docker compose stop hasura
@@ -99,7 +109,7 @@ EOF
 
 function run_tests() {
   cd "${base_dir}"
-  
+
   echo "Starting tests..."
   echo ""
   echo -e "${YELLOW}INFO${NC} Hasura will stay connected to the test database."
@@ -107,10 +117,8 @@ function run_tests() {
   echo ""
   echo "     docker compose down hasura && docker compose up hasura -d"
   echo ""
-  
   bun --env-file="${base_dir}/../.env" test "${bun_args[@]}"
 }
-
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -120,6 +128,7 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
+check_bash_version
 check_bun_installed
 ensure_postgres_is_running
 
@@ -128,7 +137,7 @@ if ! docker compose exec hasura bash -c '[[ "${PG_DATABASE_URL}" == */test ]]' \
   || [ ! -d "${base_dir}/node_modules" ] \
   || [ "$quick" -eq 0 ]; then
   prepare_test_environment
-else  
+else
   echo -e "${YELLOW}INFO${NC} Reusing existing test environment..."
   echo -e "${YELLOW}INFO${NC} Run '$0' without '--quick' option to restart cleanly."
   echo

@@ -8,6 +8,8 @@ services:
       - db_data:/bitnami/postgresql
     ports:
       - '0.0.0.0:5432:5432'
+    networks:
+      - breedersdb_net
 
   hasura:
     image: hasura/graphql-engine:v2.40.0
@@ -28,6 +30,12 @@ services:
       HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS: 'false'
     env_file:
       - ./.env
+    networks:
+      - breedersdb_net
 
 volumes:
   db_data:
+
+networks:
+  breedersdb_net:
+    name: breedersdb_net

@@ -17,8 +17,7 @@ GraphQL API for BreederDB, built with [Hasura](https://hasura.io/docs/latest).
    cp .env.example .env
    ```
 
-1. Set `HASURA_GRAPHQL_ADMIN_SECRET` and `HASURA_GRAPHQL_JWT_SECRET` in `.env`.
-   Ensure they match the `.env` of the frontend.
+1. Set `HASURA_GRAPHQL_ADMIN_SECRET` in `.env`. Ensure it matches the `.env` of the frontend. Also set `ACTIONS_SECRET` and ensure it matches the `.env` of the cloud-function.
 
 1. Run:
 
@@ -30,6 +29,8 @@ GraphQL API for BreederDB, built with [Hasura](https://hasura.io/docs/latest).
    ```
 
 1. Visit [Hasura Console](http://localhost:8080/console) (admin secret in `.env`)
+
+1. Run the [cloud-function](../cloud-function/README.md) for authentication to work (not needed if you only run queries with the admin-secret).
 
 ## Database & Schema
 

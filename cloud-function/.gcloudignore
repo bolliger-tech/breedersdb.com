@@ -1,0 +1,12 @@
+# This file specifies files that are _not_ uploaded to Google Cloud
+
+.gcloudignore
+.git
+.gitignore
+.env.example
+.env
+.env.yaml
+
+# This includes .gitignore
+
+#!include:.gitignore

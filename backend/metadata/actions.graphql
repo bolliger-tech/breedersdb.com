@@ -1,0 +1,56 @@
+type Mutation {
+  ChangePassword(
+    user_id: Int!
+    password: String!
+  ): UserOutput!
+}
+
+type Mutation {
+  InsertUser(
+    email: citext!
+    password: String!
+    locale: String
+  ): InsertUserOutput!
+}
+
+type Query {
+  Me: MeOutput!
+}
+
+type Mutation {
+  SignIn(
+    email: citext!
+    password: String!
+  ): SignInOutput!
+}
+
+type Mutation {
+  SignOut: SignOutOutput!
+}
+
+type InsertUserOutput {
+  created: timestamptz!
+  email: citext!
+  id: Int!
+  last_signin: timestamptz
+  locale: String!
+  modified: timestamptz
+  failed_signin_attempts: Int!
+}
+
+type SignInOutput {
+  user_id: Int!
+}
+
+type SignOutOutput {
+  user_id: Int!
+}
+
+type MeOutput {
+  id: Int!
+}
+
+type UserOutput {
+  id: Int!
+}
+

@@ -11,22 +11,8 @@ const IMG_MAX_SIZE_MB = 16;
 // Max uncompressed HTTP request size: 32MB
 // https://cloud.google.com/functions/quotas#resource_limits
 export async function handleUpload(req: ff.Request, res: ff.Response) {
-  if (['POST', 'OPTIONS'].includes(req.method) === false) {
+  if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
-  }
-  // TODO url
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:9000');
-  res.setHeader('Access-Control-Allow-Methods', 'POST');
-  res.setHeader('Access-Control-Allow-Headers', [
-    'Content-Type',
-    'X-File-Name',
-  ]);
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  // TODO should OPTION requests be authenticated? makes for a bad error message
-  // (unknown) in xhr requests but otherwise it seems the server first has to
-  // receive the payload before it can respond with a 401
-  if (req.method === 'OPTIONS') {
-    return res.send();
   }
 
   // TODO scope: get bucket for user
@@ -67,7 +53,7 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
   const originalFileName =
     (req.headers?.['x-file-name'] as string)?.split('.').shift() || 'unknown';
   // TODO url
-  const url = `http://localhost:8090/images/${originalFileName}.jpeg?file=${storageFileName}`;
+  const url = `/api/v1/assets/images/${originalFileName}.jpeg?file=${storageFileName}`;
 
   try {
     await uploadFile(file, storageFileName);
@@ -79,7 +65,7 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
 }
 
 export async function handleDownload(req: ff.Request, res: ff.Response) {
-  if (['GET'].includes(req.method) === false) {
+  if (req.method !== 'GET') {
     return res.status(405).send('Method Not Allowed');
   }
 

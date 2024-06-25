@@ -38,6 +38,7 @@ select_permissions:
         - note
         - orchard_id
       filter: {}
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: user

@@ -49,6 +49,7 @@ select_permissions:
         - description
         - validation_rule
       filter: {}
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: user

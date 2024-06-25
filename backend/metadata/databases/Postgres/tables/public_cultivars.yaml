@@ -80,6 +80,7 @@ select_permissions:
         - display_name
         - name_override
       filter: {}
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: user

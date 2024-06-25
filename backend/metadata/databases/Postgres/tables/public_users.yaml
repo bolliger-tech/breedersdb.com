@@ -35,6 +35,7 @@ select_permissions:
         - last_signin
         - modified
       filter: {}
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: user

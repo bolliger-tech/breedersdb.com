@@ -6,6 +6,7 @@ export const attributions = {
     author: 'Author',
     dateAttributed: 'Date',
     value: 'Value',
+    note: 'Note',
     attributeName: 'Attribute',
   },
 
@@ -13,7 +14,4 @@ export const attributions = {
   treatments: 'Treatments',
   samples: 'Samples',
   others: 'Others',
-
-  showImage: 'Show',
-  downloadAndClose: 'Download and close',
 };

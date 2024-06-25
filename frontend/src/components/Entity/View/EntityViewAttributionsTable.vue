@@ -19,6 +19,8 @@
           <EntityViewAttributionImage
             :file-hash="cellProps.value"
             :file-name="getFileName(cellProps.row)"
+            :note="cellProps.row.note"
+            :metadata="`${cellProps.row.attribute_name}, ${cellProps.row.date_attributed} ${cellProps.row.author}`"
           />
         </template>
         <template v-else>
@@ -72,7 +74,15 @@ const columns = [
     field: (row: EntityAttributionsViewFragment) => getValue(row),
     align: 'left' as const,
     sortable: true,
-    style: 'max-width: clamp(100px, 20vw, 300px);',
+    style: 'max-width: clamp(100px, 30vw, 300px);',
+  },
+  {
+    name: 'note',
+    label: t('attributions.columns.note'),
+    field: 'note',
+    align: 'left' as const,
+    sortable: true,
+    style: 'max-width: clamp(100px, 40vw, 300px);',
   },
   {
     name: 'date_attributed',

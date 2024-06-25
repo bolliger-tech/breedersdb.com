@@ -42,7 +42,6 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'src/composables/useI18n';
 import { EntityAttributionsViewFragment } from '../entityAttributionsViewFragment';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { imageFileName, metadata } from './imageHelpers';
@@ -57,6 +56,4 @@ export interface EntityViewAttributionsImageGalleryProps {
 }
 
 defineProps<EntityViewAttributionsImageGalleryProps>();
-
-const { t } = useI18n();
 </script>

@@ -1,5 +1,14 @@
 <template>
+  <!-- TODO: set correct image url, set height! -->
+  <img
+    v-if="preview"
+    v-ripple
+    src="https://pomaculta.org/wp-content/uploads/2019/02/cropped-Bild_Scho__nheit_und_Ertrag-300x180.jpg"
+    class="cursor-pointer"
+    @click="open = true"
+  />
   <q-btn
+    v-else
     flat
     dense
     icon="photo"
@@ -72,6 +81,7 @@ export interface EntityViewAttributionImageProps {
   fileHash: string;
   note: string | null;
   metadata: string;
+  preview?: boolean;
 }
 
 defineProps<EntityViewAttributionImageProps>();

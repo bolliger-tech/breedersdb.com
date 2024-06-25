@@ -5,11 +5,11 @@
 
   <EntityModalContent v-else-if="plant">
     <template #title>
-      <BaseSpriteIcon name="tree" color="grey-7" size="lg" />
+      <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
       <div class="q-ma-sm">
-        <h4 class="q-ma-none">
+        <h2 class="q-ma-none">
           <PlantLabelId :label-id="plant.label_id" />
-        </h4>
+        </h2>
         <EntityName
           :plant-group="plant.plant_group"
           :cultivar="plant.plant_group?.cultivar"
@@ -20,10 +20,20 @@
     </template>
 
     <template #default>
+      <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <PlantEntityTable :plant="plant" />
 
-      <!-- images: Carousel -->
+      <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
+      <EntityViewAttributionImageGallery
+        :images="images"
+        :plant="plant"
+        :plant-group="plant.plant_group"
+        :cultivar="plant.plant_group?.cultivar"
+        :lot="plant.plant_group?.cultivar.lot"
+        :crossing="plant.plant_group?.cultivar.lot.crossing"
+      />
 
+      <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="OBSERVATION"
         :rows="observations"
@@ -32,9 +42,9 @@
         :cultivar="plant.plant_group?.cultivar"
         :lot="plant.plant_group?.cultivar.lot"
         :crossing="plant.plant_group?.cultivar.lot.crossing"
-        :title="t('attributions.observations')"
       />
-      <q-separator />
+
+      <h3 class="q-mb-md">{{ t('attributions.treatments') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="TREATMENT"
         :rows="treatments"
@@ -43,9 +53,9 @@
         :cultivar="plant.plant_group?.cultivar"
         :lot="plant.plant_group?.cultivar.lot"
         :crossing="plant.plant_group?.cultivar.lot.crossing"
-        :title="t('attributions.treatments')"
       />
-      <q-separator />
+
+      <h3 class="q-mb-md">{{ t('attributions.samples') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="SAMPLE"
         :rows="samples"
@@ -54,9 +64,9 @@
         :cultivar="plant.plant_group?.cultivar"
         :lot="plant.plant_group?.cultivar.lot"
         :crossing="plant.plant_group?.cultivar.lot.crossing"
-        :title="t('attributions.samples')"
       />
-      <q-separator />
+
+      <h3 class="q-mb-md">{{ t('attributions.others') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="OTHER"
         :rows="other"
@@ -65,10 +75,7 @@
         :cultivar="plant.plant_group?.cultivar"
         :lot="plant.plant_group?.cultivar.lot"
         :crossing="plant.plant_group?.cultivar.lot.crossing"
-        :title="t('attributions.others')"
       />
-
-      <pre>{{ JSON.stringify(plant.attributions_views, undefined, 2) }}</pre>
     </template>
   </EntityModalContent>
 
@@ -92,6 +99,7 @@ import EntityName from 'src/components/Entity/EntityName.vue';
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
 import { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 import { useI18n } from 'src/composables/useI18n';
+import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -119,6 +127,10 @@ const plant = computed(() => data.value?.plants_by_pk);
 const attributions = computed(
   () =>
     (plant.value?.attributions_views || []) as EntityAttributionsViewFragment[],
+);
+
+const images = computed(() =>
+  attributions.value.filter((row) => row.data_type === 'PHOTO'),
 );
 
 const { t } = useI18n();

@@ -3,7 +3,6 @@
     v-model:pagination="pagination"
     class="q-mt-md"
     flat
-    :title="title"
     dense
     :rows="rows"
     :columns="columns"
@@ -18,9 +17,18 @@
         <template v-if="cellProps.row.data_type === 'PHOTO'">
           <EntityViewAttributionImage
             :file-hash="cellProps.value"
-            :file-name="getFileName(cellProps.row)"
+            :file-name="
+              imageFileName({
+                row: cellProps.row,
+                plant,
+                plantGroup,
+                cultivar,
+                lot,
+                crossing,
+              })
+            "
             :note="cellProps.row.note"
-            :metadata="`${cellProps.row.attribute_name}, ${cellProps.row.date_attributed} ${cellProps.row.author}`"
+            :metadata="metadata({ row: cellProps.row })"
           />
         </template>
         <template v-else>
@@ -41,13 +49,13 @@ import {
   dataTypeToColumnTypes,
 } from 'src/utils/attributeUtils';
 import { localizeDate } from 'src/utils/dateUtils';
-import { computed, watch } from 'vue';
+import { watch } from 'vue';
 import { ref } from 'vue';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
+import { imageFileName, metadata } from './imageHelpers';
 
 export interface EntityViewAttributionsTableProps {
   rows: EntityAttributionsViewFragment[];
-  title: string;
   attributeType?: AttributeTypes;
   plant?: { label_id: string };
   plantGroup?: { display_name: string };
@@ -137,21 +145,5 @@ const pagination = ref(
 watch(pagination, (value: Pagination) => {
   $q.localStorage.set(paginationKey, value);
 });
-
-const fileNamePrefix = computed(() => {
-  const org = import.meta.env.VITE_ORG_ABBREVIATION;
-  const entityName =
-    props.plant?.label_id ??
-    props.plantGroup?.display_name ??
-    props.cultivar?.display_name ??
-    props.lot?.display_name ??
-    props.crossing?.name ??
-    'unknown';
-
-  return `${org}-${entityName}`;
-});
-
-function getFileName(row: EntityAttributionsViewFragment) {
-  return `${fileNamePrefix.value}-${row.attribute_name}-${row.date_attributed}-${row.id}.jpg`;
-}
 </script>
+./imageHelpers

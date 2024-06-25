@@ -14,4 +14,6 @@ export const attributions = {
   treatments: 'Treatments',
   samples: 'Samples',
   others: 'Others',
+
+  photos: 'Photos',
 };

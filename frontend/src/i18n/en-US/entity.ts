@@ -23,4 +23,6 @@ export const entity = {
 
     noData: 'No data.',
   },
+
+  basics: 'Basics',
 };

@@ -61,13 +61,17 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
     return;
   }
 
-  const fileName = `${hashFile(image)}.jpeg`;
+  const fileHash = hashFile(image);
+  const storageFileName = `${fileHash}.jpeg`;
+
+  const originalFileName =
+    (req.headers?.['x-file-name'] as string)?.split('.').shift() || 'unknown';
+  // TODO url
+  const url = `http://localhost:8090/images/${originalFileName}.jpeg?file=${storageFileName}`;
 
   try {
-    await uploadFile(file, fileName);
-    // TODO url
-    const url = `http://localhost:8090/images/${fileName}`;
-    return res.send({ fileName, url });
+    await uploadFile(file, storageFileName);
+    return res.send({ fileName: storageFileName, url });
   } catch (e) {
     console.error('Error uploading file:', e);
     return res.status(500).send('Internal Server Error');
@@ -85,18 +89,46 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
     return res.status(401).send('Unauthorized');
   }
 
-  const fileName = req.url.split('/').pop();
+  const searchParams = new URLSearchParams(req.url.split('?').pop());
+  const fileName = searchParams?.get('file');
   if (!fileName) {
-    return res.status(400).send('Bad Request');
+    return res.status(400).send('Bad Request: missing parameter "file"');
   }
 
-  // stream from google storage to response
-  // TODO handle errors
   const file = downloadFile(fileName);
-  const buf = await buffer(file);
+  let buf;
+  try {
+    buf = await buffer(file);
+  } catch (e: any) {
+    if (e.message.includes('No such object')) {
+      return res.status(404).send('Not Found');
+    }
+    console.error('Error downloading file:', e);
+    return res.status(500).send('Internal Server Error');
+  }
+
+  const [hasWidth, hasHeight] = [
+    searchParams.has('width'),
+    searchParams.has('height'),
+  ];
+  const [width, height] = [
+    hasWidth ? parseInt(searchParams?.get('width') || '') : undefined,
+    hasHeight ? parseInt(searchParams?.get('height') || '') : undefined,
+  ];
+  if (
+    (hasWidth && isNaN(width || NaN)) ||
+    (hasHeight && isNaN(height || NaN))
+  ) {
+    return res
+      .status(400)
+      .send('Bad Request: width and height must be numbers');
+  }
+
+  if (width || height) {
+    buf = await sharp(buf).resize({ width, height, fit: 'inside' }).toBuffer();
+  }
 
   // TODO cache control
-  // TODO fix mime type
   res.setHeader('Content-Type', 'image/jpeg');
 
   return res.send(buf);

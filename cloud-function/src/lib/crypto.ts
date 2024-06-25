@@ -32,6 +32,10 @@ export function timingSafeEqual(a: String, b: String): boolean {
   return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
 }
 
-export function hashFile(file: Buffer): string {
+export function hashFileForStorage(file: Buffer): string {
   return crypto.createHash('sha256').update(file).digest('hex');
+}
+
+export function hashFileForCaching(file: Buffer): string {
+  return crypto.createHash('md5').update(file).digest('hex');
 }

@@ -1,6 +1,6 @@
 import * as ff from '@google-cloud/functions-framework';
 import { authenticateRequest } from '..';
-import { hashFile } from '../lib/crypto';
+import { hashFileForCaching, hashFileForStorage } from '../lib/crypto';
 import { config } from '../lib/config';
 import { downloadFile, uploadFile } from '../lib/storage';
 import { buffer } from 'node:stream/consumers';
@@ -61,7 +61,7 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
     return;
   }
 
-  const fileHash = hashFile(image);
+  const fileHash = hashFileForStorage(image);
   const storageFileName = `${fileHash}.jpeg`;
 
   const originalFileName =
@@ -89,24 +89,12 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
     return res.status(401).send('Unauthorized');
   }
 
+  // validate params
   const searchParams = new URLSearchParams(req.url.split('?').pop());
   const fileName = searchParams?.get('file');
   if (!fileName) {
     return res.status(400).send('Bad Request: missing parameter "file"');
   }
-
-  const file = downloadFile(fileName);
-  let buf;
-  try {
-    buf = await buffer(file);
-  } catch (e: any) {
-    if (e.message.includes('No such object')) {
-      return res.status(404).send('Not Found');
-    }
-    console.error('Error downloading file:', e);
-    return res.status(500).send('Internal Server Error');
-  }
-
   const [hasWidth, hasHeight] = [
     searchParams.has('width'),
     searchParams.has('height'),
@@ -124,11 +112,24 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
       .send('Bad Request: width and height must be numbers');
   }
 
+  const file = downloadFile(fileName);
+  let buf;
+  try {
+    buf = await buffer(file);
+  } catch (e: any) {
+    if (e.message.includes('No such object')) {
+      return res.status(404).send('Not Found');
+    }
+    console.error('Error downloading file:', e);
+    return res.status(500).send('Internal Server Error');
+  }
+
   if (width || height) {
     buf = await sharp(buf).resize({ width, height, fit: 'inside' }).toBuffer();
   }
 
-  // TODO cache control
+  // headers
+  res.setHeader('ETag', hashFileForCaching(buf));
   res.setHeader('Content-Type', 'image/jpeg');
 
   return res.send(buf);

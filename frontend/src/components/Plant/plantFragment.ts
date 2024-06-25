@@ -14,14 +14,17 @@ export const plantFragment = graphql(
         id
         name_segment
         name_override
+        display_name
         cultivar {
           id
           name_segment
           name_override
+          display_name
           lot {
             id
             name_segment
             name_override
+            display_name
             crossing {
               id
               name

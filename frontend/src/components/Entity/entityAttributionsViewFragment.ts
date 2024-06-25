@@ -7,14 +7,16 @@ import {
 
 export type EntityAttributionsViewFragment = Omit<
   FragmentOf<typeof entityAttributionsViewFragment>,
-  'data_type' | 'attribute_type'
+  'data_type' | 'attribute_type' | 'id'
 > & {
   data_type: AttributeDataTypes;
   attribute_type: AttributeTypes;
+  id: number;
 };
 
 export const entityAttributionsViewFragment = graphql(`
   fragment entityAttributionsViewFragment on attributions_view @_unmask {
+    id
     data_type
     integer_value
     float_value

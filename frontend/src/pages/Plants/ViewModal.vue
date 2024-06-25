@@ -25,22 +25,46 @@
       <!-- images: Carousel -->
 
       <EntityViewAttributionsTable
+        attribute-type="OBSERVATION"
         :rows="observations"
+        :plant="plant"
+        :plant-group="plant.plant_group"
+        :cultivar="plant.plant_group?.cultivar"
+        :lot="plant.plant_group?.cultivar.lot"
+        :crossing="plant.plant_group?.cultivar.lot.crossing"
         :title="t('attributions.observations')"
       />
       <q-separator />
       <EntityViewAttributionsTable
+        attribute-type="TREATMENT"
         :rows="treatments"
+        :plant="plant"
+        :plant-group="plant.plant_group"
+        :cultivar="plant.plant_group?.cultivar"
+        :lot="plant.plant_group?.cultivar.lot"
+        :crossing="plant.plant_group?.cultivar.lot.crossing"
         :title="t('attributions.treatments')"
       />
       <q-separator />
       <EntityViewAttributionsTable
+        attribute-type="SAMPLE"
         :rows="samples"
+        :plant="plant"
+        :plant-group="plant.plant_group"
+        :cultivar="plant.plant_group?.cultivar"
+        :lot="plant.plant_group?.cultivar.lot"
+        :crossing="plant.plant_group?.cultivar.lot.crossing"
         :title="t('attributions.samples')"
       />
       <q-separator />
       <EntityViewAttributionsTable
+        attribute-type="OTHER"
         :rows="other"
+        :plant="plant"
+        :plant-group="plant.plant_group"
+        :cultivar="plant.plant_group?.cultivar"
+        :lot="plant.plant_group?.cultivar.lot"
+        :crossing="plant.plant_group?.cultivar.lot.crossing"
         :title="t('attributions.others')"
       />
 

@@ -13,4 +13,7 @@ export const attributions = {
   treatments: 'Treatments',
   samples: 'Samples',
   others: 'Others',
+
+  showImage: 'Show',
+  downloadAndClose: 'Download and close',
 };

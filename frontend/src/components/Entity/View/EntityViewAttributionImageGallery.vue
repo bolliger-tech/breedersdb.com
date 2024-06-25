@@ -3,37 +3,12 @@
     <div class="row no-wrap q-gutter-sm scroll">
       <div v-for="image of images" :key="image.id">
         <EntityViewAttributionImage
-          :file-hash="image.text_value!"
-          :file-name="
-            imageFileName({
-              row: image,
-              plant,
-              plantGroup,
-              cultivar,
-              lot,
-              crossing,
-            })
-          "
-          :note="image.note"
-          :metadata="metadata({ row: image })"
-          preview
-        />
-      </div>
-      <div v-for="image of images" :key="image.id">
-        <EntityViewAttributionImage
-          :file-hash="image.text_value!"
-          :file-name="
-            imageFileName({
-              row: image,
-              plant,
-              plantGroup,
-              cultivar,
-              lot,
-              crossing,
-            })
-          "
-          :note="image.note"
-          :metadata="metadata({ row: image })"
+          :attribution="image"
+          :plant="plant"
+          :plant-group="plantGroup"
+          :cultivar="cultivar"
+          :lot="lot"
+          :crossing="crossing"
           preview
         />
       </div>
@@ -44,7 +19,6 @@
 <script setup lang="ts">
 import { EntityAttributionsViewFragment } from '../entityAttributionsViewFragment';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
-import { imageFileName, metadata } from './imageHelpers';
 
 export interface EntityViewAttributionsImageGalleryProps {
   images: EntityAttributionsViewFragment[];

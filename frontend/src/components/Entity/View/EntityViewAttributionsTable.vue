@@ -16,19 +16,12 @@
       <q-td key="name" :props="cellProps">
         <template v-if="cellProps.row.data_type === 'PHOTO'">
           <EntityViewAttributionImage
-            :file-hash="cellProps.value"
-            :file-name="
-              imageFileName({
-                row: cellProps.row,
-                plant,
-                plantGroup,
-                cultivar,
-                lot,
-                crossing,
-              })
-            "
-            :note="cellProps.row.note"
-            :metadata="metadata({ row: cellProps.row })"
+            :attribution="cellProps.row"
+            :plant="plant"
+            :plant-group="plantGroup"
+            :cultivar="cultivar"
+            :lot="lot"
+            :crossing="crossing"
           />
         </template>
         <template v-else>
@@ -52,7 +45,6 @@ import { localizeDate } from 'src/utils/dateUtils';
 import { watch } from 'vue';
 import { ref } from 'vue';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
-import { imageFileName, metadata } from './imageHelpers';
 
 export interface EntityViewAttributionsTableProps {
   rows: EntityAttributionsViewFragment[];
@@ -146,4 +138,3 @@ watch(pagination, (value: Pagination) => {
   $q.localStorage.set(paginationKey, value);
 });
 </script>
-./imageHelpers

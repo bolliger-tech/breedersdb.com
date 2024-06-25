@@ -17,7 +17,8 @@
     size="sm"
     :label="t('base.show')"
     @click="open = true"
-  ></q-btn>
+  />
+
   <q-dialog v-model="open">
     <q-card
       style="width: clamp(300px, calc(90vw - 20px), 980px); max-width: unset"
@@ -47,7 +48,7 @@
           "
         />
         <p class="text-caption q-ma-none text-center">
-          <span v-if="note">{{ note }}</span
+          <span v-if="attribution.note">{{ attribution.note }}</span
           >&nbsp;
           <span class="text-muted">{{ metadata }}</span>
         </p>
@@ -56,7 +57,7 @@
       <q-card-actions align="right">
         <!-- TODO: set correct image url -->
         <a
-          :href="`/images/v1/${fileName}?hash=${fileHash}`"
+          :href="`/images/v1/${fileName}?hash=${attribution.text_value}`"
           :download="fileName"
         >
           <q-btn flat :label="t('base.download')" color="primary" />
@@ -73,19 +74,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
+import { EntityAttributionsViewFragment } from '../entityAttributionsViewFragment';
 
 export interface EntityViewAttributionImageProps {
-  fileName: string;
-  fileHash: string;
-  note: string | null;
-  metadata: string;
+  attribution: EntityAttributionsViewFragment;
+  plant?: { label_id: string };
+  plantGroup?: { display_name: string };
+  cultivar?: { display_name: string };
+  lot?: { display_name: string };
+  crossing?: { name: string };
   preview?: boolean;
 }
 
-defineProps<EntityViewAttributionImageProps>();
+const props = defineProps<EntityViewAttributionImageProps>();
 
 const open = ref(false);
 const { t } = useI18n();
+
+const fileName = computed(() => {
+  const org = import.meta.env.VITE_ORG_ABBREVIATION;
+  const entityName =
+    props.plant?.label_id ??
+    props.plantGroup?.display_name ??
+    props.cultivar?.display_name ??
+    props.lot?.display_name ??
+    props.crossing?.name ??
+    'unknown';
+
+  return `${org}-${entityName}-${props.attribution.attribute_name}-${props.attribution.date_attributed}-${props.attribution.id}.jpg`;
+});
+
+const metadata = computed(() => {
+  return `${props.attribution.attribute_name}, ${props.attribution.date_attributed} ${props.attribution.author}`;
+});
 </script>

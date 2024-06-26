@@ -60,7 +60,12 @@
       </div>
     </div>
     <div class="q-mt-sm text-body2">
-      <PlantEntityTable :plant="data.plant" dark />
+      <PlantEntityTable
+        :plant="data.plant"
+        row-padding-side="0"
+        dark
+        no-border
+      />
     </div>
   </template>
 

@@ -1,7 +1,10 @@
 <template>
   <table
     class="plant-entity-table"
-    :class="{ 'plant-entity-table--dark': dark }"
+    :class="{
+      'plant-entity-table--dark': dark,
+      'plant-entity-table--no-border': noBorder,
+    }"
   >
     <template v-if="plant.plant_row">
       <tr>
@@ -65,6 +68,8 @@ import { type PlantFragment } from './plantFragment';
 export interface PlantEntityTableProps {
   plant: PlantFragment;
   dark?: boolean;
+  rowPaddingSide: string;
+  noBorder?: boolean;
 }
 
 defineProps<PlantEntityTableProps>();
@@ -100,6 +105,11 @@ tr:last-child {
   border-top: 1px solid $grey-8;
 }
 
+.plant-entity-table--no-border :is(tr, .plant-entity-table__note) {
+  border-bottom: none;
+  border-top: none;
+}
+
 th {
   text-align: left;
   padding: 4px 8px;
@@ -111,10 +121,19 @@ td {
   padding: 4px 8px;
 }
 th:first-child {
-  padding-left: 16px;
+  padding-left: v-bind(rowPaddingSide);
 }
 td:last-child {
-  padding-right: 16px;
+  padding-right: v-bind(rowPaddingSide);
+}
+
+.plant-entity-table--no-border :is(td, th) {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.plant-entity-table--no-border tr:hover {
+  background: none;
 }
 
 .plant-entity-table {

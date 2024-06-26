@@ -13,7 +13,7 @@
     binary-state-sort
   >
     <template #body-cell-value="cellProps">
-      <q-td key="name" :props="cellProps">
+      <q-td key="value" :props="cellProps">
         <template v-if="cellProps.row.data_type === 'PHOTO'">
           <EntityViewAttributionImage
             :attribution="cellProps.row"
@@ -24,6 +24,7 @@
             :crossing="crossing"
           />
         </template>
+
         <template v-else>
           {{ cellProps.value }}
         </template>

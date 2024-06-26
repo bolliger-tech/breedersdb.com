@@ -6,7 +6,16 @@ export const graphql = initGraphQLTada<{
   scalars: {
     date: string;
     float8: number;
-    // geography: string;
+    geography: {
+      type: 'Point';
+      crs: {
+        type: 'name';
+        properties: {
+          name: 'urn:ogc:def:crs:EPSG::4326';
+        };
+      };
+      coordinates: [number, number];
+    };
     // geometry: string;
     // jsonb: Object;
     timestamptz: string;

@@ -5,13 +5,27 @@ import {
   type AttributeTypes,
 } from 'src/graphql';
 
+// because this comes from a postgres view, non nullable fields are not enforced
+// so we need to manually do it here
 export type EntityAttributionsViewFragment = Omit<
   FragmentOf<typeof entityAttributionsViewFragment>,
-  'data_type' | 'attribute_type' | 'id'
+  | 'data_type'
+  | 'attribute_type'
+  | 'id'
+  | 'date_attributed'
+  | 'exceptional_attribution'
+  | 'attribute_name'
+  | 'author'
+  | 'attribution_id'
 > & {
-  data_type: AttributeDataTypes;
-  attribute_type: AttributeTypes;
   id: number;
+  data_type: AttributeDataTypes;
+  date_attributed: string;
+  exceptional_attribution: boolean;
+  attribute_name: string;
+  author: string;
+  attribute_type: AttributeTypes;
+  attribution_id: number;
 };
 
 export const entityAttributionsViewFragment = graphql(`

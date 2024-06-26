@@ -61,12 +61,6 @@ export function createUrqlClient() {
       mapExchange(loadingBarTriggers),
       fetchExchange,
     ],
-    fetchOptions: {
-      headers: {
-        // TODO: implement proper authentication
-        'x-hasura-admin-secret': 'changeForProduction',
-      },
-    },
   });
 }
 

@@ -197,7 +197,8 @@ gcloud functions deploy ${FN_SERVICE_NAME} \
   --source=./ \
   --entry-point=func \
   --trigger-http \
-  --allow-unauthenticated
+  --allow-unauthenticated \
+  --memory=512M
 ```
 
 ### FUNCTION NETWORKING
@@ -263,6 +264,7 @@ gcloud compute backend-buckets create $FE_BUCKET_BACKEND_BUCKET \
     --gcs-bucket-name=$FE_BUCKET_NAME \
     --enable-cdn \
     --cache-mode=USE_ORIGIN_HEADERS
+
 ```
 
 ### Deploy
@@ -271,6 +273,11 @@ cd frontend
 npm run build
 export FE_BUCKET_NAME=${INSTANCE}-breedersdb-fe
 gsutil -m rsync -d -R dist/spa/ gs://$FE_BUCKET_NAME
+
+# purge cache
+# https://cloud.google.com/cdn/docs/invalidating-cached-content#invalidate_everything
+gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME \
+  --path "/*"
 ```
 
 

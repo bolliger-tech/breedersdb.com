@@ -9,7 +9,7 @@
       </div>
     </q-card-section>
     <q-card-section class="q-pt-none">
-      <BaseGraphqlError v-if="combinedError" :error="combinedError" />
+      <BaseGraphqlError v-if="combinedError" :error="combinedError" throw />
       <div v-else>
         {{ error.message }}
       </div>

@@ -10,16 +10,23 @@
 <script lang="ts" setup>
 import { CombinedError } from '@urql/core';
 import { onMounted } from 'vue';
+import { captureException } from '@sentry/browser';
 
 export interface BaseGraphqlErrorProps {
   error: CombinedError;
+  throw?: boolean;
 }
 
-const props = defineProps<BaseGraphqlErrorProps>();
+const props = withDefaults(defineProps<BaseGraphqlErrorProps>(), {
+  throw: false,
+});
 
 onMounted(() => {
-  if (props.error) {
-    throw props.error; // report error to Sentry
+  if (props.error && props.throw) {
+    throw props.error; // reports automatically to Sentry
+  } else if (props.error) {
+    captureException(props.error);
+    console.error(props.error);
   }
 });
 </script>

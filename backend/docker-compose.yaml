@@ -61,23 +61,23 @@ services:
               listen 80;
               server_name localhost;
 
-              location /api/v1/console {
+              location /api/console {
                   proxy_set_header Host localhost;
                   proxy_pass http://hasura_backend/console;
               }
 
-              location /api/v1/graphql {
+              location /api/v1 {
                   proxy_set_header Host localhost;
-                  proxy_pass http://hasura_backend/v1/graphql;
+                  proxy_pass http://hasura_backend;
               }
 
               # trailing slash in proxy_pass removes url of location
-              location /api/v1/internal/ {
+              location /api/internal/ {
                   proxy_set_header Host localhost;
                   proxy_pass http://cloud_function/;
               }
 
-              location /api/v1/assets/ {
+              location /api/assets/ {
                   proxy_set_header Host localhost;
                   proxy_pass http://cloud_function/;
               }
@@ -87,9 +87,9 @@ services:
                   proxy_pass http://frontend/;
               }
 
-              # Redirect /api/v1 to /api/v1/console
+              # Redirect /api/v1 to /api/console
               location = /api/v1 {
-                  return 301 /api/v1/console;
+                  return 301 /api/console;
               }
           }
       }

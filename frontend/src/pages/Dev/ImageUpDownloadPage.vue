@@ -89,7 +89,7 @@ const onSubmit = async () => {
   const file = fileInput.value.files[0];
   try {
     // TODO URL
-    const response = await upload(file, '/api/v1/assets/upload');
+    const response = await upload(file, '/api/assets/upload');
     message.value = 'Upload successful 🎉';
     uploadedFile.value = response;
   } catch (error) {

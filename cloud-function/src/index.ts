@@ -107,7 +107,6 @@ ff.http('func', (req: ff.Request, res: ff.Response) => {
     case 'upload':
       return handleUpload(req, res);
     default:
-      // TODO url handling
       if (req.url.startsWith('/images/')) {
         return handleDownload(req, res);
       }

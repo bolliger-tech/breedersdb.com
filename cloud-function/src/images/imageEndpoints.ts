@@ -52,7 +52,6 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
 
   const originalFileName =
     (req.headers?.['x-file-name'] as string)?.split('.').shift() || 'unknown';
-  // TODO url
   const url = `/api/assets/images/${originalFileName}.jpeg?file=${storageFileName}`;
 
   try {

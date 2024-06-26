@@ -11,8 +11,6 @@ export const ROLL_EVERY_SECONDS = 60 * 60; // 1 hour
 const TOKEN_COOKIE_NAME = 'breedersdb.id.token';
 const FE_COOKIE_NAME = 'breedersdb.user';
 
-// TODO: check SameSite
-// TODO: check domain
 // eg. (true, MAX_AGE): HttpOnly; SameSite=None; Max-Age=34473600; Path=/
 // eg. (false, MAX_AGE): SameSite=None; Max-Age=34473600; Path=/
 function cookieOptions(httpOnly: boolean, maxAge: number) {

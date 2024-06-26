@@ -1,9 +1,12 @@
 <template>
-  <!-- TODO: set correct image url, set height! -->
   <img
     v-if="preview"
     v-ripple
-    src="https://pomaculta.org/wp-content/uploads/2019/02/cropped-Bild_Scho__nheit_und_Ertrag-300x180.jpg"
+    :src="`/api/v1/assets/images/${desiredFileName}?file=${storedFileName}&height=200`"
+    :srcset="`
+      /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&height=200,
+      /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&height=400 2x
+    `"
     class="cursor-pointer"
     @click="open = true"
   />
@@ -26,19 +29,15 @@
       <q-card-section class="row justify-end q-pa-sm">
         <q-btn flat dense round icon="close" @click="open = false" />
       </q-card-section>
-
       <q-card-section>
-        <!-- TODO: set correct image url -->
-        <!-- :src="`/api/v1/assets/image/${fileName}?hash=${fileHash}?w=1024`"
-          :srcset="`
-            /api/v1/assets/image/${fileName}?hash=${fileHash}?w=320 320w,
-            /api/v1/assets/image/${fileName}?hash=${fileHash}?w=768 768w,
-            /api/v1/assets/image/${fileName}?hash=${fileHash}?w=1024 1024w,
-            /api/v1/assets/image/${fileName}?hash=${fileHash}?w=2560 2560w,
-          `" -->
         <q-img
-          src="https://pomaculta.org/wp-content/uploads/2019/02/cropped-Bild_Scho__nheit_und_Ertrag.jpg"
-          srcset="https://pomaculta.org/wp-content/uploads/2019/02/cropped-Bild_Scho__nheit_und_Ertrag.jpg 2000w, https://pomaculta.org/wp-content/uploads/2019/02/cropped-Bild_Scho__nheit_und_Ertrag-300x180.jpg 300w, https://pomaculta.org/wp-content/uploads/2019/02/cropped-Bild_Scho__nheit_und_Ertrag-768x461.jpg 768w, https://pomaculta.org/wp-content/uploads/2019/02/cropped-Bild_Scho__nheit_und_Ertrag-1024x614.jpg 1024w"
+          :src="`/api/v1/assets/images/${desiredFileName}?file=${storedFileName}&width=1024`"
+          :srcset="`
+            /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&width=320 320w,
+            /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&width=768 768w,
+            /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&width=1024 1024w,
+            /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&width=2560 2560w,
+          `"
           sizes="clamp(300px, calc(90vw - 20px), 980px)"
           spinner-color="white"
           fit="contain"
@@ -55,10 +54,9 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <!-- TODO: set correct image url -->
         <a
-          :href="`/images/v1/${fileName}?hash=${attribution.text_value}`"
-          :download="fileName"
+          :href="`/api/v1/assets/images/${desiredFileName}?file=${storedFileName}`"
+          download
         >
           <q-btn flat :label="t('base.download')" color="primary" />
         </a>
@@ -93,7 +91,7 @@ const props = defineProps<EntityViewAttributionImageProps>();
 const open = ref(false);
 const { t } = useI18n();
 
-const fileName = computed(() => {
+const desiredFileName = computed(() => {
   const org = import.meta.env.VITE_ORG_ABBREVIATION;
   const entityName =
     props.plant?.label_id ??
@@ -103,7 +101,13 @@ const fileName = computed(() => {
     props.crossing?.name ??
     'unknown';
 
-  return `${org}-${entityName}-${props.attribution.attribute_name}-${props.attribution.date_attributed}-${props.attribution.id}.jpg`;
+  return encodeURI(
+    `${org}-${entityName}-${props.attribution.attribute_name}-${props.attribution.date_attributed}-${props.attribution.id}.jpg`,
+  );
+});
+
+const storedFileName = computed(() => {
+  return `${props.attribution.text_value}.jpg`;
 });
 
 const metadata = computed(() => {

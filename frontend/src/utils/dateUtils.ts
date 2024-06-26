@@ -1,4 +1,4 @@
-export function localizeDate(date: Date | string | null) {
+export function localizeDate(date: Date | string | null | undefined) {
   if (!date) {
     return null;
   }

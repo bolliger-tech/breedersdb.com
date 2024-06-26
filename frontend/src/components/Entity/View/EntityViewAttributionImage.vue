@@ -45,7 +45,15 @@
             max-width: clamp(300px, calc(90vw - 52px), 980px);
             max-height: calc(90vh - 200px);
           "
-        />
+        >
+          <template #error>
+            <div class="text-caption q-mx-md absolute-center text-center">
+              <q-icon name="warning" size="sm" class="q-mr-sm" />{{
+                t('entity.failedToLoadImage')
+              }}<br />{{ storedFileName }}
+            </div>
+          </template>
+        </q-img>
         <p class="text-caption q-ma-none text-center">
           <span v-if="attribution.note">{{ attribution.note }}</span
           >&nbsp;
@@ -107,7 +115,7 @@ const desiredFileName = computed(() => {
 });
 
 const storedFileName = computed(() => {
-  return `${props.attribution.text_value}.jpg`;
+  return props.attribution.text_value;
 });
 
 const metadata = computed(() => {

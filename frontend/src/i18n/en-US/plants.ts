@@ -11,9 +11,15 @@ export const plants = {
     datePlanted: 'Date planted',
     dateEliminated: 'Date eliminated',
     dateLabeled: 'Date labeled',
-    group: 'Group',
+    plantGroup: 'Group',
+    plantRow: 'Row',
     grafting: 'Grafting',
     rootstock: 'Rootstock',
+  },
+
+  errors: {
+    labelId:
+      'Label ID can only be numbers (max 8 digits). If the plant was eliminated, the label ID must be prefixed with a #',
   },
 
   eliminate: 'Eliminate',

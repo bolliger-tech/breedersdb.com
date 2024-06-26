@@ -3,7 +3,7 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <EntityModalContent v-else-if="plant" @edit="edit">
+  <EntityModalContent v-else-if="plant">
     <template #title>
       <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
       <div class="q-ma-sm">
@@ -81,6 +81,11 @@
     <template #action-left>
       <PlantButtonEliminate v-if="!plant.disabled" :plant-id="plant.id" />
       <div v-else></div>
+    </template>
+
+    <template #action-right>
+      <q-btn flat :label="t('base.edit')" color="primary" @click="edit" />
+      <q-btn v-close-popup flat :label="t('base.close')" color="primary" />
     </template>
   </EntityModalContent>
 

@@ -26,4 +26,10 @@ export const base = {
   edit: 'Edit',
   save: 'Save',
   cancel: 'Cancel',
+
+  validation: {
+    xIsRequired: '{x} is required',
+  },
+
+  noResults: 'No results',
 };

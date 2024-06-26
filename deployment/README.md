@@ -233,6 +233,47 @@ gcloud compute network-endpoint-groups delete $FN_NEG_NAME \
   --region=$REGION
 ```
 
+
+## Frontend
+
+### Bucket
+```bash
+export FE_BUCKET_NAME=${INSTANCE}-breedersdb-fe
+
+# create bucket
+gcloud storage buckets create gs://$FE_BUCKET_NAME \
+  --location=$REGION \
+  --default-storage-class=STANDARD \
+  --uniform-bucket-level-access \
+  --project=$PROJECT_ID
+
+# make the bucket public
+# Important: When objects are served from a public Cloud Storage bucket, by default they have a Cache-Control: public, max-age=3600 response header applied. This allows the objects to be cached when Cloud CDN is enabled.
+gcloud storage buckets add-iam-policy-binding gs://$FE_BUCKET_NAME \
+  --member=allUsers --role=roles/storage.objectViewer
+
+# set the bucket as a website
+gcloud storage buckets update gs://$FE_BUCKET_NAME \
+  --web-main-page-suffix=index.html
+  # --web-error-page=404.html
+
+# create backend bucket
+export FE_BUCKET_BACKEND_BUCKET=${FE_BUCKET_NAME}-backend-bucket
+gcloud compute backend-buckets create $FE_BUCKET_BACKEND_BUCKET \
+    --gcs-bucket-name=$FE_BUCKET_NAME \
+    --enable-cdn \
+    --cache-mode=USE_ORIGIN_HEADERS
+```
+
+### Deploy
+```bash
+cd frontend
+npm run build
+export FE_BUCKET_NAME=${INSTANCE}-breedersdb-fe
+gsutil -m rsync -d -R dist/spa/ gs://$FE_BUCKET_NAME
+```
+
+
 ## Load Balancer
 
 ```bash
@@ -266,10 +307,9 @@ gcloud compute ssl-certificates describe $CERTIFICATE_NAME \
 # create url-map with path matchers
 # https://cloud.google.com/load-balancing/docs/url-map-concepts
 # https://cloud.google.com/compute/docs/reference/rest/v1/urlMaps
-# TODO: change default-service to frontend as soon as it is ready
 export URL_MAP_NAME=${INSTANCE}-url-map
 export PATH_MATCHER_NAME=${INSTANCE}-path-matcher
-echo "defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$FN_BACKEND_SERVICE_NAME
+echo "defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendBuckets/$FE_BUCKET_BACKEND_BUCKET
 hostRules:
 - hosts:
   - beta.breedersdb.com
@@ -277,7 +317,7 @@ hostRules:
 kind: compute#urlMap
 name: $URL_MAP_NAME
 pathMatchers:
-- defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$FN_BACKEND_SERVICE_NAME
+- defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendBuckets/$FE_BUCKET_BACKEND_BUCKET
   name: $PATH_MATCHER_NAME
   routeRules:
   - description: forward request to hasura console

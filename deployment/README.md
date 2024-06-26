@@ -206,6 +206,7 @@ gcloud functions deploy ${FN_SERVICE_NAME} \
 ```bash
 export FN_NEG_NAME=${FN_SERVICE_NAME}-neg
 export FN_BACKEND_SERVICE_NAME=${FN_SERVICE_NAME}-backend-service
+export FN_BACKEND_SERVICE_CDN_NAME=${FN_SERVICE_NAME}-backend-service-cdn
 
 gcloud compute network-endpoint-groups create $FN_NEG_NAME \
   --region=$REGION \
@@ -221,6 +222,22 @@ gcloud compute backend-services create $FN_BACKEND_SERVICE_NAME \
 # connect backend-service to network-endpoint-group
 # must be global (transitive dependency of the load balancer's SSL feature)
 gcloud compute backend-services add-backend $FN_BACKEND_SERVICE_NAME \
+  --global \
+  --network-endpoint-group=$FN_NEG_NAME \
+  --network-endpoint-group-region=$REGION
+
+
+# create backend-service with cdn
+gcloud compute backend-services create $FN_BACKEND_SERVICE_CDN_NAME \
+  --global \
+  --load-balancing-scheme=EXTERNAL_MANAGED \
+  --enable-cdn \
+  --cache-mode=USE_ORIGIN_HEADERS \
+  --custom-response-header='Cache-Status: {cdn_cache_status}' \
+  --custom-response-header='Cache-ID: {cdn_cache_id}'
+
+# connect backend-service to network-endpoint-group
+gcloud compute backend-services add-backend $FN_BACKEND_SERVICE_CDN_NAME \
   --global \
   --network-endpoint-group=$FN_NEG_NAME \
   --network-endpoint-group-region=$REGION
@@ -268,6 +285,7 @@ gcloud compute backend-buckets create $FE_BUCKET_BACKEND_BUCKET \
 ```
 
 ### Deploy
+TODO: `npm run build` uses the .env file. Currently you are required to manually swap the dev and prod values.
 ```bash
 cd frontend
 npm run build
@@ -365,7 +383,7 @@ pathMatchers:
     routeAction:
       urlRewrite:
         pathPrefixRewrite: /
-    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$FN_BACKEND_SERVICE_NAME" | \
+    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$FN_BACKEND_SERVICE_CDN_NAME" | \
 gcloud compute url-maps import $URL_MAP_NAME \
   --global
 

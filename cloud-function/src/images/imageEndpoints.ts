@@ -1,6 +1,6 @@
 import * as ff from '@google-cloud/functions-framework';
 import { authenticateRequest } from '..';
-import { hashFileForCaching, hashFileForStorage } from '../lib/crypto';
+import { hashFileForStorage } from '../lib/crypto';
 import { config } from '../lib/config';
 import { downloadFile, uploadFile } from '../lib/storage';
 import { buffer } from 'node:stream/consumers';
@@ -69,12 +69,6 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
     return res.status(405).send('Method Not Allowed');
   }
 
-  // TODO scope: check if use has access to bucket
-  const auth = await authenticateRequest(req.headers.cookie);
-  if (!auth) {
-    return res.status(401).send('Unauthorized');
-  }
-
   // validate params
   const searchParams = new URLSearchParams(req.url.split('?').pop());
   const fileName = searchParams?.get('file');
@@ -115,7 +109,10 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
   }
 
   // headers
-  res.setHeader('ETag', hashFileForCaching(buf));
+  // https://cloud.google.com/cdn/docs/caching#expiration
+  // By default, when the expiration time value exceeds 30 days (2,592,000 seconds), Cloud CDN treats the expiration value as if it were 2,592,000 seconds.
+  // As an upper bound, cache entries that aren't accessed for 30 days are automatically evicted.
+  res.setHeader('Cache-Control', `max-age=${60 * 60 * 24 * 30},public`); // 30 days
   res.setHeader('Content-Type', 'image/jpeg');
 
   return res.send(buf);

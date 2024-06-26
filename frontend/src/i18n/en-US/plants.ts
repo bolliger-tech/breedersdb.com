@@ -15,4 +15,7 @@ export const plants = {
     grafting: 'Grafting',
     rootstock: 'Rootstock',
   },
+
+  eliminate: 'Eliminate',
+  eliminateConfirmation: 'Are you sure you want to eliminate this plant?',
 };

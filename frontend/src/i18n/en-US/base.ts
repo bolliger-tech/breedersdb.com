@@ -22,4 +22,8 @@ export const base = {
   show: 'Show',
   download: 'Download',
   close: 'Close',
+  delete: 'Delete',
+  edit: 'Edit',
+  save: 'Save',
+  cancel: 'Cancel',
 };

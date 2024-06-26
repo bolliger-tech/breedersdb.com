@@ -25,4 +25,5 @@ export const entity = {
   },
 
   basics: 'Basics',
+  noImages: 'No images available',
 };

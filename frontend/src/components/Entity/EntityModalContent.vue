@@ -16,14 +16,35 @@
 
     <q-separator />
 
-    <q-card-actions align="right">
-      <q-btn v-close-popup flat label="Decline" color="primary" />
-      <q-btn v-close-popup flat label="Accept" color="primary" />
+    <q-card-actions align="between">
+      <div>
+        <slot name="action-left">
+          <q-btn
+            flat
+            :label="t('base.delete')"
+            color="negative"
+            @click="() => $emit('delete')"
+          />
+        </slot>
+      </div>
+      <div>
+        <slot name="action-right">
+          <q-btn
+            flat
+            :label="t('base.edit')"
+            color="primary"
+            @click="() => $emit('edit')"
+          />
+          <q-btn v-close-popup flat :label="t('base.close')" color="primary" />
+        </slot>
+      </div>
     </q-card-actions>
   </q-card>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'src/composables/useI18n';
+
 export interface EntityModalContentProps {
   title?: string;
 }
@@ -32,5 +53,13 @@ defineProps<EntityModalContentProps>();
 defineSlots<{
   title: [];
   default: [];
+  'action-left': [];
+  'action-right': [];
 }>();
+defineEmits<{
+  delete: [];
+  edit: [];
+}>();
+
+const { t } = useI18n();
 </script>

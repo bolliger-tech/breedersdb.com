@@ -3,7 +3,7 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <EntityModalContent v-else-if="plant">
+  <EntityModalContent v-else-if="plant" @edit="edit">
     <template #title>
       <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
       <div class="q-ma-sm">
@@ -77,6 +77,11 @@
         :crossing="plant.plant_group?.cultivar.lot.crossing"
       />
     </template>
+
+    <template #action-left>
+      <PlantButtonEliminate v-if="!plant.disabled" :plant-id="plant.id" />
+      <div v-else></div>
+    </template>
   </EntityModalContent>
 
   <q-card v-else>
@@ -100,6 +105,8 @@ import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAt
 import { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 import { useI18n } from 'src/composables/useI18n';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
+import { useRoute, useRouter } from 'vue-router';
+import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -147,4 +154,13 @@ const samples = computed(() =>
 const other = computed(() =>
   attributions.value.filter((row) => row.attribute_type === 'OTHER'),
 );
+
+const route = useRoute();
+const router = useRouter();
+function edit() {
+  router.push({
+    path: `/plants/${props.entityId}/edit`,
+    query: route.query,
+  });
+}
 </script>

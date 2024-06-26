@@ -1,5 +1,8 @@
 <template>
-  <q-scroll-area style="height: 200px; max-width: 100%">
+  <q-scroll-area
+    v-if="images.length > 0"
+    style="height: 200px; max-width: 100%; margin: 8px 16px"
+  >
     <div class="row no-wrap q-gutter-sm scroll">
       <div v-for="image of images" :key="image.id">
         <EntityViewAttributionImage
@@ -14,9 +17,15 @@
       </div>
     </div>
   </q-scroll-area>
+  <div v-else class="text-caption q-mx-md">
+    <q-icon name="warning" size="sm" class="q-mr-sm" />{{
+      t('entity.noImages')
+    }}
+  </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'src/composables/useI18n';
 import { EntityAttributionsViewFragment } from '../entityAttributionsViewFragment';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 
@@ -30,4 +39,5 @@ export interface EntityViewAttributionsImageGalleryProps {
 }
 
 defineProps<EntityViewAttributionsImageGalleryProps>();
+const { t } = useI18n();
 </script>

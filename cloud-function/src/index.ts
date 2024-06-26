@@ -93,7 +93,7 @@ async function authenticateHasuraRequest(req: ff.Request, res: ff.Response) {
   });
 }
 
-ff.http('auth', (req: ff.Request, res: ff.Response) => {
+ff.http('func', (req: ff.Request, res: ff.Response) => {
   if (config.LOG_REQUESTS) {
     console.log('req:', { headers: req.headers, url: req.url, body: req.body });
   }

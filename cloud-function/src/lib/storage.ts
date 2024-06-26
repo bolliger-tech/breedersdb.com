@@ -23,25 +23,9 @@ function getGCS() {
     ),
   });
 
-  /*
-  function getPublicUrl(fileName: string) {
-    return `https://storage.googleapis.com/${GOOGLE_STORAGE_BUCKET_NAME}/${fileName}`;
-  }
-
-  function getFileNameFromUrl(url: string) {
-    const fileName = url.split('/').pop();
-    if (!fileName) {
-      throw new Error('Invalid url');
-    }
-    return fileName;
-  }
-    */
-
   return {
     storage,
     bucketName: GOOGLE_STORAGE_BUCKET_NAME,
-    //getPublicUrl,
-    //getFileNameFromUrl,
   };
 }
 
@@ -56,9 +40,3 @@ export function downloadFile(fileName: string) {
 
   return storage.bucket(bucketName).file(fileName).createReadStream();
 }
-/*
-export async function deleteFile(fileName: string) {
-  const { storage, bucketName } = getGCS();
-
-  return storage.bucket(bucketName).file(fileName).delete();
-}*/

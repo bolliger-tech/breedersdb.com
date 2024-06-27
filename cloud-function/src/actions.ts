@@ -2,12 +2,12 @@ import * as ff from '@google-cloud/functions-framework';
 import { timingSafeEqual } from './lib/crypto';
 import { ErrorWithStatus } from './lib/errors';
 import { config } from './lib/config';
-import { InsertUserAction } from './actions/InsertUser';
-import { SignIn } from './actions/SignIn';
-import type { ActionProps } from './actions/types';
-import { SignOut } from './actions/SignOut';
-import { Me } from './actions/Me';
-import { ChangePassword } from './actions/ChangePassword';
+import type { ActionProps } from './types';
+import { InsertUserAction } from './auth/InsertUser';
+import { SignIn } from './auth/SignIn';
+import { SignOut } from './auth/SignOut';
+import { Me } from './auth/Me';
+import { ChangePassword } from './auth/ChangePassword';
 
 /* example request
 body: {

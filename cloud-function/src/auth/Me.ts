@@ -1,6 +1,6 @@
-import { authenticateRequest } from '..';
+import { authenticateRequest } from './authenticateRequest';
 import { ErrorWithStatus } from '../lib/errors';
-import type { ActionProps, ActionResult } from './types';
+import type { ActionProps, ActionResult } from '../types';
 
 type MeOutput = {
   id: number;

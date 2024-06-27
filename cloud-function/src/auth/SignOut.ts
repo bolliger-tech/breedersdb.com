@@ -1,9 +1,9 @@
-import { authenticateRequest } from '..';
+import { authenticateRequest } from './authenticateRequest';
 import { createClearAuthCookies } from '../lib/cookies';
 import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
 import { DeleteUserTokenMutation } from '../queries';
-import type { ActionProps, ActionResult } from './types';
+import type { ActionProps, ActionResult } from '../types';
 
 type SignOutOutput = {
   user_id: number;

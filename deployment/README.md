@@ -5,6 +5,7 @@
 ```bash
 . ./env.sh
 ```
+Note: to extract all variables, run: `cat README.md | grep -E '^export '`
 
 ## Create Project
 
@@ -289,13 +290,11 @@ TODO: `npm run build` uses the .env file. Currently you are required to manually
 ```bash
 cd frontend
 npm run build
-export FE_BUCKET_NAME=${INSTANCE}-breedersdb-fe
 gsutil -m rsync -d -R dist/spa/ gs://$FE_BUCKET_NAME
 
 # purge cache
 # https://cloud.google.com/cdn/docs/invalidating-cached-content#invalidate_everything
-gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME \
-  --path "/*"
+gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path "/*"
 ```
 
 

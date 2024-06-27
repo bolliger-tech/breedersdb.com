@@ -28,6 +28,7 @@ services:
       HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
       ## don't infer function permissions from entity
       HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS: 'false'
+      HASURA_GRAPHQL_ENABLE_TELEMETRY: 'false'
     env_file:
       - ./.env
     networks:

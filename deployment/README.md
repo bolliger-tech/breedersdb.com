@@ -104,8 +104,6 @@ gcloud sql instances create $PG_INSTANCE_NAME \
 gcloud sql instances describe $PG_INSTANCE_NAME
 # use connectionName to build connection string
 # postgres://postgres:<PASSWORD>@/<DATABASE_NAME>?host=/cloudsql/<CONNECTION_NAME>
-
-# TODO: cloud proxy
 ```
 
 ## HASURA
@@ -445,52 +443,43 @@ gcloud compute url-maps delete $URL_MAP_NAME
 ```
 
 
-## Storage
+## Assets
 
 ```bash
 export INSTANCE=beta
 export REGION=europe-west6
 export PROJECT_ID=breedersdb
-export BUCKET_NAME=${INSTANCE}-breedersdb
+export ASSETS_BUCKET_NAME=${INSTANCE}-breedersdb-assets
 
 gcloud services enable \
   storage-component.googleapis.com
 
-gcloud storage buckets create gs://$BUCKET_NAME \
+gcloud storage buckets create gs://$ASSETS_BUCKET_NAME \
   --location=$REGION \
   --default-storage-class=STANDARD \
   --uniform-bucket-level-access \
   --project=$PROJECT_ID
 
 # add service account
-export STORAGE_SERVICE_ACCOUNT_NAME=${PROJECT_ID}-storage-serv-acc
-gcloud iam service-accounts create $STORAGE_SERVICE_ACCOUNT_NAME \
-    --display-name $STORAGE_SERVICE_ACCOUNT_NAME
+export ASSETS_SERVICE_ACCOUNT_NAME=${PROJECT_ID}-storage-serv-acc
+gcloud iam service-accounts create $ASSETS_SERVICE_ACCOUNT_NAME \
+    --display-name $ASSETS_SERVICE_ACCOUNT_NAME
 
-export STORAGE_SERVICE_ACCOUNT_EMAIL=$(gcloud iam service-accounts list | grep $STORAGE_SERVICE_ACCOUNT_NAME | awk '{print $2}')
+export ASSETS_SERVICE_ACCOUNT_EMAIL=$(gcloud iam service-accounts list | grep $ASSETS_SERVICE_ACCOUNT_NAME | awk '{print $2}')
 
-gcloud iam service-accounts keys create ${STORAGE_SERVICE_ACCOUNT_NAME}-key.json \
-    --iam-account=$STORAGE_SERVICE_ACCOUNT_EMAIL
+gcloud iam service-accounts keys create ${ASSETS_SERVICE_ACCOUNT_NAME}-key.json \
+    --iam-account=$ASSETS_SERVICE_ACCOUNT_EMAIL
 
 # grant all permissions on all buckets of project
 # gcloud projects add-iam-policy-binding $PPROJECT_ID \
-#     --member="serviceAccount:${STORAGE_SERVICE_ACCOUNT_EMAIL}" \
+#     --member="serviceAccount:${ASSETS_SERVICE_ACCOUNT_EMAIL}" \
 #     --role="roles/storage.objectAdmin"
-
-# https://cloud.google.com/storage/docs/access-control/iam-roles
-# grant only write and read, no delete nor overwrite on the bucket
-# gsutil iam ch \
-#   "serviceAccount:${STORAGE_SERVICE_ACCOUNT_EMAIL}:roles/storage.# objectViewer" \
-#   gs://${BUCKET_NAME}
-# gsutil iam ch \
-#   "serviceAccount:${STORAGE_SERVICE_ACCOUNT_EMAIL}:roles/storage.# objectCreator" \
-#   gs://${BUCKET_NAME}
 
 # grant write, overwrite, delete and read permissions
 gsutil iam ch \
-  "serviceAccount:${STORAGE_SERVICE_ACCOUNT_EMAIL}:roles/storage.objectUser" \
-  gs://${BUCKET_NAME}
+  "serviceAccount:${ASSETS_SERVICE_ACCOUNT_EMAIL}:roles/storage.objectUser" \
+  gs://${ASSETS_BUCKET_NAME}
 
 # list permissions
-gsutil iam get gs://${BUCKET_NAME}
+gsutil iam get gs://${ASSETS_BUCKET_NAME}
 ```

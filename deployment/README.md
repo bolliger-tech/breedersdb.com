@@ -347,11 +347,12 @@ pathMatchers:
   routeRules:
   - description: forward request to hasura console
     matchRules:
-    - prefixMatch: /api/console
+    - prefixMatch: /api/console/
+    - fullPathMatch: /api/console
     priority: 10
     routeAction:
       urlRewrite:
-        pathPrefixRewrite: /console
+        pathPrefixRewrite: /console/
     service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
   - description: forward request to hasura graphql
     matchRules:

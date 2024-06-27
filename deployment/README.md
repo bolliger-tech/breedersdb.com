@@ -275,12 +275,11 @@ gcloud storage buckets update gs://$FE_BUCKET_NAME \
   # --web-error-page=404.html
 
 # create backend bucket
-export FE_BUCKET_BACKEND_BUCKET=${FE_BUCKET_NAME}-backend-bucket
-gcloud compute backend-buckets create $FE_BUCKET_BACKEND_BUCKET \
+export FE_BUCKET_BACKEND=${FE_BUCKET_NAME}-backend
+gcloud compute backend-buckets create $FE_BUCKET_BACKEND \
     --gcs-bucket-name=$FE_BUCKET_NAME \
     --enable-cdn \
     --cache-mode=USE_ORIGIN_HEADERS
-
 ```
 
 ### Deploy
@@ -302,19 +301,26 @@ gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path "/*"
 ```bash
 # https://cloud.google.com/load-balancing/docs/https/setup-global-ext-https-serverless
 
-# reserve static ip
-export IP_NAME=load-balancer-ip
-gcloud compute addresses create $IP_NAME \
+# reserve static ipv4
+export IPV4_NAME=load-balancer-ip
+gcloud compute addresses create $IPV4_NAME \
   --network-tier=PREMIUM \
   --ip-version=IPV4 \
   --global
 
 # get the ip (optional)
-gcloud compute addresses describe $IP_NAME \
+gcloud compute addresses describe $IPV4_NAME \
   --format="get(address)" \
   --global
 
-# point the domain to the ip (currently at cyon)
+# reserve static ipv6
+export IPV6_NAME=load-balancer-ipv6
+gcloud compute addresses create $IPV6_NAME \
+  --network-tier=PREMIUM \
+  --ip-version=IPV6 \
+  --global
+
+# point the domain to the ips (currently at cyon)
 
 # create ssl certificate
 export CERTIFICATE_NAME=${INSTANCE}-cert
@@ -327,12 +333,23 @@ gcloud compute ssl-certificates describe $CERTIFICATE_NAME \
   --global \
   --format="get(name,managed.status, managed.domainStatus)"
 
+# create url-map with https redirect
+export HTTPS_REDIRECT_URL_MAP_NAME=https-redirect-url-map
+export HTTPS_REDIRECT_PATH_MATCHER_NAME=https-redirect-path-matcher
+echo "kind: compute#urlMap
+name: $HTTPS_REDIRECT_URL_MAP_NAME
+defaultUrlRedirect:
+  redirectResponseCode: MOVED_PERMANENTLY_DEFAULT
+  httpsRedirect: True" | \
+gcloud compute url-maps import $HTTPS_REDIRECT_URL_MAP_NAME \
+  --global
+
 # create url-map with path matchers
 # https://cloud.google.com/load-balancing/docs/url-map-concepts
 # https://cloud.google.com/compute/docs/reference/rest/v1/urlMaps
 export URL_MAP_NAME=${INSTANCE}-url-map
 export PATH_MATCHER_NAME=${INSTANCE}-path-matcher
-echo "defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendBuckets/$FE_BUCKET_BACKEND_BUCKET
+echo "defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendBuckets/$FE_BUCKET_BACKEND
 hostRules:
 - hosts:
   - beta.breedersdb.com
@@ -340,7 +357,7 @@ hostRules:
 kind: compute#urlMap
 name: $URL_MAP_NAME
 pathMatchers:
-- defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendBuckets/$FE_BUCKET_BACKEND_BUCKET
+- defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendBuckets/$FE_BUCKET_BACKEND
   name: $PATH_MATCHER_NAME
   routeRules:
   - description: forward request to hasura console
@@ -386,17 +403,6 @@ pathMatchers:
 gcloud compute url-maps import $URL_MAP_NAME \
   --global
 
-# create url-map with https redirect
-export HTTPS_REDIRECT_URL_MAP_NAME=https-redirect-url-map
-export HTTPS_REDIRECT_PATH_MATCHER_NAME=https-redirect-path-matcher
-echo "kind: compute#urlMap
-name: $HTTPS_REDIRECT_URL_MAP_NAME
-defaultUrlRedirect:
-  redirectResponseCode: MOVED_PERMANENTLY_DEFAULT
-  httpsRedirect: True" | \
-gcloud compute url-maps import $HTTPS_REDIRECT_URL_MAP_NAME \
-  --global
-
 # create target-http-proxy & target-https-proxy
 export TARGET_HTTP_PROXY_NAME=http-proxy
 gcloud compute target-http-proxies create $TARGET_HTTP_PROXY_NAME \
@@ -407,18 +413,34 @@ gcloud compute target-https-proxies create $TARGET_HTTPS_PROXY_NAME \
   --ssl-certificates=$CERTIFICATE_NAME \
   --url-map=$URL_MAP_NAME
 
-# create forwarding-rule
-export HTTP_FORWARDING_RULE_NAME=http-forwarding-rule
-gcloud compute forwarding-rules create $HTTP_FORWARDING_RULE_NAME \
-  --address=$IP_NAME \
+# create forwarding-rules
+export HTTP_FORWARDING_RULE_V4_NAME=http-forwarding-rule-v4
+gcloud compute forwarding-rules create $HTTP_FORWARDING_RULE_V4_NAME \
+  --address=$IPV4_NAME \
   --global \
   --target-http-proxy=$TARGET_HTTP_PROXY_NAME \
   --ports=80 \
   --load-balancing-scheme=EXTERNAL_MANAGED
 
-export HTTPS_FORWARDING_RULE_NAME=${INSTANCE}-https-forwarding-rule
-gcloud compute forwarding-rules create $HTTPS_FORWARDING_RULE_NAME \
-  --address=$IP_NAME \
+export HTTP_FORWARDING_RULE_V6_NAME=http-forwarding-rule-v6
+gcloud compute forwarding-rules create $HTTP_FORWARDING_RULE_V6_NAME \
+  --address=$IPV6_NAME \
+  --global \
+  --target-http-proxy=$TARGET_HTTP_PROXY_NAME \
+  --ports=80 \
+  --load-balancing-scheme=EXTERNAL_MANAGED
+
+export HTTPS_FORWARDING_RULE_V4_NAME=${INSTANCE}-https-forwarding-rule-v4
+gcloud compute forwarding-rules create $HTTPS_FORWARDING_RULE_V4_NAME \
+  --address=$IPV4_NAME \
+  --global \
+  --target-https-proxy=$TARGET_HTTPS_PROXY_NAME \
+  --ports=443 \
+  --load-balancing-scheme=EXTERNAL_MANAGED
+
+export HTTPS_FORWARDING_RULE_V6_NAME=${INSTANCE}-https-forwarding-rule-v6
+gcloud compute forwarding-rules create $HTTPS_FORWARDING_RULE_V6_NAME \
+  --address=$IPV6_NAME \
   --global \
   --target-https-proxy=$TARGET_HTTPS_PROXY_NAME \
   --ports=443 \
@@ -428,17 +450,14 @@ gcloud compute forwarding-rules create $HTTPS_FORWARDING_RULE_NAME \
 
 remove url map:
 ```bash
-export HTTPS_FORWARDING_RULE_NAME=${INSTANCE}-https-forwarding-rule
-export HTTP_FORWARDING_RULE_NAME=http-forwarding-rule
-gcloud compute forwarding-rules delete $HTTPS_FORWARDING_RULE_NAME --global
-gcloud compute forwarding-rules delete $HTTP_FORWARDING_RULE_NAME --global
+gcloud compute forwarding-rules delete $HTTPS_FORWARDING_RULE_V6_NAME --global
+gcloud compute forwarding-rules delete $HTTPS_FORWARDING_RULE_V4_NAME --global
+gcloud compute forwarding-rules delete $HTTP_FORWARDING_RULE_V6_NAME --global
+gcloud compute forwarding-rules delete $HTTP_FORWARDING_RULE_V4_NAME --global
 
-export TARGET_HTTPS_PROXY_NAME=${INSTANCE}-https-proxy
-export TARGET_HTTP_PROXY_NAME=http-proxy
 gcloud compute target-https-proxies delete $TARGET_HTTPS_PROXY_NAME
 gcloud compute target-http-proxies delete $TARGET_HTTP_PROXY_NAME
 
-export URL_MAP_NAME=${INSTANCE}-url-map
 gcloud compute url-maps delete $URL_MAP_NAME
 ```
 

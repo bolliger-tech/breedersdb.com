@@ -368,7 +368,7 @@ pathMatchers:
     urlRedirect:
       pathRedirect: /api/console
       redirectResponseCode: MOVED_PERMANENTLY_DEFAULT
-  - description: forward request to function
+  - description: forward request to cloud-function
     matchRules:
     - prefixMatch: /api/internal/
     priority: 20
@@ -376,7 +376,7 @@ pathMatchers:
       urlRewrite:
         pathPrefixRewrite: /
     service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$FN_BACKEND_SERVICE_NAME
-  - description: forward request to function
+  - description: forward request to cloud-function through CDN
     matchRules:
     - prefixMatch: /api/assets/
     priority: 21

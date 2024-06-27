@@ -10,6 +10,7 @@
 
     <template #default>
       <PlantEntityForm
+        ref="formRef"
         :plant="plant"
         @change="(data) => (changedData = data)"
       />
@@ -21,6 +22,7 @@
     </template>
 
     <template #action-right>
+      <div v-if="errorMsg" class="text-negative">{{ errorMsg }}</div>
       <q-btn flat :label="t('base.cancel')" color="primary" @click="cancel" />
       <q-btn
         flat
@@ -41,7 +43,7 @@
 import { useMutation, useQuery } from '@urql/vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import { VariablesOf, graphql } from 'src/graphql';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
@@ -49,6 +51,8 @@ import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import PlantEntityForm from 'src/components/Plant/PlantEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
+import { closeModalSymbol } from 'src/components/Entity/modalProvideSymbols';
+import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -83,6 +87,9 @@ function cancel() {
   }
 }
 
+const errorMsg = ref<string | null>(null);
+const closeModal = useInjectOrThrow(closeModalSymbol);
+const formRef = ref<InstanceType<typeof PlantEntityForm> | null>(null);
 const changedData = ref<VariablesOf<typeof mutation>['plant']>();
 const mutation = graphql(
   `
@@ -102,16 +109,31 @@ const mutation = graphql(
 const {
   executeMutation,
   fetching: saving,
-  error: saveError, // TODO: show error
+  error: saveError,
 } = useMutation(mutation);
-function save() {
-  if (!changedData.value) return; // TODO: show error
+watch(saveError, () => {
+  errorMsg.value = saveError.value?.message ?? null;
+});
+
+async function save() {
+  if (!changedData.value) {
+    closeModal();
+    return;
+  }
+
+  errorMsg.value = null;
+  const isValid = await formRef.value?.validate();
+  if (!isValid) {
+    errorMsg.value = t('base.validation.invalidFields');
+    return;
+  }
+
   executeMutation({
     id: parseInt(props.entityId.toString()),
     plant: changedData.value,
   }).then(() => {
-    if (!error.value) {
-      router.push({ path: '/plants', query: route.query });
+    if (!saveError.value) {
+      closeModal();
     }
   });
 }

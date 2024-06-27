@@ -1,6 +1,6 @@
 <template>
   <EntitySelect
-    :ref="plantGroupRef"
+    ref="plantGroupRef"
     v-model="plantGroup"
     :label="t('plants.fields.plantGroup')"
     :options="plantGroupOptions"

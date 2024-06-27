@@ -31,6 +31,8 @@ export const base = {
 
   validation: {
     xIsRequired: '{x} is required',
+    invalidFields:
+      'Invalid form fields. Please check the errors and try again.',
   },
 
   noResults: 'No results',

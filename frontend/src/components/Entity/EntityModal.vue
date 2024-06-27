@@ -13,7 +13,10 @@
 
 <script setup lang="ts">
 import { provide, ref } from 'vue';
-import { makeModalPersistentSymbol } from './makeModalPersistent';
+import {
+  closeModalSymbol,
+  makeModalPersistentSymbol,
+} from './modalProvideSymbols';
 
 const visible = defineModel<boolean>();
 defineEmits<{
@@ -25,5 +28,8 @@ const persistent = ref(false);
 
 provide(makeModalPersistentSymbol, (value: boolean) => {
   persistent.value = value;
+});
+provide(closeModalSymbol, () => {
+  visible.value = false;
 });
 </script>

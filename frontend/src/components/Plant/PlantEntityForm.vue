@@ -1,19 +1,19 @@
 <template>
   <PlantLabelIdEdit
-    :ref="() => refs.labelIdRef"
+    :ref="(el: InputRef) => (refs.labelIdRef = el)"
     v-model="data.label_id"
     :eliminated="!!data.date_eliminated"
   />
   <PlantPlantGroupSelect
-    :ref="() => refs.plantGroupRef"
+    :ref="(el: InputRef) => (refs.plantGroupRef = el)"
     v-model="data.plant_group_id"
   />
   <PlantPlantRowSelect
-    :ref="() => refs.plantRowRef"
+    :ref="(el: InputRef) => (refs.plantRowRef = el)"
     v-model="data.plant_row_id"
   />
   <EntityInput
-    :ref="() => refs.distancePlantRowStartRef"
+    :ref="(el: InputRef) => (refs.distancePlantRowStartRef = el)"
     v-model="data.distance_plant_row_start"
     :label="t('plants.fields.distancePlantRowStart')"
     :rules="[
@@ -28,21 +28,21 @@
     :hint="t('plants.hints.distancePlantRowStart')"
   />
   <EntityInput
-    :ref="() => refs.dateGraftedRef"
+    :ref="(el: InputRef) => (refs.dateGraftedRef = el)"
     v-model="data.date_grafted"
     :label="t('plants.fields.dateGrafted')"
     type="date"
     autocomplete="off"
   />
   <EntityInput
-    :ref="() => refs.datePlantedRef"
+    :ref="(el: InputRef) => (refs.datePlantedRef = el)"
     v-model="data.date_planted"
     :label="t('plants.fields.datePlanted')"
     type="date"
     autocomplete="off"
   />
   <EntityInput
-    :ref="() => refs.dateEliminatedRef"
+    :ref="(el: InputRef) => (refs.dateEliminatedRef = el)"
     v-model="data.date_eliminated"
     :label="t('plants.fields.dateEliminated')"
     type="date"
@@ -54,28 +54,26 @@
     "
   />
   <EntityInput
-    :ref="() => refs.dateLabeledRef"
+    :ref="(el: InputRef) => (refs.dateLabeledRef = el)"
     v-model="data.date_labeled"
     :label="t('plants.fields.dateLabeled')"
     type="date"
     autocomplete="off"
   />
   <PlantRootstockSelect
-    :ref="() => refs.rootstockRef"
+    :ref="(el: InputRef) => (refs.rootstockRef = el)"
     v-model="data.rootstock_id"
   />
   <PlantGraftingSelect
-    :ref="() => refs.graftingRef"
+    :ref="(el: InputRef) => (refs.graftingRef = el)"
     v-model="data.grafting_id"
   />
-  <!-- remove -->
-  <q-btn label="Validate" color="primary" @click="validate" />
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { type PlantFragment } from './plantFragment';
-import { VNodeRef, computed, inject, ref } from 'vue';
+import { VNodeRef, computed, ref } from 'vue';
 import PlantPlantGroupSelect from './PlantPlantGroupSelect.vue';
 import PlantPlantRowSelect from './PlantPlantRowSelect.vue';
 import PlantLabelIdEdit from './PlantLabelIdEdit.vue';
@@ -83,7 +81,8 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import PlantRootstockSelect from './PlantRootstockSelect.vue';
 import PlantGraftingSelect from './PlantGraftingSelect.vue';
 import { watch } from 'vue';
-import { makeModalPersistentSymbol } from '../Entity/makeModalPersistent';
+import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
+import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 
 export interface PlantEntityTableProps {
   plant: PlantFragment;
@@ -93,6 +92,7 @@ const props = defineProps<PlantEntityTableProps>();
 const emits = defineEmits<{
   change: [data: typeof data.value];
 }>();
+defineExpose({ validate });
 
 const { t } = useI18n();
 
@@ -137,21 +137,19 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   graftingRef: null,
 });
 
-function validate() {
-  for (const key in refs.value) {
-    refs.value[key]?.validate();
-  }
-}
-
 const isDirty = computed(() => {
   return (Object.keys(initialData) as (keyof typeof initialData)[]).some(
     (key) => data.value[key] !== initialData[key],
   );
 });
-const makeModalPersistent = inject(makeModalPersistentSymbol);
-watch(isDirty, () => {
-  if (makeModalPersistent) makeModalPersistent(isDirty.value);
-});
+const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
+watch(isDirty, () => makeModalPersistent(isDirty.value));
 
 watch(data, (newData) => emits('change', newData), { deep: true });
+
+async function validate() {
+  return Promise.all(
+    Object.values(refs.value).map((ref) => ref?.validate?.() ?? true),
+  ).then((results) => results.every((result) => result));
+}
 </script>

@@ -2,7 +2,7 @@
   <div>
     <q-select
       v-if="!error"
-      :ref="selectRef"
+      ref="selectRef"
       v-model="modelValue"
       :label="label"
       :bg-color="inputBgColor"

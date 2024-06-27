@@ -15,7 +15,6 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
     return res.status(405).send('Method Not Allowed');
   }
 
-  // TODO scope: get bucket for user
   const auth = await authenticateRequest(req.headers.cookie);
   if (!auth) {
     return res.status(401).send('Unauthorized');

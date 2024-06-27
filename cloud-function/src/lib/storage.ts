@@ -1,8 +1,5 @@
 import { Storage } from '@google-cloud/storage';
 
-// create GOOGLE_APPLICATION_CREDENTIALS_BASE64:
-// cat path/to/your/credentials.json | base64 | pbcopy
-
 function getGCS() {
   const GOOGLE_APPLICATION_CREDENTIALS_BASE64 =
     process.env.GOOGLE_APPLICATION_CREDENTIALS_BASE64;

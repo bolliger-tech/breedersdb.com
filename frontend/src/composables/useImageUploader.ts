@@ -42,8 +42,8 @@ export function useImageUploader(
         if (event.lengthComputable) {
           const percentComplete = Math.min(
             Math.round((event.loaded / event.total) * 100),
-            99,
-          );
+            90,
+          ); // leave 10% for server processing
           onProgress({
             percentComplete,
             bytesTotal: event.total,

@@ -47,11 +47,11 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
   }
 
   const fileHash = hashFileForStorage(image);
-  const storageFileName = `${fileHash}.jpeg`;
+  const storageFileName = `${fileHash}.jpg`;
 
   const originalFileName =
     (req.headers?.['x-file-name'] as string)?.split('.').shift() || 'unknown';
-  const url = `/api/assets/images/${originalFileName}.jpeg?file=${storageFileName}`;
+  const url = `/api/assets/images/${originalFileName}.jpg?file=${storageFileName}`;
 
   try {
     await uploadFile(file, storageFileName);

@@ -286,7 +286,7 @@ gcloud compute backend-buckets create $FE_BUCKET_BACKEND_BUCKET \
 ```
 
 ### Deploy
-First time: `cp .env.dev .env.prod` and adapt at least `HASURA_GRAPHQL_URL`.
+First time: `cp .env.dev .env.prod`
 
 ```bash
 cd frontend

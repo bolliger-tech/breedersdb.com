@@ -25,12 +25,6 @@ function stopLoadingBar() {
 }
 
 export function createUrqlClient() {
-  const url = process.env.HASURA_GRAPHQL_URL;
-
-  if (!url) {
-    throw new Error('Missing or empty environment variable HASURA_GRAPHQL_URL');
-  }
-
   const retryOptions = {
     initialDelayMs: 50,
     randomDelay: false,
@@ -51,7 +45,7 @@ export function createUrqlClient() {
   };
 
   return new Client({
-    url,
+    url: '/api/v1/graphql',
     exchanges: [
       requestPolicyExchange({
         ttl: 15 * 60 * 1000, // 15 minutes -- in the field, internet may be slow

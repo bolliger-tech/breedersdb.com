@@ -82,12 +82,12 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
     hasHeight ? parseInt(searchParams?.get('height') || '') : undefined,
   ];
   if (
-    (hasWidth && isNaN(width || NaN)) ||
-    (hasHeight && isNaN(height || NaN))
+    (hasWidth && (isNaN(width || NaN) || !width || width < 1)) ||
+    (hasHeight && (isNaN(height || NaN) || !height || height < 1))
   ) {
     return res
       .status(400)
-      .send('Bad Request: width and height must be numbers');
+      .send('Bad Request: width and height must be numbers and greater than 0');
   }
 
   const file = downloadFile(fileName);

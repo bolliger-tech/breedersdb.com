@@ -68,9 +68,9 @@ services:
                   proxy_pass http://hasura_backend/console;
               }
 
-              location /api/v1 {
+              location /api/v1/ {
                   proxy_set_header Host localhost;
-                  proxy_pass http://hasura_backend;
+                  proxy_pass http://hasura_backend/v1/;
               }
 
               # trailing slash in proxy_pass removes url of location
@@ -89,8 +89,8 @@ services:
                   proxy_pass http://frontend/;
               }
 
-              # Redirect /api/v1 to /api/console
-              location = /api/v1 {
+              # Redirect /api to /api/console
+              location = /api {
                   return 301 /api/console;
               }
           }

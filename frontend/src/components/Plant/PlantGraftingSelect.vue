@@ -29,7 +29,7 @@ defineExpose({
   validate: () => graftingRef.value?.validate(),
 });
 
-const grafting = defineModel<{ id: number; name: string }>();
+const grafting = defineModel<{ id: number; name: string } | null | undefined>();
 
 const query = graphql(`
   query Graftings {

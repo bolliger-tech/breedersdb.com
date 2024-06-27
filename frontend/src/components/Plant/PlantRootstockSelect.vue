@@ -29,7 +29,9 @@ defineExpose({
   validate: () => rootstockRef.value?.validate(),
 });
 
-const rootstock = defineModel<{ id: number; name: string }>();
+const rootstock = defineModel<
+  { id: number; name: string } | null | undefined
+>();
 
 const query = graphql(`
   query Rootstocks {

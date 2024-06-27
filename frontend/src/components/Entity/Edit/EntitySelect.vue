@@ -60,7 +60,7 @@ export type EntitySelectInstance<T> = {
 
 // for generic components we have to export all interfaces or none. else it currently throws an error
 export interface EntitySelectProps<T> extends EntitySelectPropsWithoutModel<T> {
-  modelValue: T;
+  modelValue: T | null | undefined;
 }
 
 // for generic components we have to export all interfaces or none. else it currently throws an error
@@ -85,7 +85,7 @@ defineExpose({
   validate: () => selectRef.value?.validate(),
 });
 
-const modelValue = defineModel<T>();
+const modelValue = defineModel<T | null | undefined>();
 
 const filteredOptions = shallowRef([...props.options]);
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {

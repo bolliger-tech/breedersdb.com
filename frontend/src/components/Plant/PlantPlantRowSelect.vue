@@ -29,7 +29,7 @@ defineExpose({
   validate: () => plantRowRef.value?.validate(),
 });
 
-const plantRow = defineModel<{ id: number; name: string }>();
+const plantRow = defineModel<{ id: number; name: string } | null | undefined>();
 
 const query = graphql(`
   query PlantRows {

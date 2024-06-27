@@ -29,7 +29,7 @@ defineExpose({
   validate: () => plantRowRef.value?.validate(),
 });
 
-const plantRow = defineModel<{ id: number; name: string } | null | undefined>();
+const modelValue = defineModel<number | null>({ required: true });
 
 const query = graphql(`
   query PlantRows {
@@ -45,6 +45,11 @@ const { data, error, fetching } = useQuery({
 });
 
 const plantRowOptions = computed(() => data.value?.plant_rows ?? []);
+
+const plantRow = computed<{ id: number; name: string } | undefined>({
+  get: () => plantRowOptions.value.find((o) => o.id === modelValue.value),
+  set: (plantRow) => (modelValue.value = plantRow?.id ?? null),
+});
 
 const { t } = useI18n();
 </script>

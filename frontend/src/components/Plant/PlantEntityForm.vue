@@ -1,17 +1,20 @@
 <template>
   <PlantLabelIdEdit
     :ref="() => refs.labelIdRef"
-    v-model="data.labelId"
-    :eliminated="!!data.dateEliminated"
+    v-model="data.label_id"
+    :eliminated="!!data.date_eliminated"
   />
   <PlantPlantGroupSelect
     :ref="() => refs.plantGroupRef"
-    v-model="data.plantGroup"
+    v-model="data.plant_group_id"
   />
-  <PlantPlantRowSelect :ref="() => refs.plantRowRef" v-model="data.plantRow" />
+  <PlantPlantRowSelect
+    :ref="() => refs.plantRowRef"
+    v-model="data.plant_row_id"
+  />
   <EntityInput
     :ref="() => refs.distancePlantRowStartRef"
-    v-model="data.distancePlantRowStart"
+    v-model="data.distance_plant_row_start"
     :label="t('plants.fields.distancePlantRowStart')"
     :rules="[
       (val: string) =>
@@ -26,42 +29,45 @@
   />
   <EntityInput
     :ref="() => refs.dateGraftedRef"
-    v-model="data.dateGrafted"
+    v-model="data.date_grafted"
     :label="t('plants.fields.dateGrafted')"
     type="date"
     autocomplete="off"
   />
   <EntityInput
     :ref="() => refs.datePlantedRef"
-    v-model="data.datePlanted"
+    v-model="data.date_planted"
     :label="t('plants.fields.datePlanted')"
     type="date"
     autocomplete="off"
   />
   <EntityInput
     :ref="() => refs.dateEliminatedRef"
-    v-model="data.dateEliminated"
+    v-model="data.date_eliminated"
     :label="t('plants.fields.dateEliminated')"
     type="date"
     autocomplete="off"
     :hint="
-      data.dateEliminated
+      data.date_eliminated
         ? t('plants.hints.dateEliminatedTrue')
         : t('plants.hints.dateEliminatedFalse')
     "
   />
   <EntityInput
     :ref="() => refs.dateLabeledRef"
-    v-model="data.dateLabeled"
+    v-model="data.date_labeled"
     :label="t('plants.fields.dateLabeled')"
     type="date"
     autocomplete="off"
   />
   <PlantRootstockSelect
     :ref="() => refs.rootstockRef"
-    v-model="data.rootstock"
+    v-model="data.rootstock_id"
   />
-  <PlantGraftingSelect :ref="() => refs.graftingRef" v-model="data.grafting" />
+  <PlantGraftingSelect
+    :ref="() => refs.graftingRef"
+    v-model="data.grafting_id"
+  />
   <!-- remove -->
   <q-btn label="Validate" color="primary" @click="validate" />
 </template>
@@ -80,33 +86,36 @@ import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/makeModalPersistent';
 
 export interface PlantEntityTableProps {
-  plant?: PlantFragment;
+  plant: PlantFragment;
 }
 
 const props = defineProps<PlantEntityTableProps>();
+const emits = defineEmits<{
+  change: [data: typeof data.value];
+}>();
 
 const { t } = useI18n();
 
 const initialData = {
-  labelId: props.plant?.label_id ?? '',
-  plantGroup: props.plant?.plant_group,
-  plantRow: props.plant?.plant_row,
-  distancePlantRowStart: props.plant?.distance_plant_row_start,
-  dateGrafted: props.plant?.date_grafted,
-  datePlanted: props.plant?.date_planted,
-  dateEliminated: props.plant?.date_eliminated,
-  dateLabeled: props.plant?.date_labeled,
-  rootstock: props.plant?.rootstock,
-  grafting: props.plant?.grafting,
+  label_id: props.plant.label_id,
+  plant_group_id: props.plant.plant_group?.id || null,
+  plant_row_id: props.plant.plant_row?.id || null,
+  distance_plant_row_start: props.plant.distance_plant_row_start,
+  date_grafted: props.plant.date_grafted,
+  date_planted: props.plant.date_planted,
+  date_eliminated: props.plant.date_eliminated,
+  date_labeled: props.plant.date_labeled,
+  rootstock_id: props.plant.rootstock?.id || null,
+  grafting_id: props.plant.grafting?.id || null,
 };
 
 const data = ref({ ...initialData });
 
 watch(
-  () => data.value.dateEliminated,
+  () => data.value.date_eliminated,
   (eliminated) => {
-    const nonPrefixedLabelId = data.value.labelId.replace('#', '');
-    data.value.labelId = eliminated
+    const nonPrefixedLabelId = data.value.label_id.replace('#', '');
+    data.value.label_id = eliminated
       ? `#${nonPrefixedLabelId}`
       : nonPrefixedLabelId;
   },
@@ -143,4 +152,6 @@ const makeModalPersistent = inject(makeModalPersistentSymbol);
 watch(isDirty, () => {
   if (makeModalPersistent) makeModalPersistent(isDirty.value);
 });
+
+watch(data, (newData) => emits('change', newData), { deep: true });
 </script>

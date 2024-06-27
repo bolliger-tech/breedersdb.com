@@ -29,7 +29,7 @@ defineExpose({
   validate: () => graftingRef.value?.validate(),
 });
 
-const grafting = defineModel<{ id: number; name: string } | null | undefined>();
+const modelValue = defineModel<number | null>({ required: true });
 
 const query = graphql(`
   query Graftings {
@@ -45,6 +45,11 @@ const { data, error, fetching } = useQuery({
 });
 
 const graftingOptions = computed(() => data.value?.graftings ?? []);
+
+const grafting = computed<{ id: number; name: string } | undefined>({
+  get: () => graftingOptions.value.find((o) => o.id === modelValue.value),
+  set: (grafting) => (modelValue.value = grafting?.id ?? null),
+});
 
 const { t } = useI18n();
 </script>

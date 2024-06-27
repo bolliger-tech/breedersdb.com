@@ -29,9 +29,7 @@ defineExpose({
   validate: () => rootstockRef.value?.validate(),
 });
 
-const rootstock = defineModel<
-  { id: number; name: string } | null | undefined
->();
+const modelValue = defineModel<number | null>({ required: true });
 
 const query = graphql(`
   query Rootstocks {
@@ -47,6 +45,11 @@ const { data, error, fetching } = useQuery({
 });
 
 const rootstockOptions = computed(() => data.value?.rootstocks ?? []);
+
+const rootstock = computed<{ id: number; name: string } | undefined>({
+  get: () => rootstockOptions.value.find((o) => o.id === modelValue.value),
+  set: (rootstock) => (modelValue.value = rootstock?.id ?? null),
+});
 
 const { t } = useI18n();
 </script>

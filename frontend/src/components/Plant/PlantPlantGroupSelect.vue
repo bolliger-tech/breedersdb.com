@@ -21,7 +21,10 @@ import EntitySelect, {
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 
-const plantGroupRef = ref<EntitySelectInstance | null>(null);
+const plantGroupRef = ref<EntitySelectInstance<{
+  id: number;
+  display_name: string;
+}> | null>(null);
 
 defineExpose({
   validate: () => plantGroupRef.value?.validate(),

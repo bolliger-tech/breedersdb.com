@@ -27,6 +27,8 @@ export const base = {
   save: 'Save',
   cancel: 'Cancel',
 
+  required: 'Required',
+
   validation: {
     xIsRequired: '{x} is required',
   },

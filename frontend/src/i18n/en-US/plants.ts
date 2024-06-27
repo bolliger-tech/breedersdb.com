@@ -6,7 +6,7 @@ export const plants = {
   fields: {
     labelId: 'Label ID',
     serialInPlantRow: 'Number in row',
-    distancePlantRowStart: 'Offset',
+    distancePlantRowStart: 'Distance to row start',
     dateGrafted: 'Date grafted',
     datePlanted: 'Date planted',
     dateEliminated: 'Date eliminated',
@@ -20,6 +20,13 @@ export const plants = {
   errors: {
     labelId:
       'Label ID can only be numbers (max 8 digits). If the plant was eliminated, the label ID must be prefixed with a #',
+    distancePlantRowStart: 'Distance to row start must be a positive number',
+  },
+
+  hints: {
+    labelId:
+      'Required. Number (max 8 digits). Prefixed with a # if plant was eliminated',
+    distancePlantRowStart: 'Meters',
   },
 
   eliminate: 'Eliminate',

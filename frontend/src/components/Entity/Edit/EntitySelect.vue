@@ -18,6 +18,7 @@
       hide-selected
       clearable
       :loading="loading"
+      :hint="required ? t('base.required') : ''"
       @filter="filterOptions"
     >
       <template #no-option>
@@ -39,7 +40,7 @@
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { QSelect } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
-import { VNodeRef, computed, ref } from 'vue';
+import { ComponentPublicInstance, VNodeRef, computed, ref } from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import {
   FilterSelectOptionsUpdateFn,
@@ -48,14 +49,22 @@ import {
 import { shallowRef } from 'vue';
 import { CombinedError } from '@urql/vue';
 
-export type EntitySelectInstance = VNodeRef & {
-  // HACK: the way to do it properly doesn't seem to work with generics,
-  // therefore it is manually typed. The proper way would be something like this:
-  // export type EntitySelect = InstanceType<typeof EntitySelect>;
+// it currently seems to be a bug with generic components. the currect type
+// would be without the `& VNodeRef` part.
+// but this throws an error. the workaround with `& VNodeRef` is not 100%
+// accurate, but it works.
+export type EntitySelectInstance<T> = {
   validate: () => ReturnType<QSelect['validate']> | undefined;
-};
+} & ComponentPublicInstance<EntitySelectProps<T>> &
+  VNodeRef;
 
-interface EntitySelectPropsWithoutModel {
+// for generic components we have to export all interfaces or none. else it currently throws an error
+export interface EntitySelectProps<T> extends EntitySelectPropsWithoutModel<T> {
+  modelValue: T;
+}
+
+// for generic components we have to export all interfaces or none. else it currently throws an error
+export interface EntitySelectPropsWithoutModel<T> {
   label: string;
   required?: boolean;
   optionValue: keyof T;
@@ -65,7 +74,7 @@ interface EntitySelectPropsWithoutModel {
   error?: CombinedError | null;
 }
 
-const props = withDefaults(defineProps<EntitySelectPropsWithoutModel>(), {
+const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   required: false,
   loading: false,
   error: null,

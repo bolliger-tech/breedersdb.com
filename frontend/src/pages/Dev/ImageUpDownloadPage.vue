@@ -3,12 +3,8 @@
     <h1>📸⬆️☁️⬇️🏞️</h1>
     <form @submit.prevent="onSubmit">
       <input ref="fileInput" type="file" required />
-      <button type="submit">Upload</button>
-      <button
-        :disabled="!isUploading"
-        :style="{ 'margin-left': '20px' }"
-        @click="abortUpload"
-      >
+      <button class="q-ml-lg" type="submit">Upload</button>
+      <button :disabled="!isUploading" class="q-ml-lg" @click="abort">
         Abort
       </button>
     </form>
@@ -58,20 +54,17 @@ const uploadState = ref<UploadProgress>({
   bytesUploaded: 0,
   errorMessage: '',
 });
-const message = ref<string>('');
+const message = ref('');
 const uploadedFile = ref<UploadResponse | null>(null);
 
-const handleProgress = (progress: UploadProgress) => {
-  uploadState.value = {
-    ...uploadState.value,
-    ...progress,
-  };
+function handleProgress(progress: UploadProgress) {
+  uploadState.value = progress;
   message.value = progress.errorMessage || '';
-};
+}
 
 const { upload, abort } = useImageUploader(handleProgress);
 
-const onSubmit = async () => {
+async function onSubmit() {
   if (!fileInput.value || !fileInput.value.files?.length) {
     uploadState.value = {
       status: 'error',
@@ -94,11 +87,7 @@ const onSubmit = async () => {
   } catch (error) {
     console.warn('Upload failed:', error);
   }
-};
-
-const abortUpload = () => {
-  abort();
-};
+}
 
 const isUploading = computed(() => uploadState.value.status === 'uploading');
 const isError = computed(() => uploadState.value.status === 'error');

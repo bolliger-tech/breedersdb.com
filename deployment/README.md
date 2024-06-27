@@ -286,15 +286,16 @@ gcloud compute backend-buckets create $FE_BUCKET_BACKEND_BUCKET \
 ```
 
 ### Deploy
-TODO: `npm run build` uses the .env file. Currently you are required to manually swap the dev and prod values.
+First time: `cp .env.dev .env.prod` and adapt at least `HASURA_GRAPHQL_URL`.
+
 ```bash
 cd frontend
-npm run build
+yarn run build
 gsutil -m rsync -d -R dist/spa/ gs://$FE_BUCKET_NAME
 
+gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path "/*"
 # purge cache
 # https://cloud.google.com/cdn/docs/invalidating-cached-content#invalidate_everything
-gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path "/*"
 ```
 
 

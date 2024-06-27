@@ -6,6 +6,7 @@
     dense
     outlined
     :hint="hint ?? (required ? t('base.required') : '')"
+    :clearable="clearable ?? !required"
   />
 </template>
 

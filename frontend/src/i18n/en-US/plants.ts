@@ -27,6 +27,10 @@ export const plants = {
     labelId:
       'Required. Number (max 8 digits). Prefixed with a # if plant was eliminated',
     distancePlantRowStart: 'Meters',
+    dateEliminatedTrue:
+      'Adding an elimination date will disable this plant and prefix the label id with a #',
+    dateEliminatedFalse:
+      'Removing the elimination date will enable this plant and remove the # prefix from the label id',
   },
 
   eliminate: 'Eliminate',

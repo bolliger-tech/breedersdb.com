@@ -1,14 +1,13 @@
 <template>
   <EntitySelect
-    :ref="plantGroupRef"
-    v-model="plantGroup"
-    :label="t('plants.fields.plantGroup')"
-    :options="plantGroupOptions"
+    :ref="rootstockRef"
+    v-model="rootstock"
+    :label="t('plants.fields.rootstock')"
+    :options="rootstockOptions"
     option-value="id"
-    option-label="display_name"
+    option-label="name"
     :loading="fetching"
     :error="error"
-    required
   />
 </template>
 
@@ -21,25 +20,22 @@ import EntitySelect, {
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 
-const plantGroupRef = ref<EntitySelectInstance<{
+const rootstockRef = ref<EntitySelectInstance<{
   id: number;
-  display_name: string;
+  name: string;
 }> | null>(null);
 
 defineExpose({
-  validate: () => plantGroupRef.value?.validate(),
+  validate: () => rootstockRef.value?.validate(),
 });
 
-const plantGroup = defineModel<{ id: number; display_name: string }>();
+const rootstock = defineModel<{ id: number; name: string }>();
 
 const query = graphql(`
-  query PlantGroups {
-    plant_groups(
-      where: { disabled: { _eq: false } }
-      order_by: { display_name: asc }
-    ) {
+  query Rootstocks {
+    rootstocks(order_by: { name: asc }) {
       id
-      display_name
+      name
     }
   }
 `);
@@ -48,7 +44,7 @@ const { data, error, fetching } = useQuery({
   query,
 });
 
-const plantGroupOptions = computed(() => data.value?.plant_groups ?? []);
+const rootstockOptions = computed(() => data.value?.rootstocks ?? []);
 
 const { t } = useI18n();
 </script>

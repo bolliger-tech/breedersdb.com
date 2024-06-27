@@ -33,7 +33,7 @@ const plantRow = defineModel<{ id: number; name: string }>();
 
 const query = graphql(`
   query PlantRows {
-    plant_rows(where: { disabled: { _eq: false } }) {
+    plant_rows(where: { disabled: { _eq: false } }, order_by: { name: asc }) {
       id
       name
     }

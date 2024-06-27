@@ -47,6 +47,8 @@ services:
       }
 
       http {
+          client_max_body_size 32m;
+
           upstream hasura_backend {
               server hasura:8080;
           }

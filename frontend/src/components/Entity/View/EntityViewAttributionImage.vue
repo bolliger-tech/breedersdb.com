@@ -2,10 +2,10 @@
   <img
     v-if="preview"
     v-ripple
-    :src="`/api/v1/assets/images/${desiredFileName}?file=${storedFileName}&height=200`"
+    :src="`/api/assets/images/${desiredFileName}?file=${storedFileName}&height=200`"
     :srcset="`
-      /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&height=200,
-      /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&height=400 2x
+      /api/assets/images/${desiredFileName}?file=${storedFileName}&height=200,
+      /api/assets/images/${desiredFileName}?file=${storedFileName}&height=400 2x
     `"
     class="cursor-pointer"
     @click="open = true"
@@ -31,12 +31,12 @@
       </q-card-section>
       <q-card-section>
         <q-img
-          :src="`/api/v1/assets/images/${desiredFileName}?file=${storedFileName}&width=1024`"
+          :src="`/api/assets/images/${desiredFileName}?file=${storedFileName}&width=1024`"
           :srcset="`
-            /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&width=320 320w,
-            /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&width=768 768w,
-            /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&width=1024 1024w,
-            /api/v1/assets/images/${desiredFileName}?file=${storedFileName}&width=2560 2560w,
+            /api/assets/images/${desiredFileName}?file=${storedFileName}&width=320 320w,
+            /api/assets/images/${desiredFileName}?file=${storedFileName}&width=768 768w,
+            /api/assets/images/${desiredFileName}?file=${storedFileName}&width=1024 1024w,
+            /api/assets/images/${desiredFileName}?file=${storedFileName}&width=2560 2560w,
           `"
           sizes="clamp(300px, calc(90vw - 20px), 980px)"
           spinner-color="white"
@@ -63,7 +63,7 @@
 
       <q-card-actions align="right">
         <a
-          :href="`/api/v1/assets/images/${desiredFileName}?file=${storedFileName}`"
+          :href="`/api/assets/images/${desiredFileName}?file=${storedFileName}`"
           download
         >
           <q-btn flat :label="t('base.download')" color="primary" />
@@ -109,7 +109,7 @@ const desiredFileName = computed(() => {
     props.crossing?.name ??
     'unknown';
 
-  return encodeURI(
+  return encodeURIComponent(
     `${org}-${entityName}-${props.attribution.attribute_name}-${props.attribution.date_attributed}-${props.attribution.id}.jpg`,
   );
 });

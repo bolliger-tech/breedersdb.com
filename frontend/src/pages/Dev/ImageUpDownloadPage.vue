@@ -45,6 +45,10 @@ import {
   UploadProgress,
   UploadResponse,
 } from 'src/composables/useImageUploader';
+import { resizeImageFile } from 'src/composables/imageResizer';
+
+const MAX_IMAGE_SIZE = 3840; // longest side, 4k
+const IMAGE_QUALITY = 0.9; // 0.0 - 1.0 (jpeg)
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const uploadState = ref<UploadProgress>({
@@ -55,6 +59,7 @@ const uploadState = ref<UploadProgress>({
   errorMessage: '',
 });
 const message = ref('');
+const localIsError = ref(false);
 const uploadedFile = ref<UploadResponse | null>(null);
 
 function handleProgress(progress: UploadProgress) {
@@ -78,10 +83,28 @@ async function onSubmit() {
 
   message.value = '';
   uploadedFile.value = null;
+  localIsError.value = false;
 
   const file = fileInput.value.files[0];
+
+  const resizedFile = await resizeImageFile(
+    file,
+    MAX_IMAGE_SIZE,
+    MAX_IMAGE_SIZE,
+    IMAGE_QUALITY,
+    'image/jpeg',
+  ).catch(() => {
+    message.value = 'Invalid or unsupported image file.';
+    localIsError.value = true;
+    return null;
+  });
+
+  if (!resizedFile) {
+    return;
+  }
+
   try {
-    const response = await upload(file, '/api/assets/upload');
+    const response = await upload(resizedFile, '/api/assets/upload');
     message.value = 'Upload successful 🎉';
     uploadedFile.value = response;
   } catch (error) {
@@ -90,7 +113,9 @@ async function onSubmit() {
 }
 
 const isUploading = computed(() => uploadState.value.status === 'uploading');
-const isError = computed(() => uploadState.value.status === 'error');
+const isError = computed(
+  () => localIsError.value || uploadState.value.status === 'error',
+);
 const progressWidth = computed(() => uploadState.value.percentComplete + '%');
 </script>
 

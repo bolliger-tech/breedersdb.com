@@ -13,6 +13,23 @@ export interface UploadResponse {
   url: string;
 }
 
+export async function hashFile(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const buffer = reader.result as ArrayBuffer;
+      crypto.subtle.digest('SHA-256', buffer).then((hash) => {
+        const hashArray = Array.from(new Uint8Array(hash));
+        const hashHex = hashArray
+          .map((byte) => byte.toString(16).padStart(2, '0'))
+          .join('');
+        resolve(hashHex);
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
 export function useImageUploader(
   onProgress: (progress: UploadProgress) => void,
 ) {
@@ -23,7 +40,11 @@ export function useImageUploader(
     ([xhr.value?.status, xhr.value?.responseText].filter(Boolean).join(': ') ||
       '- Upload failed due to an unknown error.');
 
-  const upload = (file: File, url: string): Promise<UploadResponse> => {
+  const upload = (
+    file: File,
+    hash: string,
+    url: string,
+  ): Promise<UploadResponse> => {
     onProgress({
       percentComplete: 0,
       bytesTotal: file.size,
@@ -36,6 +57,7 @@ export function useImageUploader(
       xhr.value.open('POST', url, true);
       xhr.value.setRequestHeader('Content-Type', 'application/octet-stream');
       xhr.value.setRequestHeader('X-File-Name', encodeURIComponent(file.name));
+      xhr.value.setRequestHeader('X-File-Hash', hash);
       xhr.value.withCredentials = true;
 
       xhr.value.upload.onprogress = (event) => {

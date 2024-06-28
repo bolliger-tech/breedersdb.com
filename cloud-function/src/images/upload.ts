@@ -53,6 +53,11 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
   }
 
   const fileHash = hashFileForStorage(image);
+  const fileHashFromClient = req.headers['x-file-hash'] as string;
+  if (fileHash !== fileHashFromClient) {
+    return res.status(400).send('Hash mismatch');
+  }
+
   const storageFileName = `${fileHash}.jpg`;
 
   const originalFileName =

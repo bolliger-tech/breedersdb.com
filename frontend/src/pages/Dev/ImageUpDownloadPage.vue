@@ -44,6 +44,7 @@ import {
   useImageUploader,
   UploadProgress,
   UploadResponse,
+  hashFile,
 } from 'src/composables/useImageUploader';
 import { resizeImageFile } from 'src/composables/imageResizer';
 
@@ -104,7 +105,8 @@ async function onSubmit() {
   }
 
   try {
-    const response = await upload(resizedFile, '/api/assets/upload');
+    const fileHash = await hashFile(resizedFile);
+    const response = await upload(resizedFile, fileHash, '/api/assets/upload');
     message.value = 'Upload successful 🎉';
     uploadedFile.value = response;
   } catch (error) {

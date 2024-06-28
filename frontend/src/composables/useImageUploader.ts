@@ -62,10 +62,7 @@ export function useImageUploader(
 
       xhr.value.upload.onprogress = (event) => {
         if (event.lengthComputable) {
-          const percentComplete = Math.min(
-            Math.round((event.loaded / event.total) * 100),
-            90,
-          ); // leave 10% for server processing
+          const percentComplete = Math.round((event.loaded / event.total) * 90); // leave 10% for server processing
           onProgress({
             percentComplete,
             bytesTotal: event.total,

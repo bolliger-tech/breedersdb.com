@@ -5,6 +5,7 @@
 ```bash
 . ./env.sh
 ```
+Note: to extract all variables, run: `cat README.md | grep -E '^export '`
 
 ## Create Project
 
@@ -103,8 +104,6 @@ gcloud sql instances create $PG_INSTANCE_NAME \
 gcloud sql instances describe $PG_INSTANCE_NAME
 # use connectionName to build connection string
 # postgres://postgres:<PASSWORD>@/<DATABASE_NAME>?host=/cloudsql/<CONNECTION_NAME>
-
-# TODO: cloud proxy
 ```
 
 ## HASURA
@@ -136,9 +135,12 @@ gcloud run deploy $HASURA_SERVICE_NAME \
   --memory=1024Mi \
   --port=8080 \
   --region=$REGION \
+  --network=default \
   --use-http2
 
 hasura deploy --endpoint https://hasura-fbygdhvnga-oa.a.run.app --admin-secret SECRET
+# later:
+#hasura deploy --endpoint https://beta.breedersdb.com/api --admin-secret SECRET
 
 # hasura should now be available on the https://hasura-fbygdhvnga-oa.a.run.app
 # the following steps are preparations for the load balancer for using it with a
@@ -162,52 +164,163 @@ gcloud compute backend-services add-backend $HASURA_BACKEND_SERVICE_NAME \
   --network-endpoint-group-region=$REGION
 ```
 
-## AUTH
+remove networking:
+```bash
+gcloud compute backend-services delete $HASURA_BACKEND_SERVICE_NAME \
+  --global
+gcloud compute network-endpoint-groups delete $HASURA_NEG_NAME \
+  --region=$REGION
+```
+
+## FUNCTION
+
+1. Prepare ENVs:
+   > Extracted from the [`gcloud functions deploy`](https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--env-vars-file) docs:
+   >
+   > `--env-vars-file=FILE_PATH`
+   >
+   > Path to a local YAML file with definitions for all environment variables. All existing environment variables will be removed before the new environment variables are added.
+
+Copy `.env` to `env.yaml`, replace `=` with `: `, make bools to strings and adapt the values for prod.
+
+1. Deploy:
 
 ```bash
-export AUTH_SERVICE_NAME=${INSTANCE}-auth
-export AUTH_NEG_NAME=${AUTH_SERVICE_NAME}-neg
-export AUTH_BACKEND_SERVICE_NAME=${AUTH_SERVICE_NAME}-backend-service
+cd cloud-function
+export FN_SERVICE_NAME=${INSTANCE}-func
+gcloud functions deploy ${FN_SERVICE_NAME} \
+  --env-vars-file .env.yaml \
+  --gen2 \
+  --region=$REGION \
+  --runtime=nodejs20 \
+  --source=./ \
+  --entry-point=func \
+  --trigger-http \
+  --allow-unauthenticated \
+  --memory=512M
+```
 
-# TODO: create auth service
+### FUNCTION NETWORKING
 
-gcloud compute network-endpoint-groups create $AUTH_NEG_NAME \
+```bash
+export FN_NEG_NAME=${FN_SERVICE_NAME}-neg
+export FN_BACKEND_SERVICE_NAME=${FN_SERVICE_NAME}-backend-service
+export FN_BACKEND_SERVICE_CDN_NAME=${FN_SERVICE_NAME}-backend-service-cdn
+
+gcloud compute network-endpoint-groups create $FN_NEG_NAME \
   --region=$REGION \
   --network-endpoint-type=serverless  \
-  --cloud-run-service=$AUTH_SERVICE_NAME
+  --cloud-run-service=$FN_SERVICE_NAME
 
 # create backend-service
 # must be global (transitive dependency of the load balancer's SSL feature)
-gcloud compute backend-services create $AUTH_BACKEND_SERVICE_NAME \
+gcloud compute backend-services create $FN_BACKEND_SERVICE_NAME \
   --global \
   --load-balancing-scheme=EXTERNAL_MANAGED
 
 # connect backend-service to network-endpoint-group
 # must be global (transitive dependency of the load balancer's SSL feature)
-gcloud compute backend-services add-backend $AUTH_BACKEND_SERVICE_NAME \
+gcloud compute backend-services add-backend $FN_BACKEND_SERVICE_NAME \
   --global \
-  --network-endpoint-group=$AUTH_NEG_NAME \
+  --network-endpoint-group=$FN_NEG_NAME \
+  --network-endpoint-group-region=$REGION
+
+
+# create backend-service with cdn
+gcloud compute backend-services create $FN_BACKEND_SERVICE_CDN_NAME \
+  --global \
+  --load-balancing-scheme=EXTERNAL_MANAGED \
+  --enable-cdn \
+  --cache-mode=USE_ORIGIN_HEADERS \
+  --custom-response-header='Cache-Status: {cdn_cache_status}' \
+  --custom-response-header='Cache-ID: {cdn_cache_id}'
+
+# connect backend-service to network-endpoint-group
+gcloud compute backend-services add-backend $FN_BACKEND_SERVICE_CDN_NAME \
+  --global \
+  --network-endpoint-group=$FN_NEG_NAME \
   --network-endpoint-group-region=$REGION
 ```
+
+remove networking:
+```bash
+gcloud compute backend-services delete $FN_BACKEND_SERVICE_NAME \
+  --global
+gcloud compute network-endpoint-groups delete $FN_NEG_NAME \
+  --region=$REGION
+```
+
+
+## Frontend
+
+### Bucket
+```bash
+export FE_BUCKET_NAME=${INSTANCE}-breedersdb-fe
+
+# create bucket
+gcloud storage buckets create gs://$FE_BUCKET_NAME \
+  --location=$REGION \
+  --default-storage-class=STANDARD \
+  --uniform-bucket-level-access \
+  --project=$PROJECT_ID
+
+# make the bucket public
+# Important: When objects are served from a public Cloud Storage bucket, by default they have a Cache-Control: public, max-age=3600 response header applied. This allows the objects to be cached when Cloud CDN is enabled.
+gcloud storage buckets add-iam-policy-binding gs://$FE_BUCKET_NAME \
+  --member=allUsers --role=roles/storage.objectViewer
+
+# set the bucket as a website
+gcloud storage buckets update gs://$FE_BUCKET_NAME \
+  --web-main-page-suffix=index.html
+  # --web-error-page=404.html
+
+# create backend bucket
+export FE_BUCKET_BACKEND=${FE_BUCKET_NAME}-backend
+gcloud compute backend-buckets create $FE_BUCKET_BACKEND \
+    --gcs-bucket-name=$FE_BUCKET_NAME \
+    --enable-cdn \
+    --cache-mode=USE_ORIGIN_HEADERS
+```
+
+### Deploy
+First time: `cp .env.dev .env.prod`
+
+```bash
+cd frontend
+yarn run build
+gsutil -m rsync -d -R dist/spa/ gs://$FE_BUCKET_NAME
+
+gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path "/*"
+# purge cache
+# https://cloud.google.com/cdn/docs/invalidating-cached-content#invalidate_everything
+```
+
 
 ## Load Balancer
 
 ```bash
 # https://cloud.google.com/load-balancing/docs/https/setup-global-ext-https-serverless
 
-# reserve static ip
-export IP_NAME=load-balancer-ip
-gcloud compute addresses create $IP_NAME \
+# reserve static ipv4
+export IPV4_NAME=load-balancer-ip
+gcloud compute addresses create $IPV4_NAME \
   --network-tier=PREMIUM \
   --ip-version=IPV4 \
   --global
 
 # get the ip (optional)
-gcloud compute addresses describe $IP_NAME \
+gcloud compute addresses describe $IPV4_NAME \
   --format="get(address)" \
   --global
 
-# point the domain to the ip (currently at cyon)
+# reserve static ipv6
+export IPV6_NAME=load-balancer-ipv6
+gcloud compute addresses create $IPV6_NAME \
+  --network-tier=PREMIUM \
+  --ip-version=IPV6 \
+  --global
+
+# point the domain to the ips (currently at cyon)
 
 # create ssl certificate
 export CERTIFICATE_NAME=${INSTANCE}-cert
@@ -220,56 +333,6 @@ gcloud compute ssl-certificates describe $CERTIFICATE_NAME \
   --global \
   --format="get(name,managed.status, managed.domainStatus)"
 
-# create url-map with path matchers
-# https://cloud.google.com/load-balancing/docs/url-map-concepts
-# https://cloud.google.com/compute/docs/reference/rest/v1/urlMaps
-# TODO: change default-service to frontend as soon as it is ready
-export URL_MAP_NAME=${INSTANCE}-url-map
-export PATH_MATCHER_NAME=${INSTANCE}-path-matcher
-echo "defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$AUTH_BACKEND_SERVICE_NAME
-hostRules:
-- hosts:
-  - beta.breedersdb.com
-  pathMatcher: $PATH_MATCHER_NAME
-kind: compute#urlMap
-name: $URL_MAP_NAME
-pathMatchers:
-- defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$AUTH_BACKEND_SERVICE_NAME
-  name: $PATH_MATCHER_NAME
-  routeRules:
-  - description: forward request to hasura without the /api/v1/ prefix
-    matchRules:
-    - prefixMatch: /api/v1/
-    priority: 10
-    routeAction:
-      urlRewrite:
-        pathPrefixRewrite: /
-    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
-  - description: redirect /api/v1 to /api/v1/
-    matchRules:
-    - fullPathMatch: /api/v1
-    priority: 11
-    urlRedirect:
-      pathRedirect: /api/v1/
-      redirectResponseCode: MOVED_PERMANENTLY_DEFAULT
-  - description: forward request to auth without the /auth/v1/ prefix
-    matchRules:
-    - prefixMatch: /auth/v1/
-    priority: 20
-    routeAction:
-      urlRewrite:
-        pathPrefixRewrite: /
-    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$AUTH_BACKEND_SERVICE_NAME
-  - description: redirect /auth/v1 to /auth/v1/
-    matchRules:
-    - fullPathMatch: /auth/v1
-    priority: 21
-    urlRedirect:
-      pathRedirect: /auth/v1/
-      redirectResponseCode: MOVED_PERMANENTLY_DEFAULT" | \
-gcloud compute url-maps import $URL_MAP_NAME \
-  --global
-
 # create url-map with https redirect
 export HTTPS_REDIRECT_URL_MAP_NAME=https-redirect-url-map
 export HTTPS_REDIRECT_PATH_MATCHER_NAME=https-redirect-path-matcher
@@ -279,6 +342,65 @@ defaultUrlRedirect:
   redirectResponseCode: MOVED_PERMANENTLY_DEFAULT
   httpsRedirect: True" | \
 gcloud compute url-maps import $HTTPS_REDIRECT_URL_MAP_NAME \
+  --global
+
+# create url-map with path matchers
+# https://cloud.google.com/load-balancing/docs/url-map-concepts
+# https://cloud.google.com/compute/docs/reference/rest/v1/urlMaps
+export URL_MAP_NAME=${INSTANCE}-url-map
+export PATH_MATCHER_NAME=${INSTANCE}-path-matcher
+echo "defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendBuckets/$FE_BUCKET_BACKEND
+hostRules:
+- hosts:
+  - beta.breedersdb.com
+  pathMatcher: $PATH_MATCHER_NAME
+kind: compute#urlMap
+name: $URL_MAP_NAME
+pathMatchers:
+- defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendBuckets/$FE_BUCKET_BACKEND
+  name: $PATH_MATCHER_NAME
+  routeRules:
+  - description: forward request to hasura console
+    matchRules:
+    - prefixMatch: /api/console/
+    - fullPathMatch: /api/console
+    priority: 10
+    routeAction:
+      urlRewrite:
+        pathPrefixRewrite: /console/
+    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
+  - description: forward request to hasura graphql
+    matchRules:
+    - prefixMatch: /api/v1/
+    priority: 11
+    routeAction:
+      urlRewrite:
+        pathPrefixRewrite: /v1/
+    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
+  - description: redirect /api to /api/console
+    matchRules:
+    - fullPathMatch: /api
+    priority: 12
+    urlRedirect:
+      pathRedirect: /api/console
+      redirectResponseCode: MOVED_PERMANENTLY_DEFAULT
+  - description: forward request to cloud-function
+    matchRules:
+    - prefixMatch: /api/internal/
+    priority: 20
+    routeAction:
+      urlRewrite:
+        pathPrefixRewrite: /
+    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$FN_BACKEND_SERVICE_NAME
+  - description: forward request to cloud-function through CDN
+    matchRules:
+    - prefixMatch: /api/assets/
+    priority: 21
+    routeAction:
+      urlRewrite:
+        pathPrefixRewrite: /
+    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$FN_BACKEND_SERVICE_CDN_NAME" | \
+gcloud compute url-maps import $URL_MAP_NAME \
   --global
 
 # create target-http-proxy & target-https-proxy
@@ -291,20 +413,92 @@ gcloud compute target-https-proxies create $TARGET_HTTPS_PROXY_NAME \
   --ssl-certificates=$CERTIFICATE_NAME \
   --url-map=$URL_MAP_NAME
 
-# create forwarding-rule
-export HTTP_FORWARDING_RULE_NAME=http-forwarding-rule
-gcloud compute forwarding-rules create $HTTP_FORWARDING_RULE_NAME \
-  --address=$IP_NAME \
+# create forwarding-rules
+export HTTP_FORWARDING_RULE_V4_NAME=http-forwarding-rule-v4
+gcloud compute forwarding-rules create $HTTP_FORWARDING_RULE_V4_NAME \
+  --address=$IPV4_NAME \
   --global \
   --target-http-proxy=$TARGET_HTTP_PROXY_NAME \
   --ports=80 \
   --load-balancing-scheme=EXTERNAL_MANAGED
 
-export HTTPS_FORWARDING_RULE_NAME=${INSTANCE}-https-forwarding-rule
-gcloud compute forwarding-rules create $HTTPS_FORWARDING_RULE_NAME \
-  --address=$IP_NAME \
+export HTTP_FORWARDING_RULE_V6_NAME=http-forwarding-rule-v6
+gcloud compute forwarding-rules create $HTTP_FORWARDING_RULE_V6_NAME \
+  --address=$IPV6_NAME \
+  --global \
+  --target-http-proxy=$TARGET_HTTP_PROXY_NAME \
+  --ports=80 \
+  --load-balancing-scheme=EXTERNAL_MANAGED
+
+export HTTPS_FORWARDING_RULE_V4_NAME=${INSTANCE}-https-forwarding-rule-v4
+gcloud compute forwarding-rules create $HTTPS_FORWARDING_RULE_V4_NAME \
+  --address=$IPV4_NAME \
   --global \
   --target-https-proxy=$TARGET_HTTPS_PROXY_NAME \
   --ports=443 \
   --load-balancing-scheme=EXTERNAL_MANAGED
+
+export HTTPS_FORWARDING_RULE_V6_NAME=${INSTANCE}-https-forwarding-rule-v6
+gcloud compute forwarding-rules create $HTTPS_FORWARDING_RULE_V6_NAME \
+  --address=$IPV6_NAME \
+  --global \
+  --target-https-proxy=$TARGET_HTTPS_PROXY_NAME \
+  --ports=443 \
+  --load-balancing-scheme=EXTERNAL_MANAGED
+```
+
+
+remove url map:
+```bash
+gcloud compute forwarding-rules delete $HTTPS_FORWARDING_RULE_V6_NAME --global
+gcloud compute forwarding-rules delete $HTTPS_FORWARDING_RULE_V4_NAME --global
+gcloud compute forwarding-rules delete $HTTP_FORWARDING_RULE_V6_NAME --global
+gcloud compute forwarding-rules delete $HTTP_FORWARDING_RULE_V4_NAME --global
+
+gcloud compute target-https-proxies delete $TARGET_HTTPS_PROXY_NAME
+gcloud compute target-http-proxies delete $TARGET_HTTP_PROXY_NAME
+
+gcloud compute url-maps delete $URL_MAP_NAME
+```
+
+
+## Assets
+
+```bash
+export INSTANCE=beta
+export REGION=europe-west6
+export PROJECT_ID=breedersdb
+export ASSETS_BUCKET_NAME=${INSTANCE}-breedersdb-assets
+
+gcloud services enable \
+  storage-component.googleapis.com
+
+gcloud storage buckets create gs://$ASSETS_BUCKET_NAME \
+  --location=$REGION \
+  --default-storage-class=STANDARD \
+  --uniform-bucket-level-access \
+  --project=$PROJECT_ID
+
+# add service account
+export ASSETS_SERVICE_ACCOUNT_NAME=${PROJECT_ID}-storage-serv-acc
+gcloud iam service-accounts create $ASSETS_SERVICE_ACCOUNT_NAME \
+    --display-name $ASSETS_SERVICE_ACCOUNT_NAME
+
+export ASSETS_SERVICE_ACCOUNT_EMAIL=$(gcloud iam service-accounts list | grep $ASSETS_SERVICE_ACCOUNT_NAME | awk '{print $2}')
+
+gcloud iam service-accounts keys create ${ASSETS_SERVICE_ACCOUNT_NAME}-key.json \
+    --iam-account=$ASSETS_SERVICE_ACCOUNT_EMAIL
+
+# grant all permissions on all buckets of project
+# gcloud projects add-iam-policy-binding $PPROJECT_ID \
+#     --member="serviceAccount:${ASSETS_SERVICE_ACCOUNT_EMAIL}" \
+#     --role="roles/storage.objectAdmin"
+
+# grant write, overwrite, delete and read permissions
+gsutil iam ch \
+  "serviceAccount:${ASSETS_SERVICE_ACCOUNT_EMAIL}:roles/storage.objectUser" \
+  gs://${ASSETS_BUCKET_NAME}
+
+# list permissions
+gsutil iam get gs://${ASSETS_BUCKET_NAME}
 ```

@@ -18,7 +18,3 @@ export type ActionResult<T> = {
     [key: string]: string[];
   };
 };
-
-export type UserOutput = {
-  id: number;
-};

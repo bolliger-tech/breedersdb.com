@@ -1,4 +1,4 @@
-import { authenticateRequest } from '..';
+import { authenticateRequest } from './authenticateRequest';
 import { createAuthCookies } from '../lib/cookies';
 import { generateToken, hashToken, verifyPassword } from '../lib/crypto';
 import { ErrorWithStatus } from '../lib/errors';
@@ -8,7 +8,7 @@ import {
   InsertUserTokenMutations,
   UserQueryByEmail,
 } from '../queries';
-import type { ActionProps, ActionResult } from './types';
+import type { ActionProps, ActionResult } from '../types';
 
 type SignInInput = {
   user_id: number;

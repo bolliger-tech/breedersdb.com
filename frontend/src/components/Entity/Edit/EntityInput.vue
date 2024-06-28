@@ -7,6 +7,7 @@
     outlined
     :hint="hint ?? (required ? t('base.required') : '')"
     :clearable="clearable ?? !required"
+    :dark="$q.dark.isActive"
   />
 </template>
 

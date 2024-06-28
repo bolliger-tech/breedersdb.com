@@ -5,7 +5,11 @@
 
   <EntityModalContent v-else-if="plant">
     <template #title>
-      <h2 class="q-my-sm">{{ t('base.edit') }}</h2>
+      <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
+      <div class="q-ma-sm">
+        <h2 class="q-ma-none">{{ t('base.edit') }}</h2>
+        <span>{{ t('plants.title', 1) }}</span>
+      </div>
     </template>
 
     <template #default>
@@ -82,6 +86,7 @@ import {
   makeModalPersistentSymbol,
 } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
+import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

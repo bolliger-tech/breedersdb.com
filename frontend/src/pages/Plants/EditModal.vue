@@ -22,7 +22,6 @@
     </template>
 
     <template #action-right>
-      <div v-if="errorMsg" class="text-negative">{{ errorMsg }}</div>
       <q-btn flat :label="t('base.cancel')" color="primary" @click="cancel" />
       <q-btn
         flat
@@ -31,6 +30,33 @@
         :loading="saving"
         @click="save"
       />
+      <q-dialog
+        :model-value="!!saveError || !!validationError"
+        @update:model-value="
+          saveError = undefined;
+          validationError = null;
+        "
+      >
+        <q-card>
+          <q-card-section>
+            <h2 class="q-my-sm">
+              <q-avatar icon="warning" color="negative" text-color="white" />
+              {{ t('base.error') }}
+            </h2>
+          </q-card-section>
+
+          <q-card-section class="q-py-none">
+            <BaseGraphqlError v-if="saveError" :error="saveError" />
+            <p v-else-if="validationError">
+              {{ validationError }}
+            </p>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn v-close-popup flat :label="t('base.ok')" color="primary" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </template>
   </EntityModalContent>
 
@@ -43,7 +69,7 @@
 import { useMutation, useQuery } from '@urql/vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import { VariablesOf, graphql } from 'src/graphql';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
@@ -87,7 +113,7 @@ function cancel() {
   }
 }
 
-const errorMsg = ref<string | null>(null);
+const validationError = ref<string | null>(null);
 const closeModal = useInjectOrThrow(closeModalSymbol);
 const formRef = ref<InstanceType<typeof PlantEntityForm> | null>(null);
 const changedData = ref<VariablesOf<typeof mutation>['plant']>();
@@ -111,9 +137,6 @@ const {
   fetching: saving,
   error: saveError,
 } = useMutation(mutation);
-watch(saveError, () => {
-  errorMsg.value = saveError.value?.message ?? null;
-});
 
 async function save() {
   if (!changedData.value) {
@@ -121,10 +144,9 @@ async function save() {
     return;
   }
 
-  errorMsg.value = null;
   const isValid = await formRef.value?.validate();
+  validationError.value = isValid ? null : t('base.validation.invalidFields');
   if (!isValid) {
-    errorMsg.value = t('base.validation.invalidFields');
     return;
   }
 

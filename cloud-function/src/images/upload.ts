@@ -24,14 +24,21 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
     console.log('received:', file);
   }
 
-  // validate and convert image
-  let image;
+  // validate image
+  let image: Buffer | undefined;
   try {
-    image = await sharp(req.body)
-      .rotate() // auto rotate based on exif data
-      .jpeg({ quality: 90 }) // convert to jpeg
-      .toBuffer();
-  } catch (e) {
+    const buffer = Buffer.from(req.body);
+
+    const imageMeta = await sharp(buffer).metadata();
+    if (!imageMeta) {
+      return res.status(400).send('Invalid image');
+    }
+    if (imageMeta.format !== 'jpeg') {
+      return res.status(400).send('Invalid image format, must be JPEG');
+    }
+
+    image = buffer;
+  } catch (e: any) {
     console.error('Error parsing image', e);
   }
   if (!image) {

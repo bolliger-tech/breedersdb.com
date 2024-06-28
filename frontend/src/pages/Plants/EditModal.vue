@@ -77,7 +77,10 @@ import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import PlantEntityForm from 'src/components/Plant/PlantEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import { closeModalSymbol } from 'src/components/Entity/modalProvideSymbols';
+import {
+  closeModalSymbol,
+  makeModalPersistentSymbol,
+} from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 
 const props = defineProps<{ entityId: number | string }>();
@@ -115,6 +118,7 @@ function cancel() {
 
 const validationError = ref<string | null>(null);
 const closeModal = useInjectOrThrow(closeModalSymbol);
+const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
 const formRef = ref<InstanceType<typeof PlantEntityForm> | null>(null);
 const changedData = ref<VariablesOf<typeof mutation>['plant']>();
 const mutation = graphql(
@@ -163,6 +167,7 @@ async function save() {
     plant: vars,
   }).then(() => {
     if (!saveError.value) {
+      makeModalPersistent(false);
       closeModal();
     }
   });

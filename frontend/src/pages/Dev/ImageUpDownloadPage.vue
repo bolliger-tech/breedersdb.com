@@ -60,7 +60,7 @@ const uploadState = ref<UploadProgress>({
   errorMessage: '',
 });
 const message = ref('');
-const localIsError = ref(false);
+const isInvalidImage = ref(false);
 const uploadedFile = ref<UploadResponse | null>(null);
 
 function handleProgress(progress: UploadProgress) {
@@ -84,7 +84,7 @@ async function onSubmit() {
 
   message.value = '';
   uploadedFile.value = null;
-  localIsError.value = false;
+  isInvalidImage.value = false;
 
   const file = fileInput.value.files[0];
 
@@ -96,7 +96,7 @@ async function onSubmit() {
     'image/jpeg',
   ).catch(() => {
     message.value = 'Invalid or unsupported image file.';
-    localIsError.value = true;
+    isInvalidImage.value = true;
     return null;
   });
 
@@ -116,7 +116,7 @@ async function onSubmit() {
 
 const isUploading = computed(() => uploadState.value.status === 'uploading');
 const isError = computed(
-  () => localIsError.value || uploadState.value.status === 'error',
+  () => isInvalidImage.value || uploadState.value.status === 'error',
 );
 const progressWidth = computed(() => uploadState.value.percentComplete + '%');
 </script>

@@ -28,10 +28,69 @@ services:
       HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
       ## don't infer function permissions from entity
       HASURA_GRAPHQL_INFER_FUNCTION_PERMISSIONS: 'false'
+      HASURA_GRAPHQL_ENABLE_TELEMETRY: 'false'
     env_file:
       - ./.env
     networks:
       - breedersdb_net
+
+  nginx:
+    image: nginx:1.26
+    container_name: nginx
+    ports:
+      - "80:80"
+    networks:
+      - breedersdb_net
+    depends_on:
+      - hasura
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: >
+      sh -c 'echo "
+      events {
+          worker_connections 1024;
+      }
+
+      http {
+          client_max_body_size 32m;
+
+          server {
+              listen 80;
+              server_name localhost;
+
+              location /api/console {
+                  proxy_set_header Host localhost;
+                  proxy_pass http://hasura:8080/console;
+              }
+
+              location /api/v1/ {
+                  proxy_set_header Host localhost;
+                  proxy_pass http://hasura:8080/v1/;
+              }
+
+              # trailing slash in proxy_pass removes url of location
+              location /api/internal/ {
+                  proxy_set_header Host localhost;
+                  proxy_pass http://cloud-function:8090/;
+              }
+
+              location /api/assets/ {
+                  proxy_set_header Host localhost;
+                  proxy_pass http://cloud-function:8090/;
+              }
+
+              location / {
+                  proxy_set_header Host localhost;
+                  proxy_pass http://host.docker.internal:9000/;
+              }
+
+              # Redirect /api to /api/console
+              location = /api {
+                  return 301 /api/console;
+              }
+          }
+      }
+      " > /etc/nginx/nginx.conf && nginx -g "daemon off;"'
 
 volumes:
   db_data:

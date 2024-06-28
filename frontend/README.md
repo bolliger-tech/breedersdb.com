@@ -15,7 +15,7 @@ the Quasar CLI with Vite and TypeScript.
 1. Create `.env`:
 
    ```bash
-   cp .env.example .env
+   cp .env.example .env.dev
    ```
 
 1. Install the dependencies:

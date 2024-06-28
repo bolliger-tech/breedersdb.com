@@ -2,7 +2,7 @@ import { hashAndSaltPassword } from '../lib/crypto';
 import { InsertUserMutation } from '../queries';
 import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
-import type { ActionProps, ActionResult } from './types';
+import type { ActionProps, ActionResult } from '../types';
 import { validatePassword } from '../lib/validation';
 
 type InsertUserOutput = any;

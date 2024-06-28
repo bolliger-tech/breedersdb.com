@@ -11,7 +11,7 @@
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build && bun run sentry:sourcemaps",
-    "serve": "quasar serve dist/spa",
+    "serve": "quasar serve dist/spa --port 9000",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org bolligertech --project breedersdb ./dist && sentry-cli sourcemaps upload --org bolligertech --project breedersdb ./dist",
     "test:unit": "vitest",
     "test:unit:ci": "vitest run"

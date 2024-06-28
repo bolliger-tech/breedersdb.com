@@ -3,6 +3,7 @@
     :ref="(el: InputRef) => (refs.labelIdRef = el)"
     v-model="data.label_id"
     :eliminated="!!data.date_eliminated"
+    :stored-label-id="props.plant.label_id"
   />
   <PlantPlantGroupSelect
     :ref="(el: InputRef) => (refs.plantGroupRef = el)"

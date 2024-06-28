@@ -21,6 +21,11 @@ export const plants = {
     labelId:
       'Label ID can only be numbers (max 8 digits). If the plant was eliminated, the label ID must be prefixed with a #',
     distancePlantRowStart: 'Distance to row start must be a positive number',
+    labelIdQueryError: 'Failed to check if label ID is unique',
+    labelIdNextFree:
+      'Label ID is already in use. Next free label ID is {labelId}',
+    labelIdNotUnique:
+      'Label ID is already in use. Next free label ID is unknown.',
   },
 
   hints: {

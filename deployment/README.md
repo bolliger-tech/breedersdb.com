@@ -502,3 +502,15 @@ gsutil iam ch \
 # list permissions
 gsutil iam get gs://${ASSETS_BUCKET_NAME}
 ```
+
+### Upload existing photos
+Extract photos from subfolders:
+```bash
+find ./photos -type f -exec cp {} ./photos-flat/ \;
+```
+
+Upload photos:
+```bash
+gsutil -m rsync -R ./photos-flat/ gs://$ASSETS_BUCKET_NAME
+```
+Hint: use `-d` to delete files in the bucket that are not in the local folder.

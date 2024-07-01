@@ -59,6 +59,7 @@ select_permissions:
         - plant_group_id
         - plant_id
       filter: {}
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: user

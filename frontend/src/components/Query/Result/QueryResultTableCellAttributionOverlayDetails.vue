@@ -47,57 +47,25 @@
       <BaseSpriteIcon name="tree" color="grey-7" size="lg" />
       <div class="q-ml-sm">
         <RouterLink :to="`/plants/${data.plant.id}`" class="link">
-          <BaseLabelId :label-id="data.plant.label_id" />
+          <PlantLabelId :label-id="data.plant.label_id" />
         </RouterLink>
         <br />
-        <RouterLink
-          v-if="data.cultivar"
-          :to="`/cultivars/${data.cultivar.id}`"
-          class="link"
-        >
-          {{ data.plant.cultivar_name }}
-        </RouterLink>
-        <template v-else>
-          {{ data.plant.cultivar_name }}
-        </template>
+        <EntityName
+          :plant-group="data.plant.plant_group"
+          :cultivar="data.plant.plant_group?.cultivar"
+          :lot="data.plant.plant_group?.cultivar.lot"
+          :crossing="data.plant.plant_group?.cultivar.lot.crossing"
+          dark
+        />
       </div>
     </div>
-    <table style="width: 100%" class="text-body2">
-      <tr v-if="data.plant.date_planted">
-        <th>{{ t('plants.fields.datePlanted') }}</th>
-        <td>{{ localizeDate(data.plant.date_planted) }}</td>
-      </tr>
-      <tr v-if="data.plant.date_grafted">
-        <th>{{ t('plants.fields.dateGrafted') }}</th>
-        <td>{{ localizeDate(data.plant.date_grafted) }}</td>
-      </tr>
-      <tr v-if="data.plant.date_eliminated">
-        <th>{{ t('plants.fields.dateEliminated') }}</th>
-        <td>{{ localizeDate(data.plant.date_eliminated) }}</td>
-      </tr>
-      <template v-if="data.plant.plant_row">
-        <tr>
-          <th>{{ t('orchards.title', 1) }}</th>
-          <td>{{ data.plant.plant_row.orchard.name }}</td>
-        </tr>
-        <tr>
-          <th>{{ t('plantRows.title', 1) }}</th>
-          <td>{{ data.plant.plant_row.name }}</td>
-        </tr>
-        <tr v-if="data.plant.serial_in_plant_row">
-          <th>{{ t('plants.fields.serialInPlantRow') }}</th>
-          <td>{{ data.plant.serial_in_plant_row }}</td>
-        </tr>
-        <tr v-if="data.plant.distance_plant_row_start">
-          <th>{{ t('plants.fields.distancePlantRowStart') }}</th>
-          <td>{{ data.plant.distance_plant_row_start }}</td>
-        </tr>
-      </template>
-    </table>
-    <div v-if="data.plant.note" class="q-mt-sm text-body2">
-      <strong>{{ t('entity.commonColumns.note') }}</strong
-      ><br />
-      <span style="white-space: pre-line">{{ data.plant.note }}</span>
+    <div class="q-mt-sm text-body2">
+      <PlantEntityTable
+        :plant="data.plant"
+        row-padding-side="0"
+        dark
+        no-border
+      />
     </div>
   </template>
 
@@ -176,9 +144,12 @@
 
 <script lang="ts" setup>
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
-import BaseLabelId from 'src/components/Base/BaseLabelId.vue';
+import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { AttributionDetails } from './QueryResultTableCellAttributionOverlay.vue';
+import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
+import { localizeDate } from 'src/utils/dateUtils';
+import EntityName from 'src/components/Entity/EntityName.vue';
 
 export interface QueryResultTableCellAttributionOverlayDetailsProps {
   data: AttributionDetails;
@@ -187,10 +158,6 @@ export interface QueryResultTableCellAttributionOverlayDetailsProps {
 defineProps<QueryResultTableCellAttributionOverlayDetailsProps>();
 
 const { t } = useI18n();
-
-function localizeDate(strDate: string | null) {
-  return strDate ? new Date(strDate).toLocaleDateString() : '';
-}
 </script>
 
 <style lang="scss" scoped>

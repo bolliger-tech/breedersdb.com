@@ -1,4 +1,4 @@
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 import type { FilterColumnConstructorData } from './useFilterColumns';
 import { ref } from 'vue';
 
@@ -23,7 +23,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'id',
     labelKey: 'entity.commonColumns.id',
     schema: {
-      type: ColumnType.Integer,
+      type: ColumnTypes.Integer,
       allowEmpty: false,
       validation: {
         min: 1,
@@ -37,7 +37,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'display_name',
     labelKey: 'entity.commonColumns.displayName',
     schema: {
-      type: ColumnType.String,
+      type: ColumnTypes.String,
       allowEmpty: false,
       validation: {
         maxLen: 58,
@@ -50,7 +50,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'full_name',
     labelKey: 'entity.commonColumns.fullName',
     schema: {
-      type: ColumnType.String,
+      type: ColumnTypes.String,
       allowEmpty: false,
       validation: {
         maxLen: 58,
@@ -63,7 +63,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'name_override',
     labelKey: 'entity.commonColumns.nameOverride',
     schema: {
-      type: ColumnType.String,
+      type: ColumnTypes.String,
       allowEmpty: true,
       validation: {
         maxLen: 58,
@@ -76,7 +76,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'acronym',
     labelKey: 'cultivars.fields.acronym',
     schema: {
-      type: ColumnType.String,
+      type: ColumnTypes.String,
       allowEmpty: true,
       validation: {
         maxLen: 10,
@@ -89,7 +89,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'breeder',
     labelKey: 'cultivars.fields.breeder',
     schema: {
-      type: ColumnType.String,
+      type: ColumnTypes.String,
       allowEmpty: true,
       validation: {
         maxLen: 255,
@@ -102,7 +102,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'registration',
     labelKey: 'cultivars.fields.registration',
     schema: {
-      type: ColumnType.String,
+      type: ColumnTypes.String,
       allowEmpty: true,
       validation: {
         maxLen: 255,
@@ -115,7 +115,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'note',
     labelKey: 'entity.commonColumns.note',
     schema: {
-      type: ColumnType.String,
+      type: ColumnTypes.String,
       allowEmpty: true,
       validation: {
         maxLen: 2047,
@@ -128,7 +128,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'created',
     labelKey: 'entity.commonColumns.created',
     schema: {
-      type: ColumnType.DateTime,
+      type: ColumnTypes.DateTime,
       allowEmpty: false,
     },
   },

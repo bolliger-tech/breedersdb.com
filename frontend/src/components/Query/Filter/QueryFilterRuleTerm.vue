@@ -73,7 +73,7 @@ import {
   FilterSelectOptionsUpdateFn,
 } from 'src/utils/selectOptionFilter';
 import { useInputBackground } from 'src/composables/useInputBackground';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 
 import { FilterRuleTerm } from './filterRuleTerm';
 import { QSelect } from 'quasar';
@@ -104,12 +104,12 @@ function updateTerm(value: string | number | null) {
   inputUpdated.value = true;
 }
 
-const type = computed<null | ColumnType>(() => props.modelValue?.type || null);
+const type = computed<null | ColumnTypes>(() => props.modelValue?.type || null);
 
-const isEnum = computed<boolean>(() => type.value === ColumnType.Enum);
-const isDate = computed<boolean>(() => type.value === ColumnType.Date);
-const isTime = computed<boolean>(() => type.value === ColumnType.Time);
-const isDateTime = computed<boolean>(() => type.value === ColumnType.DateTime);
+const isEnum = computed<boolean>(() => type.value === ColumnTypes.Enum);
+const isDate = computed<boolean>(() => type.value === ColumnTypes.Date);
+const isTime = computed<boolean>(() => type.value === ColumnTypes.Time);
+const isDateTime = computed<boolean>(() => type.value === ColumnTypes.DateTime);
 
 const validationOptions = computed(() => {
   return props.modelValue?.validation;
@@ -170,20 +170,20 @@ const filteredOptions = ref(options.value);
 
 const inputType = computed(() => {
   switch (type.value) {
-    case ColumnType.Integer:
-    case ColumnType.Float:
+    case ColumnTypes.Integer:
+    case ColumnTypes.Float:
       return 'number';
-    case ColumnType.Boolean:
-    case ColumnType.Photo:
+    case ColumnTypes.Boolean:
+    case ColumnTypes.Photo:
       throw new Error('Boolean type is not supported');
-    case ColumnType.Date:
+    case ColumnTypes.Date:
       return 'date';
-    case ColumnType.DateTime:
+    case ColumnTypes.DateTime:
       return 'datetime-local';
-    case ColumnType.Time:
+    case ColumnTypes.Time:
       return 'time';
-    case ColumnType.String:
-    case ColumnType.Enum:
+    case ColumnTypes.String:
+    case ColumnTypes.Enum:
     case null:
       return 'text';
     default:

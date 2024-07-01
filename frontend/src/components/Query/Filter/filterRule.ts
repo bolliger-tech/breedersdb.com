@@ -5,7 +5,7 @@ import {
   type FilterRuleOperatorJson,
 } from './filterRuleOperator';
 import { FilterRuleTerm, FilterRuleTermJson } from './filterRuleTerm';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 
 export type FilterRuleSchema =
   | StringSchema
@@ -110,7 +110,7 @@ export class FilterRule {
   get canBeNullOrEmpty() {
     return (
       this.allowEmptyTerm &&
-      this.type === ColumnType.String &&
+      this.type === ColumnTypes.String &&
       this.operator?.value &&
       [
         FilterOperatorValue.Equal,
@@ -136,19 +136,19 @@ export class FilterRule {
     if (!this.type) return false;
 
     switch (this.type) {
-      case ColumnType.Time:
-      case ColumnType.Date:
-      case ColumnType.DateTime:
-      case ColumnType.Integer:
-      case ColumnType.Float:
-      case ColumnType.Enum:
-      case ColumnType.String:
+      case ColumnTypes.Time:
+      case ColumnTypes.Date:
+      case ColumnTypes.DateTime:
+      case ColumnTypes.Integer:
+      case ColumnTypes.Float:
+      case ColumnTypes.Enum:
+      case ColumnTypes.String:
         return (
           this.operator?.value !== FilterOperatorValue.Empty &&
           this.operator?.value !== FilterOperatorValue.NotEmpty
         );
-      case ColumnType.Boolean:
-      case ColumnType.Photo:
+      case ColumnTypes.Boolean:
+      case ColumnTypes.Photo:
         return false;
       default:
         throw new Error(`Unknown column type: ${this.type}`);
@@ -210,7 +210,7 @@ export class FilterRule {
 
 interface StringSchema {
   allowEmpty: boolean;
-  type: ColumnType.String;
+  type: ColumnTypes.String;
   validation: {
     maxLen: number | null;
     pattern: string | null;
@@ -219,7 +219,7 @@ interface StringSchema {
 
 interface IntegerSchema {
   allowEmpty: boolean;
-  type: ColumnType.Integer;
+  type: ColumnTypes.Integer;
   validation: {
     min: number;
     max: number;
@@ -229,7 +229,7 @@ interface IntegerSchema {
 
 interface FloatSchema {
   allowEmpty: boolean;
-  type: ColumnType.Float;
+  type: ColumnTypes.Float;
   validation: {
     min: number;
     max: number;
@@ -239,12 +239,12 @@ interface FloatSchema {
 
 interface BooleanSchema {
   allowEmpty: boolean;
-  type: ColumnType.Boolean;
+  type: ColumnTypes.Boolean;
 }
 
 interface EnumSchema {
   allowEmpty: boolean;
-  type: ColumnType.Enum;
+  type: ColumnTypes.Enum;
   validation: {
     options: string[];
   };
@@ -252,20 +252,20 @@ interface EnumSchema {
 
 interface DateSchema {
   allowEmpty: boolean;
-  type: ColumnType.Date;
+  type: ColumnTypes.Date;
 }
 
 interface DateTimeSchema {
   allowEmpty: boolean;
-  type: ColumnType.DateTime;
+  type: ColumnTypes.DateTime;
 }
 
 interface TimeSchema {
   allowEmpty: boolean;
-  type: ColumnType.Time;
+  type: ColumnTypes.Time;
 }
 
 interface PhotoSchema {
   allowEmpty: boolean;
-  type: ColumnType.Photo;
+  type: ColumnTypes.Photo;
 }

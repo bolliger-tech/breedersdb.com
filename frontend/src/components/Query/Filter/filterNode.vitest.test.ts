@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { FilterConjunction, FilterNode, BaseTable } from './filterNode';
 import { FilterRule, type FilterRuleSchema } from './filterRule';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 import { FilterRuleColumn } from './filterRuleColumn';
 import { FilterOperatorValue, FilterRuleOperator } from './filterRuleOperator';
 import { FilterRuleTerm } from './filterRuleTerm';
@@ -231,7 +231,7 @@ describe('FilterNode', () => {
           tableLabel: 'Table',
           tableColumnLabel: 'Column',
           schema: {
-            type: ColumnType.String,
+            type: ColumnTypes.String,
             allowEmpty: true,
             validation: { maxLen: null, pattern: null },
           },
@@ -270,7 +270,7 @@ describe('FilterNode', () => {
           tableLabel: 'Table',
           tableColumnLabel: 'Column',
           schema: {
-            type: ColumnType.String,
+            type: ColumnTypes.String,
             allowEmpty: false,
             validation: { maxLen: null, pattern: null },
           },
@@ -662,7 +662,7 @@ describe('FilterNode', () => {
   describe('toJSON', () => {
     it('should serialize the tree to JSON', () => {
       const schema: FilterRuleSchema = {
-        type: ColumnType.String,
+        type: ColumnTypes.String,
         allowEmpty: true,
         validation: { maxLen: 55, pattern: '[a-z]+' },
       };
@@ -766,7 +766,7 @@ describe('FilterNode', () => {
   describe('fromJSON', () => {
     it('should construct the tree from JSON', () => {
       const schema: FilterRuleSchema = {
-        type: ColumnType.String,
+        type: ColumnTypes.String,
         allowEmpty: true,
         validation: { maxLen: 55, pattern: '[a-z]+' },
       };

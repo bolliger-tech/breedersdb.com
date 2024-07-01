@@ -40,12 +40,12 @@ import { useInputBackground } from 'src/composables/useInputBackground';
 import { createGetFilterRuleOperators } from './createFilterRuleOperators';
 import { FilterRuleOperator } from './filterRuleOperator';
 import { computed } from 'vue';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 
 export interface QueryFilterRuleOperatorProps {
   disabled: boolean;
   modelValue?: FilterRuleOperator;
-  columnType?: ColumnType;
+  columnType?: ColumnTypes;
 }
 
 const { t } = useI18n();

@@ -6,8 +6,7 @@ export const graphql = initGraphQLTada<{
   scalars: {
     date: string;
     float8: number;
-    // geography: string;
-    // geometry: string;
+    geography: GeographyPoint;
     // jsonb: Object;
     timestamptz: string;
     uuid: string;
@@ -24,3 +23,14 @@ export type AttributeDataTypes = ReturnType<
 export type AttributeTypes = ReturnType<
   typeof graphql.scalar<'attribute_types_enum'>
 >;
+
+export type GeographyPoint = {
+  type: 'Point';
+  crs: {
+    type: 'name';
+    properties: {
+      name: 'urn:ogc:def:crs:EPSG::4326';
+    };
+  };
+  coordinates: [number, number];
+};

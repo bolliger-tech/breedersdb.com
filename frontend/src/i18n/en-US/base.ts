@@ -18,4 +18,12 @@ export const base = {
     hour: 'hour | hours',
     day: 'day | days',
   },
+
+  show: 'Show',
+  download: 'Download',
+  close: 'Close',
+  delete: 'Delete',
+  edit: 'Edit',
+  save: 'Save',
+  cancel: 'Cancel',
 };

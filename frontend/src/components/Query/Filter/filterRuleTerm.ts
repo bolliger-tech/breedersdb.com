@@ -1,5 +1,5 @@
 import { type FilterRuleSchema } from './filterRule';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { ColumnTypes } from 'src/utils/columnTypes';
 
 export type FilterRuleTermJson = {
   value: string;
@@ -24,16 +24,16 @@ export class FilterRuleTerm {
   get validation() {
     if (typeof this.schema === 'undefined') return undefined;
     switch (this.schema.type) {
-      case ColumnType.String:
-      case ColumnType.Integer:
-      case ColumnType.Float:
-      case ColumnType.Enum:
+      case ColumnTypes.String:
+      case ColumnTypes.Integer:
+      case ColumnTypes.Float:
+      case ColumnTypes.Enum:
         return this.schema.validation;
-      case ColumnType.Boolean:
-      case ColumnType.Date:
-      case ColumnType.DateTime:
-      case ColumnType.Time:
-      case ColumnType.Photo:
+      case ColumnTypes.Boolean:
+      case ColumnTypes.Date:
+      case ColumnTypes.DateTime:
+      case ColumnTypes.Time:
+      case ColumnTypes.Photo:
         return undefined;
       default:
         throw new Error(`Unknown column type: ${this.type}`);
@@ -46,23 +46,23 @@ export class FilterRuleTerm {
     if (this.value === '') return this.allowEmpty;
 
     switch (this.type) {
-      case ColumnType.String:
+      case ColumnTypes.String:
         return this.isValidString();
-      case ColumnType.Integer:
+      case ColumnTypes.Integer:
         return this.isValidInteger();
-      case ColumnType.Float:
+      case ColumnTypes.Float:
         return this.isValidFloat();
-      case ColumnType.Boolean:
+      case ColumnTypes.Boolean:
         return this.isValidBoolean();
-      case ColumnType.Enum:
+      case ColumnTypes.Enum:
         return this.isValidEnum();
-      case ColumnType.Date:
+      case ColumnTypes.Date:
         return this.isValidDate();
-      case ColumnType.DateTime:
+      case ColumnTypes.DateTime:
         return this.isValidDateTime();
-      case ColumnType.Time:
+      case ColumnTypes.Time:
         return this.isValidTime();
-      case ColumnType.Photo:
+      case ColumnTypes.Photo:
         return this.isValidPhoto();
       default:
         throw new Error(`Unknown column type: ${this.type}`);
@@ -84,7 +84,7 @@ export class FilterRuleTerm {
   }
 
   private isValidString() {
-    if (this.schema?.type !== ColumnType.String) return false;
+    if (this.schema?.type !== ColumnTypes.String) return false;
     const validation = this.schema.validation;
 
     if (validation.maxLen !== null && this.value.length > validation.maxLen) {
@@ -106,8 +106,8 @@ export class FilterRuleTerm {
 
   private isValidFloat() {
     if (
-      this.schema?.type !== ColumnType.Float &&
-      this.schema?.type !== ColumnType.Integer
+      this.schema?.type !== ColumnTypes.Float &&
+      this.schema?.type !== ColumnTypes.Integer
     )
       return false;
     const validation = this.schema.validation;
@@ -158,7 +158,7 @@ export class FilterRuleTerm {
   }
 
   private isValidEnum() {
-    if (this.schema?.type !== ColumnType.Enum) return false;
+    if (this.schema?.type !== ColumnTypes.Enum) return false;
     // as we can also apply string functions (startsWith, contains, etc.) on
     // enums there is not much we can validate
     return true;

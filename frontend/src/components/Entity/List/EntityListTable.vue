@@ -15,7 +15,8 @@
     color="primary"
     row-key="id"
     flat
-    v-on="handleEvents"
+    @request="(event) => (pagination = event.pagination)"
+    @row-click="(_, row) => $emit('row-click', row)"
   >
     <template #top-left>
       <div v-if="visibleColumns.length < 1" class="text-negative">
@@ -100,7 +101,6 @@ import {
 import EntityListTableColumnSelector from './EntityListTableColumnSelector.vue';
 import EntityListTableHeaderCell from './EntityListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { RouteLocationRaw, useRouter } from 'vue-router';
 import { useQueryArg } from 'src/composables/useQueryArg';
 
 export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
@@ -114,45 +114,28 @@ interface EntityListTablePropsWithoutModel {
   allColumns: QTableColumn[];
   dataIsFresh?: boolean;
   headerHeight?: string;
-  rowClickNavigatesTo?: (row: QTableProps['rows'][0]) => RouteLocationRaw;
 }
-
-export type EntityListTableRequestDataParams = Parameters<
-  NonNullable<QTableProps['onRequest']>
->[0];
 
 const props = withDefaults(defineProps<EntityListTablePropsWithoutModel>(), {
   loading: false,
   dataIsFresh: true,
   headerHeight: undefined,
-  rowClickNavigatesTo: undefined,
+  rowClick: undefined,
 });
 const visibleColumns = defineModel<string[]>('visibleColumns', {
   required: true,
 });
-const pagination = defineModel<QTableProps['pagination']>('pagination', {
-  required: false,
-});
+const pagination = defineModel<QTableProps['pagination']>('pagination');
+
+defineEmits<{
+  'row-click': [row: QTableProps['rows'][0]];
+}>();
 
 defineSlots<{
   'body-cell': QTableSlots['body-cell'];
   'column-selector-option': QSelectSlots['option'];
   'header-cell-label': QTableSlots['header-cell'];
 }>();
-
-const router = useRouter();
-const handleEvents = computed(() => {
-  const onRequest = (
-    event: Parameters<NonNullable<QTableProps['onRequest']>>[0],
-  ) => (pagination.value = event.pagination);
-
-  const getUrlFn = props.rowClickNavigatesTo;
-  const onRowClick = getUrlFn
-    ? (...[, row]: Parameters<NonNullable<QTableProps['onRowClick']>>) =>
-        router.push(getUrlFn(row))
-    : undefined;
-  return { request: onRequest, rowClick: onRowClick };
-});
 
 const { t } = useI18n();
 

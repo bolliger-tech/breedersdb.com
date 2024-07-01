@@ -181,7 +181,7 @@ function setDropEffectMove(e: DragEvent) {
   background: color-mix(in srgb, var(--q-primary) 20%, transparent);
 }
 
-:global(.q-table__sort-icon) {
+:global(.entity-list-table-header-cell .q-table__sort-icon) {
   position: absolute;
   top: calc(50% - 10px);
   right: 10px;
@@ -192,7 +192,7 @@ function setDropEffectMove(e: DragEvent) {
   min-width: 20px;
 }
 
-:global(.q-table__sort-icon:hover),
+:global(.entity-list-table-header-cell .q-table__sort-icon:hover),
 :global(.entity-list-table th.sortable:hover .q-table__sort-icon) {
   background: color-mix(in srgb, currentColor 15%, transparent);
 }

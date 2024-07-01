@@ -27,6 +27,7 @@ select_permissions:
         - created
         - modified
       filter: {}
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: user

@@ -1,21 +1,25 @@
 <template>
   <div class="row items-center">
     <h1 class="q-mr-lg">{{ title }}</h1>
-    <q-btn :to="toNewEntity" primary unelevated no-caps color="primary">{{
-      t('entity.add')
-    }}</q-btn>
+    <q-btn
+      primary
+      unelevated
+      no-caps
+      color="primary"
+      @click="() => $emit('add-new')"
+      >{{ t('entity.add') }}</q-btn
+    >
   </div>
 
   <q-card v-if="search !== undefined" class="bg-shade q-my-md" flat>
     <q-card-section>
       <q-input
-        :model-value="search"
+        v-model="search"
         outlined
         :bg-color="inputBgColor"
         dense
         debounce="300"
         :placeholder="searchPlaceholder || t('entity.search')"
-        @update:model-value="(val) => $emit('update:search', val as string)"
       >
         <template #append>
           <q-icon name="search" />
@@ -27,14 +31,13 @@
   <div>
     <q-tabs
       v-if="tabs"
-      :model-value="tab"
+      v-model="tab"
       class="q-ml-xs"
       breakpoint="320"
       align="left"
       no-caps
       dense
       active-bg-color="shade"
-      @update:model-value="(val) => $emit('update:tab', val as string)"
     >
       <q-tab
         v-for="item in tabs"
@@ -62,18 +65,17 @@ interface EntityListPropsWithoutModels {
   title: string;
   tabs?: { value: string; label: string }[];
   searchPlaceholder?: string;
-  toNewEntity: string;
+  hasAddButton?: boolean;
 }
 
-defineProps<EntityListProps>();
-defineModel('tab', { type: String });
-defineModel('search', { type: String });
+defineProps<EntityListPropsWithoutModels>();
+const tab = defineModel<string>('tab');
+const search = defineModel<string>('search');
 defineSlots<{
   default: void;
 }>();
 defineEmits<{
-  'update:tab': [value: string];
-  'update:search': [value: string];
+  'add-new': [];
 }>();
 
 const { t } = useI18n();

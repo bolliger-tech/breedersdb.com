@@ -11,5 +11,11 @@ export const plants = {
     datePlanted: 'Date planted',
     dateEliminated: 'Date eliminated',
     dateLabeled: 'Date labeled',
+    group: 'Group',
+    grafting: 'Grafting',
+    rootstock: 'Rootstock',
   },
+
+  eliminate: 'Eliminate',
+  eliminateConfirmation: 'Are you sure you want to eliminate this plant?',
 };

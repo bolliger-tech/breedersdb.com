@@ -23,4 +23,9 @@ export const entity = {
 
     noData: 'No data.',
   },
+
+  basics: 'Basics',
+  noImages: 'No images available',
+  failedToLoadImage: 'Failed to load image',
+  noData: 'No data available',
 };

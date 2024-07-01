@@ -83,6 +83,7 @@ select_permissions:
         - serial_in_plant_row
         - plant_group_id
       filter: {}
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: user

@@ -1,11 +1,12 @@
 import { useQuery } from '@urql/vue';
-import { graphql, type AttributeDataTypes, type ResultOf } from 'src/graphql';
+import { graphql, type ResultOf } from 'src/graphql';
 import { FilterRuleColumn } from '../Filter/filterRuleColumn';
 import { type FilterRuleSchema } from '../Filter/filterRule';
-import { ColumnType } from 'src/components/Query/ColumnDefinitions/columnTypes';
+import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
+import { ColumnTypes } from 'src/utils/columnTypes';
 
 const query = graphql(`
   query Attributes {
@@ -78,28 +79,11 @@ function getFilterColumnFromAttribute(
   });
 }
 
-function getColumnTypeFromDataType(dataType: AttributeDataTypes): ColumnType {
-  const type = {
-    TEXT: ColumnType.String,
-    INTEGER: ColumnType.Integer,
-    FLOAT: ColumnType.Float,
-    BOOLEAN: ColumnType.Boolean,
-    DATE: ColumnType.Date,
-    PHOTO: ColumnType.Photo,
-  }[dataType];
-
-  if (typeof type === 'undefined') {
-    throw Error(`Unknown attribute.data_type: ${dataType}`);
-  }
-
-  return type;
-}
-
 function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
-  const type = getColumnTypeFromDataType(attribute.data_type);
+  const type = dataTypeToColumnTypes(attribute.data_type);
 
   switch (type) {
-    case ColumnType.String:
+    case ColumnTypes.String:
       return {
         type,
         allowEmpty: false,
@@ -108,8 +92,8 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
           pattern: null,
         },
       };
-    case ColumnType.Integer:
-    case ColumnType.Float:
+    case ColumnTypes.Integer:
+    case ColumnTypes.Float:
       return {
         type,
         allowEmpty: false,
@@ -117,12 +101,12 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
           Attribute['validation_rule']
         >,
       };
-    case ColumnType.Photo:
+    case ColumnTypes.Photo:
       return {
         type,
         allowEmpty: true,
       };
-    case ColumnType.Enum:
+    case ColumnTypes.Enum:
       throw Error('Enum is not supported yet');
     default:
       return {

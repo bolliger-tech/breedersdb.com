@@ -48,6 +48,7 @@ select_permissions:
         - label_id
         - cultivar_name
       filter: {}
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: user

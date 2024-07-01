@@ -37,13 +37,13 @@ import QueryResultTable, {
 import { useQueryStore } from '../useQueryStore';
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
 import { QueryResult, filterToQuery } from './filterToQuery';
-import { useMutation, useQuery } from '@urql/vue';
+import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { QTableColumn, useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { debounce } from 'quasar';
-import { graphql } from 'gql.tada';
 import { AttributionAggregation } from './attributionAggregationTypes';
+import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
 
 export interface QueryResultProps {
   baseTable: BaseTable;
@@ -137,23 +137,7 @@ const pagination = ref<QueryResultTableProps['pagination']>({
   rowsNumber: 0,
 });
 
-// refresh the attributions view
-const { executeMutation: refreshDbView } = useMutation(
-  graphql(`
-    mutation RefreshAttributionsView {
-      refresh_attributions_view(
-        where: { view_name: { _eq: "attributions_view" } }
-        order_by: { last_check: desc }
-        limit: 1
-      ) {
-        id
-        view_name
-        last_change
-        last_check
-      }
-    }
-  `),
-);
+const { executeMutation: refreshDbView } = useRefreshAttributionsView();
 const { data: lastRefresh, error: refreshError } = await refreshDbView({});
 
 const lastRefreshDate = computed(() => {

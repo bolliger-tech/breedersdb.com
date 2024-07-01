@@ -112,8 +112,16 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import { useRoute, useRouter } from 'vue-router';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
+import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
 
 const props = defineProps<{ entityId: number | string }>();
+
+const {
+  executeMutation: refreshAttributionsView,
+  fetching: refreshingAttributionsView,
+} = useRefreshAttributionsView();
+const { error: attributionsRefreshError, data: attributionsRefresh } =
+  await refreshAttributionsView({});
 
 const query = graphql(
   `
@@ -130,10 +138,13 @@ const query = graphql(
   [plantFragment],
 );
 
-const { data, error } = useQuery({
+const { data, error: queryPlantError } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  pause: refreshingAttributionsView.value || !attributionsRefresh,
 });
+
+const error = computed(() => queryPlantError.value || attributionsRefreshError);
 
 const plant = computed(() => data.value?.plants_by_pk);
 const attributions = computed(

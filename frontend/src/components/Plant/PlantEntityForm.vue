@@ -3,7 +3,7 @@
     :ref="(el: InputRef) => (refs.labelIdRef = el)"
     v-model="data.label_id"
     :eliminated="!!data.date_eliminated"
-    :stored-label-id="props.plant.label_id"
+    :stored-label-id="initialLabelId"
   />
   <PlantPlantGroupSelect
     :ref="(el: InputRef) => (refs.plantGroupRef = el)"
@@ -80,7 +80,6 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { type PlantFragment } from './plantFragment';
 import { VNodeRef, computed, ref } from 'vue';
 import PlantPlantGroupSelect from './PlantPlantGroupSelect.vue';
 import PlantPlantRowSelect from './PlantPlantRowSelect.vue';
@@ -91,9 +90,10 @@ import PlantGraftingSelect from './PlantGraftingSelect.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
+import { PlantEditInput, PlantInsertInput } from './PlantModalEdit.vue';
 
 export interface PlantEntityTableProps {
-  plant: PlantFragment;
+  plant: PlantInsertInput | PlantEditInput;
 }
 
 const props = defineProps<PlantEntityTableProps>();
@@ -104,8 +104,11 @@ defineExpose({ validate });
 
 const { t } = useI18n();
 
+// new plant has no label_id
+const initialLabelId = 'label_id' in props.plant ? props.plant.label_id : '';
+
 const initialData = {
-  label_id: props.plant.label_id,
+  label_id: initialLabelId,
   plant_group_id: props.plant.plant_group?.id || null,
   plant_row_id: props.plant.plant_row?.id || null,
   distance_plant_row_start: props.plant.distance_plant_row_start,

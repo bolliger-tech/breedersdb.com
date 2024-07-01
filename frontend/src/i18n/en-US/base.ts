@@ -24,6 +24,7 @@ export const base = {
   close: 'Close',
   delete: 'Delete',
   edit: 'Edit',
+  new: 'New',
   save: 'Save',
   cancel: 'Cancel',
   ok: 'OK',

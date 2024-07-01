@@ -39,7 +39,7 @@
             /api/assets/images/${desiredFileName}?file=${storedFileName}&width=2560 2560w,
           `"
           sizes="clamp(300px, calc(90vw - 20px), 980px)"
-          spinner-color="white"
+          spinner-color="primary"
           fit="contain"
           style="
             max-width: clamp(300px, calc(90vw - 52px), 980px);

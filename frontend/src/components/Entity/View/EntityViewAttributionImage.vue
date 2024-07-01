@@ -22,8 +22,19 @@
     @click="open = true"
   />
 
-  <q-dialog v-model="open" full-height full-width>
-    <q-card style="width: calc(100svw - 48px); height: calc(100svh - 48px)">
+  <q-dialog
+    v-model="open"
+    :transition-show="transition"
+    :transition-hide="transition"
+    :transition-duration="transitionDuration"
+    @keydown.left="$emit('previous')"
+    @keydown.right="$emit('next')"
+  >
+    <q-card
+      v-touch-swipe.right="() => $emit('previous')"
+      v-touch-swipe.left="() => $emit('next')"
+      style="max-width: calc(100svw - 48px); max-height: calc(100svh - 48px)"
+    >
       <q-card-section class="row justify-end q-pa-sm">
         <q-btn flat dense round icon="close" @click="open = false" />
       </q-card-section>
@@ -39,7 +50,13 @@
           `"
           spinner-color="primary"
           fit="contain"
-          style="width: calc(100svw - 48px); height: calc(100svh - 202px)"
+          style="
+            max-width: calc(100svw - 80px);
+            width: calc(100svw - 80px);
+            max-height: calc(100svh - 202px);
+            height: calc(100svh - 202px);
+          "
+          :draggable="false"
         >
           <template #error>
             <div class="text-caption q-mx-md absolute-center text-center">
@@ -75,9 +92,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { EntityAttributionsViewFragment } from '../entityAttributionsViewFragment';
+import { localizeDate } from 'src/utils/dateUtils';
+import { QDialogProps } from 'quasar';
 
 export interface EntityViewAttributionImageProps {
   attribution: EntityAttributionsViewFragment;
@@ -87,25 +106,50 @@ export interface EntityViewAttributionImageProps {
   lot?: { display_name: string };
   crossing?: { name: string };
   preview?: boolean;
+  transition?: QDialogProps['transitionShow'];
+  transitionDuration?: number;
 }
 
 const props = defineProps<EntityViewAttributionImageProps>();
+defineEmits<{
+  next: [];
+  previous: [];
+}>();
 
-const open = ref(false);
+const open = defineModel<boolean>({ required: false, default: false });
+
 const { t } = useI18n();
 
-const desiredFileName = computed(() => {
-  const org = import.meta.env.VITE_ORG_ABBREVIATION;
-  const entityName =
+const entityName = computed(() => {
+  return (
     props.plant?.label_id ??
     props.plantGroup?.display_name ??
     props.cultivar?.display_name ??
     props.lot?.display_name ??
     props.crossing?.name ??
-    'unknown';
+    'unknown'
+  );
+});
+
+const entityType = computed(() => {
+  return props.plant
+    ? t('plants.title', 1)
+    : props.plantGroup
+      ? t('plantGroups.title', 1)
+      : props.cultivar
+        ? t('cultivars.title', 1)
+        : props.lot
+          ? t('lots.title', 1)
+          : props.crossing
+            ? t('crossings.title', 1)
+            : 'unknown';
+});
+
+const desiredFileName = computed(() => {
+  const org = import.meta.env.VITE_ORG_ABBREVIATION;
 
   return encodeURIComponent(
-    `${org}-${entityName}-${props.attribution.attribute_name}-${props.attribution.date_attributed}-${props.attribution.id}.jpg`,
+    `${org}-${entityName.value}-${props.attribution.attribute_name}-${props.attribution.date_attributed}-${props.attribution.id}.jpg`,
   );
 });
 
@@ -114,6 +158,6 @@ const storedFileName = computed(() => {
 });
 
 const metadata = computed(() => {
-  return `${props.attribution.attribute_name}, ${props.attribution.date_attributed} ${props.attribution.author}`;
+  return `${props.attribution.attribute_name}, ${localizeDate(props.attribution.date_attributed)} ${props.attribution.author}, ${entityType.value} ${entityName.value}`;
 });
 </script>

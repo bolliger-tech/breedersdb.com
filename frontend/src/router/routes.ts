@@ -2,9 +2,18 @@ import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
+    path: '/sign-in',
+    component: () => import('pages/Auth/SignInPage.vue'),
+  },
+  {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    meta: { requiresAuth: true },
     children: [
+      {
+        path: '/sign-out',
+        component: () => import('pages/Auth/SignOutPage.vue'),
+      },
       { path: '', redirect: '/plants' },
       {
         path: 'plants',

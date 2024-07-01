@@ -84,9 +84,11 @@ const { t } = useI18n();
 </script>
 
 <style lang="scss" scoped>
+$border: 1px solid $grey-4;
+
 tr {
   white-space: nowrap;
-  border-bottom: 1px solid $grey-4;
+  border-bottom: $border;
 }
 tr:hover {
   background: rgba(0, 0, 0, 0.03);
@@ -98,8 +100,8 @@ tr:hover {
 .body--dark tr:hover {
   background: rgba(255, 255, 255, 0.07);
 }
-tr:last-child {
-  border-bottom: none;
+tr:first-child {
+  border-top: $border;
 }
 
 .plant-entity-table--no-border tr {

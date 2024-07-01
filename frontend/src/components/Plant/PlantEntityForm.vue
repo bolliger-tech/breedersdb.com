@@ -35,6 +35,14 @@
     type="date"
     autocomplete="off"
   />
+  <PlantRootstockSelect
+    :ref="(el: InputRef) => (refs.rootstockRef = el)"
+    v-model="data.rootstock_id"
+  />
+  <PlantGraftingSelect
+    :ref="(el: InputRef) => (refs.graftingRef = el)"
+    v-model="data.grafting_id"
+  />
   <EntityInput
     :ref="(el: InputRef) => (refs.datePlantedRef = el)"
     v-model="data.date_planted"
@@ -61,13 +69,12 @@
     type="date"
     autocomplete="off"
   />
-  <PlantRootstockSelect
-    :ref="(el: InputRef) => (refs.rootstockRef = el)"
-    v-model="data.rootstock_id"
-  />
-  <PlantGraftingSelect
-    :ref="(el: InputRef) => (refs.graftingRef = el)"
-    v-model="data.grafting_id"
+  <EntityInput
+    :ref="(el: InputRef) => (refs.note = el)"
+    v-model="data.note"
+    :label="t('entity.commonColumns.note')"
+    type="textarea"
+    autocomplete="off"
   />
 </template>
 
@@ -108,6 +115,7 @@ const initialData = {
   date_labeled: props.plant.date_labeled,
   rootstock_id: props.plant.rootstock?.id || null,
   grafting_id: props.plant.grafting?.id || null,
+  note: props.plant.note,
 };
 
 const data = ref({ ...initialData });
@@ -136,6 +144,7 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   dateLabeledRef: null,
   rootstockRef: null,
   graftingRef: null,
+  note: null,
 });
 
 const isDirty = computed(() => {

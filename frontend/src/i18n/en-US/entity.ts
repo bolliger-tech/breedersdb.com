@@ -2,7 +2,7 @@ export const entity = {
   commonColumns: {
     id: 'ID',
     name: 'Name',
-    note: 'Note',
+    note: 'Notes',
     created: 'Created',
     displayName: 'Name',
     nameOverride: 'Common name',

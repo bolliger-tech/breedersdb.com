@@ -102,7 +102,7 @@ entity "**cultivars**" #ffff0012 ##888800 {
   *""name_segment"": //character varying(25) //
   *""full_name"": //character varying(51)  : Set by triggers.//
   ""name_override"": //character varying(51) //
-  ""display_name"": //character varying(51)  : Generated.//
+  *""display_name"": //character varying(51)  : Generated.//
   ""acronym"": //character varying(10) //
   ""breeder"": //character varying(255) //
   ""registration"": //character varying(255) //
@@ -126,7 +126,7 @@ entity "**lots**" #ffff0012 ##888800 {
   *""name_segment"": //character varying(3) //
   *""full_name"": //character varying(12)  : Set by triggers.//
   ""name_override"": //character varying(25) //
-  ""display_name"": //character varying(25)  : Generated.//
+  *""display_name"": //character varying(25)  : Generated.//
   ""date_sowed"": //date //
   ""numb_seeds_sowed"": //integer //
   ""numb_seedlings_grown"": //integer //
@@ -183,7 +183,7 @@ entity "**plant_groups**" #ffff0012 ##888800 {
   *""name_segment"": //character varying(25) //
   ""full_name"": //character varying(77)  : Generated.//
   ""name_override"": //character varying(77) //
-  ""display_name"": //character varying(77)  : Generated.//
+  *""display_name"": //character varying(77)  : Generated.//
   ""note"": //character varying(2047) //
   *""disabled"": //boolean //
   *""created"": //timestamp with time zone //

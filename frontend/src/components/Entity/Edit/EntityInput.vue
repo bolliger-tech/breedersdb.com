@@ -1,14 +1,19 @@
 <template>
-  <q-input
-    v-bind="$props"
-    ref="inputRef"
-    :bg-color="inputBgColor"
-    dense
-    outlined
-    :hint="hint ?? (required ? t('base.required') : '')"
-    :clearable="clearable ?? !required"
-    :dark="$q.dark.isActive"
-  />
+  <EntityLabel :label="label">
+    <q-input
+      v-bind="$props"
+      ref="inputRef"
+      :label="undefined"
+      :bg-color="inputBgColor"
+      dense
+      outlined
+      :hint="hint ?? (required ? t('base.required') : '')"
+      :clearable="!required"
+      :dark="$q.dark.isActive"
+      :model-value="modelValue"
+      @update:model-value="updateModelValue"
+    />
+  </EntityLabel>
 </template>
 
 <script setup lang="ts">
@@ -16,6 +21,7 @@ import { useInputBackground } from 'src/composables/useInputBackground';
 import type { QInput, QInputProps } from 'quasar';
 import { ComponentPublicInstance, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
+import EntityLabel from './EntityLabel.vue';
 
 export type EntityInputInstance = ComponentPublicInstance<EntityInputProps> & {
   validate: () => ReturnType<QInput['validate']> | undefined;
@@ -23,17 +29,27 @@ export type EntityInputInstance = ComponentPublicInstance<EntityInputProps> & {
 
 export type EntityInputProps = Omit<
   QInputProps,
-  'bgColor' | 'dense' | 'outlined'
+  'bgColor' | 'dense' | 'outlined' | 'modelValue'
 > & {
   required?: boolean;
 };
 
-defineProps<EntityInputProps>();
+const props = defineProps<EntityInputProps>();
 
 const inputRef = ref<QInput | null>(null);
 defineExpose({
   validate: () => inputRef.value?.validate(),
 });
+
+const modelValue = defineModel<QInputProps['modelValue']>();
+
+function updateModelValue(value: QInputProps['modelValue']) {
+  if (!props.required && value === '') {
+    modelValue.value = null;
+  } else {
+    modelValue.value = value;
+  }
+}
 
 const { inputBgColor } = useInputBackground();
 const { t } = useI18n();

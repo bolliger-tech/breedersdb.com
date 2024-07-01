@@ -159,17 +159,9 @@ async function save() {
     return;
   }
 
-  const vars = {
-    ...changedData.value,
-    date_grafted: changedData.value.date_grafted || null,
-    date_planted: changedData.value.date_planted || null,
-    date_eliminated: changedData.value.date_eliminated || null,
-    date_labeled: changedData.value.date_labeled || null,
-  };
-
   executeMutation({
     id: parseInt(props.entityId.toString()),
-    plant: vars,
+    plant: changedData.value,
   }).then(() => {
     if (!saveError.value) {
       makeModalPersistent(false);

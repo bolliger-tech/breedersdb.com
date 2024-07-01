@@ -51,6 +51,13 @@
     autocomplete="off"
   />
   <EntityInput
+    :ref="(el: InputRef) => (refs.dateLabeledRef = el)"
+    v-model="data.date_labeled"
+    :label="t('plants.fields.dateLabeled')"
+    type="date"
+    autocomplete="off"
+  />
+  <EntityInput
     :ref="(el: InputRef) => (refs.dateEliminatedRef = el)"
     v-model="data.date_eliminated"
     :label="t('plants.fields.dateEliminated')"
@@ -61,13 +68,6 @@
         ? t('plants.hints.dateEliminatedTrue')
         : t('plants.hints.dateEliminatedFalse')
     "
-  />
-  <EntityInput
-    :ref="(el: InputRef) => (refs.dateLabeledRef = el)"
-    v-model="data.date_labeled"
-    :label="t('plants.fields.dateLabeled')"
-    type="date"
-    autocomplete="off"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"

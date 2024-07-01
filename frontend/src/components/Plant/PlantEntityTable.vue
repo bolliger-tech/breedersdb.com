@@ -24,10 +24,6 @@
         <td>{{ plant.distance_plant_row_start }}</td>
       </tr>
     </template>
-    <tr v-if="plant.date_labeled">
-      <th>{{ t('plants.fields.dateLabeled') }}</th>
-      <td>{{ localizeDate(plant.date_labeled) }}</td>
-    </tr>
     <tr v-if="plant.date_grafted">
       <th>{{ t('plants.fields.dateGrafted') }}</th>
       <td>{{ localizeDate(plant.date_grafted) }}</td>
@@ -39,6 +35,10 @@
     <tr v-if="plant.grafting?.name">
       <th>{{ t('plants.fields.grafting') }}</th>
       <td>{{ plant.grafting?.name }}</td>
+    </tr>
+    <tr v-if="plant.date_labeled">
+      <th>{{ t('plants.fields.dateLabeled') }}</th>
+      <td>{{ localizeDate(plant.date_labeled) }}</td>
     </tr>
     <tr v-if="plant.date_planted">
       <th>{{ t('plants.fields.datePlanted') }}</th>

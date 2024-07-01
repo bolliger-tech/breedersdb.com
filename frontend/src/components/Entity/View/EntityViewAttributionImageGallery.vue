@@ -1,7 +1,7 @@
 <template>
   <q-scroll-area
     v-if="images.length > 0"
-    style="height: 200px; max-width: 100%; margin: 8px 16px"
+    style="height: 216px; max-width: 100%; margin: 8px 16px"
   >
     <div class="row no-wrap q-gutter-sm scroll">
       <div v-for="image of images" :key="image.id">

@@ -65,8 +65,8 @@
     autocomplete="off"
     :hint="
       data.date_eliminated
-        ? t('plants.hints.dateEliminatedTrue')
-        : t('plants.hints.dateEliminatedFalse')
+        ? t('plants.hints.dateEliminatedFalse')
+        : t('plants.hints.dateEliminatedTrue')
     "
   />
   <EntityInput

@@ -10,10 +10,10 @@
 <script setup lang="ts">
 // quasar currently has no option to pull the label out the proper way :(
 
-export interface EntityLabelProps {
+export interface BaseInputLabelProps {
   label?: string;
 }
-defineProps<EntityLabelProps>();
+defineProps<BaseInputLabelProps>();
 </script>
 
 <style>

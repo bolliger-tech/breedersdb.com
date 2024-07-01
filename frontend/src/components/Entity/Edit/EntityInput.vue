@@ -1,5 +1,5 @@
 <template>
-  <EntityLabel :label="label">
+  <BaseInputLabel :label="label">
     <q-input
       v-bind="$props"
       ref="inputRef"
@@ -13,7 +13,7 @@
       :model-value="modelValue"
       @update:model-value="updateModelValue"
     />
-  </EntityLabel>
+  </BaseInputLabel>
 </template>
 
 <script setup lang="ts">
@@ -21,7 +21,7 @@ import { useInputBackground } from 'src/composables/useInputBackground';
 import type { QInput, QInputProps } from 'quasar';
 import { ComponentPublicInstance, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import EntityLabel from './EntityLabel.vue';
+import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 
 export type EntityInputInstance = ComponentPublicInstance<EntityInputProps> & {
   validate: () => ReturnType<QInput['validate']> | undefined;

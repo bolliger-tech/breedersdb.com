@@ -1,5 +1,5 @@
 <template>
-  <EntityLabel :label="label">
+  <BaseInputLabel :label="label">
     <q-select
       v-if="!error"
       ref="selectRef"
@@ -32,7 +32,7 @@
     <q-card v-else>
       <BaseGraphqlError :error="error" />
     </q-card>
-  </EntityLabel>
+  </BaseInputLabel>
 </template>
 
 <script setup lang="ts" generic="T extends { [key: string]: any }">
@@ -47,7 +47,7 @@ import {
 } from 'src/utils/selectOptionFilter';
 import { shallowRef } from 'vue';
 import { CombinedError } from '@urql/vue';
-import EntityLabel from './EntityLabel.vue';
+import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 
 // it currently seems to be a bug with generic components. the currect type
 // would be without the `& VNodeRef` part.

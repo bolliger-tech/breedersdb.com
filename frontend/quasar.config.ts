@@ -5,7 +5,6 @@
 
 import { configure } from 'quasar/wrappers';
 import { fileURLToPath } from 'node:url';
-import 'dotenv/config';
 
 export default configure((ctx) => {
   return {
@@ -50,7 +49,6 @@ export default configure((ctx) => {
 
       // publicPath: '/',
       // analyze: true,
-      env: process.env,
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

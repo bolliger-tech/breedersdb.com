@@ -2,8 +2,9 @@ import { hashAndSaltPassword } from '../lib/crypto';
 import { ChangePasswordMutation } from '../queries';
 import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
-import type { ActionProps, ActionResult, UserOutput } from './types';
+import type { ActionProps, ActionResult } from '../types';
 import { validatePassword } from '../lib/validation';
+import type { UserOutput } from './types';
 
 export async function ChangePassword({
   input,

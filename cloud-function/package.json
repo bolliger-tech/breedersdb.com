@@ -4,15 +4,17 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "functions-framework --target=auth --port 8090",
+    "start": "functions-framework --target=func --port 8090",
     "prestart": "npm run build",
     "gcp-build": "npm run build",
     "dev": "nodemon --watch src -e ts --exec npm run start"
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^3.4.0",
+    "@google-cloud/storage": "^7.11.2",
     "dotenv": "^16.4.5",
-    "libsodium-wrappers-sumo": "^0.7.13"
+    "libsodium-wrappers-sumo": "^0.7.13",
+    "sharp": "^0.33.4"
   },
   "devDependencies": {
     "@types/libsodium-wrappers-sumo": "^0.7.8",

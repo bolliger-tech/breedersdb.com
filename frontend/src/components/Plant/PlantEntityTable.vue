@@ -56,16 +56,14 @@
       <th>{{ t('entity.commonColumns.modified') }}</th>
       <td>{{ localizeDate(plant.modified) }}</td>
     </tr>
+    <tr v-if="plant.note">
+      <td colspan="2" class="plant-entity-table__note">
+        <strong>{{ t('entity.commonColumns.note') }}</strong>
+        <br />
+        <span style="white-space: pre-line">{{ plant.note }}</span>
+      </td>
+    </tr>
   </table>
-  <div
-    v-if="plant.note"
-    class="plant-entity-table__note"
-    :class="{ 'plant-entity-table__note--dark': dark }"
-  >
-    <strong>{{ t('entity.commonColumns.note') }}</strong
-    ><br />
-    <span style="white-space: pre-line">{{ plant.note }}</span>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -104,16 +102,7 @@ tr:last-child {
   border-bottom: none;
 }
 
-.plant-entity-table__note {
-  padding-top: 0.375em;
-  border-top: 1px solid $grey-4;
-}
-.plant-entity-table__note--dark,
-.body--dark .plant-entity-table__note {
-  border-top: 1px solid $grey-8;
-}
-
-.plant-entity-table--no-border :is(tr, .plant-entity-table__note) {
+.plant-entity-table--no-border tr {
   border-bottom: none;
   border-top: none;
 }
@@ -132,6 +121,12 @@ th:first-child {
   padding-left: v-bind(rowPaddingSide);
 }
 td:last-child {
+  padding-right: v-bind(rowPaddingSide);
+}
+
+.plant-entity-table__note {
+  text-align: left;
+  padding-left: v-bind(rowPaddingSide);
   padding-right: v-bind(rowPaddingSide);
 }
 

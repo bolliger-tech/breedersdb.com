@@ -90,6 +90,7 @@ export type PlantInsertInput = Omit<
   | 'cultivar_name'
   | 'plant_group_name'
   | 'created'
+  | 'modified'
   | 'attributions_views'
 >;
 

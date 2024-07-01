@@ -59,6 +59,7 @@ export const plantFragment = graphql(
       }
       disabled
       created
+      modified
       attributions_views @include(if: $withAttributions) {
         ...entityAttributionsViewFragment
       }

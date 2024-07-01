@@ -4,6 +4,7 @@ export const entity = {
     name: 'Name',
     note: 'Notes',
     created: 'Created',
+    modified: 'Last updated',
     displayName: 'Name',
     nameOverride: 'Common name',
     fullName: 'Breeding name',

@@ -48,6 +48,14 @@
       <th>{{ t('plants.fields.dateEliminated') }}</th>
       <td>{{ localizeDate(plant.date_eliminated) }}</td>
     </tr>
+    <tr v-if="plant.created">
+      <th>{{ t('entity.commonColumns.created') }}</th>
+      <td>{{ localizeDate(plant.created) }}</td>
+    </tr>
+    <tr v-if="plant.modified">
+      <th>{{ t('entity.commonColumns.modified') }}</th>
+      <td>{{ localizeDate(plant.modified) }}</td>
+    </tr>
   </table>
   <div
     v-if="plant.note"

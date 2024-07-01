@@ -29,9 +29,7 @@
     </div>
   </q-scroll-area>
   <div v-else class="text-caption q-mx-md">
-    <q-icon name="warning" size="sm" class="q-mr-sm" />{{
-      t('entity.noImages')
-    }}
+    {{ t('entity.noImages') }}
   </div>
 </template>
 

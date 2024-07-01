@@ -22,10 +22,8 @@
     @click="open = true"
   />
 
-  <q-dialog v-model="open">
-    <q-card
-      style="width: clamp(300px, calc(90vw - 20px), 980px); max-width: unset"
-    >
+  <q-dialog v-model="open" full-height full-width>
+    <q-card style="width: calc(100svw - 48px); height: calc(100svh - 48px)">
       <q-card-section class="row justify-end q-pa-sm">
         <q-btn flat dense round icon="close" @click="open = false" />
       </q-card-section>
@@ -37,14 +35,11 @@
             /api/assets/images/${desiredFileName}?file=${storedFileName}&width=768 768w,
             /api/assets/images/${desiredFileName}?file=${storedFileName}&width=1024 1024w,
             /api/assets/images/${desiredFileName}?file=${storedFileName}&width=2560 2560w,
+            /api/assets/images/${desiredFileName}?file=${storedFileName}&width=3840 3840w,
           `"
-          sizes="clamp(300px, calc(90vw - 20px), 980px)"
           spinner-color="primary"
           fit="contain"
-          style="
-            max-width: clamp(300px, calc(90vw - 52px), 980px);
-            max-height: calc(90vh - 200px);
-          "
+          style="width: calc(100svw - 48px); height: calc(100svh - 202px)"
         >
           <template #error>
             <div class="text-caption q-mx-md absolute-center text-center">

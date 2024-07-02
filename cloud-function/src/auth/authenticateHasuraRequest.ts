@@ -1,5 +1,10 @@
 import * as ff from '@google-cloud/functions-framework';
-import { ROLL_EVERY_SECONDS, createAuthCookies } from '../lib/cookies';
+import {
+  ROLL_EVERY_SECONDS,
+  createAuthCookies,
+  createClearAuthCookies,
+  getTokenFromCookies,
+} from '../lib/cookies';
 import { fetchGraphQL } from '../lib/fetch';
 import { RollTokenLastVerifyMutation } from '../queries';
 import { authenticateRequest } from './authenticateRequest';
@@ -11,6 +16,11 @@ export async function authenticateHasuraRequest(
 ) {
   const auth = await authenticateRequest(req.headers.cookie);
   if (!auth) {
+    const cookiePayload = getTokenFromCookies(req.headers.cookie);
+    if (cookiePayload) {
+      // token in cookie is invalid, clear it
+      res.setHeader('Set-Cookie', createClearAuthCookies());
+    }
     return res.send({
       'X-Hasura-Role': 'public',
     });

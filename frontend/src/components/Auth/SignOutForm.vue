@@ -3,11 +3,7 @@
     <button type="submit">Sign Out</button>
   </form>
   <template v-if="error">
-    <q-separator />
-    <q-card-section v-if="error">
-      <BaseGraphqlError :error="error" :throw="false" />
-    </q-card-section>
-    <q-separator />
+    <BaseGraphqlError :error="error" />
   </template>
 </template>
 

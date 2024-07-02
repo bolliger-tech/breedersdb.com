@@ -13,12 +13,8 @@
   <div v-if="errorMessage" class="q-my-md text-negative">
     {{ errorMessage }}
   </div>
-  <template v-if="error && !errorMessage">
-    <q-separator />
-    <q-card-section v-if="error">
-      <BaseGraphqlError :error="error" :throw="false" />
-    </q-card-section>
-    <q-separator />
+  <template v-else-if="error">
+    <BaseGraphqlError :error="error" />
   </template>
 </template>
 

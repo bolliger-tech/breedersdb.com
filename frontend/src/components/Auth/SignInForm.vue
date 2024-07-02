@@ -1,14 +1,14 @@
 <template>
   <form @submit.prevent="onSubmit">
     <div>
-      <label for="email">Email</label>
+      <label for="email">{{ t('auth.email') }}</label>
       <input id="email" v-model="email" type="email" required />
     </div>
     <div>
-      <label for="password">Password</label>
+      <label for="password">{{ t('auth.password') }}</label>
       <input id="password" v-model="password" type="password" required />
     </div>
-    <button type="submit">Sign In</button>
+    <button type="submit">{{ t('auth.signInButton') }}</button>
   </form>
   <div v-if="errorMessage" class="q-my-md text-negative">
     {{ errorMessage }}
@@ -25,6 +25,8 @@ import { ref, watch } from 'vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getUserFromCookie } from 'src/utils/authUtils';
+import { useI18n } from 'src/composables/useI18n';
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
@@ -68,8 +70,8 @@ watch(error, () => {
       typeof firstError?.extensions.code === 'number'
         ? firstError?.extensions.code
         : 0;
-    if ([404, 401].includes(code)) {
-      errorMessage.value = firstError.message;
+    if (code === 401 || code === 404) {
+      errorMessage.value = t(`auth.errors.${code}`);
     }
   }
 });

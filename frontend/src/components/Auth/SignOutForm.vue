@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="onSubmit">
-    <button type="submit">Sign Out</button>
+    <button type="submit">{{ t('auth.signOutButton') }}</button>
   </form>
   <template v-if="error">
     <BaseGraphqlError :error="error" />
@@ -12,6 +12,8 @@ import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'src/composables/useI18n';
+const { t } = useI18n();
 
 const router = useRouter();
 

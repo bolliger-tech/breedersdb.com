@@ -129,7 +129,7 @@ function getValue(row: EntityAttributionsViewFragment) {
   return formatResultColumnValue({ value, type });
 }
 
-const paginationKey = `entity-attributions-table-pagination__${props.attributeType}`;
+const paginationKey = `breedersdb-entity-attributions-table-pagination__${props.attributeType}`;
 const defaultPagination = {
   sortBy: 'date_attributed',
   descending: true,

@@ -8,7 +8,7 @@ import { watch } from 'vue';
 import { setCssVar } from 'quasar';
 import { onMounted } from 'vue';
 
-const DARK_MODE_KEY = 'darkMode';
+const DARK_MODE_KEY = 'breedersdb-dark-mode';
 
 const $q = useQuasar();
 

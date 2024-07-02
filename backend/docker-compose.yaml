@@ -68,6 +68,12 @@ services:
                   proxy_pass http://hasura:8080/v1/;
               }
 
+              location /api/v2/ {
+                  # v2 is used by the hasura console (currently undocumented)
+                  proxy_set_header Host localhost;
+                  proxy_pass http://hasura:8080/v2/;
+              }
+
               # trailing slash in proxy_pass removes url of location
               location /api/internal/ {
                   proxy_set_header Host localhost;

@@ -53,13 +53,13 @@ const { error, executeMutation: signIn } = useMutation(
   `),
 );
 
-const onSubmit = () => {
+function onSubmit() {
   signIn({ email: email.value, password: password.value }).then((result) => {
     if (result.data?.SignIn?.user_id) {
       redirect();
     }
   });
-};
+}
 
 watch(error, () => {
   if (error.value?.graphQLErrors.length === 1) {

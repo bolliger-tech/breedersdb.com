@@ -17,7 +17,7 @@ function cookieOptions(httpOnly: boolean, maxAge: number) {
   return [
     httpOnly ? 'HttpOnly' : null,
     'SameSite=Lax',
-    'Secure',
+    config.NODE_ENV === 'development' ? '' : 'Secure',
     `Max-Age=${maxAge}`,
     'Path=/',
   ]

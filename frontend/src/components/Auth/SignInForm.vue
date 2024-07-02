@@ -1,14 +1,40 @@
 <template>
-  <form @submit.prevent="onSubmit">
-    <div>
-      <label for="email">{{ t('auth.email') }}</label>
-      <input id="email" v-model="email" type="email" required />
+  <form class="form" @submit.prevent="onSubmit">
+    <div class="q-mb-md">
+      <q-input
+        v-bind="$props"
+        id="email"
+        ref="emailRef"
+        v-model="email"
+        :label="t('auth.email')"
+        :bg-color="inputBgColor"
+        dense
+        outlined
+        :clearable="false"
+        :dark="$q.dark.isActive"
+        type="email"
+        required
+      />
     </div>
-    <div>
-      <label for="password">{{ t('auth.password') }}</label>
-      <input id="password" v-model="password" type="password" required />
+    <div class="q-mb-md">
+      <q-input
+        v-bind="$props"
+        id="password"
+        ref="passwordRef"
+        v-model="password"
+        :label="t('auth.password')"
+        :bg-color="inputBgColor"
+        dense
+        outlined
+        :clearable="false"
+        :dark="$q.dark.isActive"
+        type="password"
+        required
+      />
     </div>
-    <button type="submit">{{ t('auth.signInButton') }}</button>
+    <div class="q-mb-md text-right">
+      <q-btn :label="t('auth.signInButton')" type="submit" color="primary" />
+    </div>
   </form>
   <div v-if="errorMessage" class="q-my-md text-negative">
     {{ errorMessage }}
@@ -26,7 +52,9 @@ import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getUserFromCookie } from 'src/utils/authUtils';
 import { useI18n } from 'src/composables/useI18n';
+import { useInputBackground } from 'src/composables/useInputBackground';
 const { t } = useI18n();
+const { inputBgColor } = useInputBackground();
 
 const route = useRoute();
 const router = useRouter();
@@ -76,3 +104,10 @@ watch(error, () => {
   }
 });
 </script>
+
+<style lang="scss" scoped>
+.form {
+  width: 100%;
+  min-width: 200px;
+}
+</style>

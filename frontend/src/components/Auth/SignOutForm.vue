@@ -1,6 +1,8 @@
 <template>
   <form @submit.prevent="onSubmit">
-    <button type="submit">{{ t('auth.signOutButton') }}</button>
+    <div class="q-mb-md">
+      <q-btn :label="t('auth.signOutButton')" type="submit" color="primary" />
+    </div>
   </form>
   <template v-if="error">
     <BaseGraphqlError :error="error" />

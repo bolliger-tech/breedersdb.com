@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h1>{{ t('auth.signOutTitle') }}</h1>
+  <div class="q-pa-md absolute-center column items-center">
+    <p>{{ t('auth.signOutMessage') }}</p>
     <SignOutForm />
   </div>
 </template>

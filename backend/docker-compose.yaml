@@ -69,6 +69,7 @@ services:
               }
 
               location /api/v2/ {
+                  # v2 is used by the hasura console (currently undocumented)
                   proxy_set_header Host localhost;
                   proxy_pass http://hasura:8080/v2/;
               }

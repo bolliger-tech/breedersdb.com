@@ -377,7 +377,7 @@ pathMatchers:
       urlRewrite:
         pathPrefixRewrite: /v1/
     service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
-  - description: forward request to hasura graphql
+  - description: forward request to hasura graphql (v2 is used by the hasura console)
     matchRules:
     - prefixMatch: /api/v2/
     priority: 12

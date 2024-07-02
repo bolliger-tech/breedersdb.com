@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md absolute-center column signin-page-content">
+  <div class="q-px-md absolute-center column items-center signin-page-content">
     <h1 class="q-mb-lg">{{ orgAbbreviation }}</h1>
     <h2>{{ t('auth.signInTitle') }}</h2>
     <SignInForm />
@@ -24,10 +24,5 @@ const orgAbbreviation = import.meta.env.VITE_ORG;
 .signin-page-content {
   width: 100%;
   max-width: 400px;
-  padding: 0 16px;
-
-  @media screen and (min-width: 300px) {
-    align-items: center;
-  }
 }
 </style>

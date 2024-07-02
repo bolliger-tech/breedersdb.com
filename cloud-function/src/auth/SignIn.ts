@@ -12,6 +12,7 @@ import type { ActionProps, ActionResult } from '../types';
 
 type SignInInput = {
   user_id: number;
+  locale: string;
 };
 
 // checking if the user is already signed in is not necessary
@@ -28,16 +29,6 @@ export async function SignIn({
     );
   }
 
-  const auth = await authenticateRequest(ctx.req.headers.cookie);
-  if (auth) {
-    // user is already signed in
-    return {
-      response: {
-        user_id: auth.userId,
-      },
-    };
-  }
-
   if (!input || !input.email || !input.password) {
     throw new ErrorWithStatus(400, 'Bad Request: Missing email or password');
   }
@@ -51,6 +42,24 @@ export async function SignIn({
   }).then((data) => data?.data?.users?.[0]);
   if (!user) {
     throw new ErrorWithStatus(404, 'Not Found: User not found');
+  }
+
+  // check if user is already signed in
+  const auth = await authenticateRequest(ctx.req.headers.cookie);
+  if (auth) {
+    if (auth.userId !== user.id) {
+      throw new ErrorWithStatus(
+        403,
+        'Forbidden: Already signed in as another user, sign out first',
+      );
+    }
+    // user is already signed in
+    return {
+      response: {
+        user_id: user.id,
+        locale: user.locale,
+      },
+    };
   }
 
   // verify password
@@ -91,6 +100,7 @@ export async function SignIn({
   return {
     response: {
       user_id: user.id,
+      locale: user.locale,
     },
     headers: {
       'Set-Cookie': cookieHeader,

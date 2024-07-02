@@ -55,7 +55,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { getUserFromCookie } from 'src/utils/authUtils';
 import { useI18n } from 'src/composables/useI18n';
 import { useInputBackground } from 'src/composables/useInputBackground';
-const { t } = useI18n();
+const i18n = useI18n({ useScope: 'global' });
+const { t } = i18n;
 const { inputBgColor } = useInputBackground();
 
 const route = useRoute();
@@ -83,6 +84,7 @@ const {
     mutation SignIn($email: citext!, $password: String!) {
       SignIn(email: $email, password: $password) {
         user_id
+        locale
       }
     }
   `),
@@ -91,6 +93,8 @@ const {
 function onSubmit() {
   signIn({ email: email.value, password: password.value }).then((result) => {
     if (result.data?.SignIn?.user_id) {
+      // @ts-expect-error locale is not typed in db
+      i18n.locale.value = result.data.SignIn.locale;
       redirect();
     }
   });

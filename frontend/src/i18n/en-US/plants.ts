@@ -40,4 +40,7 @@ export const plants = {
 
   eliminate: 'Eliminate',
   eliminateConfirmation: 'Are you sure you want to eliminate this plant?',
+
+  scanQrCode: 'Scan QR code',
+  enterLabelId: 'Enter label ID',
 };

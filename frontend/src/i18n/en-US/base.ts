@@ -28,6 +28,8 @@ export const base = {
   save: 'Save',
   cancel: 'Cancel',
   ok: 'OK',
+  continue: 'Continue',
+  back: 'Back',
 
   error: 'Error',
   required: 'Required',
@@ -36,7 +38,16 @@ export const base = {
     xIsRequired: '{x} is required',
     invalidFields:
       'Invalid form fields. Please check the form fields for errors and try again.',
+    maxLen: 'Maximum length is {x}',
+    min: 'Minimum value is {x}',
+    max: 'Maximum value is {x}',
+    integer: 'Must be an integer',
   },
 
   noResults: 'No results',
+
+  qr: {
+    permissionRequest: 'Failed to access camera. Please allow camera use.',
+    loading: 'Loading QR code scanner…',
+  },
 };

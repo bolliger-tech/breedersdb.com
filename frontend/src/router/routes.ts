@@ -30,6 +30,10 @@ const routes: RouteRecordRaw[] = [
               },
             ],
           },
+          {
+            path: 'attribute',
+            component: () => import('pages/Plants/AttributePage.vue'),
+          },
         ],
       },
       {

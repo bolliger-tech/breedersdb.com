@@ -7,6 +7,7 @@ import { filter } from './query-filter';
 import { result } from './query-result';
 import { datetimeFormats } from './datetime-formats';
 import { attributions } from './attributions';
+import { attribute } from './attribute';
 import { crossings } from './crossings';
 import { lots } from './lots';
 import { plantGroups } from './plant-groups';
@@ -25,6 +26,7 @@ const messages = {
   errorNotFound,
 
   entity,
+  attribute,
   crossings,
   lots,
   plantGroups,

@@ -36,7 +36,15 @@ export function createUrqlClient() {
         startLoadingBar();
       }
     },
-    onResult: () => {
+    onResult: (result) => {
+      console.log('onResult', result);
+      if (
+        result.error?.graphQLErrors[0]?.extensions?.code === 'access-denied'
+      ) {
+        // our cookie is invalid, sign out
+        document.cookie = 'breedersdb.user=; SameSite=Lax; Max-Age=0; Path=/';
+        window.location.reload();
+      }
       stopLoadingBar();
     },
     onError: () => {

@@ -2,7 +2,6 @@ import * as ff from '@google-cloud/functions-framework';
 import {
   ROLL_EVERY_SECONDS,
   createAuthCookies,
-  createClearAuthCookies,
   getTokenFromCookies,
 } from '../lib/cookies';
 import { fetchGraphQL } from '../lib/fetch';
@@ -18,8 +17,13 @@ export async function authenticateHasuraRequest(
   if (!auth) {
     const cookiePayload = getTokenFromCookies(req.headers.cookie);
     if (cookiePayload) {
-      // token in cookie is invalid, clear it
-      res.setHeader('Set-Cookie', createClearAuthCookies());
+      // TODO check if request operationName is SignIn, then skip this
+      // token in cookie is invalid
+      // unfortunately, the Set-Cookie header is only forwarded by hasura
+      // in the success case (200), not in the error case (401), so we can't
+      // clear the cookie here
+      console.error('Invalid token in cookie:', cookiePayload);
+      return res.status(401).send('Unauthorized');
     }
     return res.send({
       'X-Hasura-Role': 'public',

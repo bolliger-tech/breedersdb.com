@@ -4,7 +4,7 @@
     <h2>{{ t('auth.signInTitle') }}</h2>
     <SignInForm />
     <div class="text-h4 text-muted">
-      <BaseSpriteIcon :name="'blossom'" size="lg" />
+      <BaseSpriteIcon name="blossom" size="lg" />
       <span style="margin-left: 8px; vertical-align: middle">
         {{ t('auth.signInFooter') }}
       </span>

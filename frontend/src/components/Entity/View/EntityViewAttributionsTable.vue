@@ -1,5 +1,9 @@
 <template>
+  <div v-if="rows.length === 0" class="text-caption q-mx-md">
+    {{ t('entity.noData') }}
+  </div>
   <q-table
+    v-else
     v-model:pagination="pagination"
     class="q-mt-md"
     flat

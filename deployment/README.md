@@ -377,10 +377,18 @@ pathMatchers:
       urlRewrite:
         pathPrefixRewrite: /v1/
     service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
+  - description: forward request to hasura graphql (v2 is used by the hasura console)
+    matchRules:
+    - prefixMatch: /api/v2/
+    priority: 12
+    routeAction:
+      urlRewrite:
+        pathPrefixRewrite: /v2/
+    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
   - description: redirect /api to /api/console
     matchRules:
     - fullPathMatch: /api
-    priority: 12
+    priority: 13
     urlRedirect:
       pathRedirect: /api/console
       redirectResponseCode: MOVED_PERMANENTLY_DEFAULT
@@ -502,3 +510,15 @@ gsutil iam ch \
 # list permissions
 gsutil iam get gs://${ASSETS_BUCKET_NAME}
 ```
+
+### Upload existing photos
+Extract photos from subfolders:
+```bash
+find ./photos -type f -exec cp {} ./photos-flat/ \;
+```
+
+Upload photos:
+```bash
+gsutil -m rsync -R ./photos-flat/ gs://$ASSETS_BUCKET_NAME
+```
+Hint: use `-d` to delete files in the bucket that are not in the local folder.

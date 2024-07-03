@@ -1,11 +1,18 @@
 <template>
-  <q-stepper v-model="step" vertical color="primary" animated header-nav>
+  <q-stepper
+    v-model="step"
+    animated
+    header-nav
+    contracted
+    class="attribute-steps"
+  >
     <q-step
       :name="1"
       icon="svguse:/icons/sprite.svg#form"
-      :title="t('attribute.form')"
+      done-icon="svguse:/icons/sprite.svg#form"
+      active-icon="svguse:/icons/sprite.svg#form"
+      title=""
       :done="!!form"
-      :caption="step > 1 ? form?.name : undefined"
     >
       <AttributeFormSelector
         ref="attributeFormSelectorRef"
@@ -13,7 +20,7 @@
         @select="(f) => (form = f)"
       />
 
-      <q-stepper-navigation>
+      <q-stepper-navigation class="row justify-end">
         <q-btn
           color="primary"
           :label="t('base.continue')"
@@ -24,9 +31,10 @@
 
     <q-step
       :name="2"
-      :title="t('attribute.addMeta')"
-      :caption="metadataCaption"
+      title=""
       icon="sell"
+      done-icon="sell"
+      active-icon="sell"
       :done="!!author && !!date"
       :disable="!form"
     >
@@ -37,49 +45,45 @@
         v-model:repeat="repeat"
       />
 
-      <q-stepper-navigation>
+      <q-stepper-navigation class="row justify-between">
+        <q-btn flat color="primary" :label="t('base.back')" @click="step = 1" />
         <q-btn
           color="primary"
           :label="t('base.continue')"
           @click="completeStep2"
-        />
-        <q-btn
-          flat
-          color="primary"
-          :label="t('base.back')"
-          class="q-ml-sm"
-          @click="step = 1"
         />
       </q-stepper-navigation>
     </q-step>
 
     <q-step
       :name="3"
-      :title="entityTitle"
-      :caption="entityCaption"
+      title=""
       :icon="entityIcon"
+      :done-icon="entityIcon"
+      :active-icon="entityIcon"
       :disable="!form || !author || !date"
       :done="hasEntity"
     >
       <slot name="entity-selector"></slot>
-      <q-stepper-navigation>
+      <q-stepper-navigation class="row justify-between">
+        <q-btn flat color="primary" :label="t('base.back')" @click="step = 2" />
         <q-btn
           color="primary"
           :label="t('base.continue')"
           :loading="entityLoading"
           @click="completeStep3"
         />
-        <q-btn
-          flat
-          color="primary"
-          :label="t('base.back')"
-          class="q-ml-sm"
-          @click="step = 2"
-        />
       </q-stepper-navigation>
     </q-step>
 
-    <q-step :name="4" title="Attributes" icon="svguse:/icons/sprite.svg#star">
+    <q-step
+      :name="4"
+      title=""
+      icon="svguse:/icons/sprite.svg#star"
+      done-icon="svguse:/icons/sprite.svg#star"
+      active-icon="svguse:/icons/sprite.svg#star"
+      :disable="!form || !author || !date || !hasEntity"
+    >
       Try out different ad text to see what brings in the most customers, and
       learn how to enhance your ads using features like ad extensions. If you
       run into any problems with your ads, find out how to tell if they're
@@ -115,7 +119,6 @@ export interface AttributeStepsProps {
   entityLoading: boolean;
   entityTitle: string;
   entityIcon: string;
-  entityCaption: string | undefined;
 }
 
 const props = defineProps<AttributeStepsProps>();
@@ -222,3 +225,22 @@ watch(
 
 const step = ref(1);
 </script>
+
+<style scoped>
+:global(.attribute-steps .q-stepper__tab--active) {
+  background: color-mix(in srgb, currentColor 9%, white 5%);
+}
+:global(
+    .attribute-steps :is(.q-stepper__tab--active, .q-stepper__tab--done) .q-icon
+  ) {
+  color: white;
+}
+
+:global(.attribute-steps .q-stepper__header) {
+  min-height: 50px;
+}
+:global(.attribute-steps .q-stepper__header .q-stepper__tab) {
+  padding: 0 max(0.5em, calc(10svw - 24px - 4px));
+  min-height: clamp(50px, 7svw, 72px);
+}
+</style>

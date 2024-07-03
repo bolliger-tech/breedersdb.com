@@ -71,9 +71,8 @@ if (getUserFromCookie()) {
   redirect();
 }
 
-// TODO: remove tester
-const email = ref('tester1@breedersdb.com');
-const password = ref('Asdfasdf1!');
+const email = ref('');
+const password = ref('');
 
 const {
   error,

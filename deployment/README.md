@@ -5,6 +5,7 @@
 ```bash
 . ./env.sh
 ```
+
 Note: to extract all variables, run: `cat README.md | grep -E '^export '`
 
 ## Create Project
@@ -116,7 +117,7 @@ gcloud services enable \
 # use default service account
 export RUN_SERVICE_ACCOUNT=$(gcloud iam service-accounts list | grep "Default compute" | awk '{print $5}')
 
-export HASURA_VERSION=v2.40.0
+export HASURA_VERSION=v2.40.2
 
 export HASURA_SERVICE_NAME=${INSTANCE}-hasura
 export HASURA_NEG_NAME=${HASURA_SERVICE_NAME}-neg
@@ -165,6 +166,7 @@ gcloud compute backend-services add-backend $HASURA_BACKEND_SERVICE_NAME \
 ```
 
 remove networking:
+
 ```bash
 gcloud compute backend-services delete $HASURA_BACKEND_SERVICE_NAME \
   --global
@@ -243,6 +245,7 @@ gcloud compute backend-services add-backend $FN_BACKEND_SERVICE_CDN_NAME \
 ```
 
 remove networking:
+
 ```bash
 gcloud compute backend-services delete $FN_BACKEND_SERVICE_NAME \
   --global
@@ -250,10 +253,10 @@ gcloud compute network-endpoint-groups delete $FN_NEG_NAME \
   --region=$REGION
 ```
 
-
 ## Frontend
 
 ### Bucket
+
 ```bash
 export FE_BUCKET_NAME=${INSTANCE}-breedersdb-fe
 
@@ -283,6 +286,7 @@ gcloud compute backend-buckets create $FE_BUCKET_BACKEND \
 ```
 
 ### Deploy
+
 First time: `cp .env.dev .env.prod`
 
 ```bash
@@ -294,7 +298,6 @@ gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path "/*"
 # purge cache
 # https://cloud.google.com/cdn/docs/invalidating-cached-content#invalidate_everything
 ```
-
 
 ## Load Balancer
 
@@ -455,8 +458,8 @@ gcloud compute forwarding-rules create $HTTPS_FORWARDING_RULE_V6_NAME \
   --load-balancing-scheme=EXTERNAL_MANAGED
 ```
 
-
 remove url map:
+
 ```bash
 gcloud compute forwarding-rules delete $HTTPS_FORWARDING_RULE_V6_NAME --global
 gcloud compute forwarding-rules delete $HTTPS_FORWARDING_RULE_V4_NAME --global
@@ -468,7 +471,6 @@ gcloud compute target-http-proxies delete $TARGET_HTTP_PROXY_NAME
 
 gcloud compute url-maps delete $URL_MAP_NAME
 ```
-
 
 ## Assets
 
@@ -512,13 +514,17 @@ gsutil iam get gs://${ASSETS_BUCKET_NAME}
 ```
 
 ### Upload existing photos
+
 Extract photos from subfolders:
+
 ```bash
 find ./photos -type f -exec cp {} ./photos-flat/ \;
 ```
 
 Upload photos:
+
 ```bash
 gsutil -m rsync -R ./photos-flat/ gs://$ASSETS_BUCKET_NAME
 ```
+
 Hint: use `-d` to delete files in the bucket that are not in the local folder.

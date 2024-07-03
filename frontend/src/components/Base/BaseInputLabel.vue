@@ -8,7 +8,9 @@
 </template>
 
 <script setup lang="ts">
-// quasar currently has no option to pull the label out the proper way :(
+// quasar currently has no option to display the label above the input,
+// nor to not define the label tag :( therefore this ugly and semantically
+// incorrect workaround.
 
 export interface BaseInputLabelProps {
   label?: string;

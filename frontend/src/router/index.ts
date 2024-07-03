@@ -46,7 +46,7 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  Router.beforeEach((to, from, next) => {
+  Router.beforeEach((to, _, next) => {
     if (to.meta.requiresAuth && !getUserFromCookie()) {
       const redirect = encodeURIComponent(to.fullPath);
       next(`/sign-in?redirect=${redirect}`);

@@ -13,17 +13,21 @@ export async function authenticateHasuraRequest(
   req: ff.Request,
   res: ff.Response,
 ) {
-  const auth = await authenticateRequest(req.headers.cookie);
+  const cookies = req.body.headers.Cookie;
+  const operationName = req.body.request.operationName;
+
+  const auth = await authenticateRequest(cookies);
   if (!auth) {
-    const cookiePayload = getTokenFromCookies(req.headers.cookie);
-    if (cookiePayload) {
-      // TODO check if request operationName is SignIn, then skip this
-      // token in cookie is invalid
-      // unfortunately, the Set-Cookie header is only forwarded by hasura
-      // in the success case (200), not in the error case (401), so we can't
-      // clear the cookie here
-      console.error('Invalid token in cookie:', cookiePayload);
-      return res.status(401).send('Unauthorized');
+    // allow SignIn in any case
+    if (operationName !== 'SignIn') {
+      const cookiePayload = getTokenFromCookies(cookies);
+      if (cookiePayload) {
+        // cookie with token is present but invalid
+        // unfortunately, the Set-Cookie header is only forwarded by hasura
+        // in the success case (200), not in the error case (401), so we can't
+        // clear the cookie here
+        return res.status(401).send('Unauthorized: Invalid token!');
+      }
     }
     return res.send({
       'X-Hasura-Role': 'public',

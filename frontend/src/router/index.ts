@@ -7,6 +7,7 @@ import {
 } from 'vue-router';
 
 import routes from './routes';
+import { getUserFromCookie } from 'src/utils/authUtils';
 
 /*
  * If not building with SSR mode, you can
@@ -43,6 +44,15 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.config.ts -> build -> vueRouterMode
     // quasar.config.ts -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  Router.beforeEach((to, _, next) => {
+    if (to.meta.requiresAuth && !getUserFromCookie()) {
+      const redirect = encodeURIComponent(to.fullPath);
+      next(`/sign-in?redirect=${redirect}`);
+    } else {
+      next();
+    }
   });
 
   return Router;

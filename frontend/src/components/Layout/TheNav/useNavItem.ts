@@ -14,7 +14,11 @@ export function useNavItem<T extends { to: string }>({
     return (
       children?.map((child) => ({
         ...child,
-        to: child.to ? `${to}/${child.to}` : `${to}`,
+        to: child.to
+          ? child.to.startsWith('/')
+            ? child.to
+            : `${to}/${child.to}`
+          : `${to}`,
       })) || []
     );
   });

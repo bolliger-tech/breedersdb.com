@@ -233,3 +233,20 @@ test('is not lower than the given label id', async () => {
 
   expect(resp.data.plants_next_free_label_id[0].label_id).toBe('00000011');
 });
+
+test('respects unpadded label_id', async () => {
+  await insertWithLabelId({
+    label_id: '00000001',
+    crossing_name: 'a',
+    orchard_name: 'Orchard 1',
+  });
+
+  const resp = await postOrFail({
+    query,
+    variables: {
+      label_id: '1',
+    },
+  });
+
+  expect(resp.data.plants_next_free_label_id[0].label_id).toBe('00000002');
+});

@@ -47,7 +47,7 @@ export function createUrqlClient() {
     },
   };
 
-  const authTrigger: MapExchangeOpts = {
+  const invalidAuthCookieHandler: MapExchangeOpts = {
     onResult: (result) => {
       if (
         result.error?.graphQLErrors[0]?.extensions?.code === 'access-denied'
@@ -68,7 +68,7 @@ export function createUrqlClient() {
       cacheExchange,
       retryExchange(retryOptions),
       mapExchange(loadingBarTriggers),
-      mapExchange(authTrigger),
+      mapExchange(invalidAuthCookieHandler),
       fetchExchange,
     ],
   });

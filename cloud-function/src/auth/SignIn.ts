@@ -9,18 +9,14 @@ import {
   UserQueryByEmail,
 } from '../queries';
 import type { ActionProps, ActionResult } from '../types';
-
-type SignInInput = {
-  user_id: number;
-  locale: string;
-};
+import type { FullUserOutput } from './types';
 
 // checking if the user is already signed in is not necessary
 // because this action is protected by hasura permissions
 export async function SignIn({
   input,
   ctx,
-}: ActionProps): Promise<ActionResult<SignInInput>> {
+}: ActionProps): Promise<ActionResult<FullUserOutput>> {
   // admin in hasura console is not allowed to signIn/SignOut
   if (ctx.sessionVariables?.['x-hasura-role'] === 'admin') {
     throw new ErrorWithStatus(
@@ -55,10 +51,7 @@ export async function SignIn({
     }
     // user is already signed in
     return {
-      response: {
-        user_id: user.id,
-        locale: user.locale,
-      },
+      response: user,
     };
   }
 
@@ -98,10 +91,7 @@ export async function SignIn({
   const cookieHeader = createAuthCookies(dbToken.id, token, user.email);
 
   return {
-    response: {
-      user_id: user.id,
-      locale: user.locale,
-    },
+    response: user,
     headers: {
       'Set-Cookie': cookieHeader,
     },

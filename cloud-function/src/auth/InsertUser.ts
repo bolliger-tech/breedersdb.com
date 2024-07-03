@@ -4,12 +4,11 @@ import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
 import type { ActionProps, ActionResult } from '../types';
 import { validatePassword } from '../lib/validation';
-
-type InsertUserOutput = any;
+import type { FullUserOutput } from './types';
 
 export async function InsertUserAction({
   input,
-}: ActionProps): Promise<ActionResult<InsertUserOutput>> {
+}: ActionProps): Promise<ActionResult<FullUserOutput>> {
   if (!input || !input.email || !input.password) {
     throw new ErrorWithStatus(400, 'Bad Request: Missing email or password');
   }

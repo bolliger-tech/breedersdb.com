@@ -10,7 +10,7 @@ type Mutation {
     email: citext!
     password: String!
     locale: String
-  ): InsertUserOutput!
+  ): FullUserOutput!
 }
 
 type Query {
@@ -21,26 +21,21 @@ type Mutation {
   SignIn(
     email: citext!
     password: String!
-  ): SignInOutput!
+  ): FullUserOutput!
 }
 
 type Mutation {
   SignOut: SignOutOutput!
 }
 
-type InsertUserOutput {
-  created: timestamptz!
-  email: citext!
+type FullUserOutput {
   id: Int!
+  email: citext!
+  locale: String!
   last_signin: timestamptz
-  locale: String!
-  modified: timestamptz
   failed_signin_attempts: Int!
-}
-
-type SignInOutput {
-  user_id: Int!
-  locale: String!
+  created: timestamptz!
+  modified: timestamptz
 }
 
 type SignOutOutput {

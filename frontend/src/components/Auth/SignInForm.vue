@@ -83,7 +83,7 @@ const {
   graphql(`
     mutation SignIn($email: citext!, $password: String!) {
       SignIn(email: $email, password: $password) {
-        user_id
+        id
         locale
       }
     }
@@ -92,11 +92,12 @@ const {
 
 function onSubmit() {
   signIn({ email: email.value, password: password.value }).then((result) => {
-    if (result.data?.SignIn?.user_id) {
-      // @ts-expect-error locale is not typed in db
-      i18n.locale.value = result.data.SignIn.locale;
-      redirect();
+    if (result.error) {
+      return;
     }
+    // @ts-expect-error locale is not typed in db
+    i18n.locale.value = result.data.SignIn.locale;
+    redirect();
   });
 }
 </script>

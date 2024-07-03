@@ -2,11 +2,11 @@
   <div
     class="bg-grey-5 video-sized row justify-center items-center relative-position"
   >
-    <div v-if="!videoAccess" class="text-center text-negative q-pa-sm">
+    <BaseSpinner v-if="loading" size="xl" />
+    <div v-else-if="!videoAccess" class="text-center text-negative q-pa-sm">
       <q-icon name="no_photography" size="2em" /><br />
       {{ t('base.qr.permissionRequest') }}
     </div>
-    <BaseSpinner v-else-if="loading" />
     <canvas ref="canvasElement" class="video-sized absolute-top-left"></canvas>
   </div>
 </template>
@@ -74,9 +74,10 @@ async function initVideo() {
     videoStream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: 'environment',
-        width: { ideal: 800 },
-        height: { ideal: 800 },
-        frameRate: { ideal: 10 },
+        width: { ideal: 640 },
+        height: { ideal: 640 },
+        aspectRatio: { ideal: 1 },
+        frameRate: { ideal: 10, max: 30 },
       },
     });
 
@@ -92,8 +93,16 @@ async function initVideo() {
 
     requestAnimationFrame(tick);
   } catch (e) {
-    console.error(e);
+    loading.value = false;
+
+    if (e instanceof DOMException && e.name === 'NotAllowedError') {
+      videoAccess.value = false;
+      return;
+    }
+
     videoAccess.value = false;
+    console.error(e);
+    throw e; // so it's reported by sentry
   }
 }
 

@@ -244,7 +244,7 @@ test('me', async () => {
   }
   const result = await postOrFail(
     { query: meQuery },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(result.data.Me.user.email).toBe(user1.email);
   expect(result.data.Me.user.locale).not.toBe(null);
@@ -258,7 +258,7 @@ test('sign out', async () => {
   }
   const result = await postOrFail(
     { query: signOutMutation },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(result.data.SignOut.user_id).toBe(user1Id);
 });
@@ -269,10 +269,13 @@ test('me after sign out', async () => {
   }
   const json = await post(
     { query: meQuery },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(json.errors).not.toBe(undefined);
-  expect(json.errors[0]?.message).toBe('Unauthorized');
+  expect(json.errors[0]?.extensions?.code).toBe('access-denied');
+  expect(json.errors[0]?.message).toBe(
+    'Authentication hook unauthorized this request',
+  );
   expect(json.data).toBe(undefined);
 });
 
@@ -317,7 +320,7 @@ test('failed sign in attempts reset', async () => {
 
   const result = await postOrFail(
     { query: meQuery },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(result.data.Me.user.email).toBe(user1.email);
   expect(result.data.Me.user.locale).not.toBe(null);
@@ -341,17 +344,20 @@ test('change password', async () => {
 test('signed out after password change', async () => {
   const json = await post(
     { query: meQuery },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(json.errors).not.toBe(undefined);
-  expect(json.errors[0]?.message).toBe('Unauthorized');
+  expect(json.errors[0]?.extensions?.code).toBe('access-denied');
+  expect(json.errors[0]?.message).toBe(
+    'Authentication hook unauthorized this request',
+  );
   expect(json.data).toBe(undefined);
 });
 
 test('user2 still signed in', async () => {
   const result = await postOrFail(
     { query: meQuery },
-    { cookie: user2CookiesReqHeader },
+    { Cookie: user2CookiesReqHeader },
   );
   expect(result.data.Me.user.email).toBe(user2.email);
   expect(result.data.Me.user.locale).not.toBe(null);
@@ -395,7 +401,7 @@ test('sign-in with new password', async () => {
 
   const result = await postOrFail(
     { query: meQuery },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(result.data.Me.user.email).toBe(user1.email);
 });

@@ -13,9 +13,8 @@ export async function authenticateHasuraRequest(
   req: ff.Request,
   res: ff.Response,
 ) {
-  const cookies = req.body.headers.Cookie;
+  const cookies = req.body.headers.Cookie || req.body.headers.cookie;
   const operationName = req.body.request.operationName;
-
   const auth = await authenticateRequest(cookies);
   if (!auth) {
     // allow SignIn in any case

@@ -53,8 +53,7 @@ custom_types:
   enums: []
   input_objects: []
   objects:
-    - name: InsertUserOutput
-    - name: SignInOutput
+    - name: FullUserOutput
     - name: SignOutOutput
     - name: MeOutput
       relationships:

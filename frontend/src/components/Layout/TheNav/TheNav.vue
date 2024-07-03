@@ -295,7 +295,7 @@ const items: NavLevel0Props['items'] = [
       {
         label: t('nav.more.logout'),
         icon: 'logout',
-        to: 'logout',
+        to: '/sign-out',
       },
     ],
   },

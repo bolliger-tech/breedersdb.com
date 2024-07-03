@@ -6,8 +6,8 @@
   },
   "devDependencies": {
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
-    "prettier": "^3.0.3"
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.2"
   },
   "lint-staged": {
     "**/*.{js,ts,vue,scss,html,md,json,yaml,yml}": "prettier --write --ignore-unknown"

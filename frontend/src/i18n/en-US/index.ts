@@ -1,6 +1,7 @@
 import { base } from './base';
 import { nav } from './nav';
 import { errorNotFound } from './error-not-found';
+import { auth } from './auth';
 import { plants } from './plants';
 import { cultivars } from './cultivars';
 import { filter } from './query-filter';
@@ -24,6 +25,7 @@ const messages = {
   base,
   nav,
   errorNotFound,
+  auth,
 
   entity,
   attribute,

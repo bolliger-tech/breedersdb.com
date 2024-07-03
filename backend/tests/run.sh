@@ -75,7 +75,7 @@ function prepare_test_environment() {
   cd "${base_dir}/.."
 
   # starting cloud function
-  docker compose --file="${base_dir}/../../cloud-function/docker-compose.yaml" up --build --watch -d
+  docker compose --file="${base_dir}/../../cloud-function/docker-compose.yaml" up --build -d
 
   # stop hasura
   docker compose stop hasura

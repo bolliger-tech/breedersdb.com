@@ -15,4 +15,6 @@ export const attribute = {
   repeatHint:
     'The number of times you aim to attribute the same object. Less is possible.',
   valueCount: '{count} attributions',
+
+  noEntitySelected: 'No entity selected',
 };

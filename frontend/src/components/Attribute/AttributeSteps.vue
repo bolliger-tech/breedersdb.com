@@ -84,10 +84,7 @@
       active-icon="svguse:/icons/sprite.svg#star"
       :disable="!form || !author || !date || !hasEntity"
     >
-      Try out different ad text to see what brings in the most customers, and
-      learn how to enhance your ads using features like ad extensions. If you
-      run into any problems with your ads, find out how to tell if they're
-      running and how to resolve approval issues.
+      <slot name="entity-preview"></slot>
 
       <q-stepper-navigation>
         <q-btn color="primary" label="Finish" />
@@ -109,15 +106,13 @@ import AttributeFormSelector, {
 } from 'src/components/Attribute/AttributeFormSelector.vue';
 import AttributeMetaData from 'src/components/Attribute/AttributeMetaData.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
-import { localizeDate } from 'src/utils/dateUtils';
 
 export interface AttributeStepsProps {
   hasEntity: boolean;
   entityLoading: boolean;
-  entityTitle: string;
   entityIcon: string;
 }
 
@@ -125,6 +120,7 @@ const props = defineProps<AttributeStepsProps>();
 
 defineSlots<{
   'entity-selector': void;
+  'entity-preview': void;
 }>();
 
 const emit = defineEmits<{
@@ -183,19 +179,6 @@ const { queryArg: repeat } = useQueryArg<number>({
   showDefaultInUrl: true,
 });
 watch(repeat, (r) => sessionStorage.set('breedersdb-attribution-repeat', r));
-
-const metadataCaption = computed(() => {
-  if (step.value === 2 || !author.value || !date.value) {
-    return undefined;
-  }
-
-  return (
-    `${localizeDate(date.value)} ${author.value}` +
-    (repeat.value > 0
-      ? ` – ${t('attribute.valueCount', { count: repeat.value })}`
-      : '')
-  );
-});
 
 const attributeMetaDataRef = ref<InstanceType<typeof AttributeMetaData> | null>(
   null,

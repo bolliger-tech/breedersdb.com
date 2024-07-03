@@ -34,6 +34,7 @@ export const plants = {
   hints: {
     labelId:
       'Required. Number (max 8 digits). Prefixed with a # if plant was eliminated',
+    labelIdOmitZeros: 'You can omit leading zeros',
     distancePlantRowStart: 'Meters',
     dateEliminatedTrue:
       'Adding an elimination date will disable this plant and prefix the label id with a #',

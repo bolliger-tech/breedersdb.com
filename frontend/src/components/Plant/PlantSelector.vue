@@ -20,6 +20,7 @@
         type="text"
         :error-message="error?.message"
         :error="!!error"
+        :hint="t('plants.hints.labelIdOmitZeros')"
         @keyup.enter="onManualInput"
         @blur="() => (input = zeroFill(input))"
         @focus="() => (input = getSignificantDigits(input))"

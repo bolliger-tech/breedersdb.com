@@ -2,7 +2,6 @@
   <PageLayout>
     <h1>{{ t('attribute.title') }}</h1>
     <AttributeSteps
-      :entity-title="t('plants.title', { count: 1 })"
       :entity-caption="entityCaption"
       :entity-loading="fetching"
       :has-entity="!!plant"
@@ -17,6 +16,17 @@
           @fetching="(f) => (fetching = f)"
         />
       </template>
+
+      <template #entity-preview>
+        <PlantCard
+          v-if="plant"
+          :label-id="plant.label_id"
+          :plant-group="plant.plant_group"
+        />
+        <div v-else class="text-negative">
+          {{ t('attribute.noEntitySelected') }}
+        </div>
+      </template>
     </AttributeSteps>
   </PageLayout>
 </template>
@@ -26,6 +36,7 @@ import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
 import AttributeSteps from 'src/components/Attribute/AttributeSteps.vue';
 import PlantSelector from 'src/components/Plant/PlantSelector.vue';
+import PlantCard from 'src/components/Plant/PlantCard.vue';
 import { computed, ref } from 'vue';
 import { PlantFragment } from 'src/components/Plant/plantFragment';
 

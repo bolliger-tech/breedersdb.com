@@ -24,6 +24,11 @@ import { nextTick } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { ValidationRule } from 'quasar';
+import {
+  isPrefixed,
+  zeroFill,
+  isValid as isValidLabelId,
+} from 'src/utils/labelIdUtils';
 
 export interface PlantLabelIdEditProps
   extends PlantLabelIdEditPropsWithoutModel {
@@ -55,11 +60,6 @@ function paddLabelId() {
   labelId.value = zeroFill(labelId.value);
 }
 
-function zeroFill(val: string) {
-  const prefix = val.startsWith('#') ? '#' : '';
-  return `${prefix}${parseInt(val.replace(/^#/, '')).toString().padStart(8, '0')}`;
-}
-
 const uniqueQuery = graphql(`
   query NextFreeLabelId($label_id: String!) {
     plants_next_free_label_id(args: { input_label_id: $label_id }) {
@@ -78,7 +78,7 @@ const { executeQuery, fetching } = useQuery({
 async function uniqueRule(newLabelId: string) {
   if (
     !newLabelId ||
-    newLabelId.startsWith('#') ||
+    isPrefixed(newLabelId) ||
     newLabelId === props.storedLabelId
   ) {
     return true;
@@ -107,26 +107,14 @@ const rules = computed(() => {
       !!val ||
       t('base.validation.xIsRequired', { x: t('plants.fields.labelId') }),
 
-    // positive integer with max 8 digits
-    (val: string) => {
-      const num = parseInt(val.replace(/^#/, ''));
-      return (
-        (num.toString().length <= 8 && num > 0) || t('plants.errors.labelId')
-      );
-    },
-  ];
+    // generally valid format
+    (val: string) => isValidLabelId(val) || t('plants.errors.labelId'),
 
-  if (props.eliminated) {
-    // starts with #
-    rules.push(
-      (val: string) => val.startsWith('#') || t('plants.errors.labelId'),
-    );
-  } else {
-    // starts NOT with #
-    rules.push(
-      (val: string) => !val.startsWith('#') || t('plants.errors.labelId'),
-    );
-  }
+    // prefix
+    (val: string) =>
+      (props.eliminated ? isPrefixed(val) : !isPrefixed(val)) ||
+      t('plants.errors.labelId'),
+  ];
 
   // unique
   rules.push((val: string) => uniqueRule(zeroFill(val)));

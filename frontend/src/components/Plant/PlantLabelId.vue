@@ -1,11 +1,16 @@
 <template>
-  <span v-if="props.labelId.startsWith('#')" class="hash">#</span>
-  <span v-if="isZeroPrefixed" class="prefix">{{ prefix }}</span>
+  <span v-if="prefix" class="hash">{{ prefix }}</span>
+  <span v-if="leadingZeros.length > 0" class="prefix">{{ leadingZeros }}</span>
   <span class="rest">{{ rest }}</span>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import {
+  getLeadingZeroes,
+  getPrefix,
+  getSignificantDigits,
+} from 'src/utils/labelIdUtils';
 
 export interface PlantLabelIdProps {
   labelId: string;
@@ -13,16 +18,9 @@ export interface PlantLabelIdProps {
 
 const props = defineProps<PlantLabelIdProps>();
 
-const hashLessLabelId = computed(() => props.labelId.replace(/^#/, ''));
-const isZeroPrefixed = computed(() => /^0\d{7}$/.test(hashLessLabelId.value));
-const prefix = computed(() =>
-  isZeroPrefixed.value ? (hashLessLabelId.value.match(/^0*/) || [''])[0] : '',
-);
-const rest = computed(() =>
-  isZeroPrefixed.value
-    ? hashLessLabelId.value.slice(prefix.value.length)
-    : hashLessLabelId.value,
-);
+const prefix = computed(() => getPrefix(props.labelId));
+const leadingZeros = computed(() => getLeadingZeroes(props.labelId));
+const rest = computed(() => getSignificantDigits(props.labelId));
 </script>
 
 <style lang="scss" scoped>

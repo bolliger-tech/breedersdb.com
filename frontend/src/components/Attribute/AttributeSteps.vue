@@ -63,7 +63,12 @@
     >
       <slot name="entity-selector"></slot>
       <q-stepper-navigation>
-        <q-btn color="primary" :label="t('base.continue')" @click="step = 3" />
+        <q-btn
+          color="primary"
+          :label="t('base.continue')"
+          :loading="entityLoading"
+          @click="completeStep3"
+        />
         <q-btn
           flat
           color="primary"
@@ -87,7 +92,7 @@
           color="primary"
           label="Back"
           class="q-ml-sm"
-          @click="step = 2"
+          @click="step = 3"
         />
       </q-stepper-navigation>
     </q-step>
@@ -107,15 +112,20 @@ import { localizeDate } from 'src/utils/dateUtils';
 
 export interface AttributeStepsProps {
   hasEntity: boolean;
+  entityLoading: boolean;
   entityTitle: string;
   entityIcon: string;
-  entityCaption?: string;
+  entityCaption: string | undefined;
 }
 
-defineProps<AttributeStepsProps>();
+const props = defineProps<AttributeStepsProps>();
 
 defineSlots<{
   'entity-selector': void;
+}>();
+
+const emit = defineEmits<{
+  entityStepCompleted: [];
 }>();
 
 const { t } = useI18n();
@@ -197,6 +207,18 @@ function completeStep2() {
 }
 
 // step 3
+function completeStep3() {
+  emit('entityStepCompleted');
+}
+
+watch(
+  () => props.hasEntity,
+  () => {
+    if (props.hasEntity) {
+      step.value = 4;
+    }
+  },
+);
 
 const step = ref(1);
 </script>

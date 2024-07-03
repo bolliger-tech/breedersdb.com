@@ -2,18 +2,32 @@
   <div
     class="bg-grey-5 video-sized row justify-center items-center relative-position"
   >
-    <BaseSpinner v-if="loading" size="xl" />
-    <div v-else-if="!videoAccess" class="text-center text-negative q-pa-sm">
-      <q-icon name="no_photography" size="2em" /><br />
-      {{ t('base.qr.permissionRequest') }}
-    </div>
     <canvas ref="canvasElement" class="video-sized absolute-top-left"></canvas>
+    <div class="absolute q-pa-sm">
+      <div
+        v-if="error && errorMessage"
+        class="text-center text-negative text-weight-bold q-pa-md"
+        style="
+          background: rgba(0, 0, 0, 0.5);
+          -webkit-text-stroke: max(0.05em, 0.5px);
+          -webkit-text-stroke-color: rgba(255, 255, 255, 0.5);
+          letter-spacing: 0.015em;
+        "
+      >
+        {{ errorMessage }}
+      </div>
+      <BaseSpinner v-else-if="loading" size="xl" />
+      <div v-else-if="!videoAccess" class="text-center text-negative">
+        <q-icon name="no_photography" size="2em" /><br />
+        {{ t('base.qr.permissionRequest') }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
-import jsQR from 'jsqr';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import jsQR, { QRCode } from 'jsqr';
 import { useI18n } from 'src/composables/useI18n';
 import { useInterval } from 'quasar';
 import BaseSpinner from './BaseSpinner.vue';
@@ -23,19 +37,25 @@ interface Point {
   y: number;
 }
 
-const frameColor = '#FF3B58';
-
 const emit = defineEmits<{
   change: [data: string];
   ready: [];
 }>();
 
+defineProps<{
+  errorMessage?: string;
+  error?: boolean;
+}>();
+
 const { t } = useI18n();
 
 const video = document.createElement('video');
+video.setAttribute('playsinline', ''); // no fullscreen (iOS)
+
 const videoAccess = ref(false);
 const loading = ref(true);
 let videoStream: MediaStream;
+let animationFrame: number | null = null;
 
 const canvasElement = ref<HTMLCanvasElement | null>(null);
 let renderingContext: CanvasRenderingContext2D;
@@ -58,16 +78,10 @@ onBeforeUnmount(() => {
       track.stop();
     });
   }
+  if (animationFrame) {
+    cancelAnimationFrame(animationFrame);
+  }
 });
-
-function drawLine(begin: Point, end: Point, color: string) {
-  renderingContext.beginPath();
-  renderingContext.moveTo(begin.x, begin.y);
-  renderingContext.lineTo(end.x, end.y);
-  renderingContext.lineWidth = 4;
-  renderingContext.strokeStyle = color;
-  renderingContext.stroke();
-}
 
 async function initVideo() {
   try {
@@ -81,20 +95,18 @@ async function initVideo() {
       },
     });
 
-    video.setAttribute('playsinline', ''); // tell safari on iOS we don't want fullscreen
-    video.srcObject = videoStream;
     videoAccess.value = true;
+
+    video.srcObject = videoStream;
 
     await videoMetadataLoaded();
     video.play();
 
     await canvasAndVideoAreReady();
-    loading.value = false;
+    emit('ready');
 
-    requestAnimationFrame(tick);
+    animationFrame = requestAnimationFrame(processVideoFrame);
   } catch (e) {
-    loading.value = false;
-
     if (e instanceof DOMException && e.name === 'NotAllowedError') {
       videoAccess.value = false;
       return;
@@ -103,6 +115,8 @@ async function initVideo() {
     videoAccess.value = false;
     console.error(e);
     throw e; // so it's reported by sentry
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -129,7 +143,7 @@ onBeforeUnmount(() => {
   removeInterval();
 });
 
-function tick() {
+function processVideoFrame() {
   if (video.readyState === video.HAVE_ENOUGH_DATA) {
     const el = canvasElement.value;
 
@@ -165,44 +179,53 @@ function tick() {
       el.width,
       el.height,
     );
+
     const imageData = renderingContext.getImageData(0, 0, el.width, el.height);
     const code = jsQR(imageData.data, imageData.width, imageData.height, {
       inversionAttempts: 'dontInvert',
     });
 
     if (code) {
-      drawLine(
-        code.location.topLeftCorner,
-        code.location.topRightCorner,
-        frameColor,
-      );
-      drawLine(
-        code.location.topRightCorner,
-        code.location.bottomRightCorner,
-        frameColor,
-      );
-      drawLine(
-        code.location.bottomRightCorner,
-        code.location.bottomLeftCorner,
-        frameColor,
-      );
-      drawLine(
-        code.location.bottomLeftCorner,
-        code.location.topLeftCorner,
-        frameColor,
-      );
+      drawFrameAroundCode(code);
       emit('change', code.data);
     }
   }
 
-  requestAnimationFrame(tick);
+  animationFrame = requestAnimationFrame(processVideoFrame);
 }
 
-watch(loading, (val) => {
-  if (!val) {
-    emit('ready');
-  }
-});
+function drawFrameAroundCode(code: QRCode) {
+  const frameColor = '#FF3B58';
+  drawLine(
+    code.location.topLeftCorner,
+    code.location.topRightCorner,
+    frameColor,
+  );
+  drawLine(
+    code.location.topRightCorner,
+    code.location.bottomRightCorner,
+    frameColor,
+  );
+  drawLine(
+    code.location.bottomRightCorner,
+    code.location.bottomLeftCorner,
+    frameColor,
+  );
+  drawLine(
+    code.location.bottomLeftCorner,
+    code.location.topLeftCorner,
+    frameColor,
+  );
+}
+
+function drawLine(begin: Point, end: Point, color: string) {
+  renderingContext.beginPath();
+  renderingContext.moveTo(begin.x, begin.y);
+  renderingContext.lineTo(end.x, end.y);
+  renderingContext.lineWidth = 4;
+  renderingContext.strokeStyle = color;
+  renderingContext.stroke();
+}
 </script>
 
 <style scoped>

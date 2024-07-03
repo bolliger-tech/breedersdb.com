@@ -26,6 +26,9 @@ export const plants = {
       'Label ID is already in use. Next free label ID is {labelId}',
     labelIdNotUnique:
       'Label ID is already in use. Next free label ID is unknown.',
+    labelIdinvalid: 'Invalid label ID',
+    eliminatedNotAllowed: "Eliminated plants can't be used here",
+    labelIdNotFound: 'Plant {labelId} not found',
   },
 
   hints: {

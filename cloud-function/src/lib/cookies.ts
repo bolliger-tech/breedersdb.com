@@ -9,6 +9,7 @@ const MAX_AGE = 399 * 24 * 60 * 60; // 399 days in seconds
 export const ROLL_EVERY_SECONDS = 60 * 60; // 1 hour
 
 const TOKEN_COOKIE_NAME = 'breedersdb.id.token';
+// must match with frontend/src/boot/graphql-client.ts
 const FE_COOKIE_NAME = 'breedersdb.user';
 
 // eg. (true, MAX_AGE): HttpOnly; SameSite=Lax; Max-Age=34473600; Path=/

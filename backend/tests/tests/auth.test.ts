@@ -2,6 +2,16 @@ import { test, expect, beforeAll, afterAll } from 'bun:test';
 import { post, postOrFail, postOrFailRaw } from '../fetch';
 import { config } from '../config';
 
+const UserFields = /* GraphQL */ `
+  id
+  email
+  locale
+  failed_signin_attempts
+  last_signin
+  created
+  modified
+`;
+
 const deleteAllUsersMutation = /* GraphQL */ `
   mutation DeleteAllUsers {
     delete_user_tokens(where: {}) {
@@ -26,11 +36,7 @@ const insertUserMutation = /* GraphQL */ `
 const usersQuery = /* GraphQL */ `
   query Users {
     users(order_by: { created: asc }) {
-      id
-      email
-      failed_signin_attempts
-      last_signin
-      locale
+      ${UserFields}
       password_hash
       user_tokens_aggregate {
         aggregate {
@@ -46,7 +52,7 @@ const usersQuery = /* GraphQL */ `
 const signinMutation = /* GraphQL */ `
   mutation SignIn($email: citext!, $password: String!) {
     SignIn(email: $email, password: $password) {
-      user_id
+      ${UserFields}
     }
   }
 `;
@@ -56,12 +62,7 @@ const meQuery = /* GraphQL */ `
     Me {
       id
       user {
-        id
-        email
-        locale
-        last_signin
-        failed_signin_attempts
-        created
+        ${UserFields}
       }
     }
   }
@@ -210,7 +211,9 @@ test('sign in', async () => {
     query: signinMutation,
     variables: { email: user1.email, password: user1.password },
   });
-  expect(json.data.SignIn.user_id).toBe(user1Id);
+  expect(json.data.SignIn.id).toBe(user1Id);
+  expect(json.data.SignIn.locale).toBe('de-CH');
+  expect(json.data.SignIn.failed_signin_attempts).toBe(0);
 
   const respCookies = resp?.headers?.get('Set-Cookie');
   expect(respCookies).toMatch('breedersdb.id.token=');
@@ -227,7 +230,7 @@ test('sign in user2', async () => {
     query: signinMutation,
     variables: { email: user2.email, password: user2.password },
   });
-  expect(json.data.SignIn.user_id).toBeGreaterThan(0);
+  expect(json.data.SignIn.id).toBeGreaterThan(0);
 
   const respCookies = resp?.headers?.get('Set-Cookie');
   expect(respCookies).toMatch('breedersdb.id.token=');
@@ -244,7 +247,7 @@ test('me', async () => {
   }
   const result = await postOrFail(
     { query: meQuery },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(result.data.Me.user.email).toBe(user1.email);
   expect(result.data.Me.user.locale).not.toBe(null);
@@ -258,7 +261,7 @@ test('sign out', async () => {
   }
   const result = await postOrFail(
     { query: signOutMutation },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(result.data.SignOut.user_id).toBe(user1Id);
 });
@@ -269,10 +272,13 @@ test('me after sign out', async () => {
   }
   const json = await post(
     { query: meQuery },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(json.errors).not.toBe(undefined);
-  expect(json.errors[0]?.message).toBe('Unauthorized');
+  expect(json.errors[0]?.extensions?.code).toBe('access-denied');
+  expect(json.errors[0]?.message).toBe(
+    'Authentication hook unauthorized this request',
+  );
   expect(json.data).toBe(undefined);
 });
 
@@ -305,7 +311,7 @@ test('failed sign in attempts reset', async () => {
     query: signinMutation,
     variables: { email: user1.email, password: user1.password },
   });
-  expect(json.data.SignIn.user_id).toBe(user1Id);
+  expect(json.data.SignIn.id).toBe(user1Id);
 
   const respCookies = resp?.headers?.get('Set-Cookie');
   expect(respCookies).toMatch('breedersdb.id.token=');
@@ -317,7 +323,7 @@ test('failed sign in attempts reset', async () => {
 
   const result = await postOrFail(
     { query: meQuery },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(result.data.Me.user.email).toBe(user1.email);
   expect(result.data.Me.user.locale).not.toBe(null);
@@ -341,17 +347,20 @@ test('change password', async () => {
 test('signed out after password change', async () => {
   const json = await post(
     { query: meQuery },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(json.errors).not.toBe(undefined);
-  expect(json.errors[0]?.message).toBe('Unauthorized');
+  expect(json.errors[0]?.extensions?.code).toBe('access-denied');
+  expect(json.errors[0]?.message).toBe(
+    'Authentication hook unauthorized this request',
+  );
   expect(json.data).toBe(undefined);
 });
 
 test('user2 still signed in', async () => {
   const result = await postOrFail(
     { query: meQuery },
-    { cookie: user2CookiesReqHeader },
+    { Cookie: user2CookiesReqHeader },
   );
   expect(result.data.Me.user.email).toBe(user2.email);
   expect(result.data.Me.user.locale).not.toBe(null);
@@ -383,7 +392,7 @@ test('sign-in with new password', async () => {
     query: signinMutation,
     variables: { email: user1.email, password: user1.password2 },
   });
-  expect(json.data.SignIn.user_id).toBe(user1Id);
+  expect(json.data.SignIn.id).toBe(user1Id);
 
   const respCookies = resp?.headers?.get('Set-Cookie');
   expect(respCookies).toMatch('breedersdb.id.token=');
@@ -395,7 +404,7 @@ test('sign-in with new password', async () => {
 
   const result = await postOrFail(
     { query: meQuery },
-    { cookie: user1CookiesReqHeader },
+    { Cookie: user1CookiesReqHeader },
   );
   expect(result.data.Me.user.email).toBe(user1.email);
 });

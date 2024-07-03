@@ -10,6 +10,9 @@ import { retryExchange } from '@urql/exchange-retry';
 import { requestPolicyExchange } from '@urql/exchange-request-policy';
 import { LoadingBar } from 'quasar';
 
+// must match with cloud-function/src/lib/cookies.ts
+const FE_COOKIE_NAME = 'breedersdb.user';
+
 function startLoadingBar() {
   LoadingBar.start();
 }
@@ -44,6 +47,18 @@ export function createUrqlClient() {
     },
   };
 
+  const invalidAuthCookieHandler: MapExchangeOpts = {
+    onResult: (result) => {
+      if (
+        result.error?.graphQLErrors[0]?.extensions?.code === 'access-denied'
+      ) {
+        // our token is invalid, remove fe cookie and reload to trigger router
+        document.cookie = `${FE_COOKIE_NAME}=; SameSite=Lax; Max-Age=0; Path=/`;
+        window.location.reload();
+      }
+    },
+  };
+
   return new Client({
     url: '/api/v1/graphql',
     exchanges: [
@@ -53,6 +68,7 @@ export function createUrqlClient() {
       cacheExchange,
       retryExchange(retryOptions),
       mapExchange(loadingBarTriggers),
+      mapExchange(invalidAuthCookieHandler),
       fetchExchange,
     ],
   });

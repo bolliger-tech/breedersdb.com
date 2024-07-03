@@ -16,7 +16,7 @@
       <template v-if="error">
         <q-separator />
         <q-card-section v-if="error">
-          <BaseGraphqlError :error="error" :throw="false" />
+          <BaseGraphqlError :error="error" />
         </q-card-section>
         <q-separator />
       </template>

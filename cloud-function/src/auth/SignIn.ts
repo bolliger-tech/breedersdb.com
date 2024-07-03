@@ -9,33 +9,20 @@ import {
   UserQueryByEmail,
 } from '../queries';
 import type { ActionProps, ActionResult } from '../types';
-
-type SignInInput = {
-  user_id: number;
-};
+import type { FullUserOutput } from './types';
 
 // checking if the user is already signed in is not necessary
 // because this action is protected by hasura permissions
 export async function SignIn({
   input,
   ctx,
-}: ActionProps): Promise<ActionResult<SignInInput>> {
+}: ActionProps): Promise<ActionResult<FullUserOutput>> {
   // admin in hasura console is not allowed to signIn/SignOut
   if (ctx.sessionVariables?.['x-hasura-role'] === 'admin') {
     throw new ErrorWithStatus(
       403,
       'Forbidden: Admins are not allowed to sign in',
     );
-  }
-
-  const auth = await authenticateRequest(ctx.req.headers.cookie);
-  if (auth) {
-    // user is already signed in
-    return {
-      response: {
-        user_id: auth.userId,
-      },
-    };
   }
 
   if (!input || !input.email || !input.password) {
@@ -51,6 +38,21 @@ export async function SignIn({
   }).then((data) => data?.data?.users?.[0]);
   if (!user) {
     throw new ErrorWithStatus(404, 'Not Found: User not found');
+  }
+
+  // check if user is already signed in
+  const auth = await authenticateRequest(ctx.req.headers.cookie);
+  if (auth) {
+    if (auth.userId !== user.id) {
+      throw new ErrorWithStatus(
+        403,
+        'Forbidden: Already signed in as another user, sign out first',
+      );
+    }
+    // user is already signed in
+    return {
+      response: user,
+    };
   }
 
   // verify password
@@ -89,9 +91,7 @@ export async function SignIn({
   const cookieHeader = createAuthCookies(dbToken.id, token, user.email);
 
   return {
-    response: {
-      user_id: user.id,
-    },
+    response: user,
     headers: {
       'Set-Cookie': cookieHeader,
     },

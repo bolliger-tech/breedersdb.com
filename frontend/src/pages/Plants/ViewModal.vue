@@ -5,18 +5,12 @@
 
   <EntityModalContent v-else-if="plant">
     <template #title>
-      <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
-      <div class="q-ma-sm">
-        <h2 class="q-ma-none">
-          <PlantLabelId :label-id="plant.label_id" />
-        </h2>
-        <EntityName
-          :plant-group="plant.plant_group"
-          :cultivar="plant.plant_group?.cultivar"
-          :lot="plant.plant_group?.cultivar.lot"
-          :crossing="plant.plant_group?.cultivar.lot.crossing"
-        />
-      </div>
+      <PlantCard
+        v-if="plant"
+        :label-id="plant.label_id"
+        :plant-group="plant.plant_group"
+        class="q-my-sm"
+      />
     </template>
 
     <template #default>
@@ -100,12 +94,10 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
-import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
-import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
 import { computed } from 'vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
-import EntityName from 'src/components/Entity/EntityName.vue';
+import PlantCard from 'src/components/Plant/PlantCard.vue';
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
 import { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 import { useI18n } from 'src/composables/useI18n';

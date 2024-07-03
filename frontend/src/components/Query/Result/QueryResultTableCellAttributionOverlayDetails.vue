@@ -44,20 +44,24 @@
 
   <template v-if="data.plant">
     <div class="row no-wrap items-center text-body2 q-pt-xs">
-      <BaseSpriteIcon name="tree" color="grey-7" size="lg" />
-      <div class="q-ml-sm">
-        <RouterLink :to="`/plants/${data.plant.id}`" class="link">
-          <PlantLabelId :label-id="data.plant.label_id" />
-        </RouterLink>
-        <br />
-        <EntityName
-          :plant-group="data.plant.plant_group"
-          :cultivar="data.plant.plant_group?.cultivar"
-          :lot="data.plant.plant_group?.cultivar.lot"
-          :crossing="data.plant.plant_group?.cultivar.lot.crossing"
-          dark
-        />
-      </div>
+      <PlantCard :plant-group="data.plant.plant_group">
+        <template #title>
+          <RouterLink
+            :to="`/plants/${data.plant.id}`"
+            class="link block text-h2"
+          >
+            <PlantLabelId :label-id="data.plant.label_id" />
+          </RouterLink>
+        </template>
+        <template #subtitle>
+          <EntityName
+            :plant-group="data.plant.plant_group"
+            :cultivar="data.plant.plant_group?.cultivar"
+            :lot="data.plant.plant_group?.cultivar.lot"
+            :crossing="data.plant.plant_group?.cultivar.lot.crossing"
+          />
+        </template>
+      </PlantCard>
     </div>
     <div class="q-mt-sm text-body2">
       <PlantEntityTable
@@ -150,6 +154,7 @@ import { AttributionDetails } from './QueryResultTableCellAttributionOverlay.vue
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import { localizeDate } from 'src/utils/dateUtils';
 import EntityName from 'src/components/Entity/EntityName.vue';
+import PlantCard from 'src/components/Plant/PlantCard.vue';
 
 export interface QueryResultTableCellAttributionOverlayDetailsProps {
   data: AttributionDetails;

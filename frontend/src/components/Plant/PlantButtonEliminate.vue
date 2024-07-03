@@ -6,7 +6,7 @@
     @click="confirm = true"
   />
 
-  <q-dialog v-model="confirm" persistent>
+  <q-dialog v-model="confirm">
     <q-card>
       <q-card-section class="row items-center">
         <q-avatar icon="warning" color="negative" text-color="white" />

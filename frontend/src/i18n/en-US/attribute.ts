@@ -5,8 +5,8 @@ export const attribute = {
   selectForm: 'Select form',
   addMeta: 'Meta data',
 
-  setAuthor: 'Who collected the data?',
-  setDate: 'When was the data collected?',
+  setAuthor: 'Who collects the data?',
+  setDate: 'When is/was the data collected?',
 
   repeat: 'Repeat',
   shouldRepeat:

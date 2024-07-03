@@ -22,6 +22,7 @@
         :error="!!error"
         @keyup.enter="onManualInput"
         @blur="() => (input = zeroFill(input))"
+        @focus="() => (input = getSignificantDigits(input))"
       />
     </BaseInputLabel>
 
@@ -44,7 +45,12 @@ import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
 import BaseInputLabel from '../Base/BaseInputLabel.vue';
 import BaseQrScanner from '../Base/BaseQrScanner.vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
-import { isPrefixed, isValid, zeroFill } from 'src/utils/labelIdUtils';
+import {
+  isPrefixed,
+  isValid,
+  zeroFill,
+  getSignificantDigits,
+} from 'src/utils/labelIdUtils';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';

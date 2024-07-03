@@ -1,6 +1,6 @@
 <template>
   <div class="q-px-md absolute-center column items-center signin-page-content">
-    <h1 class="q-mb-lg">{{ orgAbbreviation }}</h1>
+    <h1 class="q-mb-lg">{{ orgName }}</h1>
     <h2>{{ t('auth.signInTitle') }}</h2>
     <SignInForm />
     <div class="text-h4 text-muted">
@@ -17,7 +17,7 @@ import SignInForm from 'components/Auth/SignInForm.vue';
 import { useI18n } from 'src/composables/useI18n';
 import BaseSpriteIcon from 'components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 const { t } = useI18n();
-const orgAbbreviation = import.meta.env.VITE_ORG;
+const orgName = import.meta.env.VITE_ORG;
 </script>
 
 <style lang="scss" scoped>

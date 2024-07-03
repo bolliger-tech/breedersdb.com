@@ -230,7 +230,7 @@ function drawLine(begin: Point, end: Point, color: string) {
 
 <style scoped>
 .video-sized {
-  width: clamp(250px, min(calc(100svh - 400px), calc(100svw - 100px)), 800px);
-  height: clamp(250px, min(calc(100svh - 400px), calc(100svw - 100px)), 800px);
+  width: clamp(250px, min(calc(100svh - 400px), calc(100svw - 64px)), 800px);
+  height: clamp(250px, min(calc(100svh - 400px), calc(100svw - 64px)), 800px);
 }
 </style>

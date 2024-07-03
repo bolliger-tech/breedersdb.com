@@ -4,7 +4,7 @@ declare
     plant_cursor no scroll cursor for select *
                                       from plants
                                       where label_id ~ '^[[:digit:]]+$'
-                                        and label_id >= input_label_id
+                                        and label_id::int >= input_label_id::int
                                       order by label_id;
     plant              plants%ROWTYPE;
     new_plant          plants%ROWTYPE;

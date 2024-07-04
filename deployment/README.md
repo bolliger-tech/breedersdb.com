@@ -380,10 +380,18 @@ pathMatchers:
       urlRewrite:
         pathPrefixRewrite: /v1/
     service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
+  - description: forward request to hasura graphql (v1alpha1 is used by the hasura console)
+    matchRules:
+    - prefixMatch: /api/v1alpha1/
+    priority: 12
+    routeAction:
+      urlRewrite:
+        pathPrefixRewrite: /v1alpha1/
+    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
   - description: forward request to hasura graphql (v2 is used by the hasura console)
     matchRules:
     - prefixMatch: /api/v2/
-    priority: 12
+    priority: 13
     routeAction:
       urlRewrite:
         pathPrefixRewrite: /v2/
@@ -391,7 +399,7 @@ pathMatchers:
   - description: redirect /api to /api/console
     matchRules:
     - fullPathMatch: /api
-    priority: 13
+    priority: 14
     urlRedirect:
       pathRedirect: /api/console
       redirectResponseCode: MOVED_PERMANENTLY_DEFAULT

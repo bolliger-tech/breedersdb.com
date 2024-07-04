@@ -4,6 +4,7 @@ import {
   type NamedValue,
   type TranslateOptions,
 } from 'vue-i18n';
+import { LocalStorage } from 'quasar';
 
 export type Locale = ReturnType<typeof useI18n>['locale'] extends {
   value: infer T;
@@ -14,8 +15,11 @@ export type Locale = ReturnType<typeof useI18n>['locale'] extends {
 const LOCAL_STORAGE_KEY = 'breedersdb-locale';
 
 export function getPersistedLocale(): Locale | undefined {
-  if (window.localStorage) {
-    return window.localStorage.getItem(LOCAL_STORAGE_KEY) as Locale;
+  try {
+    return LocalStorage.getItem(LOCAL_STORAGE_KEY) as Locale;
+  } catch (e) {
+    console.warn('Failed to load persisted locale:', e);
+    return undefined;
   }
 }
 
@@ -27,9 +31,12 @@ export function useI18n(options?: Parameters<typeof useVueI18n>[0]) {
     if (options?.useScope !== 'global') {
       throw new Error('useScope must be global to use setLocalePersistently');
     }
-    if (window.localStorage) {
-      window.localStorage.setItem(LOCAL_STORAGE_KEY, locale);
+    try {
+      LocalStorage.setItem(LOCAL_STORAGE_KEY, locale);
+    } catch (e) {
+      console.warn('Failed to persist locale:', e);
     }
+
     i18n.locale.value = locale;
   }
 

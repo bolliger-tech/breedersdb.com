@@ -11,6 +11,7 @@
     :loading="fetching"
     :error="labelIdIsNotUnique"
     reactive-rules
+    required
     @blur="paddLabelId"
   >
     <template v-if="labelIdIsNotUnique" #error>
@@ -128,6 +129,7 @@ async function uniqueRule(newLabelId: string) {
 
 const labelIdIsNotUnique = computed(() => {
   return (
+    !!labelId.value &&
     !labelId.value.startsWith('#') &&
     !!nextFreeLabelId.value &&
     nextFreeLabelId.value !== zeroFill(labelId.value)

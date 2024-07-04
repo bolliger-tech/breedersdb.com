@@ -128,7 +128,9 @@ async function uniqueRule(newLabelId: string) {
 
 const labelIdIsNotUnique = computed(() => {
   return (
-    !!nextFreeLabelId.value && nextFreeLabelId.value !== zeroFill(labelId.value)
+    !labelId.value.startsWith('#') &&
+    !!nextFreeLabelId.value &&
+    nextFreeLabelId.value !== zeroFill(labelId.value)
   );
 });
 

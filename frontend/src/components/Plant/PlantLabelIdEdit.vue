@@ -63,6 +63,7 @@ const labelId = defineModel<string>({
 const inputRef = ref<EntityInputInstance | null>(null);
 defineExpose({
   validate: () => inputRef.value?.validate(),
+  focus: () => inputRef.value?.focus(),
 });
 
 const { t } = useI18n();

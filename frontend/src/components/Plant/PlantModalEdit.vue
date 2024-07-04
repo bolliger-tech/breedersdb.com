@@ -163,7 +163,7 @@ const {
 function onFormChange(data: typeof editedData.value | typeof insertData.value) {
   if (!data) {
     return;
-  } else if ('id' in data) {
+  } else if ('id' in props.plant) {
     editedData.value = data;
   } else {
     insertData.value = data;

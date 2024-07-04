@@ -11,7 +11,7 @@ export type Locale = ReturnType<typeof useI18n>['locale'] extends {
   ? T
   : never;
 
-const LOCAL_STORAGE_KEY = 'locale';
+const LOCAL_STORAGE_KEY = 'breedersdb-locale';
 
 export function getPersistedLocale(): Locale | undefined {
   if (window.localStorage) {

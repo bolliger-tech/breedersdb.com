@@ -2,7 +2,7 @@
   <q-item
     clickable
     class="column justify-center"
-    @click="i18n.setLocalePersisted(locale)"
+    @click="i18n.setLocalePersistently(locale)"
   >
     <span class="label text-white">{{ label }}</span>
   </q-item>

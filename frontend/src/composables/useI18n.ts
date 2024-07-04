@@ -23,9 +23,9 @@ export function getPersistedLocale(): Locale | undefined {
 export function useI18n(options?: Parameters<typeof useVueI18n>[0]) {
   const { t, ...i18n } = useVueI18n(options);
 
-  function setLocalePersisted(locale: Locale) {
+  function setLocalePersistently(locale: Locale) {
     if (options?.useScope !== 'global') {
-      throw new Error('useScope must be global to use setLocalePersisted');
+      throw new Error('useScope must be global to use setLocalePersistently');
     }
     if (window.localStorage) {
       window.localStorage.setItem(LOCAL_STORAGE_KEY, locale);
@@ -35,7 +35,7 @@ export function useI18n(options?: Parameters<typeof useVueI18n>[0]) {
 
   return {
     ...i18n,
-    setLocalePersisted,
+    setLocalePersistently,
     // add strong typing for t function
     // https://vue-i18n.intlify.dev/api/composition.html#t
     t: t as (

@@ -29,34 +29,27 @@
         :loading="savingEdit || savingInsert"
         @click="save"
       />
-      <q-dialog
+      <q-tooltip
         :model-value="!!saveError || !!validationError"
+        max-width="250px"
+        anchor="top middle"
+        self="bottom middle"
+        class="bg-dark shadow-3 entity-modal-content__error-tooltip"
         @update:model-value="
           saveInsertError = undefined;
           saveEditError = undefined;
           validationError = null;
         "
       >
-        <q-card>
-          <q-card-section>
-            <h2 class="q-my-sm">
-              <q-avatar icon="warning" color="negative" text-color="white" />
-              {{ t('base.error') }}
-            </h2>
-          </q-card-section>
-
-          <q-card-section class="q-py-none">
-            <BaseGraphqlError v-if="saveError" :error="saveError" />
-            <p v-else-if="validationError">
-              {{ validationError }}
-            </p>
-          </q-card-section>
-
-          <q-card-actions align="right">
-            <q-btn v-close-popup flat :label="t('base.ok')" color="primary" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
+        <BaseGraphqlError v-if="saveError" :error="saveError" />
+        <p v-else-if="validationError">
+          <q-icon
+            name="warning"
+            size="2em"
+            class="text-negative"
+          />&nbsp;&nbsp;{{ validationError }}
+        </p>
+      </q-tooltip>
     </template>
   </EntityModalContent>
 </template>
@@ -163,7 +156,7 @@ const {
 function onFormChange(data: typeof editedData.value | typeof insertData.value) {
   if (!data) {
     return;
-  } else if ('id' in data) {
+  } else if ('id' in props.plant) {
     editedData.value = data;
   } else {
     insertData.value = data;
@@ -223,3 +216,9 @@ const saveError = computed(() => saveInsertError.value || saveEditError.value);
 
 const { t } = useI18n();
 </script>
+
+<style lang="scss" scoped>
+:global(.body--dark .entity-modal-content__error-tooltip) {
+  border: 1px solid $grey-7;
+}
+</style>

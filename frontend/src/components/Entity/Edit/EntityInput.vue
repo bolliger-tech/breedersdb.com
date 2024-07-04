@@ -29,6 +29,7 @@ import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 
 export type EntityInputInstance = ComponentPublicInstance<EntityInputProps> & {
   validate: () => ReturnType<QInput['validate']> | undefined;
+  focus: () => ReturnType<QInput['focus']> | undefined;
 };
 
 export type EntityInputProps = Omit<
@@ -43,6 +44,7 @@ const props = defineProps<EntityInputProps>();
 const inputRef = ref<QInput | null>(null);
 defineExpose({
   validate: () => inputRef.value?.validate(),
+  focus: () => inputRef.value?.focus(),
 });
 
 const modelValue = defineModel<QInputProps['modelValue']>();

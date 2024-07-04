@@ -27,6 +27,7 @@ const rootstockRef = ref<EntitySelectInstance<{
 
 defineExpose({
   validate: () => rootstockRef.value?.validate(),
+  focus: () => rootstockRef.value?.focus(),
 });
 
 const modelValue = defineModel<number | null>({ required: true });

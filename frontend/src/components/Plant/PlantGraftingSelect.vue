@@ -27,6 +27,7 @@ const graftingRef = ref<EntitySelectInstance<{
 
 defineExpose({
   validate: () => graftingRef.value?.validate(),
+  focus: () => graftingRef.value?.focus(),
 });
 
 const modelValue = defineModel<number | null>({ required: true });

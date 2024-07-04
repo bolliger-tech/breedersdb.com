@@ -28,6 +28,7 @@ const plantGroupRef = ref<EntitySelectInstance<{
 
 defineExpose({
   validate: () => plantGroupRef.value?.validate(),
+  focus: () => plantGroupRef.value?.focus(),
 });
 
 const modelValue = defineModel<number | null>({ required: true });

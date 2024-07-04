@@ -11,6 +11,7 @@
     :loading="fetching"
     :error="labelIdIsNotUnique"
     reactive-rules
+    required
     @blur="paddLabelId"
   >
     <template v-if="labelIdIsNotUnique" #error>
@@ -63,6 +64,7 @@ const labelId = defineModel<string>({
 const inputRef = ref<EntityInputInstance | null>(null);
 defineExpose({
   validate: () => inputRef.value?.validate(),
+  focus: () => inputRef.value?.focus(),
 });
 
 const { t } = useI18n();
@@ -127,7 +129,10 @@ async function uniqueRule(newLabelId: string) {
 
 const labelIdIsNotUnique = computed(() => {
   return (
-    !!nextFreeLabelId.value && nextFreeLabelId.value !== zeroFill(labelId.value)
+    !!labelId.value &&
+    !labelId.value.startsWith('#') &&
+    !!nextFreeLabelId.value &&
+    nextFreeLabelId.value !== zeroFill(labelId.value)
   );
 });
 

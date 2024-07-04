@@ -55,6 +55,7 @@ import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 // accurate, but it works.
 export type EntitySelectInstance<T> = {
   validate: () => ReturnType<QSelect['validate']> | undefined;
+  focus: () => ReturnType<QSelect['focus']> | undefined;
 } & ComponentPublicInstance<EntitySelectProps<T>> &
   VNodeRef;
 
@@ -83,6 +84,7 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
 const selectRef = ref<QSelect | null>(null);
 defineExpose({
   validate: () => selectRef.value?.validate(),
+  focus: () => selectRef.value?.focus(),
 });
 
 const modelValue = defineModel<T | null | undefined>();

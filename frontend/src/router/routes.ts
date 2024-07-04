@@ -62,7 +62,6 @@ const routes: RouteRecordRaw[] = [
                 component: () => import('pages/Users/ViewModal.vue'),
                 props: true,
               },
-              /*
               {
                 path: ':entityId/edit',
                 component: () => import('pages/Users/EditModal.vue'),
@@ -73,7 +72,6 @@ const routes: RouteRecordRaw[] = [
                 component: () => import('pages/Users/AddModal.vue'),
                 props: { entityId: 'new' },
               },
-              */
             ],
           },
         ],

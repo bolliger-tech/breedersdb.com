@@ -6,6 +6,7 @@ export const users = {
     locale: 'Locale',
     failedSigninAttempts: 'Failed Signin Attempts',
     lastSignin: 'Last Signin',
+    password: 'Password',
   },
   deleteConfirmation: 'Are you sure you want to delete this user?',
 };

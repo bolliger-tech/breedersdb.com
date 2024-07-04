@@ -28,6 +28,7 @@ import { usePagination } from 'src/components/Entity/List/usePagination';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { userFragment } from 'src/components/User/userFragment';
+import { useRoute } from 'vue-router';
 
 const { t, d } = useI18n();
 
@@ -108,10 +109,14 @@ const variables = computed(() => ({
   where: where.value,
 }));
 
-const { data, fetching, error } = await useQuery({
+const { data, fetching, error, executeQuery } = await useQuery({
   query,
   variables,
 });
+
+function reexecuteQuery() {
+  executeQuery({ requestPolicy: 'network-only' });
+}
 
 const usersCount = computed(
   () => data.value?.users_aggregate?.aggregate?.count || 0,
@@ -152,14 +157,16 @@ const columns = [
     name: 'last_signin',
     label: t('users.fields.lastSignin'),
     align: 'left' as const,
-    field: (row: User) => d(row.last_signin as string, 'ymdHis'),
+    field: (row: User) =>
+      row.last_signin ? d(row.last_signin as string, 'ymdHis') : null,
     sortable: true,
   },
   {
     name: 'modified',
     label: t('entity.commonColumns.modified'),
     align: 'left' as const,
-    field: (row: User) => d(row.modified as string, 'ymdHis'),
+    field: (row: User) =>
+      row.modified ? d(row.modified as string, 'ymdHis') : null,
     sortable: true,
   },
   {
@@ -194,4 +201,8 @@ watch(
   },
   { immediate: true },
 );
+
+// TODO: make reexecuteQuery more efficient
+const route = useRoute();
+watch(route, reexecuteQuery, { immediate: true });
 </script>

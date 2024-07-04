@@ -13,3 +13,15 @@ export const userFragment = graphql(`
     modified
   }
 `);
+
+export const userFragmentOnFullUserOutput = graphql(`
+  fragment userFragmentOnFullUserOutput on FullUserOutput @_unmask {
+    id
+    email
+    locale
+    failed_signin_attempts
+    last_signin
+    created
+    modified
+  }
+`);

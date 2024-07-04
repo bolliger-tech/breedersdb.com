@@ -51,6 +51,7 @@ export async function authenticateHasuraRequest(
       const newCookies = createAuthCookies(
         auth.cookiePayload.tokenId,
         auth.cookiePayload.token,
+        rollResultUser.id,
         rollResultUser.email,
       );
       res.setHeader('Set-Cookie', newCookies);

@@ -10,9 +10,9 @@
       :rows="data?.users || []"
       :loading="fetching"
       :all-columns="columns"
-      list-entities-path="/users"
-      add-entity-path="/users/new"
-      :view-entity-path-getter="(id) => `/users/${id}`"
+      list-entities-path="/more/users"
+      add-entity-path="/more/users/new"
+      :view-entity-path-getter="(id) => `/more/users/${id}`"
     />
   </PageLayout>
   <router-view name="modal" />
@@ -157,14 +157,14 @@ const columns = [
   },
   {
     name: 'modified',
-    label: t('users.fields.modified'),
+    label: t('entity.commonColumns.modified'),
     align: 'left' as const,
     field: (row: User) => d(row.modified as string, 'ymdHis'),
     sortable: true,
   },
   {
     name: 'created',
-    label: t('users.fields.created'),
+    label: t('entity.commonColumns.created'),
     align: 'left' as const,
     field: (row: User) => d(row.created as string, 'ymdHis'),
     sortable: true,

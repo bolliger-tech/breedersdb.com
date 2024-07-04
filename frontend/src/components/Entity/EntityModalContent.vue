@@ -19,16 +19,17 @@
     <q-card-actions align="between">
       <div>
         <slot name="action-left">
-          <q-btn
-            flat
-            :label="t('base.delete')"
-            color="negative"
-            @click="() => $emit('delete')"
-          />
+          <EntityButtonDelete @delete="() => $emit('delete')" />
         </slot>
       </div>
       <div>
         <slot name="action-right">
+          <q-btn
+            flat
+            :label="t('base.edit')"
+            color="primary"
+            @click="() => $emit('edit')"
+          />
           <q-btn v-close-popup flat :label="t('base.close')" color="primary" />
         </slot>
       </div>
@@ -38,6 +39,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
+import EntityButtonDelete from './EntityButtonDelete.vue';
 
 export interface EntityModalContentProps {
   title?: string;
@@ -51,6 +53,7 @@ defineSlots<{
   'action-right': [];
 }>();
 defineEmits<{
+  edit: [];
   delete: [];
 }>();
 

@@ -12,7 +12,11 @@
       :dark="$q.dark.isActive"
       :model-value="modelValue"
       @update:model-value="updateModelValue"
-    />
+    >
+      <template v-if="$slots.error" #error>
+        <slot name="error"></slot>
+      </template>
+    </q-input>
   </BaseInputLabel>
 </template>
 
@@ -42,6 +46,8 @@ defineExpose({
 });
 
 const modelValue = defineModel<QInputProps['modelValue']>();
+
+defineSlots<{ error: void }>();
 
 function updateModelValue(value: QInputProps['modelValue']) {
   if (!props.required && value === '') {

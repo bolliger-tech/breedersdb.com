@@ -92,11 +92,11 @@ import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { PlantEditInput, PlantInsertInput } from './PlantModalEdit.vue';
 
-export interface PlantEntityTableProps {
+export interface PlantEntityFormProps {
   plant: PlantInsertInput | PlantEditInput;
 }
 
-const props = defineProps<PlantEntityTableProps>();
+const props = defineProps<PlantEntityFormProps>();
 const emits = defineEmits<{
   change: [data: typeof data.value];
 }>();

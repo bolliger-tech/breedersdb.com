@@ -41,13 +41,14 @@
         class="bg-dark shadow-3 entity-modal-content__error-tooltip"
       >
         <BaseGraphqlError v-if="saveError" :error="saveError" />
-        <p v-else-if="validationError">
-          <q-icon
-            name="warning"
-            size="2em"
-            class="text-negative"
-          />&nbsp;&nbsp;{{ validationError }}
-        </p>
+        <div v-else-if="validationError" class="q-gutter-md row items-center">
+          <div class="col-auto">
+            <q-icon name="warning" size="2em" class="text-negative" />
+          </div>
+          <div class="col">
+            {{ validationError }}
+          </div>
+        </div>
       </q-tooltip>
     </template>
   </EntityModalContent>

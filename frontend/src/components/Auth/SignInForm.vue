@@ -96,7 +96,7 @@ function onSubmit() {
       return;
     }
     if (result.data?.SignIn.locale) {
-      i18n.setLocalePersistently(result.data.SignIn.locale as Locale);
+      i18n.setAndPersistLocale(result.data.SignIn.locale as Locale);
     } else {
       console.error('No locale in SignIn response');
     }

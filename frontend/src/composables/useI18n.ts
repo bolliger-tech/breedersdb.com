@@ -4,12 +4,45 @@ import {
   type NamedValue,
   type TranslateOptions,
 } from 'vue-i18n';
+import { LocalStorage } from 'quasar';
+
+export type Locale = ReturnType<typeof useI18n>['locale'] extends {
+  value: infer T;
+}
+  ? T
+  : never;
+
+const LOCAL_STORAGE_KEY = 'breedersdb-locale';
+
+export function getPersistedLocale(): Locale | undefined {
+  try {
+    return LocalStorage.getItem(LOCAL_STORAGE_KEY) as Locale;
+  } catch (e) {
+    console.warn('Failed to load persisted locale:', e);
+    return undefined;
+  }
+}
 
 // wrapper for vue-i18n
 export function useI18n(options?: Parameters<typeof useVueI18n>[0]) {
   const { t, ...i18n } = useVueI18n(options);
+
+  function setAndPersistLocale(locale: Locale) {
+    if (options?.useScope !== 'global') {
+      throw new Error('useScope must be global to use setAndPersistLocale');
+    }
+    try {
+      LocalStorage.setItem(LOCAL_STORAGE_KEY, locale);
+    } catch (e) {
+      console.warn('Failed to persist locale:', e);
+    }
+
+    i18n.locale.value = locale;
+  }
+
   return {
     ...i18n,
+    setAndPersistLocale,
     // add strong typing for t function
     // https://vue-i18n.intlify.dev/api/composition.html#t
     t: t as (

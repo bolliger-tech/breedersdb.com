@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { VNodeRef, computed, ref } from 'vue';
+import { VNodeRef, ref } from 'vue';
 import PlantPlantGroupSelect from './PlantPlantGroupSelect.vue';
 import PlantPlantRowSelect from './PlantPlantRowSelect.vue';
 import PlantLabelIdEdit from './PlantLabelIdEdit.vue';
@@ -91,6 +91,7 @@ import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { PlantEditInput, PlantInsertInput } from './PlantModalEdit.vue';
+import { useEntityForm } from 'src/composables/useEntityForm';
 
 export interface PlantEntityFormProps {
   plant: PlantInsertInput | PlantEditInput;
@@ -100,7 +101,6 @@ const props = defineProps<PlantEntityFormProps>();
 const emits = defineEmits<{
   change: [data: typeof data.value];
 }>();
-defineExpose({ validate });
 
 const { t } = useI18n();
 
@@ -151,32 +151,16 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   note: null,
 });
 
-const isDirty = computed(() => {
-  return (Object.keys(initialData) as (keyof typeof initialData)[]).some(
-    (key) => data.value[key] !== initialData[key],
-  );
+const { isDirty, validate } = useEntityForm({
+  refs,
+  data,
+  initialData,
 });
+
+defineExpose({ validate });
+
 const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
 watch(isDirty, () => makeModalPersistent(isDirty.value));
 
 watch(data, (newData) => emits('change', newData), { deep: true });
-
-async function validate() {
-  const validated = await Promise.all(
-    Object.values(refs.value).map((ref) => ({
-      ref,
-      valid: ref?.validate?.() ?? true,
-    })),
-  );
-
-  if (validated.every((input) => input.valid)) {
-    // all are valid
-    return true;
-  }
-
-  // focus first invalid
-  validated.find((input) => !input.valid)?.ref?.focus();
-
-  return false;
-}
 </script>

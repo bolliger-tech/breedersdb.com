@@ -14,13 +14,12 @@
     </template>
 
     <template #action-left>
-      <EntityButtonDelete
+      <UserButtonDelete
         v-if="'id' in user"
-        :disabled="deleteDisabled"
-        :message="t('users.deleteConfirmation')"
-        :error="deleteError"
-        :fetching="deleting"
-        @delete="deleteUser"
+        :user-id="user.id"
+        @deleted="
+          () => router.push({ path: '/more/users', query: route.query })
+        "
       />
       <div v-else></div>
     </template>
@@ -69,7 +68,7 @@ import {
 import { VariablesOf, graphql } from 'src/graphql';
 import { computed, ref, nextTick } from 'vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
-import EntityButtonDelete from 'src/components/Entity/EntityButtonDelete.vue';
+import UserButtonDelete from 'src/components/User/UserButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import UserEntityForm from 'src/components/User/UserEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -80,7 +79,6 @@ import {
 } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
-import { useDeleteUser } from 'src/composables/User/useDeleteUser';
 
 export type UserEditInput = Omit<
   UserFragment,
@@ -216,12 +214,6 @@ async function saveEdit() {
 const saveError = computed(() => saveInsertError.value || saveEditError.value);
 
 const { t } = useI18n();
-
-// TODO refactor
-const { deleteError, deleteUser, deleteDisabled, deleting } = useDeleteUser(
-  // @ts-expect-error id only for existing users
-  (props.user.id as number) || -1,
-);
 </script>
 
 <style lang="scss" scoped>

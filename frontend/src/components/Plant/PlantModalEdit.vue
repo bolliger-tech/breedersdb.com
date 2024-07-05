@@ -1,5 +1,12 @@
 <template>
-  <EntityModalContent>
+  <EntityModalContent
+    :loading="savingEdit || savingInsert"
+    :save-error="saveError"
+    :validation-error="validationError"
+    @cancel="cancel"
+    @save="save"
+    @reset-errors="resetErrors"
+  >
     <template #title>
       <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
       <div class="q-ma-sm">
@@ -19,38 +26,6 @@
       />
       <div v-else></div>
     </template>
-
-    <template #action-right>
-      <q-btn flat :label="t('base.cancel')" color="primary" @click="cancel" />
-      <q-btn
-        flat
-        :label="t('base.save')"
-        color="primary"
-        :loading="savingEdit || savingInsert"
-        @click="save"
-        @mouseleave="resetErrors"
-        @focusout="resetErrors"
-      />
-      <q-tooltip
-        :model-value="!!saveError || !!validationError"
-        max-width="250px"
-        anchor="top middle"
-        self="bottom middle"
-        :hide-delay="2000"
-        no-parent-event
-        class="bg-dark shadow-3 entity-modal-content__error-tooltip"
-      >
-        <BaseGraphqlError v-if="saveError" :error="saveError" />
-        <div v-else-if="validationError" class="q-gutter-md row items-center">
-          <div class="col-auto">
-            <q-icon name="warning" size="2em" class="text-negative" />
-          </div>
-          <div class="col">
-            {{ validationError }}
-          </div>
-        </div>
-      </q-tooltip>
-    </template>
   </EntityModalContent>
 </template>
 
@@ -63,7 +38,6 @@ import {
 import { VariablesOf, graphql } from 'src/graphql';
 import { computed, ref, nextTick } from 'vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
-import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
 import PlantEntityForm from 'src/components/Plant/PlantEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';

@@ -1,5 +1,12 @@
 <template>
-  <EntityModalContent>
+  <EntityModalContent
+    :loading="savingEdit || savingInsert"
+    :save-error="saveError"
+    :validation-error="validationError"
+    @cancel="cancel"
+    @save="save"
+    @reset-errors="resetErrors"
+  >
     <template #title>
       <BaseSpriteIcon name="user" color="grey-7" size="50px" />
       <div class="q-ma-sm">
@@ -23,38 +30,6 @@
       />
       <div v-else></div>
     </template>
-
-    <template #action-right>
-      <q-btn flat :label="t('base.cancel')" color="primary" @click="cancel" />
-      <q-btn
-        flat
-        :label="t('base.save')"
-        color="primary"
-        :loading="savingEdit || savingInsert"
-        @click="save"
-      />
-      <q-tooltip
-        :model-value="!!saveError || !!validationError"
-        max-width="250px"
-        anchor="top middle"
-        self="bottom middle"
-        class="bg-dark shadow-3 entity-modal-content__error-tooltip"
-        @update:model-value="
-          saveInsertError = undefined;
-          saveEditError = undefined;
-          validationError = null;
-        "
-      >
-        <BaseGraphqlError v-if="saveError" :error="saveError" />
-        <p v-else-if="validationError">
-          <q-icon
-            name="warning"
-            size="2em"
-            class="text-negative"
-          />&nbsp;&nbsp;{{ validationError }}
-        </p>
-      </q-tooltip>
-    </template>
   </EntityModalContent>
 </template>
 
@@ -69,7 +44,6 @@ import { VariablesOf, graphql } from 'src/graphql';
 import { computed, ref, nextTick } from 'vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import UserButtonDelete from 'src/components/User/UserButtonDelete.vue';
-import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import UserEntityForm from 'src/components/User/UserEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
@@ -219,6 +193,12 @@ async function saveEdit() {
 }
 
 const saveError = computed(() => saveInsertError.value || saveEditError.value);
+
+function resetErrors() {
+  saveInsertError.value = undefined;
+  saveEditError.value = undefined;
+  validationError.value = null;
+}
 
 const { t } = useI18n();
 </script>

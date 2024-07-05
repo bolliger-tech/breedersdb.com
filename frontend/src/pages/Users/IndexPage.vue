@@ -22,13 +22,13 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, watch } from 'vue';
+import { computed, provide, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { usePagination } from 'src/components/Entity/List/usePagination';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { userFragment } from 'src/components/User/userFragment';
-import { useRoute } from 'vue-router';
+import { userReexecuteQuerySymbol } from './userProvideSymbols';
 
 const { t, d } = useI18n();
 
@@ -66,8 +66,8 @@ const { queryArg: subset } = useQueryArg<'all'>({
 });
 
 const { pagination } = usePagination({
-  sortBy: 'email',
-  descending: false,
+  sortBy: 'id',
+  descending: true,
   page: 1,
   rowsPerPage: 100,
   rowsNumber: 0,
@@ -114,9 +114,9 @@ const { data, fetching, error, executeQuery } = await useQuery({
   variables,
 });
 
-function reexecuteQuery() {
-  executeQuery({ requestPolicy: 'network-only' });
-}
+provide(userReexecuteQuerySymbol, () =>
+  executeQuery({ requestPolicy: 'network-only' }),
+);
 
 const usersCount = computed(
   () => data.value?.users_aggregate?.aggregate?.count || 0,
@@ -201,8 +201,4 @@ watch(
   },
   { immediate: true },
 );
-
-// TODO: make reexecuteQuery more efficient
-const route = useRoute();
-watch(route, reexecuteQuery, { immediate: true });
 </script>

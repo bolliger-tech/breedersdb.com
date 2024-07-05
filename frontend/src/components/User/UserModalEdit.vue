@@ -77,6 +77,7 @@ import {
   closeModalSymbol,
   makeModalPersistentSymbol,
 } from 'src/components/Entity/modalProvideSymbols';
+import { userReexecuteQuerySymbol } from 'src/pages/Users/userProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 
@@ -183,6 +184,8 @@ async function save() {
   }
 }
 
+const reexecuteUsersQuery = useInjectOrThrow(userReexecuteQuerySymbol);
+
 async function saveInsert() {
   if (!insertData.value) {
     closeModal();
@@ -191,6 +194,10 @@ async function saveInsert() {
 
   return executeInsertMutation({
     ...insertData.value,
+  }).then(() => {
+    // because the return type of InsertUser is not userFragment
+    // we need to reexecute the query to refresh the users list
+    reexecuteUsersQuery();
   });
 }
 

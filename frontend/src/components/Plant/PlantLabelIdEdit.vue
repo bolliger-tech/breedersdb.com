@@ -44,6 +44,7 @@ import { nextTick } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { ValidationRule } from 'quasar';
+import { focusInView } from 'src/utils/focusInView';
 
 export interface PlantLabelIdEditProps
   extends PlantLabelIdEditPropsWithoutModel {
@@ -64,7 +65,7 @@ const labelId = defineModel<string>({
 const inputRef = ref<EntityInputInstance | null>(null);
 defineExpose({
   validate: () => inputRef.value?.validate(),
-  focus: () => inputRef.value?.focus(),
+  focus: () => inputRef.value && focusInView(inputRef.value),
 });
 
 const { t } = useI18n();

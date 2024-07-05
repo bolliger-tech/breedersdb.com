@@ -20,6 +20,7 @@ import { useQuery } from '@urql/vue';
 import EntitySelect, {
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
+import { focusInView } from 'src/utils/focusInView';
 
 const plantGroupRef = ref<EntitySelectInstance<{
   id: number;
@@ -28,7 +29,7 @@ const plantGroupRef = ref<EntitySelectInstance<{
 
 defineExpose({
   validate: () => plantGroupRef.value?.validate(),
-  focus: () => plantGroupRef.value?.focus(),
+  focus: () => plantGroupRef.value && focusInView(plantGroupRef.value),
 });
 
 const modelValue = defineModel<number | null>({ required: true });

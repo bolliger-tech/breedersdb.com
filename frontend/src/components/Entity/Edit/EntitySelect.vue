@@ -48,6 +48,7 @@ import {
 import { shallowRef } from 'vue';
 import { CombinedError } from '@urql/vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
+import { focusInView } from 'src/utils/focusInView';
 
 // it currently seems to be a bug with generic components. the currect type
 // would be without the `& VNodeRef` part.
@@ -84,7 +85,7 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
 const selectRef = ref<QSelect | null>(null);
 defineExpose({
   validate: () => selectRef.value?.validate(),
-  focus: () => selectRef.value?.focus(),
+  focus: () => selectRef.value && focusInView(selectRef.value),
 });
 
 const modelValue = defineModel<T | null | undefined>();

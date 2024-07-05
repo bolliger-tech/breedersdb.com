@@ -1,25 +1,25 @@
 <template>
-  <q-item clickable class="column justify-center" @click="setLocale">
+  <q-item
+    clickable
+    class="column justify-center"
+    @click="i18n.setAndPersistLocale(locale)"
+  >
     <span class="label text-white">{{ label }}</span>
   </q-item>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
+import type { Locale } from 'src/composables/useI18n';
 
 export interface LanguageSetterProps {
-  locale: ReturnType<typeof useI18n>['locale'] extends { value: infer T }
-    ? T
-    : never;
+  locale: Locale;
   label: string;
 }
 
 const { locale, label } = defineProps<LanguageSetterProps>();
 
 const i18n = useI18n({ useScope: 'global' });
-function setLocale() {
-  i18n.locale.value = locale;
-}
 </script>
 
 <style scoped lang="scss">

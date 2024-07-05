@@ -26,6 +26,7 @@ import type { QInput, QInputProps } from 'quasar';
 import { ComponentPublicInstance, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
+import { focusInView } from 'src/utils/focusInView';
 
 export type EntityInputInstance = ComponentPublicInstance<EntityInputProps> & {
   validate: () => ReturnType<QInput['validate']> | undefined;
@@ -44,7 +45,7 @@ const props = defineProps<EntityInputProps>();
 const inputRef = ref<QInput | null>(null);
 defineExpose({
   validate: () => inputRef.value?.validate(),
-  focus: () => inputRef.value?.focus(),
+  focus: () => inputRef.value && focusInView(inputRef.value),
 });
 
 const modelValue = defineModel<QInputProps['modelValue']>();

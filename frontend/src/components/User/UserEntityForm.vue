@@ -1,9 +1,13 @@
 <template>
-  <!-- TODO: email validation-->
   <EntityInput
     :ref="(el: InputRef) => (refs.emailRef = el)"
     v-model="data.email as string"
     :label="t('users.fields.email')"
+    :rules="[
+      (val: string) => {
+        return isValidEmail(val) || t('base.validation.invalidEmail');
+      },
+    ]"
     type="email"
     autocomplete="off"
   />
@@ -34,6 +38,7 @@ import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { UserEditInput, UserInsertInput } from './UserModalEdit.vue';
 import { useEntityForm } from 'src/composables/useEntityForm';
+import { isValidEmail } from 'src/utils/validationUtils';
 
 export interface UserEntityFormProps {
   user: UserInsertInput | UserEditInput;

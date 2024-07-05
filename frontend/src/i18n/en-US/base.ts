@@ -36,7 +36,7 @@ export const base = {
     xIsRequired: '{x} is required',
     invalidFields:
       'Invalid form fields. Please check the form fields for errors and try again.',
-    invalidEmail: 'Invalid email',
+    invalidEmail: 'Invalid email address',
   },
 
   noResults: 'No results',

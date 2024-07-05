@@ -1,4 +1,3 @@
-<!-- TODO: discuss: shouldn't this file be named UserViewModal? -->
 <template>
   <q-card v-if="error">
     <BaseGraphqlError :error="error" />

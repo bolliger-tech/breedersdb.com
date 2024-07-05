@@ -28,18 +28,17 @@
         color="primary"
         :loading="savingEdit || savingInsert"
         @click="save"
+        @mouseleave="resetErrors"
+        @focusout="resetErrors"
       />
       <q-tooltip
         :model-value="!!saveError || !!validationError"
         max-width="250px"
         anchor="top middle"
         self="bottom middle"
+        :hide-delay="2000"
+        no-parent-event
         class="bg-dark shadow-3 entity-modal-content__error-tooltip"
-        @update:model-value="
-          saveInsertError = undefined;
-          saveEditError = undefined;
-          validationError = null;
-        "
       >
         <BaseGraphqlError v-if="saveError" :error="saveError" />
         <p v-else-if="validationError">
@@ -213,6 +212,12 @@ async function saveEdit() {
 }
 
 const saveError = computed(() => saveInsertError.value || saveEditError.value);
+
+function resetErrors() {
+  saveInsertError.value = undefined;
+  saveEditError.value = undefined;
+  validationError.value = null;
+}
 
 const { t } = useI18n();
 </script>

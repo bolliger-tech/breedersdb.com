@@ -56,7 +56,7 @@
             />
             <q-tooltip
               :model-value="!!saveError || !!validationError"
-              max-width="250px"
+              max-width="500px"
               anchor="top middle"
               self="bottom middle"
               :hide-delay="2000"

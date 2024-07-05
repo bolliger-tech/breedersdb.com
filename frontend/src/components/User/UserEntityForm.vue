@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO discuss how to validate email uniqueness -->
   <EntityInput
     :ref="(el: InputRef) => (refs.emailRef = el)"
     v-model="data.email as string"

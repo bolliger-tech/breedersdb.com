@@ -23,7 +23,7 @@ import PageLayout from 'src/layouts/PageLayout.vue';
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
 import { computed, provide, watch } from 'vue';
-import { useI18n } from 'src/composables/useI18n';
+import { useI18n, Locale } from 'src/composables/useI18n';
 import { usePagination } from 'src/components/Entity/List/usePagination';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
@@ -143,7 +143,7 @@ const columns = [
     name: 'locale',
     label: t('users.fields.locale'),
     align: 'left' as const,
-    field: 'locale',
+    field: (row: User) => t(`base.locales.${row.locale as Locale}`),
     sortable: true,
   },
   {

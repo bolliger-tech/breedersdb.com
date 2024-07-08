@@ -15,7 +15,26 @@
 
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <UserEntityTable :user="user" row-padding-side="16px" />
+      <EntityViewTable row-padding-side="16px">
+        <EntityViewTableRow :label="t('users.fields.email')">
+          {{ user.email }}
+        </EntityViewTableRow>
+        <EntityViewTableRow :label="t('users.fields.locale')">
+          {{ user.locale }}
+        </EntityViewTableRow>
+        <EntityViewTableRow :label="t('users.fields.failedSigninAttempts')">
+          {{ user.failed_signin_attempts }}
+        </EntityViewTableRow>
+        <EntityViewTableRow :label="t('users.fields.lastSignin')">
+          {{ localizeDate(user.last_signin) }}
+        </EntityViewTableRow>
+        <EntityViewTableRow :label="t('entity.commonColumns.created')">
+          {{ localizeDate(user.created) }}
+        </EntityViewTableRow>
+        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
+          {{ localizeDate(user.modified) }}
+        </EntityViewTableRow>
+      </EntityViewTable>
     </template>
 
     <template #action-left>
@@ -43,9 +62,11 @@ import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { computed } from 'vue';
 import { userFragment } from 'src/components/User/userFragment';
-import UserEntityTable from 'src/components/User/UserEntityTable.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
+import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
+import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
+import { localizeDate } from 'src/utils/dateUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 

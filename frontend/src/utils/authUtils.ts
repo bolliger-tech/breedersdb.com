@@ -1,6 +1,11 @@
 const FE_COOKIE_NAME = 'breedersdb.user';
 
-export function getUserFromCookie() {
+type CookieUser = {
+  id: number;
+  email: string;
+};
+
+export function getUserFromCookie(): CookieUser | null {
   const cookie = document.cookie
     .split(';')
     .find((c) => c.trim().startsWith(`${FE_COOKIE_NAME}=`))

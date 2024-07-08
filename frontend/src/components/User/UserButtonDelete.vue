@@ -1,6 +1,6 @@
 <template>
   <EntityButtonDelete
-    :disabled="disabled"
+    :disabled="me?.id === props.userId"
     :message="t('users.deleteConfirmation')"
     :error="error"
     :fetching="deleting"
@@ -12,9 +12,8 @@
 import { useMutation } from '@urql/vue';
 import EntityButtonDelete from 'src/components/Entity/EntityButtonDelete.vue';
 import { graphql } from 'src/graphql';
-import { getUserFromCookie } from 'src/utils/authUtils';
-import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
+import { useMe } from 'src/composables/useMe';
 
 export interface UserButtonDeleteProps {
   userId: number;
@@ -53,11 +52,7 @@ function deleteUser() {
   });
 }
 
-const disabled = computed(() => {
-  // TODO: refactor into useMe
-  const me = getUserFromCookie();
-  return me?.id === props.userId;
-});
+const me = useMe();
 
 const { t } = useI18n();
 </script>

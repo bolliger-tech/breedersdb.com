@@ -12,13 +12,26 @@
     type="email"
     autocomplete="off"
   />
-  <!-- TODO: select instead of input -->
-  <EntityInput
+  <EntitySelect
     :ref="(el: InputRef) => (refs.localeRef = el)"
-    v-model="data.locale"
+    :model-value="
+      data.locale
+        ? ({
+            value: data.locale,
+            label: localeOptions.find((o) => o.value === data.locale)?.label,
+          } as LocaleOption)
+        : null
+    "
     :label="t('users.fields.locale')"
-    type="text"
-    autocomplete="off"
+    :options="localeOptions"
+    option-value="value"
+    option-label="label"
+    :clearable="false"
+    required
+    @update:model-value="
+      (option: LocaleOption | null | undefined) =>
+        (data.locale = option ? option.value : DEFAULT_LOCALE)
+    "
   />
   <EntityInput
     v-if="!('id' in props.user)"
@@ -31,9 +44,15 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'src/composables/useI18n';
+import {
+  DEFAULT_LOCALE,
+  LocaleOption,
+  getLocaleOptions,
+  useI18n,
+} from 'src/composables/useI18n';
 import { VNodeRef, ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
+import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
@@ -82,4 +101,6 @@ const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
 watch(isDirty, () => makeModalPersistent(isDirty.value));
 
 watch(data, (newData) => emits('change', newData), { deep: true });
+
+const localeOptions = getLocaleOptions(t);
 </script>

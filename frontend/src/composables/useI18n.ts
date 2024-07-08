@@ -6,11 +6,14 @@ import {
 } from 'vue-i18n';
 import { LocalStorage } from 'quasar';
 
-export type Locale = ReturnType<typeof useI18n>['locale'] extends {
-  value: infer T;
+export enum Locales {
+  en_US = 'en-US',
+  de_CH = 'de-CH',
 }
-  ? T
-  : never;
+
+export type Locale = `${Locales}`;
+
+export const DEFAULT_LOCALE = Locales.en_US;
 
 const LOCAL_STORAGE_KEY = 'breedersdb-locale';
 
@@ -37,6 +40,7 @@ export function useI18n(options?: Parameters<typeof useVueI18n>[0]) {
       console.warn('Failed to persist locale:', e);
     }
 
+    // @ts-expect-error i18n Locale is en-US only
     i18n.locale.value = locale;
   }
 
@@ -69,3 +73,14 @@ type Paths<T> = T extends object
         : never;
     }[keyof T]
   : '';
+
+export type LocaleOption = {
+  value: Locale;
+  label: string;
+};
+export function getLocaleOptions(t: TFunc): LocaleOption[] {
+  return Object.values(Locales).map((locale) => ({
+    value: locale,
+    label: t(`base.locales.${locale}`),
+  }));
+}

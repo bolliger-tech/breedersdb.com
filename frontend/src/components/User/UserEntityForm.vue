@@ -1,16 +1,17 @@
 <template>
-  <!-- TODO validate email uniqueness -->
   <EntityInput
     :ref="(el: InputRef) => (refs.emailRef = el)"
     v-model="data.email as string"
     :label="t('users.fields.email')"
     :rules="[
-      (val: string) => {
-        return isValidEmail(val) || t('base.validation.invalidEmail');
-      },
+      (val: string) => isValidEmail(val) || t('base.validation.invalidEmail'),
+      async (val: string) =>
+        (await isEmailUnique(val)) || t('base.validation.emailNotUnique'),
     ]"
     type="email"
     autocomplete="off"
+    debounce="300"
+    :loading="fetchingEmailUnique"
     required
   />
   <EntitySelect
@@ -59,7 +60,7 @@ import {
   getLocaleOptions,
   useI18n,
 } from 'src/composables/useI18n';
-import { VNodeRef, ref } from 'vue';
+import { VNodeRef, nextTick, ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { watch } from 'vue';
@@ -70,6 +71,8 @@ import { useEntityForm } from 'src/composables/useEntityForm';
 import { isValidEmail } from 'src/utils/validationUtils';
 import UserButtonChangePassword from './UserButtonChangePassword.vue';
 import { isValidPassword } from 'src/utils/validationUtils';
+import { graphql } from 'src/graphql';
+import { useQuery } from '@urql/vue';
 
 export interface UserEntityFormProps {
   user: UserInsertInput | UserEditInput;
@@ -83,7 +86,7 @@ const emits = defineEmits<{
 const { t } = useI18n();
 
 const initialData = {
-  email: props.user.email,
+  email: props.user.email as string,
   locale: props.user.locale,
   password: null,
 };
@@ -114,4 +117,37 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 watch(data, (newData) => emits('change', newData), { deep: true });
 
 const localeOptions = getLocaleOptions(t);
+
+const emailUniqueQuery = graphql(`
+  query EmailUniqueQuery($email: citext!) {
+    users(where: { email: { _eq: $email } }, limit: 1) {
+      id
+    }
+  }
+`);
+
+const queryVariables = ref({ email: data.value.email });
+
+const { executeQuery: executeEmailUniqueQuery, fetching: fetchingEmailUnique } =
+  useQuery({
+    query: emailUniqueQuery,
+    variables: queryVariables,
+  });
+
+async function isEmailUnique(newEmail: string) {
+  // 😵🔫
+  queryVariables.value.email = newEmail;
+  await nextTick(); // wait for the refs to be updated
+  const result = await executeEmailUniqueQuery();
+  if (result.error.value) {
+    console.error(result.error);
+    return true;
+  }
+  // @ts-expect-error id only availabe on add
+  const userId = props.user.id as number | undefined;
+  return (
+    result.data?.value?.users.length === 0 ||
+    result.data?.value?.users[0]?.id === userId
+  );
+}
 </script>

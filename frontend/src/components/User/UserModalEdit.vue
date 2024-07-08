@@ -140,6 +140,7 @@ function onFormChange(data: typeof editedData.value | typeof insertData.value) {
 async function save() {
   const isValid = await formRef.value?.validate();
   validationError.value = isValid ? null : t('base.validation.invalidFields');
+  // TODO: why is this true even if email is not unique?
   if (!isValid) {
     return;
   }

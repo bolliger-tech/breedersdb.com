@@ -62,7 +62,7 @@
       :done-icon="entityIcon"
       :active-icon="entityIcon"
       :disable="!form || !author || !date"
-      :done="hasEntity"
+      :done="entityId !== null"
     >
       <slot name="entity-selector"></slot>
       <q-stepper-navigation class="row justify-between">
@@ -82,9 +82,18 @@
       icon="svguse:/icons/sprite.svg#star"
       done-icon="svguse:/icons/sprite.svg#star"
       active-icon="svguse:/icons/sprite.svg#star"
-      :disable="!form || !author || !date || !hasEntity"
+      :disable="!form || !author || !date || entityId === null"
     >
       <slot name="entity-preview"></slot>
+      <AttributeRepeatCounter
+        v-if="repeatInt > 0"
+          class="q-mt-md"
+        :total="repeatInt"
+        :entity-type="entityType"
+          :count="repeatCount"
+          @reset="repeatCount = 0"
+      />
+      <!-- <AttributeForm /> -->
 
       <q-stepper-navigation>
         <q-btn color="primary" label="Finish" />
@@ -105,13 +114,21 @@ import AttributeFormSelector, {
   AttributionForm,
 } from 'src/components/Attribute/AttributeFormSelector.vue';
 import AttributeMetaData from 'src/components/Attribute/AttributeMetaData.vue';
+import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCounter.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
+import { AttributableEntities } from './attributableEntities';
+import { useRepeatCounter } from './useRepeatCounter';
+
+const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';
+const AUTHOR_STORAGE_KEY = 'breedersdb-attribution-author';
+const REPEAT_STORAGE_KEY = 'breedersdb-attribute-repeat-target';
 
 export interface AttributeStepsProps {
-  hasEntity: boolean;
+  entityId: number | null;
+  entityType: AttributableEntities;
   entityLoading: boolean;
   entityIcon: string;
 }
@@ -133,12 +150,11 @@ const { localStorage, sessionStorage } = useQuasar();
 // step 1
 const { queryArg: formId } = useQueryArg<number>({
   key: 'form',
-  defaultValue:
-    sessionStorage.getItem<number>('breedersdb-attribution-formId') ?? -1,
+  defaultValue: sessionStorage.getItem<number>(FORM_ID_STORAGE_KEY) ?? -1,
   replace: true,
   showDefaultInUrl: true,
 });
-watch(formId, (f) => sessionStorage.set('breedersdb-attribution-formId', f));
+watch(formId, (f) => sessionStorage.set(FORM_ID_STORAGE_KEY, f));
 
 const form = ref<AttributionForm | null>(null);
 
@@ -157,12 +173,11 @@ function completeStep1() {
 // step 2
 const { queryArg: author } = useQueryArg<string>({
   key: 'author',
-  defaultValue:
-    localStorage.getItem<string>('breedersdb-attribution-author') ?? '',
+  defaultValue: localStorage.getItem<string>(AUTHOR_STORAGE_KEY) ?? '',
   replace: true,
   showDefaultInUrl: true,
 });
-watch(author, (a) => localStorage.set('breedersdb-attribution-author', a));
+watch(author, (a) => localStorage.set(AUTHOR_STORAGE_KEY, a));
 
 const { queryArg: date } = useQueryArg({
   key: 'date',
@@ -173,12 +188,12 @@ const { queryArg: date } = useQueryArg({
 
 const { queryArg: repeat } = useQueryArg<number>({
   key: 'repeat',
-  defaultValue:
-    sessionStorage.getItem<number>('breedersdb-attribution-repeat') ?? 0,
+  defaultValue: sessionStorage.getItem<number>(REPEAT_STORAGE_KEY) ?? 0,
   replace: true,
   showDefaultInUrl: true,
 });
-watch(repeat, (r) => sessionStorage.set('breedersdb-attribution-repeat', r));
+watch(repeat, (r) => sessionStorage.set(REPEAT_STORAGE_KEY, r));
+const repeatInt = computed(() => parseInt(repeat.value.toString(), 10));
 
 const attributeMetaDataRef = ref<InstanceType<typeof AttributeMetaData> | null>(
   null,
@@ -197,10 +212,17 @@ function completeStep3() {
   emit('entityStepCompleted');
 }
 
+// step 4
+const repeatCount = useRepeatCounter({
+  formId: form.value?.id || -1,
+  entityId: props.entityId || -1,
+  entityType: props.entityType,
+});
+
 watch(
-  () => props.hasEntity,
+  () => props.entityId,
   () => {
-    if (props.hasEntity) {
+    if (props.entityId !== null) {
       step.value = 4;
     }
   },

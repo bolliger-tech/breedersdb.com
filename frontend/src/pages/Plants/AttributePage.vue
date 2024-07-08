@@ -4,7 +4,8 @@
     <AttributeSteps
       :entity-caption="entityCaption"
       :entity-loading="fetching"
-      :has-entity="!!plant"
+      :entity-id="plant?.id || null"
+      :entity-type="AttributableEntities.Plant"
       entity-icon="svguse:/icons/sprite.svg#tree"
       @entity-step-completed="() => plantSelectorRef?.onManualInput()"
     >
@@ -39,6 +40,7 @@ import PlantSelector from 'src/components/Plant/PlantSelector.vue';
 import PlantCard from 'src/components/Plant/PlantCard.vue';
 import { computed, ref } from 'vue';
 import { PlantFragment } from 'src/components/Plant/plantFragment';
+import { AttributableEntities } from 'src/components/Attribute/attributableEntities';
 
 const { t } = useI18n();
 

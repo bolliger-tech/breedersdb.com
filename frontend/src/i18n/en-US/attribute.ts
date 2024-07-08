@@ -17,4 +17,11 @@ export const attribute = {
   valueCount: '{count} attributions',
 
   noEntitySelected: 'No entity selected',
+
+  counter: {
+    description:
+      "During the last 24h, you've added {count} marks with this form to this {entity} (target {total}).",
+    reset: 'Reset counter',
+    title: 'Count',
+  },
 };

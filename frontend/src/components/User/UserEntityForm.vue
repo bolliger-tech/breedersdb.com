@@ -1,5 +1,5 @@
 <template>
-  <!-- TODO discuss how to validate email uniqueness -->
+  <!-- TODO validate email uniqueness -->
   <EntityInput
     :ref="(el: InputRef) => (refs.emailRef = el)"
     v-model="data.email as string"
@@ -11,6 +11,7 @@
     ]"
     type="email"
     autocomplete="off"
+    required
   />
   <EntitySelect
     :ref="(el: InputRef) => (refs.localeRef = el)"
@@ -40,7 +41,15 @@
     :label="t('users.fields.password')"
     type="password"
     autocomplete="off"
+    required
+    :rules="[
+      (val: string) =>
+        !!isValidPassword(val) || t('base.validation.invalidPassword'),
+    ]"
   />
+  <template v-else>
+    <UserButtonChangePassword :user-id="props.user.id" />
+  </template>
 </template>
 
 <script setup lang="ts">
@@ -59,6 +68,8 @@ import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { UserEditInput, UserInsertInput } from './UserModalEdit.vue';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import { isValidEmail } from 'src/utils/validationUtils';
+import UserButtonChangePassword from './UserButtonChangePassword.vue';
+import { isValidPassword } from 'src/utils/validationUtils';
 
 export interface UserEntityFormProps {
   user: UserInsertInput | UserEditInput;

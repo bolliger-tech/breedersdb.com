@@ -91,10 +91,10 @@ const orderBy = computed(() => {
   const column = pagination.value.sortBy;
 
   if (['rootstock', 'grafting', 'plant_row'].includes(column)) {
-    return [{ [column]: { name: order } }];
+    return { [column]: { name: order } };
   }
 
-  return [{ [column]: order }];
+  return { [column]: order };
 });
 
 const where = computed(() => {
@@ -135,7 +135,7 @@ const where = computed(() => {
 const variables = computed(() => ({
   limit: pagination.value.rowsPerPage,
   offset: (pagination.value.page - 1) * pagination.value.rowsPerPage,
-  orderBy: orderBy.value,
+  orderBy: [orderBy.value, { id: 'asc' }],
   where: where.value,
 }));
 

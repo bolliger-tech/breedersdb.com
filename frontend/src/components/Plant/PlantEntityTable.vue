@@ -24,10 +24,6 @@
         <td>{{ plant.distance_plant_row_start }}</td>
       </tr>
     </template>
-    <tr v-if="plant.date_labeled">
-      <th>{{ t('plants.fields.dateLabeled') }}</th>
-      <td>{{ localizeDate(plant.date_labeled) }}</td>
-    </tr>
     <tr v-if="plant.date_grafted">
       <th>{{ t('plants.fields.dateGrafted') }}</th>
       <td>{{ localizeDate(plant.date_grafted) }}</td>
@@ -40,6 +36,10 @@
       <th>{{ t('plants.fields.grafting') }}</th>
       <td>{{ plant.grafting?.name }}</td>
     </tr>
+    <tr v-if="plant.date_labeled">
+      <th>{{ t('plants.fields.dateLabeled') }}</th>
+      <td>{{ localizeDate(plant.date_labeled) }}</td>
+    </tr>
     <tr v-if="plant.date_planted">
       <th>{{ t('plants.fields.datePlanted') }}</th>
       <td>{{ localizeDate(plant.date_planted) }}</td>
@@ -48,16 +48,22 @@
       <th>{{ t('plants.fields.dateEliminated') }}</th>
       <td>{{ localizeDate(plant.date_eliminated) }}</td>
     </tr>
+    <tr v-if="plant.created">
+      <th>{{ t('entity.commonColumns.created') }}</th>
+      <td>{{ localizeDate(plant.created) }}</td>
+    </tr>
+    <tr v-if="plant.modified">
+      <th>{{ t('entity.commonColumns.modified') }}</th>
+      <td>{{ localizeDate(plant.modified) }}</td>
+    </tr>
+    <tr v-if="plant.note">
+      <td colspan="2" class="plant-entity-table__note">
+        <strong>{{ t('entity.commonColumns.note') }}</strong>
+        <br />
+        <span style="white-space: pre-line">{{ plant.note }}</span>
+      </td>
+    </tr>
   </table>
-  <div
-    v-if="plant.note"
-    class="plant-entity-table__note"
-    :class="{ 'plant-entity-table__note--dark': dark }"
-  >
-    <strong>{{ t('entity.commonColumns.note') }}</strong
-    ><br />
-    <span style="white-space: pre-line">{{ plant.note }}</span>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -78,9 +84,11 @@ const { t } = useI18n();
 </script>
 
 <style lang="scss" scoped>
+$border: 1px solid $grey-4;
+
 tr {
   white-space: nowrap;
-  border-bottom: 1px solid $grey-4;
+  border-bottom: $border;
 }
 tr:hover {
   background: rgba(0, 0, 0, 0.03);
@@ -92,20 +100,11 @@ tr:hover {
 .body--dark tr:hover {
   background: rgba(255, 255, 255, 0.07);
 }
-tr:last-child {
-  border-bottom: none;
+tr:first-child {
+  border-top: $border;
 }
 
-.plant-entity-table__note {
-  padding-top: 0.375em;
-  border-top: 1px solid $grey-4;
-}
-.plant-entity-table__note--dark,
-.body--dark .plant-entity-table__note {
-  border-top: 1px solid $grey-8;
-}
-
-.plant-entity-table--no-border :is(tr, .plant-entity-table__note) {
+.plant-entity-table--no-border tr {
   border-bottom: none;
   border-top: none;
 }
@@ -124,6 +123,12 @@ th:first-child {
   padding-left: v-bind(rowPaddingSide);
 }
 td:last-child {
+  padding-right: v-bind(rowPaddingSide);
+}
+
+.plant-entity-table__note {
+  text-align: left;
+  padding-left: v-bind(rowPaddingSide);
   padding-right: v-bind(rowPaddingSide);
 }
 

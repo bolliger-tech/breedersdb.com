@@ -15,8 +15,8 @@ export function filterSelectOptions<T>({
 }: {
   value: string;
   update: FilterSelectOptionsUpdateFn;
-  allOptions: Array<T>;
-  filteredOptions: Ref<Array<T>>;
+  allOptions: T[] | readonly T[];
+  filteredOptions: Ref<T[] | readonly T[]>;
   valueExtractorFn: (item: T) => string;
 }) {
   update(
@@ -28,8 +28,8 @@ export function filterSelectOptions<T>({
 
 function setFilteredOptions<T>(
   value: string,
-  allOptions: Array<T>,
-  filteredOptions: Ref<Array<T>>,
+  allOptions: T[] | readonly T[],
+  filteredOptions: Ref<T[] | readonly T[]>,
   valueExtractorFn: (item: T) => string,
 ) {
   if (value === '') {

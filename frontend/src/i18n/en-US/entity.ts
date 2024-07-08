@@ -2,8 +2,9 @@ export const entity = {
   commonColumns: {
     id: 'ID',
     name: 'Name',
-    note: 'Note',
+    note: 'Notes',
     created: 'Created',
+    modified: 'Last updated',
     displayName: 'Name',
     nameOverride: 'Common name',
     fullName: 'Breeding name',

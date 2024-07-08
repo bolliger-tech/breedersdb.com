@@ -6,7 +6,7 @@
     @click="confirm = true"
   />
 
-  <q-dialog v-model="confirm" persistent>
+  <q-dialog v-model="confirm">
     <q-card>
       <q-card-section class="row items-center">
         <q-avatar icon="warning" color="negative" text-color="white" />
@@ -27,7 +27,7 @@
           v-if="!error"
           flat
           :label="t('plants.eliminate')"
-          :loading="working"
+          :loading="fetching"
           color="negative"
           @click="eliminate"
         />
@@ -53,7 +53,11 @@ const { t } = useI18n();
 
 const confirm = ref(false);
 
-const { error, executeMutation: eliminatePlant } = useMutation(
+const {
+  error,
+  executeMutation: eliminatePlant,
+  fetching,
+} = useMutation(
   graphql(`
     mutation EliminatePlant($id: Int!) {
       update_plants_by_pk(
@@ -66,15 +70,9 @@ const { error, executeMutation: eliminatePlant } = useMutation(
   `),
 );
 
-const working = ref(false);
 function eliminate() {
-  working.value = true;
-  eliminatePlant({ id: props.plantId })
-    .then(() => {
-      confirm.value = !!error.value;
-    })
-    .finally(() => {
-      working.value = false;
-    });
+  eliminatePlant({ id: props.plantId }).then(() => {
+    confirm.value = !!error.value;
+  });
 }
 </script>

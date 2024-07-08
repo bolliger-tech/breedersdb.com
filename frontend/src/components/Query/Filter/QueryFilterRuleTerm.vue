@@ -33,7 +33,7 @@
       <template #no-option>
         <q-item>
           <q-item-section class="text-grey">
-            {{ t('filter.noResults') }}
+            {{ t('base.noResults') }}
           </q-item-section>
         </q-item>
       </template>

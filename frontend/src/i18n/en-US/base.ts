@@ -24,6 +24,19 @@ export const base = {
   close: 'Close',
   delete: 'Delete',
   edit: 'Edit',
+  new: 'New',
   save: 'Save',
   cancel: 'Cancel',
+  ok: 'OK',
+
+  error: 'Error',
+  required: 'Required',
+
+  validation: {
+    xIsRequired: '{x} is required',
+    invalidFields:
+      'Invalid form fields. Please check the form fields for errors and try again.',
+  },
+
+  noResults: 'No results',
 };

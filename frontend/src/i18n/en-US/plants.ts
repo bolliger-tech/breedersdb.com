@@ -6,14 +6,36 @@ export const plants = {
   fields: {
     labelId: 'Label ID',
     serialInPlantRow: 'Number in row',
-    distancePlantRowStart: 'Offset',
+    distancePlantRowStart: 'Distance to row start',
     dateGrafted: 'Date grafted',
     datePlanted: 'Date planted',
     dateEliminated: 'Date eliminated',
     dateLabeled: 'Date labeled',
-    group: 'Group',
+    plantGroup: 'Group',
+    plantRow: 'Row',
     grafting: 'Grafting',
     rootstock: 'Rootstock',
+  },
+
+  errors: {
+    labelId:
+      'Label ID can only be numbers (max 8 digits). If the plant was eliminated, the label ID must be prefixed with a #',
+    distancePlantRowStart: 'Distance to row start must be a positive number',
+    labelIdQueryError: 'Failed to check if label ID is unique',
+    labelIdNextFree:
+      'Label ID is already in use. Next free label ID is {labelId}',
+    labelIdNotUnique:
+      'Label ID is already in use. Next free label ID is unknown.',
+  },
+
+  hints: {
+    labelId:
+      'Required. Number (max 8 digits). Prefixed with a # if plant was eliminated',
+    distancePlantRowStart: 'Meters',
+    dateEliminatedTrue:
+      'Adding an elimination date will disable this plant and prefix the label id with a #',
+    dateEliminatedFalse:
+      'Removing the elimination date will enable this plant and remove the # prefix from the label id',
   },
 
   eliminate: 'Eliminate',

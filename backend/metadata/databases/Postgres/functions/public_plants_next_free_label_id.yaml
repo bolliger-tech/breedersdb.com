@@ -1,0 +1,5 @@
+function:
+  name: plants_next_free_label_id
+  schema: public
+permissions:
+  - role: user

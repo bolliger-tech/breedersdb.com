@@ -1,6 +1,7 @@
 <template>
   <article class="q-my-md q-pa-sm bg-black text-negative rounded-borders">
     <h3 class="q-mt-sm">GraphQL Error</h3>
+    <p>{{ error.message }}</p>
     <pre class="q-ma-none base-graphql-error__msg">{{
       JSON.stringify(error, null, 2)
     }}</pre>

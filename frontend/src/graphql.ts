@@ -7,6 +7,7 @@ export const graphql = initGraphQLTada<{
     date: string;
     float8: number;
     geography: GeographyPoint;
+    citext: string;
     // jsonb: Object;
     timestamptz: string;
     uuid: string;

@@ -4,7 +4,6 @@ export const users = {
   searchPlaceholder: 'Search by email',
 
   fields: {
-    id: 'ID',
     email: 'Email',
     locale: 'Locale',
     failedSigninAttempts: 'Failed Signin Attempts',

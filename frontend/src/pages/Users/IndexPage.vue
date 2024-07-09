@@ -59,8 +59,8 @@ const { queryArg: search } = useQueryArg<string>({
 });
 
 const { pagination } = usePagination({
-  sortBy: 'id',
-  descending: true,
+  sortBy: 'email',
+  descending: false,
   page: 1,
   rowsPerPage: 100,
   rowsNumber: 0,
@@ -70,7 +70,7 @@ const orderBy = computed(() => {
   const order = pagination.value.descending ? 'desc' : 'asc';
   const column = pagination.value.sortBy;
 
-  return [{ [column]: order }];
+  return [{ [column]: order }, { id: 'asc' }];
 });
 
 const where = computed(() => {
@@ -108,13 +108,6 @@ const usersCount = computed(
 type User = ResultOf<typeof query>['users'][0];
 
 const columns = [
-  {
-    name: 'id',
-    label: t('users.fields.id'),
-    align: 'left' as const,
-    field: 'id',
-    sortable: true,
-  },
   {
     name: 'email',
     label: t('users.fields.email'),
@@ -162,7 +155,7 @@ const columns = [
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 6),
+  defaultValue: columns.map((column) => column.name).slice(0, 4),
   replace: true,
 });
 

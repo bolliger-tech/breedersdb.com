@@ -5,6 +5,7 @@
     :error="error"
     :fetching="deleting"
     @delete="deleteUser"
+    @reset-errors="resetErrors"
   />
 </template>
 
@@ -23,6 +24,10 @@ const props = defineProps<UserButtonDeleteProps>();
 const emit = defineEmits<{
   deleted: [];
 }>();
+
+function resetErrors() {
+  error.value = undefined;
+}
 
 const {
   error,

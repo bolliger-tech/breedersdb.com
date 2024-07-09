@@ -39,7 +39,10 @@
     <q-card-actions align="between">
       <div>
         <slot name="action-left">
-          <EntityButtonDelete @delete="$emit('delete')" />
+          <EntityButtonDelete
+            @delete="$emit('delete')"
+            @reset-errors="$emit('resetErrors')"
+          />
         </slot>
       </div>
       <div>

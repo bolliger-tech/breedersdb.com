@@ -7,7 +7,7 @@
     @click="confirm = true"
   />
 
-  <q-dialog v-model="confirm">
+  <q-dialog v-model="confirm" @hide="$emit('resetErrors')">
     <q-card>
       <q-card-section class="row items-center">
         <q-avatar icon="warning" color="negative" text-color="white" />
@@ -61,5 +61,6 @@ const confirm = ref(false);
 
 defineEmits<{
   delete: [];
+  resetErrors: [];
 }>();
 </script>

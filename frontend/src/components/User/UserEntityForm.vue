@@ -1,7 +1,7 @@
 <template>
   <EntityInput
     :ref="(el: InputRef) => (refs.emailRef = el)"
-    v-model="data.email as string"
+    v-model="data.email"
     :label="t('users.fields.email')"
     :rules="[
       (val: string) => isValidEmail(val) || t('base.validation.invalidEmail'),

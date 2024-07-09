@@ -3,12 +3,16 @@ import { boot } from 'quasar/wrappers';
 import { createI18n } from 'vue-i18n';
 
 import { messages, datetimeFormats } from 'src/i18n';
-import { DEFAULT_LOCALE, getPersistedLocale } from 'src/composables/useI18n';
+import { getPersistedLocale } from 'src/composables/useI18n';
 
 export type MessageLanguages = keyof typeof messages;
+
+export const locales = Object.keys(messages) as MessageLanguages[];
+export const DEFAULT_LOCALE: Extract<MessageLanguages, 'en-US'> = 'en-US';
+
 // Type-define 'en-US' as the master schema for the resource
-export type MessageSchema = (typeof messages)['en-US'];
-export type DateTimeFormats = (typeof datetimeFormats)['en-US'];
+export type MessageSchema = (typeof messages)[typeof DEFAULT_LOCALE];
+export type DateTimeFormats = (typeof datetimeFormats)[typeof DEFAULT_LOCALE];
 
 // See https://vue-i18n.intlify.dev/guide/advanced/typescript.html#global-resource-schema-type-definition
 /* eslint-disable @typescript-eslint/no-empty-interface */

@@ -55,11 +55,11 @@
 
 <script setup lang="ts">
 import {
-  DEFAULT_LOCALE,
   LocaleOption,
   getLocaleOptions,
   useI18n,
 } from 'src/composables/useI18n';
+import { DEFAULT_LOCALE } from 'src/boot/i18n';
 import { VNodeRef, nextTick, ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import EntitySelect from '../Entity/Edit/EntitySelect.vue';

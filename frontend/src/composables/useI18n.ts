@@ -1,4 +1,8 @@
-import type { MessageSchema } from 'src/boot/i18n';
+import {
+  type MessageLanguages,
+  type MessageSchema,
+  locales,
+} from 'src/boot/i18n';
 import {
   useI18n as useVueI18n,
   type NamedValue,
@@ -6,16 +10,9 @@ import {
 } from 'vue-i18n';
 import { LocalStorage } from 'quasar';
 
-export enum Locales {
-  en_US = 'en-US',
-  de_CH = 'de-CH',
-}
-
-export type Locale = `${Locales}`;
-
-export const DEFAULT_LOCALE = Locales.en_US;
-
 const LOCAL_STORAGE_KEY = 'breedersdb-locale';
+
+export type Locale = MessageLanguages;
 
 export function getPersistedLocale(): Locale | undefined {
   try {
@@ -79,7 +76,7 @@ export type LocaleOption = {
   label: string;
 };
 export function getLocaleOptions(t: TFunc): LocaleOption[] {
-  return Object.values(Locales).map((locale) => ({
+  return locales.map((locale) => ({
     value: locale,
     label: t(`base.locales.${locale}`),
   }));

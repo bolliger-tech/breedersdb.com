@@ -226,10 +226,6 @@ begin
         raise exception 'The value does not match the validation rule.';
     end if;
 
-    if _data_type = 'DATE' and new.date_value !~ '^\d{4}-\d{2}-\d{2}$' then
-        raise exception 'The value must be a date.';
-    end if;
-
     if _data_type = 'PHOTO' and
        new.text_value !~ '^\w{64}\.(jpe?g|avif)$' then
         raise exception 'The photo''s filename must match /^\w{64}\.(jpe?g|avif)$/.';

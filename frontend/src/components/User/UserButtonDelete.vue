@@ -45,7 +45,6 @@ const {
 
 function deleteUser() {
   executeDeleteUser({ id: props.userId }).then((result) => {
-    // TODO discuss
     // in case no user is found (which shouldn't happen) we don't get an error
     // currently the error is not displayed as creating a
     // GraphQL error is cumbersome

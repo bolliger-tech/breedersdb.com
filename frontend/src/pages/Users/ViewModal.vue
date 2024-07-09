@@ -11,7 +11,7 @@
   >
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <EntityViewTable row-padding-side="16px">
+      <EntityViewTable>
         <EntityViewTableRow :label="t('users.fields.email')">
           {{ user.email }}
         </EntityViewTableRow>

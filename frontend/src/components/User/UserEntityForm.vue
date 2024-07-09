@@ -86,7 +86,7 @@ const emits = defineEmits<{
 const { t } = useI18n();
 
 const initialData = {
-  email: props.user.email as string,
+  email: props.user.email,
   locale: props.user.locale,
   password: null,
 };
@@ -143,8 +143,8 @@ async function isEmailUnique(newEmail: string) {
     console.error(result.error);
     return true;
   }
-  // @ts-expect-error id only availabe on add
-  const userId = props.user.id as number | undefined;
+  // id only availabe on edit
+  const userId = 'id' in props.user ? props.user.id : undefined;
   return (
     result.data?.value?.users.length === 0 ||
     result.data?.value?.users[0]?.id === userId

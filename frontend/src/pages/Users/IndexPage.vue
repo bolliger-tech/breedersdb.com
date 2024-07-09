@@ -1,7 +1,6 @@
 <template>
   <PageLayout>
     <EntityContainer
-      v-model:tab="subset"
       v-model:search="search"
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
@@ -56,12 +55,6 @@ const query = graphql(
 const { queryArg: search } = useQueryArg<string>({
   key: 's',
   defaultValue: '',
-  replace: true,
-});
-
-const { queryArg: subset } = useQueryArg<'all'>({
-  key: 'tab',
-  defaultValue: 'all',
   replace: true,
 });
 
@@ -158,22 +151,21 @@ const columns = [
     label: t('users.fields.lastSignin'),
     align: 'left' as const,
     field: (row: User) =>
-      row.last_signin ? d(row.last_signin as string, 'ymdHis') : null,
+      row.last_signin ? d(row.last_signin, 'ymdHis') : null,
     sortable: true,
   },
   {
     name: 'modified',
     label: t('entity.commonColumns.modified'),
     align: 'left' as const,
-    field: (row: User) =>
-      row.modified ? d(row.modified as string, 'ymdHis') : null,
+    field: (row: User) => (row.modified ? d(row.modified, 'ymdHis') : null),
     sortable: true,
   },
   {
     name: 'created',
     label: t('entity.commonColumns.created'),
     align: 'left' as const,
-    field: (row: User) => d(row.created as string, 'ymdHis'),
+    field: (row: User) => d(row.created, 'ymdHis'),
     sortable: true,
   },
 ];

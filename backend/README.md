@@ -28,7 +28,7 @@ GraphQL API for BreederDB, built with [Hasura](https://hasura.io/docs/latest).
    hasura metadata apply
    ```
 
-1. Visit [Hasura Console](http://localhost:8080/console) (admin secret in `.env`)
+1. Visit [Hasura Console](http://localhost/api/hasura/console) (admin secret in `.env`)
 
 1. Run the [cloud-function](../cloud-function/README.md) for authentication to work (not needed if you only run queries with the admin-secret).
 

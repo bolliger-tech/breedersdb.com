@@ -72,7 +72,8 @@ select_permissions:
         - integer_value
         - lot_id
         - modified
-        - note
+        - text_note
+        - photo_note
         - plant_group_id
         - plant_id
         - text_value

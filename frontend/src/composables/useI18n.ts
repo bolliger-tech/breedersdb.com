@@ -1,14 +1,11 @@
-import {
-  type MessageLanguages,
-  type MessageSchema,
-  locales,
-} from 'src/boot/i18n';
+import { type MessageSchema } from 'src/boot/i18n';
 import {
   useI18n as useVueI18n,
   type NamedValue,
   type TranslateOptions,
 } from 'vue-i18n';
 import { LocalStorage } from 'quasar';
+import { locales, type MessageLanguages } from 'src/i18n';
 
 const LOCAL_STORAGE_KEY = 'breedersdb-locale';
 

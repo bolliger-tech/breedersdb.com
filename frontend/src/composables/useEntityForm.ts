@@ -23,9 +23,9 @@ export function useEntityForm<T extends Record<string, unknown>>({
 
   async function validate() {
     const validated = await Promise.all(
-      Object.values(refs.value).map((ref) => ({
+      Object.values(refs.value).map(async (ref) => ({
         ref,
-        valid: ref?.validate?.() ?? true,
+        valid: (await ref?.validate?.()) ?? true,
       })),
     );
 

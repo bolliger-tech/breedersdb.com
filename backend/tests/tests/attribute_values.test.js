@@ -1,5 +1,5 @@
 import { test, expect, afterEach } from 'bun:test';
-import { post } from '../fetch';
+import { post, postOrFail } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
@@ -14,7 +14,8 @@ const insertMutation = /* GraphQL */ `
     $text_value: String
     $boolean_value: Boolean
     $date_value: date
-    $note: String
+    $text_note: String
+    $photo_note: String
     $exceptional_attribution: Boolean
   ) {
     insert_attribute_values_one(
@@ -33,7 +34,8 @@ const insertMutation = /* GraphQL */ `
         text_value: $text_value
         boolean_value: $boolean_value
         date_value: $date_value
-        note: $note
+        text_note: $text_note
+        photo_note: $photo_note
         exceptional_attribution: $exceptional_attribution
       }
     ) {
@@ -51,7 +53,8 @@ const insertMutation = /* GraphQL */ `
       text_value
       boolean_value
       date_value
-      note
+      text_note
+      photo_note
       exceptional_attribution
       offline_id
       created
@@ -89,7 +92,7 @@ const insertAttributionMutation = /* GraphQL */ `
 `;
 
 afterEach(async () => {
-  await post({
+  await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAllAttributeValues {
         delete_attribute_values(where: {}) {
@@ -119,7 +122,7 @@ afterEach(async () => {
 });
 
 test('insert', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -130,7 +133,7 @@ test('insert', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       attribute_name: 'Attribution Attribute 1',
@@ -138,7 +141,9 @@ test('insert', async () => {
       attribute_type: 'OBSERVATION',
       attribution_id: attribution.data.insert_attributions_one.id,
       text_value: 'Text Value 1',
-      note: 'Description 1',
+      text_note: 'Description 1',
+      photo_note:
+        'c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2.jpeg',
       exceptional_attribution: true,
     },
   });
@@ -155,7 +160,10 @@ test('insert', async () => {
   expect(resp.data.insert_attribute_values_one.text_value).toBe('Text Value 1');
   expect(resp.data.insert_attribute_values_one.boolean_value).toBeNull();
   expect(resp.data.insert_attribute_values_one.date_value).toBeNull();
-  expect(resp.data.insert_attribute_values_one.note).toBe('Description 1');
+  expect(resp.data.insert_attribute_values_one.text_note).toBe('Description 1');
+  expect(resp.data.insert_attribute_values_one.photo_note).toBe(
+    'c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2.jpeg',
+  );
   expect(resp.data.insert_attribute_values_one.exceptional_attribution).toBe(
     true,
   );
@@ -166,7 +174,7 @@ test('insert', async () => {
 });
 
 test('insert with offline data', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -177,7 +185,7 @@ test('insert with offline data', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: /* GraphQL */ `
       mutation InsertAttributeValue(
         $attribute_name: String
@@ -231,7 +239,7 @@ test('insert with offline data', async () => {
 });
 
 test('insert INTEGER valid low', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -242,7 +250,7 @@ test('insert INTEGER valid low', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -260,7 +268,7 @@ test('insert INTEGER valid low', async () => {
 });
 
 test('insert INTEGER valid high', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -271,7 +279,7 @@ test('insert INTEGER valid high', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -289,7 +297,7 @@ test('insert INTEGER valid high', async () => {
 });
 
 test('insert INTEGER too low', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -319,7 +327,7 @@ test('insert INTEGER too low', async () => {
 });
 
 test('insert INTEGER too high', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -349,7 +357,7 @@ test('insert INTEGER too high', async () => {
 });
 
 test('insert INTEGER invalid step', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -379,7 +387,7 @@ test('insert INTEGER invalid step', async () => {
 });
 
 test('insert INTEGER invalid value data type', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -398,18 +406,18 @@ test('insert INTEGER invalid value data type', async () => {
       attribute_name: 'Attribution Attribute 1',
       attribute_type: 'OBSERVATION',
       attribute_data_type: 'INTEGER',
-      attribute_validation_rule: { min: 0, max: 10, step: 2 },
-      integer_value: 1.0,
+      attribute_validation_rule: { min: 1, max: 9, step: 1 },
+      integer_value: '1.0',
     },
   });
 
-  expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'The value does not match the validation rule.',
+  expect(resp.errors[0].message).toMatch(
+    'invalid input syntax for type integer',
   );
 });
 
 test('insert INTEGER wrong column', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -439,7 +447,7 @@ test('insert INTEGER wrong column', async () => {
 });
 
 test('insert FLOAT valid low', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -450,7 +458,7 @@ test('insert FLOAT valid low', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -468,7 +476,7 @@ test('insert FLOAT valid low', async () => {
 });
 
 test('insert FLOAT valid high', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -479,7 +487,7 @@ test('insert FLOAT valid high', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -497,7 +505,7 @@ test('insert FLOAT valid high', async () => {
 });
 
 test('insert FLOAT too low', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -527,7 +535,7 @@ test('insert FLOAT too low', async () => {
 });
 
 test('insert FLOAT too high', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -557,7 +565,7 @@ test('insert FLOAT too high', async () => {
 });
 
 test('insert FLOAT invalid value data type', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -587,7 +595,7 @@ test('insert FLOAT invalid value data type', async () => {
 });
 
 test('insert FLOAT wrong column', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -617,7 +625,7 @@ test('insert FLOAT wrong column', async () => {
 });
 
 test('insert TEXT valid', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -628,7 +636,7 @@ test('insert TEXT valid', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -645,7 +653,7 @@ test('insert TEXT valid', async () => {
 });
 
 test('insert TEXT too long', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -674,7 +682,7 @@ test('insert TEXT too long', async () => {
 });
 
 test('insert TEXT empty', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -703,7 +711,7 @@ test('insert TEXT empty', async () => {
 });
 
 test('insert TEXT wrong column', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -732,7 +740,7 @@ test('insert TEXT wrong column', async () => {
 });
 
 test('insert BOOLEAN valid', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -743,7 +751,7 @@ test('insert BOOLEAN valid', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -760,7 +768,7 @@ test('insert BOOLEAN valid', async () => {
 });
 
 test('insert BOOLEAN invalid value data type', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -789,7 +797,7 @@ test('insert BOOLEAN invalid value data type', async () => {
 });
 
 test('insert BOOLEAN wrong column', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -818,7 +826,7 @@ test('insert BOOLEAN wrong column', async () => {
 });
 
 test('insert DATE valid', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -829,7 +837,7 @@ test('insert DATE valid', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -846,7 +854,7 @@ test('insert DATE valid', async () => {
 });
 
 test('insert DATE out of range date', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -873,7 +881,7 @@ test('insert DATE out of range date', async () => {
 });
 
 test('insert DATE invalid date format', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -900,7 +908,7 @@ test('insert DATE invalid date format', async () => {
 });
 
 test('insert DATE timestamp', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -911,7 +919,7 @@ test('insert DATE timestamp', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -928,7 +936,7 @@ test('insert DATE timestamp', async () => {
 });
 
 test('insert DATE invalid value data type', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -955,7 +963,7 @@ test('insert DATE invalid value data type', async () => {
 });
 
 test('insert DATE wrong column', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -984,7 +992,7 @@ test('insert DATE wrong column', async () => {
 });
 
 test('insert PHOTO jpg', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -995,7 +1003,7 @@ test('insert PHOTO jpg', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -1014,7 +1022,7 @@ test('insert PHOTO jpg', async () => {
 });
 
 test('insert PHOTO jpeg', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -1025,7 +1033,7 @@ test('insert PHOTO jpeg', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -1043,8 +1051,8 @@ test('insert PHOTO jpeg', async () => {
   );
 });
 
-test('insert PHOTO avif', async () => {
-  const attribution = await post({
+test('insert PHOTO long file name jpeg', async () => {
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -1055,7 +1063,38 @@ test('insert PHOTO avif', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'PHOTO',
+      text_value:
+        'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpeg',
+    },
+  });
+
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.text_value).toBe(
+    'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpeg',
+  );
+});
+
+test('insert PHOTO avif', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -1074,7 +1113,7 @@ test('insert PHOTO avif', async () => {
 });
 
 test('insert PHOTO png invalid', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -1098,12 +1137,12 @@ test('insert PHOTO png invalid', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    "The photo's filename must match /^\\w{32}\\.(jpe?g|avif)$/.",
+    "The photo's filename must match /^\\w{64}\\.(jpe?g|avif)$/.",
   );
 });
 
 test('insert PHOTO name invalid', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -1127,12 +1166,12 @@ test('insert PHOTO name invalid', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    "The photo's filename must match /^\\w{32}\\.(jpe?g|avif)$/.",
+    "The photo's filename must match /^\\w{64}\\.(jpe?g|avif)$/.",
   );
 });
 
 test('insert PHOTO empty', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -1161,7 +1200,7 @@ test('insert PHOTO empty', async () => {
 });
 
 test('insert PHOTO wrong column', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -1190,7 +1229,7 @@ test('insert PHOTO wrong column', async () => {
 });
 
 test('modified', async () => {
-  const attribution = await post({
+  const attribution = await postOrFail({
     query: insertAttributionMutation,
     variables: {
       author: 'Attribution Author',
@@ -1201,7 +1240,7 @@ test('modified', async () => {
     },
   });
 
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       exceptional_attribution: false,
@@ -1213,7 +1252,7 @@ test('modified', async () => {
     },
   });
 
-  const updated = await post({
+  const updated = await postOrFail({
     query: /* GraphQL */ `
       mutation UpdateAttribute($id: Int!, $text_value: String) {
         update_attribute_values_by_pk(
@@ -1234,5 +1273,428 @@ test('modified', async () => {
 
   expect(updated.data.update_attribute_values_by_pk.modified).toMatch(
     iso8601dateRegex,
+  );
+});
+
+test('insert photo_note jpg', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'PHOTO',
+      text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpg',
+      photo_note:
+        'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpg',
+    },
+  });
+
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.photo_note).toBe(
+    'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpg',
+  );
+});
+
+test('insert photo_note jpeg', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'PHOTO',
+      text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpg',
+      photo_note:
+        'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpeg',
+    },
+  });
+
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.photo_note).toBe(
+    'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpeg',
+  );
+});
+
+test('insert photo_note avif', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'PHOTO',
+      text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpg',
+      photo_note:
+        'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.avif',
+    },
+  });
+
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.photo_note).toBe(
+    'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.avif',
+  );
+});
+
+test('insert photo_note png invalid', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'PHOTO',
+      text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpg',
+      photo_note:
+        'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.png',
+    },
+  });
+
+  expect(resp.errors[0].message).toBe(
+    'Check constraint violation. new row for relation "attribute_values" violates check constraint "attribute_values_photo_note_check"',
+  );
+});
+
+test('insert photo_note name invalid', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'PHOTO',
+      text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpg',
+      photo_note: 'b51fd.jpg',
+    },
+  });
+
+  expect(resp.errors[0].message).toBe(
+    'Check constraint violation. new row for relation "attribute_values" violates check constraint "attribute_values_photo_note_check"',
+  );
+});
+
+test('insert photo_note empty', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'PHOTO',
+      text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpg',
+      photo_note: '',
+    },
+  });
+
+  expect(resp.errors[0].message).toBe(
+    'Check constraint violation. new row for relation "attribute_values" violates check constraint "attribute_values_photo_note_check"',
+  );
+});
+
+test('insert photo_note null', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'PHOTO',
+      text_value: 'b51fd56a7e0528c5c35f2669750e2c65.jpg',
+      photo_note: null,
+    },
+  });
+
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+});
+
+test('insert RATING valid low', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'RATING',
+      attribute_validation_rule: { min: 0, max: 9, step: 1 },
+      integer_value: 0,
+    },
+  });
+
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.integer_value).toBe(0);
+});
+
+test('insert RATING valid high', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'RATING',
+      attribute_validation_rule: { min: 1, max: 9, step: 1 },
+      integer_value: 9,
+    },
+  });
+
+  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribute_values_one.integer_value).toBe(9);
+});
+
+test('insert RATING too low', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'RATING',
+      attribute_validation_rule: { min: 1, max: 9, step: 1 },
+      integer_value: 0,
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The value does not match the validation rule.',
+  );
+});
+
+test('insert RATING too high', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'RATING',
+      attribute_validation_rule: { min: 1, max: 9, step: 1 },
+      integer_value: 10,
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The value does not match the validation rule.',
+  );
+});
+
+test('insert RATING invalid step', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'RATING',
+      attribute_validation_rule: { min: 0, max: 9, step: 2 },
+      integer_value: 1,
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The step value must be 1.',
+  );
+});
+
+test('insert RATING invalid value data type', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'RATING',
+      attribute_validation_rule: { min: 1, max: 9, step: 1 },
+      integer_value: '1.0',
+    },
+  });
+
+  expect(resp.errors[0].message).toMatch(
+    'invalid input syntax for type integer',
+  );
+});
+
+test('insert RATING wrong column', async () => {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'RATING',
+      attribute_validation_rule: { min: 0, max: 9, step: 1 },
+      float_value: 1,
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The value type does not match the attribute type.',
   );
 });

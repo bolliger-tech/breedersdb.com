@@ -17,7 +17,8 @@ const attributionsViewFields = /* GraphQL */ `
       id
     }
     data_type
-    note
+    text_note
+    photo_note
     lot {
       id
       display_name
@@ -230,7 +231,8 @@ const insertAttributeValue = /* GraphQL */ `
     $text_value: String
     $boolean_value: Boolean
     $date_value: date
-    $note: String
+    $text_note: String
+    $photo_note: String
     $exceptional_attribution: Boolean = false
   ) {
     insert_attribute_values_one(
@@ -242,7 +244,8 @@ const insertAttributeValue = /* GraphQL */ `
         text_value: $text_value
         boolean_value: $boolean_value
         date_value: $date_value
-        note: $note
+        text_note: $text_note
+        photo_note: $photo_note
         exceptional_attribution: $exceptional_attribution
       }
     ) {
@@ -328,7 +331,8 @@ async function insertAttributeValueWithAssociatedData({
   text_value = 'Text 1',
   boolean_value = true,
   date_value = '2021-01-01',
-  note = 'Note 1',
+  text_note = 'Note 1',
+  photo_note = 'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpeg',
   exceptional_attribution = false,
 }) {
   const objects =
@@ -420,7 +424,8 @@ async function insertAttributeValueWithAssociatedData({
       text_value: attribute_data_type === 'TEXT' ? text_value : null,
       boolean_value: attribute_data_type === 'BOOLEAN' ? boolean_value : null,
       date_value: attribute_data_type === 'DATE' ? date_value : null,
-      note,
+      text_note,
+      photo_note,
       exceptional_attribution,
     },
   });
@@ -463,7 +468,9 @@ describe('non aggregated values are correct', async () => {
         geo_location: { type: 'Point', coordinates: [1, 2] },
         geo_location_accuracy: 1,
         integer_value: 42,
-        note: 'Note 1',
+        text_note: 'Note 1',
+        photo_note:
+          'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpeg',
         exceptional_attribution: true,
       });
 
@@ -478,7 +485,10 @@ describe('non aggregated values are correct', async () => {
     expect(data.attributions_view[0].attribute_name).toBe('Attribute 1');
     expect(data.attributions_view[0].attribute.id).toBe(attribute_id);
     expect(data.attributions_view[0].data_type).toBe('INTEGER');
-    expect(data.attributions_view[0].note).toBe('Note 1');
+    expect(data.attributions_view[0].text_note).toBe('Note 1');
+    expect(data.attributions_view[0].photo_note).toBe(
+      'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpeg',
+    );
     expect(data.attributions_view[0].geo_location.coordinates).toEqual([1, 2]);
     expect(data.attributions_view[0].geo_location_accuracy).toBe(1);
     expect(data.attributions_view[0].exceptional_attribution).toBe(true);

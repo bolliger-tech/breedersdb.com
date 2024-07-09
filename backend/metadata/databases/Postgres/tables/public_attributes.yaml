@@ -28,25 +28,29 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - data_type
-        - disabled
         - attribute_type
-        - name
+        - data_type
+        - default_value
         - description
+        - disabled
+        - legend
+        - name
         - validation_rule
     comment: ""
 select_permissions:
   - role: user
     permission:
       columns:
+        - attribute_type
         - created
         - data_type
+        - default_value
+        - description
         - disabled
         - id
-        - attribute_type
+        - legend
         - modified
         - name
-        - description
         - validation_rule
       filter: {}
       allow_aggregations: true
@@ -55,11 +59,13 @@ update_permissions:
   - role: user
     permission:
       columns:
-        - data_type
-        - disabled
         - attribute_type
-        - name
+        - data_type
+        - default_value
         - description
+        - disabled
+        - legend
+        - name
         - validation_rule
       filter: {}
       check: {}

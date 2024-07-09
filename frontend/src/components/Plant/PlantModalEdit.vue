@@ -36,12 +36,12 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
 import PlantEntityForm from 'src/components/Plant/PlantEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useRoute, useRouter } from 'vue-router';
 import {
   closeModalSymbol,
   makeModalPersistentSymbol,
 } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
+import { useCancel } from 'src/composables/useCancel';
 
 export type PlantEditInput = PlantFragment;
 export type PlantInsertInput = Omit<
@@ -62,16 +62,7 @@ export interface PlantModalEditProps {
 
 const props = defineProps<PlantModalEditProps>();
 
-const router = useRouter();
-const route = useRoute();
-function cancel() {
-  const canGoBack = !!router.options.history.state.back;
-  if (canGoBack) {
-    router.back();
-  } else {
-    router.push({ path: '/plants', query: route.query });
-  }
-}
+const { cancel } = useCancel({ path: '/plants' });
 
 const validationError = ref<string | null>(null);
 const closeModal = useInjectOrThrow(closeModalSymbol);

@@ -45,6 +45,7 @@ import {
 } from 'src/components/Entity/modalProvideSymbols';
 import { userReexecuteQuerySymbol } from 'src/pages/Users/userProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
+import { useCancel } from 'src/composables/useCancel';
 
 export type UserEditInput = Omit<
   UserFragment,
@@ -62,14 +63,7 @@ const props = defineProps<UserModalEditProps>();
 
 const router = useRouter();
 const route = useRoute();
-function cancel() {
-  const canGoBack = !!router.options.history.state.back;
-  if (canGoBack) {
-    router.back();
-  } else {
-    router.push({ path: '/users', query: route.query });
-  }
-}
+const { cancel } = useCancel({ path: '/users' });
 
 const validationError = ref<string | null>(null);
 const closeModal = useInjectOrThrow(closeModalSymbol);

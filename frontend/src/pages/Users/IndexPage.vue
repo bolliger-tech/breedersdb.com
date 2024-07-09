@@ -10,9 +10,9 @@
       :rows="data?.users || []"
       :loading="fetching"
       :all-columns="columns"
-      list-entities-path="/more/users"
-      add-entity-path="/more/users/new"
-      :view-entity-path-getter="(id) => `/more/users/${id}`"
+      list-entities-path="/users"
+      add-entity-path="/users/new"
+      :view-entity-path-getter="(id) => `/users/${id}`"
     />
   </PageLayout>
   <router-view name="modal" />

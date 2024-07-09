@@ -51,7 +51,7 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
-        path: 'more/users',
+        path: 'users',
         children: [
           {
             path: '',

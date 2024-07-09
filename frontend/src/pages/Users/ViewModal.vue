@@ -40,9 +40,7 @@
     <template #action-left>
       <UserButtonDelete
         :user-id="user.id"
-        @deleted="
-          () => router.push({ path: '/more/users', query: route.query })
-        "
+        @deleted="() => router.push({ path: '/users', query: route.query })"
       />
     </template>
   </EntityModalContent>
@@ -94,7 +92,7 @@ const route = useRoute();
 const router = useRouter();
 function edit() {
   router.push({
-    path: `/more/users/${props.entityId}/edit`,
+    path: `/users/${props.entityId}/edit`,
     query: route.query,
   });
 }

@@ -125,7 +125,7 @@ async function changePassword() {
   }).then(() => {
     if (props.userId === me.value?.id) {
       // trigger signin
-      router.push({ path: '/more/users' });
+      router.push({ path: '/users' });
       return;
     }
     open.value = false;

@@ -24,9 +24,7 @@
       <UserButtonDelete
         v-if="'id' in user"
         :user-id="user.id"
-        @deleted="
-          () => router.push({ path: '/more/users', query: route.query })
-        "
+        @deleted="() => router.push({ path: '/users', query: route.query })"
       />
       <div v-else></div>
     </template>

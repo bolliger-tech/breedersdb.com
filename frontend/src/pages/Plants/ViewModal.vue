@@ -5,17 +5,22 @@
 
   <EntityModalContent v-else-if="plant" @edit="edit">
     <template #title>
-      <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
-      <div class="q-ma-sm">
-        <h2 class="q-ma-none">
-          <PlantLabelId :label-id="plant.label_id" />
-        </h2>
-        <EntityName
-          :plant-group="plant.plant_group"
-          :cultivar="plant.plant_group?.cultivar"
-          :lot="plant.plant_group?.cultivar.lot"
-          :crossing="plant.plant_group?.cultivar.lot.crossing"
-        />
+      <div class="row items-center no-wrap">
+        <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
+        <div
+          class="q-ma-sm"
+          style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
+        >
+          <h2 class="q-ma-none">
+            <PlantLabelId :label-id="plant.label_id" />
+          </h2>
+          <EntityName
+            :plant-group="plant.plant_group"
+            :cultivar="plant.plant_group?.cultivar"
+            :lot="plant.plant_group?.cultivar.lot"
+            :crossing="plant.plant_group?.cultivar.lot.crossing"
+          />
+        </div>
       </div>
     </template>
 

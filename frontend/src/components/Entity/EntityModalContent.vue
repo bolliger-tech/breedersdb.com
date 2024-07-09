@@ -1,7 +1,7 @@
 <template>
   <q-card style="width: clamp(310px, 90vw, 1000px); max-width: unset">
     <q-card-section class="row items-center q-py-sm">
-      <div style="max-width: calc(100% - 34px)">
+      <div style="width: calc(100% - 34px)">
         <slot name="title">
           <div class="row items-center no-wrap">
             <BaseSpriteIcon
@@ -25,7 +25,6 @@
           </div>
         </slot>
       </div>
-      <q-space />
       <q-btn v-close-popup icon="close" flat round dense />
     </q-card-section>
 

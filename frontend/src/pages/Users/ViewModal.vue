@@ -55,7 +55,6 @@ import UserButtonDelete from 'src/components/User/UserButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
-import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { computed } from 'vue';
 import { userFragment } from 'src/components/User/userFragment';
 import { useI18n, Locale } from 'src/composables/useI18n';

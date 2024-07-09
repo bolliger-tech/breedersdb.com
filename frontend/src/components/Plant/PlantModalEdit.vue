@@ -42,7 +42,6 @@ import {
   makeModalPersistentSymbol,
 } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 
 export type PlantEditInput = PlantFragment;
 export type PlantInsertInput = Omit<

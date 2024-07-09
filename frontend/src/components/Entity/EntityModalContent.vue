@@ -39,7 +39,7 @@
     <q-card-actions align="between">
       <div>
         <slot name="action-left">
-          <EntityButtonDelete @delete="() => $emit('delete')" />
+          <EntityButtonDelete @delete="$emit('delete')" />
         </slot>
       </div>
       <div>
@@ -49,7 +49,7 @@
               flat
               :label="t('base.edit')"
               color="primary"
-              @click="() => $emit('edit')"
+              @click="$emit('edit')"
             />
             <q-btn
               v-close-popup
@@ -63,16 +63,16 @@
               flat
               :label="t('base.cancel')"
               color="primary"
-              @click="() => $emit('cancel')"
+              @click="$emit('cancel')"
             />
             <q-btn
               flat
               :label="t('base.save')"
               color="primary"
               :loading="loading"
-              @click="() => $emit('save')"
-              @mouseleave="() => $emit('resetErrors')"
-              @focusout="() => $emit('resetErrors')"
+              @click="$emit('save')"
+              @mouseleave="$emit('resetErrors')"
+              @focusout="$emit('resetErrors')"
             />
             <q-tooltip
               :model-value="!!saveError || !!validationError"

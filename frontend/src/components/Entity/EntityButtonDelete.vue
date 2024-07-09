@@ -32,7 +32,7 @@
           :label="t('base.delete')"
           :loading="fetching"
           color="negative"
-          @click="() => $emit('delete')"
+          @click="$emit('delete')"
         />
       </q-card-actions>
     </q-card>

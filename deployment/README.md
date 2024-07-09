@@ -3,10 +3,9 @@
 ## Set envs
 
 ```bash
+cat README.md | grep -E '^export ' > env.sh
 . ./env.sh
 ```
-
-Note: to extract all variables, run: `cat README.md | grep -E '^export '`
 
 ## Create Project
 

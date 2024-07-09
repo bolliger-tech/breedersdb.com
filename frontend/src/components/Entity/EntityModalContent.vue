@@ -29,12 +29,6 @@
       </div>
       <div>
         <slot name="action-right">
-          <q-btn
-            flat
-            :label="t('base.edit')"
-            color="primary"
-            @click="() => $emit('edit')"
-          />
           <q-btn v-close-popup flat :label="t('base.close')" color="primary" />
         </slot>
       </div>
@@ -58,7 +52,6 @@ defineSlots<{
 }>();
 defineEmits<{
   delete: [];
-  edit: [];
 }>();
 
 const { t } = useI18n();

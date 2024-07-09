@@ -16,12 +16,13 @@
       {
         "name": "@0no-co/graphqlsp",
         "schema": {
-          "url": "http://localhost:8080/v1/graphql",
+          "url": "http://localhost/api/hasura/v1/graphql",
           "headers": {
             // see ../backend/.env
             // never use the production secret here
             // this is only for development
-            "x-hasura-admin-secret": "changeForProduction"
+            "x-hasura-admin-secret": "changeForProduction",
+            "x-hasura-role": "user"
           }
         },
         "tadaOutputLocation": "./src/graphql-env.d.ts",

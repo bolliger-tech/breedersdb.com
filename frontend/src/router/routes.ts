@@ -34,7 +34,7 @@ const routes: RouteRecordRaw[] = [
               },
               {
                 path: 'new',
-                component: () => import('pages/Plants/EditModal.vue'),
+                component: () => import('pages/Plants/AddModal.vue'),
                 props: { entityId: 'new' },
               },
             ],

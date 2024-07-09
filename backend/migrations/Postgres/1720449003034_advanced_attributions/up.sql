@@ -1,10 +1,13 @@
-alter table attribute_values
-    rename column note to text_note;
-alter table attribute_values
-    add column photo_note varchar(70) check (photo_note ~ '^\w{64}\.(jpe?g|avif)$');
+-----------------------
+-- attribute_data_types
+-----------------------
 
 insert into attribute_data_types (enum)
 values ('RATING');
+
+-------------
+-- attributes
+-------------
 
 alter table attributes
     add column legend jsonb;
@@ -29,7 +32,7 @@ begin
         not new.validation_rule ? 'min' or
         not new.validation_rule ? 'max' or
         not new.validation_rule ? 'step') then
-        raise exception 'For INTEGER, RATING and FLOAT the validation rule must contain min, max and step keys with integer values.';
+        raise exception 'For INTEGER, RATING and FLOAT the validation rule must contain min, max and step keys with number values.';
     end if;
     if new.data_type in ('INTEGER', 'RATING') and
        (new.validation_rule ->> 'min' !~ '^-?\d+$' or
@@ -56,7 +59,7 @@ begin
                            end if;
                            if (new.validation_rule ->> 'max')::bigint < 0 or
                               (new.validation_rule ->> 'max')::bigint > 9 then
-                               raise exception 'The maximum value must be between -2147483648 and 2147483647.';
+                               raise exception 'The maximum value must be between 0 and 9.';
                            end if;
                            if (new.validation_rule ->> 'step')::bigint != 1 then
                                raise exception 'The step value must be 1.';
@@ -102,7 +105,7 @@ begin
         if jsonb_array_length(new.legend) != rating_steps then
             raise exception 'The legend must have % items.', rating_steps;
         end if;
-        for i in 0..9
+        for i in 0..(jsonb_array_length(new.legend) - 1)
             loop
                 if not jsonb_typeof(new.legend -> i) = 'string' then
                     raise exception 'The legend must contain only strings.';
@@ -133,29 +136,29 @@ begin
     end if;
 
     -- the default value must be of the same data type as the attribute
-    if new.data_type in ('INTEGER', 'RATING') and not new.default_value !~ '^-?\d+$' then
+    if new.data_type in ('INTEGER', 'RATING') and new.default_value::text !~ '^-?\d+$' then
         raise exception 'The default value must be an integer.';
     end if;
 
-    if new.data_type = 'FLOAT' and new.default_value !~ '^-?\d+(\.\d+)?$' then
+    if new.data_type = 'FLOAT' and new.default_value::text !~ '^-?\d+(\.\d+)?$' then
         raise exception 'The default value must be a number.';
     end if;
 
     if new.data_type in ('INTEGER', 'RATING') and
-       (new.default_value < (new.validation_rule ->> 'min')::int or
-        new.default_value > (new.validation_rule ->> 'max')::int or
-        (new.default_value - (new.validation_rule ->> 'min')::int) % (new.validation_rule ->> 'step')::int <> 0) then
+       (new.default_value::text::int < (new.validation_rule ->> 'min')::int or
+        new.default_value::text::int > (new.validation_rule ->> 'max')::int or
+        (new.default_value::text::int - (new.validation_rule ->> 'min')::int) % (new.validation_rule ->> 'step')::int <> 0) then
         raise exception 'The default value does not match the validation rule.';
     end if;
 
     if new.data_type = ('FLOAT') and
-       (new.default_value < (new.validation_rule ->> 'min')::float or
-        new.default_value > (new.validation_rule ->> 'max')::float) then
+       (new.default_value::text::float < (new.validation_rule ->> 'min')::float or
+        new.default_value::text::float > (new.validation_rule ->> 'max')::float) then
         -- don't check step for floats as there is no fmod in postgres
         raise exception 'The default value does not match the validation rule.';
     end if;
 
-    if new.data_type = 'DATE' and new.default_value !~ '^\d{4}-\d{2}-\d{2}$' then
+    if new.data_type = 'DATE' and not isfinite(new.default_value::text::date) then
         raise exception 'The default value must be a date.';
     end if;
 
@@ -173,8 +176,23 @@ create trigger check_default_value
     before insert or update of data_type, default_value, validation_rule
     on attributes
     for each row
-execute function check_legend();
+execute function check_default_value();
 
+-------------------
+-- attribute_values
+-------------------
+
+alter table attribute_values
+    rename column note to text_note;
+alter table attribute_values
+    add column photo_note varchar(70) check (photo_note ~ '^\w{64}\.(jpe?g|avif)$');
+
+drop trigger if exists trim_attribute_values on attribute_values;
+create trigger trim_attribute_values
+    before insert or update of text_value, text_note, photo_note
+    on attribute_values
+    for each row
+execute function trim_strings('text_value', 'text_note', 'photo_note');
 
 -- function for trigger created in backend/migrations/Postgres/1710156170932_init/up.sql
 create or replace function sanitize_and_validate_attribute_value() returns trigger as
@@ -227,7 +245,8 @@ begin
     end if;
 
     if _data_type = 'PHOTO' and
-       new.text_value !~ '^\w{64}\.(jpe?g|avif)$' then
+        -- the legacy photos have a 32 character filename, the new ones have 64
+       new.text_value !~ '^(\w{32}|\w{64})\.(jpe?g|avif)$' then
         raise exception 'The photo''s filename must match /^\w{64}\.(jpe?g|avif)$/.';
     end if;
 
@@ -235,6 +254,9 @@ begin
 end;
 $$ language plpgsql;
 
+--------------------
+-- attributions_view
+--------------------
 
 drop materialized view if exists attributions_view;
 create materialized view attributions_view as

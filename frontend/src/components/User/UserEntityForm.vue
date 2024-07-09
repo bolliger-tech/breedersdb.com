@@ -4,9 +4,9 @@
     v-model="data.email"
     :label="t('users.fields.email')"
     :rules="[
-      (val: string) => isValidEmail(val) || t('base.validation.invalidEmail'),
+      (val: string) => isValidEmail(val) || t('users.validation.invalidEmail'),
       async (val: string) =>
-        (await isEmailUnique(val)) || t('base.validation.emailNotUnique'),
+        (await isEmailUnique(val)) || t('users.validation.emailNotUnique'),
     ]"
     type="email"
     autocomplete="off"
@@ -45,7 +45,7 @@
     required
     :rules="[
       (val: string) =>
-        !!isValidPassword(val) || t('base.validation.invalidPassword'),
+        !!isValidPassword(val) || t('users.validation.invalidPassword'),
     ]"
   />
   <template v-else>

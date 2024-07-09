@@ -36,11 +36,6 @@ export const base = {
     xIsRequired: '{x} is required',
     invalidFields:
       'Invalid form fields. Please check the form fields for errors and try again.',
-    invalidEmail: 'Invalid email address',
-    invalidPassword:
-      'Make the password longer or more complex. (8 characters if: uppercase+lowercase+number+special character, 12 characters if: uppercase+lowercase+number, 32 characters otherwise)',
-    emailNotUnique:
-      'This email address is already in use, please choose another one',
   },
 
   noResults: 'No results',

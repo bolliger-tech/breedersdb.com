@@ -27,7 +27,7 @@
         autocomplete="new-password"
         :rules="[
           (val: string) =>
-            !!isValidPassword(val) || t('base.validation.invalidPassword'),
+            !!isValidPassword(val) || t('users.validation.invalidPassword'),
         ]"
       />
 

@@ -3,16 +3,12 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <EntityModalContent v-else-if="user" @edit="edit">
-    <template #title>
-      <BaseSpriteIcon name="user" color="grey-7" size="50px" />
-      <div class="q-ma-sm">
-        <h2 class="q-ma-none">
-          {{ user.email }}
-        </h2>
-      </div>
-    </template>
-
+  <EntityModalContent
+    v-else-if="user"
+    sprite-icon="user"
+    :title="user.email"
+    @edit="edit"
+  >
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <EntityViewTable row-padding-side="16px">
@@ -57,7 +53,6 @@ import UserButtonDelete from 'src/components/User/UserButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
-import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { computed } from 'vue';
 import { userFragment } from 'src/components/User/userFragment';
 import { useI18n, Locale } from 'src/composables/useI18n';

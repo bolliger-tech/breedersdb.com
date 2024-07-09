@@ -3,18 +3,13 @@
     :loading="savingEdit || savingInsert"
     :save-error="saveError"
     :validation-error="validationError"
+    sprite-icon="tree"
+    :title="title"
+    :subtitle="t('plants.title', 1)"
     @cancel="cancel"
     @save="save"
     @reset-errors="resetErrors"
   >
-    <template #title>
-      <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
-      <div class="q-ma-sm">
-        <h2 class="q-ma-none">{{ title }}</h2>
-        <span>{{ t('plants.title', 1) }}</span>
-      </div>
-    </template>
-
     <template #default>
       <PlantEntityForm ref="formRef" :plant="plant" @change="onFormChange" />
     </template>
@@ -47,7 +42,6 @@ import {
   makeModalPersistentSymbol,
 } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 
 export type PlantEditInput = PlantFragment;
 export type PlantInsertInput = Omit<

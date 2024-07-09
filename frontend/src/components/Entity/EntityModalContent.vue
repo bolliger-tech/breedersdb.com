@@ -1,10 +1,30 @@
 <template>
   <q-card style="width: clamp(310px, 90vw, 1000px); max-width: unset">
     <q-card-section class="row items-center q-py-sm">
-      <slot name="title"
-        ><h4 class="q-my-sm">{{ title }}</h4></slot
-      >
-      <q-space />
+      <div style="width: calc(100% - 34px)">
+        <slot name="title">
+          <div class="row items-center no-wrap">
+            <BaseSpriteIcon
+              v-if="spriteIcon"
+              :name="spriteIcon"
+              color="grey-7"
+              size="50px"
+              class="q-mr-sm q-my-sm"
+            />
+            <div
+              class="q-my-xs"
+              :style="`max-width: ${spriteIcon ? 'calc(100% - 58px)' : '100%'}`"
+            >
+              <h2 v-if="title" class="q-ma-none nowrap-elipsis">
+                {{ title }}
+              </h2>
+              <h3 v-if="subtitle" class="text-body1 q-ma-none nowrap-elipsis">
+                {{ subtitle }}
+              </h3>
+            </div>
+          </div>
+        </slot>
+      </div>
       <q-btn v-close-popup icon="close" flat round dense />
     </q-card-section>
 
@@ -88,9 +108,13 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityButtonDelete from './EntityButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { CombinedError } from '@urql/vue';
+import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
+import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 
 export interface EntityModalContentProps {
   title?: string;
+  subtitle?: string;
+  spriteIcon?: SpriteIcons;
   loading?: boolean;
   saveError?: CombinedError;
   validationError?: string | null;
@@ -116,3 +140,11 @@ defineEmits<{
 
 const { t } = useI18n();
 </script>
+
+<style scoped>
+.nowrap-elipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

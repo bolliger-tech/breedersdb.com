@@ -3,19 +3,13 @@
     :loading="savingEdit || savingInsert"
     :save-error="saveError"
     :validation-error="validationError"
+    sprite-icon="user"
+    :title="t('base.edit')"
+    :subtitle="t('users.title', 1)"
     @cancel="cancel"
     @save="save"
     @reset-errors="resetErrors"
   >
-    <template #title>
-      <BaseSpriteIcon name="user" color="grey-7" size="50px" />
-      <div class="q-ma-sm">
-        <h2 class="q-ma-none">
-          {{ user.email }}
-        </h2>
-      </div>
-    </template>
-
     <template #default>
       <UserEntityForm ref="formRef" :user="user" @change="onFormChange" />
     </template>
@@ -51,7 +45,6 @@ import {
 } from 'src/components/Entity/modalProvideSymbols';
 import { userReexecuteQuerySymbol } from 'src/pages/Users/userProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 
 export type UserEditInput = Omit<
   UserFragment,

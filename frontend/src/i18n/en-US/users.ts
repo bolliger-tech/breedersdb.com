@@ -1,5 +1,8 @@
 export const users = {
   title: 'User | Users',
+
+  searchPlaceholder: 'Search by email',
+
   fields: {
     id: 'ID',
     email: 'Email',

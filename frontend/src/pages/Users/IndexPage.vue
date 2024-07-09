@@ -5,7 +5,7 @@
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('users.title', 2)"
-      :search-placeholder="t('plants.searchPlaceholder')"
+      :search-placeholder="t('users.searchPlaceholder')"
       :rows="data?.users || []"
       :loading="fetching"
       :all-columns="columns"
@@ -77,19 +77,9 @@ const where = computed(() => {
   const where: UseQueryArgs<typeof query>['variables'] = { _and: [] };
 
   if (search.value) {
-    const or: UseQueryArgs<typeof query>['variables'] = { _or: [] };
-
-    if (Number.isInteger(Number(search.value))) {
-      or._or.push({
-        id: { _eq: Number(search.value) },
-      });
-    }
-
-    or._or.push({
+    where._and.push({
       email: { _ilike: `%${search.value}%` },
     });
-
-    where._and.push(or);
   }
 
   return where;

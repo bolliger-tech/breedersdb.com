@@ -9,7 +9,7 @@ import UserModalEdit, {
 } from 'src/components/User/UserModalEdit.vue';
 
 const user: UserInsertInput = {
-  email: null,
+  email: '',
   locale: '',
   password: '',
 };

@@ -363,45 +363,20 @@ pathMatchers:
 - defaultService: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendBuckets/$FE_BUCKET_BACKEND
   name: $PATH_MATCHER_NAME
   routeRules:
-  - description: forward request to hasura console
+  - description: forward request to hasura
     matchRules:
-    - prefixMatch: /api/console/
-    - fullPathMatch: /api/console
+    - prefixMatch: /api/hasura/
     priority: 10
     routeAction:
       urlRewrite:
-        pathPrefixRewrite: /console/
-    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
-  - description: forward request to hasura graphql
-    matchRules:
-    - prefixMatch: /api/v1/
-    priority: 11
-    routeAction:
-      urlRewrite:
-        pathPrefixRewrite: /v1/
-    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
-  - description: forward request to hasura graphql (v1alpha1 is used by the hasura console)
-    matchRules:
-    - prefixMatch: /api/v1alpha1/
-    priority: 12
-    routeAction:
-      urlRewrite:
-        pathPrefixRewrite: /v1alpha1/
-    service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
-  - description: forward request to hasura graphql (v2 is used by the hasura console)
-    matchRules:
-    - prefixMatch: /api/v2/
-    priority: 13
-    routeAction:
-      urlRewrite:
-        pathPrefixRewrite: /v2/
+        pathPrefixRewrite: /
     service: https://www.googleapis.com/compute/v1/projects/$PROJECT_ID/global/backendServices/$HASURA_BACKEND_SERVICE_NAME
   - description: redirect /api to /api/console
     matchRules:
-    - fullPathMatch: /api
-    priority: 14
+    - fullPathMatch: /api/hasura
+    priority: 11
     urlRedirect:
-      pathRedirect: /api/console
+      pathRedirect: /api/hasura/console
       redirectResponseCode: MOVED_PERMANENTLY_DEFAULT
   - description: forward request to cloud-function
     matchRules:

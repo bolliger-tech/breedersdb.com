@@ -61,26 +61,12 @@ services:
               # trailing slash in proxy_pass removes url of location
 
               # hasura
-              location /api/console {
+              location /api/hasura/ {
+                  proxy_pass http://hasura:8080/;
                   proxy_set_header Host localhost;
-                  proxy_pass http://hasura:8080/console;
               }
-              location /api/v1/ {
-                  proxy_set_header Host localhost;
-                  proxy_pass http://hasura:8080/v1/;
-              }
-              location /api/v1alpha1/ {
-                  proxy_set_header Host localhost;
-                  proxy_pass http://hasura:8080/v1alpha1/;
-              }
-              location /api/v2/ {
-                  # v2 is used by the hasura console (currently undocumented)
-                  proxy_set_header Host localhost;
-                  proxy_pass http://hasura:8080/v2/;
-              }
-              # Redirect /api to /api/console
-              location = /api {
-                  return 301 /api/console;
+              location = /api/hasura {
+                  return 301 /api/hasura/console;
               }
 
               # cloud-function

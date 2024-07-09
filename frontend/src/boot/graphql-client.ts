@@ -60,7 +60,7 @@ export function createUrqlClient() {
   };
 
   return new Client({
-    url: '/api/v1/graphql',
+    url: '/api/hasura/v1/graphql',
     exchanges: [
       requestPolicyExchange({
         ttl: 15 * 60 * 1000, // 15 minutes -- in the field, internet may be slow

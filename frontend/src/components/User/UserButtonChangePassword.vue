@@ -1,13 +1,17 @@
 <template>
-  <q-btn
-    color="primary"
-    :label="t('users.changePassword')"
-    @click="open = true"
-  />
+  <BaseInputLabel :label="t('users.fields.password')">
+    <q-btn
+      color="primary"
+      unelevated
+      :label="t('users.changePassword')"
+      @click="open = true"
+    />
+  </BaseInputLabel>
 
   <q-dialog v-model="open">
     <EntityModalContent
       v-if="open"
+      :title="t('users.changePassword')"
       :loading="fetching"
       :save-error="error"
       :validation-error="validationError"
@@ -18,10 +22,9 @@
       <EntityInput
         :ref="(el: InputRef) => (refs.passwordRef = el)"
         v-model="data.password"
-        :label="t('users.fields.password')"
+        :label="t('users.fields.newPassword')"
         type="password"
-        autocomplete="off"
-        required
+        autocomplete="new-password"
         :rules="[
           (val: string) =>
             !!isValidPassword(val) || t('base.validation.invalidPassword'),
@@ -61,6 +64,7 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import EntityModalContent from '../Entity/EntityModalContent.vue';
 import { isValidPassword } from 'src/utils/validationUtils';
 import { useRouter } from 'vue-router';
+import BaseInputLabel from '../Base/BaseInputLabel.vue';
 
 export interface UserButtonChangePasswordProps {
   userId: number;

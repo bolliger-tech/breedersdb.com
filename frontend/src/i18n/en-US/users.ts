@@ -7,6 +7,7 @@ export const users = {
     failedSigninAttempts: 'Failed Signin Attempts',
     lastSignin: 'Last Signin',
     password: 'Password',
+    newPassword: 'New Password',
   },
   deleteConfirmation: 'Are you sure you want to delete this user?',
   changePassword: 'Change Password',

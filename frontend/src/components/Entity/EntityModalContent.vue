@@ -84,7 +84,7 @@
               self="bottom middle"
               :hide-delay="2000"
               no-parent-event
-              class="bg-dark shadow-3 entity-modal-content__error-tooltip"
+              class="bg-dark shadow-3 error-tooltip"
             >
               <BaseGraphqlError v-if="saveError" :error="saveError" />
               <div
@@ -144,10 +144,14 @@ defineEmits<{
 const { t } = useI18n();
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .nowrap-elipsis {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.error-tooltip {
+  border: 1px solid $grey-7;
 }
 </style>

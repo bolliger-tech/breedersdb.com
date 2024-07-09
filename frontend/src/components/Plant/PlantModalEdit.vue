@@ -190,9 +190,3 @@ function resetErrors() {
 
 const { t } = useI18n();
 </script>
-
-<style lang="scss" scoped>
-:global(.body--dark .entity-modal-content__error-tooltip) {
-  border: 1px solid $grey-7;
-}
-</style>

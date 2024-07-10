@@ -74,8 +74,8 @@ begin
         end if;
         end case;
     if new.data_type in ('INTEGER', 'FLOAT', 'RATING') and
-       (new.validation_rule ->> 'min')::float + (new.validation_rule ->> 'step')::float > (new.validation_rule ->> 'max')::float then
-        raise exception 'The minimum value plus the step value must be less than or equal to the maximum value.';
+       (new.validation_rule ->> 'min')::float > (new.validation_rule ->> 'max')::float then
+        raise exception 'The minimum value must be less than or equal to the maximum value.';
     end if;
     return new;
 end;

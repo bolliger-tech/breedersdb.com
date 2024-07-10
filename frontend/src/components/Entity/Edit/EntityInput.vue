@@ -12,7 +12,11 @@
       :dark="$q.dark.isActive"
       :model-value="modelValue"
       @update:model-value="updateModelValue"
-    />
+    >
+      <template v-if="$slots.error" #error>
+        <slot name="error"></slot>
+      </template>
+    </q-input>
   </BaseInputLabel>
 </template>
 
@@ -22,9 +26,11 @@ import type { QInput, QInputProps } from 'quasar';
 import { ComponentPublicInstance, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
+import { focusInView } from 'src/utils/focusInView';
 
 export type EntityInputInstance = ComponentPublicInstance<EntityInputProps> & {
   validate: () => ReturnType<QInput['validate']> | undefined;
+  focus: () => ReturnType<QInput['focus']> | undefined;
 };
 
 export type EntityInputProps = Omit<
@@ -39,9 +45,12 @@ const props = defineProps<EntityInputProps>();
 const inputRef = ref<QInput | null>(null);
 defineExpose({
   validate: () => inputRef.value?.validate(),
+  focus: () => inputRef.value && focusInView(inputRef.value),
 });
 
 const modelValue = defineModel<QInputProps['modelValue']>();
+
+defineSlots<{ error: void }>();
 
 function updateModelValue(value: QInputProps['modelValue']) {
   if (!props.required && value === '') {

@@ -4,12 +4,11 @@ declare
     plant_cursor no scroll cursor for select *
                                       from plants
                                       where label_id ~ '^[[:digit:]]+$'
-                                        and label_id >= input_label_id
+                                        and label_id::int >= input_label_id::int
                                       order by label_id;
     plant              plants%ROWTYPE;
     new_plant          plants%ROWTYPE;
     previous           int;
-    temp_table         plants[];
     first              boolean := true;
     input_label_id_int int;
 begin
@@ -30,7 +29,6 @@ begin
         if not found or (first and plant.label_id::int > input_label_id_int) or
            (plant.label_id::int - previous > 1) then
             new_plant.label_id := to_char(previous + 1, 'FM00000000');
-            temp_table := array_append(temp_table, new_plant);
             return query select * from unnest(array [new_plant]); -- yields to the result set
             return; -- actually returns
         end if;

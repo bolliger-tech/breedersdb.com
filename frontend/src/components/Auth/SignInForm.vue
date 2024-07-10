@@ -54,6 +54,7 @@ import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getUserFromCookie } from 'src/utils/authUtils';
 import { useI18n } from 'src/composables/useI18n';
+import type { Locale } from 'src/composables/useI18n';
 import { useInputBackground } from 'src/composables/useInputBackground';
 const i18n = useI18n({ useScope: 'global' });
 const { t } = i18n;
@@ -94,8 +95,11 @@ function onSubmit() {
     if (result.error) {
       return;
     }
-    // @ts-expect-error locale is not typed in db
-    i18n.locale.value = result.data.SignIn.locale;
+    if (result.data?.SignIn.locale) {
+      i18n.setAndPersistLocale(result.data.SignIn.locale as Locale);
+    } else {
+      console.error('No locale in SignIn response');
+    }
     redirect();
   });
 }

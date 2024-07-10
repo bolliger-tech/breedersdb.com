@@ -3,6 +3,7 @@ import { boot } from 'quasar/wrappers';
 import { createI18n } from 'vue-i18n';
 
 import { messages, datetimeFormats } from 'src/i18n';
+import { getPersistedLocale } from 'src/composables/useI18n';
 
 export type MessageLanguages = keyof typeof messages;
 // Type-define 'en-US' as the master schema for the resource
@@ -29,7 +30,7 @@ declare module 'vue-i18n' {
  *
  * @ts-ignore: No overload matches this call. */
 export const i18n = createI18n({
-  locale: 'en-US',
+  locale: getPersistedLocale() || 'en-US',
   fallbackLocale: 'en-US',
   legacy: false,
   messages,

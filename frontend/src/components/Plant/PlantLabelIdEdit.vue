@@ -9,8 +9,28 @@
     :hint="t('plants.hints.labelId')"
     debounce="300"
     :loading="fetching"
+    :error="labelIdIsNotUnique"
+    reactive-rules
+    required
     @blur="paddLabelId"
-  />
+  >
+    <template v-if="labelIdIsNotUnique" #error>
+      <i18n-t
+        keypath="plants.errors.labelIdNextFree"
+        :values="{ labelId: nextFreeLabelId }"
+      >
+        <template #labelId>
+          <button
+            v-ripple
+            class="text-negative bg-transparent no-border cursor-pointer q-pa-none plant-label-id-next-free-button"
+            @click="() => (labelId = nextFreeLabelId || '')"
+          >
+            {{ nextFreeLabelId }}
+          </button>
+        </template>
+      </i18n-t>
+    </template>
+  </EntityInput>
 </template>
 
 <script setup lang="ts">
@@ -29,6 +49,7 @@ import {
   zeroFill,
   isValid as isValidLabelId,
 } from 'src/utils/labelIdUtils';
+import { focusInView } from 'src/utils/focusInView';
 
 export interface PlantLabelIdEditProps
   extends PlantLabelIdEditPropsWithoutModel {
@@ -49,6 +70,7 @@ const labelId = defineModel<string>({
 const inputRef = ref<EntityInputInstance | null>(null);
 defineExpose({
   validate: () => inputRef.value?.validate(),
+  focus: () => inputRef.value && focusInView(inputRef.value),
 });
 
 const { t } = useI18n();
@@ -75,6 +97,7 @@ const { executeQuery, fetching } = useQuery({
   pause: true,
 });
 
+const nextFreeLabelId = ref<string | null>(null);
 async function uniqueRule(newLabelId: string) {
   if (
     !newLabelId ||
@@ -84,6 +107,8 @@ async function uniqueRule(newLabelId: string) {
     return true;
   }
 
+  // check if the label id is unique in the database
+  // if not, the next free label id is returned
   queryVariables.value.label_id = newLabelId;
   await nextTick(); // wait for the refs to be updated
   const { data, error } = await executeQuery();
@@ -93,12 +118,24 @@ async function uniqueRule(newLabelId: string) {
     return t('plants.errors.labelIdQueryError');
   }
 
-  const nextFreeLabelId = data.value.plants_next_free_label_id[0].label_id;
-  return (
-    nextFreeLabelId === newLabelId ||
-    t('plants.errors.labelIdNextFree', { labelId: nextFreeLabelId })
-  );
+  nextFreeLabelId.value = data.value.plants_next_free_label_id[0].label_id;
+
+  // we use "external validation" in combination with the "error" slot for this.
+  // to ignore "internal validation", we always return true here.
+  //
+  // @see labelIdIsNotUnique for the external validation
+  // @link https://quasar.dev/vue-components/input#external-validation
+  return true;
 }
+
+const labelIdIsNotUnique = computed(() => {
+  return (
+    !!labelId.value &&
+    !labelId.value.startsWith('#') &&
+    !!nextFreeLabelId.value &&
+    nextFreeLabelId.value !== zeroFill(labelId.value)
+  );
+});
 
 const rules = computed(() => {
   const rules: ValidationRule[] = [
@@ -127,3 +164,14 @@ watch(
   () => nextTick(() => inputRef.value?.validate()),
 );
 </script>
+
+<style scoped lang="scss">
+.plant-label-id-next-free-button {
+  text-decoration: underline;
+  transition: $button-transition;
+}
+
+.plant-label-id-next-free-button:hover {
+  color: var(--q-primary) !important;
+}
+</style>

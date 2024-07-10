@@ -16,7 +16,7 @@
       {
         "name": "@0no-co/graphqlsp",
         "schema": {
-          "url": "http://localhost/api/v1/graphql",
+          "url": "http://localhost/api/hasura/v1/graphql",
           "headers": {
             // see ../backend/.env
             // never use the production secret here

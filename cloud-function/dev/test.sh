@@ -17,10 +17,10 @@ fi
   #-d '{"email": "'$email'", "password": "'$password'"}' \
 response=$(curl -X POST \
   -H "Content-Type: application/json" \
-  -d '{"query":"mutation SignIn {SignIn(email: \"'$email'\", password: \"'$password'\") {user_id}}"}' \
+  -d '{"query":"mutation SignIn {SignIn(email: \"'$email'\", password: \"'$password'\") {id}}"}' \
   -i \
   -s \
-  http://localhost:8080/v1/graphql)
+  http://localhost/api/hasura/v1/graphql)
 
 # Extract the token from the response headers
 token=$(echo "$response" | grep -i 'Set-Cookie: breedersdb.id.token=' | awk -F'=' '{print $2}' | awk -F';' '{print $1}')
@@ -39,7 +39,7 @@ curl -X POST \
   -H "Content-Type: application/json" \
   -H "Cookie: breedersdb.id.token=$token" \
   -d '{"query":"query GetCrossings {crossings {id name created}}"}' \
-  http://localhost:8080/v1/graphql
+  http://localhost/api/hasura/v1/graphql
 
 echo
 echo "Me"
@@ -48,7 +48,7 @@ curl -X POST \
   -H "Content-Type: application/json" \
   -H "Cookie: breedersdb.id.token=$token" \
   -d '{"query":"query Me {Me {id user{id email locale created}}}"}' \
-  http://localhost:8080/v1/graphql
+  http://localhost/api/hasura/v1/graphql
 
 
 echo
@@ -59,4 +59,4 @@ curl -X POST \
   -H "Content-Type: application/json" \
   -H "Cookie: breedersdb.id.token=$token" \
   -d '{"query":"mutation SignOut {SignOut {user_id}}"}' \
-  http://localhost:8080/v1/graphql
+  http://localhost/api/hasura/v1/graphql

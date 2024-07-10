@@ -58,41 +58,31 @@ services:
               listen 80;
               server_name localhost;
 
-              location /api/console {
-                  proxy_set_header Host localhost;
-                  proxy_pass http://hasura:8080/console;
-              }
-
-              location /api/v1/ {
-                  proxy_set_header Host localhost;
-                  proxy_pass http://hasura:8080/v1/;
-              }
-
-              location /api/v2/ {
-                  # v2 is used by the hasura console (currently undocumented)
-                  proxy_set_header Host localhost;
-                  proxy_pass http://hasura:8080/v2/;
-              }
-
               # trailing slash in proxy_pass removes url of location
+
+              # hasura
+              location /api/hasura/ {
+                  proxy_pass http://hasura:8080/;
+                  proxy_set_header Host localhost;
+              }
+              location = /api/hasura {
+                  return 301 /api/hasura/console;
+              }
+
+              # cloud-function
               location /api/internal/ {
                   proxy_set_header Host localhost;
                   proxy_pass http://cloud-function:8090/;
               }
-
               location /api/assets/ {
                   proxy_set_header Host localhost;
                   proxy_pass http://cloud-function:8090/;
               }
 
+              # frontend
               location / {
                   proxy_set_header Host localhost;
                   proxy_pass http://host.docker.internal:9000/;
-              }
-
-              # Redirect /api to /api/console
-              location = /api {
-                  return 301 /api/console;
               }
           }
       }

@@ -22,13 +22,19 @@
           {{ user.failed_signin_attempts }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('users.fields.lastSignin')">
-          {{ localizeDate(user.last_signin) }}
+          {{
+            user.last_signin
+              ? localizeDate(user.last_signin)
+              : t('base.notAvailable')
+          }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
           {{ localizeDate(user.created) }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{ localizeDate(user.modified) }}
+          {{
+            user.modified ? localizeDate(user.modified) : t('base.notAvailable')
+          }}
         </EntityViewTableRow>
       </EntityViewTable>
     </template>

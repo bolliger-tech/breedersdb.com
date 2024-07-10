@@ -147,7 +147,7 @@ const { t } = useI18n();
 <style lang="scss" scoped>
 .nowrap-elipsis {
   white-space: nowrap;
-  overflow: hidden;
+  overflow-x: clip;
   text-overflow: ellipsis;
 }
 

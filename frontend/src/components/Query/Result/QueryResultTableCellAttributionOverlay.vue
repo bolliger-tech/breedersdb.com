@@ -39,7 +39,8 @@ const query = graphql(
         text_value
         boolean_value
         date_value
-        note
+        text_note
+        photo_note
         exceptional_attribution
         attribute_name
         attribute_id

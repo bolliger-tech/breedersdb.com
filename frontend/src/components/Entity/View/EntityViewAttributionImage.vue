@@ -2,10 +2,10 @@
   <img
     v-if="preview"
     v-ripple
-    :src="`/api/assets/images/${desiredFileName}?file=${storedFileName}&height=200`"
+    :src="`/api/assets/images/${desiredFileName}?file=${fileName}&height=200`"
     :srcset="`
-      /api/assets/images/${desiredFileName}?file=${storedFileName}&height=200,
-      /api/assets/images/${desiredFileName}?file=${storedFileName}&height=400 2x
+      /api/assets/images/${desiredFileName}?file=${fileName}&height=200,
+      /api/assets/images/${desiredFileName}?file=${fileName}&height=400 2x
     `"
     class="cursor-pointer"
     @click="open = true"
@@ -40,13 +40,13 @@
       </q-card-section>
       <q-card-section>
         <q-img
-          :src="`/api/assets/images/${desiredFileName}?file=${storedFileName}&width=1024`"
+          :src="`/api/assets/images/${desiredFileName}?file=${fileName}&width=1024`"
           :srcset="`
-            /api/assets/images/${desiredFileName}?file=${storedFileName}&width=320 320w,
-            /api/assets/images/${desiredFileName}?file=${storedFileName}&width=768 768w,
-            /api/assets/images/${desiredFileName}?file=${storedFileName}&width=1024 1024w,
-            /api/assets/images/${desiredFileName}?file=${storedFileName}&width=2560 2560w,
-            /api/assets/images/${desiredFileName}?file=${storedFileName}&width=3840 3840w,
+            /api/assets/images/${desiredFileName}?file=${fileName}&width=320 320w,
+            /api/assets/images/${desiredFileName}?file=${fileName}&width=768 768w,
+            /api/assets/images/${desiredFileName}?file=${fileName}&width=1024 1024w,
+            /api/assets/images/${desiredFileName}?file=${fileName}&width=2560 2560w,
+            /api/assets/images/${desiredFileName}?file=${fileName}&width=3840 3840w,
           `"
           spinner-color="primary"
           fit="contain"
@@ -62,12 +62,12 @@
             <div class="text-caption q-mx-md absolute-center text-center">
               <q-icon name="warning" size="sm" class="q-mr-sm" />{{
                 t('entity.failedToLoadImage')
-              }}<br />{{ storedFileName }}
+              }}<br />{{ fileName }}
             </div>
           </template>
         </q-img>
         <p class="text-caption q-ma-none text-center">
-          <span v-if="attribution.note">{{ attribution.note }}</span
+          <span v-if="attribution.text_note">{{ attribution.text_note }}</span
           >&nbsp;
           <span class="text-muted">{{ metadata }}</span>
         </p>
@@ -75,7 +75,7 @@
 
       <q-card-actions align="right">
         <a
-          :href="`/api/assets/images/${desiredFileName}?file=${storedFileName}`"
+          :href="`/api/assets/images/${desiredFileName}?file=${fileName}`"
           download
         >
           <q-btn flat :label="t('base.download')" color="primary" />
@@ -97,8 +97,15 @@ import { useI18n } from 'src/composables/useI18n';
 import { EntityAttributionsViewFragment } from '../entityAttributionsViewFragment';
 import { localizeDate } from 'src/utils/dateUtils';
 import { QDialogProps } from 'quasar';
+import {
+  dataTypeToColumnTypes,
+  formatResultColumnValue,
+  getAttributeValue,
+} from 'src/utils/attributeUtils';
+import { ColumnTypes } from 'src/utils/columnTypes';
 
 export interface EntityViewAttributionImageProps {
+  fileName: string;
   attribution: EntityAttributionsViewFragment;
   plant?: { label_id: string };
   plantGroup?: { display_name: string };
@@ -153,11 +160,15 @@ const desiredFileName = computed(() => {
   );
 });
 
-const storedFileName = computed(() => {
-  return props.attribution.text_value;
-});
-
 const metadata = computed(() => {
-  return `${props.attribution.attribute_name}, ${localizeDate(props.attribution.date_attributed)} ${props.attribution.author}, ${entityType.value} ${entityName.value}`;
+  const type = dataTypeToColumnTypes(props.attribution.data_type);
+  const value = getAttributeValue(props.attribution);
+
+  const attrValue =
+    type === ColumnTypes.Photo
+      ? ''
+      : `: ${formatResultColumnValue({ value, type })}`;
+
+  return `${props.attribution.attribute_name}${attrValue}, ${localizeDate(props.attribution.date_attributed)} ${props.attribution.author}, ${entityType.value} ${entityName.value}`;
 });
 </script>

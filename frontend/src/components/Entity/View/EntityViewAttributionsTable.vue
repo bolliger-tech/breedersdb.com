@@ -39,6 +39,7 @@
     <template #body-cell-photo_note="cellProps">
       <q-td key="photo_note" :props="cellProps">
         <EntityViewAttributionImage
+          v-if="cellProps.row.photo_note"
           :file-name="cellProps.row.photo_note"
           :attribution="cellProps.row"
           :plant="plant"

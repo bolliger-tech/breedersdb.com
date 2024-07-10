@@ -20,8 +20,8 @@ export function useAttributionViewColumnDefinitions() {
 const columnData: FilterColumnConstructorData[] = [
   {
     table: 'attributions_view',
-    column: 'note',
-    labelKey: 'entity.commonColumns.note',
+    column: 'text_note',
+    labelKey: 'attributions.columns.textNoteLong',
     schema: {
       type: ColumnTypes.String,
       allowEmpty: true,
@@ -29,6 +29,15 @@ const columnData: FilterColumnConstructorData[] = [
         maxLen: 2047,
         pattern: null,
       },
+    },
+  },
+  {
+    table: 'attributions_view',
+    column: 'photo_note',
+    labelKey: 'attributions.columns.photoNoteLong',
+    schema: {
+      type: ColumnTypes.Photo,
+      allowEmpty: true,
     },
   },
   {

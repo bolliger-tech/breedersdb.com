@@ -12,11 +12,11 @@ const EMAIL_REGEX =
 const PASSWORD_REGEX =
   /(^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$|^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{12,}$|^.{32,}$)/;
 
-export const validateEmail = (email: string) => {
+export function validateEmail(email: string) {
   if (!EMAIL_REGEX.test(email)) {
     throw new ErrorWithStatus(400, 'Bad Request: Enter a valid email address.');
   }
-};
+}
 
 export function validatePassword(password: string) {
   if (!PASSWORD_REGEX.test(password)) {

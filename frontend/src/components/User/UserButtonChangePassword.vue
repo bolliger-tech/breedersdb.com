@@ -24,7 +24,7 @@
         v-model="data.password"
         :label="t('users.fields.newPassword')"
         type="password"
-        autocomplete="new-password"
+        :autocomplete="me?.id === userId ? 'new-password' : 'off'"
         :rules="[
           (val: string) =>
             !!isValidPassword(val) || t('users.validation.invalidPassword'),

@@ -43,13 +43,11 @@ $border: 1px solid $grey-4;
   td {
     text-align: right;
     padding: 4px 8px;
-    @media screen and (max-width: $breakpoint-sm-min) {
-      display: table-row;
-    }
   }
-  @media screen and (max-width: $breakpoint-sm-min) {
-    display: table;
-    width: 100%;
+  & :is(td, th) {
+    @media screen and (max-width: $breakpoint-xs-max) {
+      display: block;
+    }
   }
 }
 </style>

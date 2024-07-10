@@ -97,7 +97,9 @@ const error = computed(
 const resultColumns = computed<QTableColumn[]>(() => {
   return baseTableColumnsWithAttributes.value.flatMap((column) => {
     const isNum =
-      column.type === ColumnTypes.Integer || column.type === ColumnTypes.Float;
+      column.type === ColumnTypes.Integer ||
+      column.type === ColumnTypes.Rating ||
+      column.type === ColumnTypes.Float;
 
     if (column.isAttribute) {
       const attributions: QTableColumn[] = [

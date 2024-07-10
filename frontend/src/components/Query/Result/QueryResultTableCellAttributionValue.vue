@@ -43,6 +43,7 @@ const label = computed(() => {
         type,
       });
     case ColumnTypes.Integer:
+    case ColumnTypes.Rating:
       return formatResultColumnValue({
         value: props.attribution.integer_value,
         type,

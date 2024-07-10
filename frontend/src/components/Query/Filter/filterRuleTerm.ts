@@ -26,6 +26,7 @@ export class FilterRuleTerm {
     switch (this.schema.type) {
       case ColumnTypes.String:
       case ColumnTypes.Integer:
+      case ColumnTypes.Rating:
       case ColumnTypes.Float:
       case ColumnTypes.Enum:
         return this.schema.validation;
@@ -50,6 +51,8 @@ export class FilterRuleTerm {
         return this.isValidString();
       case ColumnTypes.Integer:
         return this.isValidInteger();
+      case ColumnTypes.Rating:
+        return this.isValidRating();
       case ColumnTypes.Float:
         return this.isValidFloat();
       case ColumnTypes.Boolean:
@@ -99,21 +102,27 @@ export class FilterRuleTerm {
     return true;
   }
 
+  private isValidRating() {
+    if (parseFloat(this.value) !== parseInt(this.value)) return false;
+    if (this.schema?.type !== ColumnTypes.Rating) return false;
+    return this.validateNumber(parseInt(this.value), this.schema.validation);
+  }
+
   private isValidInteger() {
     if (parseFloat(this.value) !== parseInt(this.value)) return false;
-    return this.isValidFloat();
+    if (this.schema?.type !== ColumnTypes.Integer) return false;
+    return this.validateNumber(parseInt(this.value), this.schema.validation);
   }
 
   private isValidFloat() {
-    if (
-      this.schema?.type !== ColumnTypes.Float &&
-      this.schema?.type !== ColumnTypes.Integer
-    )
-      return false;
-    const validation = this.schema.validation;
+    if (this.schema?.type !== ColumnTypes.Float) return false;
+    return this.validateNumber(parseFloat(this.value), this.schema.validation);
+  }
 
-    const value = parseFloat(this.value);
-
+  private validateNumber(
+    value: number,
+    validation: { min: number; max: number; step: number },
+  ) {
     if (isNaN(value)) return false;
 
     if (value < validation.min) return false;

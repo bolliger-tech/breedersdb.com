@@ -158,6 +158,27 @@ const filterRules = {
     }),
   }),
 
+  nestedRatingAllowEmpty: new FilterRule({
+    column: new FilterRuleColumn({
+      tableName: 'cultivars.lots',
+      tableColumnName: 'rating_allow_empty',
+      tableLabel: 'Cultivars',
+      tableColumnLabel: 'Rating Allow Empty',
+      schema: {
+        allowEmpty: true,
+        type: ColumnTypes.Rating,
+        validation: {
+          min: 0,
+          max: 9,
+          step: 1,
+        },
+      },
+    }),
+    operator: new FilterRuleOperator({
+      value: FilterOperatorValue.Empty,
+    }),
+  }),
+
   nestedStringWithValue: new FilterRule({
     column: new FilterRuleColumn({
       tableName: 'cultivars.lots',
@@ -512,6 +533,50 @@ cultivars(where: { _or: [
                   schema: {
                     allowEmpty: false,
                     type: ColumnTypes.Integer,
+                    validation: {
+                      min: 1,
+                      max: 9,
+                      step: 1,
+                    },
+                  },
+                }),
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Equal,
+                }),
+                term: new FilterRuleTerm({ value: '9' }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(
+                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { integer_value: { _eq: $v000 } } ] } } ] }',
+                ).replaceAll('$v000', '$v\\d+'),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(9);
+          });
+
+          it('should value ratings', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: new FilterRuleColumn({
+                  tableName: 'attributes',
+                  tableColumnName: '123',
+                  tableLabel: 'Attributions',
+                  tableColumnLabel: 'Rating',
+                  schema: {
+                    allowEmpty: false,
+                    type: ColumnTypes.Rating,
                     validation: {
                       min: 1,
                       max: 9,
@@ -1185,6 +1250,37 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(Object.values(variables)[0]).toBe(false);
           });
 
+          it('should return: Rating Empty nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedRatingAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Empty,
+                }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+  cultivars(where: { _and: [ { _not: { lots: { rating_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
           it('should return: String === "" nullable', () => {
             const filter = FilterNode.FilterRoot(filterRootArgs);
             FilterNode.FilterLeaf({
@@ -1265,6 +1361,37 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
               new RegExp(
                 prepareForRegex(`
     cultivars(where: { _and: [ { lots: { integer_allow_empty: { _is_null: $v000 } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
+          it('should return: Rating NotEmpty nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedRatingAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.NotEmpty,
+                }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+    cultivars(where: { _and: [ { lots: { rating_allow_empty: { _is_null: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),

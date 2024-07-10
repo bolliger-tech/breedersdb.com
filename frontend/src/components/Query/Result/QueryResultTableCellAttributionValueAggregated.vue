@@ -77,12 +77,18 @@ const label = computed(() => {
     case AttributionAggregation.Mean:
       return formatResultColumnValue({
         value: getMean(props.attributions, type),
-        type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
+        type:
+          type === ColumnTypes.Integer || type === ColumnTypes.Rating
+            ? ColumnTypes.Float
+            : type,
       });
     case AttributionAggregation.Median:
       return formatResultColumnValue({
         value: getMedian(props.attributions, type),
-        type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
+        type:
+          type === ColumnTypes.Integer || type === ColumnTypes.Rating
+            ? ColumnTypes.Float
+            : type,
       });
     case AttributionAggregation.StdDev:
       if (type === ColumnTypes.Date) {
@@ -91,7 +97,10 @@ const label = computed(() => {
       }
       return formatResultColumnValue({
         value: getStdDev(props.attributions, type),
-        type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
+        type:
+          type === ColumnTypes.Integer || type === ColumnTypes.Rating
+            ? ColumnTypes.Float
+            : type,
       });
     default:
       throw new Error(`Unsupported aggregation: ${props.aggregation}`);
@@ -167,7 +176,12 @@ function getValuesAsNumbers(
   type: ColumnTypes,
 ) {
   if (
-    ![ColumnTypes.Integer, ColumnTypes.Float, ColumnTypes.Date].includes(type)
+    ![
+      ColumnTypes.Integer,
+      ColumnTypes.Rating,
+      ColumnTypes.Float,
+      ColumnTypes.Date,
+    ].includes(type)
   ) {
     throw new Error(`Aggregation not available for: ${type}`);
   }
@@ -175,6 +189,7 @@ function getValuesAsNumbers(
     .map((a) => {
       switch (type) {
         case ColumnTypes.Integer:
+        case ColumnTypes.Rating:
           return a.integer_value;
         case ColumnTypes.Float:
           return a.float_value;

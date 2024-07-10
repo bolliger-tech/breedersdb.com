@@ -9,6 +9,7 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
     BOOLEAN: ColumnTypes.Boolean,
     DATE: ColumnTypes.Date,
     PHOTO: ColumnTypes.Photo,
+    RATING: ColumnTypes.Rating,
   }[dataType];
 
   if (typeof type === 'undefined') {
@@ -33,8 +34,10 @@ export function formatResultColumnValue({
     return value.toLocaleString();
   } else if (typeof value === 'boolean') {
     return value ? '✓' : '✕';
-  } else if (type === ColumnTypes.Integer || type === ColumnTypes.Float) {
+  } else if (type === ColumnTypes.Integer || type === ColumnTypes.Rating) {
     return parseInt(value).toLocaleString();
+  } else if (type === ColumnTypes.Float) {
+    return parseFloat(value).toLocaleString();
   } else if (type === ColumnTypes.Date) {
     return new Date(value).toLocaleDateString();
   }

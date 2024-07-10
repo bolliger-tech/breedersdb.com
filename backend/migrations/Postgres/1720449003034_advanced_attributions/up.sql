@@ -185,7 +185,7 @@ execute function check_default_value();
 alter table attribute_values
     rename column note to text_note;
 alter table attribute_values
-    add column photo_note varchar(70) check (photo_note ~ '^\w{64}\.(jpe?g|avif)$');
+    add column photo_note varchar(69) check (photo_note ~ '^\w{64}\.(jpe?g|avif)$');
 
 drop trigger if exists trim_attribute_values on attribute_values;
 create trigger trim_attribute_values

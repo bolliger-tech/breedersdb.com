@@ -3,6 +3,7 @@ actions:
     definition:
       kind: synchronous
       handler: '{{ACTIONS_URL}}'
+      forward_client_headers: true
       headers:
         - name: X-Actions-Secret
           value_from_env: ACTIONS_SECRET

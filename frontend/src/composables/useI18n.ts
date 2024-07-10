@@ -1,18 +1,15 @@
-import type { MessageSchema } from 'src/boot/i18n';
+import { type MessageSchema } from 'src/boot/i18n';
 import {
   useI18n as useVueI18n,
   type NamedValue,
   type TranslateOptions,
 } from 'vue-i18n';
 import { LocalStorage } from 'quasar';
-
-export type Locale = ReturnType<typeof useI18n>['locale'] extends {
-  value: infer T;
-}
-  ? T
-  : never;
+import { locales, type MessageLanguages } from 'src/i18n';
 
 const LOCAL_STORAGE_KEY = 'breedersdb-locale';
+
+export type Locale = MessageLanguages;
 
 export function getPersistedLocale(): Locale | undefined {
   try {
@@ -37,6 +34,7 @@ export function useI18n(options?: Parameters<typeof useVueI18n>[0]) {
       console.warn('Failed to persist locale:', e);
     }
 
+    // @ts-expect-error i18n Locale is en-US only
     i18n.locale.value = locale;
   }
 
@@ -69,3 +67,14 @@ type Paths<T> = T extends object
         : never;
     }[keyof T]
   : '';
+
+export type LocaleOption = {
+  value: Locale;
+  label: string;
+};
+export function getLocaleOptions(t: TFunc): LocaleOption[] {
+  return locales.map((locale) => ({
+    value: locale,
+    label: t(`base.locales.${locale}`),
+  }));
+}

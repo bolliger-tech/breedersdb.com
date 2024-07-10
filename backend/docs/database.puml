@@ -30,7 +30,7 @@ entity "**attribute_values**" #00ff0012 ##008800 {
   ""offline_id"": //uuid //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
-  ""photo_note"": //character varying(70) //
+  ""photo_note"": //character varying(69) //
 }
 
 entity "**attributes**" #00ff0012 ##008800 {

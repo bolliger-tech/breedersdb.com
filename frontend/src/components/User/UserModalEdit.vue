@@ -3,27 +3,22 @@
     :loading="savingEdit || savingInsert"
     :save-error="saveError"
     :validation-error="validationError"
+    sprite-icon="user"
+    :title="t('base.edit')"
+    :subtitle="t('users.title', 1)"
     @cancel="cancel"
     @save="save"
     @reset-errors="resetErrors"
   >
-    <template #title>
-      <PlantCard>
-        <template #title>
-          <h2 class="q-ma-none">{{ title }}</h2>
-        </template>
-        <template #subtitle>{{ t('plants.title', 1) }}</template>
-      </PlantCard>
-    </template>
-
     <template #default>
-      <PlantEntityForm ref="formRef" :plant="plant" @change="onFormChange" />
+      <UserEntityForm ref="formRef" :user="user" @change="onFormChange" />
     </template>
 
     <template #action-left>
-      <PlantButtonEliminate
-        v-if="!plant.disabled && 'id' in plant"
-        :plant-id="plant.id"
+      <UserButtonDelete
+        v-if="'id' in user"
+        :user-id="user.id"
+        @deleted="() => router.push({ path: '/users', query: route.query })"
       />
       <div v-else></div>
     </template>
@@ -33,64 +28,59 @@
 <script setup lang="ts">
 import { useMutation } from '@urql/vue';
 import {
-  PlantFragment,
-  plantFragment,
-} from 'src/components/Plant/plantFragment';
+  UserFragment,
+  userFragment,
+  userFragmentOnFullUserOutput,
+} from 'src/components/User/userFragment';
 import { VariablesOf, graphql } from 'src/graphql';
 import { computed, ref, nextTick } from 'vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
-import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
-import PlantEntityForm from 'src/components/Plant/PlantEntityForm.vue';
+import UserButtonDelete from 'src/components/User/UserButtonDelete.vue';
+import UserEntityForm from 'src/components/User/UserEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
+import { useRoute, useRouter } from 'vue-router';
 import {
   closeModalSymbol,
   makeModalPersistentSymbol,
 } from 'src/components/Entity/modalProvideSymbols';
+import { userReexecuteQuerySymbol } from 'src/pages/Users/userProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import PlantCard from 'src/components/Plant/PlantCard.vue';
 import { useCancel } from 'src/composables/useCancel';
 
-export type PlantEditInput = PlantFragment;
-export type PlantInsertInput = Omit<
-  PlantFragment,
-  | 'id'
-  | 'label_id'
-  | 'cultivar_name'
-  | 'plant_group_name'
-  | 'created'
-  | 'modified'
-  | 'attributions_views'
+export type UserEditInput = Omit<
+  UserFragment,
+  'failed_signin_attempts' | 'last_signin' | 'created' | 'modified'
 >;
+export type UserInsertInput = Omit<UserEditInput, 'id'> & {
+  password: string;
+};
 
-export interface PlantModalEditProps {
-  plant: PlantEditInput | PlantInsertInput;
-  title: string;
+export interface UserModalEditProps {
+  user: UserEditInput | UserInsertInput;
 }
 
-const props = defineProps<PlantModalEditProps>();
+const props = defineProps<UserModalEditProps>();
 
-const { cancel } = useCancel({ path: '/plants' });
+const router = useRouter();
+const route = useRoute();
+const { cancel } = useCancel({ path: '/users' });
 
 const validationError = ref<string | null>(null);
 const closeModal = useInjectOrThrow(closeModalSymbol);
 const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
-const formRef = ref<InstanceType<typeof PlantEntityForm> | null>(null);
+const formRef = ref<InstanceType<typeof UserEntityForm> | null>(null);
 
 const insertMutation = graphql(
   `
-    mutation InsertPlant(
-      $plant: plants_insert_input!
-      $withSegments: Boolean = true
-      $withAttributions: Boolean = false
-    ) {
-      insert_plants_one(object: $plant) {
-        ...plantFragment
+    mutation InsertUser($email: citext!, $locale: String, $password: String!) {
+      InsertUser(email: $email, locale: $locale, password: $password) {
+        ...userFragmentOnFullUserOutput
       }
     }
   `,
-  [plantFragment],
+  [userFragmentOnFullUserOutput],
 );
-const insertData = ref<VariablesOf<typeof insertMutation>['plant']>();
+const insertData = ref<VariablesOf<typeof insertMutation>>();
 const {
   executeMutation: executeInsertMutation,
   fetching: savingInsert,
@@ -99,20 +89,15 @@ const {
 
 const editMutation = graphql(
   `
-    mutation UpdatePlant(
-      $id: Int!
-      $plant: plants_set_input!
-      $withSegments: Boolean = true
-      $withAttributions: Boolean = false
-    ) {
-      update_plants_by_pk(pk_columns: { id: $id }, _set: $plant) {
-        ...plantFragment
+    mutation UpdateUser($id: Int!, $user: users_set_input!) {
+      update_users_by_pk(pk_columns: { id: $id }, _set: $user) {
+        ...userFragment
       }
     }
   `,
-  [plantFragment],
+  [userFragment],
 );
-const editedData = ref<VariablesOf<typeof editMutation>['plant']>();
+const editedData = ref<VariablesOf<typeof editMutation>['user']>();
 const {
   executeMutation: executeEditMutation,
   fetching: savingEdit,
@@ -122,9 +107,17 @@ const {
 function onFormChange(data: typeof editedData.value | typeof insertData.value) {
   if (!data) {
     return;
-  } else if ('id' in props.plant) {
-    editedData.value = data;
+  } else if ('id' in props.user) {
+    // omit password
+    editedData.value = {
+      email: data.email,
+      locale: data.locale,
+    };
   } else {
+    if (!('password' in data)) {
+      // this should never happen
+      throw new Error('Password is missing');
+    }
     insertData.value = data;
   }
 }
@@ -136,7 +129,7 @@ async function save() {
     return;
   }
 
-  if ('id' in props.plant) {
+  if ('id' in props.user) {
     await saveEdit();
   } else {
     await saveInsert();
@@ -150,6 +143,8 @@ async function save() {
   }
 }
 
+const reexecuteUsersQuery = useInjectOrThrow(userReexecuteQuerySymbol);
+
 async function saveInsert() {
   if (!insertData.value) {
     closeModal();
@@ -157,7 +152,11 @@ async function saveInsert() {
   }
 
   return executeInsertMutation({
-    plant: insertData.value,
+    ...insertData.value,
+  }).then(() => {
+    // because the return type of InsertUser is not userFragment
+    // we need to reexecute the query to refresh the users list
+    reexecuteUsersQuery();
   });
 }
 
@@ -167,14 +166,14 @@ async function saveEdit() {
     return;
   }
 
-  if (!('id' in props.plant)) {
+  if (!('id' in props.user)) {
     // this should never happen
-    throw new Error('Plant ID is missing');
+    throw new Error('User ID is missing');
   }
 
   return executeEditMutation({
-    id: props.plant.id,
-    plant: editedData.value,
+    id: props.user.id,
+    user: editedData.value,
   });
 }
 

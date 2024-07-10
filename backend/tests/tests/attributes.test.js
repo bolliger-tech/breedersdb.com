@@ -848,7 +848,7 @@ test('"some string" is not a valid default value for BOOLEAN', async () => {
   );
 });
 
-test('"anything" is not a valid default value for TEXT', async () => {
+test('"anything" is a valid default value for TEXT', async () => {
   const resp = await postOrFail({
     query: insertMutation,
     variables: {

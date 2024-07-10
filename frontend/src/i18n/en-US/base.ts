@@ -50,4 +50,12 @@ export const base = {
     permissionRequest: 'Failed to access camera. Please allow camera use.',
     loading: 'Loading QR code scanner…',
   },
+
+  notAvailable: 'N/A',
+  deleteConfirmation: 'Are you sure you want to delete this item?',
+
+  locales: {
+    'en-US': 'English',
+    'de-CH': 'Deutsch',
+  },
 };

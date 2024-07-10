@@ -3,7 +3,7 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <EntityModalContent v-else-if="plant">
+  <EntityModalContent v-else-if="plant" @edit="edit">
     <template #title>
       <PlantCard
         v-if="plant"
@@ -75,11 +75,6 @@
     <template #action-left>
       <PlantButtonEliminate v-if="!plant.disabled" :plant-id="plant.id" />
       <div v-else></div>
-    </template>
-
-    <template #action-right>
-      <q-btn flat :label="t('base.edit')" color="primary" @click="edit" />
-      <q-btn v-close-popup flat :label="t('base.close')" color="primary" />
     </template>
   </EntityModalContent>
 

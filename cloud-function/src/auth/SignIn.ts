@@ -88,7 +88,12 @@ export async function SignIn({
   }
 
   // create cookies
-  const cookieHeader = createAuthCookies(dbToken.id, token, user.email);
+  const cookieHeader = createAuthCookies(
+    dbToken.id,
+    token,
+    user.id,
+    user.email,
+  );
 
   return {
     response: user,

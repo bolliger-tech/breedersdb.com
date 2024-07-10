@@ -4,8 +4,8 @@
     no-route-dismiss
     no-refocus
     :persistent="persistent"
-    @before-hide="() => $emit('before-hide')"
-    @hide="() => $emit('hide')"
+    @before-hide="$emit('before-hide')"
+    @hide="$emit('hide')"
   >
     <slot></slot>
   </q-dialog>

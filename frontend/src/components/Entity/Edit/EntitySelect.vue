@@ -15,7 +15,7 @@
       use-input
       fill-input
       hide-selected
-      clearable
+      :clearable="clearable"
       :loading="loading"
       :hint="required ? t('base.required') : ''"
       @filter="filterOptions"
@@ -78,12 +78,14 @@ export interface EntitySelectPropsWithoutModel<T> {
   options: T[];
   loading?: boolean;
   error?: CombinedError | null;
+  clearable?: boolean;
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   required: false,
   loading: false,
   error: null,
+  clearable: true,
 });
 
 const selectRef = ref<QSelect | null>(null);

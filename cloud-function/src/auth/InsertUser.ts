@@ -3,7 +3,7 @@ import { InsertUserMutation } from '../queries';
 import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
 import type { ActionProps, ActionResult } from '../types';
-import { validatePassword } from '../lib/validation';
+import { validateEmail, validatePassword } from '../lib/validation';
 import type { FullUserOutput } from './types';
 
 export async function InsertUserAction({
@@ -13,6 +13,7 @@ export async function InsertUserAction({
     throw new ErrorWithStatus(400, 'Bad Request: Missing email or password');
   }
 
+  validateEmail(input.email);
   validatePassword(input.password);
 
   const passwordHash = await hashAndSaltPassword(input.password);

@@ -25,15 +25,16 @@ entity "**attribute_values**" #00ff0012 ##008800 {
   ""text_value"": //character varying(2047) //
   ""boolean_value"": //boolean //
   ""date_value"": //date //
-  ""note"": //character varying(2047) //
+  ""text_note"": //character varying(2047) //
   *""exceptional_attribution"": //boolean //
   ""offline_id"": //uuid //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
+  ""photo_note"": //character varying(69) //
 }
 
 entity "**attributes**" #00ff0012 ##008800 {
-  ""- validation_rule"":\n""    JSONB: {min: int, max: int, step: int}"" for ""INTEGER"",\n""           {min: float|int, max: float|int, step: float|int}"" for ""FLOAT""\n""    NULL"" for other data types.\n""- data_type"": Can&#39;t be changed once ""attribute_values"" for this ""attribute"" exist.
+  ""- validation_rule"":\n""    JSONB: {min: int, max: int, step: int}"" for ""INTEGER"",\n""           {min: int &gt;= 0, max: int &lt;= 9, step: 1}"" for ""RATING""\n""           {min: float|int, max: float|int, step: float|int}"" for ""FLOAT""\n""    NULL"" for other data types.\n""- data_type"": Can&#39;t be changed once ""attribute_values"" for this ""attribute"" exist.\n""- legend"": Only supported for data_type RATING\n""- default_value"": Not supported for data_type PHOTO\n
   ..
   + ""id"": //integer [PK]//
   --
@@ -45,6 +46,8 @@ entity "**attributes**" #00ff0012 ##008800 {
   *""disabled"": //boolean //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
+  ""legend"": //jsonb //
+  ""default_value"": //jsonb //
 }
 
 entity "**attribution_form_fields**" #00ff0012 ##008800 {

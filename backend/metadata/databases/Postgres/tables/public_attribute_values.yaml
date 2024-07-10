@@ -21,7 +21,8 @@ insert_permissions:
         - integer_value
         - attribute_id
         - attribution_id
-        - note
+        - text_note
+        - photo_note
         - offline_id
         - text_value
     comment: ""
@@ -37,7 +38,8 @@ select_permissions:
         - integer_value
         - attribute_id
         - attribution_id
-        - note
+        - text_note
+        - photo_note
         - text_value
         - created
         - modified
@@ -56,7 +58,8 @@ update_permissions:
         - integer_value
         - attribute_id
         - attribution_id
-        - note
+        - text_note
+        - photo_note
         - text_value
       filter: {}
       check: {}

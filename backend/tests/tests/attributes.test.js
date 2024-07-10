@@ -1,5 +1,5 @@
 import { test, expect, afterEach } from 'bun:test';
-import { post } from '../fetch';
+import { post, postOrFail } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
@@ -9,6 +9,8 @@ const insertMutation = /* GraphQL */ `
     $data_type: attribute_data_types_enum
     $description: String
     $attribute_type: attribute_types_enum
+    $legend: jsonb
+    $default_value: jsonb
   ) {
     insert_attributes_one(
       object: {
@@ -18,6 +20,8 @@ const insertMutation = /* GraphQL */ `
         description: $description
         attribute_type: $attribute_type
         disabled: false
+        legend: $legend
+        default_value: $default_value
       }
     ) {
       id
@@ -29,12 +33,14 @@ const insertMutation = /* GraphQL */ `
       disabled
       created
       modified
+      legend
+      default_value
     }
   }
 `;
 
 afterEach(async () => {
-  await post({
+  await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAllAttributes {
         delete_attribute_values(where: {}) {
@@ -64,7 +70,7 @@ afterEach(async () => {
 });
 
 test('insert', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Attribution Attribute 1',
@@ -91,7 +97,7 @@ test('insert', async () => {
 });
 
 test('name is unique', async () => {
-  const resp1 = await post({
+  const resp1 = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Attribution Attribute 1',
@@ -129,7 +135,7 @@ test('name is required', async () => {
 });
 
 test('empty validation rule is valid for TEXT', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Attribution Attribute 1',
@@ -207,7 +213,7 @@ test('validation rule is empty for PHOTO', async () => {
 });
 
 test('validation rule contains integers for INTEGER', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Attribution Attribute 1',
@@ -232,7 +238,7 @@ test('validation rule contains no floats for INTEGER', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'For INTEGER the validation rule must contain min, max and step keys with integer values.',
+    'For INTEGER and RATING the validation rule must contain min, max and step keys with integer values.',
   );
 });
 
@@ -248,12 +254,136 @@ test('validation rule contains min, max, step for INTEGER', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'For INTEGER the validation rule must contain min, max and step keys with integer values.',
+    'For INTEGER, RATING and FLOAT the validation rule must contain min, max and step keys with number values.',
   );
 });
 
-test('validation rule contains numbers for FLOAT', async () => {
+test('validation rule contains integers for RATING', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: { max: 9, min: 0, step: 1 },
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('validation rule contains no floats for RATING', async () => {
   const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: { max: 9, min: 0, step: 0.1 },
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'For INTEGER and RATING the validation rule must contain min, max and step keys with integer values.',
+  );
+});
+
+test('validation rule contains min, max, step for RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: { max: 9, min: 1 },
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'For INTEGER, RATING and FLOAT the validation rule must contain min, max and step keys with number values.',
+  );
+});
+
+test('validation rule min must not be smaller than 0 for RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: { max: 9, min: -1, step: 1 },
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The minimum value must be between 0 and 9.',
+  );
+});
+
+test('validation rule max must not be greater than 9 for RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: { max: 10, min: 0, step: 1 },
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The maximum value must be between 0 and 9.',
+  );
+});
+
+test('validation rule step must be 1 for RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: { max: 9, min: 0, step: 2 },
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The step value must be 1.',
+  );
+});
+
+test('validation rule min must not be greater than max for RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: { max: 0, min: 1, step: 1 },
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The minimum value must be less than or equal to the maximum value.',
+  );
+});
+
+test('validation rule min can be equal to max for RATING', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: { max: 1, min: 1, step: 1 },
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('validation rule contains numbers for FLOAT', async () => {
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Attribution Attribute 1',
@@ -294,12 +424,12 @@ test('validation rule contains min, max, step for FLOAT', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'For FLOAT the validation rule must contain min, max and step keys with number values.',
+    'For INTEGER, RATING and FLOAT the validation rule must contain min, max and step keys with number values.',
   );
 });
 
 test('data type is immutable after insert of attribute_values', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Attribution Attribute 1',
@@ -309,7 +439,7 @@ test('data type is immutable after insert of attribute_values', async () => {
     },
   });
 
-  await post({
+  await postOrFail({
     query: /* GraphQL */ `
       mutation InsertAttributeValue($attribute_id: Int!) {
         insert_attribute_values_one(
@@ -366,7 +496,7 @@ test('data type is immutable after insert of attribute_values', async () => {
 });
 
 test('modified', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Attribution Attribute 1',
@@ -376,7 +506,7 @@ test('modified', async () => {
     },
   });
 
-  const updated = await post({
+  const updated = await postOrFail({
     query: /* GraphQL */ `
       mutation UpdateAttribute($id: Int!, $name: String) {
         update_attributes_by_pk(
@@ -397,5 +527,515 @@ test('modified', async () => {
 
   expect(updated.data.update_attributes_by_pk.modified).toMatch(
     iso8601dateRegex,
+  );
+});
+
+test('default value can be null', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'PHOTO',
+      attribute_type: 'OBSERVATION',
+      default_value: null,
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('default value is not allowed for PHOTO', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'PHOTO',
+      attribute_type: 'OBSERVATION',
+      default_value:
+        'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpg',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value must be NULL for PHOTO.',
+  );
+});
+
+test('default value must be an integer for INTEGER', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'INTEGER',
+      attribute_type: 'OBSERVATION',
+      default_value: 1.1,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value must be an integer.',
+  );
+});
+
+test('1 is a valid default value for INTEGER', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'INTEGER',
+      attribute_type: 'OBSERVATION',
+      default_value: 1,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('default value must respect the min for INTEGER', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'INTEGER',
+      attribute_type: 'OBSERVATION',
+      default_value: 0,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value does not match the validation rule.',
+  );
+});
+
+test('default value must respect the max for INTEGER', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'INTEGER',
+      attribute_type: 'OBSERVATION',
+      default_value: 10,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value does not match the validation rule.',
+  );
+});
+
+test('default value must respect the step for INTEGER', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'INTEGER',
+      attribute_type: 'OBSERVATION',
+      default_value: 1,
+      validation_rule: { max: 10, min: 0, step: 2 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value does not match the validation rule.',
+  );
+});
+
+test('default value must be an integer for RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+      default_value: 1.1,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value must be an integer.',
+  );
+});
+
+test('1 is a valid default value for RATING', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+      default_value: 1,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('default value must respect the min for RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+      default_value: 0,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value does not match the validation rule.',
+  );
+});
+
+test('default value must respect the max for RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+      default_value: 10,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value does not match the validation rule.',
+  );
+});
+
+test('default value must respect the step for RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+      default_value: 1,
+      validation_rule: { max: 10, min: 0, step: 2 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value does not match the validation rule.',
+  );
+});
+
+test('1.1 is a valid default value for FLOAT', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'FLOAT',
+      attribute_type: 'OBSERVATION',
+      default_value: 1.1,
+      validation_rule: { max: 9, min: 1, step: 0.1 },
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('default value must respect the min for FLOAT', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'FLOAT',
+      attribute_type: 'OBSERVATION',
+      default_value: 0,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value does not match the validation rule.',
+  );
+});
+
+test('default value must respect the max for FLOAT', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'FLOAT',
+      attribute_type: 'OBSERVATION',
+      default_value: 10,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value does not match the validation rule.',
+  );
+});
+
+test('2024-07-09 is a valid default value for DATE', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'DATE',
+      attribute_type: 'OBSERVATION',
+      default_value: '2024-07-09',
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('2024-07-32 is not a valid default value for DATE', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'DATE',
+      attribute_type: 'OBSERVATION',
+      default_value: '2024-07-32',
+    },
+  });
+
+  expect(resp.errors[0].message).toMatch('date/time field value out of range:');
+});
+
+test('false is a valid default value for BOOLEAN', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'BOOLEAN',
+      attribute_type: 'OBSERVATION',
+      default_value: false,
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('true is a valid default value for BOOLEAN', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'BOOLEAN',
+      attribute_type: 'OBSERVATION',
+      default_value: true,
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('"some string" is not a valid default value for BOOLEAN', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'BOOLEAN',
+      attribute_type: 'OBSERVATION',
+      default_value: 'some string',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value must be a boolean.',
+  );
+});
+
+test('"anything" is a valid default value for TEXT', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'TEXT',
+      attribute_type: 'OBSERVATION',
+      default_value: 'anything',
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('legend must be null for INTEGER', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'INTEGER',
+      attribute_type: 'OBSERVATION',
+      legend: ['1', '2'],
+      validation_rule: { max: 2, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The legend must be NULL for data types other than RATING.',
+  );
+});
+
+test('legend must be null for FLOAT', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'FLOAT',
+      attribute_type: 'OBSERVATION',
+      legend: ['1', '2'],
+      validation_rule: { max: 2, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The legend must be NULL for data types other than RATING.',
+  );
+});
+
+test('legend must be null for TEXT', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'TEXT',
+      attribute_type: 'OBSERVATION',
+      legend: ['1', '2'],
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The legend must be NULL for data types other than RATING.',
+  );
+});
+test('legend must be null for DATE', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'DATE',
+      attribute_type: 'OBSERVATION',
+      legend: ['1', '2'],
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The legend must be NULL for data types other than RATING.',
+  );
+});
+
+test('legend must be null for PHOTO', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'PHOTO',
+      attribute_type: 'OBSERVATION',
+      legend: ['1', '2'],
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The legend must be NULL for data types other than RATING.',
+  );
+});
+
+test('legend must be null for BOOLEAN', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'BOOLEAN',
+      attribute_type: 'OBSERVATION',
+      legend: ['1', '2'],
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The legend must be NULL for data types other than RATING.',
+  );
+});
+
+test('legend CAN be null for RATING', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+      legend: null,
+      validation_rule: { max: 9, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('legend matches the count of the RATING', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+      legend: ['1', '2'],
+      validation_rule: { max: 2, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.data.insert_attributes_one.id).toBeGreaterThan(0);
+});
+
+test('legend must not have less entries than the RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+      legend: ['1'],
+      validation_rule: { max: 4, min: 3, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The legend must have 2 items.',
+  );
+});
+
+test('legend must not have more entries than the RATING', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+      legend: ['1', '2'],
+      validation_rule: { max: 3, min: 3, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The legend must have 1 items.',
+  );
+});
+
+test('legend must only contain strings', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'RATING',
+      attribute_type: 'OBSERVATION',
+      legend: ['1', 2],
+      validation_rule: { max: 2, min: 1, step: 1 },
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The legend must contain only strings.',
   );
 });

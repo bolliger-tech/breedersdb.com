@@ -1,10 +1,30 @@
 <template>
   <q-card style="width: clamp(310px, 90vw, 1000px); max-width: unset">
     <q-card-section class="row items-center q-py-sm">
-      <slot name="title"
-        ><h4 class="q-my-sm">{{ title }}</h4></slot
-      >
-      <q-space />
+      <div style="width: calc(100% - 34px)">
+        <slot name="title">
+          <div class="row items-center no-wrap">
+            <BaseSpriteIcon
+              v-if="spriteIcon"
+              :name="spriteIcon"
+              color="grey-7"
+              size="50px"
+              class="q-mr-sm q-my-sm"
+            />
+            <div
+              class="q-my-xs"
+              :style="`max-width: ${spriteIcon ? 'calc(100% - 58px)' : '100%'}`"
+            >
+              <h2 v-if="title" class="q-ma-none nowrap-elipsis">
+                {{ title }}
+              </h2>
+              <h3 v-if="subtitle" class="text-body1 q-ma-none nowrap-elipsis">
+                {{ subtitle }}
+              </h3>
+            </div>
+          </div>
+        </slot>
+      </div>
       <q-btn v-close-popup icon="close" flat round dense />
     </q-card-section>
 
@@ -19,17 +39,67 @@
     <q-card-actions align="between">
       <div>
         <slot name="action-left">
-          <q-btn
-            flat
-            :label="t('base.delete')"
-            color="negative"
-            @click="() => $emit('delete')"
+          <EntityButtonDelete
+            @delete="$emit('delete')"
+            @reset-errors="$emit('resetErrors')"
           />
         </slot>
       </div>
       <div>
         <slot name="action-right">
-          <q-btn v-close-popup flat :label="t('base.close')" color="primary" />
+          <template v-if="onEdit">
+            <q-btn
+              flat
+              :label="t('base.edit')"
+              color="primary"
+              @click="$emit('edit')"
+            />
+            <q-btn
+              v-close-popup
+              flat
+              :label="t('base.close')"
+              color="primary"
+            />
+          </template>
+          <template v-if="onSave">
+            <q-btn
+              flat
+              :label="t('base.cancel')"
+              color="primary"
+              @click="$emit('cancel')"
+            />
+            <q-btn
+              flat
+              :label="t('base.save')"
+              color="primary"
+              :loading="loading"
+              @click="$emit('save')"
+              @mouseleave="$emit('resetErrors')"
+              @focusout="$emit('resetErrors')"
+            />
+            <q-tooltip
+              :model-value="!!saveError || !!validationError"
+              max-width="min(500px, 90svw)"
+              anchor="top middle"
+              self="bottom middle"
+              :hide-delay="2000"
+              no-parent-event
+              class="bg-dark shadow-3 entity-modal-content__error-tooltip"
+            >
+              <BaseGraphqlError v-if="saveError" :error="saveError" />
+              <div
+                v-else-if="validationError"
+                class="q-gutter-md row items-center"
+              >
+                <div class="col-auto">
+                  <q-icon name="warning" size="2em" class="text-negative" />
+                </div>
+                <div class="col">
+                  {{ validationError }}
+                </div>
+              </div>
+            </q-tooltip>
+          </template>
         </slot>
       </div>
     </q-card-actions>
@@ -38,9 +108,22 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
+import EntityButtonDelete from './EntityButtonDelete.vue';
+import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
+import { CombinedError } from '@urql/vue';
+import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
+import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 
 export interface EntityModalContentProps {
   title?: string;
+  subtitle?: string;
+  spriteIcon?: SpriteIcons;
+  loading?: boolean;
+  saveError?: CombinedError;
+  validationError?: string | null;
+  // make emit handler available in template
+  onSave?: () => void;
+  onEdit?: () => void;
 }
 
 defineProps<EntityModalContentProps>();
@@ -51,8 +134,24 @@ defineSlots<{
   'action-right': [];
 }>();
 defineEmits<{
+  edit: [];
   delete: [];
+  cancel: [];
+  save: [];
+  resetErrors: [];
 }>();
 
 const { t } = useI18n();
 </script>
+
+<style lang="scss" scoped>
+.nowrap-elipsis {
+  white-space: nowrap;
+  overflow-x: clip;
+  text-overflow: ellipsis;
+}
+
+:global(.body--dark .entity-modal-content__error-tooltip) {
+  border: 1px solid $grey-7;
+}
+</style>

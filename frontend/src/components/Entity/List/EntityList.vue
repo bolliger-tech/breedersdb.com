@@ -6,7 +6,7 @@
       unelevated
       no-caps
       color="primary"
-      @click="() => $emit('add-new')"
+      @click="$emit('add-new')"
       >{{ t('entity.add') }}</q-btn
     >
   </div>

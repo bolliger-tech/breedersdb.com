@@ -33,6 +33,10 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+p {
+  font-size: 12px;
+}
+
 .base-graphql-error__msg {
   font-size: 12px;
   white-space: pre-wrap;

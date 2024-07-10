@@ -3,19 +3,24 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <EntityModalContent v-else-if="plant">
+  <EntityModalContent v-else-if="plant" @edit="edit">
     <template #title>
-      <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
-      <div class="q-ma-sm">
-        <h2 class="q-ma-none">
-          <PlantLabelId :label-id="plant.label_id" />
-        </h2>
-        <EntityName
-          :plant-group="plant.plant_group"
-          :cultivar="plant.plant_group?.cultivar"
-          :lot="plant.plant_group?.cultivar.lot"
-          :crossing="plant.plant_group?.cultivar.lot.crossing"
-        />
+      <div class="row items-center no-wrap">
+        <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
+        <div
+          class="q-ma-sm"
+          style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
+        >
+          <h2 class="q-ma-none">
+            <PlantLabelId :label-id="plant.label_id" />
+          </h2>
+          <EntityName
+            :plant-group="plant.plant_group"
+            :cultivar="plant.plant_group?.cultivar"
+            :lot="plant.plant_group?.cultivar.lot"
+            :crossing="plant.plant_group?.cultivar.lot.crossing"
+          />
+        </div>
       </div>
     </template>
 
@@ -81,11 +86,6 @@
     <template #action-left>
       <PlantButtonEliminate v-if="!plant.disabled" :plant-id="plant.id" />
       <div v-else></div>
-    </template>
-
-    <template #action-right>
-      <q-btn flat :label="t('base.edit')" color="primary" @click="edit" />
-      <q-btn v-close-popup flat :label="t('base.close')" color="primary" />
     </template>
   </EntityModalContent>
 

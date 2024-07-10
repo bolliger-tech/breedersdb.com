@@ -32,11 +32,12 @@ function cookieOptions(httpOnly: boolean, maxAge: number) {
 export function createAuthCookies(
   tokenId: number,
   token: string,
+  userId: number,
   email: string,
 ) {
   return [
     `${TOKEN_COOKIE_NAME}=${tokenId}.${token}; ${cookieOptions(true, MAX_AGE)}`,
-    `${FE_COOKIE_NAME}=${JSON.stringify({ email })}; ${cookieOptions(false, MAX_AGE)}`,
+    `${FE_COOKIE_NAME}=${JSON.stringify({ id: userId, email })}; ${cookieOptions(false, MAX_AGE)}`,
   ];
 }
 

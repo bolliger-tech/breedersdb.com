@@ -39,4 +39,12 @@ export const base = {
   },
 
   noResults: 'No results',
+  notAvailable: 'N/A',
+
+  deleteConfirmation: 'Are you sure you want to delete this item?',
+
+  locales: {
+    'en-US': 'English',
+    'de-CH': 'Deutsch',
+  },
 };

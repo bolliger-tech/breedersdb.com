@@ -231,7 +231,7 @@ const items: NavLevel0Props['items'] = [
       {
         label: t('users.title', 2),
         icon: 'user',
-        to: 'users',
+        to: '/users',
       },
       {
         label: t('nav.more.settings'),

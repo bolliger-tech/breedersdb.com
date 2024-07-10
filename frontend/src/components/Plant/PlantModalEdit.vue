@@ -3,19 +3,13 @@
     :loading="savingEdit || savingInsert"
     :save-error="saveError"
     :validation-error="validationError"
+    sprite-icon="tree"
+    :title="title"
+    :subtitle="t('plants.title', 1)"
     @cancel="cancel"
     @save="save"
     @reset-errors="resetErrors"
   >
-    <template #title>
-      <PlantCard>
-        <template #title>
-          <h2 class="q-ma-none">{{ title }}</h2>
-        </template>
-        <template #subtitle>{{ t('plants.title', 1) }}</template>
-      </PlantCard>
-    </template>
-
     <template #default>
       <PlantEntityForm ref="formRef" :plant="plant" @change="onFormChange" />
     </template>
@@ -47,7 +41,6 @@ import {
   makeModalPersistentSymbol,
 } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import PlantCard from 'src/components/Plant/PlantCard.vue';
 import { useCancel } from 'src/composables/useCancel';
 
 export type PlantEditInput = PlantFragment;

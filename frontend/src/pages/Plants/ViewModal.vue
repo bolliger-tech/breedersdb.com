@@ -3,13 +3,17 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <EntityModalContent v-else-if="plant" @edit="edit">
-    <template #title>
-      <PlantCard
-        v-if="plant"
-        :label-id="plant.label_id"
+  <EntityModalContent v-else-if="plant" sprite-icon="tree" @edit="edit">
+    <template #title-text>
+      <PlantLabelId :label-id="plant.label_id" />
+    </template>
+    <template #subtitle-text>
+      <EntityName
+        v-if="plant.plant_group"
         :plant-group="plant.plant_group"
-        class="q-my-sm"
+        :cultivar="plant.plant_group.cultivar"
+        :lot="plant.plant_group.cultivar?.lot"
+        :crossing="plant.plant_group.cultivar?.lot?.crossing"
       />
     </template>
 
@@ -92,7 +96,8 @@ import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
-import PlantCard from 'src/components/Plant/PlantCard.vue';
+import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
+import EntityName from 'src/components/Entity/EntityName.vue';
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
 import { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 import { useI18n } from 'src/composables/useI18n';

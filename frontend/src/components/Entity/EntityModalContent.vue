@@ -15,11 +15,17 @@
               class="q-my-xs"
               :style="`max-width: ${spriteIcon ? 'calc(100% - 58px)' : '100%'}`"
             >
-              <h2 v-if="title" class="q-ma-none nowrap-elipsis">
-                {{ title }}
+              <h2
+                v-if="title || $slots['title-text']"
+                class="q-ma-none nowrap-elipsis"
+              >
+                <slot name="title-text">{{ title }}</slot>
               </h2>
-              <h3 v-if="subtitle" class="text-body1 q-ma-none nowrap-elipsis">
-                {{ subtitle }}
+              <h3
+                v-if="subtitle || $slots['subtitle-text']"
+                class="text-body1 q-ma-none nowrap-elipsis"
+              >
+                <slot name="subtitle-text">{{ subtitle }}</slot>
               </h3>
             </div>
           </div>
@@ -129,6 +135,8 @@ export interface EntityModalContentProps {
 defineProps<EntityModalContentProps>();
 defineSlots<{
   title: [];
+  'title-text': [];
+  'subtitle-text': [];
   default: [];
   'action-left': [];
   'action-right': [];

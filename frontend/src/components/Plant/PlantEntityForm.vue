@@ -101,8 +101,7 @@ const props = defineProps<PlantEntityFormProps>();
 const emits = defineEmits<{
   change: [data: typeof data.value];
 }>();
-
-const { t } = useI18n();
+// for defineExpose() see below
 
 // new plant has no label_id
 const initialLabelId = 'label_id' in props.plant ? props.plant.label_id : '';
@@ -163,4 +162,6 @@ const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
 watch(isDirty, () => makeModalPersistent(isDirty.value));
 
 watch(data, (newData) => emits('change', newData), { deep: true });
+
+const { t } = useI18n();
 </script>

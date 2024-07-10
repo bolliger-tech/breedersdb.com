@@ -82,8 +82,7 @@ const props = defineProps<UserEntityFormProps>();
 const emits = defineEmits<{
   change: [data: typeof data.value];
 }>();
-
-const { t } = useI18n();
+// for defineExpose() see below
 
 const initialData = {
   email: props.user.email,
@@ -116,6 +115,7 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 
 watch(data, (newData) => emits('change', newData), { deep: true });
 
+const { t } = useI18n();
 const localeOptions = getLocaleOptions(t);
 
 const emailUniqueQuery = graphql(`

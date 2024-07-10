@@ -162,11 +162,17 @@ const resultColumns = computed<QTableColumn[]>(() => {
       field: column.tableColumnName,
       align: isNum ? 'right' : 'left',
       sortable: true,
-      format: (value: string | number | Date | null | undefined) =>
-        formatResultColumnValue({
+      format: (value: string | number | Date | null | undefined) => {
+        if (column.type === ColumnTypes.Photo) {
+          // this should never happen
+          throw new Error('Photo columns are not supported');
+        }
+
+        return formatResultColumnValue({
           value,
           type: column.type ?? ColumnTypes.String,
-        }),
+        });
+      },
     };
   });
 });

@@ -58,6 +58,11 @@ const label = computed(() => {
 
   const type = dataTypeToColumnTypes(props.attributions[0].data_type);
 
+  if (type === ColumnTypes.Photo) {
+    // this should never happen
+    throw new Error('Photo type not supported for aggregation');
+  }
+
   switch (props.aggregation) {
     case AttributionAggregation.Count:
       return formatResultColumnValue({

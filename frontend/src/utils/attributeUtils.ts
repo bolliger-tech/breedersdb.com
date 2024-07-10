@@ -24,7 +24,7 @@ export function formatResultColumnValue({
   type,
 }: {
   value: string | number | Date | null | boolean | undefined;
-  type: ColumnTypes;
+  type: Exclude<ColumnTypes, ColumnTypes.Photo>;
 }) {
   if (null === value || undefined === value) {
     return '';
@@ -43,4 +43,22 @@ export function formatResultColumnValue({
   }
 
   return value;
+}
+
+export function getAttributeValue({
+  integer_value,
+  float_value,
+  text_value,
+  boolean_value,
+  date_value,
+}: {
+  integer_value?: number | null;
+  float_value?: number | null;
+  text_value?: string | null;
+  boolean_value?: boolean | null;
+  date_value?: string | null;
+}) {
+  return (
+    integer_value ?? float_value ?? text_value ?? boolean_value ?? date_value
+  );
 }

@@ -17,6 +17,7 @@
           :lot="lot"
           :crossing="crossing"
           preview
+          :preview-height="200"
           :model-value="open === image.id"
           :transition="transition"
           :transition-duration="TRANSITION_DURATION"

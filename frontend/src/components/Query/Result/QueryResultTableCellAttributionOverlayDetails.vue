@@ -1,33 +1,27 @@
 <template>
   <div v-if="'TEXT' === data.data_type">
     {{ data.text_value }}
-    <q-separator class="q-my-sm" dark />
+    <q-separator v-if="!data.photo_note" class="q-my-sm" dark />
   </div>
 
-  <div v-if="'PHOTO' === data.data_type" class="photo-block">
-    <div class="photo-wrapper">
-      <a :href="`/photos/view/${data.text_value}`" target="_blank">
-        <img
-          :alt="
-            t('result.altPhoto', {
-              date: localizeDate(data.date_attributed),
-              author: data.author,
-            })
-          "
-          :src="`/photos/view/${data.text_value}?h=564`"
-          class="photo"
-        />
-      </a>
+  <EntityViewAttributionImage
+    v-if="data.photo_note || ('PHOTO' === data.data_type && data.text_value)"
+    :file-name="(data.photo_note || data.text_value)!"
+    :attribution="data"
+    :plant="data.plant || undefined"
+    :plant-group="data.plant_group || undefined"
+    :cultivar="data.cultivar || undefined"
+    :lot="data.lot || undefined"
+    preview
+    :preview-width="282"
+  />
+
+  <template v-if="data.text_note">
+    <div class="text-body2" style="white-space: pre-line">
+      {{ data.text_note }}
     </div>
-    <q-btn
-      :href="`/photos/view/${data.text_value}`"
-      :label="t('result.downloadPhoto')"
-      download
-      outline
-      size="xs"
-      type="a"
-    />
-  </div>
+    <q-separator class="q-my-sm" dark />
+  </template>
 
   <div class="text-body2 row justify-between">
     <div>
@@ -155,6 +149,7 @@ import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import { localizeDate } from 'src/utils/dateUtils';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import PlantCard from 'src/components/Plant/PlantCard.vue';
+import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 
 export interface QueryResultTableCellAttributionOverlayDetailsProps {
   data: AttributionDetails;

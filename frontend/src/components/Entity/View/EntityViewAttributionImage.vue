@@ -2,10 +2,10 @@
   <img
     v-if="preview"
     v-ripple
-    :src="`/api/assets/images/${desiredFileName}?file=${fileName}&height=200`"
+    :src="`/api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['1x']}`"
     :srcset="`
-      /api/assets/images/${desiredFileName}?file=${fileName}&height=200,
-      /api/assets/images/${desiredFileName}?file=${fileName}&height=400 2x
+      /api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['1x']},
+      /api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['2x']} 2x
     `"
     class="cursor-pointer"
     @click="open = true"
@@ -104,6 +104,8 @@ import {
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
 
+const DEFAULT_PREVIEW_HEIGHT = 200;
+
 export interface EntityViewAttributionImageProps {
   fileName: string;
   attribution: EntityAttributionsViewFragment;
@@ -113,6 +115,8 @@ export interface EntityViewAttributionImageProps {
   lot?: { display_name: string };
   crossing?: { name: string };
   preview?: boolean;
+  previewWidth?: number;
+  previewHeight?: number;
   transition?: QDialogProps['transitionShow'];
   transitionDuration?: number;
 }
@@ -170,5 +174,27 @@ const metadata = computed(() => {
       : `: ${formatResultColumnValue({ value, type })}`;
 
   return `${props.attribution.attribute_name}${attrValue}, ${localizeDate(props.attribution.date_attributed)} ${props.attribution.author}, ${entityType.value} ${entityName.value}`;
+});
+
+const previewDimensions = computed(() => {
+  const dims1x = [];
+  const dims2x = [];
+
+  if (props.previewWidth) {
+    dims1x.push(`width=${props.previewWidth}`);
+    dims2x.push(`width=${2 * props.previewWidth}`);
+  }
+
+  if (props.previewHeight || DEFAULT_PREVIEW_HEIGHT) {
+    dims1x.push(`height=${props.previewHeight || DEFAULT_PREVIEW_HEIGHT}`);
+    dims2x.push(
+      `height=${2 * (props.previewHeight || DEFAULT_PREVIEW_HEIGHT)}`,
+    );
+  }
+
+  return {
+    '1x': dims1x.join('&'),
+    '2x': dims2x.join('&'),
+  };
 });
 </script>

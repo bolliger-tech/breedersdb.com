@@ -2,8 +2,8 @@
   <BaseSpinner v-if="fetching" size="xl" />
   <BaseGraphqlError v-else-if="error" :error="error" />
   <QueryResultTableCellAttributionOverlayDetails
-    v-else-if="data?.attributions_view[0]"
-    :data="data?.attributions_view[0]"
+    v-else-if="attribution"
+    :data="attribution"
   />
   <div v-else>{{ t('result.noData') }}</div>
 </template>
@@ -15,13 +15,27 @@ import { useQuery } from '@urql/vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import QueryResultTableCellAttributionOverlayDetails from './QueryResultTableCellAttributionOverlayDetails.vue';
-import { plantFragment } from 'src/components/Plant/plantFragment';
+import {
+  plantFragment,
+  type PlantFragment,
+} from 'src/components/Plant/plantFragment';
+import {
+  entityAttributionsViewFragment,
+  type EntityAttributionsViewFragment,
+} from 'src/components/Entity/entityAttributionsViewFragment';
+import { computed } from 'vue';
 
 export interface QueryResultTableCellAttributionOverlayProps {
   id: number;
 }
 
-export type AttributionDetails = ResultOf<typeof query>['attributions_view'][0];
+type QueryResult = ResultOf<typeof query>['attributions_view'][0];
+export type AttributionDetails = EntityAttributionsViewFragment & {
+  plant: PlantFragment;
+  plant_group: QueryResult['plant_group'];
+  cultivar: QueryResult['cultivar'];
+  lot: QueryResult['lot'];
+};
 
 const props = defineProps<QueryResultTableCellAttributionOverlayProps>();
 
@@ -33,22 +47,14 @@ const query = graphql(
       $withSegments: Boolean! = true
     ) {
       attributions_view(where: { id: { _eq: $id } }) {
-        id
-        integer_value
-        float_value
-        text_value
-        boolean_value
-        date_value
-        text_note
-        photo_note
-        exceptional_attribution
-        attribute_name
-        attribute_id
-        data_type
-        attribute_type
-        attribution_id
+        ...entityAttributionsViewFragment
         plant {
           ...plantFragment
+        }
+        plant_group {
+          id
+          display_name
+          note
         }
         cultivar {
           id
@@ -70,12 +76,10 @@ const query = graphql(
           plot
           note
         }
-        author
-        date_attributed
       }
     }
   `,
-  [plantFragment],
+  [plantFragment, entityAttributionsViewFragment],
 );
 
 const { data, fetching, error } = useQuery({
@@ -83,6 +87,12 @@ const { data, fetching, error } = useQuery({
   variables: { id: props.id },
   requestPolicy: 'cache-first',
 });
+
+const attribution = computed(() =>
+  data.value
+    ? (data.value.attributions_view[0] as AttributionDetails)
+    : undefined,
+);
 
 const { t } = useI18n();
 </script>

@@ -24,9 +24,7 @@
           :label-id="plant.label_id"
           :plant-group="plant.plant_group"
         />
-        <div v-else class="text-negative">
-          {{ t('attribute.noEntitySelected') }}
-        </div>
+        <!-- if the plant is missing AttributeSteps will handle it -->
       </template>
     </AttributeSteps>
   </PageLayout>

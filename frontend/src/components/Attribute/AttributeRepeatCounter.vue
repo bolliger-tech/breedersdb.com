@@ -45,6 +45,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed } from 'vue';
 import { AttributableEntities } from './attributableEntities';
 import BaseExplainer from 'src/components/Base/BaseExplainer.vue';
+import { useAttributableEntityName } from 'src/components/Attribute/useAttributableEntityName';
 
 defineEmits<{
   reset: [];
@@ -58,19 +59,7 @@ export type MarkCounterProps = {
 
 const props = defineProps<MarkCounterProps>();
 const progress = computed(() => props.count / props.total);
-const entity = computed(() => {
-  switch (props.entityType) {
-    case AttributableEntities.Plant:
-      return t('plants.title', 1);
-    case AttributableEntities.PlantGroup:
-      return t('plantGroups.title', 1);
-    case AttributableEntities.Cultivar:
-      return t('cultivars.title', 1);
-    case AttributableEntities.Lot:
-      return t('lots.title', 1);
-  }
-  throw new Error('Unknown entity type');
-});
+const { entity } = useAttributableEntityName({ entityType: props.entityType });
 
 const { t } = useI18n();
 </script>

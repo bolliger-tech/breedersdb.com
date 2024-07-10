@@ -12,13 +12,9 @@
       done-icon="svguse:/icons/sprite.svg#form"
       active-icon="svguse:/icons/sprite.svg#form"
       title=""
-      :done="!!form"
+      :done="formId > -1"
     >
-      <AttributeFormSelector
-        ref="attributeFormSelectorRef"
-        v-model="formId"
-        @select="(f) => (form = f)"
-      />
+      <AttributeFormSelector ref="attributeFormSelectorRef" v-model="formId" />
 
       <q-stepper-navigation class="row justify-end">
         <q-btn
@@ -36,7 +32,7 @@
       done-icon="sell"
       active-icon="sell"
       :done="!!author && !!date"
-      :disable="!form"
+      :disable="formId === -1"
     >
       <AttributeMetaData
         ref="attributeMetaDataRef"
@@ -61,7 +57,7 @@
       :icon="entityIcon"
       :done-icon="entityIcon"
       :active-icon="entityIcon"
-      :disable="!form || !author || !date"
+      :disable="formId === -1 || !author || !date"
       :done="entityId !== null"
     >
       <slot name="entity-selector"></slot>
@@ -82,39 +78,75 @@
       icon="svguse:/icons/sprite.svg#star"
       done-icon="svguse:/icons/sprite.svg#star"
       active-icon="svguse:/icons/sprite.svg#star"
-      :disable="!form || !author || !date || entityId === null"
+      :disable="formId === -1 || !author || !date || entityId === null"
     >
-      <slot name="entity-preview"></slot>
-      <AttributeRepeatCounter
-        v-if="repeatInt > 0"
-          class="q-mt-md"
-        :total="repeatInt"
+      <BaseGraphqlError v-if="formFetchError" :error="formFetchError" />
+      <BaseSpinner v-else-if="formFetching" />
+      <q-banner v-else-if="!form" class="text-white bg-negative">
+        {{ t('attribute.noFormSelected') }}
+        <template #action>
+          <q-btn
+            flat
+            color="white"
+            :label="t('attribute.selectForm')"
+            @click="step = 1"
+          />
+        </template>
+      </q-banner>
+      <q-banner v-else-if="!author || !date" class="text-white bg-negative">
+        {{ t('attribute.missingMetadata') }}
+        <template #action>
+          <q-btn
+            flat
+            color="white"
+            :label="t('attribute.addMetadata')"
+            @click="step = 2"
+          />
+        </template>
+      </q-banner>
+      <AttributeNoEntityError
+        v-else-if="entityId === null"
         :entity-type="entityType"
+        @click="step = 3"
+      />
+
+      <template v-else>
+        <slot name="entity-preview"></slot>
+        <AttributeRepeatCounter
+          v-if="repeatInt > 0"
+          class="q-mt-md"
+          :total="repeatInt"
+          :entity-type="entityType"
           :count="repeatCount"
           @reset="repeatCount = 0"
-      />
-      <!-- <AttributeForm /> -->
-
-      <q-stepper-navigation>
-        <q-btn color="primary" label="Finish" />
-        <q-btn
-          flat
-          color="primary"
-          label="Back"
-          class="q-ml-sm"
-          @click="step = 3"
         />
+
+        <AttributeForm
+          :entity-id="entityId"
+          :entity-type="entityType"
+          :form="form"
+          :date="date"
+          :author="author"
+          @saved="completeStep4"
+        />
+      </template>
+      <q-stepper-navigation>
+        <q-btn flat color="primary" :label="t('base.back')" @click="step = 3" />
       </q-stepper-navigation>
     </q-step>
   </q-stepper>
 </template>
 
 <script setup lang="ts">
-import AttributeFormSelector, {
-  AttributionForm,
-} from 'src/components/Attribute/AttributeFormSelector.vue';
+import AttributeFormSelector from 'src/components/Attribute/AttributeFormSelector.vue';
 import AttributeMetaData from 'src/components/Attribute/AttributeMetaData.vue';
 import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCounter.vue';
+import AttributeForm from 'src/components/Attribute/AttributeForm.vue';
+import AttributeNoEntityError from 'src/components/Attribute/AttributeNoEntityError.vue';
+import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
+import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
+import { graphql, ResultOf } from 'src/graphql';
+import { useQuery } from '@urql/vue';
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref, watch } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
@@ -144,6 +176,74 @@ const emit = defineEmits<{
   entityStepCompleted: [];
 }>();
 
+const formQuery = graphql(`
+  query AttributionForm($formId: Int!) {
+    attribution_forms_by_pk(id: $formId) {
+      id
+      name
+      description
+      attribution_form_fields(
+        where: { attribute: { disabled: { _eq: false } } }
+        order_by: { priority: asc }
+      ) {
+        id
+        priority
+        attribute {
+          id
+          validation_rule
+          name
+          description
+          data_type
+          attribute_type
+          default_value
+          legend
+        }
+      }
+    }
+  }
+`);
+
+type Form = NonNullable<ResultOf<typeof formQuery>['attribution_forms_by_pk']>;
+type Attribute = Form['attribution_form_fields'][0]['attribute'];
+export type AttributeDefinition =
+  | (Attribute & {
+      data_type: 'RATING';
+      legend: string[] | null;
+      default_value: number | null;
+      validation_rule: { min: number; max: number; step: 1 };
+    })
+  | (Attribute & {
+      data_type: 'INTEGER' | 'FLOAT';
+      legend: null;
+      default_value: number | null;
+      validation_rule: { min: number; max: number; step: number };
+    })
+  | (Attribute & {
+      data_type: 'TEXT' | 'DATE';
+      legend: null;
+      validation_rule: null;
+      default_value: string | null;
+    })
+  | (Attribute & {
+      data_type: 'BOOLEAN';
+      legend: null;
+      validation_rule: null;
+      default_value: boolean | null;
+    })
+  | (Attribute & {
+      data_type: 'PHOTO';
+      legend: null;
+      validation_rule: null;
+      default_value: null;
+    });
+export type AttributionForm = Form & {
+  attribution_form_fields: {
+    attribute: AttributeDefinition;
+    priority: number;
+    id: number;
+  }[];
+};
+
 const { t } = useI18n();
 const { localStorage, sessionStorage } = useQuasar();
 
@@ -156,7 +256,19 @@ const { queryArg: formId } = useQueryArg<number>({
 });
 watch(formId, (f) => sessionStorage.set(FORM_ID_STORAGE_KEY, f));
 
-const form = ref<AttributionForm | null>(null);
+const {
+  data: formData,
+  error: formFetchError,
+  fetching: formFetching,
+} = useQuery({
+  query: formQuery,
+  variables: { formId: parseInt(formId.value.toString(), 10) },
+  pause: formId.value === -1,
+});
+
+const form = computed(
+  () => (formData.value?.attribution_forms_by_pk as AttributionForm) ?? null,
+);
 
 const attributeFormSelectorRef = ref<InstanceType<
   typeof AttributeFormSelector
@@ -218,6 +330,11 @@ const repeatCount = useRepeatCounter({
   entityId: props.entityId || -1,
   entityType: props.entityType,
 });
+
+function completeStep4() {
+  // TODO:
+  console.log(form);
+}
 
 watch(
   () => props.entityId,

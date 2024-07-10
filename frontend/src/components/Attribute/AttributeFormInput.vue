@@ -1,0 +1,110 @@
+<template>
+  <BaseInputLabel :label="attribute.name">
+    <AttributeFormInputRating
+      v-if="attribute.data_type === 'RATING'"
+      :model-value="modelValue?.integer_value ?? attribute.default_value"
+      :validation="attribute.validation_rule"
+      :legend="attribute.legend"
+      @update:model-value="
+        (val: number | null) => updateModelValue({ integer_value: val })
+      "
+    />
+    <AttributeFormInputNumber
+      v-else-if="
+        attribute.data_type === 'INTEGER' || attribute.data_type === 'FLOAT'
+      "
+      v-model="modelValue"
+      :validation="attribute.validation_rule"
+      :default-value="attribute.default_value"
+    />
+    <AttributeFormInputText
+      v-else-if="attribute.data_type === 'TEXT'"
+      v-model="modelValue"
+      :validation="attribute.validation_rule"
+      :default-value="attribute.default_value"
+    />
+    <AttributeFormInputBoolean
+      v-else-if="attribute.data_type === 'BOOLEAN'"
+      v-model="modelValue"
+      :default-value="attribute.default_value"
+    />
+    <AttributeFormInputDate
+      v-else-if="attribute.data_type === 'DATE'"
+      v-model="modelValue"
+      :default-value="attribute.default_value"
+    />
+    <AttributeFormInputPhoto
+      v-else-if="attribute.data_type === 'PHOTO'"
+      v-model="modelValue"
+    />
+    <div v-if="attribute.description">
+      {{ attribute.description }}
+    </div>
+    <q-btn color="primary" flat :label="t('attribute.addTextNote')" /><q-btn
+      color="primary"
+      flat
+      :label="t('attribute.addPhotoNote')"
+    />
+
+    <!-- <pre>{{ JSON.stringify(attribute, null, 2) }}</pre> -->
+  </BaseInputLabel>
+</template>
+
+<script setup lang="ts">
+import type { AttributeInsertData } from 'src/components/Attribute/AttributeForm.vue';
+import type { AttributeDefinition } from 'src/components/Attribute/AttributeSteps.vue';
+import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
+import AttributeFormInputRating from 'src/components/Attribute/AttributeFormInputRating.vue';
+import { useI18n } from 'src/composables/useI18n';
+
+export interface AttributeFormInputProps {
+  attribute: AttributeDefinition;
+  exceptional: boolean;
+}
+
+const props = defineProps<AttributeFormInputProps>();
+
+const modelValue = defineModel<AttributeInsertData | undefined>();
+
+function updateModelValue({
+  integer_value = null,
+  float_value = null,
+  text_value = null,
+  boolean_value = null,
+  date_value = null,
+  text_note,
+  photo_note,
+}: {
+  integer_value?: number | null;
+  float_value?: number | null;
+  text_value?: string | null;
+  boolean_value?: boolean | null;
+  date_value?: string | null;
+  text_note?: string | null | undefined;
+  photo_note?: string | null | undefined;
+}) {
+  const model = modelValue.value ?? {
+    attribute_id: props.attribute.id,
+    integer_value: null,
+    float_value: null,
+    text_value: null,
+    boolean_value: null,
+    date_value: null,
+    exceptional_attribution: props.exceptional,
+    text_note: null,
+    photo_note: null,
+  };
+
+  model.integer_value = integer_value;
+  model.float_value = float_value;
+  model.text_value = text_value;
+  model.boolean_value = boolean_value;
+  model.date_value = date_value;
+  model.text_note = text_note ?? model.text_note;
+  model.photo_note = photo_note ?? model.photo_note;
+
+  modelValue.value = model;
+}
+
+const { t } = useI18n();
+</script>

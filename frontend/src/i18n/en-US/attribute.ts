@@ -1,5 +1,6 @@
 export const attribute = {
   title: 'Add Attribute',
+  attributions: 'Attributions',
 
   form: 'Form',
   selectForm: 'Select form',
@@ -16,7 +17,11 @@ export const attribute = {
     'The number of times you aim to attribute the same object. Less is possible.',
   valueCount: '{count} attributions',
 
-  noEntitySelected: 'No entity selected',
+  selectEntity: 'Select {entity}',
+  noEntitySelected: 'No {entity} selected.',
+  noFormSelected: 'No form selected.',
+  missingMetadata: 'Missing metadata.',
+  addMetadata: 'Add metadata',
 
   counter: {
     description:
@@ -24,4 +29,7 @@ export const attribute = {
     reset: 'Reset counter',
     title: 'Count',
   },
+
+  addTextNote: 'Add Note',
+  addPhotoNote: 'Add Photo',
 };

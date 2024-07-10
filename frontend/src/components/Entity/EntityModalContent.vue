@@ -84,7 +84,7 @@
               self="bottom middle"
               :hide-delay="2000"
               no-parent-event
-              class="bg-dark shadow-3 error-tooltip"
+              class="bg-dark shadow-3 entity-modal-content__error-tooltip"
             >
               <BaseGraphqlError v-if="saveError" :error="saveError" />
               <div
@@ -151,7 +151,7 @@ const { t } = useI18n();
   text-overflow: ellipsis;
 }
 
-.error-tooltip {
+:global(.body--dark .entity-modal-content__error-tooltip) {
   border: 1px solid $grey-7;
 }
 </style>

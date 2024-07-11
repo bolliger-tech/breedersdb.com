@@ -33,14 +33,16 @@
         (val: string | null) => updateModelValue({ text_value: val })
       "
     />
+    <AttributeFormInputDate
+      v-else-if="attribute.data_type === 'DATE'"
+      :model-value="modelValue?.date_value ?? attribute.default_value"
+      @update:model-value="
+        (val: string | null) => updateModelValue({ date_value: val })
+      "
+    />
     <!--
     <AttributeFormInputBoolean
       v-else-if="attribute.data_type === 'BOOLEAN'"
-      v-model="modelValue"
-      :default-value="attribute.default_value"
-    />
-    <AttributeFormInputDate
-      v-else-if="attribute.data_type === 'DATE'"
       v-model="modelValue"
       :default-value="attribute.default_value"
     />
@@ -68,6 +70,7 @@ import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import AttributeFormInputRating from 'src/components/Attribute/AttributeFormInputRating.vue';
 import AttributeFormInputNumber from 'src/components/Attribute/AttributeFormInputNumber.vue';
 import AttributeFormInputText from 'src/components/Attribute/AttributeFormInputText.vue';
+import AttributeFormInputDate from 'src/components/Attribute/AttributeFormInputDate.vue';
 import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributeFormInputProps {

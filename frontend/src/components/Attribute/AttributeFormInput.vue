@@ -49,17 +49,18 @@
     />
     <AttributeFormInputPhoto
       v-else-if="attribute.data_type === 'PHOTO'"
-      :model-value="photoInput"
-      @update:model-value="updatePhotoInput"
+      v-model="photoInput"
     />
 
     <div v-if="attribute.description">
       {{ attribute.description }}
     </div>
-    <q-btn color="primary" flat :label="t('attribute.addTextNote')" /><q-btn
-      color="primary"
-      flat
-      :label="t('attribute.addPhotoNote')"
+
+    <AttributeFormInputNote
+      v-model:photo-note="photoNote"
+      v-model:text-note="textNote"
+      :allow-text-note="attribute.data_type !== 'TEXT'"
+      :allow-photo-note="attribute.data_type !== 'PHOTO'"
     />
   </BaseInputLabel>
 </template>
@@ -74,7 +75,7 @@ import AttributeFormInputText from 'src/components/Attribute/AttributeFormInputT
 import AttributeFormInputDate from 'src/components/Attribute/AttributeFormInputDate.vue';
 import AttributeFormInputBoolean from 'src/components/Attribute/AttributeFormInputBoolean.vue';
 import AttributeFormInputPhoto from 'src/components/Attribute/AttributeFormInputPhoto.vue';
-import { useI18n } from 'src/composables/useI18n';
+import AttributeFormInputNote from 'src/components/Attribute/AttributeFormInputNote.vue';
 import { computed } from 'vue';
 
 export interface AttributeFormInputProps {
@@ -89,36 +90,73 @@ const modelValue = defineModel<AttributeInsertData | undefined>({
 });
 const photo = defineModel<File | null>('photo', { required: true });
 
-const photoInput = computed(() => {
-  const file = photo.value;
-
-  if (
-    !file ||
-    props.attribute.data_type !== 'PHOTO' ||
-    !modelValue.value?.text_value
-  ) {
-    return null;
-  }
-
-  return {
-    file,
-    fileName: modelValue.value?.text_value,
-  };
+const photoInput = computed({
+  get: () => {
+    const file = photo.value;
+    if (
+      !file ||
+      props.attribute.data_type !== 'PHOTO' ||
+      !modelValue.value?.text_value
+    ) {
+      return null;
+    }
+    return {
+      file,
+      fileName: modelValue.value?.text_value,
+    };
+  },
+  set: (input: { file: File; fileName: string } | null) => {
+    if (props.attribute.data_type !== 'PHOTO') {
+      throw new Error('Invalid data type for photo input');
+    }
+    if (!input) {
+      photo.value = null;
+      updateModelValue({ text_value: null });
+    } else {
+      photo.value = input.file;
+      updateModelValue({ text_value: input.fileName });
+    }
+  },
 });
 
-function updatePhotoInput(input: { file: File; fileName: string } | null) {
-  if (props.attribute.data_type !== 'PHOTO') {
-    throw new Error('Invalid data type for photo input');
-  }
+const photoNote = computed({
+  get: () => {
+    const file = photo.value;
+    if (
+      !file ||
+      props.attribute.data_type === 'PHOTO' ||
+      !modelValue.value?.photo_note
+    ) {
+      return null;
+    }
+    return {
+      file,
+      fileName: modelValue.value?.photo_note,
+    };
+  },
+  set: (input: { file: File; fileName: string } | null) => {
+    if (props.attribute.data_type === 'PHOTO') {
+      throw new Error('Invalid data type for photo note');
+    }
+    photo.value = input?.file ?? null;
+    if (modelValue.value) {
+      modelValue.value.photo_note = input?.fileName ?? null;
+    } else {
+      updateModelValue({ photo_note: input?.fileName ?? null });
+    }
+  },
+});
 
-  if (!input) {
-    photo.value = null;
-    updateModelValue({ text_value: null });
-  } else {
-    photo.value = input.file;
-    updateModelValue({ text_value: input.fileName });
-  }
-}
+const textNote = computed({
+  get: () => modelValue.value?.text_note ?? null,
+  set: (val: string | null) => {
+    if (modelValue.value) {
+      modelValue.value.text_note = val;
+    } else {
+      updateModelValue({ text_note: val });
+    }
+  },
+});
 
 function updateModelValue({
   integer_value = null,
@@ -159,6 +197,4 @@ function updateModelValue({
 
   modelValue.value = model;
 }
-
-const { t } = useI18n();
 </script>

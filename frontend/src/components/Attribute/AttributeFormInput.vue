@@ -25,12 +25,15 @@
         (val: number | null) => updateModelValue({ float_value: val })
       "
     />
-    <!-- <AttributeFormInputText
+    <AttributeFormInputText
       v-else-if="attribute.data_type === 'TEXT'"
-      v-model="modelValue"
-      :validation="attribute.validation_rule"
-      :default-value="attribute.default_value"
+      :model-value="modelValue?.text_value ?? attribute.default_value"
+      :validation="{ maxLen: 2047, pattern: null }"
+      @update:model-value="
+        (val: string | null) => updateModelValue({ text_value: val })
+      "
     />
+    <!--
     <AttributeFormInputBoolean
       v-else-if="attribute.data_type === 'BOOLEAN'"
       v-model="modelValue"
@@ -64,6 +67,7 @@ import type { AttributeDefinition } from 'src/components/Attribute/AttributeStep
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import AttributeFormInputRating from 'src/components/Attribute/AttributeFormInputRating.vue';
 import AttributeFormInputNumber from 'src/components/Attribute/AttributeFormInputNumber.vue';
+import AttributeFormInputText from 'src/components/Attribute/AttributeFormInputText.vue';
 import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributeFormInputProps {

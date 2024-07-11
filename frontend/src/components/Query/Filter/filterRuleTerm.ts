@@ -1,5 +1,6 @@
 import { type FilterRuleSchema } from './filterRule';
 import { ColumnTypes } from 'src/utils/columnTypes';
+import * as validationUtils from 'src/utils/validationUtils';
 
 export type FilterRuleTermJson = {
   value: string;
@@ -88,82 +89,46 @@ export class FilterRuleTerm {
 
   private isValidString() {
     if (this.schema?.type !== ColumnTypes.String) return false;
-    const validation = this.schema.validation;
-
-    if (validation.maxLen !== null && this.value.length > validation.maxLen) {
-      return false;
-    }
-
-    if (validation.pattern !== null) {
-      const regex = new RegExp(validation.pattern, 'g');
-      return regex.test(this.value);
-    }
-
-    return true;
+    return validationUtils.isValidString({
+      value: this.value,
+      validation: this.schema.validation,
+    });
   }
 
   private isValidRating() {
-    if (parseFloat(this.value) !== parseInt(this.value)) return false;
     if (this.schema?.type !== ColumnTypes.Rating) return false;
-    return this.validateNumber(parseInt(this.value), this.schema.validation);
+    return validationUtils.isValidInteger({
+      value: this.value,
+      validation: this.schema.validation,
+    });
   }
 
   private isValidInteger() {
-    if (parseFloat(this.value) !== parseInt(this.value)) return false;
     if (this.schema?.type !== ColumnTypes.Integer) return false;
-    return this.validateNumber(parseInt(this.value), this.schema.validation);
+    return validationUtils.isValidInteger({
+      value: this.value,
+      validation: this.schema.validation,
+    });
   }
 
   private isValidFloat() {
     if (this.schema?.type !== ColumnTypes.Float) return false;
-    return this.validateNumber(parseFloat(this.value), this.schema.validation);
-  }
-
-  private validateNumber(
-    value: number,
-    validation: { min: number; max: number; step: number },
-  ) {
-    if (isNaN(value)) return false;
-
-    if (value < validation.min) return false;
-    if (value > validation.max) return false;
-
-    const remainder = this.modulo(value - validation.min, validation.step);
-
-    if (remainder !== 0) return false;
-
-    return true;
-  }
-
-  private modulo(n: number, d: number) {
-    const nPrecision = n.toString().split('.')[1]?.length || 0;
-    const dPrecision = d.toString().split('.')[1]?.length || 0;
-    const precision = Math.max(nPrecision, dPrecision);
-    const power = Math.pow(10, precision);
-
-    // make integers out of the floats
-    // beacuse float operations may lead to wrong results
-    // (e.g. 0.5 % 0.1 = 0.09999999999999998)
-    const nInt = n * power;
-    const dInt = d * power;
-
-    // get the modulo instead of the remainder.
-    // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder
-    return ((nInt % dInt) + dInt) % dInt;
+    return validationUtils.isValidFloat({
+      value: this.value,
+      validation: this.schema.validation,
+    });
   }
 
   private isValidDate() {
-    return !isNaN(Date.parse(`${this.value}T00:00:00.000Z`));
+    return validationUtils.isValidDate({ value: this.value });
   }
 
   private isValidDateTime() {
-    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(\.\d+)?/.test(this.value))
-      return false;
-    return !isNaN(Date.parse(this.value));
+    return validationUtils.isValidDateTime({ value: this.value });
   }
 
   private isValidTime() {
-    return !isNaN(Date.parse(`1970-01-01T${this.value}`));
+    return validationUtils.isValidTime({ value: this.value });
   }
 
   private isValidEnum() {

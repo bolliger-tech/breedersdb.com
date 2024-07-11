@@ -101,6 +101,11 @@ gcloud sql instances create $PG_INSTANCE_NAME \
   --insights-config-query-insights-enabled \
   --root-password=$PG_ROOT_PASSWORD
 
+## NOTE
+# Note: The db-f1-micro and db-g1-small machine types aren't included in the Cloud SQL SLA.
+# These machine types are configured to use a shared-core CPU, and are designed to provide
+# low-cost test and development instances only. Don't use them for production instances.
+
 gcloud sql instances describe $PG_INSTANCE_NAME
 # use connectionName to build connection string
 # postgres://postgres:<PASSWORD>@/<DATABASE_NAME>?host=/cloudsql/<CONNECTION_NAME>
@@ -132,7 +137,7 @@ gcloud run deploy $HASURA_SERVICE_NAME \
   --max-instances=2 \
   --min-instances=1 \
   --cpu=1 \
-  --memory=1024Mi \
+  --memory=512Mi \
   --port=8080 \
   --region=$REGION \
   --network=default \

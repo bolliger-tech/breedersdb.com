@@ -47,11 +47,12 @@
         (val: boolean | null) => updateModelValue({ boolean_value: val })
       "
     />
-    <!--
     <AttributeFormInputPhoto
       v-else-if="attribute.data_type === 'PHOTO'"
-      v-model="modelValue"
-    /> -->
+      :model-value="photoInput"
+      @update:model-value="updatePhotoInput"
+    />
+
     <div v-if="attribute.description">
       {{ attribute.description }}
     </div>
@@ -60,8 +61,6 @@
       flat
       :label="t('attribute.addPhotoNote')"
     />
-
-    <!-- <pre>{{ JSON.stringify(attribute, null, 2) }}</pre> -->
   </BaseInputLabel>
 </template>
 
@@ -74,7 +73,9 @@ import AttributeFormInputNumber from 'src/components/Attribute/AttributeFormInpu
 import AttributeFormInputText from 'src/components/Attribute/AttributeFormInputText.vue';
 import AttributeFormInputDate from 'src/components/Attribute/AttributeFormInputDate.vue';
 import AttributeFormInputBoolean from 'src/components/Attribute/AttributeFormInputBoolean.vue';
+import AttributeFormInputPhoto from 'src/components/Attribute/AttributeFormInputPhoto.vue';
 import { useI18n } from 'src/composables/useI18n';
+import { defineProps, defineModel, computed } from 'vue';
 
 export interface AttributeFormInputProps {
   attribute: AttributeDefinition;
@@ -83,7 +84,41 @@ export interface AttributeFormInputProps {
 
 const props = defineProps<AttributeFormInputProps>();
 
-const modelValue = defineModel<AttributeInsertData | undefined>();
+const modelValue = defineModel<AttributeInsertData | undefined>({
+  required: true,
+});
+const photo = defineModel<File | null>('photo', { required: true });
+
+const photoInput = computed(() => {
+  const file = photo.value;
+
+  if (
+    !file ||
+    props.attribute.data_type !== 'PHOTO' ||
+    !modelValue.value?.text_value
+  ) {
+    return null;
+  }
+
+  return {
+    file,
+    fileName: modelValue.value?.text_value,
+  };
+});
+
+function updatePhotoInput(input: { file: File; fileName: string } | null) {
+  if (props.attribute.data_type !== 'PHOTO') {
+    throw new Error('Invalid data type for photo input');
+  }
+
+  if (!input) {
+    photo.value = null;
+    updateModelValue({ text_value: null });
+  } else {
+    photo.value = input.file;
+    updateModelValue({ text_value: input.fileName });
+  }
+}
 
 function updateModelValue({
   integer_value = null,

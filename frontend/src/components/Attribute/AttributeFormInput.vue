@@ -40,12 +40,14 @@
         (val: string | null) => updateModelValue({ date_value: val })
       "
     />
-    <!--
     <AttributeFormInputBoolean
       v-else-if="attribute.data_type === 'BOOLEAN'"
-      v-model="modelValue"
-      :default-value="attribute.default_value"
+      :model-value="modelValue?.boolean_value ?? attribute.default_value"
+      @update:model-value="
+        (val: boolean | null) => updateModelValue({ boolean_value: val })
+      "
     />
+    <!--
     <AttributeFormInputPhoto
       v-else-if="attribute.data_type === 'PHOTO'"
       v-model="modelValue"
@@ -71,6 +73,7 @@ import AttributeFormInputRating from 'src/components/Attribute/AttributeFormInpu
 import AttributeFormInputNumber from 'src/components/Attribute/AttributeFormInputNumber.vue';
 import AttributeFormInputText from 'src/components/Attribute/AttributeFormInputText.vue';
 import AttributeFormInputDate from 'src/components/Attribute/AttributeFormInputDate.vue';
+import AttributeFormInputBoolean from 'src/components/Attribute/AttributeFormInputBoolean.vue';
 import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributeFormInputProps {

@@ -35,7 +35,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { defineProps, defineModel, computed } from 'vue';
+import { computed } from 'vue';
 
 export interface AttributeFormInputProps {
   validation: { min: number; max: number; step: 1 };

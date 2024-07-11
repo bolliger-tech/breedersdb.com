@@ -10,7 +10,5 @@
   />
 </template>
 <script setup lang="ts">
-import { defineModel } from 'vue';
-
 const modelValue = defineModel<boolean | null>({ required: true });
 </script>

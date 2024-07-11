@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { useInputBackground } from 'src/composables/useInputBackground';
-import { defineProps, defineModel, computed } from 'vue';
+import { computed } from 'vue';
 import { isValidFloat, isValidInteger } from 'src/utils/validationUtils';
 import { useI18n } from 'src/composables/useI18n';
 

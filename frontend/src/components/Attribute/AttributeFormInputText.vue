@@ -20,7 +20,6 @@
 </template>
 <script setup lang="ts">
 import { useInputBackground } from 'src/composables/useInputBackground';
-import { defineProps, defineModel } from 'vue';
 import { isValidString } from 'src/utils/validationUtils';
 import { useI18n } from 'src/composables/useI18n';
 

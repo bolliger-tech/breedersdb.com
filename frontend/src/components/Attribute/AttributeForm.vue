@@ -23,7 +23,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { graphql, VariablesOf } from 'src/graphql';
 import { useMutation } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribute/attributableEntities';
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
 import AttributeFormInput from 'src/components/Attribute/AttributeFormInput.vue';
 
 export interface AttributeFormProps {

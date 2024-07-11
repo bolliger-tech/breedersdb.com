@@ -6,6 +6,7 @@
     outlined
     type="text"
     autocomplete="off"
+    :placeholder="t('attribute.textPlaceholder')"
     clearable
     autogrow
     :maxlength="validation.maxLen ?? undefined"

@@ -36,4 +36,7 @@ export const attribute = {
   invalidNumber:
     'Invalid number. Valid values are between {min} and {max} with a step of {step}.',
   invalidPhoto: 'Invalid or unsupported image.',
+
+  textPlaceholder: 'Enter some text…',
+  numberPlaceholder: 'Enter a number…',
 };

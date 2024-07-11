@@ -5,6 +5,7 @@
     outlined
     type="number"
     autocomplete="off"
+    :placeholder="t('attribute.numberPlaceholder')"
     clearable
     :input-mode="isIntegerOnly ? 'decimal' : 'numeric'"
     :min="validation.min"

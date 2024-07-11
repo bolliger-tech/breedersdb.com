@@ -45,6 +45,7 @@ export const base = {
   },
 
   noResults: 'No results',
+  noData: 'No data',
 
   qr: {
     permissionRequest: 'Failed to access camera. Please allow camera use.',
@@ -58,4 +59,7 @@ export const base = {
     'en-US': 'English',
     'de-CH': 'Deutsch',
   },
+
+  yes: 'yes',
+  no: 'no',
 };

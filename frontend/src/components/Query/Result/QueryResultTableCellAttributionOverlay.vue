@@ -5,7 +5,7 @@
     v-else-if="attribution"
     :data="attribution"
   />
-  <div v-else>{{ t('result.noData') }}</div>
+  <div v-else>{{ t('base.noData') }}</div>
 </template>
 
 <script lang="ts" setup>

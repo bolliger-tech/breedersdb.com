@@ -14,7 +14,6 @@
         :rows="rows"
         :loading="loading"
         :all-columns="allColumns"
-        :model-value:pagination="pagination"
         @row-click="(row) => view(row.id)"
       />
     </template>

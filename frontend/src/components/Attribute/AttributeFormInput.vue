@@ -75,7 +75,7 @@ import AttributeFormInputDate from 'src/components/Attribute/AttributeFormInputD
 import AttributeFormInputBoolean from 'src/components/Attribute/AttributeFormInputBoolean.vue';
 import AttributeFormInputPhoto from 'src/components/Attribute/AttributeFormInputPhoto.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { defineProps, defineModel, computed } from 'vue';
+import { computed } from 'vue';
 
 export interface AttributeFormInputProps {
   attribute: AttributeDefinition;

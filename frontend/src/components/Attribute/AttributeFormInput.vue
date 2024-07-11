@@ -10,14 +10,22 @@
       "
     />
     <AttributeFormInputNumber
-      v-else-if="
-        attribute.data_type === 'INTEGER' || attribute.data_type === 'FLOAT'
-      "
-      v-model="modelValue"
+      v-else-if="attribute.data_type === 'INTEGER'"
+      :model-value="modelValue?.integer_value ?? attribute.default_value"
       :validation="attribute.validation_rule"
-      :default-value="attribute.default_value"
+      @update:model-value="
+        (val: number | null) => updateModelValue({ integer_value: val })
+      "
     />
-    <AttributeFormInputText
+    <AttributeFormInputNumber
+      v-else-if="attribute.data_type === 'FLOAT'"
+      :model-value="modelValue?.float_value ?? attribute.default_value"
+      :validation="attribute.validation_rule"
+      @update:model-value="
+        (val: number | null) => updateModelValue({ float_value: val })
+      "
+    />
+    <!-- <AttributeFormInputText
       v-else-if="attribute.data_type === 'TEXT'"
       v-model="modelValue"
       :validation="attribute.validation_rule"
@@ -36,7 +44,7 @@
     <AttributeFormInputPhoto
       v-else-if="attribute.data_type === 'PHOTO'"
       v-model="modelValue"
-    />
+    /> -->
     <div v-if="attribute.description">
       {{ attribute.description }}
     </div>
@@ -55,6 +63,7 @@ import type { AttributeInsertData } from 'src/components/Attribute/AttributeForm
 import type { AttributeDefinition } from 'src/components/Attribute/AttributeSteps.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import AttributeFormInputRating from 'src/components/Attribute/AttributeFormInputRating.vue';
+import AttributeFormInputNumber from 'src/components/Attribute/AttributeFormInputNumber.vue';
 import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributeFormInputProps {

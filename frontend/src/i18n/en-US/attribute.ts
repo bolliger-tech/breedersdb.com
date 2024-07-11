@@ -32,4 +32,7 @@ export const attribute = {
 
   addTextNote: 'Add Note',
   addPhotoNote: 'Add Photo',
+
+  invalidNumber:
+    'Invalid number. Valid values are between {min} and {max} with a step of {step}.',
 };

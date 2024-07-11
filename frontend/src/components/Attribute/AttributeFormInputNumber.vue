@@ -65,12 +65,11 @@ const rules = computed(() => {
 function updateModelValue(value: string | number | null) {
   if (value === '' || value === null) {
     modelValue.value = null;
-    return;
+  } else if (isIntegerOnly.value) {
+    modelValue.value = parseInt(value.toString());
+  } else {
+    modelValue.value = parseFloat(normalizeDecimalSeparator(value));
   }
-
-  return isIntegerOnly.value
-    ? (modelValue.value = parseInt(value.toString()))
-    : (modelValue.value = parseFloat(normalizeDecimalSeparator(value)));
 }
 
 function normalizeDecimalSeparator(value: string | number) {

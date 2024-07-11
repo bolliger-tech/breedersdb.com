@@ -5,13 +5,7 @@
   >
     <img
       ref="preview"
-      style="
-        max-width: min(calc(100svw - 64px), 400px);
-        max-height: min(calc(100svw - 64px), 400px);
-        transform: translateX(-50%);
-        left: 50%;
-        position: relative;
-      "
+      class="attribute-form-input-photo__preview"
       :class="{ hidden: modelValue === null }"
     />
 
@@ -129,6 +123,14 @@ watch(modelValue, loadPreview, { immediate: true });
 .attribute-form-input-photo {
   line-height: 0;
   max-width: min(calc(100svw - 64px), 400px);
+
+  &__preview {
+    max-width: min(calc(100svw - 64px), 400px);
+    max-height: min(calc(100svw - 64px), 400px);
+    transform: translateX(-50%);
+    left: 50%;
+    position: relative;
+  }
 
   &__input {
     position: absolute;

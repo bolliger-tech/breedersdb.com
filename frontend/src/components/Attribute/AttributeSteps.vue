@@ -256,13 +256,17 @@ const { queryArg: formId } = useQueryArg<number>({
 });
 watch(formId, (f) => sessionStorage.set(FORM_ID_STORAGE_KEY, f));
 
+const formVariables = computed(() => ({
+  formId: parseInt(formId.value.toString(), 10),
+}));
+
 const {
   data: formData,
   error: formFetchError,
   fetching: formFetching,
 } = useQuery({
   query: formQuery,
-  variables: { formId: parseInt(formId.value.toString(), 10) },
+  variables: formVariables,
   pause: formId.value === -1,
 });
 

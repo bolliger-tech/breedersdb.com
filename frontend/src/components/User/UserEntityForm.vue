@@ -126,17 +126,16 @@ const emailUniqueQuery = graphql(`
   }
 `);
 
-const queryVariables = ref({ email: data.value.email });
+const emailUniqueQueryVariables = ref({ email: data.value.email });
 
 const { executeQuery: executeEmailUniqueQuery, fetching: fetchingEmailUnique } =
   useQuery({
     query: emailUniqueQuery,
-    variables: queryVariables,
+    variables: emailUniqueQueryVariables,
   });
 
 async function isEmailUnique(newEmail: string) {
-  // 😵🔫
-  queryVariables.value.email = newEmail;
+  emailUniqueQueryVariables.value.email = newEmail;
   await nextTick(); // wait for the refs to be updated
   const result = await executeEmailUniqueQuery();
   if (result.error.value) {

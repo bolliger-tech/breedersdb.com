@@ -42,6 +42,7 @@ export const base = {
     min: 'Minimum value is {x}',
     max: 'Maximum value is {x}',
     integer: 'Must be an integer',
+    nameNotUnique: 'This name is already in use',
   },
 
   noResults: 'No results',

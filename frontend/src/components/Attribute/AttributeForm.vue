@@ -15,15 +15,12 @@
     <!-- TODO: add exceptional attributions -->
     <q-page-sticky :offset="[18, 18]" position="bottom-right">
       <BaseErrorTooltip :message="uploadError" :graph-q-l-error="insertError" />
-      <!-- TODO: :disabled="!savable" -->
       <q-btn
         color="primary"
         fab
         icon="save"
-        :loading="
-          inserting ||
-          (photoUploadPercentage > 0 && photoUploadPercentage < 100)
-        "
+        :disable="!hasValues || isSaving"
+        :loading="isSaving"
         :percentage="photoUploadPercentage * 0.95"
         @click="save"
         @mouseleave="resetErrors"
@@ -38,7 +35,7 @@ import type { AttributionForm } from 'src/components/Attribute/AttributeSteps.vu
 import { graphql, VariablesOf } from 'src/graphql';
 import { useMutation } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribute/attributableEntities';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import AttributeFormInput from 'src/components/Attribute/AttributeFormInput.vue';
 import {
   useImageUploader,
@@ -69,11 +66,23 @@ const props = defineProps<AttributeFormProps>();
 // (to allow multiple inserts of the same attribute)
 const attributeValues = ref<{ [key: number]: AttributeValueWithPhoto }>({});
 
+const hasValues = computed(() =>
+  Object.values(attributeValues.value).some(
+    (av) =>
+      av.integer_value !== null ||
+      av.float_value !== null ||
+      av.text_value !== null ||
+      av.boolean_value !== null ||
+      av.date_value !== null ||
+      av.photo_value !== null,
+  ),
+);
+
 const mutation = graphql(`
   mutation InsertAttributions(
     $formId: Int!
     $author: String!
-    $dateAttributed: String!
+    $dateAttributed: date!
     $lotId: Int
     $cultivarId: Int
     $plantGroupId: Int
@@ -92,7 +101,7 @@ const mutation = graphql(`
         attribute_values: { data: $attributeValues }
       }
     ) {
-      affected_rows
+      id
     }
   }
 `);
@@ -106,24 +115,18 @@ const {
 } = useMutation(mutation);
 
 async function save() {
-  const values = Object.values(attributeValues.value).filter(
-    (av) =>
-      // do not store attribution_values without a value
-      av.integer_value !== null ||
-      av.float_value !== null ||
-      av.text_value !== null ||
-      av.boolean_value !== null ||
-      av.date_value !== null ||
-      av.photo_value !== null,
-  );
-
-  if (values.length === 0) {
-    // do not store attributions without any values
-    return;
-  }
-
-  // transform AttributeValueWithPhoto[] into AttributeValue[] and File[]
-  const { photos, attributions } = values
+  const { photos, attributions } = Object.values(attributeValues.value)
+    // filter out attribution_values without a value
+    .filter(
+      (av) =>
+        av.integer_value !== null ||
+        av.float_value !== null ||
+        av.text_value !== null ||
+        av.boolean_value !== null ||
+        av.date_value !== null ||
+        av.photo_value !== null,
+    )
+    // transform AttributeValueWithPhoto[] into AttributeValue[] and File[]
     .map((av) => {
       const { photo_value, photo_note, ...rest } = av;
       if (photo_value) {
@@ -220,6 +223,12 @@ async function uploadPhotos(files: File[]) {
     uploadBytes.value.completed += file.size;
   }
 }
+
+const isSaving = computed(
+  () =>
+    inserting.value ||
+    (photoUploadPercentage.value > 0 && photoUploadPercentage.value < 100),
+);
 
 function resetErrors() {
   uploadError.value = undefined;

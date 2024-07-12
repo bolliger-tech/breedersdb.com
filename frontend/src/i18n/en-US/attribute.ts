@@ -30,8 +30,9 @@ export const attribute = {
     title: 'Count',
   },
 
-  addTextNote: 'Add Note',
-  addPhotoNote: 'Add Photo',
+  notes: 'Notes',
+  addTextNote: 'Add note',
+  addPhotoNote: 'Add photo',
 
   invalidNumber:
     'Invalid number. Valid values are between {min} and {max} with a step of {step}.',

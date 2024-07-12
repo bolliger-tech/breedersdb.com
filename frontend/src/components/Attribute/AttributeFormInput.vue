@@ -1,5 +1,5 @@
 <template>
-  <BaseInputLabel :label="attribute.name">
+  <BaseInputLabel :label="attribute.name" style="max-width: 592px">
     <AttributeFormInputRating
       v-if="attribute.data_type === 'RATING'"
       :model-value="modelValue?.integer_value ?? attribute.default_value"
@@ -59,7 +59,7 @@
     <AttributeFormInputNote
       v-model:photo-note="photoNote"
       v-model:text-note="textNote"
-      :allow-text-note="attribute.data_type !== 'TEXT'"
+      :allow-text-note="true"
       :allow-photo-note="attribute.data_type !== 'PHOTO'"
     />
   </BaseInputLabel>

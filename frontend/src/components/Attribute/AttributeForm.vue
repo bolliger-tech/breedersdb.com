@@ -13,18 +13,38 @@
       </li>
     </ul>
     <!-- TODO: add exceptional attributions -->
-    <!-- TODO: save -->
+    <q-page-sticky :offset="[18, 18]" position="bottom-right">
+      <BaseErrorTooltip :message="uploadError" :graph-q-l-error="insertError" />
+      <!-- TODO: :disabled="!savable" -->
+      <q-btn
+        color="primary"
+        fab
+        icon="save"
+        :loading="
+          inserting ||
+          (photoUploadPercentage > 0 && photoUploadPercentage < 100)
+        "
+        :percentage="photoUploadPercentage * 0.95"
+        @click="save"
+        @mouseleave="resetErrors"
+        @focusout="resetErrors"
+      />
+    </q-page-sticky>
   </form>
 </template>
 
 <script setup lang="ts">
 import type { AttributionForm } from 'src/components/Attribute/AttributeSteps.vue';
-import { useI18n } from 'src/composables/useI18n';
 import { graphql, VariablesOf } from 'src/graphql';
 import { useMutation } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribute/attributableEntities';
 import { ref } from 'vue';
 import AttributeFormInput from 'src/components/Attribute/AttributeFormInput.vue';
+import {
+  useImageUploader,
+  UploadProgress,
+} from 'src/composables/useImageUploader';
+import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 
 export interface AttributeFormProps {
   entityId: number;
@@ -34,17 +54,20 @@ export interface AttributeFormProps {
   author: string;
 }
 
-export type AttributeInsertData = VariablesOf<
-  typeof mutation
->['attributeValues'][0];
+type AttributeValue = Omit<
+  VariablesOf<typeof mutation>['attributeValues'][0],
+  'attribution' | 'attribute'
+>;
+export type AttributeValueWithPhoto = Omit<AttributeValue, 'photo_note'> & {
+  photo_value: File | null | undefined;
+  photo_note: File | null | undefined;
+};
 
 const props = defineProps<AttributeFormProps>();
 
-const { t } = useI18n();
-
 // !!! uses the PRIORITY as the key !!!
 // (to allow multiple inserts of the same attribute)
-const attributeValues = ref<{ [key: number]: AttributeInsertData }>({});
+const attributeValues = ref<{ [key: number]: AttributeValueWithPhoto }>({});
 
 const mutation = graphql(`
   mutation InsertAttributions(
@@ -74,11 +97,12 @@ const mutation = graphql(`
   }
 `);
 
-// TODO: handle photos
+const uploadError = ref<string | undefined>(undefined);
+
 const {
   executeMutation: insertAttributions,
-  fetching: saving,
-  error,
+  fetching: inserting,
+  error: insertError,
 } = useMutation(mutation);
 
 async function save() {
@@ -89,12 +113,54 @@ async function save() {
       av.float_value !== null ||
       av.text_value !== null ||
       av.boolean_value !== null ||
-      av.date_value !== null,
+      av.date_value !== null ||
+      av.photo_value !== null,
   );
 
   if (values.length === 0) {
     // do not store attributions without any values
     return;
+  }
+
+  // transform AttributeValueWithPhoto[] into AttributeValue[] and File[]
+  const { photos, attributions } = values
+    .map((av) => {
+      const { photo_value, photo_note, ...rest } = av;
+      if (photo_value) {
+        return {
+          photo: photo_value,
+          attribution: { ...rest, text_value: photo_value.name },
+        };
+      } else if (photo_note) {
+        return {
+          photo: photo_note,
+          attribution: { ...rest, photo_note: photo_note.name },
+        };
+      } else {
+        return { photo: null, attribution: rest };
+      }
+    })
+    .reduce(
+      (acc, { photo, attribution }) => {
+        acc.attributions.push(attribution);
+        if (photo) {
+          acc.photos.push(photo);
+        }
+        return acc;
+      },
+      { photos: [] as File[], attributions: [] as AttributeValue[] },
+    );
+
+  try {
+    await uploadPhotos(photos);
+  } catch (error) {
+    if (error instanceof Error) {
+      uploadError.value = error.message;
+      return; // do not continue with the insert
+    } else {
+      // this should never happen
+      throw error;
+    }
   }
 
   await insertAttributions({
@@ -113,8 +179,51 @@ async function save() {
         : null,
     plantId:
       props.entityType === AttributableEntities.Plant ? props.entityId : null,
-    attributeValues: values,
+    attributeValues: attributions,
   });
+}
+
+const photoUploadPercentage = ref(0);
+const uploadBytes = ref({
+  total: 0,
+  completed: 0,
+});
+
+function handlePhotoUploadProgress(progress: UploadProgress) {
+  photoUploadPercentage.value =
+    (100 * (uploadBytes.value.completed + progress.bytesUploaded)) /
+    uploadBytes.value.total;
+}
+
+const { upload } = useImageUploader(handlePhotoUploadProgress);
+
+async function uploadPhotos(files: File[]) {
+  if (files.some((f) => f.size === 0)) {
+    // this should never happen as the file was already checked before resizing
+    throw new Error('Cannot upload empty files');
+  }
+
+  photoUploadPercentage.value = 0;
+  uploadBytes.value = {
+    total: files.reduce((acc, file) => acc + file.size, 0),
+    completed: 0,
+  };
+
+  if (files.length === 0) {
+    return;
+  }
+
+  for (const file of files) {
+    const hash = file.name.split('.').slice(0, -1).join('.');
+    // may throw, must be caught by the caller
+    await upload(file, hash, '/api/assets/upload');
+    uploadBytes.value.completed += file.size;
+  }
+}
+
+function resetErrors() {
+  uploadError.value = undefined;
+  insertError.value = undefined;
 }
 </script>
 

@@ -49,7 +49,10 @@
     />
     <AttributeFormInputPhoto
       v-else-if="attribute.data_type === 'PHOTO'"
-      v-model="photoInput"
+      :model-value="modelValue?.photo_value ?? null"
+      @update:model-value="
+        (val: File | null) => updateModelValue({ photo_value: val })
+      "
     />
 
     <div v-if="attribute.description">
@@ -66,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributeInsertData } from 'src/components/Attribute/AttributeForm.vue';
+import type { AttributeValueWithPhoto } from 'src/components/Attribute/AttributeForm.vue';
 import type { AttributeDefinition } from 'src/components/Attribute/AttributeSteps.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import AttributeFormInputRating from 'src/components/Attribute/AttributeFormInputRating.vue';
@@ -85,77 +88,18 @@ export interface AttributeFormInputProps {
 
 const props = defineProps<AttributeFormInputProps>();
 
-const modelValue = defineModel<AttributeInsertData | undefined>({
+const modelValue = defineModel<AttributeValueWithPhoto | undefined>({
   required: true,
-});
-const photo = defineModel<File | null>('photo', { required: true });
-
-const photoInput = computed({
-  get: () => {
-    const file = photo.value;
-    if (
-      !file ||
-      props.attribute.data_type !== 'PHOTO' ||
-      !modelValue.value?.text_value
-    ) {
-      return null;
-    }
-    return {
-      file,
-      fileName: modelValue.value?.text_value,
-    };
-  },
-  set: (input: { file: File; fileName: string } | null) => {
-    if (props.attribute.data_type !== 'PHOTO') {
-      throw new Error('Invalid data type for photo input');
-    }
-    if (!input) {
-      photo.value = null;
-      updateModelValue({ text_value: null });
-    } else {
-      photo.value = input.file;
-      updateModelValue({ text_value: input.fileName });
-    }
-  },
 });
 
 const photoNote = computed({
-  get: () => {
-    const file = photo.value;
-    if (
-      !file ||
-      props.attribute.data_type === 'PHOTO' ||
-      !modelValue.value?.photo_note
-    ) {
-      return null;
-    }
-    return {
-      file,
-      fileName: modelValue.value?.photo_note,
-    };
-  },
-  set: (input: { file: File; fileName: string } | null) => {
-    if (props.attribute.data_type === 'PHOTO') {
-      throw new Error('Invalid data type for photo note');
-    }
-    photo.value = input?.file ?? null;
-    if (modelValue.value) {
-      modelValue.value.photo_note = input?.fileName ?? null;
-    } else {
-      updateModelValue({ photo_note: input?.fileName ?? null });
-    }
-  },
+  get: () => modelValue.value?.photo_note ?? null,
+  set: (file: File | null) => updateModelValue({ photo_note: file ?? null }),
 });
 
 const textNote = computed({
   get: () => modelValue.value?.text_note ?? null,
-  set: (val: string | null) => {
-    if (modelValue.value) {
-      modelValue.value.text_note = val;
-    } else {
-      updateModelValue({ text_note: val });
-    }
-  },
+  set: (val: string | null) => updateModelValue({ text_note: val }),
 });
 
 function updateModelValue({
@@ -164,16 +108,18 @@ function updateModelValue({
   text_value = null,
   boolean_value = null,
   date_value = null,
-  text_note,
-  photo_note,
+  photo_value = null,
+  text_note = modelValue.value?.text_note,
+  photo_note = modelValue.value?.photo_note,
 }: {
   integer_value?: number | null;
   float_value?: number | null;
   text_value?: string | null;
   boolean_value?: boolean | null;
   date_value?: string | null;
-  text_note?: string | null | undefined;
-  photo_note?: string | null | undefined;
+  photo_value?: File | null;
+  text_note?: string | null;
+  photo_note?: File | null;
 }) {
   const model = modelValue.value ?? {
     attribute_id: props.attribute.id,
@@ -182,6 +128,7 @@ function updateModelValue({
     text_value: null,
     boolean_value: null,
     date_value: null,
+    photo_value: null,
     exceptional_attribution: props.exceptional,
     text_note: null,
     photo_note: null,
@@ -192,8 +139,9 @@ function updateModelValue({
   model.text_value = text_value;
   model.boolean_value = boolean_value;
   model.date_value = date_value;
-  model.text_note = text_note ?? model.text_note;
-  model.photo_note = photo_note ?? model.photo_note;
+  model.photo_value = photo_value;
+  model.text_note = text_note;
+  model.photo_note = photo_note;
 
   modelValue.value = model;
 }

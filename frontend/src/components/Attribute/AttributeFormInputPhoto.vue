@@ -27,7 +27,7 @@
 
       <q-file
         ref="inputRef"
-        :model-value="modelValue?.file"
+        :model-value="modelValue"
         :multiple="false"
         bg-color="transparent"
         input-style="opacity: 0"
@@ -57,7 +57,7 @@ import type { QFile } from 'quasar';
 const MAX_IMAGE_SIZE = 3840; // longest side, 4k
 const IMAGE_QUALITY = 0.9; // 0.0 - 1.0 (jpeg)
 
-const modelValue = defineModel<{ file: File; fileName: string } | null>({
+const modelValue = defineModel<File | null>({
   required: true,
 });
 
@@ -81,7 +81,7 @@ const errorMessage = ref('');
 const isInvalidImage = ref(false);
 
 async function updateModelValue(file: File | null) {
-  if (!file) {
+  if (!file || file.size === 0) {
     modelValue.value = null;
     return;
   }
@@ -111,10 +111,10 @@ async function updateModelValue(file: File | null) {
   // if this fails something went terribly wrong. so let it throw
   const fileHash = await hashFile(resizedFile);
 
-  modelValue.value = {
-    file: resizedFile,
-    fileName: `${fileHash}.jpg`,
-  };
+  // create new file with the final name
+  modelValue.value = new File([resizedFile], `${fileHash}.jpg`, {
+    type: 'image/jpeg',
+  });
 
   processing.value = false;
 }
@@ -131,7 +131,7 @@ function loadPreview() {
     return;
   }
 
-  preview.value.src = URL.createObjectURL(modelValue.value.file);
+  preview.value.src = URL.createObjectURL(modelValue.value);
 }
 
 watch(modelValue, loadPreview, { immediate: true });

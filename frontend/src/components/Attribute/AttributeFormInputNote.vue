@@ -63,10 +63,7 @@ export interface AttributeFormInputNoteProps {
 
 defineProps<AttributeFormInputNoteProps>();
 const textNote = defineModel<string | null>('textNote', { required: true });
-const photoNote = defineModel<{ file: File; fileName: string } | null>(
-  'photoNote',
-  { required: true },
-);
+const photoNote = defineModel<File | null>('photoNote', { required: true });
 
 const showTextInput = ref(false);
 const showPhotoInput = ref(false);

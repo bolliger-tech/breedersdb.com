@@ -35,7 +35,7 @@ import type { AttributionForm } from 'src/components/Attribute/AttributeSteps.vu
 import { graphql, VariablesOf } from 'src/graphql';
 import { useMutation } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribute/attributableEntities';
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import AttributeFormInput from 'src/components/Attribute/AttributeFormInput.vue';
 import {
   useImageUploader,
@@ -61,6 +61,10 @@ export type AttributeValueWithPhoto = Omit<AttributeValue, 'photo_note'> & {
 };
 
 const props = defineProps<AttributeFormProps>();
+
+const emit = defineEmits<{
+  saved: [];
+}>();
 
 // !!! uses the PRIORITY as the key !!!
 // (to allow multiple inserts of the same attribute)
@@ -115,6 +119,8 @@ const {
 } = useMutation(mutation);
 
 async function save() {
+  // TODO: check if the form is valid
+
   const { photos, attributions } = Object.values(attributeValues.value)
     // filter out attribution_values without a value
     .filter(
@@ -184,6 +190,12 @@ async function save() {
       props.entityType === AttributableEntities.Plant ? props.entityId : null,
     attributeValues: attributions,
   });
+
+  await nextTick();
+
+  if (!insertError.value) {
+    emit('saved');
+  }
 }
 
 const photoUploadPercentage = ref(0);

@@ -332,8 +332,8 @@ const repeatCount = useRepeatCounter({
 });
 
 function completeStep4() {
-  // TODO:
-  console.log(form);
+  // TODO: success notification
+  step.value = 3;
 }
 
 watch(

@@ -27,6 +27,7 @@ import {
 import { FilterRuleTerm } from 'src/components/Query/Filter/filterRuleTerm';
 import { useRoute } from 'vue-router';
 import { reactive } from 'vue';
+import type { FilterRuleColumn } from 'src/components/Query/Filter/filterRuleColumn';
 
 vi.mock('vue-router');
 
@@ -192,7 +193,7 @@ describe('AnalyzePage', () => {
 
       const column = await wrapper.findComponent(QueryFilterRuleColumn);
       const currentColumn = column.vm.$props.options.find(
-        (col) => col.name === 'cultivars.id',
+        (col: FilterRuleColumn) => col.name === 'cultivars.id',
       );
       await column.setValue(currentColumn);
       const operator = await wrapper.findComponent(QueryFilterRuleOperator);

@@ -1,6 +1,5 @@
 <template>
   <EntityButtonDelete
-    :disabled="me?.id === props.graftingId"
     :message="
       t('base.deleteConfirmation', { entity: t('graftings.entityName') })
     "
@@ -16,7 +15,6 @@ import { useMutation } from '@urql/vue';
 import EntityButtonDelete from 'src/components/Entity/EntityButtonDelete.vue';
 import { graphql } from 'src/graphql';
 import { useI18n } from 'src/composables/useI18n';
-import { useMe } from 'src/composables/useMe';
 
 export interface GraftingButtonDeleteProps {
   graftingId: number;
@@ -54,8 +52,6 @@ function deleteGrafting() {
     }
   });
 }
-
-const me = useMe();
 
 const { t } = useI18n();
 </script>

@@ -53,7 +53,7 @@ export const base = {
   },
 
   notAvailable: 'N/A',
-  deleteConfirmation: 'Are you sure you want to delete this item?',
+  deleteConfirmation: 'Are you sure you want to delete this {entity}?',
 
   locales: {
     'en-US': 'English',

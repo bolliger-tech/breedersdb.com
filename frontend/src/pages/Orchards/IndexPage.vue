@@ -81,7 +81,7 @@ const columns = [
     name: 'disabled',
     label: t('orchards.fields.disabled'),
     align: 'left' as const,
-    field: 'disabled',
+    field: (row: Orchard) => (row.disabled ? t('base.yes') : t('base.no')),
     sortable: true,
   },
   {

@@ -3,7 +3,7 @@ import { useQueryArg } from './useQueryArg';
 import { computed } from 'vue';
 import type { UseQueryArgs } from '@urql/vue';
 
-export function useEntityIndexHooks<T>() {
+export function useEntityIndexHooks<T>(foreignKeys?: string[]) {
   const { queryArg: search } = useQueryArg<string>({
     key: 's',
     defaultValue: '',
@@ -21,6 +21,10 @@ export function useEntityIndexHooks<T>() {
   const orderBy = computed(() => {
     const order = pagination.value.descending ? 'desc' : 'asc';
     const column = pagination.value.sortBy;
+
+    if (foreignKeys?.includes(column)) {
+      return { [column]: { name: order } };
+    }
 
     return [{ [column]: order }, { id: 'asc' }];
   });

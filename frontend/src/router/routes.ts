@@ -55,32 +55,34 @@ const routes: RouteRecordRaw[] = [
         ],
       },
 
-      ...['Users', 'Orchards', 'Rootstocks', 'Graftings'].map((entity) => ({
-        path: entity.toLowerCase(),
-        children: [
-          {
-            path: '',
-            component: () => import(`pages/${entity}/IndexPage.vue`),
-            children: [
-              {
-                path: ':entityId(\\d+)',
-                component: () => import(`pages/${entity}/ViewModal.vue`),
-                props: true,
-              },
-              {
-                path: ':entityId/edit',
-                component: () => import(`pages/${entity}/EditModal.vue`),
-                props: true,
-              },
-              {
-                path: 'new',
-                component: () => import(`pages/${entity}/AddModal.vue`),
-                props: { entityId: 'new' },
-              },
-            ],
-          },
-        ],
-      })),
+      ...['Users', 'Orchards', 'Rootstocks', 'Graftings', 'PlantRows'].map(
+        (entity) => ({
+          path: entity.split('Plant').slice(-1)[0].toLowerCase(),
+          children: [
+            {
+              path: '',
+              component: () => import(`pages/${entity}/IndexPage.vue`),
+              children: [
+                {
+                  path: ':entityId(\\d+)',
+                  component: () => import(`pages/${entity}/ViewModal.vue`),
+                  props: true,
+                },
+                {
+                  path: ':entityId/edit',
+                  component: () => import(`pages/${entity}/EditModal.vue`),
+                  props: true,
+                },
+                {
+                  path: 'new',
+                  component: () => import(`pages/${entity}/AddModal.vue`),
+                  props: { entityId: 'new' },
+                },
+              ],
+            },
+          ],
+        }),
+      ),
 
       {
         path: 'dev',

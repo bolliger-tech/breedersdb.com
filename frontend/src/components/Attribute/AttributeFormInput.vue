@@ -60,11 +60,35 @@
     </div>
 
     <AttributeFormInputNote
+      ref="noteInputRef"
       v-model:photo-note="photoNote"
       v-model:text-note="textNote"
       :allow-text-note="true"
       :allow-photo-note="attribute.data_type !== 'PHOTO'"
+      :disabled="hasNoValue"
     />
+
+    <q-dialog v-model="confirm">
+      <q-card>
+        <q-card-section class="row items-center no-wrap">
+          <q-icon name="warning" color="negative" size="xl" />
+          <p class="q-ma-none q-ml-md">{{ t('attribute.clearAttribute') }}</p>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat :label="t('base.cancel')" color="primary" />
+          <q-btn
+            flat
+            :label="t('base.delete')"
+            color="negative"
+            @click="
+              clearModelValue();
+              confirm = false;
+            "
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </BaseInputLabel>
 </template>
 
@@ -79,7 +103,8 @@ import AttributeFormInputDate from 'src/components/Attribute/AttributeFormInputD
 import AttributeFormInputBoolean from 'src/components/Attribute/AttributeFormInputBoolean.vue';
 import AttributeFormInputPhoto from 'src/components/Attribute/AttributeFormInputPhoto.vue';
 import AttributeFormInputNote from 'src/components/Attribute/AttributeFormInputNote.vue';
-import { computed } from 'vue';
+import { computed, ref, nextTick } from 'vue';
+import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributeFormInputProps {
   attribute: AttributeDefinition;
@@ -102,15 +127,43 @@ const textNote = computed({
   set: (val: string | null) => updateModelValue({ text_note: val }),
 });
 
+const { t } = useI18n();
+const confirm = ref(false);
+const noteInputRef = ref<InstanceType<typeof AttributeFormInputNote> | null>(
+  null,
+);
+
+async function clearModelValue() {
+  if (!modelValue.value) {
+    return;
+  }
+
+  modelValue.value.integer_value = null;
+  modelValue.value.float_value = null;
+  modelValue.value.text_value = null;
+  modelValue.value.boolean_value = null;
+  modelValue.value.date_value = null;
+  modelValue.value.photo_value = null;
+  modelValue.value.text_note = null;
+  modelValue.value.photo_note = null;
+  noteInputRef.value?.clear();
+
+  if (document.activeElement instanceof HTMLElement) {
+    // required to reset state of star ratings
+    await nextTick();
+    document.activeElement.blur();
+  }
+}
+
 function updateModelValue({
-  integer_value = null,
-  float_value = null,
-  text_value = null,
-  boolean_value = null,
-  date_value = null,
-  photo_value = null,
-  text_note = modelValue.value?.text_note,
-  photo_note = modelValue.value?.photo_note,
+  integer_value,
+  float_value,
+  text_value,
+  boolean_value,
+  date_value,
+  photo_value,
+  text_note,
+  photo_note,
 }: {
   integer_value?: number | null;
   float_value?: number | null;
@@ -134,15 +187,44 @@ function updateModelValue({
     photo_note: null,
   };
 
-  model.integer_value = integer_value;
-  model.float_value = float_value;
-  model.text_value = text_value;
-  model.boolean_value = boolean_value;
-  model.date_value = date_value;
-  model.photo_value = photo_value;
-  model.text_note = text_note;
-  model.photo_note = photo_note;
+  if (
+    (integer_value === null ||
+      float_value === null ||
+      text_value === null ||
+      boolean_value === null ||
+      date_value === null ||
+      photo_value === null) &&
+    (model.text_note || model.photo_note)
+  ) {
+    confirm.value = true;
+    return;
+  }
+
+  model.integer_value =
+    integer_value === undefined ? model.integer_value : integer_value;
+  model.float_value =
+    float_value === undefined ? model.float_value : float_value;
+  model.text_value = text_value === undefined ? model.text_value : text_value;
+  model.boolean_value =
+    boolean_value === undefined ? model.boolean_value : boolean_value;
+  model.date_value = date_value === undefined ? model.date_value : date_value;
+  model.photo_value =
+    photo_value === undefined ? model.photo_value : photo_value;
+  model.text_note = text_note === undefined ? model.text_note : text_note;
+  model.photo_note = photo_note === undefined ? model.photo_note : photo_note;
 
   modelValue.value = model;
 }
+
+const hasNoValue = computed(() => {
+  return (
+    !modelValue.value ||
+    (modelValue.value.integer_value === null &&
+      modelValue.value.float_value === null &&
+      modelValue.value.text_value === null &&
+      modelValue.value.boolean_value === null &&
+      modelValue.value.date_value === null &&
+      modelValue.value.photo_value === null)
+  );
+});
 </script>

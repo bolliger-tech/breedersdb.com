@@ -37,6 +37,7 @@
       size="sm"
       :label="t('attribute.addTextNote')"
       class="q-mt-sm"
+      :disabled="disabled"
       @click="showTextInput = true"
     />
     <q-btn
@@ -46,6 +47,7 @@
       size="sm"
       :label="t('attribute.addPhotoNote')"
       class="q-mt-sm"
+      :disabled="disabled"
       @click="addPhotoNote"
     />
   </div>
@@ -59,11 +61,14 @@ import { nextTick, ref, watch } from 'vue';
 export interface AttributeFormInputNoteProps {
   allowTextNote: boolean;
   allowPhotoNote: boolean;
+  disabled?: boolean;
 }
 
 defineProps<AttributeFormInputNoteProps>();
 const textNote = defineModel<string | null>('textNote', { required: true });
 const photoNote = defineModel<File | null>('photoNote', { required: true });
+
+defineExpose({ clear });
 
 const showTextInput = ref(false);
 const showPhotoInput = ref(false);
@@ -101,4 +106,11 @@ watch([showTextInput, showPhotoInput], ([text, photo]) => {
     );
   }
 });
+
+function clear() {
+  showTextInput.value = false;
+  showPhotoInput.value = false;
+  textNote.value = null;
+  photoNote.value = null;
+}
 </script>

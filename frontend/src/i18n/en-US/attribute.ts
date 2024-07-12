@@ -40,4 +40,7 @@ export const attribute = {
 
   textPlaceholder: 'Enter some text…',
   numberPlaceholder: 'Enter a number…',
+
+  clearAttribute:
+    'Clearing this value will remove the comments for this attribute as well. Do you want to delete the comments?',
 };

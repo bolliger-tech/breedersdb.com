@@ -24,6 +24,7 @@ import { computed, ref } from 'vue';
 import { isValidFloat, isValidInteger } from 'src/utils/validationUtils';
 import { useI18n } from 'src/composables/useI18n';
 import { type QInput } from 'quasar';
+import { focusInView } from 'src/utils/focusInView';
 
 export interface AttributeFormInputProps {
   validation: { min: number; max: number; step: number };
@@ -34,6 +35,11 @@ const props = defineProps<AttributeFormInputProps>();
 const modelValue = defineModel<number | null>({ required: true });
 
 const inputRef = ref<QInput | null>(null);
+
+defineExpose({
+  validate: () => inputRef.value?.validate(),
+  focus: () => inputRef.value && focusInView(inputRef.value),
+});
 
 const { t } = useI18n();
 

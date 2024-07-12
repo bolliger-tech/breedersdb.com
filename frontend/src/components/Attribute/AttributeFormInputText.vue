@@ -27,6 +27,7 @@ import { isValidString } from 'src/utils/validationUtils';
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 import { type QInput } from 'quasar';
+import { focusInView } from 'src/utils/focusInView';
 
 export interface AttributeFormInputProps {
   validation: { maxLen: number | null; pattern: string | null };
@@ -36,6 +37,11 @@ defineProps<AttributeFormInputProps>();
 const modelValue = defineModel<string | null>({ required: true });
 
 const inputRef = ref<QInput | null>(null);
+
+defineExpose({
+  validate: () => inputRef.value?.validate(),
+  focus: () => inputRef.value && focusInView(inputRef.value),
+});
 
 const { t } = useI18n();
 const { inputBgColor } = useInputBackground();

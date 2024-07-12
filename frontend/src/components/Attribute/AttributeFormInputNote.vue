@@ -9,6 +9,7 @@
   <div class="column" :class="{ reverse: openInputsOrdered[0] === 'photo' }">
     <AttributeFormInputText
       v-if="showTextInput"
+      ref="textInputRef"
       :model-value="textNote"
       :validation="{ maxLen: 2047, pattern: null }"
       :label="t('attributions.columns.textNote')"
@@ -57,6 +58,7 @@ import { useI18n } from 'src/composables/useI18n';
 import AttributeFormInputPhoto from 'src/components/Attribute/AttributeFormInputPhoto.vue';
 import AttributeFormInputText from 'src/components/Attribute/AttributeFormInputText.vue';
 import { nextTick, ref, watch } from 'vue';
+import { focusInView } from 'src/utils/focusInView';
 
 export interface AttributeFormInputNoteProps {
   allowTextNote: boolean;
@@ -68,7 +70,15 @@ defineProps<AttributeFormInputNoteProps>();
 const textNote = defineModel<string | null>('textNote', { required: true });
 const photoNote = defineModel<File | null>('photoNote', { required: true });
 
-defineExpose({ clear });
+const textInputRef = ref<InstanceType<typeof AttributeFormInputText> | null>(
+  null,
+);
+
+defineExpose({
+  clear,
+  validate: () => textInputRef.value?.validate(),
+  focus: () => textInputRef.value && focusInView(textInputRef.value),
+});
 
 const showTextInput = ref(false);
 const showPhotoInput = ref(false);

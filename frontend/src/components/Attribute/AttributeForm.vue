@@ -6,6 +6,9 @@
         :key="formField.priority"
       >
         <AttributeFormInput
+          :ref="
+            (el: InputRef) => (attributeFormInputRefs[formField.priority] = el)
+          "
           v-model="attributeValues[formField.priority]"
           :attribute="formField.attribute"
           :exceptional="false"
@@ -14,7 +17,10 @@
     </ul>
     <!-- TODO: add exceptional attributions -->
     <q-page-sticky :offset="[18, 18]" position="bottom-right">
-      <BaseErrorTooltip :message="uploadError" :graph-q-l-error="insertError" />
+      <BaseErrorTooltip
+        :message="uploadError || validationError"
+        :graph-q-l-error="insertError"
+      />
       <q-btn
         color="primary"
         fab
@@ -44,6 +50,7 @@ import {
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
+import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
 
 export interface AttributeFormProps {
   entityId: number;
@@ -74,6 +81,7 @@ const { t } = useI18n();
 // !!! uses the PRIORITY as the key !!!
 // (to allow multiple inserts of the same attribute)
 const attributeValues = ref<{ [key: number]: AttributeValueWithPhoto }>({});
+const attributeFormInputRefs = ref<{ [key: number]: InputRef | null }>({});
 
 const hasValues = computed(() =>
   Object.values(attributeValues.value).some(
@@ -117,6 +125,13 @@ const mutation = graphql(`
 
 const uploadError = ref<string | undefined>(undefined);
 
+const validationError = ref<string | undefined>(undefined);
+const { validate } = useEntityForm({
+  refs: attributeFormInputRefs,
+  data: attributeValues,
+  initialData: {},
+});
+
 const {
   executeMutation: insertAttributions,
   fetching: inserting,
@@ -124,7 +139,10 @@ const {
 } = useMutation(mutation);
 
 async function save() {
-  // TODO: check if the form is valid
+  if (!(await validate())) {
+    validationError.value = t('attribute.invalidInput');
+    return;
+  }
 
   const { photos, attributions } = Object.values(attributeValues.value)
     // filter out attribution_values without a value
@@ -257,6 +275,7 @@ const isSaving = computed(
 function resetErrors() {
   uploadError.value = undefined;
   insertError.value = undefined;
+  validationError.value = undefined;
 }
 </script>
 

@@ -11,6 +11,7 @@
     />
     <AttributeFormInputNumber
       v-else-if="attribute.data_type === 'INTEGER'"
+      ref="integerInputRef"
       :model-value="modelValue?.integer_value ?? attribute.default_value"
       :validation="attribute.validation_rule"
       @update:model-value="
@@ -19,6 +20,7 @@
     />
     <AttributeFormInputNumber
       v-else-if="attribute.data_type === 'FLOAT'"
+      ref="floatInputRef"
       :model-value="modelValue?.float_value ?? attribute.default_value"
       :validation="attribute.validation_rule"
       @update:model-value="
@@ -27,6 +29,7 @@
     />
     <AttributeFormInputText
       v-else-if="attribute.data_type === 'TEXT'"
+      ref="textInputRef"
       :model-value="modelValue?.text_value ?? attribute.default_value"
       :validation="{ maxLen: 2047, pattern: null }"
       @update:model-value="
@@ -116,6 +119,8 @@ const props = defineProps<AttributeFormInputProps>();
 const modelValue = defineModel<AttributeValueWithPhoto | undefined>({
   required: true,
 });
+
+defineExpose({ validate, focus: focusInvalid });
 
 const photoNote = computed({
   get: () => modelValue.value?.photo_note ?? null,
@@ -227,4 +232,62 @@ const hasNoValue = computed(() => {
       modelValue.value.photo_value === null)
   );
 });
+
+const integerInputRef = ref<InstanceType<
+  typeof AttributeFormInputNumber
+> | null>(null);
+const floatInputRef = ref<InstanceType<typeof AttributeFormInputNumber> | null>(
+  null,
+);
+const textInputRef = ref<InstanceType<typeof AttributeFormInputText> | null>(
+  null,
+);
+
+async function validate() {
+  let valueIsValid: Promise<boolean> = Promise.resolve(true);
+
+  switch (props.attribute.data_type) {
+    case 'INTEGER':
+      valueIsValid = Promise.resolve(
+        integerInputRef.value?.validate() ?? false,
+      );
+      break;
+    case 'FLOAT':
+      valueIsValid = Promise.resolve(floatInputRef.value?.validate() ?? false);
+      break;
+    case 'TEXT':
+      valueIsValid = Promise.resolve(textInputRef.value?.validate() ?? false);
+      break;
+  }
+
+  let noteIsValid: Promise<boolean> = Promise.resolve(true);
+  if (modelValue.value?.text_note) {
+    noteIsValid = Promise.resolve(noteInputRef.value?.validate() ?? false);
+  }
+
+  return (await Promise.all([valueIsValid, noteIsValid])).every(Boolean);
+}
+
+function focusInvalid() {
+  if (
+    modelValue.value?.text_note &&
+    noteInputRef.value &&
+    !noteInputRef.value.validate()
+  ) {
+    noteInputRef.value.focus();
+    return;
+  }
+
+  switch (props.attribute.data_type) {
+    case 'INTEGER':
+      integerInputRef.value?.focus();
+      break;
+    case 'FLOAT':
+      floatInputRef.value?.focus();
+      break;
+    case 'TEXT':
+      textInputRef.value?.focus();
+      break;
+  }
+}
 </script>

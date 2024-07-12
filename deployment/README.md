@@ -101,6 +101,11 @@ gcloud sql instances create $PG_INSTANCE_NAME \
   --insights-config-query-insights-enabled \
   --root-password=$PG_ROOT_PASSWORD
 
+## NOTE
+# Note: The db-f1-micro and db-g1-small machine types aren't included in the Cloud SQL SLA.
+# These machine types are configured to use a shared-core CPU, and are designed to provide
+# low-cost test and development instances only. Don't use them for production instances.
+
 gcloud sql instances describe $PG_INSTANCE_NAME
 # use connectionName to build connection string
 # postgres://postgres:<PASSWORD>@/<DATABASE_NAME>?host=/cloudsql/<CONNECTION_NAME>
@@ -132,7 +137,7 @@ gcloud run deploy $HASURA_SERVICE_NAME \
   --max-instances=2 \
   --min-instances=1 \
   --cpu=1 \
-  --memory=1024Mi \
+  --memory=512Mi \
   --port=8080 \
   --region=$REGION \
   --network=default \
@@ -510,3 +515,33 @@ gsutil -m rsync -R ./photos-flat/ gs://$ASSETS_BUCKET_NAME
 ```
 
 Hint: use `-d` to delete files in the bucket that are not in the local folder.
+
+## Rate-Limiting
+
+```bash
+gcloud compute security-policies create action-signin-rate-limit-policy \
+  --description="Rate limit policy for action signin"
+
+gcloud compute security-policies rules create 1000 \
+    --security-policy=action-signin-rate-limit-policy \
+    --expression="request.path.matches('/actions') && request.headers['X-Rate-Limit'] == 'signin'" \
+    --action=rate-based-ban \
+    --rate-limit-threshold-count=30 \
+    --rate-limit-threshold-interval-sec=180 \
+    --ban-duration-sec=3600 \
+    --conform-action=allow \
+    --exceed-action=deny-429 \
+    --enforce-on-key=IP \
+    --description="Rate limit rule for /actions route when X-Rate-Limit is 'signin'"
+
+gcloud compute backend-services update $FN_BACKEND_SERVICE_NAME \
+  --global \
+  --security-policy=action-signin-rate-limit-policy
+
+# Logs query:
+resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(action-signin-rate-limit-policy)
+```
+
+Limit: If more than 30 requests are made in 3 minutes, the IP is banned for 1 hour.
+
+Attention `enforce-on-key=IP`: The requesting IP is hasuras IP, this means all requests from one hasura instance are counted together. This was done because google cloud does not easily support rate limiting on a trusted ip set by the load balancer.

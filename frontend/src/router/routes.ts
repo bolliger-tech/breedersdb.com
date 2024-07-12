@@ -80,6 +80,15 @@ const routes: RouteRecordRaw[] = [
           },
         ],
       },
+      ...['Orchards', 'Rootstocks', 'Graftings'].map((entity) => ({
+        path: entity.toLowerCase(),
+        children: [
+          {
+            path: '',
+            component: () => import(`pages/${entity}/IndexPage.vue`),
+          },
+        ],
+      })),
 
       {
         path: 'dev',

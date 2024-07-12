@@ -1,0 +1,52 @@
+import { usePagination } from 'src/components/Entity/List/usePagination';
+import { useQueryArg } from './useQueryArg';
+import { computed } from 'vue';
+import type { UseQueryArgs } from '@urql/vue';
+
+export function useEntityIndexHooks<T>() {
+  const { queryArg: search } = useQueryArg<string>({
+    key: 's',
+    defaultValue: '',
+    replace: true,
+  });
+
+  const { pagination } = usePagination({
+    sortBy: 'name',
+    descending: false,
+    page: 1,
+    rowsPerPage: 100,
+    rowsNumber: 0,
+  });
+
+  const orderBy = computed(() => {
+    const order = pagination.value.descending ? 'desc' : 'asc';
+    const column = pagination.value.sortBy;
+
+    return [{ [column]: order }, { id: 'asc' }];
+  });
+
+  const where = computed(() => {
+    const where: UseQueryArgs<T>['variables'] = { _and: [] };
+
+    if (search.value) {
+      where._and.push({
+        email: { _ilike: `%${search.value}%` },
+      });
+    }
+
+    return where;
+  });
+
+  const variables = computed(() => ({
+    limit: pagination.value.rowsPerPage,
+    offset: (pagination.value.page - 1) * pagination.value.rowsPerPage,
+    orderBy: orderBy.value,
+    where: where.value,
+  }));
+
+  return {
+    search,
+    pagination,
+    variables,
+  };
+}

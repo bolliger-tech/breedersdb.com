@@ -216,17 +216,17 @@ const items: NavLevel0Props['items'] = [
       {
         label: t('orchards.title', 2),
         icon: 'orchard',
-        to: 'orchards',
+        to: '/orchards',
       },
       {
         label: t('rootstocks.title', 2),
         icon: 'rootstock',
-        to: 'rootstocks',
+        to: '/rootstocks',
       },
       {
         label: t('graftings.title', 2),
         icon: 'grafting',
-        to: 'graftings',
+        to: '/graftings',
       },
       {
         label: t('users.title', 2),

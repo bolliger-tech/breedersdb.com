@@ -83,28 +83,10 @@
               @mouseleave="$emit('resetErrors')"
               @focusout="$emit('resetErrors')"
             />
-            <q-tooltip
-              :model-value="!!saveError || !!validationError"
-              max-width="min(500px, 90svw)"
-              anchor="top middle"
-              self="bottom middle"
-              :hide-delay="2000"
-              no-parent-event
-              class="bg-dark shadow-3 entity-modal-content__error-tooltip"
-            >
-              <BaseGraphqlError v-if="saveError" :error="saveError" />
-              <div
-                v-else-if="validationError"
-                class="q-gutter-md row items-center"
-              >
-                <div class="col-auto">
-                  <q-icon name="warning" size="2em" class="text-negative" />
-                </div>
-                <div class="col">
-                  {{ validationError }}
-                </div>
-              </div>
-            </q-tooltip>
+            <BaseErrorTooltip
+              :graph-q-l-error="saveError"
+              :message="validationError"
+            />
           </template>
         </slot>
       </div>
@@ -115,10 +97,10 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import EntityButtonDelete from './EntityButtonDelete.vue';
-import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { CombinedError } from '@urql/vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
+import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 
 export interface EntityModalContentProps {
   title?: string;

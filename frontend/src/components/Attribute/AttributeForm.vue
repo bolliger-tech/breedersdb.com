@@ -42,6 +42,8 @@ import {
   UploadProgress,
 } from 'src/composables/useImageUploader';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
+import { useQuasar } from 'quasar';
+import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributeFormProps {
   entityId: number;
@@ -65,6 +67,9 @@ const props = defineProps<AttributeFormProps>();
 const emit = defineEmits<{
   saved: [];
 }>();
+
+const $q = useQuasar();
+const { t } = useI18n();
 
 // !!! uses the PRIORITY as the key !!!
 // (to allow multiple inserts of the same attribute)
@@ -194,6 +199,13 @@ async function save() {
   await nextTick();
 
   if (!insertError.value) {
+    $q.notify({
+      type: 'positive',
+      message: t('attribute.saved'),
+      color: 'primary',
+      timeout: 3000,
+      position: 'top',
+    });
     emit('saved');
   }
 }

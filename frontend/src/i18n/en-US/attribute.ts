@@ -43,4 +43,6 @@ export const attribute = {
 
   clearAttribute:
     'Clearing this value will remove the comments for this attribute as well. Do you want to delete the comments?',
+
+  saved: 'Attribute saved.',
 };

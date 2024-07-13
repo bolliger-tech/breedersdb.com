@@ -131,6 +131,10 @@ psql -h localhost -p 35432 -U postgres
 # check the env for the password
 ```
 
+Restoring a backup:
+
+You may need to reload the metadata in hasura after restoring the database.
+
 ## HASURA
 
 ```bash

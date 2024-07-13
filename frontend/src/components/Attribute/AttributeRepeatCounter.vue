@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="row no-wrap align-center"
-    style="width: min(calc(100svw - 220px), 250px)"
-  >
+  <div class="row no-wrap align-center">
     <q-linear-progress
       size="1.5em"
       :value="progress"

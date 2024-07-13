@@ -46,4 +46,5 @@ export const attribute = {
     'Clearing this value will remove the comments for this attribute as well. Do you want to delete the comments?',
 
   saved: 'Attribute saved.',
+  uploading: 'Saving… {percentage}%',
 };

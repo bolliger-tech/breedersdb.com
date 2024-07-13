@@ -22,21 +22,45 @@
         :graph-q-l-error="insertError"
       />
       <div
-        class="row align-center shadow-3"
+        class="row align-center shadow-3 attribute-form__save-btn"
         :class="{
-          'bg-grey-10': !$q.dark.isActive,
-          'bg-grey-9': $q.dark.isActive,
+          'bg-grey-10': !$q.dark.isActive && !isSaving,
+          'bg-grey-9': $q.dark.isActive && !isSaving,
+          'bg-primary': isSaving,
+          'attribute-form__save-btn--saving': isSaving,
+          'attribute-form__save-btn--repeat': repeatTarget > 1 && !isSaving,
         }"
-        style="border-radius: 2rem"
+        :style="`transition: all ${SAVE_BTN_TRANSITION_DURATION_MS}ms ease`"
       >
-        <AttributeRepeatCounter
-          v-if="repeatTarget > 1"
-          class="q-mx-md"
-          :total="repeatTarget"
-          :entity-type="entityType"
-          :count="repeatCount"
-          @reset="repeatCount = 0"
-        />
+        <div style="width: calc(100% - 62px)" class="q-pl-md q-pr-sm">
+          <AttributeRepeatCounter
+            v-if="repeatTarget > 1 && !isSaving && !insertedAttribution"
+            :total="repeatTarget"
+            :entity-type="entityType"
+            :count="repeatCount"
+            style="width: 100%"
+            @reset="repeatCount = 0"
+          />
+          <q-linear-progress
+            v-if="isSaving || !!insertedAttribution"
+            size="1.5em"
+            :percentage="savingProgress"
+            color="grey-7"
+            style="width: 100%"
+            rounded
+            dark
+          >
+            <div class="absolute-full flex flex-center">
+              <q-badge color="white" text-color="black">
+                {{
+                  t('attribute.uploading', {
+                    percentage: savingProgress,
+                  })
+                }}
+              </q-badge>
+            </div>
+          </q-linear-progress>
+        </div>
         <q-btn
           color="primary"
           icon="save"
@@ -44,9 +68,10 @@
           unelevated
           :disable="!hasValues || isSaving"
           :loading="isSaving"
-          :percentage="photoUploadPercentage * 0.95"
           :style="
-            repeatTarget > 1 ? 'border: 1px solid white; margin: 2px' : ''
+            repeatTarget > 1 || isSaving
+              ? 'border: 1px solid white; margin: 2px'
+              : ''
           "
           @click="save"
           @mouseleave="resetErrors"
@@ -74,6 +99,8 @@ import { useI18n } from 'src/composables/useI18n';
 import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
 import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCounter.vue';
 import { useRepeatCounter } from './useRepeatCounter';
+
+const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
 export interface AttributeFormProps {
   entityId: number;
@@ -166,6 +193,7 @@ const {
   executeMutation: insertAttributions,
   fetching: inserting,
   error: insertError,
+  data: insertedAttribution,
 } = useMutation(mutation);
 
 async function save() {
@@ -256,7 +284,10 @@ async function save() {
     });
 
     repeatCount.value += 1;
-    emit('saved', repeatCount.value);
+
+    window.setTimeout(() => {
+      emit('saved', repeatCount.value);
+    }, SAVE_BTN_TRANSITION_DURATION_MS);
   }
 }
 
@@ -298,11 +329,26 @@ async function uploadPhotos(files: File[]) {
   }
 }
 
-const isSaving = computed(
-  () =>
-    inserting.value ||
-    (photoUploadPercentage.value > 0 && photoUploadPercentage.value < 100),
+const isUploadingPhotos = computed(
+  () => photoUploadPercentage.value > 0 && photoUploadPercentage.value < 100,
 );
+
+const isSaving = computed(() => inserting.value || isUploadingPhotos.value);
+
+const savingProgress = computed(() => {
+  const photoProgress = photoUploadPercentage.value * 0.95;
+  const attributionProgress = insertedAttribution.value ? 5 : 0;
+
+  if (!isSaving.value && !insertedAttribution.value) {
+    return 0;
+  }
+
+  if (insertedAttribution.value) {
+    return 100;
+  }
+
+  return photoProgress + attributionProgress;
+});
 
 function resetErrors() {
   uploadError.value = undefined;
@@ -312,15 +358,30 @@ function resetErrors() {
 </script>
 
 <style scoped lang="scss">
-.attribute-form__list {
-  list-style-type: none;
-  padding: 0;
+.attribute-form {
+  &__list {
+    list-style-type: none;
+    padding: 0;
 
-  li {
-    border-bottom: 1px solid $grey-4;
+    li {
+      border-bottom: 1px solid $grey-4;
 
-    .body--dark & {
-      border-color: $grey-8;
+      .body--dark & {
+        border-color: $grey-8;
+      }
+    }
+  }
+
+  &__save-btn {
+    border-radius: 2rem;
+    width: 56px;
+
+    &--saving {
+      width: min(calc(100svw - 36px), 436px);
+    }
+
+    &--repeat {
+      width: min(calc(100svw - 126px), 344px);
     }
   }
 }

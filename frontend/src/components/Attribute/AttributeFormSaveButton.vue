@@ -1,5 +1,5 @@
 <template>
-  <q-page-sticky :offset="[18, 18]" position="bottom-right">
+  <q-page-sticky :offset="[18, 18]" position="bottom-right" class="z-max">
     <slot name="error"></slot>
     <div
       class="row align-center shadow-3 attribute-form-save-btn"
@@ -27,6 +27,7 @@
             </q-badge>
           </div>
         </q-linear-progress>
+
         <slot v-else name="counter"></slot>
       </div>
 

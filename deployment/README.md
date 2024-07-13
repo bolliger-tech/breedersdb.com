@@ -92,7 +92,6 @@ gcloud sql instances create $PG_INSTANCE_NAME \
   #--ssl-mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED \
   --ssl-mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED \
   --activation-policy=ALWAYS \
-  --no-assign-ip \
   --enable-google-private-path \
   --network=projects/$PROJECT_ID/global/networks/default \
   --availability-type=ZONAL \
@@ -109,6 +108,27 @@ gcloud sql instances create $PG_INSTANCE_NAME \
 gcloud sql instances describe $PG_INSTANCE_NAME
 # use connectionName to build connection string
 # postgres://postgres:<PASSWORD>@/<DATABASE_NAME>?host=/cloudsql/<CONNECTION_NAME>
+```
+
+Access the database:
+
+```bash
+## FUTURE
+# in the future use the following command to connect to the database
+# currently there are some ipv6 issues…
+gcloud components install cloud_sql_proxy
+gcloud sql connect $PG_INSTANCE_NAME --user=postgres
+
+
+## NOW
+# NOTE: the instance needs a public IP to connect to it
+# 1. install cloud-sql-proxy
+brew install cloud-sql-proxy
+# 2. start the proxy
+cloud-sql-proxy --private-ip $PROJECT_ID:$REGION:$PG_INSTANCE_NAME --port 35432 --gcloud-auth
+# 3. connect to the database
+psql -h localhost -p 35432 -U postgres
+# check the env for the password
 ```
 
 ## HASURA

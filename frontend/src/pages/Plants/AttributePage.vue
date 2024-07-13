@@ -1,6 +1,8 @@
 <template>
   <PageLayout>
-    <h1>{{ t('attribute.title') }}</h1>
+    <h1>
+      {{ t('attribute.attributeEntity', { entity: t('plants.title', 1) }) }}
+    </h1>
     <AttributeSteps
       :entity-caption="entityCaption"
       :entity-loading="fetching"

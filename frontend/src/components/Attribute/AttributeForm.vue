@@ -1,21 +1,20 @@
 <template>
   <form>
     <ul class="attribute-form__list">
-      <li
-        v-for="formField in form.attribution_form_fields"
-        :key="formField.priority"
-      >
+      <li v-for="formField in attributeInputs" :key="formField.priority">
         <AttributeFormInput
           :ref="
             (el: InputRef) => (attributeFormInputRefs[formField.priority] = el)
           "
           v-model="attributeValues[formField.priority]"
           :attribute="formField.attribute"
-          :exceptional="false"
+          :exceptional="formField.exceptional"
         />
       </li>
     </ul>
-    <!-- TODO: add exceptional attributions -->
+
+    <AttributeFormAddInput @add="(a) => extraAttributes.push(a)" />
+
     <AttributeFormSaveButton
       :disable="!hasValues || isSaving || !!insertedAttribution"
       :loading="isSaving"
@@ -62,6 +61,8 @@ import { useRepeatCounter } from './useRepeatCounter';
 import AttributeFormSaveButton from './AttributeFormSaveButton.vue';
 import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCounter.vue';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
+import AttributeFormAddInput from 'src/components/Attribute/AttributeFormAddInput.vue';
+import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -91,6 +92,30 @@ const emit = defineEmits<{
 
 const $q = useQuasar();
 const { t } = useI18n();
+
+const formFields = computed(() => props.form.attribution_form_fields);
+const extraAttributes = ref<AttributeFragment[]>([]);
+const attributeInputs = computed<
+  {
+    attribute: AttributeFragment;
+    priority: number;
+    exceptional: boolean;
+  }[]
+>(() =>
+  formFields.value
+    .map((formField) => ({
+      attribute: formField.attribute as AttributeFragment,
+      priority: formField.priority,
+      exceptional: false,
+    }))
+    .concat(
+      extraAttributes.value.map((attribute, index) => ({
+        attribute,
+        priority: formFields.value.length + index,
+        exceptional: true,
+      })),
+    ),
+);
 
 // !!! uses the PRIORITY as the key !!!
 // (to allow multiple inserts of the same attribute)

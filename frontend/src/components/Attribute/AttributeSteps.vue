@@ -144,6 +144,7 @@ import { computed, ref, watch } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
 import { AttributableEntities } from './attributableEntities';
+import { attributeFragment, type AttributeFragment } from './attributeFragment';
 
 const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';
 const AUTHOR_STORAGE_KEY = 'breedersdb-attribution-author';
@@ -167,69 +168,33 @@ const emit = defineEmits<{
   entityStepCompleted: [];
 }>();
 
-const formQuery = graphql(`
-  query AttributionForm($formId: Int!) {
-    attribution_forms_by_pk(id: $formId) {
-      id
-      name
-      description
-      attribution_form_fields(
-        where: { attribute: { disabled: { _eq: false } } }
-        order_by: { priority: asc }
-      ) {
+const formQuery = graphql(
+  `
+    query AttributionForm($formId: Int!) {
+      attribution_forms_by_pk(id: $formId) {
         id
-        priority
-        attribute {
+        name
+        description
+        attribution_form_fields(
+          where: { attribute: { disabled: { _eq: false } } }
+          order_by: { priority: asc }
+        ) {
           id
-          validation_rule
-          name
-          description
-          data_type
-          attribute_type
-          default_value
-          legend
+          priority
+          attribute {
+            ...attributeFragment
+          }
         }
       }
     }
-  }
-`);
+  `,
+  [attributeFragment],
+);
 
 type Form = NonNullable<ResultOf<typeof formQuery>['attribution_forms_by_pk']>;
-type Attribute = Form['attribution_form_fields'][0]['attribute'];
-export type AttributeDefinition =
-  | (Attribute & {
-      data_type: 'RATING';
-      legend: string[] | null;
-      default_value: number | null;
-      validation_rule: { min: number; max: number; step: 1 };
-    })
-  | (Attribute & {
-      data_type: 'INTEGER' | 'FLOAT';
-      legend: null;
-      default_value: number | null;
-      validation_rule: { min: number; max: number; step: number };
-    })
-  | (Attribute & {
-      data_type: 'TEXT' | 'DATE';
-      legend: null;
-      validation_rule: null;
-      default_value: string | null;
-    })
-  | (Attribute & {
-      data_type: 'BOOLEAN';
-      legend: null;
-      validation_rule: null;
-      default_value: boolean | null;
-    })
-  | (Attribute & {
-      data_type: 'PHOTO';
-      legend: null;
-      validation_rule: null;
-      default_value: null;
-    });
 export type AttributionForm = Form & {
   attribution_form_fields: {
-    attribute: AttributeDefinition;
+    attribute: AttributeFragment;
     priority: number;
     id: number;
   }[];

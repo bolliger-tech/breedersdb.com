@@ -1,5 +1,6 @@
 export const attribute = {
-  title: 'Add Attribute',
+  title: 'Attribute | Attributes',
+  attributeEntity: 'Attribute {entity}',
   attributions: 'Attributions',
 
   form: 'Form',
@@ -47,4 +48,6 @@ export const attribute = {
 
   saved: 'Attribute saved.',
   uploading: 'Saving… {percentage}%',
+
+  addAttribute: 'Add attribute',
 };

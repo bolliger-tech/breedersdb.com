@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import type { AttributeValueWithPhoto } from 'src/components/Attribute/AttributeForm.vue';
-import type { AttributeDefinition } from 'src/components/Attribute/AttributeSteps.vue';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import AttributeFormInputRating from 'src/components/Attribute/AttributeFormInputRating.vue';
 import AttributeFormInputNumber from 'src/components/Attribute/AttributeFormInputNumber.vue';
@@ -110,7 +110,7 @@ import { computed, ref, nextTick } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributeFormInputProps {
-  attribute: AttributeDefinition;
+  attribute: AttributeFragment;
   exceptional: boolean;
 }
 

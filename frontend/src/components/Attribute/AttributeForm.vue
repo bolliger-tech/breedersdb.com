@@ -16,69 +16,31 @@
       </li>
     </ul>
     <!-- TODO: add exceptional attributions -->
-    <q-page-sticky :offset="[18, 18]" position="bottom-right">
-      <BaseErrorTooltip
-        :message="uploadError || validationError"
-        :graph-q-l-error="insertError"
-      />
-      <div
-        class="row align-center shadow-3 attribute-form__save-btn"
-        :class="{
-          'bg-grey-10': !$q.dark.isActive && !isSaving,
-          'bg-grey-9': $q.dark.isActive && !isSaving,
-          'bg-primary': isSaving,
-          'attribute-form__save-btn--saving': isSaving,
-          'attribute-form__save-btn--repeat': repeatTarget > 1 && !isSaving,
-        }"
-        :style="`transition: all ${SAVE_BTN_TRANSITION_DURATION_MS}ms ease`"
-      >
-        <div style="width: calc(100% - 62px)" class="q-pl-md q-pr-sm">
-          <AttributeRepeatCounter
-            v-if="repeatTarget > 1 && !isSaving && !insertedAttribution"
-            :total="repeatTarget"
-            :entity-type="entityType"
-            :count="repeatCount"
-            style="width: 100%"
-            @reset="repeatCount = 0"
-          />
-          <q-linear-progress
-            v-if="isSaving || !!insertedAttribution"
-            size="1.5em"
-            :percentage="savingProgress"
-            color="grey-7"
-            style="width: 100%"
-            rounded
-            dark
-          >
-            <div class="absolute-full flex flex-center">
-              <q-badge color="white" text-color="black">
-                {{
-                  t('attribute.uploading', {
-                    percentage: savingProgress,
-                  })
-                }}
-              </q-badge>
-            </div>
-          </q-linear-progress>
-        </div>
-        <q-btn
-          color="primary"
-          icon="save"
-          fab
-          unelevated
-          :disable="!hasValues || isSaving"
-          :loading="isSaving"
-          :style="
-            repeatTarget > 1 || isSaving
-              ? 'border: 1px solid white; margin: 2px'
-              : ''
-          "
-          @click="save"
-          @mouseleave="resetErrors"
-          @focusout="resetErrors"
+    <AttributeFormSaveButton
+      :disable="!hasValues || isSaving || !!insertedAttribution"
+      :loading="isSaving"
+      :show-progress="isSaving || !!insertedAttribution"
+      :progress="savingProgress"
+      :transition-duration="SAVE_BTN_TRANSITION_DURATION_MS"
+      @save="save"
+      @reset-errors="resetErrors"
+    >
+      <template #error>
+        <BaseErrorTooltip
+          :message="uploadError || validationError"
+          :graph-q-l-error="insertError"
         />
-      </div>
-    </q-page-sticky>
+      </template>
+      <template v-if="repeatTarget > 1" #counter>
+        <AttributeRepeatCounter
+          :total="repeatTarget"
+          :entity-type="entityType"
+          :count="repeatCount"
+          style="width: 100%"
+          @reset="repeatCount = 0"
+        />
+      </template>
+    </AttributeFormSaveButton>
   </form>
 </template>
 
@@ -93,12 +55,13 @@ import {
   useImageUploader,
   UploadProgress,
 } from 'src/composables/useImageUploader';
-import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
-import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCounter.vue';
 import { useRepeatCounter } from './useRepeatCounter';
+import AttributeFormSaveButton from './AttributeFormSaveButton.vue';
+import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCounter.vue';
+import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -358,30 +321,15 @@ function resetErrors() {
 </script>
 
 <style scoped lang="scss">
-.attribute-form {
-  &__list {
-    list-style-type: none;
-    padding: 0;
+.attribute-form__list {
+  list-style-type: none;
+  padding: 0;
 
-    li {
-      border-bottom: 1px solid $grey-4;
+  li {
+    border-bottom: 1px solid $grey-4;
 
-      .body--dark & {
-        border-color: $grey-8;
-      }
-    }
-  }
-
-  &__save-btn {
-    border-radius: 2rem;
-    width: 56px;
-
-    &--saving {
-      width: min(calc(100svw - 36px), 436px);
-    }
-
-    &--repeat {
-      width: min(calc(100svw - 126px), 344px);
+    .body--dark & {
+      border-color: $grey-8;
     }
   }
 }

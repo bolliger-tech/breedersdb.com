@@ -18,7 +18,7 @@
         self="bottom middle"
         style="width: min(90svw, 500px)"
       >
-        <i18n-t :keypath="`attribute.counter.description`">
+        <i18n-t :keypath="`attribute.counter.description`" scope="global">
           <template #count
             ><strong>{{ count }}</strong></template
           >

@@ -112,21 +112,14 @@
 
       <template v-else>
         <slot name="entity-preview"></slot>
-        <AttributeRepeatCounter
-          v-if="repeatInt > 0"
-          class="q-mt-md"
-          :total="repeatInt"
-          :entity-type="entityType"
-          :count="repeatCount"
-          @reset="repeatCount = 0"
-        />
-
         <AttributeForm
+          :key="attributeFormKey"
           :entity-id="entityId"
           :entity-type="entityType"
           :form="form"
           :date="date"
           :author="author"
+          :repeat-target="repeatInt"
           @saved="completeStep4"
         />
       </template>
@@ -140,7 +133,6 @@
 <script setup lang="ts">
 import AttributeFormSelector from 'src/components/Attribute/AttributeFormSelector.vue';
 import AttributeMetaData from 'src/components/Attribute/AttributeMetaData.vue';
-import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCounter.vue';
 import AttributeForm from 'src/components/Attribute/AttributeForm.vue';
 import AttributeNoEntityError from 'src/components/Attribute/AttributeNoEntityError.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -152,7 +144,6 @@ import { computed, ref, watch } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
 import { AttributableEntities } from './attributableEntities';
-import { useRepeatCounter } from './useRepeatCounter';
 
 const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';
 const AUTHOR_STORAGE_KEY = 'breedersdb-attribution-author';
@@ -329,15 +320,17 @@ function completeStep3() {
 }
 
 // step 4
-const repeatCount = useRepeatCounter({
-  formId: form.value?.id || -1,
-  entityId: props.entityId || -1,
-  entityType: props.entityType,
-});
+const attributeFormKey = ref(0);
 
-function completeStep4() {
-  // TODO: success notification
-  step.value = 3;
+function completeStep4(repeatCount: number) {
+  if (repeatCount >= repeatInt.value) {
+    // select next entity
+    step.value = 3;
+  } else {
+    // stay on the same entity
+    // but reset the AttributeForm
+    attributeFormKey.value += 1;
+  }
 }
 
 watch(

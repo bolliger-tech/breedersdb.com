@@ -21,17 +21,38 @@
         :message="uploadError || validationError"
         :graph-q-l-error="insertError"
       />
-      <q-btn
-        color="primary"
-        fab
-        icon="save"
-        :disable="!hasValues || isSaving"
-        :loading="isSaving"
-        :percentage="photoUploadPercentage * 0.95"
-        @click="save"
-        @mouseleave="resetErrors"
-        @focusout="resetErrors"
-      />
+      <div
+        class="row align-center shadow-3"
+        :class="{
+          'bg-grey-10': !$q.dark.isActive,
+          'bg-grey-9': $q.dark.isActive,
+        }"
+        style="border-radius: 2rem"
+      >
+        <AttributeRepeatCounter
+          v-if="repeatTarget > 1"
+          class="q-mx-md"
+          :total="repeatTarget"
+          :entity-type="entityType"
+          :count="repeatCount"
+          @reset="repeatCount = 0"
+        />
+        <q-btn
+          color="primary"
+          icon="save"
+          fab
+          unelevated
+          :disable="!hasValues || isSaving"
+          :loading="isSaving"
+          :percentage="photoUploadPercentage * 0.95"
+          :style="
+            repeatTarget > 1 ? 'border: 1px solid white; margin: 2px' : ''
+          "
+          @click="save"
+          @mouseleave="resetErrors"
+          @focusout="resetErrors"
+        />
+      </div>
     </q-page-sticky>
   </form>
 </template>
@@ -51,6 +72,8 @@ import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
+import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCounter.vue';
+import { useRepeatCounter } from './useRepeatCounter';
 
 export interface AttributeFormProps {
   entityId: number;
@@ -58,6 +81,7 @@ export interface AttributeFormProps {
   form: AttributionForm;
   date: string;
   author: string;
+  repeatTarget: number;
 }
 
 type AttributeValue = Omit<
@@ -72,7 +96,7 @@ export type AttributeValueWithPhoto = Omit<AttributeValue, 'photo_note'> & {
 const props = defineProps<AttributeFormProps>();
 
 const emit = defineEmits<{
-  saved: [];
+  saved: [repeatCount: number];
 }>();
 
 const $q = useQuasar();
@@ -82,6 +106,12 @@ const { t } = useI18n();
 // (to allow multiple inserts of the same attribute)
 const attributeValues = ref<{ [key: number]: AttributeValueWithPhoto }>({});
 const attributeFormInputRefs = ref<{ [key: number]: InputRef | null }>({});
+
+const repeatCount = useRepeatCounter({
+  formId: props.form.id,
+  entityId: props.entityId,
+  entityType: props.entityType,
+});
 
 const hasValues = computed(() =>
   Object.values(attributeValues.value).some(
@@ -224,7 +254,9 @@ async function save() {
       timeout: 3000,
       position: 'top',
     });
-    emit('saved');
+
+    repeatCount.value += 1;
+    emit('saved', repeatCount.value);
   }
 }
 

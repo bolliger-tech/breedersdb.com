@@ -3,7 +3,6 @@
     <q-linear-progress
       size="1.5em"
       :value="progress"
-      color="grey-7"
       rounded
       dark
       @mouseover="showExplainer = true"
@@ -69,3 +68,9 @@ const { t } = useI18n();
 
 const showExplainer = ref(false);
 </script>
+
+<style scoped>
+.q-linear-progress {
+  color: var(--bdb-primary-100);
+}
+</style>

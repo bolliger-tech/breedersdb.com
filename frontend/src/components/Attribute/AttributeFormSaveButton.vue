@@ -1,12 +1,14 @@
 <template>
-  <q-page-sticky :offset="[18, 18]" position="bottom-right" class="z-max">
+  <q-page-sticky :offset="[18, 18]" position="bottom-right" style="z-index: 1">
     <slot name="error"></slot>
     <div
       class="row align-center shadow-3 attribute-form-save-btn"
       :class="{
-        'bg-grey-10': !$q.dark.isActive && !loading,
-        'bg-grey-9': $q.dark.isActive && !loading,
-        'bg-primary': loading,
+        'bg-grey-10': !$q.dark.isActive && !showProgress && !disable,
+        'bg-grey-9':
+          ($q.dark.isActive && !showProgress) ||
+          (!$q.dark.isActive && !showProgress && disable),
+        'bg-primary': showProgress,
         'attribute-form-save-btn--progress': showProgress,
         'attribute-form-save-btn--counter': $slots.counter && !loading,
       }"
@@ -15,15 +17,18 @@
         <q-linear-progress
           v-if="showProgress"
           size="1.5em"
-          :percentage="progress"
-          color="grey-7"
+          track-color="white"
+          :value="progress / 100"
           style="width: 100%"
           rounded
           dark
+          class="attribute-form-save-btn__progress"
         >
           <div class="absolute-full flex flex-center">
             <q-badge color="white" text-color="black">
-              {{ t('attribute.uploading', { percentage: progress }) }}
+              {{
+                t('attribute.uploading', { percentage: progress.toFixed(0) })
+              }}
             </q-badge>
           </div>
         </q-linear-progress>
@@ -95,5 +100,9 @@ const transition = computed(() => `all ${props.transitionDuration}ms ease`);
   &__progress-container {
     width: calc(100% - 62px);
   }
+}
+
+.attribute-form-save-btn__progress.q-linear-progress {
+  color: var(--bdb-accent-100);
 }
 </style>

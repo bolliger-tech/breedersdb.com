@@ -18,6 +18,9 @@
       :clearable="clearable"
       :loading="loading"
       :hint="required ? t('base.required') : ''"
+      :label="inlineLabel"
+      @popup-show="() => (inlineLabel = label)"
+      @popup-hide="() => (inlineLabel = undefined)"
       @filter="filterOptions"
     >
       <template #no-option>
@@ -120,4 +123,6 @@ const rules = computed(() => {
 
 const optionValueKey = props.optionValue as string;
 const optionLabelKey = props.optionLabel as string;
+
+const inlineLabel = ref<string | undefined>(undefined);
 </script>

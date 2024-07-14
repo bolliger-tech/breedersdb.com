@@ -145,7 +145,9 @@ const attributions = computed(
 );
 
 const images = computed(() =>
-  attributions.value.filter((row) => row.data_type === 'PHOTO'),
+  attributions.value.filter(
+    (row) => row.data_type === 'PHOTO' || row.photo_note,
+  ),
 );
 
 const { t } = useI18n();

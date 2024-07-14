@@ -9,7 +9,7 @@
     :placeholder="t('attribute.numberPlaceholder')"
     clearable
     :hide-bottom-space="!inputRef?.hasError"
-    :input-mode="isIntegerOnly ? 'decimal' : 'numeric'"
+    input-mode="decimal"
     :min="validation.min"
     :max="validation.max"
     :step="validation.step"

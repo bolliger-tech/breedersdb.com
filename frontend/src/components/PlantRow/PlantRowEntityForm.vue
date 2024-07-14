@@ -18,6 +18,7 @@
   <OrchardSelect
     :ref="(el: InputRef) => (refs.orchardRef = el)"
     v-model="data.orchard_id"
+    :with-disabled="props.plantRow.orchard?.disabled"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateEliminatedRef = el)"

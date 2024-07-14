@@ -11,6 +11,7 @@ export const plantRowFragment = graphql(`
     orchard {
       id
       name
+      disabled
     }
     created
     modified

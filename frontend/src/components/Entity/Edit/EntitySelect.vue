@@ -10,6 +10,7 @@
       autocomplete="off"
       :option-value="optionValueKey"
       :option-label="optionLabelKey"
+      :option-disable="optionDisable"
       dense
       outlined
       use-input
@@ -41,7 +42,7 @@
 
 <script setup lang="ts" generic="T extends { [key: string]: any }">
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { QSelect, QSelectSlots } from 'quasar';
+import { QSelect, QSelectSlots, QSelectProps } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ComponentPublicInstance, VNodeRef, computed, ref } from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
@@ -79,6 +80,7 @@ export interface EntitySelectPropsWithoutModel<T> {
   loading?: boolean;
   error?: CombinedError | null;
   clearable?: boolean;
+  optionDisable?: QSelectProps['optionDisable'];
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
@@ -86,6 +88,7 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   loading: false,
   error: null,
   clearable: true,
+  optionDisable: undefined,
 });
 
 const selectRef = ref<QSelect | null>(null);

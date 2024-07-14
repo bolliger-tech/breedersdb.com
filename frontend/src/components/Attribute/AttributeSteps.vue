@@ -220,11 +220,21 @@ const {
   data: formData,
   error: formFetchError,
   fetching: formFetching,
+  executeQuery: fetchForm,
 } = useQuery({
   query: formQuery,
   variables: formVariables,
-  pause: formId.value === -1,
+  pause: true,
 });
+watch(
+  formVariables,
+  () => {
+    if (formId.value > -1) {
+      fetchForm();
+    }
+  },
+  { immediate: true, deep: true, flush: 'post' },
+);
 
 const form = computed(
   () => (formData.value?.attribution_forms_by_pk as AttributionForm) ?? null,

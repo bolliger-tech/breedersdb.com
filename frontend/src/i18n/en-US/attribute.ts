@@ -39,6 +39,8 @@ export const attribute = {
     'Invalid number. Valid values are between {min} and {max} with a step of {step}.',
   invalidPhoto: 'Invalid or unsupported image.',
   invalidInput: 'Some inputs are invalid. Please check the form.',
+  notCurrentYearMonth:
+    'The selected date is outside the current year or month.',
 
   textPlaceholder: 'Enter some text…',
   numberPlaceholder: 'Enter a number…',

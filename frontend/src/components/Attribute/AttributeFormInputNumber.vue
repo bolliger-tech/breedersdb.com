@@ -5,11 +5,12 @@
     dense
     outlined
     type="number"
+    input-mode="decimal"
+    :pattern="isIntegerOnly && $q.platform.is.ios ? '[0-9]*' : undefined"
     autocomplete="off"
     :placeholder="t('attribute.numberPlaceholder')"
     clearable
     :hide-bottom-space="!inputRef?.hasError"
-    input-mode="decimal"
     :min="validation.min"
     :max="validation.max"
     :step="validation.step"

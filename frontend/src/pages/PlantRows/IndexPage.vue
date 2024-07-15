@@ -83,7 +83,7 @@ const columns = [
     name: 'orchard',
     label: t('plantRows.fields.orchard'),
     align: 'left' as const,
-    field: (row: PlantRow) => row.orchard?.name,
+    field: (row: PlantRow) => row.orchard.name,
     sortable: true,
   },
   {

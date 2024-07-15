@@ -16,7 +16,7 @@
           {{ plantRow.name }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('plantRows.fields.orchard')">
-          {{ plantRow.orchard?.name }}
+          {{ plantRow.orchard.name }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.disabled')">
           {{ plantRow.disabled ? t('base.yes') : t('base.no') }}

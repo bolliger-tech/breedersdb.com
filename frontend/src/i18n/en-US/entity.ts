@@ -9,6 +9,7 @@ export const entity = {
     nameOverride: 'Common name',
     fullName: 'Breeding name',
     disabled: 'Disabled',
+    dateDisabled: 'Date disabled',
   },
 
   add: 'Add new',

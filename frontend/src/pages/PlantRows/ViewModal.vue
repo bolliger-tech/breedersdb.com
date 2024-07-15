@@ -18,8 +18,8 @@
         <EntityViewTableRow :label="t('plantRows.fields.orchard')">
           {{ plantRow.orchard.name }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.disabled')">
-          {{ plantRow.disabled ? t('base.yes') : t('base.no') }}
+        <EntityViewTableRow :label="t('entity.commonColumns.dateDisabled')">
+          {{ localizeDate(plantRow.date_eliminated) }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
           {{ localizeDate(plantRow.created) }}

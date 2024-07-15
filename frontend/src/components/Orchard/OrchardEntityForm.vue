@@ -27,13 +27,13 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { VNodeRef, nextTick, ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { OrchardEditInput, OrchardInsertInput } from './OrchardModalEdit.vue';
-import { useEntityForm } from 'src/composables/useEntityForm';
+import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import BaseInputLabel from '../Base/BaseInputLabel.vue';
 import { graphql } from 'gql.tada';
 import { useQuery } from '@urql/vue';
@@ -55,10 +55,6 @@ const initialData = {
 
 const data = ref({ ...initialData });
 
-type InputRef = VNodeRef & {
-  validate: () => boolean | Promise<boolean> | undefined;
-  focus: () => void;
-};
 const refs = ref<{ [key: string]: InputRef | null }>({
   nameRef: null,
   disabledRef: null,

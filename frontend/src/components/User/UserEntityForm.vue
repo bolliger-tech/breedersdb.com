@@ -60,14 +60,14 @@ import {
   useI18n,
 } from 'src/composables/useI18n';
 import { DEFAULT_LOCALE } from 'src/i18n';
-import { VNodeRef, nextTick, ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { UserEditInput, UserInsertInput } from './UserModalEdit.vue';
-import { useEntityForm } from 'src/composables/useEntityForm';
+import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import { isValidEmail } from 'src/utils/validationUtils';
 import UserButtonChangePassword from './UserButtonChangePassword.vue';
 import { isValidPassword } from 'src/utils/validationUtils';
@@ -92,10 +92,6 @@ const initialData = {
 
 const data = ref({ ...initialData });
 
-type InputRef = VNodeRef & {
-  validate: () => boolean | Promise<boolean> | undefined;
-  focus: () => void;
-};
 const refs = ref<{ [key: string]: InputRef | null }>({
   emailRef: null,
   localeRef: null,

@@ -23,5 +23,5 @@ export const plantRows = {
   disableConfirmation: 'Are you sure you want to disable this row?',
   delete: 'Delete',
   deleteConfirmation:
-    "This row doesn't have any plants and would be permanently deleted. Are you sure?",
+    "This row doesn't have any plants and will therefore be permanently deleted. Are you sure?",
 };

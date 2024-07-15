@@ -22,6 +22,7 @@ import EntitySelect, {
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 export interface OrchardSelectProps {
   includeId?: number;
@@ -62,7 +63,18 @@ const { data, error, fetching } = useQuery({
   variables: { where },
 });
 
-const orchardOptions = computed(() => data.value?.orchards ?? []);
+type Orchard = NonNullable<NonNullable<typeof data.value>['orchards']>[0];
+
+const { localizedSortPredicate } = useLocalizedSort();
+
+const orchardOptions = computed(
+  () =>
+    data.value?.orchards
+      .slice(0)
+      .sort((a: Orchard, b: Orchard) =>
+        localizedSortPredicate(a.name, b.name),
+      ) ?? [],
+);
 
 const orchard = computed({
   get: () => orchardOptions.value.find((o) => o.id === modelValue.value),

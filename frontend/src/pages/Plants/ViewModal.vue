@@ -83,17 +83,17 @@
   </EntityModalContent>
 
   <q-card v-else>
-    <BaseSpinner />
+    <BaseSpinner size="xl" />
   </q-card>
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue';
+import { CombinedError, useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
@@ -104,16 +104,19 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import { useRoute, useRouter } from 'vue-router';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
-import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
+import {
+  RefreshAttributionsViewResult,
+  useRefreshAttributionsView,
+} from 'src/composables/useRefreshAttributionsView';
 
 const props = defineProps<{ entityId: number | string }>();
 
+const attributionsRefreshError = ref<CombinedError | undefined>();
+const attributionsRefresh = ref<RefreshAttributionsViewResult | undefined>();
 const {
   executeMutation: refreshAttributionsView,
   fetching: refreshingAttributionsView,
 } = useRefreshAttributionsView();
-const { error: attributionsRefreshError, data: attributionsRefresh } =
-  await refreshAttributionsView({});
 
 const query = graphql(
   `
@@ -130,13 +133,26 @@ const query = graphql(
   [plantFragment],
 );
 
-const { data, error: queryPlantError } = useQuery({
+const {
+  data,
+  error: queryPlantError,
+  executeQuery: executePlantQuery,
+} = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
-  pause: refreshingAttributionsView.value || !attributionsRefresh,
+  pause: refreshingAttributionsView.value || !attributionsRefresh.value,
+  requestPolicy: 'cache-and-network',
 });
 
-const error = computed(() => queryPlantError.value || attributionsRefreshError);
+refreshAttributionsView({}).then(({ data, error }) => {
+  attributionsRefresh.value = data;
+  attributionsRefreshError.value = error;
+  executePlantQuery();
+});
+
+const error = computed(
+  () => queryPlantError.value || attributionsRefreshError.value,
+);
 
 const plant = computed(() => data.value?.plants_by_pk);
 const attributions = computed(

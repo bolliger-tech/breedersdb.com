@@ -2,14 +2,14 @@
   <template v-if="rule && rule.isValid">
     <q-icon name="info" />&nbsp;
     <span class="text-body2">
-      <strong>{{ t('filter.explainer.title') }}</strong>
+      <strong>{{ t('analyze.filter.explainer.title') }}</strong>
       {{ explainer }}
     </span>
   </template>
   <template v-else>
     <q-icon name="warning" class="text-negative" />&nbsp;
     <span class="text-body2 text-negative">
-      {{ t('filter.explainer.invalidRule') }}
+      {{ t('analyze.filter.explainer.invalidRule') }}
     </span>
   </template>
 </template>
@@ -79,7 +79,7 @@ const entityName = computed(() => {
 const explainer = computed(() => {
   const args = {
     entity: props.rule?.isAttribute
-      ? t('filter.cultivarAndSubentities')
+      ? t('analyze.filter.cultivarAndSubentities')
       : entityName.value,
     column: column.value,
     operator: operator.value,
@@ -87,11 +87,11 @@ const explainer = computed(() => {
   };
   if (props.rule?.isAttribute) {
     if (props.rule.includeEntitiesWithoutAttributions) {
-      return t('filter.explainer.attributeWithNoAttributions', args);
+      return t('analyze.filter.explainer.attributeWithNoAttributions', args);
     } else {
-      return t('filter.explainer.attribute', args);
+      return t('analyze.filter.explainer.attribute', args);
     }
   }
-  return t('filter.explainer.entity', args);
+  return t('analyze.filter.explainer.entity', args);
 });
 </script>

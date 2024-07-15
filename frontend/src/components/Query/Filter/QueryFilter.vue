@@ -1,7 +1,10 @@
 <template>
-  <q-toggle v-model="store.explain" :label="t('filter.showExplanation')" />
+  <q-toggle
+    v-model="store.explain"
+    :label="t('analyze.filter.showExplanation')"
+  />
   <p class="text-overline q-mb-none q-mt-lg">
-    {{ t('filter.baseFilter', { entityName }) }}
+    {{ t('analyze.filter.baseFilter', { entityName }) }}
   </p>
   <QueryFilterRootNode
     :filter="baseFilter"
@@ -10,7 +13,7 @@
   />
 
   <p class="text-overline q-mb-none q-mt-lg">
-    {{ t('filter.attributionFilter') }}
+    {{ t('analyze.filter.attributionFilter') }}
   </p>
   <QueryFilterRootNode
     :filter="attributionFilter"

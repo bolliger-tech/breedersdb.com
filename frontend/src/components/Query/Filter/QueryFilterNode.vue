@@ -69,8 +69,8 @@
             >
               {{
                 conjunction === FilterConjunction.And
-                  ? t('filter.operators.and')
-                  : t('filter.operators.or')
+                  ? t('analyze.filter.operators.and')
+                  : t('analyze.filter.operators.or')
               }}
             </div>
           </template>

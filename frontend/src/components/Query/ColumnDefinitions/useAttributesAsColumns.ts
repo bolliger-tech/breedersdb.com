@@ -46,7 +46,7 @@ export function useAttributesAsColumns() {
       return [];
     }
 
-    const tableLabel = t('filter.attribute');
+    const tableLabel = t('analyze.filter.attribute');
 
     return data.value.attributes
       .map((attribute) =>

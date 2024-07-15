@@ -34,7 +34,7 @@ const { t } = useI18n();
 const label = computed(() => {
   const type = dataTypeToColumnTypes(props.attribution.data_type);
 
-  if (type === ColumnTypes.Photo) return t('result.photo');
+  if (type === ColumnTypes.Photo) return t('analyze.result.photo');
 
   const value = getAttributeValue(props.attribution);
   return formatResultColumnValue({ value, type });

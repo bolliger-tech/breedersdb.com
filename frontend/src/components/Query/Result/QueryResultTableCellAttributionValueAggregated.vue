@@ -236,12 +236,12 @@ const color = computed(() => {
 
 const aggregationName = computed(() => {
   return {
-    [AttributionAggregation.Count]: t('result.aggregations.theCount'),
-    [AttributionAggregation.Max]: t('result.aggregations.theMax'),
-    [AttributionAggregation.Min]: t('result.aggregations.theMin'),
-    [AttributionAggregation.Mean]: t('result.aggregations.theMean'),
-    [AttributionAggregation.Median]: t('result.aggregations.theMedian'),
-    [AttributionAggregation.StdDev]: t('result.aggregations.theStdDev'),
+    [AttributionAggregation.Count]: t('analyze.result.aggregations.theCount'),
+    [AttributionAggregation.Max]: t('analyze.result.aggregations.theMax'),
+    [AttributionAggregation.Min]: t('analyze.result.aggregations.theMin'),
+    [AttributionAggregation.Mean]: t('analyze.result.aggregations.theMean'),
+    [AttributionAggregation.Median]: t('analyze.result.aggregations.theMedian'),
+    [AttributionAggregation.StdDev]: t('analyze.result.aggregations.theStdDev'),
   }[props.aggregation];
 });
 </script>

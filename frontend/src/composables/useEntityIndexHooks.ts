@@ -3,7 +3,15 @@ import { useQueryArg } from './useQueryArg';
 import { computed } from 'vue';
 import type { UseQueryArgs } from '@urql/vue';
 
-export function useEntityIndexHooks<T>(foreignKeys?: string[]) {
+export function useEntityIndexHooks<T>({
+  foreignKeys,
+  defaultSortBy = 'name',
+  searchColumn = 'name',
+}: {
+  foreignKeys?: string[];
+  defaultSortBy?: string;
+  searchColumn?: string;
+} = {}) {
   const { queryArg: search } = useQueryArg<string>({
     key: 's',
     defaultValue: '',
@@ -11,7 +19,7 @@ export function useEntityIndexHooks<T>(foreignKeys?: string[]) {
   });
 
   const { pagination } = usePagination({
-    sortBy: 'name',
+    sortBy: defaultSortBy,
     descending: false,
     page: 1,
     rowsPerPage: 100,
@@ -34,7 +42,7 @@ export function useEntityIndexHooks<T>(foreignKeys?: string[]) {
 
     if (search.value) {
       where._and.push({
-        email: { _ilike: `%${search.value}%` },
+        [searchColumn]: { _ilike: `%${search.value}%` },
       });
     }
 

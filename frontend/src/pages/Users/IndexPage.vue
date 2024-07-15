@@ -52,7 +52,10 @@ const query = graphql(
   [userFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+  defaultSortBy: 'email',
+  searchColumn: 'email',
+});
 
 const { data, fetching, error, executeQuery } = await useQuery({
   query,

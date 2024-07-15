@@ -56,9 +56,9 @@ const query = graphql(
   [plantRowFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>([
-  'orchard',
-]);
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+  foreignKeys: ['orchard'],
+});
 
 const { data, fetching, error } = await useQuery({
   query,

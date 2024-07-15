@@ -2,10 +2,11 @@
   <EntityInput
     :ref="(el: InputRef) => (refs.nameRef = el)"
     v-model="data.name"
-    :label="t('plantRows.fields.name')"
+    :label="t('entity.commonColumns.name')"
     :rules="[
       (val: string) =>
-        !!val || t('base.validation.xIsRequired', [t('plantRows.fields.name')]),
+        !!val ||
+        t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"

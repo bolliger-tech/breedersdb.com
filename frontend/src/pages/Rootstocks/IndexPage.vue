@@ -5,7 +5,7 @@
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('rootstocks.title', 2)"
-      :search-placeholder="t('rootstocks.searchPlaceholder')"
+      :search-placeholder="t('entity.searchPlaceholderName')"
       :rows="data?.rootstocks || []"
       :loading="fetching"
       :all-columns="columns"
@@ -72,7 +72,7 @@ type Rootstock = ResultOf<typeof query>['rootstocks'][0];
 const columns = [
   {
     name: 'name',
-    label: t('rootstocks.fields.name'),
+    label: t('entity.commonColumns.name'),
     align: 'left' as const,
     field: 'name',
     sortable: true,

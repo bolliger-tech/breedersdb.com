@@ -5,7 +5,7 @@
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('plantRows.title', 2)"
-      :search-placeholder="t('plantRows.searchPlaceholder')"
+      :search-placeholder="t('entity.searchPlaceholderName')"
       :rows="data?.plant_rows || []"
       :loading="fetching"
       :all-columns="columns"
@@ -74,7 +74,7 @@ type PlantRow = ResultOf<typeof query>['plant_rows'][0];
 const columns = [
   {
     name: 'name',
-    label: t('plantRows.fields.name'),
+    label: t('entity.commonColumns.name'),
     align: 'left' as const,
     field: 'name',
     sortable: true,
@@ -88,7 +88,7 @@ const columns = [
   },
   {
     name: 'disabled',
-    label: t('plantRows.fields.disabled'),
+    label: t('entity.commonColumns.disabled'),
     align: 'left' as const,
     field: (row: PlantRow) => (row.disabled ? t('base.yes') : t('base.no')),
     sortable: true,

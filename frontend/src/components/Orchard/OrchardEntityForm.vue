@@ -2,10 +2,11 @@
   <EntityInput
     :ref="(el: InputRef) => (refs.nameRef = el)"
     v-model="data.name"
-    :label="t('orchards.fields.name')"
+    :label="t('entity.commonColumns.name')"
     :rules="[
       (val: string) =>
-        !!val || t('base.validation.xIsRequired', [t('orchards.fields.name')]),
+        !!val ||
+        t('base.validation.xIsRequired', [t('entity.commonColumns.name')]),
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"
@@ -14,7 +15,7 @@
     debounce="300"
     :loading="fetchingNameUnique"
   />
-  <BaseInputLabel :label="t('orchards.fields.disabled')">
+  <BaseInputLabel :label="t('entity.commonColumns.disabled')">
     <q-checkbox
       :ref="(el: InputRef) => (refs.disabledRef = el)"
       v-model="data.disabled"

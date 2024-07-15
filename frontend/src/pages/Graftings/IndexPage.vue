@@ -5,7 +5,7 @@
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('graftings.title', 2)"
-      :search-placeholder="t('graftings.searchPlaceholder')"
+      :search-placeholder="t('entity.searchPlaceholderName')"
       :rows="data?.graftings || []"
       :loading="fetching"
       :all-columns="columns"
@@ -72,7 +72,7 @@ type Grafting = ResultOf<typeof query>['graftings'][0];
 const columns = [
   {
     name: 'name',
-    label: t('graftings.fields.name'),
+    label: t('entity.commonColumns.name'),
     align: 'left' as const,
     field: 'name',
     sortable: true,

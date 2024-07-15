@@ -12,7 +12,7 @@
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <EntityViewTable>
-        <EntityViewTableRow :label="t('graftings.fields.name')">
+        <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ grafting.name }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">

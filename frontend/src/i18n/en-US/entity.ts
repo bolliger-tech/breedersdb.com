@@ -8,10 +8,12 @@ export const entity = {
     displayName: 'Name',
     nameOverride: 'Common name',
     fullName: 'Breeding name',
+    disabled: 'Disabled',
   },
 
   add: 'Add new',
   search: 'Search list',
+  searchPlaceholderName: 'Search by name',
 
   list: {
     fullscreen: 'Fullscreen',

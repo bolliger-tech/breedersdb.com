@@ -5,7 +5,7 @@
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('orchards.title', 2)"
-      :search-placeholder="t('orchards.searchPlaceholder')"
+      :search-placeholder="t('entity.searchPlaceholderName')"
       :rows="data?.orchards || []"
       :loading="fetching"
       :all-columns="columns"
@@ -72,14 +72,14 @@ type Orchard = ResultOf<typeof query>['orchards'][0];
 const columns = [
   {
     name: 'name',
-    label: t('orchards.fields.name'),
+    label: t('entity.commonColumns.name'),
     align: 'left' as const,
     field: 'name',
     sortable: true,
   },
   {
     name: 'disabled',
-    label: t('orchards.fields.disabled'),
+    label: t('entity.commonColumns.disabled'),
     align: 'left' as const,
     field: (row: Orchard) => (row.disabled ? t('base.yes') : t('base.no')),
     sortable: true,

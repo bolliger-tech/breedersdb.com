@@ -12,13 +12,13 @@
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <EntityViewTable>
-        <EntityViewTableRow :label="t('plantRows.fields.name')">
+        <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ plantRow.name }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('plantRows.fields.orchard')">
           {{ plantRow.orchard?.name }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('plantRows.fields.disabled')">
+        <EntityViewTableRow :label="t('entity.commonColumns.disabled')">
           {{ plantRow.disabled ? t('base.yes') : t('base.no') }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">

@@ -50,7 +50,8 @@ import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { useCancel } from 'src/composables/useCancel';
 
 export type PlantRowEditInput = Omit<PlantRowFragment, 'created' | 'modified'>;
-export type PlantRowInsertInput = Omit<PlantRowEditInput, 'id'>;
+export type PlantRowInsertInput = Omit<PlantRowEditInput, 'id' | 'orchard'> &
+  Partial<Pick<PlantRowEditInput, 'orchard'>>;
 
 export interface PlantRowModalEditProps {
   plantRow: PlantRowEditInput | PlantRowInsertInput;

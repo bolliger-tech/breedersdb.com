@@ -11,6 +11,7 @@ import PlantRowModalEdit, {
 const plantRow: PlantRowInsertInput = {
   name: '',
   disabled: false,
+  date_eliminated: null,
 };
 
 const { t } = useI18n();

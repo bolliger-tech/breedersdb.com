@@ -1,19 +1,14 @@
 table:
   name: queries
   schema: public
-object_relationships:
-  - name: query_group
-    using:
-      foreign_key_constraint_on: query_group_id
 insert_permissions:
   - role: user
     permission:
       check: {}
       columns:
         - note
-        - my_query
+        - filters
         - name
-        - query_group_id
     comment: ""
 select_permissions:
   - role: user
@@ -21,8 +16,7 @@ select_permissions:
       columns:
         - name
         - id
-        - query_group_id
-        - my_query
+        - filters
         - note
         - created
         - modified
@@ -34,9 +28,8 @@ update_permissions:
     permission:
       columns:
         - note
-        - my_query
+        - filters
         - name
-        - query_group_id
       filter: {}
       check: {}
     comment: ""

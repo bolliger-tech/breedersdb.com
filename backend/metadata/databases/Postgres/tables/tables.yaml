@@ -18,7 +18,6 @@
 - "!include public_plants.yaml"
 - "!include public_pollen.yaml"
 - "!include public_queries.yaml"
-- "!include public_query_groups.yaml"
 - "!include public_rootstocks.yaml"
 - "!include public_user_tokens.yaml"
 - "!include public_users.yaml"

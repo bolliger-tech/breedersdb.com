@@ -1,36 +1,23 @@
 import { test, expect, afterEach } from 'bun:test';
-import { post } from '../fetch';
+import { post, postOrFail } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertQuery(
-    $name: String
-    $my_query: jsonb
-    $note: String
-    $query_group_name: String
-  ) {
+  mutation InsertQuery($name: String, $filters: jsonb, $note: String) {
     insert_queries_one(
-      object: {
-        name: $name
-        my_query: $my_query
-        note: $note
-        query_group: { data: { name: $query_group_name, version: "1.0.0" } }
-      }
+      object: { name: $name, filters: $filters, note: $note }
     ) {
       id
       name
-      my_query
+      filters
       note
-      query_group {
-        name
-      }
       created
       modified
     }
   }
 `;
 
-const my_query = {
+const filters = {
   baseTable: 'Plants',
   baseFilter: {
     id: 23,
@@ -135,13 +122,10 @@ const my_query = {
 };
 
 afterEach(async () => {
-  await post({
+  await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAllQueries {
         delete_queries(where: {}) {
-          affected_rows
-        }
-        delete_query_groups(where: {}) {
           affected_rows
         }
       }
@@ -150,40 +134,36 @@ afterEach(async () => {
 });
 
 test('insert', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Query 1',
-      my_query,
+      filters,
       note: 'Note 1',
-      query_group_name: 'QueryGroup 1',
     },
   });
 
   expect(resp.data.insert_queries_one.id).toBeGreaterThan(0);
   expect(resp.data.insert_queries_one.name).toBe('Query 1');
-  expect(resp.data.insert_queries_one.my_query).toEqual(my_query);
+  expect(resp.data.insert_queries_one.filters).toEqual(filters);
   expect(resp.data.insert_queries_one.note).toBe('Note 1');
-  expect(resp.data.insert_queries_one.query_group.name).toBe('QueryGroup 1');
   expect(resp.data.insert_queries_one.created).toMatch(iso8601dateRegex);
   expect(resp.data.insert_queries_one.modified).toBeNull();
 });
 
 test('name is unique', async () => {
-  const resp1 = await post({
+  const resp1 = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Query 1',
-      my_query,
-      query_group_name: 'QueryGroup 1',
+      filters,
     },
   });
   const resp2 = await post({
     query: insertMutation,
     variables: {
       name: 'Query 1',
-      my_query,
-      query_group_name: 'QueryGroup 1',
+      filters,
     },
   });
 
@@ -196,8 +176,7 @@ test('name is required', async () => {
     query: insertMutation,
     variables: {
       name: '',
-      my_query,
-      query_group_name: 'QueryGroup 1',
+      filters,
     },
   });
 
@@ -205,16 +184,15 @@ test('name is required', async () => {
 });
 
 test('modified', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Query 1',
-      my_query,
-      query_group_name: 'QueryGroup 1',
+      filters,
     },
   });
 
-  const updated = await post({
+  const updated = await postOrFail({
     query: /* GraphQL */ `
       mutation UpdateQuery($id: Int!, $name: String) {
         update_queries_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
@@ -231,17 +209,14 @@ test('modified', async () => {
 });
 
 test('note is trimmed', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Query 1',
-      my_query,
+      filters,
       note: '   Note 1   ',
-      query_group_name: 'QueryGroup 1',
     },
   });
 
   expect(resp.data.insert_queries_one.note).toBe('Note 1');
 });
-
-// TODO: test validation of my_query structure

@@ -1,6 +1,6 @@
 <template>
   <EntityButtonDelete
-    :label="plantRowHasPlants ? t('plantRows.disable') : t('plantRows.delete')"
+    :label="plantRowHasPlants ? t('base.disable') : t('base.delete')"
     :error="queryError || deleteError || disableError"
     :fetching="queryFetching || deleting || disabling"
     @delete="() => (plantRowHasPlants ? disablePlantRow() : deletePlantRow())"
@@ -11,7 +11,11 @@
         <q-avatar icon="warning" color="negative" text-color="white" />
       </div>
       <div class="col">
-        {{ t('plantRows.disableConfirmation') }}
+        {{
+          t('base.disableConfirmation', {
+            entity: t('base.entityName.plantRow'),
+          })
+        }}
       </div>
     </template>
     <template v-else #message>

@@ -3,8 +3,6 @@ export const orchards = {
 
   searchPlaceholder: 'Search by name',
 
-  entityName: 'orchard',
-
   fields: {
     name: 'Name',
     disabled: 'Disabled',

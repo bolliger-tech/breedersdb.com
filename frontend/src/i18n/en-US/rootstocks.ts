@@ -3,8 +3,6 @@ export const rootstocks = {
 
   searchPlaceholder: 'Search by name',
 
-  entityName: 'rootstock',
-
   fields: {
     name: 'Name',
     created: 'Created',

@@ -3,8 +3,6 @@ export const graftings = {
 
   searchPlaceholder: 'Search by name',
 
-  entityName: 'grafting',
-
   fields: {
     name: 'Name',
     created: 'Created',

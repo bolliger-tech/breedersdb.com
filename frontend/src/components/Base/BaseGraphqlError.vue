@@ -1,10 +1,21 @@
 <template>
-  <article class="q-my-md q-pa-sm bg-black text-negative rounded-borders">
+  <article class="q-pa-sm bg-black text-negative rounded-borders">
     <h3 class="q-mt-sm">GraphQL Error</h3>
-    <p>{{ error.message }}</p>
-    <pre class="q-ma-none base-graphql-error__msg">{{
-      JSON.stringify(error, null, 2)
-    }}</pre>
+
+    <p class="text-body">
+      {{
+        error.message.startsWith('[GraphQL]')
+          ? error.message.slice(9)
+          : error.message
+      }}
+    </p>
+    <details class="text-caption">
+      <summary>Details</summary>
+
+      <pre class="q-ma-none base-graphql-error__msg">{{
+        JSON.stringify(error, null, 2)
+      }}</pre>
+    </details>
   </article>
 </template>
 
@@ -33,12 +44,30 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-p {
-  font-size: 12px;
+.base-graphql-error__msg {
+  white-space: pre-wrap;
 }
 
-.base-graphql-error__msg {
-  font-size: 12px;
-  white-space: pre-wrap;
+details {
+  summary {
+    cursor: pointer;
+    list-style-type: none;
+
+    &:before {
+      content: '▶';
+      display: inline-block;
+      margin-right: 0.5em;
+    }
+
+    &:webkit-details-marker {
+      display: none;
+    }
+  }
+
+  &[open] {
+    summary:before {
+      content: '▼';
+    }
+  }
 }
 </style>

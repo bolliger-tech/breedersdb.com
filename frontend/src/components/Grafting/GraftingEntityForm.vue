@@ -6,7 +6,7 @@
     :rules="[
       (val: string) =>
         !!val ||
-        t('base.validation.xIsRequired', [t('entity.commonColumns.name')]),
+        t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"

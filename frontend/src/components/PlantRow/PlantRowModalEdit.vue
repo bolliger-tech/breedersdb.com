@@ -22,7 +22,7 @@
       <PlantRowButtonDelete
         v-if="'id' in plantRow && !plantRow.disabled"
         :plant-row-id="plantRow.id"
-        @deleted="() => router.push({ path: '/rows', query: route.query })"
+        @deleted="() => $router.push({ path: '/rows', query: $route.query })"
       />
       <div v-else></div>
     </template>
@@ -41,7 +41,6 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PlantRowButtonDelete from 'src/components/PlantRow/PlantRowButtonDelete.vue';
 import PlantRowEntityForm from 'src/components/PlantRow/PlantRowEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useRoute, useRouter } from 'vue-router';
 import {
   closeModalSymbol,
   makeModalPersistentSymbol,
@@ -59,8 +58,6 @@ export interface PlantRowModalEditProps {
 
 const props = defineProps<PlantRowModalEditProps>();
 
-const router = useRouter();
-const route = useRoute();
 const { cancel } = useCancel({ path: '/rows' });
 
 const validationError = ref<string | null>(null);

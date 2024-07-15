@@ -22,7 +22,9 @@
       <RootstockButtonDelete
         v-if="'id' in rootstock"
         :rootstock-id="rootstock.id"
-        @deleted="() => router.push({ path: '/rootstock', query: route.query })"
+        @deleted="
+          () => $router.push({ path: '/rootstock', query: $route.query })
+        "
       />
       <div v-else></div>
     </template>
@@ -41,7 +43,6 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import RootstockButtonDelete from 'src/components/Rootstock/RootstockButtonDelete.vue';
 import RootstockEntityForm from 'src/components/Rootstock/RootstockEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useRoute, useRouter } from 'vue-router';
 import {
   closeModalSymbol,
   makeModalPersistentSymbol,
@@ -61,8 +62,6 @@ export interface RootstockModalEditProps {
 
 const props = defineProps<RootstockModalEditProps>();
 
-const router = useRouter();
-const route = useRoute();
 const { cancel } = useCancel({ path: '/rootstock' });
 
 const validationError = ref<string | null>(null);

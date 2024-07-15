@@ -22,7 +22,7 @@
       <OrchardButtonDelete
         v-if="'id' in orchard"
         :orchard-id="orchard.id"
-        @deleted="() => router.push({ path: '/orchard', query: route.query })"
+        @deleted="() => $router.push({ path: '/orchard', query: $route.query })"
       />
       <div v-else></div>
     </template>
@@ -41,7 +41,6 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import OrchardButtonDelete from 'src/components/Orchard/OrchardButtonDelete.vue';
 import OrchardEntityForm from 'src/components/Orchard/OrchardEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useRoute, useRouter } from 'vue-router';
 import {
   closeModalSymbol,
   makeModalPersistentSymbol,
@@ -58,8 +57,6 @@ export interface OrchardModalEditProps {
 
 const props = defineProps<OrchardModalEditProps>();
 
-const router = useRouter();
-const route = useRoute();
 const { cancel } = useCancel({ path: '/orchard' });
 
 const validationError = ref<string | null>(null);

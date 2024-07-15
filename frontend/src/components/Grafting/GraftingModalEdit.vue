@@ -22,7 +22,9 @@
       <GraftingButtonDelete
         v-if="'id' in grafting"
         :grafting-id="grafting.id"
-        @deleted="() => router.push({ path: '/grafting', query: route.query })"
+        @deleted="
+          () => $router.push({ path: '/grafting', query: $route.query })
+        "
       />
       <div v-else></div>
     </template>
@@ -41,7 +43,6 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import GraftingButtonDelete from 'src/components/Grafting/GraftingButtonDelete.vue';
 import GraftingEntityForm from 'src/components/Grafting/GraftingEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useRoute, useRouter } from 'vue-router';
 import {
   closeModalSymbol,
   makeModalPersistentSymbol,
@@ -58,8 +59,6 @@ export interface GraftingModalEditProps {
 
 const props = defineProps<GraftingModalEditProps>();
 
-const router = useRouter();
-const route = useRoute();
 const { cancel } = useCancel({ path: '/grafting' });
 
 const validationError = ref<string | null>(null);

@@ -23,11 +23,10 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, watch } from 'vue';
+import { computed, watch, UnwrapRef } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { usePagination } from 'src/components/Entity/List/usePagination';
 import { useQueryArg } from 'src/composables/useQueryArg';
-import { UnwrapRef } from 'vue';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 
@@ -73,9 +72,9 @@ const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
   replace: true,
 });
 const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
-  { value: 'active', label: 'Active' },
-  { value: 'disabled', label: 'Disabled' },
-  { value: 'all', label: 'All' },
+  { value: 'active', label: t('entity.tabs.active') },
+  { value: 'disabled', label: t('entity.tabs.disabled') },
+  { value: 'all', label: t('entity.tabs.all') },
 ];
 
 const { pagination } = usePagination({

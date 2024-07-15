@@ -15,6 +15,12 @@ export const entity = {
   search: 'Search list',
   searchPlaceholderName: 'Search by name',
 
+  tabs: {
+    active: 'Active',
+    disabled: 'Disabled',
+    all: 'all',
+  },
+
   list: {
     fullscreen: 'Fullscreen',
     exitFullscreen: 'Exit fullscreen',

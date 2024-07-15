@@ -1,16 +1,18 @@
 import { usePagination } from 'src/components/Entity/List/usePagination';
 import { useQueryArg } from './useQueryArg';
-import { computed } from 'vue';
+import { computed, type Ref } from 'vue';
 import type { UseQueryArgs } from '@urql/vue';
 
 export function useEntityIndexHooks<T>({
   foreignKeys,
   defaultSortBy = 'name',
   searchColumn = 'name',
+  subset,
 }: {
   foreignKeys?: string[];
   defaultSortBy?: string;
   searchColumn?: string;
+  subset?: Ref<'active' | 'disabled' | 'all'>;
 } = {}) {
   const { queryArg: search } = useQueryArg<string>({
     key: 's',
@@ -39,6 +41,14 @@ export function useEntityIndexHooks<T>({
 
   const where = computed(() => {
     const where: UseQueryArgs<T>['variables'] = { _and: [] };
+
+    if (subset) {
+      if (subset.value === 'active') {
+        where._and.push({ disabled: { _eq: false } });
+      } else if (subset.value === 'disabled') {
+        where._and.push({ disabled: { _eq: true } });
+      }
+    }
 
     if (search.value) {
       where._and.push({

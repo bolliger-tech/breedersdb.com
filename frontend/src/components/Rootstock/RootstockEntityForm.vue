@@ -2,11 +2,11 @@
   <EntityInput
     :ref="(el: InputRef) => (refs.nameRef = el)"
     v-model="data.name"
-    :label="t('rootstocks.fields.name')"
+    :label="t('entity.commonColumns.name')"
     :rules="[
       (val: string) =>
         !!val ||
-        t('base.validation.xIsRequired', [t('rootstocks.fields.name')]),
+        t('base.validation.xIsRequired', [t('entity.commonColumns.name')]),
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"
@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { VNodeRef, nextTick, ref } from 'vue';
+import { ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
@@ -28,9 +28,8 @@ import {
   RootstockEditInput,
   RootstockInsertInput,
 } from './RootstockModalEdit.vue';
-import { useEntityForm } from 'src/composables/useEntityForm';
-import { graphql } from 'gql.tada';
-import { useQuery } from '@urql/vue';
+import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import { useIsUnique } from 'src/composables/useIsUnique';
 
 export interface RootstockEntityFormProps {
   rootstock: RootstockInsertInput | RootstockEditInput;
@@ -48,10 +47,6 @@ const initialData = {
 
 const data = ref({ ...initialData });
 
-type InputRef = VNodeRef & {
-  validate: () => boolean | Promise<boolean> | undefined;
-  focus: () => void;
-};
 const refs = ref<{ [key: string]: InputRef | null }>({
   nameRef: null,
 });
@@ -71,34 +66,8 @@ watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
 
-const nameUniqueQuery = graphql(`
-  query RootstocksNameUniqueQuery($name: String!) {
-    rootstocks(where: { name: { _eq: $name } }, limit: 1) {
-      id
-    }
-  }
-`);
-
-const nameUniqueQueryVariables = ref({ name: data.value.name });
-
-const { executeQuery: executeEmailUniqueQuery, fetching: fetchingNameUnique } =
-  useQuery({
-    query: nameUniqueQuery,
-    variables: nameUniqueQueryVariables,
-  });
-
-async function isNameUnique(newName: string) {
-  nameUniqueQueryVariables.value.name = newName;
-  await nextTick(); // wait for the refs to be updated
-  const result = await executeEmailUniqueQuery();
-  if (result.error.value) {
-    console.error(result.error);
-    return true;
-  }
-  return (
-    result.data?.value?.rootstocks.length === 0 ||
-    result.data?.value?.rootstocks[0]?.id ===
-      ('id' in props.rootstock ? props.rootstock.id : undefined)
-  );
-}
+const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
+  tableName: 'rootstocks',
+  existingId: ('id' in props.rootstock && props.rootstock.id) || undefined,
+});
 </script>

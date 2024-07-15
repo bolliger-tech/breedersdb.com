@@ -8,10 +8,19 @@ export const entity = {
     displayName: 'Name',
     nameOverride: 'Common name',
     fullName: 'Breeding name',
+    disabled: 'Disabled',
+    dateDisabled: 'Date disabled',
   },
 
   add: 'Add new',
   search: 'Search list',
+  searchPlaceholderName: 'Search by name',
+
+  tabs: {
+    active: 'Active',
+    disabled: 'Disabled',
+    all: 'all',
+  },
 
   list: {
     fullscreen: 'Fullscreen',

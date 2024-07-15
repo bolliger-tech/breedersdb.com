@@ -1,7 +1,7 @@
 <template>
   <EntityButtonDelete
     :message="
-      t('base.deleteConfirmation', { entity: t('orchards.entityName') })
+      t('base.deleteConfirmation', { entity: t('base.entityName.orchard') })
     "
     :error="error"
     :fetching="deleting"

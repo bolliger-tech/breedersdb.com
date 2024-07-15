@@ -12,7 +12,7 @@
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <EntityViewTable>
-        <EntityViewTableRow :label="t('rootstocks.fields.name')">
+        <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ rootstock.name }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">

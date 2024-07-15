@@ -211,7 +211,7 @@ const items: NavLevel0Props['items'] = [
       {
         label: t('plantRows.title', 2),
         icon: 'rows',
-        to: 'rows',
+        to: '/rows',
       },
       {
         label: t('orchards.title', 2),

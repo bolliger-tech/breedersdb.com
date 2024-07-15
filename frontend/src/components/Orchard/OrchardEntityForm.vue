@@ -2,10 +2,11 @@
   <EntityInput
     :ref="(el: InputRef) => (refs.nameRef = el)"
     v-model="data.name"
-    :label="t('orchards.fields.name')"
+    :label="t('entity.commonColumns.name')"
     :rules="[
       (val: string) =>
-        !!val || t('base.validation.xIsRequired', [t('orchards.fields.name')]),
+        !!val ||
+        t('base.validation.xIsRequired', [t('entity.commonColumns.name')]),
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"
@@ -14,7 +15,7 @@
     debounce="300"
     :loading="fetchingNameUnique"
   />
-  <BaseInputLabel :label="t('orchards.fields.disabled')">
+  <BaseInputLabel :label="t('entity.commonColumns.disabled')">
     <q-checkbox
       :ref="(el: InputRef) => (refs.disabledRef = el)"
       v-model="data.disabled"
@@ -26,16 +27,15 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { VNodeRef, nextTick, ref } from 'vue';
+import { ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { OrchardEditInput, OrchardInsertInput } from './OrchardModalEdit.vue';
-import { useEntityForm } from 'src/composables/useEntityForm';
+import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import BaseInputLabel from '../Base/BaseInputLabel.vue';
-import { graphql } from 'gql.tada';
-import { useQuery } from '@urql/vue';
+import { useIsUnique } from 'src/composables/useIsUnique';
 
 export interface OrchardEntityFormProps {
   orchard: OrchardInsertInput | OrchardEditInput;
@@ -54,10 +54,6 @@ const initialData = {
 
 const data = ref({ ...initialData });
 
-type InputRef = VNodeRef & {
-  validate: () => boolean | Promise<boolean> | undefined;
-  focus: () => void;
-};
 const refs = ref<{ [key: string]: InputRef | null }>({
   nameRef: null,
   disabledRef: null,
@@ -78,34 +74,8 @@ watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
 
-const nameUniqueQuery = graphql(`
-  query OrchardsNameUniqueQuery($name: String!) {
-    orchards(where: { name: { _eq: $name } }, limit: 1) {
-      id
-    }
-  }
-`);
-
-const nameUniqueQueryVariables = ref({ name: data.value.name });
-
-const { executeQuery: executeEmailUniqueQuery, fetching: fetchingNameUnique } =
-  useQuery({
-    query: nameUniqueQuery,
-    variables: nameUniqueQueryVariables,
-  });
-
-async function isNameUnique(newName: string) {
-  nameUniqueQueryVariables.value.name = newName;
-  await nextTick(); // wait for the refs to be updated
-  const result = await executeEmailUniqueQuery();
-  if (result.error.value) {
-    console.error(result.error);
-    return true;
-  }
-  return (
-    result.data?.value?.orchards.length === 0 ||
-    result.data?.value?.orchards[0]?.id ===
-      ('id' in props.orchard ? props.orchard.id : undefined)
-  );
-}
+const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
+  tableName: 'orchards',
+  existingId: ('id' in props.orchard && props.orchard.id) || undefined,
+});
 </script>

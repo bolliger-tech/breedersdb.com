@@ -1,7 +1,7 @@
 <template>
   <q-btn
     flat
-    :label="t('base.delete')"
+    :label="label ? label : t('base.delete')"
     color="negative"
     :disable="disabled"
     @click="confirm = true"
@@ -9,11 +9,15 @@
 
   <q-dialog v-model="confirm" @hide="$emit('resetErrors')">
     <q-card>
-      <q-card-section class="row items-center">
-        <q-avatar icon="warning" color="negative" text-color="white" />
-        <span class="q-ml-sm">{{
-          message ? message : t('base.deleteConfirmation')
-        }}</span>
+      <q-card-section class="row items-center q-gutter-md">
+        <slot name="message">
+          <div class="col-auto">
+            <q-avatar icon="warning" color="negative" text-color="white" />
+          </div>
+          <div class="col">
+            {{ message ? message : t('base.deleteConfirmation') }}
+          </div>
+        </slot>
       </q-card-section>
 
       <template v-if="error">
@@ -29,7 +33,7 @@
         <q-btn
           v-if="!error"
           flat
-          :label="t('base.delete')"
+          :label="label ? label : t('base.delete')"
           :loading="fetching"
           color="negative"
           @click="$emit('delete')"
@@ -47,6 +51,7 @@ import BaseGraphqlError, {
 } from '../Base/BaseGraphqlError.vue';
 
 export interface EntityButtonEliminateProps {
+  label?: string;
   message?: string;
   error?: BaseGraphqlErrorProps['error'];
   fetching?: boolean;

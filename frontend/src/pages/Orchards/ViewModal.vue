@@ -12,10 +12,10 @@
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <EntityViewTable>
-        <EntityViewTableRow :label="t('orchards.fields.name')">
+        <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ orchard.name }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('orchards.fields.disabled')">
+        <EntityViewTableRow :label="t('entity.commonColumns.disabled')">
           {{ orchard.disabled ? t('base.yes') : t('base.no') }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">

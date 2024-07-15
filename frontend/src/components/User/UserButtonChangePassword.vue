@@ -56,8 +56,8 @@ import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { useI18n } from 'src/composables/useI18n';
 import { useMe } from 'src/composables/useMe';
-import { VNodeRef, ref, watch } from 'vue';
-import { useEntityForm } from 'src/composables/useEntityForm';
+import { ref, watch } from 'vue';
+import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
@@ -79,10 +79,6 @@ const initialData = {
 
 const data = ref({ ...initialData });
 
-type InputRef = VNodeRef & {
-  validate: () => boolean | Promise<boolean> | undefined;
-  focus: () => void;
-};
 const refs = ref<{ [key: string]: InputRef | null }>({
   passwordRef: null,
 });

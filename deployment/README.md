@@ -167,9 +167,9 @@ gcloud run deploy $HASURA_SERVICE_NAME \
   --network=default \
   --use-http2
 
-hasura deploy --endpoint https://hasura-fbygdhvnga-oa.a.run.app --admin-secret SECRET
-# later:
-#hasura deploy --endpoint https://beta.breedersdb.com/api/hasura --admin-secret SECRET
+hasura deploy --endpoint https://beta.breedersdb.com/api/hasura --admin-secret SECRET
+# in case of error, try:
+#hasura deploy --endpoint https://hasura-fbygdhvnga-oa.a.run.app --admin-secret SECRET
 
 # hasura should now be available on the https://hasura-fbygdhvnga-oa.a.run.app
 # the following steps are preparations for the load balancer for using it with a

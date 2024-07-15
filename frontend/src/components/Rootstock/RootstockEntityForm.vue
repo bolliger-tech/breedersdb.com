@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { nextTick, ref } from 'vue';
+import { ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
@@ -29,8 +29,7 @@ import {
   RootstockInsertInput,
 } from './RootstockModalEdit.vue';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
-import { graphql } from 'gql.tada';
-import { useQuery } from '@urql/vue';
+import { useIsUnique } from 'src/composables/useIsUnique';
 
 export interface RootstockEntityFormProps {
   rootstock: RootstockInsertInput | RootstockEditInput;
@@ -67,34 +66,8 @@ watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
 
-const nameUniqueQuery = graphql(`
-  query RootstocksNameUniqueQuery($name: String!) {
-    rootstocks(where: { name: { _eq: $name } }, limit: 1) {
-      id
-    }
-  }
-`);
-
-const nameUniqueQueryVariables = ref({ name: data.value.name });
-
-const { executeQuery: executeEmailUniqueQuery, fetching: fetchingNameUnique } =
-  useQuery({
-    query: nameUniqueQuery,
-    variables: nameUniqueQueryVariables,
-  });
-
-async function isNameUnique(newName: string) {
-  nameUniqueQueryVariables.value.name = newName;
-  await nextTick(); // wait for the refs to be updated
-  const result = await executeEmailUniqueQuery();
-  if (result.error.value) {
-    console.error(result.error);
-    return true;
-  }
-  return (
-    result.data?.value?.rootstocks.length === 0 ||
-    result.data?.value?.rootstocks[0]?.id ===
-      ('id' in props.rootstock ? props.rootstock.id : undefined)
-  );
-}
+const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
+  tableName: 'rootstocks',
+  existingId: ('id' in props.rootstock && props.rootstock.id) || undefined,
+});
 </script>

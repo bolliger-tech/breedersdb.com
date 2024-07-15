@@ -27,8 +27,10 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { graftingFragment } from 'src/components/Grafting/graftingFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 const { t, d } = useI18n();
+const { localizedSortPredicate } = useLocalizedSort();
 
 const query = graphql(
   `
@@ -76,6 +78,7 @@ const columns = [
     align: 'left' as const,
     field: 'name',
     sortable: true,
+    sort: (a: Grafting, b: Grafting) => localizedSortPredicate(a.name, b.name),
   },
   {
     name: 'modified',

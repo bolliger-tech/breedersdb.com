@@ -57,6 +57,7 @@ const routes: RouteRecordRaw[] = [
 
       ...['Users', 'Orchards', 'Rootstocks', 'Graftings', 'PlantRows'].map(
         (entity) => ({
+          // path is entityName minus 'Plant' prefix eg. PlantRows -> rows
           path: entity.split('Plant').slice(-1)[0].toLowerCase(),
           children: [
             {

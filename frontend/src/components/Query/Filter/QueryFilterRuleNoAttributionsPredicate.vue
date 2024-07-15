@@ -2,7 +2,7 @@
   <q-toggle
     :model-value="modelValue"
     :label="
-      t('filter.withNoAttributions', {
+      t('analyze.filter.withNoAttributions', {
         entities: entitiesName,
         attributeName,
       })

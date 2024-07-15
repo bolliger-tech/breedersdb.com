@@ -118,27 +118,27 @@ const resultColumns = computed<QTableColumn[]>(() => {
         const aggs = [
           {
             type: AttributionAggregation.Count,
-            label: t('result.aggregations.count'),
+            label: t('analyze.result.aggregations.count'),
           },
           {
             type: AttributionAggregation.Max,
-            label: t('result.aggregations.max'),
+            label: t('analyze.result.aggregations.max'),
           },
           {
             type: AttributionAggregation.Min,
-            label: t('result.aggregations.min'),
+            label: t('analyze.result.aggregations.min'),
           },
           {
             type: AttributionAggregation.Mean,
-            label: t('result.aggregations.mean'),
+            label: t('analyze.result.aggregations.mean'),
           },
           {
             type: AttributionAggregation.Median,
-            label: t('result.aggregations.median'),
+            label: t('analyze.result.aggregations.median'),
           },
           {
             type: AttributionAggregation.StdDev,
-            label: t('result.aggregations.stdDev'),
+            label: t('analyze.result.aggregations.stdDev'),
           },
         ];
         aggs.forEach((agg) => {

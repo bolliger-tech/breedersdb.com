@@ -17,37 +17,37 @@ export class FilterRuleOperator {
   get labelKey(): Parameters<TFunc>[0] {
     switch (this.value) {
       case FilterOperatorValue.Equal:
-        return 'filter.operators.equals';
+        return 'analyze.filter.operators.equals';
       case FilterOperatorValue.NotEqual:
-        return 'filter.operators.notEquals';
+        return 'analyze.filter.operators.notEquals';
       case FilterOperatorValue.Less:
-        return 'filter.operators.less';
+        return 'analyze.filter.operators.less';
       case FilterOperatorValue.LessOrEqual:
-        return 'filter.operators.lessOrEqual';
+        return 'analyze.filter.operators.lessOrEqual';
       case FilterOperatorValue.Greater:
-        return 'filter.operators.greater';
+        return 'analyze.filter.operators.greater';
       case FilterOperatorValue.GreaterOrEqual:
-        return 'filter.operators.greaterOrEqual';
+        return 'analyze.filter.operators.greaterOrEqual';
       case FilterOperatorValue.StartsWith:
-        return 'filter.operators.startsWith';
+        return 'analyze.filter.operators.startsWith';
       case FilterOperatorValue.StartsNotWith:
-        return 'filter.operators.startsNotWith';
+        return 'analyze.filter.operators.startsNotWith';
       case FilterOperatorValue.Contains:
-        return 'filter.operators.contains';
+        return 'analyze.filter.operators.contains';
       case FilterOperatorValue.NotContains:
-        return 'filter.operators.notContains';
+        return 'analyze.filter.operators.notContains';
       case FilterOperatorValue.EndsWith:
-        return 'filter.operators.endsWith';
+        return 'analyze.filter.operators.endsWith';
       case FilterOperatorValue.NotEndsWith:
-        return 'filter.operators.notEndsWith';
+        return 'analyze.filter.operators.notEndsWith';
       case FilterOperatorValue.Empty:
-        return 'filter.operators.empty';
+        return 'analyze.filter.operators.empty';
       case FilterOperatorValue.NotEmpty:
-        return 'filter.operators.notEmpty';
+        return 'analyze.filter.operators.notEmpty';
       case FilterOperatorValue.True:
-        return 'filter.operators.isTrue';
+        return 'analyze.filter.operators.isTrue';
       case FilterOperatorValue.False:
-        return 'filter.operators.isFalse';
+        return 'analyze.filter.operators.isFalse';
       default:
         throw new Error(`Unknown filter operator value: ${this.value}`);
     }

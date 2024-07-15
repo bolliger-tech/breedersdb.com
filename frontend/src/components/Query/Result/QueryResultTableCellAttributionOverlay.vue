@@ -5,7 +5,7 @@
     v-else-if="data?.attributions_view[0]"
     :data="data?.attributions_view[0]"
   />
-  <div v-else>{{ t('result.noData') }}</div>
+  <div v-else>{{ t('analyze.result.noData') }}</div>
 </template>
 
 <script lang="ts" setup>

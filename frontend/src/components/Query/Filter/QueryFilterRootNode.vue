@@ -12,7 +12,7 @@
       data-test="query-filter-root-node__filter-placeholder"
     >
       {{
-        t('filter.noFilter', {
+        t('analyze.filter.noFilter', {
           entity: isAttributionsFilter
             ? t('base.entityName.attribution', 2)
             : entityName,
@@ -28,7 +28,7 @@
   <template v-else>
     <div v-if="isSimplifiable" class="text-negative q-mb-sm">
       <q-icon name="warning" />
-      {{ t('filter.simplifiable') }}&nbsp;&nbsp;
+      {{ t('analyze.filter.simplifiable') }}&nbsp;&nbsp;
       <q-btn
         size="sm"
         color="negative"
@@ -37,16 +37,16 @@
         unelevated
         @click="simplify()"
       >
-        {{ t('filter.simplify') }}
+        {{ t('analyze.filter.simplify') }}
       </q-btn>
     </div>
     <div v-else-if="!isValid" class="text-negative q-mb-sm">
       <q-icon name="warning" />
-      {{ t('filter.invalid') }}
+      {{ t('analyze.filter.invalid') }}
     </div>
     <div v-else class="text-positive q-mb-sm">
       <q-icon name="check" />
-      {{ t('filter.valid') }}
+      {{ t('analyze.filter.valid') }}
     </div>
 
     <QueryFilterNode

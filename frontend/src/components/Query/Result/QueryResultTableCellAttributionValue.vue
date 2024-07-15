@@ -34,7 +34,7 @@ const label = computed(() => {
     case ColumnTypes.String:
       return props.attribution.text_value || undefined;
     case ColumnTypes.Photo:
-      return t('result.photo');
+      return t('analyze.result.photo');
     case ColumnTypes.Boolean:
       return props.attribution.boolean_value ? '✓' : '✕';
     case ColumnTypes.Date:

@@ -1,8 +1,8 @@
 <template>
   <q-select
     :error="modelValue?.isValid === false"
-    :error-message="t('filter.error.column')"
-    :label="t('filter.column')"
+    :error-message="t('analyze.filter.error.column')"
+    :label="t('analyze.filter.column')"
     :model-value="modelValue"
     :options="filteredOptions"
     autocomplete="off"

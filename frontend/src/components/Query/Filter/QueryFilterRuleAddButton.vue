@@ -2,7 +2,7 @@
   <q-fab
     v-model="actionsVisible"
     data-test="query-filter-node__action-btn"
-    :label="t('filter.operators.add')"
+    :label="t('analyze.filter.operators.add')"
     :color="conjunction === FilterConjunction.And ? 'primary' : 'accent'"
     icon="add"
     direction="down"
@@ -16,14 +16,14 @@
     @mouseleave="actionButtonHover = false"
   >
     <q-fab-action
-      :label="t('filter.operators.andFilter')"
+      :label="t('analyze.filter.operators.andFilter')"
       color="primary"
       padding="xs"
       data-test="query-filter-node__action-btn-and"
       @click="addLeafToCurrentNode(FilterConjunction.And)"
     />
     <q-fab-action
-      :label="t('filter.operators.orFilter')"
+      :label="t('analyze.filter.operators.orFilter')"
       color="accent"
       padding="xs"
       data-test="query-filter-node__action-btn-or"

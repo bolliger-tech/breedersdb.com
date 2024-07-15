@@ -9,7 +9,7 @@
       <a :href="`/photos/view/${data.text_value}`" target="_blank">
         <img
           :alt="
-            t('result.altPhoto', {
+            t('analyze.result.altPhoto', {
               date: localizeDate(data.date_attributed),
               author: data.author,
             })
@@ -21,7 +21,7 @@
     </div>
     <q-btn
       :href="`/photos/view/${data.text_value}`"
-      :label="t('result.downloadPhoto')"
+      :label="t('analyze.result.downloadPhoto')"
       download
       outline
       size="xs"

@@ -1,5 +1,5 @@
 <template>
-  <h3>{{ t('result.title') }}</h3>
+  <h3>{{ t('analyze.result.title') }}</h3>
 
   <BaseGraphqlError v-if="error" :error="error" />
 
@@ -15,7 +15,7 @@
     <!-- TODO: <ResultDownload :enabled="!fetching && !!result" /> -->
     <div v-if="lastRefreshDate" class="text-caption">
       {{
-        t('result.lastRefresh', {
+        t('analyze.result.lastRefresh', {
           date: lastRefreshDate?.toLocaleString(),
         })
       }}

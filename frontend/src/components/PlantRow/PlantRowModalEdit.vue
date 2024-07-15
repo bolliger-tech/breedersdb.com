@@ -70,7 +70,10 @@ const formRef = ref<InstanceType<typeof PlantRowEntityForm> | null>(null);
 
 const insertMutation = graphql(
   `
-    mutation InsertPlantRow($plantRow: plant_rows_insert_input!) {
+    mutation InsertPlantRow(
+      $plantRow: plant_rows_insert_input!
+      $withPlants: Boolean = false
+    ) {
       insert_plant_rows_one(object: $plantRow) {
         ...plantRowFragment
       }
@@ -87,7 +90,11 @@ const {
 
 const editMutation = graphql(
   `
-    mutation UpdatePlantRow($id: Int!, $plantRow: plant_rows_set_input!) {
+    mutation UpdatePlantRow(
+      $id: Int!
+      $plantRow: plant_rows_set_input!
+      $withPlants: Boolean = false
+    ) {
       update_plant_rows_by_pk(pk_columns: { id: $id }, _set: $plantRow) {
         ...plantRowFragment
       }

@@ -32,6 +32,42 @@
           }}
         </EntityViewTableRow>
       </EntityViewTable>
+
+      <h3 class="q-mb-md">
+        {{ t('plants.title', 2) }}
+      </h3>
+      <q-table
+        v-if="plantRow.plants"
+        class="q-mt-md"
+        flat
+        dense
+        :rows="plantRow.plants"
+        :columns="plantsColumns"
+        :rows-per-page-options="[0]"
+        hide-pagination
+        wrap-cells
+        binary-state-sort
+      >
+        <template #body-cell-label_id="cellProps">
+          <q-td key="value" :props="cellProps">
+            <RouterLink :to="`/plants/${cellProps.row.id}`">
+              <PlantLabelId :label-id="cellProps.row.label_id" />
+            </RouterLink>
+          </q-td>
+        </template>
+        <template #body-cell-plant_group="cellProps">
+          <q-td key="value" :props="cellProps">
+            <RouterLink :to="`/plant-groups/${cellProps.row.id}`">
+              <EntityName
+                :plant-group="cellProps.row.plant_group"
+                :cultivar="cellProps.row.plant_group?.cultivar"
+                :lot="cellProps.row.plant_group?.cultivar.lot"
+                :crossing="cellProps.row.plant_group?.cultivar.lot.crossing"
+              />
+            </RouterLink>
+          </q-td>
+        </template>
+      </q-table>
     </template>
 
     <template #action-left>
@@ -63,12 +99,15 @@ import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import { localizeDate } from 'src/utils/dateUtils';
+import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
+import EntityName from 'src/components/Entity/EntityName.vue';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query PlantRow($id: Int!) {
+    query PlantRow($id: Int!, $withPlants: Boolean = true) {
       plant_rows_by_pk(id: $id) {
         ...plantRowFragment
       }
@@ -85,6 +124,7 @@ const { data, error } = useQuery({
 const plantRow = computed(() => data.value?.plant_rows_by_pk);
 
 const { t } = useI18n();
+const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
 const router = useRouter();
@@ -94,4 +134,27 @@ function edit() {
     query: route.query,
   });
 }
+
+type Plant = NonNullable<NonNullable<typeof plantRow.value>['plants']>[0];
+
+const plantsColumns = [
+  {
+    name: 'label_id',
+    label: t('entity.commonColumns.name'),
+    field: 'label_id',
+    align: 'left' as const,
+    sortable: true,
+    sort: (a: Plant['label_id'], b: Plant['label_id']) =>
+      localizedSortPredicate(a, b),
+  },
+  {
+    name: 'plant_group',
+    label: t('plants.fields.plantGroup'),
+    field: 'plant_group',
+    align: 'left' as const,
+    sortable: true,
+    sort: (a: Plant['plant_group'], b: Plant['plant_group']) =>
+      localizedSortPredicate(a.display_name, b.display_name),
+  },
+];
 </script>

@@ -72,7 +72,7 @@ const {
 });
 
 const plantRowHasPlants = computed(() => {
-  return plantRowData.value?.plant_rows_by_pk?.plants_aggregate?.aggregate
+  return !!plantRowData.value?.plant_rows_by_pk?.plants_aggregate?.aggregate
     ?.count;
 });
 

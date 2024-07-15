@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
-import { graphql } from 'src/graphql';
+import { ResultOf, graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
   type EntitySelectInstance,
@@ -63,7 +63,7 @@ const { data, error, fetching } = useQuery({
   variables: { where },
 });
 
-type Orchard = NonNullable<NonNullable<typeof data.value>['orchards']>[0];
+type Orchard = ResultOf<typeof query>['orchards'][0];
 
 const { localizedSortPredicate } = useLocalizedSort();
 

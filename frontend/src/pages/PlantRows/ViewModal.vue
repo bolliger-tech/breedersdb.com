@@ -90,7 +90,7 @@ import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PlantRowButtonDelete from 'src/components/PlantRow/PlantRowButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { graphql } from 'src/graphql';
+import { ResultOf, graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
@@ -135,7 +135,9 @@ function edit() {
   });
 }
 
-type Plant = NonNullable<NonNullable<typeof plantRow.value>['plants']>[0];
+type Plant = NonNullable<
+  NonNullable<ResultOf<typeof query>['plant_rows_by_pk']>['plants']
+>[0];
 
 const plantsColumns = [
   {

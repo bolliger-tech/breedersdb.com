@@ -52,7 +52,7 @@
           <q-td key="value" :props="cellProps">
             <RouterLink
               :to="`/plants/${cellProps.row.id}`"
-              class="text-link undecorated-link"
+              class="undecorated-link"
             >
               <PlantLabelId :label-id="cellProps.row.label_id" />
             </RouterLink>

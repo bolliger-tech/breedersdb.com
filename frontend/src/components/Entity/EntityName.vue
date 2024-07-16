@@ -6,7 +6,7 @@
     <router-link
       :to="segment.link"
       :title="segment.title"
-      class="undecorated-link text-link"
+      class="undecorated-link"
       >{{ segment.label }}</router-link
     >
     <span v-if="index + 1 < segments.length" class="dot">.</span>

@@ -1,10 +1,12 @@
 <template>
   <PageLayout>
     <EntityContainer
+      v-model:tab="subset"
       v-model:search="search"
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('orchards.title', 2)"
+      :tabs="tabs"
       :search-placeholder="t('entity.searchPlaceholderName')"
       :rows="data?.orchards || []"
       :loading="fetching"
@@ -21,7 +23,7 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, watch } from 'vue';
+import { UnwrapRef, computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
@@ -58,7 +60,20 @@ const query = graphql(
   [orchardFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
+const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
+  key: 'tab',
+  defaultValue: 'active',
+  replace: true,
+});
+const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
+  { value: 'active', label: t('entity.tabs.active') },
+  { value: 'disabled', label: t('entity.tabs.disabled') },
+  { value: 'all', label: t('entity.tabs.all') },
+];
+
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+  subset,
+});
 
 const { data, fetching, error } = await useQuery({
   query,
@@ -80,13 +95,6 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'disabled',
-    label: t('entity.commonColumns.disabled'),
-    align: 'left' as const,
-    field: (row: Orchard) => (row.disabled ? t('base.yes') : t('base.no')),
-    sortable: true,
-  },
-  {
     name: 'modified',
     label: t('entity.commonColumns.modified'),
     align: 'left' as const,
@@ -104,7 +112,7 @@ const columns = [
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
+  defaultValue: columns.map((column) => column.name).slice(0, 2),
   replace: true,
 });
 

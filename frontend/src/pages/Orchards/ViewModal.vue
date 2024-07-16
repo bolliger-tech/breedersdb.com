@@ -16,7 +16,7 @@
           {{ orchard.name }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.disabled')">
-          {{ orchard.disabled ? t('base.yes') : t('base.no') }}
+          {{ orchard.disabled ? '✓' : '' }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
           {{ localizeDate(orchard.created) }}

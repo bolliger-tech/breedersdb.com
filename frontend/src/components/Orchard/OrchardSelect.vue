@@ -9,7 +9,7 @@
     :option-disable="isOptionDisabled"
     :loading="fetching"
     :error="error"
-    required
+    :required="required"
   />
 </template>
 
@@ -24,6 +24,7 @@ import EntitySelect, {
 import { focusInView } from 'src/utils/focusInView';
 
 export interface OrchardSelectProps {
+  required?: boolean;
   includeId?: number;
 }
 const props = defineProps<OrchardSelectProps>();

@@ -16,10 +16,9 @@
     :loading="fetchingNameUnique"
   />
   <BaseInputLabel :label="t('entity.commonColumns.disabled')">
-    <q-checkbox
+    <EntityToggle
       :ref="(el: InputRef) => (refs.disabledRef = el)"
       v-model="data.disabled"
-      :label="data.disabled ? t('base.yes') : t('base.no')"
       color="primary"
     />
   </BaseInputLabel>
@@ -36,6 +35,7 @@ import { OrchardEditInput, OrchardInsertInput } from './OrchardModalEdit.vue';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import BaseInputLabel from '../Base/BaseInputLabel.vue';
 import { useIsUnique } from 'src/composables/useIsUnique';
+import EntityToggle from 'src/components/Entity/EntityToggle.vue';
 
 export interface OrchardEntityFormProps {
   orchard: OrchardInsertInput | OrchardEditInput;

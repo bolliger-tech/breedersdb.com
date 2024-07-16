@@ -16,7 +16,12 @@
           {{ plantRow.name }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('plantRows.fields.orchard')">
-          {{ plantRow.orchard.name }}
+          <RouterLink
+            :to="`/orchards/${plantRow.orchard.id}`"
+            class="undecorated-link"
+          >
+            {{ plantRow.orchard.name }}
+          </RouterLink>
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.dateDisabled')">
           {{ localizeDate(plantRow.date_eliminated) }}

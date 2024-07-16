@@ -9,11 +9,25 @@
     <template v-if="plant.plant_row">
       <tr>
         <th>{{ t('orchards.title', 1) }}</th>
-        <td>{{ plant.plant_row.orchard.name }}</td>
+        <td>
+          <RouterLink
+            :to="`/orchards/${plant.plant_row.orchard.id}`"
+            class="undecorated-link"
+          >
+            {{ plant.plant_row.orchard.name }}
+          </RouterLink>
+        </td>
       </tr>
       <tr>
         <th>{{ t('plantRows.title', 1) }}</th>
-        <td>{{ plant.plant_row.name }}</td>
+        <td>
+          <RouterLink
+            :to="`/rows/${plant.plant_row.id}`"
+            class="undecorated-link"
+          >
+            {{ plant.plant_row.name }}
+          </RouterLink>
+        </td>
       </tr>
       <tr v-if="plant.serial_in_plant_row">
         <th>{{ t('plants.fields.serialInPlantRow') }}</th>
@@ -30,11 +44,25 @@
     </tr>
     <tr v-if="plant.rootstock?.name">
       <th>{{ t('plants.fields.rootstock') }}</th>
-      <td>{{ plant.rootstock?.name }}</td>
+      <td>
+        <RouterLink
+          :to="`/rootstocks/${plant.rootstock.id}`"
+          class="undecorated-link"
+        >
+          {{ plant.rootstock?.name }}
+        </RouterLink>
+      </td>
     </tr>
     <tr v-if="plant.grafting?.name">
       <th>{{ t('plants.fields.grafting') }}</th>
-      <td>{{ plant.grafting?.name }}</td>
+      <td>
+        <RouterLink
+          :to="`/graftings/${plant.grafting.id}`"
+          class="undecorated-link"
+        >
+          {{ plant.grafting?.name }}
+        </RouterLink>
+      </td>
     </tr>
     <tr v-if="plant.date_labeled">
       <th>{{ t('plants.fields.dateLabeled') }}</th>

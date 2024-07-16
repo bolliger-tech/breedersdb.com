@@ -47,7 +47,10 @@
       >
         <template #body-cell-plant_group="cellProps">
           <q-td key="value" :props="cellProps">
-            <RouterLink :to="`/rows/${cellProps.row.id}`">
+            <RouterLink
+              :to="`/rows/${cellProps.row.id}`"
+              class="undecorated-link"
+            >
               {{ cellProps.row.name }}
             </RouterLink>
           </q-td>

@@ -28,7 +28,11 @@ const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query Orchard($id: Int!) {
+    query Orchard(
+      $id: Int!
+      $withPlantRows: Boolean = false
+      $withPlants: Boolean = false
+    ) {
       orchards_by_pk(id: $id) {
         ...orchardFragment
       }

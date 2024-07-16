@@ -21,12 +21,12 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import QueryContainer from 'src/components/Query/QueryContainer.vue';
 import { graphql } from 'src/graphql';
-import { computed, ref, watch } from 'vue';
+import { computed, Ref, ref, watch } from 'vue';
 import { useMutation, useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { analyzeFiltersFragment } from 'src/components/Query/analyzeFiltersFragment';
 import { useQuasar } from 'quasar';
-import { BaseTable } from 'src/components/Query/Filter/filterNode';
+import { BaseTable, FilterNode } from 'src/components/Query/Filter/filterNode';
 
 const BASE_FILTER_LOCAL_STORAGE_KEY = 'breedersdb-base-filter--cultivars';
 const ATTRIBUTION_FILTER_LOCAL_STORAGE_KEY =
@@ -64,22 +64,30 @@ const note = ref<string | null>(
   data.value?.analyze_filters_by_pk?.note || null,
 );
 
-const baseFilter = ref<string | undefined>(undefined);
-const attributionFilter = ref<string | undefined>(undefined);
-watch(baseFilter, (filter) => {
-  if (filter) {
-    $q.localStorage.set(BASE_FILTER_LOCAL_STORAGE_KEY, filter);
-  } else {
-    $q.localStorage.remove(BASE_FILTER_LOCAL_STORAGE_KEY);
-  }
-});
-watch(attributionFilter, (filter) => {
-  if (filter) {
-    $q.localStorage.set(ATTRIBUTION_FILTER_LOCAL_STORAGE_KEY, filter);
-  } else {
-    $q.localStorage.remove(ATTRIBUTION_FILTER_LOCAL_STORAGE_KEY);
-  }
-});
+const baseFilter: Ref<FilterNode | undefined> = ref(undefined);
+const attributionFilter: Ref<FilterNode | undefined> = ref(undefined);
+watch(
+  baseFilter,
+  (filter) => {
+    if (filter && filter.hasChildren()) {
+      $q.localStorage.set(BASE_FILTER_LOCAL_STORAGE_KEY, filter);
+    } else {
+      $q.localStorage.remove(BASE_FILTER_LOCAL_STORAGE_KEY);
+    }
+  },
+  { deep: true },
+);
+watch(
+  attributionFilter,
+  (filter) => {
+    if (filter && filter.hasChildren()) {
+      $q.localStorage.set(ATTRIBUTION_FILTER_LOCAL_STORAGE_KEY, filter);
+    } else {
+      $q.localStorage.remove(ATTRIBUTION_FILTER_LOCAL_STORAGE_KEY);
+    }
+  },
+  { deep: true },
+);
 
 function getBaseFilter() {
   const filter =
@@ -171,8 +179,8 @@ async function save() {
   const variables = {
     name: name.value,
     note: note.value,
-    baseFilter: parseFilter(baseFilter.value),
-    attributionFilter: parseFilter(attributionFilter.value),
+    baseFilter: filterToPojo(baseFilter.value),
+    attributionFilter: filterToPojo(attributionFilter.value),
   };
 
   if (props.queryId === 'new') {
@@ -185,13 +193,8 @@ async function save() {
   }
 }
 
-function parseFilter(filter: string | undefined) {
-  try {
-    return filter ? JSON.parse(filter) : null;
-  } catch (e) {
-    console.error('Failed to parse filter', e);
-    return null;
-  }
+function filterToPojo(filter: FilterNode | undefined) {
+  return filter ? JSON.parse(JSON.stringify(filter)) : null;
 }
 
 const saving = computed(() => savingInsert.value || savingEdit.value);

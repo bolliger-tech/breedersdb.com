@@ -154,8 +154,8 @@ const queryData = ref(
 );
 watch(
   [
-    props.baseFilter,
-    props.attributionFilter,
+    () => props.baseFilter,
+    () => props.attributionFilter,
     columnsToFetch,
     pagination,
     () => lastRefresh,
@@ -185,7 +185,6 @@ const {
 } = await useQuery<QueryResult>({
   query,
   variables,
-  pause: !isValid.value,
 });
 
 const rows = computed(() => {

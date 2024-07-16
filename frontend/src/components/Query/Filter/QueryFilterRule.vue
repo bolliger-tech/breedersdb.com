@@ -175,10 +175,11 @@ const applicableOperators = computed(() => {
 });
 
 function setOperator() {
-  if (filterRule.value) {
-    filterRule.value.operator = applicableOperators.value
-      ? applicableOperators.value[0]
-      : undefined;
+  if (
+    filterRule.value?.operator?.isValid === false &&
+    applicableOperators.value
+  ) {
+    filterRule.value.operator = applicableOperators.value[0];
   }
 }
 

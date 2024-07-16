@@ -29,8 +29,10 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+//import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 const { t, d } = useI18n();
+//const { localizedSortPredicate } = useLocalizedSort();
 
 const query = graphql(
   `
@@ -93,6 +95,21 @@ const columns = [
     align: 'left' as const,
     field: 'name',
     sortable: true,
+    // TODO: make this work
+    //sort: (a: PlantRow, b: PlantRow) => localizedSortPredicate(b.name, a.name),
+    sort: (a: string, b: string) => {
+      console.log('sort!!!!');
+      const aStartsWith04 = a.startsWith('04');
+      const bStartsWith04 = b.startsWith('04');
+
+      if (aStartsWith04 && !bStartsWith04) {
+        return -1;
+      } else if (!aStartsWith04 && bStartsWith04) {
+        return 1;
+      } else {
+        return a.localeCompare(b);
+      }
+    },
   },
   {
     name: 'orchard',

@@ -50,21 +50,22 @@
       >
         <template #body-cell-label_id="cellProps">
           <q-td key="value" :props="cellProps">
-            <RouterLink :to="`/plants/${cellProps.row.id}`">
+            <RouterLink
+              :to="`/plants/${cellProps.row.id}`"
+              class="undecorated-link"
+            >
               <PlantLabelId :label-id="cellProps.row.label_id" />
             </RouterLink>
           </q-td>
         </template>
         <template #body-cell-plant_group="cellProps">
           <q-td key="value" :props="cellProps">
-            <RouterLink :to="`/plant-groups/${cellProps.row.id}`">
-              <EntityName
-                :plant-group="cellProps.row.plant_group"
-                :cultivar="cellProps.row.plant_group?.cultivar"
-                :lot="cellProps.row.plant_group?.cultivar.lot"
-                :crossing="cellProps.row.plant_group?.cultivar.lot.crossing"
-              />
-            </RouterLink>
+            <EntityName
+              :plant-group="cellProps.row.plant_group"
+              :cultivar="cellProps.row.plant_group?.cultivar"
+              :lot="cellProps.row.plant_group?.cultivar.lot"
+              :crossing="cellProps.row.plant_group?.cultivar.lot.crossing"
+            />
           </q-td>
         </template>
       </q-table>

@@ -6,8 +6,7 @@
     <router-link
       :to="segment.link"
       :title="segment.title"
-      class="segment"
-      :class="{ 'segment--dark': dark }"
+      class="undecorated-link text-link"
       >{{ segment.label }}</router-link
     >
     <span v-if="index + 1 < segments.length" class="dot">.</span>
@@ -99,26 +98,5 @@ const segments = computed(() => {
 .dot {
   padding: 0 0.175em;
   font-weight: 900;
-}
-
-.segment {
-  color: #000;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-    color: var(--bdb-secondary-100);
-  }
-}
-
-.body--dark .segment,
-.segment.segment--dark {
-  color: #fff;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-    color: var(--bdb-secondary-100);
-  }
 }
 </style>

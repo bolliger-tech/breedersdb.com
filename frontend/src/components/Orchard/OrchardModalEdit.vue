@@ -66,7 +66,11 @@ const formRef = ref<InstanceType<typeof OrchardEntityForm> | null>(null);
 
 const insertMutation = graphql(
   `
-    mutation InsertOrchard($orchard: orchards_insert_input!) {
+    mutation InsertOrchard(
+      $orchard: orchards_insert_input!
+      $withPlantRows: Boolean = false
+      $withPlants: Boolean = false
+    ) {
       insert_orchards_one(object: $orchard) {
         ...orchardFragment
       }
@@ -83,7 +87,12 @@ const {
 
 const editMutation = graphql(
   `
-    mutation UpdateOrchard($id: Int!, $orchard: orchards_set_input!) {
+    mutation UpdateOrchard(
+      $id: Int!
+      $orchard: orchards_set_input!
+      $withPlantRows: Boolean = false
+      $withPlants: Boolean = false
+    ) {
       update_orchards_by_pk(pk_columns: { id: $id }, _set: $orchard) {
         ...orchardFragment
       }

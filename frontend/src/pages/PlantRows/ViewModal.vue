@@ -143,7 +143,7 @@ type Plant = NonNullable<
 const plantsColumns = [
   {
     name: 'label_id',
-    label: t('entity.commonColumns.name'),
+    label: t('plants.fields.labelId'),
     field: 'label_id',
     align: 'left' as const,
     sortable: true,

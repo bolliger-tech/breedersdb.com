@@ -8,18 +8,22 @@
       :save-error="saveError"
     />
     <QueryFilter
-      v-model:base-filter="baseFilter"
-      v-model:attribution-filter="attributionFilter"
       :base-table="baseTable"
+      :initial-base-filter="initialBaseFilter"
       :base-filter-columns="baseTableColumnsWithAttributes"
       :base-filter-columns-fetching="
         fetchingBaseTableColumns || fetchingAttributesAsColumns
       "
+      :initial-attribution-filter="initialAttributionFilter"
       :attribution-filter-columns="attributionFilterColumns"
       :attribution-filter-columns-fetching="attributionFilterColumnsFetching"
+      @base-filter-changed="updateBaseFilter"
+      @attribution-filter-changed="updateAttributionFilter"
     />
     <QueryResult
       :base-table="baseTable"
+      :base-filter="baseFilter"
+      :attribution-filter="attributionFilter"
       :available-columns="resultColumns"
       :fetching-columns="
         fetchingBaseTableColumns ||
@@ -35,9 +39,9 @@ import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import QueryHeader from 'src/components/Query/Header/QueryHeader.vue';
 import QueryFilter from 'src/components/Query/Filter/QueryFilter.vue';
 import QueryResult from 'src/components/Query/Result/QueryResult.vue';
-import { BaseTable } from './Filter/filterNode';
+import { BaseTable, FilterNode } from './Filter/filterNode';
 import { useAttributesAsColumns } from './ColumnDefinitions/useAttributesAsColumns';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, Ref, ref } from 'vue';
 import { useFilterColumns } from './ColumnDefinitions/useFilterColumns';
 import { QTableColumn } from 'quasar';
 import { ColumnTypes } from 'src/utils/columnTypes';
@@ -51,18 +55,18 @@ export type QueryContainerProps = {
   baseTable: BaseTable;
   saving: boolean;
   saveError: CombinedError | undefined;
+  initialBaseFilter: string | undefined;
+  initialAttributionFilter: string | undefined;
 };
 
 const props = defineProps<QueryContainerProps>();
 
-defineEmits<{
+const emit = defineEmits<{
   save: [];
+  baseFilterChanged: [filter: FilterNode | undefined];
+  attributionFilterChanged: [filter: FilterNode | undefined];
 }>();
 
-const baseFilter = defineModel<string | undefined>('baseFilter', {
-  required: true,
-});
-const attributionFilter = defineModel<string | undefined>('attributionFilter');
 const name = defineModel<string>('name', { required: true });
 const note = defineModel<string | null>('note', { required: true });
 
@@ -201,4 +205,15 @@ const resultColumns = computed<QTableColumn[]>(() => {
     };
   });
 });
+
+const baseFilter: Ref<FilterNode | undefined> = ref(undefined);
+const attributionFilter: Ref<FilterNode | undefined> = ref(undefined);
+function updateBaseFilter(filter: FilterNode | undefined) {
+  baseFilter.value = filter;
+  emit('baseFilterChanged', filter);
+}
+function updateAttributionFilter(filter: FilterNode | undefined) {
+  attributionFilter.value = filter;
+  emit('attributionFilterChanged', filter);
+}
 </script>

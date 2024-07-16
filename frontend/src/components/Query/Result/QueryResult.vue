@@ -34,7 +34,6 @@ import { computed, ref, watch } from 'vue';
 import QueryResultTable, {
   QueryResultTableProps,
 } from 'components/Query/Result/QueryResultTable.vue';
-import { useQueryStore } from '../useQueryStore';
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
 import { QueryResult, filterToQuery } from './filterToQuery';
 import { useQuery } from '@urql/vue';
@@ -49,34 +48,18 @@ export interface QueryResultProps {
   baseTable: BaseTable;
   availableColumns: QTableColumn[];
   fetchingColumns: boolean;
+  baseFilter: FilterNode | undefined;
+  attributionFilter: FilterNode | undefined;
 }
 
 const props = defineProps<QueryResultProps>();
 
 const { t } = useI18n();
-const store = useQueryStore();
 
 const isValid = computed(
   () =>
-    (store.baseFilter?.isValid() ?? true) &&
-    (store.attributionFilter?.isValid() ?? true),
-);
-
-const baseFilter = computed(
-  () =>
-    (store.baseFilter as FilterNode) ||
-    FilterNode.FilterRoot({
-      childrensConjunction: FilterConjunction.And,
-      baseTable: BaseTable.Cultivars,
-    }),
-);
-const attributionFilter = computed(
-  () =>
-    (store.attributionFilter as FilterNode) ||
-    FilterNode.FilterRoot({
-      childrensConjunction: FilterConjunction.And,
-      baseTable: BaseTable.Attributions,
-    }),
+    (props.baseFilter?.isValid() ?? true) &&
+    (props.attributionFilter?.isValid() ?? true),
 );
 
 const $q = useQuasar();
@@ -149,20 +132,30 @@ const lastRefreshDate = computed(() => {
     : null;
 });
 
+const emptyBaseFilter = FilterNode.FilterRoot({
+  childrensConjunction: FilterConjunction.And,
+  baseTable: props.baseTable,
+});
+
+const emptyAttributionFilter = FilterNode.FilterRoot({
+  childrensConjunction: FilterConjunction.And,
+  baseTable: BaseTable.Attributions,
+});
+
 // debounce fetch queries
 const debouncedFetching = ref(false);
 const queryData = ref(
   filterToQuery({
-    baseFilter: baseFilter.value,
-    attributionFilter: attributionFilter.value,
+    baseFilter: props.baseFilter || emptyBaseFilter,
+    attributionFilter: props.attributionFilter || emptyAttributionFilter,
     columns: columnsToFetch.value,
     pagination: pagination.value,
   }),
 );
 watch(
   [
-    baseFilter,
-    attributionFilter,
+    props.baseFilter,
+    props.attributionFilter,
     columnsToFetch,
     pagination,
     () => lastRefresh,
@@ -171,8 +164,8 @@ watch(
     debouncedFetching.value = true;
     debounce(() => {
       queryData.value = filterToQuery({
-        baseFilter: baseFilter.value,
-        attributionFilter: attributionFilter.value,
+        baseFilter: props.baseFilter || emptyBaseFilter,
+        attributionFilter: props.attributionFilter || emptyAttributionFilter,
         columns: columnsToFetch.value,
         pagination: pagination.value,
       });

@@ -1,4 +1,13 @@
 <template>
+  <div v-if="deserializationError">
+    <div class="row align-center text-negative">
+      <q-icon name="warning" class="col-auto q-mr-xs" />
+      <div class="col">
+        {{ deserializationError }}
+      </div>
+    </div>
+  </div>
+
   <div
     v-if="fetching || !filter"
     class="query-filter-root-node__filter-placeholder"
@@ -72,33 +81,44 @@ export interface QueryFilterRootNodeProps {
   baseTable: BaseTable;
   columns: FilterRuleColumn[];
   fetching: boolean;
+  serializedFilter: string | undefined;
 }
 
 const props = defineProps<QueryFilterRootNodeProps>();
 
-const modelValue = defineModel<string | undefined>({ required: true });
+const emit = defineEmits<{
+  changed: [filter: FilterNode | undefined];
+}>();
 
-// use this hacky double watch construction because compued refs won't fire on change
 const filter: Ref<FilterNode | undefined> = ref(undefined);
+watch(filter, (value) => emit('changed', value), { deep: true });
+
+const deserializationError = ref<string | null>(null);
+
 watch(
-  [modelValue, () => props.columns],
+  [() => props.serializedFilter, () => props.columns],
   ([value, columns]) => {
     if (!columns) return;
-    filter.value = value
-      ? FilterNode.FromJSON(value, null, props.columns)
-      : FilterNode.FilterRoot({
-          childrensConjunction: FilterConjunction.And,
-          baseTable: props.baseTable,
-        });
+    if (value) {
+      try {
+        filter.value = FilterNode.FromJSON(value, null, props.columns);
+      } catch (e) {
+        console.error(e);
+        if (e instanceof Error) {
+          deserializationError.value = e.message;
+        } else {
+          throw e;
+        }
+      }
+    }
+    if (!filter.value) {
+      filter.value = FilterNode.FilterRoot({
+        childrensConjunction: FilterConjunction.And,
+        baseTable: props.baseTable,
+      });
+    }
   },
   { immediate: true },
-);
-watch(
-  filter,
-  (value) => {
-    modelValue.value = value?.hasChildren() ? JSON.stringify(value) : undefined;
-  },
-  { deep: true },
 );
 
 const isSimplifiable = computed(() => filter.value?.isSimplifiable());

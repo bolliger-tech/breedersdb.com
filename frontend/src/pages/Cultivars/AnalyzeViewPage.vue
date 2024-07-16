@@ -3,14 +3,16 @@
     <BaseGraphqlError v-if="error" :error="error" />
     <QueryContainer
       v-else
-      v-model:base-filter="baseFilter"
-      v-model:attribution-filter="attributionFilter"
       v-model:name="name"
       v-model:note="note"
+      :initial-base-filter="getBaseFilter()"
+      :initial-attribution-filter="getAttributionFilter()"
       :base-table="BaseTable.Cultivars"
       :saving="saving"
       :save-error="saveError"
       @save="save"
+      @base-filter-changed="(filter) => (baseFilter = filter)"
+      @attribution-filter-changed="(filter) => (attributionFilter = filter)"
     />
   </PageLayout>
 </template>
@@ -61,17 +63,21 @@ const name = ref<string>(data.value?.analyze_filters_by_pk?.name || '');
 const note = ref<string | null>(
   data.value?.analyze_filters_by_pk?.note || null,
 );
-const baseFilter = ref<string | undefined>(getBaseFilter());
-const attributionFilter = ref<string | undefined>(getAttributionFilter());
 
+const baseFilter = ref<string | undefined>(undefined);
+const attributionFilter = ref<string | undefined>(undefined);
 watch(baseFilter, (filter) => {
   if (filter) {
     $q.localStorage.set(BASE_FILTER_LOCAL_STORAGE_KEY, filter);
+  } else {
+    $q.localStorage.remove(BASE_FILTER_LOCAL_STORAGE_KEY);
   }
 });
 watch(attributionFilter, (filter) => {
   if (filter) {
     $q.localStorage.set(ATTRIBUTION_FILTER_LOCAL_STORAGE_KEY, filter);
+  } else {
+    $q.localStorage.remove(ATTRIBUTION_FILTER_LOCAL_STORAGE_KEY);
   }
 });
 

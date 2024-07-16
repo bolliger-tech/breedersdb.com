@@ -46,12 +46,16 @@
         <div v-if="isAttribute" class="text-body2 col-12">
           <QueryFilterRuleNoAttributionsPredicate
             :attributeName="column?.tableColumnLabel"
+            :base-table="node.getBaseTable()"
             :model-value="includeEntitiesWithoutAttributions"
             @update:model-value="updateIncludeEntitiesWithoutAttributions"
           />
         </div>
         <div v-if="explain" class="col-12">
-          <QueryFilterRuleExplainer :rule="filterRule || undefined" />
+          <QueryFilterRuleExplainer
+            :rule="filterRule || undefined"
+            :base-table="node.getBaseTable()"
+          />
         </div>
       </div>
       <q-icon
@@ -179,7 +183,7 @@ function setOperator() {
 }
 
 function setTerm() {
-  if (!filterRule.value) {
+  if (!filterRule.value || filterRule.value.term) {
     return;
   }
   filterRule.value.term = new FilterRuleTerm({ value: '' });
@@ -192,6 +196,7 @@ watch(
     setOperator();
     setTerm();
   },
+  { immediate: true },
 );
 </script>
 

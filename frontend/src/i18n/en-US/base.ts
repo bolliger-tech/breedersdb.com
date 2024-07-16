@@ -13,7 +13,7 @@ export const base = {
     orchard: 'orchard | orchards',
     rootstock: 'rootstock | rootstocks',
     grafting: 'grafting | graftings',
-    plantRow: 'row | Rows',
+    plantRow: 'row | rows',
   },
 
   timespan: {

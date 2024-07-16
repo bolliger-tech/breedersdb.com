@@ -17,6 +17,12 @@ export function useEntityName() {
     const count = plural ? 2 : 1;
     let entityName = '';
     switch (table) {
+      case BaseTable.Crossings:
+        entityName = t('base.entityName.crossing', count);
+        break;
+      case BaseTable.PlantGroups:
+        entityName = t('base.entityName.plantGroup', count);
+        break;
       case BaseTable.Cultivars:
         entityName = t('base.entityName.cultivar', count);
         break;

@@ -6,9 +6,11 @@ export const base = {
   },
 
   entityName: {
+    crossing: 'crossing | crossings',
     lot: 'lot | lots',
     cultivar: 'cultivar | cultivars',
     plant: 'plant | plants',
+    plantGroup: 'plant group | plant groups',
     attribution: 'attribution | attributions',
   },
 

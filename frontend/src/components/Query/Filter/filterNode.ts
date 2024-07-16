@@ -7,8 +7,10 @@ export enum FilterConjunction {
 }
 
 export enum BaseTable {
+  Crossings = 'crossings',
   Lots = 'lots',
   Cultivars = 'cultivars',
+  PlantGroups = 'plantGroups',
   Plants = 'plants',
   Attributions = 'attributions',
 }

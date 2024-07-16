@@ -16,6 +16,7 @@ import { BaseTable } from '../Filter/filterNode';
 import { useAttributionViewColumnDefinitions } from './useAttributionViewColumnDefinitions';
 import { useEntityName } from 'src/composables/useEntityName';
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
+import { useCrossingsColumnDefinitions } from './useCrossingsColumnDefinitions';
 
 export function useFilterColumns({
   table,
@@ -34,8 +35,10 @@ export function useFilterColumns({
       error: Ref<CombinedError | undefined>;
     };
   } = {
+    [BaseTable.Crossings]: useCrossingsColumnDefinitions(),
     [BaseTable.Lots]: useLotColumnDefinitions(),
     [BaseTable.Cultivars]: useCultivarColumnDefinitions(),
+    [BaseTable.PlantGroups]: usePlantColumnDefinitions(),
     [BaseTable.Plants]: usePlantColumnDefinitions(),
     [BaseTable.Attributions]: useAttributionViewColumnDefinitions(),
   };

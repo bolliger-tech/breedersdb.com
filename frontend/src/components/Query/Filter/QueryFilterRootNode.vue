@@ -60,40 +60,63 @@
 <script lang="ts" setup>
 import QueryFilterRuleAddButton from './QueryFilterRuleAddButton.vue';
 import QueryFilterNode from './QueryFilterNode.vue';
-import { computed } from 'vue';
+import { computed, Ref, ref, watch } from 'vue';
 import { FilterNode, FilterConjunction, BaseTable } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
-import { useQueryStore } from '../useQueryStore';
 import { FilterRuleColumn } from './filterRuleColumn';
 import { useEntityName } from 'src/composables/useEntityName';
 
 const { t } = useI18n();
-const store = useQueryStore();
 
 export interface QueryFilterRootNodeProps {
-  filter?: FilterNode;
+  baseTable: BaseTable;
   columns: FilterRuleColumn[];
   fetching: boolean;
 }
 
 const props = defineProps<QueryFilterRootNodeProps>();
 
-const isSimplifiable = computed(() => props.filter?.isSimplifiable());
-const isEmpty = computed(() => !props.filter?.hasChildren());
-const isValid = computed(() => props.filter?.isValid());
+const modelValue = defineModel<string | undefined>({ required: true });
+
+// use this hacky double watch construction because compued refs won't fire on change
+const filter: Ref<FilterNode | undefined> = ref(undefined);
+watch(
+  [modelValue, () => props.columns],
+  ([value, columns]) => {
+    if (!columns) return;
+    filter.value = value
+      ? FilterNode.FromJSON(value, null, props.columns)
+      : FilterNode.FilterRoot({
+          childrensConjunction: FilterConjunction.And,
+          baseTable: props.baseTable,
+        });
+  },
+  { immediate: true },
+);
+watch(
+  filter,
+  (value) => {
+    modelValue.value = value?.hasChildren() ? JSON.stringify(value) : undefined;
+  },
+  { deep: true },
+);
+
+const isSimplifiable = computed(() => filter.value?.isSimplifiable());
+const isEmpty = computed(() => !filter.value?.hasChildren());
+const isValid = computed(() => filter.value?.isValid());
 const isAttributionsFilter = computed(
-  () => props.filter?.getBaseTable() === BaseTable.Attributions,
+  () => filter.value?.getBaseTable() === BaseTable.Attributions,
 );
 
 const { getEntityName } = useEntityName();
 const entityName = computed(() =>
-  getEntityName({ table: store.baseTable, plural: true }),
+  getEntityName({ table: props.baseTable, plural: true }),
 );
 
 function simplify() {
   let maxIterations = 10;
   while (isSimplifiable.value && maxIterations--) {
-    props.filter?.simplify();
+    filter.value?.simplify();
   }
 }
 </script>

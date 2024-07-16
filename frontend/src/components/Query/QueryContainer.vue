@@ -1,22 +1,38 @@
 <template>
   <BaseGraphqlError v-if="error" :error="error" />
   <template v-else>
+    <QueryHeader
+      v-model:name="name"
+      v-model:note="note"
+      :saving="saving"
+      :save-error="saveError"
+    />
     <QueryFilter
+      v-model:base-filter="baseFilter"
+      v-model:attribution-filter="attributionFilter"
       :base-table="baseTable"
       :base-filter-columns="baseTableColumnsWithAttributes"
+      :base-filter-columns-fetching="
+        fetchingBaseTableColumns || fetchingAttributesAsColumns
+      "
       :attribution-filter-columns="attributionFilterColumns"
-      :fetching="fetching"
+      :attribution-filter-columns-fetching="attributionFilterColumnsFetching"
     />
     <QueryResult
       :base-table="baseTable"
       :available-columns="resultColumns"
-      :fetching-columns="fetching"
+      :fetching-columns="
+        fetchingBaseTableColumns ||
+        fetchingAttributesAsColumns ||
+        attributionFilterColumnsFetching
+      "
     />
   </template>
 </template>
 
 <script setup lang="ts">
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
+import QueryHeader from 'src/components/Query/Header/QueryHeader.vue';
 import QueryFilter from 'src/components/Query/Filter/QueryFilter.vue';
 import QueryResult from 'src/components/Query/Result/QueryResult.vue';
 import { BaseTable } from './Filter/filterNode';
@@ -29,12 +45,27 @@ import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { AttributionAggregation } from './Result/attributionAggregationTypes';
+import { CombinedError } from '@urql/core';
 
-export interface QueryContainerProps {
+export type QueryContainerProps = {
   baseTable: BaseTable;
-}
+  saving: boolean;
+  saveError: CombinedError | undefined;
+};
 
 const props = defineProps<QueryContainerProps>();
+
+defineEmits<{
+  save: [];
+}>();
+
+const baseFilter = defineModel<string | undefined>('baseFilter', {
+  required: true,
+});
+const attributionFilter = defineModel<string | undefined>('attributionFilter');
+const name = defineModel<string>('name', { required: true });
+const note = defineModel<string | null>('note', { required: true });
+
 const { t } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
@@ -42,7 +73,7 @@ const {
   activate: fetchAttributesAsColumns,
   data: attributesAsColumns,
   error: attributesAsColumnsError,
-  fetching: fetchingAsColumnsAttributes,
+  fetching: fetchingAttributesAsColumns,
 } = useAttributesAsColumns();
 onMounted(() => fetchAttributesAsColumns());
 
@@ -81,12 +112,6 @@ const {
 } = attributionColumnLoader;
 onMounted(() => fetchAttributionViewColumns());
 
-const fetching = computed(
-  () =>
-    fetchingBaseTableColumns.value ||
-    fetchingAsColumnsAttributes.value ||
-    attributionFilterColumnsFetching.value,
-);
 const error = computed(
   () =>
     baseTableColumnsError.value ||

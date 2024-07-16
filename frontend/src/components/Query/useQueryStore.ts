@@ -1,36 +1,25 @@
 import { defineStore } from 'pinia';
-import { FilterNode, BaseTable } from './Filter/filterNode';
+import { FilterNode } from './Filter/filterNode';
 import { LocalStorage } from 'quasar';
 import { computed, ref } from 'vue';
 
+const LOCAL_STORAGE_EXPLAIN_KEY = 'breedersdb-query-explain';
+
 export const useQueryStore = defineStore('query', () => {
-  const baseFilter = ref<FilterNode | undefined>();
-  const attributionFilter = ref<FilterNode | undefined>();
-
-  const baseTable = computed(
-    () => baseFilter.value?.getBaseTable() || BaseTable.Cultivars,
-  );
-
   const filterDragNode = ref<FilterNode | undefined>(undefined);
 
-  const _explainKey = computed(
-    () => `breedersdb-query-explain--${baseTable.value}`,
-  );
   const _explain = ref<boolean>(
-    LocalStorage.getItem(_explainKey.value) ?? true,
+    LocalStorage.getItem(LOCAL_STORAGE_EXPLAIN_KEY) ?? true,
   );
   const explain = computed({
     get: () => _explain.value,
     set: (value: boolean) => {
       _explain.value = value;
-      LocalStorage.set(_explainKey.value, value);
+      LocalStorage.set(LOCAL_STORAGE_EXPLAIN_KEY, value);
     },
   });
 
   return {
-    baseFilter,
-    baseTable,
-    attributionFilter,
     filterDragNode,
     explain,
   };

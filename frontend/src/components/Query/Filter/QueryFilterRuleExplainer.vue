@@ -17,13 +17,14 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { FilterRule } from './filterRule';
-import { useQueryStore } from '../useQueryStore';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityName } from 'src/composables/useEntityName';
 import { ColumnTypes } from 'src/utils/columnTypes';
+import { BaseTable } from './filterNode';
 
 interface QueryFilterRuleExplainerProps {
   rule?: FilterRule;
+  baseTable: BaseTable;
 }
 
 const props = defineProps<QueryFilterRuleExplainerProps>();
@@ -67,13 +68,12 @@ const term = computed(() => {
   }
 });
 
-const store = useQueryStore();
 const { getEntityName } = useEntityName();
 const entityName = computed(() => {
   if (props.rule?.tableName === 'attributions_view') {
     return t('base.entityName.attribution', 2);
   }
-  return getEntityName({ table: store.baseTable, plural: true });
+  return getEntityName({ table: props.baseTable, plural: true });
 });
 
 const explainer = computed(() => {

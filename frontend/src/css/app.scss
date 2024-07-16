@@ -80,11 +80,3 @@ a {
     text-decoration: underline;
   }
 }
-
-.text-link {
-  color: var(--q-link-color);
-
-  &:hover {
-    color: var(--q-link-color-hover);
-  }
-}

@@ -96,6 +96,9 @@ export default configure((ctx) => {
     devServer: {
       // https: true
       open: false, // true opens browser window automatically
+      // websockets are not configured on our nginx proxy so we bypass it and
+      // use the dev server directly
+      hmr: { clientPort: 9000 },
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework

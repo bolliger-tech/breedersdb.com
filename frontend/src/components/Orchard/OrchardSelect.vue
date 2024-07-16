@@ -16,13 +16,12 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
-import { ResultOf, graphql } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
-import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 export interface OrchardSelectProps {
   includeId?: number;
@@ -63,18 +62,7 @@ const { data, error, fetching } = useQuery({
   variables: { where },
 });
 
-type Orchard = ResultOf<typeof query>['orchards'][0];
-
-const { localizedSortPredicate } = useLocalizedSort();
-
-const orchardOptions = computed(
-  () =>
-    data.value?.orchards
-      .slice(0)
-      .sort((a: Orchard, b: Orchard) =>
-        localizedSortPredicate(a.name, b.name),
-      ) ?? [],
-);
+const orchardOptions = computed(() => data.value?.orchards ?? []);
 
 const orchard = computed({
   get: () => orchardOptions.value.find((o) => o.id === modelValue.value),

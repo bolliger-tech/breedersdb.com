@@ -54,6 +54,7 @@ import { shallowRef } from 'vue';
 import { CombinedError } from '@urql/vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { focusInView } from 'src/utils/focusInView';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 // it currently seems to be a bug with generic components. the currect type
 // would be without the `& VNodeRef` part.
@@ -81,6 +82,7 @@ export interface EntitySelectPropsWithoutModel<T> {
   error?: CombinedError | null;
   clearable?: boolean;
   optionDisable?: QSelectProps['optionDisable'];
+  noSort?: boolean;
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
@@ -89,6 +91,7 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   error: null,
   clearable: true,
   optionDisable: undefined,
+  noSort: false,
 });
 
 const selectRef = ref<QSelect | null>(null);
@@ -103,18 +106,30 @@ defineSlots<{
 
 const modelValue = defineModel<T | null | undefined>();
 
-const filteredOptions = shallowRef([...props.options]);
+const { t } = useI18n();
+const { localizedSortPredicate } = useLocalizedSort();
+
+const options = computed(() => {
+  return props.noSort
+    ? props.options
+    : props.options
+        .slice()
+        .sort((a: T, b: T) =>
+          localizedSortPredicate(a[props.optionLabel], b[props.optionLabel]),
+        );
+});
+
+const filteredOptions = shallowRef([...options.value]);
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
   filterSelectOptions({
     value,
     update,
-    allOptions: Object.freeze([...props.options]),
+    allOptions: Object.freeze([...options.value]),
     filteredOptions,
     valueExtractorFn: (item) => item[props.optionLabel],
   });
 }
 
-const { t } = useI18n();
 const { inputBgColor } = useInputBackground();
 
 const rules = computed(() => {

@@ -176,7 +176,8 @@ const applicableOperators = computed(() => {
 
 function setOperator() {
   if (
-    filterRule.value?.operator?.isValid === false &&
+    filterRule.value &&
+    !filterRule.value.operator?.isValid &&
     applicableOperators.value
   ) {
     filterRule.value.operator = applicableOperators.value[0];

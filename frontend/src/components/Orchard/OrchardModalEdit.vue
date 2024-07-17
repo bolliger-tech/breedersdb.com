@@ -38,7 +38,6 @@ import {
   orchardFragment,
 } from 'src/components/Orchard/orchardFragment';
 import { useI18n } from 'vue-i18n';
-import { TadaDocumentNode } from 'gql.tada';
 
 export type OrchardEditInput = Omit<OrchardFragment, 'created' | 'modified'>;
 export type OrchardInsertInput = Omit<OrchardEditInput, 'id'>;
@@ -47,25 +46,22 @@ export interface OrchardModalEditProps {
   orchard: OrchardEditInput | OrchardInsertInput;
 }
 
-const asdf: string = 'asdf';
-console.log(asdf);
-
 defineProps<OrchardModalEditProps>();
 
 const insertMutation = graphql(
   `
     mutation InsertOrchard(
-      $orchard: orchards_insert_input!
+      $entity: orchards_insert_input!
       $withPlantRows: Boolean = false
       $withPlants: Boolean = false
     ) {
-      insert_orchards_one(object: $orchard) {
+      insert_orchards_one(object: $entity) {
         ...orchardFragment
       }
     }
   `,
   [orchardFragment],
-) as TadaDocumentNode;
+);
 
 export type OrchardEditInsertMutation = typeof insertMutation;
 
@@ -73,17 +69,17 @@ const editMutation = graphql(
   `
     mutation UpdateOrchard(
       $id: Int!
-      $orchard: orchards_set_input!
+      $entity: orchards_set_input!
       $withPlantRows: Boolean = false
       $withPlants: Boolean = false
     ) {
-      update_orchards_by_pk(pk_columns: { id: $id }, _set: $orchard) {
+      update_orchards_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...orchardFragment
       }
     }
   `,
   [orchardFragment],
-) as TadaDocumentNode;
+);
 
 const { t } = useI18n();
 </script>

@@ -28,13 +28,16 @@
   setup
   lang="ts"
   generic="
-    T extends new (...args: any) => any,
-    EditInput extends object,
-    InsertInput extends object
+    FormRef extends new (...args: any) => any,
+    EditInput extends { id: number; [key: string]: any },
+    InsertInput extends { [key: string]: any },
+    InsertResult extends { [key: string]: any },
+    InsertVariables extends { entity: any; id?: never; [key: string]: any },
+    EditResult extends { [key: string]: any },
+    EditVariables extends { entity: any; id: number; [key: string]: any }
   "
 >
 import { useMutation } from '@urql/vue';
-import { VariablesOf } from 'src/graphql';
 import { computed, ref, nextTick } from 'vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -49,9 +52,8 @@ import { TadaDocumentNode } from 'gql.tada';
 
 const props = defineProps<{
   entity: EditInput | InsertInput;
-  entityName: string;
-  insertMutation: TadaDocumentNode;
-  editMutation: TadaDocumentNode;
+  insertMutation: TadaDocumentNode<InsertResult, InsertVariables, void>;
+  editMutation: TadaDocumentNode<EditResult, EditVariables, void>;
   indexPath: string;
   spriteIcon: SpriteIcons;
   subtitle: string;
@@ -62,20 +64,20 @@ const { cancel } = useCancel({ path: props.indexPath });
 const validationError = ref<string | null>(null);
 const closeModal = useInjectOrThrow(closeModalSymbol);
 const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
-const formRef = ref<InstanceType<T> | null>(null);
+const formRef = ref<InstanceType<FormRef> | null>(null);
 
-function setFormRef(form: InstanceType<T>) {
+function setFormRef(form: InstanceType<FormRef>) {
   formRef.value = form;
 }
 
-const insertData = ref<VariablesOf<typeof props.insertMutation>['entity']>();
+const insertData = ref<InsertVariables['entity']>();
 const {
   executeMutation: executeInsertMutation,
   fetching: savingInsert,
   error: saveInsertError,
 } = useMutation(props.insertMutation);
 
-const editedData = ref<VariablesOf<typeof props.editMutation>['entity']>();
+const editedData = ref<EditVariables['entity']>();
 const {
   executeMutation: executeEditMutation,
   fetching: savingEdit,
@@ -120,8 +122,8 @@ async function saveInsert() {
   }
 
   return executeInsertMutation({
-    [props.entityName]: insertData.value,
-  });
+    entity: insertData.value,
+  } as InsertVariables);
 }
 
 async function saveEdit() {
@@ -137,8 +139,8 @@ async function saveEdit() {
 
   return executeEditMutation({
     id: props.entity.id,
-    [props.entityName]: editedData.value,
-  });
+    entity: editedData.value,
+  } as EditVariables);
 }
 
 const saveError = computed(() => saveInsertError.value || saveEditError.value);

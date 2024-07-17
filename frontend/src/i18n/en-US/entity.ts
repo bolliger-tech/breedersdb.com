@@ -19,7 +19,7 @@ export const entity = {
   tabs: {
     active: 'Active',
     disabled: 'Disabled',
-    all: 'all',
+    all: 'All',
   },
 
   list: {

@@ -86,7 +86,7 @@ const emits = defineEmits<{
 const initialData = {
   email: props.user.email,
   locale: props.user.locale,
-  password: null,
+  password: undefined,
 };
 
 const data = ref({ ...initialData });

@@ -51,8 +51,9 @@ import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 import { TadaDocumentNode } from 'gql.tada';
 
 /**
- * NOTE: your mutations must have a variable called $entity that holds your insert / edit input!
- * 
+ * NOTE: your mutations must have a variable called $entity
+ * that holds your insert / edit input!
+ *
  * Example (simplified):
  *
  * mutation InsertOrchard(
@@ -63,7 +64,7 @@ import { TadaDocumentNode } from 'gql.tada';
  *     }
  *   }
  */
-  
+
 const props = defineProps<{
   entity: EditInput | InsertInput;
   insertMutation: TadaDocumentNode<InsertResult, InsertVariables, void>;
@@ -71,6 +72,7 @@ const props = defineProps<{
   indexPath: string;
   spriteIcon: SpriteIcons;
   subtitle: string;
+  afterInsert?: () => void;
 }>();
 
 const { cancel } = useCancel({ path: props.indexPath });
@@ -137,7 +139,11 @@ async function saveInsert() {
 
   return executeInsertMutation({
     entity: insertData.value,
-  } as InsertVariables);
+  } as InsertVariables).then(() => {
+    if (props.afterInsert) {
+      props.afterInsert();
+    }
+  });
 }
 
 async function saveEdit() {

@@ -7,3 +7,5 @@ create trigger trim_orchards
     on orchards
     for each row
 execute function trim_strings('name');
+
+drop collation natural_de;

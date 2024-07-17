@@ -50,6 +50,20 @@ import { useCancel } from 'src/composables/useCancel';
 import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 import { TadaDocumentNode } from 'gql.tada';
 
+/**
+ * NOTE: your mutations must have a variable called $entity that holds your insert / edit input!
+ * 
+ * Example (simplified):
+ *
+ * mutation InsertOrchard(
+ *     $entity: orchards_insert_input!
+ *   ) {
+ *     insert_orchards_one(object: $entity) {
+ *       ...orchardFragment
+ *     }
+ *   }
+ */
+  
 const props = defineProps<{
   entity: EditInput | InsertInput;
   insertMutation: TadaDocumentNode<InsertResult, InsertVariables, void>;

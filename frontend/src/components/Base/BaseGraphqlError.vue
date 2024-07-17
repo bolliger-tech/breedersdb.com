@@ -9,13 +9,10 @@
           : error.message
       }}
     </p>
-    <details class="text-caption">
-      <summary>Details</summary>
 
-      <pre class="q-ma-none base-graphql-error__msg">{{
-        JSON.stringify(error, null, 2)
-      }}</pre>
-    </details>
+    <pre class="q-ma-none base-graphql-error__msg">{{
+      JSON.stringify(error, null, 2)
+    }}</pre>
   </article>
 </template>
 
@@ -46,28 +43,5 @@ onMounted(() => {
 <style lang="scss" scoped>
 .base-graphql-error__msg {
   white-space: pre-wrap;
-}
-
-details {
-  summary {
-    cursor: pointer;
-    list-style-type: none;
-
-    &:before {
-      content: '▶';
-      display: inline-block;
-      margin-right: 0.5em;
-    }
-
-    &:webkit-details-marker {
-      display: none;
-    }
-  }
-
-  &[open] {
-    summary:before {
-      content: '▼';
-    }
-  }
 }
 </style>

@@ -42,6 +42,38 @@ describe('FilterRuleOperator', () => {
     expect(operator.isValid).toBe(false);
   });
 
+  it('should return isValid: false when empty but allowEmpty = false', () => {
+    const operator = new FilterRuleOperator({
+      value: FilterOperatorValue.Empty,
+    });
+    operator.schema = {
+      allowEmpty: false,
+      type: ColumnTypes.String,
+      validation: {
+        maxLen: null,
+        pattern: null,
+      },
+    };
+
+    expect(operator.isValid).toBe(false);
+  });
+
+  it('should return isValid: false when notEmpty but allowEmpty = false', () => {
+    const operator = new FilterRuleOperator({
+      value: FilterOperatorValue.Empty,
+    });
+    operator.schema = {
+      allowEmpty: false,
+      type: ColumnTypes.String,
+      validation: {
+        maxLen: null,
+        pattern: null,
+      },
+    };
+
+    expect(operator.isValid).toBe(false);
+  });
+
   it('should return isValid: true when type suits', () => {
     const operator = new FilterRuleOperator({
       value: FilterOperatorValue.False,

@@ -55,6 +55,13 @@ export class FilterRuleOperator {
 
   get isValid() {
     if (typeof this.schema === 'undefined') return undefined;
+    if (
+      !this.allowEmpty &&
+      [FilterOperatorValue.Empty, FilterOperatorValue.NotEmpty].includes(
+        this.value,
+      )
+    )
+      return false;
     return this.suitableRuleTypes.includes(this.schema.type);
   }
 

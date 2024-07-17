@@ -3,8 +3,6 @@
     :entity="orchard"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
-    entity-name="orchard"
-    :fragment="orchardFragment"
     index-path="/orchard"
     sprite-icon="orchard"
     :subtitle="t('orchards.title', 1)"

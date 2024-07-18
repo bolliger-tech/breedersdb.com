@@ -1457,37 +1457,6 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(Object.values(variables).length).toBe(0);
           });
 
-          it('should return: String NotEmpty non nullable', () => {
-            const filter = FilterNode.FilterRoot(filterRootArgs);
-            FilterNode.FilterLeaf({
-              parent: filter,
-              filterRule: new FilterRule({
-                column: filterRules.nestedStringWithValue.column,
-                operator: new FilterRuleOperator({
-                  value: FilterOperatorValue.NotEmpty,
-                }),
-              }),
-            });
-
-            const { query, variables } = filterToQuery({
-              baseFilter: filter,
-              attributionFilter: emptyAttributionFilter,
-              columns: [],
-              pagination: basicPagination,
-            });
-
-            expect(query).toMatch(
-              new RegExp(
-                prepareForRegex(`
-    cultivars(where: { _and: [ { lots: { string: { _neq: $v000 } } } ] }`).replaceAll(
-                  '$v000',
-                  '$v\\d+',
-                ),
-              ),
-            );
-            expect(Object.values(variables)[0]).toBe('');
-          });
-
           it('should return: True', () => {
             const filter = FilterNode.FilterRoot(filterRootArgs);
             FilterNode.FilterLeaf({

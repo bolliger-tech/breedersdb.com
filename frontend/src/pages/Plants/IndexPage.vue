@@ -141,6 +141,7 @@ const variables = computed(() => ({
 const { data, fetching, error } = await useQuery({
   query,
   variables,
+  context: { additionalTypenames: ['plants'] },
 });
 
 const plantsCount = computed(

@@ -72,7 +72,6 @@ const props = defineProps<{
   indexPath: string;
   spriteIcon: SpriteIcons;
   subtitle: string;
-  afterInsert?: () => void;
 }>();
 
 const { cancel } = useCancel({ path: props.indexPath });
@@ -139,11 +138,7 @@ async function saveInsert() {
 
   return executeInsertMutation({
     entity: insertData.value,
-  } as InsertVariables).then(() => {
-    if (props.afterInsert) {
-      props.afterInsert();
-    }
-  });
+  } as InsertVariables);
 }
 
 async function saveEdit() {

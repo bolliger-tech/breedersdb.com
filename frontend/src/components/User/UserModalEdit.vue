@@ -6,7 +6,6 @@
     index-path="/users"
     sprite-icon="user"
     :subtitle="t('users.title', 1)"
-    :after-insert="afterInsert"
   >
     <template #form="{ setFormRef, onChange }">
       <UserEntityForm
@@ -39,8 +38,6 @@ import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import UserButtonDelete from 'src/components/User/UserButtonDelete.vue';
 import UserEntityForm from 'src/components/User/UserEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import { userReexecuteQuerySymbol } from 'src/pages/Users/userProvideSymbols';
 
 export type UserEditInput = Omit<
   UserFragment,
@@ -66,13 +63,6 @@ const insertMutation = graphql(
   `,
   [userFragmentOnFullUserOutput],
 );
-
-const reexecuteUsersQuery = useInjectOrThrow(userReexecuteQuerySymbol);
-function afterInsert() {
-  // because the return type of InsertUser is not userFragment
-  // we need to reexecute the query to refresh the users list
-  reexecuteUsersQuery();
-}
 
 const editMutation = graphql(
   `

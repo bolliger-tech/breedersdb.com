@@ -21,12 +21,11 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, provide, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n, Locale } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { userFragment } from 'src/components/User/userFragment';
-import { userReexecuteQuerySymbol } from './userProvideSymbols';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 
 const { t, d } = useI18n();
@@ -57,14 +56,11 @@ const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
   searchColumn: 'email',
 });
 
-const { data, fetching, error, executeQuery } = await useQuery({
+const { data, fetching, error } = await useQuery({
   query,
   variables,
+  context: { additionalTypenames: ['users', 'FullUserOutput'] },
 });
-
-provide(userReexecuteQuerySymbol, () =>
-  executeQuery({ requestPolicy: 'network-only' }),
-);
 
 const usersCount = computed(
   () => data.value?.users_aggregate?.aggregate?.count || 0,

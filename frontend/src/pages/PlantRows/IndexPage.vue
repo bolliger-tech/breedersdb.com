@@ -78,6 +78,7 @@ const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
 const { data, fetching, error } = await useQuery({
   query,
   variables,
+  context: { additionalTypenames: ['plant_rows'] },
 });
 
 const plantRowsCount = computed(

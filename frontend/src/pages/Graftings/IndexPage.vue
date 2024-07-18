@@ -61,6 +61,7 @@ const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
 const { data, fetching, error } = await useQuery({
   query,
   variables,
+  context: { additionalTypenames: ['graftings'] },
 });
 
 const graftingsCount = computed(

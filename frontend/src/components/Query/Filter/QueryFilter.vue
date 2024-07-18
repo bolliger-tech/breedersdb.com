@@ -1,9 +1,5 @@
 <template>
-  <q-toggle
-    v-model="store.explain"
-    :label="t('analyze.filter.showExplanation')"
-  />
-  <p class="text-overline q-mb-none q-mt-lg">
+  <p class="text-weight-bold q-mb-none q-mt-lg">
     {{ t('analyze.filter.baseFilter', { entityName }) }}
   </p>
   <QueryFilterRootNode
@@ -15,7 +11,7 @@
   />
 
   <template v-if="attributionFilterColumns || attributionFilterColumnsFetching">
-    <p class="text-overline q-mb-none q-mt-lg">
+    <p class="text-weight-bold q-mb-sm q-mt-lg">
       {{ t('analyze.filter.attributionFilter') }}
     </p>
     <QueryFilterRootNode
@@ -32,7 +28,6 @@
 import { useI18n } from 'src/composables/useI18n';
 import QueryFilterRootNode from './QueryFilterRootNode.vue';
 import { computed } from 'vue';
-import { useQueryStore } from '../useQueryStore';
 import { useEntityName } from 'src/composables/useEntityName';
 import { BaseTable, FilterNode } from './filterNode';
 import { FilterRuleColumn } from './filterRuleColumn';
@@ -55,7 +50,6 @@ defineEmits<{
 }>();
 
 const { t } = useI18n();
-const store = useQueryStore();
 
 const { getEntityName } = useEntityName();
 const entityName = computed(() =>

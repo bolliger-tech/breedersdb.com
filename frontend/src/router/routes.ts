@@ -50,7 +50,25 @@ const routes: RouteRecordRaw[] = [
         children: [
           {
             path: 'analyze',
-            component: () => import('pages/Cultivars/AnalyzePage.vue'),
+            children: [
+              {
+                path: '',
+                component: () => import('pages/Cultivars/AnalyzeIndexPage.vue'),
+              },
+              {
+                path: ':analyzeId(\\d+)',
+                component: () => import('pages/Cultivars/AnalyzePage.vue'),
+                props: (route) => ({
+                  analyzeId: route.params.analyzeId,
+                  key: route.params.analyzeId,
+                }),
+              },
+              {
+                path: 'new',
+                component: () => import('pages/Cultivars/AnalyzePage.vue'),
+                props: { analyzeId: 'new', key: 'new' },
+              },
+            ],
           },
         ],
       },

@@ -32,6 +32,7 @@ export const base = {
   ok: 'OK',
   continue: 'Continue',
   back: 'Back',
+  rename: 'Rename',
 
   error: 'Error',
   required: 'Required',

@@ -1,4 +1,15 @@
 export const analyze = {
+  header: {
+    title: 'Analyze',
+    more: 'More',
+    duplicate: 'Duplicate',
+    showExplanation: 'Explain filters',
+    hideExplanation: 'Hide explanations',
+    filter: 'filter',
+    addName: 'Save as …',
+    editName: 'Edit name',
+  },
+
   filter: {
     attributionFilter:
       'Filter criteria to select the attributions (cell values)',
@@ -16,7 +27,6 @@ export const analyze = {
 
     cultivarAndSubentities: 'cultivar, its groups or plants',
 
-    showExplanation: 'Explain filters',
     explainer: {
       title: 'Explanation:',
       attributeWithNoAttributions:

@@ -24,6 +24,9 @@ export const attribute = {
   missingMetadata: 'Missing metadata.',
   addMetadata: 'Add metadata',
 
+  alreadyAttributed:
+    "You've already attributed this {entity} on this device with this form {timeAgo}.",
+
   counter: {
     description:
       "During the last 24h, you've added {count} marks with this form to this {entity} (target {total}).",

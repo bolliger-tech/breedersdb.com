@@ -1,4 +1,10 @@
 <template>
+  <AttributeAlreadyAttributed
+    v-if="repeatTarget <= 1 && lastRepeat"
+    :date="lastRepeat"
+    :entity-type="entityType"
+  />
+
   <form>
     <ul class="attribute-form__list">
       <li v-for="formField in attributeInputs" :key="formField.priority">
@@ -63,6 +69,7 @@ import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCoun
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import AttributeFormAddInput from 'src/components/Attribute/AttributeFormAddInput.vue';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import AttributeAlreadyAttributed from 'src/components/Attribute/AttributeAlreadyAttributed.vue';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -122,7 +129,7 @@ const attributeInputs = computed<
 const attributeValues = ref<{ [key: number]: AttributeValueWithPhoto }>({});
 const attributeFormInputRefs = ref<{ [key: number]: InputRef | null }>({});
 
-const repeatCount = useRepeatCounter({
+const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
   formId: props.form.id,
   entityId: props.entityId,
   entityType: props.entityType,

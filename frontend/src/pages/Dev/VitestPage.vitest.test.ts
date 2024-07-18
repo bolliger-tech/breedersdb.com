@@ -18,7 +18,7 @@ describe('VitestPage', () => {
 
   it('should mount with api data', async () => {
     const wrapper = await mountAsync(VitestPage, {
-      executeQuery: urqlResp('hello tester'),
+      urqlMock: { executeQuery: urqlResp('hello tester') },
     });
 
     expect(wrapper.get('[data-test="query-resp"]').text()).toBe('hello tester');
@@ -26,7 +26,7 @@ describe('VitestPage', () => {
 
   it('should show state', async () => {
     const wrapper = await mountAsync(VitestPage, {
-      executeQuery: urqlResp(null),
+      urqlMock: { executeQuery: urqlResp(null) },
     });
 
     expect(wrapper.get('[data-test="state"]').text()).toBe('true');
@@ -34,7 +34,7 @@ describe('VitestPage', () => {
 
   it('should show translate keyed strings', async () => {
     const wrapper = await mountAsync(VitestPage, {
-      executeQuery: urqlResp(null),
+      urqlMock: { executeQuery: urqlResp(null) },
     });
 
     expect(wrapper.get('[data-test="i18n"]').text()).toBe('Crossings');
@@ -42,7 +42,7 @@ describe('VitestPage', () => {
 
   it('should change message on button click', async () => {
     const wrapper = await mountAsync(VitestPage, {
-      executeQuery: urqlResp('hello tester'),
+      urqlMock: { executeQuery: urqlResp('hello tester') },
     });
 
     mockQuery(wrapper, urqlResp('Another message'));

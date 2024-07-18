@@ -15,6 +15,13 @@
           v-model="attributeValues[formField.priority]"
           :attribute="formField.attribute"
           :exceptional="formField.exceptional"
+          :has-same-again="
+            attributeInputs.some(
+              (af) =>
+                af.attribute.id === formField.attribute.id &&
+                af.priority !== formField.priority,
+            )
+          "
         />
       </li>
     </ul>

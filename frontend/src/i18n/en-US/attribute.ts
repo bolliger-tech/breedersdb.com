@@ -34,6 +34,8 @@ export const attribute = {
     title: 'Count',
   },
 
+  sameAgainWarning: 'This form contains this attribute multiple times.',
+
   notes: 'Notes',
   addTextNote: 'Add note',
   addPhotoNote: 'Add photo',

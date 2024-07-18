@@ -91,7 +91,6 @@ async function initVideo() {
         width: { ideal: 640 },
         height: { ideal: 640 },
         aspectRatio: { ideal: 1 },
-        frameRate: { ideal: 10, max: 30 },
       },
     });
 

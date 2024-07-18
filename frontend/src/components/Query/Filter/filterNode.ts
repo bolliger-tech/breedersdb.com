@@ -10,7 +10,7 @@ export enum BaseTable {
   Crossings = 'crossings',
   Lots = 'lots',
   Cultivars = 'cultivars',
-  PlantGroups = 'plantGroups',
+  PlantGroups = 'plant_groups',
   Plants = 'plants',
   Attributions = 'attributions',
 }

@@ -6,6 +6,10 @@ import {
   type LocationQuery,
 } from 'vue-router';
 
+// To prevent race conditions of multiple simultanious queQueryArg calls,
+// we store the pending query args in this variable. Else they overwrite each
+// other (at least in chrome).
+// (It seems like chrome writes them asynchronously to the url)
 let pendingQueryArgs: LocationQuery = {};
 
 export function useQueryArg<

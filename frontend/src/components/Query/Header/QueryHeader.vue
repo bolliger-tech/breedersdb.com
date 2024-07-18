@@ -54,9 +54,10 @@ export interface QueryHeaderProps {
   analyzeId: 'new' | number;
   name: string;
   note: string | null;
+  baseTable: Exclude<BaseTable, BaseTable.Attributions>;
   baseFilter: FilterNode | undefined;
   attributionFilter: FilterNode | undefined;
-  baseTable: Exclude<BaseTable, BaseTable.Attributions>;
+  visibleColumns: string[] | undefined;
 }
 
 const props = defineProps<QueryHeaderProps>();
@@ -95,6 +96,7 @@ const editMutation = graphql(
       $baseTable: analyze_filter_base_tables_enum!
       $baseFilter: jsonb
       $attributionFilter: jsonb
+      $visibleColumns: [String!]
     ) {
       update_analyze_filters_by_pk(
         pk_columns: { id: $id }
@@ -104,6 +106,7 @@ const editMutation = graphql(
           base_table: $baseTable
           base_filter: $baseFilter
           attribution_filter: $attributionFilter
+          visible_columns: $visibleColumns
         }
       ) {
         ...analyzeFiltersFragment
@@ -127,6 +130,7 @@ const insertMutation = graphql(
       $baseTable: analyze_filter_base_tables_enum!
       $baseFilter: jsonb
       $attributionFilter: jsonb
+      $visibleColumns: [String!]
     ) {
       insert_analyze_filters_one(
         object: {
@@ -135,6 +139,7 @@ const insertMutation = graphql(
           base_table: $baseTable
           base_filter: $baseFilter
           attribution_filter: $attributionFilter
+          visible_columns: $visibleColumns
         }
       ) {
         ...analyzeFiltersFragment
@@ -168,6 +173,7 @@ async function save() {
     baseTable: baseTable.value,
     baseFilter: filterToPojo(props.baseFilter),
     attributionFilter: filterToPojo(props.attributionFilter),
+    visibleColumns: props.visibleColumns || null,
   };
 
   let newId: number | undefined = undefined;

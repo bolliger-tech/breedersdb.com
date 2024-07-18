@@ -10,6 +10,7 @@ export const analyzeFiltersFragment = graphql(`
     base_table
     base_filter
     attribution_filter
+    visible_columns
     created
     modified
   }

@@ -38,7 +38,7 @@ import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
 import { QueryResult, filterToQuery } from './filterToQuery';
 import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { QTableColumn, useQuasar } from 'quasar';
+import { QTableColumn } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { debounce } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
@@ -50,9 +50,14 @@ export interface QueryResultProps {
   fetchingColumns: boolean;
   baseFilter: FilterNode | undefined;
   attributionFilter: FilterNode | undefined;
+  initialVisibleColumns: string[] | undefined;
 }
 
 const props = defineProps<QueryResultProps>();
+
+const emit = defineEmits<{
+  'visible-columns-changed': [columns: string[] | undefined];
+}>();
 
 const { t } = useI18n();
 
@@ -62,15 +67,6 @@ const isValid = computed(
     (props.attributionFilter?.isValid() ?? true),
 );
 
-const $q = useQuasar();
-function getLastSelectedColumns() {
-  const cols: string[] | null = $q.localStorage.getItem(
-    `breedersdb-query-visible-columns--${props.baseTable}`,
-  );
-  return cols?.filter((c) =>
-    props.availableColumns.find((ac) => ac.name === c),
-  );
-}
 const selectedColumns = ref<string[]>([]);
 const defaultColumns = computed(() => {
   return props.availableColumns.slice(0, 5).map((c) => c.name);
@@ -79,13 +75,10 @@ const visibleColumns = computed({
   get: () =>
     selectedColumns.value.length > 0
       ? selectedColumns.value
-      : getLastSelectedColumns() ?? defaultColumns.value,
+      : props.initialVisibleColumns ?? defaultColumns.value,
   set: (cols: string[]) => {
     selectedColumns.value = cols;
-    $q.localStorage.set(
-      `breedersdb-query-visible-columns--${props.baseTable}`,
-      cols,
-    );
+    emit('visible-columns-changed', cols);
   },
 });
 

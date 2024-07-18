@@ -8,6 +8,7 @@
       :base-filter="baseFilter"
       :attribution-filter="attributionFilter"
       :base-table="baseTable"
+      :visible-columns="visibleColumns"
     />
     <QueryFilter
       :base-table="baseTable"
@@ -32,6 +33,8 @@
         fetchingAttributesAsColumns ||
         attributionFilterColumnsFetching
       "
+      :initial-visible-columns="initialData.visibleColumns"
+      @visible-columns-changed="updateVisibleColumns"
     />
   </template>
 </template>
@@ -59,6 +62,7 @@ export type QueryContainerProps = {
     note: string | null;
     baseFilter: string | undefined;
     attributionFilter: string | undefined;
+    visibleColumns: string[] | undefined;
   };
   baseTable: Exclude<BaseTable, BaseTable.Attributions>;
 };
@@ -68,6 +72,7 @@ const props = defineProps<QueryContainerProps>();
 const emit = defineEmits<{
   baseFilterChanged: [filter: FilterNode | undefined];
   attributionFilterChanged: [filter: FilterNode | undefined];
+  visibleColumnsChanged: [columns: string[] | undefined];
 }>();
 
 const { t } = useI18n();
@@ -208,6 +213,7 @@ const resultColumns = computed<QTableColumn[]>(() => {
 
 const baseFilter: Ref<FilterNode | undefined> = ref(undefined);
 const attributionFilter: Ref<FilterNode | undefined> = ref(undefined);
+const visibleColumns: Ref<string[] | undefined> = ref(undefined);
 function updateBaseFilter(filter: FilterNode | undefined) {
   baseFilter.value = filter;
   emit('baseFilterChanged', filter);
@@ -215,5 +221,9 @@ function updateBaseFilter(filter: FilterNode | undefined) {
 function updateAttributionFilter(filter: FilterNode | undefined) {
   attributionFilter.value = filter;
   emit('attributionFilterChanged', filter);
+}
+function updateVisibleColumns(columns: string[] | undefined) {
+  visibleColumns.value = columns;
+  emit('visibleColumnsChanged', columns);
 }
 </script>

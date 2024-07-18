@@ -3464,11 +3464,6 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsqr@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/jsqr/-/jsqr-1.4.0.tgz#8efb8d0a7cc6863cb6d95116b9069123ce9eb2d1"
-  integrity sha512-dxLob7q65Xg2DvstYkRpkYtmKm2sPJ9oFhrhmudT1dZvNFFTlroai3AWSpLey/w5vMcLBXRgOJsbXpdN9HzU/A==
-
 keyv@^4.5.3:
   version "4.5.4"
   resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.5.4.tgz#a879a99e29452f942439f2a405e3af8b31d4de93"
@@ -4224,6 +4219,11 @@ quick-lru@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-5.1.1.tgz#366493e6b3e42a3a6885e2e99d18f80fb7a8c932"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
+
+quircs-wasm@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/quircs-wasm/-/quircs-wasm-0.1.1.tgz#7b1e9d8fbe60478750530fa4718e8cd5da09c7d8"
+  integrity sha512-m2B0+SCOLSUImjvRFA4xSU/USIUcibB7Vj9ol7ylnZImOdQu5BTZb5FBE4ueyOyftp+lWhSMpc9tGMOYgzzeYg==
 
 randombytes@^2.1.0:
   version "2.1.0"

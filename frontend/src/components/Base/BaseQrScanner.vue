@@ -27,10 +27,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import jsQR, { QRCode } from 'jsqr';
 import { useI18n } from 'src/composables/useI18n';
 import { useInterval } from 'quasar';
 import BaseSpinner from './BaseSpinner.vue';
+import init, { read_qrcodes_from_image_data } from 'quircs-wasm';
+import wasmUrl from 'quircs-wasm/quircs_wasm_bg.wasm?url';
+
+await init(wasmUrl);
 
 interface Point {
   x: number;
@@ -181,41 +184,38 @@ function processVideoFrame() {
     );
 
     const imageData = renderingContext.getImageData(0, 0, el.width, el.height);
-    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-      inversionAttempts: 'dontInvert',
-    });
 
-    if (code) {
-      drawFrameAroundCode(code);
-      emit('change', code.data);
+    const res = read_qrcodes_from_image_data(imageData, true);
+    for (let qr of res) {
+      if ('content' in qr.data) {
+        drawFrameAroundCode({
+          topLeftCorner: qr.corners[0],
+          topRightCorner: qr.corners[1],
+          bottomRightCorner: qr.corners[2],
+          bottomLeftCorner: qr.corners[3],
+        });
+        emit(
+          'change',
+          String.fromCharCode.apply(null, qr.data.content.payload),
+        );
+      }
     }
   }
 
   animationFrame = requestAnimationFrame(processVideoFrame);
 }
 
-function drawFrameAroundCode(code: QRCode) {
+function drawFrameAroundCode(location: {
+  topLeftCorner: Point;
+  topRightCorner: Point;
+  bottomRightCorner: Point;
+  bottomLeftCorner: Point;
+}) {
   const frameColor = '#FF3B58';
-  drawLine(
-    code.location.topLeftCorner,
-    code.location.topRightCorner,
-    frameColor,
-  );
-  drawLine(
-    code.location.topRightCorner,
-    code.location.bottomRightCorner,
-    frameColor,
-  );
-  drawLine(
-    code.location.bottomRightCorner,
-    code.location.bottomLeftCorner,
-    frameColor,
-  );
-  drawLine(
-    code.location.bottomLeftCorner,
-    code.location.topLeftCorner,
-    frameColor,
-  );
+  drawLine(location.topLeftCorner, location.topRightCorner, frameColor);
+  drawLine(location.topRightCorner, location.bottomRightCorner, frameColor);
+  drawLine(location.bottomRightCorner, location.bottomLeftCorner, frameColor);
+  drawLine(location.bottomLeftCorner, location.topLeftCorner, frameColor);
 }
 
 function drawLine(begin: Point, end: Point, color: string) {

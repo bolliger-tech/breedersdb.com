@@ -27,7 +27,7 @@
       <template #error>
         <BaseErrorTooltip
           :message="uploadError || validationError"
-          :graph-q-l-error="insertError"
+          :graphel-error="insertError"
         />
       </template>
       <template v-if="repeatTarget > 1" #counter>

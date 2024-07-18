@@ -84,7 +84,7 @@
               @focusout="$emit('resetErrors')"
             />
             <BaseErrorTooltip
-              :graph-q-l-error="saveError"
+              :graphel-error="saveError"
               :message="validationError"
             />
           </template>

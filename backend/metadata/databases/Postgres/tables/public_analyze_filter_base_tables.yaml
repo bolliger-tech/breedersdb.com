@@ -1,12 +1,12 @@
 table:
-  name: attribute_types
+  name: analyze_filter_base_tables
   schema: public
 is_enum: true
 array_relationships:
-  - name: attributes
+  - name: analyze_filters
     using:
       foreign_key_constraint_on:
-        column: attribute_type
+        column: base_table
         table:
-          name: attributes
+          name: analyze_filters
           schema: public

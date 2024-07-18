@@ -22,7 +22,7 @@
     <AttributeFormAddInput @add="(a) => extraAttributes.push(a)" />
 
     <AttributeFormSaveButton
-      :disable="!hasValues || isSaving || !!insertedAttribution"
+      :disable="isSaving || !!insertedAttribution"
       :loading="isSaving"
       :show-progress="isSaving || !!insertedAttribution"
       :progress="savingProgress"
@@ -70,6 +70,7 @@ import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import AttributeFormAddInput from 'src/components/Attribute/AttributeFormAddInput.vue';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import AttributeAlreadyAttributed from 'src/components/Attribute/AttributeAlreadyAttributed.vue';
+import { useAttributableEntityName } from 'src/components/Attribute/useAttributableEntityName';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -194,6 +195,11 @@ const {
 async function save() {
   if (!(await validate())) {
     validationError.value = t('attribute.invalidInput');
+    return;
+  }
+
+  if (!hasValues.value) {
+    showNoDataNotification();
     return;
   }
 
@@ -349,6 +355,26 @@ function resetErrors() {
   uploadError.value = undefined;
   insertError.value = undefined;
   validationError.value = undefined;
+}
+
+const { entity: entityName } = useAttributableEntityName({
+  entityType: props.entityType,
+});
+function showNoDataNotification() {
+  $q.notify({
+    type: 'warning',
+    message: t('attribute.noValues', { entity: entityName.value }),
+    color: 'warning',
+    timeout: 3000,
+    position: 'top',
+    actions: [
+      {
+        label: t('attribute.changeEntity', { entity: entityName.value }),
+        handler: () => emit('saved', repeatCount.value),
+        style: 'width: min-content',
+      },
+    ],
+  });
 }
 </script>
 

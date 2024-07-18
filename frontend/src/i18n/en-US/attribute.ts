@@ -54,5 +54,8 @@ export const attribute = {
   saved: 'Attribute saved.',
   uploading: 'Saving… {percentage}%',
 
+  noValues: 'Nothing to save. Add some values or select a different {entity}.',
+  changeEntity: 'Change {entity}',
+
   addAttribute: 'Add attribute',
 };

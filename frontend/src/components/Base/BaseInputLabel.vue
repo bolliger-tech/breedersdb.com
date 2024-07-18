@@ -1,7 +1,7 @@
 <template>
   <div class="entity-label q-my-sm">
-    <div v-if="label" class="text-weight-bold q-mb-xs">
-      {{ label }}
+    <div v-if="label || $slots.label" class="text-weight-bold q-mb-xs">
+      <slot name="label">{{ label }}</slot>
     </div>
     <slot></slot>
   </div>

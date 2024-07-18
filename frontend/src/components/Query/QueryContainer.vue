@@ -2,19 +2,21 @@
   <BaseGraphqlError v-if="error" :error="error" />
   <template v-else>
     <QueryHeader
-      v-model:name="name"
-      v-model:note="note"
-      :saving="saving"
-      :save-error="saveError"
+      :analyze-id="initialData.id"
+      :name="initialData.name"
+      :note="initialData.note"
+      :base-filter="baseFilter"
+      :attribution-filter="attributionFilter"
+      :base-table="baseTable"
     />
     <QueryFilter
       :base-table="baseTable"
-      :initial-base-filter="initialBaseFilter"
+      :initial-base-filter="initialData.baseFilter"
       :base-filter-columns="baseTableColumnsWithAttributes"
       :base-filter-columns-fetching="
         fetchingBaseTableColumns || fetchingAttributesAsColumns
       "
-      :initial-attribution-filter="initialAttributionFilter"
+      :initial-attribution-filter="initialData.attributionFilter"
       :attribution-filter-columns="attributionFilterColumns"
       :attribution-filter-columns-fetching="attributionFilterColumnsFetching"
       @base-filter-changed="updateBaseFilter"
@@ -49,26 +51,24 @@ import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { AttributionAggregation } from './Result/attributionAggregationTypes';
-import { CombinedError } from '@urql/core';
 
 export type QueryContainerProps = {
-  baseTable: BaseTable;
-  saving: boolean;
-  saveError: CombinedError | undefined;
-  initialBaseFilter: string | undefined;
-  initialAttributionFilter: string | undefined;
+  initialData: {
+    id: 'new' | number;
+    name: string;
+    note: string | null;
+    baseFilter: string | undefined;
+    attributionFilter: string | undefined;
+  };
+  baseTable: Exclude<BaseTable, BaseTable.Attributions>;
 };
 
 const props = defineProps<QueryContainerProps>();
 
 const emit = defineEmits<{
-  save: [];
   baseFilterChanged: [filter: FilterNode | undefined];
   attributionFilterChanged: [filter: FilterNode | undefined];
 }>();
-
-const name = defineModel<string>('name', { required: true });
-const note = defineModel<string | null>('note', { required: true });
 
 const { t } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();

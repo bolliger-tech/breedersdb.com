@@ -78,7 +78,6 @@ const visibleColumns = computed({
       : props.initialVisibleColumns ?? defaultColumns.value,
   set: (cols: string[]) => {
     selectedColumns.value = cols;
-    emit('visible-columns-changed', cols);
   },
 });
 
@@ -109,6 +108,8 @@ watch(
       // when really needed.
       columnsToFetch.value = uniqueNewCols;
     }
+
+    emit('visible-columns-changed', newCols);
   },
   { immediate: true },
 );

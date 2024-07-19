@@ -6,7 +6,10 @@ export const attributions = {
     author: 'Author',
     dateAttributed: 'Date',
     value: 'Value',
-    note: 'Note',
+    textNote: 'Note',
+    textNoteLong: 'Note on value',
+    photoNote: 'Photo on value',
+    photoNoteLong: 'Photo',
     attributeName: 'Attribute',
   },
 

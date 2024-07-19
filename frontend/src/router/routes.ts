@@ -39,6 +39,10 @@ const routes: RouteRecordRaw[] = [
               },
             ],
           },
+          {
+            path: 'attribute',
+            component: () => import('pages/Plants/AttributePage.vue'),
+          },
         ],
       },
       {
@@ -86,6 +90,7 @@ const routes: RouteRecordRaw[] = [
             path: 'images',
             component: () => import('pages/Dev/ImageUpDownloadPage.vue'),
           },
+          { path: 'qr', component: () => import('pages/Dev/QrPage.vue') },
         ],
       },
 

@@ -38,7 +38,8 @@ export const entityAttributionsViewFragment = graphql(`
     boolean_value
     date_value
     date_attributed
-    note
+    text_note
+    photo_note
     exceptional_attribution
     attribute_name
     author

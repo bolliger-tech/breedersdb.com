@@ -82,7 +82,7 @@ const attributionFilter = computed(
 const $q = useQuasar();
 function getLastSelectedColumns() {
   const cols: string[] | null = $q.localStorage.getItem(
-    `query_visible_columns--${props.baseTable}`,
+    `breedersdb-query-visible-columns--${props.baseTable}`,
   );
   return cols?.filter((c) =>
     props.availableColumns.find((ac) => ac.name === c),
@@ -99,7 +99,10 @@ const visibleColumns = computed({
       : getLastSelectedColumns() ?? defaultColumns.value,
   set: (cols: string[]) => {
     selectedColumns.value = cols;
-    $q.localStorage.set(`query_visible_columns--${props.baseTable}`, cols);
+    $q.localStorage.set(
+      `breedersdb-query-visible-columns--${props.baseTable}`,
+      cols,
+    );
   },
 });
 

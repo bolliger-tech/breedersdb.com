@@ -30,6 +30,10 @@
           </q-item-section>
         </q-item>
       </template>
+
+      <template v-if="$slots.option" #option="option">
+        <slot name="option" v-bind="option"></slot>
+      </template>
     </q-select>
 
     <q-card v-else>
@@ -40,7 +44,7 @@
 
 <script setup lang="ts" generic="T extends { [key: string]: any }">
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { QSelect } from 'quasar';
+import { QSelect, QSelectSlots } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ComponentPublicInstance, VNodeRef, computed, ref } from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
@@ -92,6 +96,10 @@ defineExpose({
   validate: () => selectRef.value?.validate(),
   focus: () => selectRef.value && focusInView(selectRef.value),
 });
+
+defineSlots<{
+  option: QSelectSlots['option'];
+}>();
 
 const modelValue = defineModel<T | null | undefined>();
 

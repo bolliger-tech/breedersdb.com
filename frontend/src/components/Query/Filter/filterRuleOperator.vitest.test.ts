@@ -114,6 +114,7 @@ describe('FilterRuleOperator', () => {
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
         ColumnTypes.Integer,
+        ColumnTypes.Rating,
         ColumnTypes.Float,
         ColumnTypes.Enum,
         ColumnTypes.Date,
@@ -130,6 +131,7 @@ describe('FilterRuleOperator', () => {
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
         ColumnTypes.Integer,
+        ColumnTypes.Rating,
         ColumnTypes.Float,
         ColumnTypes.Enum,
         ColumnTypes.Date,
@@ -145,6 +147,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.Integer,
+        ColumnTypes.Rating,
         ColumnTypes.Float,
         ColumnTypes.Date,
         ColumnTypes.DateTime,
@@ -159,6 +162,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.Integer,
+        ColumnTypes.Rating,
         ColumnTypes.Float,
         ColumnTypes.Date,
         ColumnTypes.DateTime,
@@ -173,6 +177,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.Integer,
+        ColumnTypes.Rating,
         ColumnTypes.Float,
         ColumnTypes.Date,
         ColumnTypes.DateTime,
@@ -187,6 +192,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.Integer,
+        ColumnTypes.Rating,
         ColumnTypes.Float,
         ColumnTypes.Date,
         ColumnTypes.DateTime,
@@ -268,6 +274,7 @@ describe('FilterRuleOperator', () => {
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
         ColumnTypes.Integer,
+        ColumnTypes.Rating,
         ColumnTypes.Float,
         ColumnTypes.Enum,
         ColumnTypes.Date,
@@ -284,6 +291,7 @@ describe('FilterRuleOperator', () => {
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
         ColumnTypes.Integer,
+        ColumnTypes.Rating,
         ColumnTypes.Float,
         ColumnTypes.Enum,
         ColumnTypes.Date,

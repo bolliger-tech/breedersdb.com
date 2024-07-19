@@ -97,7 +97,9 @@ const error = computed(
 const resultColumns = computed<QTableColumn[]>(() => {
   return baseTableColumnsWithAttributes.value.flatMap((column) => {
     const isNum =
-      column.type === ColumnTypes.Integer || column.type === ColumnTypes.Float;
+      column.type === ColumnTypes.Integer ||
+      column.type === ColumnTypes.Rating ||
+      column.type === ColumnTypes.Float;
 
     if (column.isAttribute) {
       const attributions: QTableColumn[] = [
@@ -160,11 +162,17 @@ const resultColumns = computed<QTableColumn[]>(() => {
       field: column.tableColumnName,
       align: isNum ? 'right' : 'left',
       sortable: true,
-      format: (value: string | number | Date | null | undefined) =>
-        formatResultColumnValue({
+      format: (value: string | number | Date | null | undefined) => {
+        if (column.type === ColumnTypes.Photo) {
+          // this should never happen
+          throw new Error('Photo columns are not supported');
+        }
+
+        return formatResultColumnValue({
           value,
           type: column.type ?? ColumnTypes.String,
-        }),
+        });
+      },
     };
   });
 });

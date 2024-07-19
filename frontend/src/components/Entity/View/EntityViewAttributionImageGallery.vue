@@ -4,8 +4,14 @@
     style="height: 216px; max-width: 100%; margin: 8px 16px"
   >
     <div class="row no-wrap q-gutter-sm scroll">
-      <div v-for="(image, index) in images" :key="image.id">
+      <div
+        v-for="(image, index) in images.filter(
+          (img) => img.text_value || img.photo_note,
+        )"
+        :key="image.id"
+      >
         <EntityViewAttributionImage
+          :file-name="(image.text_value || image.photo_note)!"
           :attribution="image"
           :plant="plant"
           :plant-group="plantGroup"
@@ -13,6 +19,7 @@
           :lot="lot"
           :crossing="crossing"
           preview
+          :preview-height="200"
           :model-value="open === image.id"
           :transition="transition"
           :transition-duration="TRANSITION_DURATION"

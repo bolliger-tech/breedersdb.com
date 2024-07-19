@@ -13,7 +13,10 @@
 import { computed } from 'vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
-import { formatResultColumnValue } from 'src/utils/attributeUtils';
+import {
+  formatResultColumnValue,
+  getAttributeValue,
+} from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import QueryResultTableCellAttributionOverlay from './QueryResultTableCellAttributionOverlay.vue';
 import QueryResultTableCellAttribution from './QueryResultTableCellAttribution.vue';
@@ -30,31 +33,11 @@ const { t } = useI18n();
 
 const label = computed(() => {
   const type = dataTypeToColumnTypes(props.attribution.data_type);
-  switch (type) {
-    case ColumnTypes.String:
-      return props.attribution.text_value || undefined;
-    case ColumnTypes.Photo:
-      return t('result.photo');
-    case ColumnTypes.Boolean:
-      return props.attribution.boolean_value ? '✓' : '✕';
-    case ColumnTypes.Date:
-      return formatResultColumnValue({
-        value: props.attribution.date_value,
-        type,
-      });
-    case ColumnTypes.Integer:
-      return formatResultColumnValue({
-        value: props.attribution.integer_value,
-        type,
-      });
-    case ColumnTypes.Float:
-      return formatResultColumnValue({
-        value: props.attribution.float_value,
-        type: ColumnTypes.Float,
-      });
-    default:
-      throw new Error(`Column type not implemented: ${type}`);
-  }
+
+  if (type === ColumnTypes.Photo) return t('result.photo');
+
+  const value = getAttributeValue(props.attribution);
+  return formatResultColumnValue({ value, type });
 });
 
 const $q = useQuasar();

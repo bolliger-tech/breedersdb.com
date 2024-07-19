@@ -8,4 +8,5 @@ export enum ColumnTypes {
   DateTime = 'datetime',
   Time = 'time',
   Photo = 'photo',
+  Rating = 'rating',
 }

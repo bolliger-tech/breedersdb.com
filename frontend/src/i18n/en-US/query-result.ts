@@ -22,11 +22,6 @@ export const result = {
   photo: 'Photo',
   downloadPhoto: 'Download photo',
 
-  yes: 'yes',
-  no: 'no',
-
-  noData: 'No data.',
-
   lastRefresh: 'Last data refresh: {date}',
 };
 

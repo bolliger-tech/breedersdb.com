@@ -40,6 +40,7 @@ const term = computed(() => {
   switch (props.rule?.type) {
     case ColumnTypes.String:
     case ColumnTypes.Integer:
+    case ColumnTypes.Rating:
     case ColumnTypes.Float:
     case ColumnTypes.Enum:
       return props.rule?.term?.value || '';

@@ -140,7 +140,7 @@ export PG_DB_NAME=$INSTANCE
 # start cloud-sql-proxy then:
 
 psql -h localhost -p 35432 -U postgres <<EOF
-create database $PG_DB_NAME locale_provider "icu" icu_locale "en_CH-u-kn-true" template template0;
+create database $PG_DB_NAME locale_provider "icu" icu_locale "en_US-u-kn-true" template template0;
 EOF
 ```
 

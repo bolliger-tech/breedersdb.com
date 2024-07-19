@@ -19,6 +19,7 @@
           size="1.5em"
           track-color="white"
           :value="progress / 100"
+          :instant-feedback="progress > 99"
           style="width: 100%"
           rounded
           dark
@@ -103,6 +104,6 @@ const transition = computed(() => `all ${props.transitionDuration}ms ease`);
 }
 
 .attribute-form-save-btn__progress.q-linear-progress {
-  color: var(--bdb-accent-100);
+  color: $positive;
 }
 </style>

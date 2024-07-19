@@ -5,6 +5,7 @@
     header-nav
     contracted
     class="attribute-steps"
+    @transition="handleTransition"
   >
     <q-step
       :name="1"
@@ -12,7 +13,7 @@
       done-icon="svguse:/icons/sprite.svg#form"
       active-icon="svguse:/icons/sprite.svg#form"
       title=""
-      :done="formId > -1"
+      :done="step1Done"
     >
       <AttributeFormSelector ref="attributeFormSelectorRef" v-model="formId" />
 
@@ -31,8 +32,8 @@
       icon="sell"
       done-icon="sell"
       active-icon="sell"
-      :done="!!author && !!date"
-      :disable="formId === -1"
+      :done="step2Done"
+      :disable="!step1Done"
     >
       <AttributeMetaData
         ref="attributeMetaDataRef"
@@ -57,8 +58,8 @@
       :icon="entityIcon"
       :done-icon="entityIcon"
       :active-icon="entityIcon"
-      :disable="formId === -1 || !author || !date"
-      :done="entityId !== null"
+      :disable="!step1Done || !step2Done"
+      :done="step3Done"
     >
       <slot name="entity-selector"></slot>
       <q-stepper-navigation class="row justify-between">
@@ -78,7 +79,7 @@
       icon="svguse:/icons/sprite.svg#star"
       done-icon="svguse:/icons/sprite.svg#star"
       active-icon="svguse:/icons/sprite.svg#star"
-      :disable="formId === -1 || !author || !date || entityId === null"
+      :disable="!step1Done || !step2Done || !step3Done"
     >
       <BaseGraphqlError v-if="formFetchError" :error="formFetchError" />
       <BaseSpinner v-else-if="formFetching" />
@@ -145,16 +146,23 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
 import { AttributableEntities } from './attributableEntities';
 import { attributeFragment, type AttributeFragment } from './attributeFragment';
+import { useRoute } from 'vue-router';
 
 const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';
 const AUTHOR_STORAGE_KEY = 'breedersdb-attribution-author';
 const REPEAT_STORAGE_KEY = 'breedersdb-attribute-repeat-target';
+
+const FORM_ID_URL_KEY = 'form';
+const AUTHOR_URL_KEY = 'author';
+const DATE_URL_KEY = 'date';
+const REPEAT_URL_KEY = 'repeat';
 
 export interface AttributeStepsProps {
   entityId: number | null;
   entityType: AttributableEntities;
   entityLoading: boolean;
   entityIcon: string;
+  focusEntitySelector?: () => void;
 }
 
 const props = defineProps<AttributeStepsProps>();
@@ -201,11 +209,11 @@ export type AttributionForm = Form & {
 };
 
 const { t } = useI18n();
-const { localStorage, sessionStorage } = useQuasar();
+const { localStorage, sessionStorage, platform } = useQuasar();
 
 // step 1
 const { queryArg: formId } = useQueryArg<number>({
-  key: 'form',
+  key: FORM_ID_URL_KEY,
   defaultValue: sessionStorage.getItem<number>(FORM_ID_STORAGE_KEY) ?? -1,
   replace: true,
   showDefaultInUrl: true,
@@ -254,7 +262,7 @@ function completeStep1() {
 
 // step 2
 const { queryArg: author } = useQueryArg<string>({
-  key: 'author',
+  key: AUTHOR_URL_KEY,
   defaultValue: localStorage.getItem<string>(AUTHOR_STORAGE_KEY) ?? '',
   replace: true,
   showDefaultInUrl: true,
@@ -262,14 +270,14 @@ const { queryArg: author } = useQueryArg<string>({
 watch(author, (a) => localStorage.set(AUTHOR_STORAGE_KEY, a));
 
 const { queryArg: date } = useQueryArg({
-  key: 'date',
+  key: DATE_URL_KEY,
   defaultValue: new Date().toISOString().split('T')[0],
   replace: true,
   showDefaultInUrl: true,
 });
 
 const { queryArg: repeat } = useQueryArg<number>({
-  key: 'repeat',
+  key: REPEAT_URL_KEY,
   defaultValue: sessionStorage.getItem<number>(REPEAT_STORAGE_KEY) ?? 0,
   replace: true,
   showDefaultInUrl: true,
@@ -308,6 +316,8 @@ function completeStep4(repeatCount: number) {
   }
 }
 
+const route = useRoute();
+
 watch(
   () => props.entityId,
   () => {
@@ -317,7 +327,42 @@ watch(
   },
 );
 
-const step = ref(1);
+const step1Done = computed(
+  () =>
+    // look at url instead of formId so it can also be used to detect the initial step
+    !!route.query[FORM_ID_URL_KEY] &&
+    parseInt(route.query[FORM_ID_URL_KEY].toString()) > 0,
+);
+
+const step2Done = computed(
+  () =>
+    // look at url instead of author, date and repeat so it can also be used to detect the initial step
+    !!route.query[AUTHOR_URL_KEY] &&
+    !!route.query[DATE_URL_KEY] &&
+    typeof route.query[REPEAT_URL_KEY] !== 'undefined',
+);
+
+const step3Done = computed(() => props.entityId !== null);
+
+function getInitialStep() {
+  // never jump directly to step 4 to make very clear, that any attribution input is lost
+  return !step1Done.value ? 1 : !step2Done.value ? 2 : 3;
+}
+
+const step = ref(getInitialStep());
+
+function handleTransition(to: string | number, from: string | number) {
+  if (to === 3) {
+    if (platform.is.safari && from === 2) {
+      // else safari is going shaky
+      setTimeout(() => {
+        props.focusEntitySelector?.();
+      }, 100);
+    } else {
+      props.focusEntitySelector?.();
+    }
+  }
+}
 </script>
 
 <style scoped>

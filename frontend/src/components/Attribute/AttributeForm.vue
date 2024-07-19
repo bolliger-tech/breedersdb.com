@@ -1,4 +1,10 @@
 <template>
+  <AttributeAlreadyAttributed
+    v-if="repeatTarget <= 1 && lastRepeat"
+    :date="lastRepeat"
+    :entity-type="entityType"
+  />
+
   <form>
     <ul class="attribute-form__list">
       <li v-for="formField in attributeInputs" :key="formField.priority">
@@ -9,6 +15,13 @@
           v-model="attributeValues[formField.priority]"
           :attribute="formField.attribute"
           :exceptional="formField.exceptional"
+          :has-same-again="
+            attributeInputs.some(
+              (af) =>
+                af.attribute.id === formField.attribute.id &&
+                af.priority !== formField.priority,
+            )
+          "
         />
       </li>
     </ul>
@@ -16,7 +29,7 @@
     <AttributeFormAddInput @add="(a) => extraAttributes.push(a)" />
 
     <AttributeFormSaveButton
-      :disable="!hasValues || isSaving || !!insertedAttribution"
+      :disable="isSaving || !!insertedAttribution"
       :loading="isSaving"
       :show-progress="isSaving || !!insertedAttribution"
       :progress="savingProgress"
@@ -27,7 +40,7 @@
       <template #error>
         <BaseErrorTooltip
           :message="uploadError || validationError"
-          :graph-q-l-error="insertError"
+          :graphql-error="insertError"
         />
       </template>
       <template v-if="repeatTarget > 1" #counter>
@@ -63,6 +76,8 @@ import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCoun
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import AttributeFormAddInput from 'src/components/Attribute/AttributeFormAddInput.vue';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import AttributeAlreadyAttributed from 'src/components/Attribute/AttributeAlreadyAttributed.vue';
+import { useAttributableEntityName } from 'src/components/Attribute/useAttributableEntityName';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -122,7 +137,7 @@ const attributeInputs = computed<
 const attributeValues = ref<{ [key: number]: AttributeValueWithPhoto }>({});
 const attributeFormInputRefs = ref<{ [key: number]: InputRef | null }>({});
 
-const repeatCount = useRepeatCounter({
+const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
   formId: props.form.id,
   entityId: props.entityId,
   entityType: props.entityType,
@@ -187,6 +202,11 @@ const {
 async function save() {
   if (!(await validate())) {
     validationError.value = t('attribute.invalidInput');
+    return;
+  }
+
+  if (!hasValues.value) {
+    showNoDataNotification();
     return;
   }
 
@@ -342,6 +362,26 @@ function resetErrors() {
   uploadError.value = undefined;
   insertError.value = undefined;
   validationError.value = undefined;
+}
+
+const { entity: entityName } = useAttributableEntityName({
+  entityType: props.entityType,
+});
+function showNoDataNotification() {
+  $q.notify({
+    type: 'warning',
+    message: t('attribute.noValues', { entity: entityName.value }),
+    color: 'warning',
+    timeout: 3000,
+    position: 'top',
+    actions: [
+      {
+        label: t('attribute.changeEntity', { entity: entityName.value }),
+        handler: () => emit('saved', repeatCount.value),
+        style: 'width: min-content',
+      },
+    ],
+  });
 }
 </script>
 

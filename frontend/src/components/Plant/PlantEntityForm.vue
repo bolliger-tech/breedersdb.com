@@ -75,12 +75,13 @@
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"
+    auto-grow
   />
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { VNodeRef, ref } from 'vue';
+import { ref } from 'vue';
 import PlantPlantGroupSelect from './PlantPlantGroupSelect.vue';
 import PlantPlantRowSelect from './PlantPlantRowSelect.vue';
 import PlantLabelIdEdit from './PlantLabelIdEdit.vue';
@@ -92,7 +93,7 @@ import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { PlantEditInput, PlantInsertInput } from './PlantModalEdit.vue';
 import { addPrefix, removePrefix } from 'src/utils/labelIdUtils';
-import { useEntityForm } from 'src/composables/useEntityForm';
+import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 
 export interface PlantEntityFormProps {
   plant: PlantInsertInput | PlantEditInput;
@@ -132,10 +133,6 @@ watch(
   },
 );
 
-type InputRef = VNodeRef & {
-  validate: () => boolean | Promise<boolean> | undefined;
-  focus: () => void;
-};
 const refs = ref<{ [key: string]: InputRef | null }>({
   labelIdRef: null,
   plantGroupRef: null,

@@ -72,3 +72,11 @@ a {
     color: var(--q-link-color-hover);
   }
 }
+
+.undecorated-link {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

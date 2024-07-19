@@ -10,6 +10,7 @@
       autocomplete="off"
       :option-value="optionValueKey"
       :option-label="optionLabelKey"
+      :option-disable="optionDisable"
       dense
       outlined
       use-input
@@ -18,6 +19,9 @@
       :clearable="clearable"
       :loading="loading"
       :hint="required ? t('base.required') : ''"
+      :label="inlineLabel"
+      @popup-show="() => (inlineLabel = label)"
+      @popup-hide="() => (inlineLabel = undefined)"
       @filter="filterOptions"
     >
       <template #no-option>
@@ -41,7 +45,7 @@
 
 <script setup lang="ts" generic="T extends { [key: string]: any }">
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { QSelect, QSelectSlots } from 'quasar';
+import { QSelect, QSelectProps, QSelectSlots } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ComponentPublicInstance, VNodeRef, computed, ref } from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
@@ -53,6 +57,7 @@ import { shallowRef } from 'vue';
 import { CombinedError } from '@urql/vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { focusInView } from 'src/utils/focusInView';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 // it currently seems to be a bug with generic components. the currect type
 // would be without the `& VNodeRef` part.
@@ -79,6 +84,8 @@ export interface EntitySelectPropsWithoutModel<T> {
   loading?: boolean;
   error?: CombinedError | null;
   clearable?: boolean;
+  optionDisable?: QSelectProps['optionDisable'];
+  noSort?: boolean;
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
@@ -86,6 +93,8 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   loading: false,
   error: null,
   clearable: true,
+  optionDisable: undefined,
+  noSort: false,
 });
 
 const selectRef = ref<QSelect | null>(null);
@@ -100,18 +109,30 @@ defineSlots<{
 
 const modelValue = defineModel<T | null | undefined>();
 
-const filteredOptions = shallowRef([...props.options]);
+const { t } = useI18n();
+const { localizedSortPredicate } = useLocalizedSort();
+
+const options = computed(() => {
+  return props.noSort
+    ? props.options
+    : props.options
+        .slice()
+        .sort((a: T, b: T) =>
+          localizedSortPredicate(a[props.optionLabel], b[props.optionLabel]),
+        );
+});
+
+const filteredOptions = shallowRef([...options.value]);
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
   filterSelectOptions({
     value,
     update,
-    allOptions: Object.freeze([...props.options]),
+    allOptions: Object.freeze([...options.value]),
     filteredOptions,
     valueExtractorFn: (item) => item[props.optionLabel],
   });
 }
 
-const { t } = useI18n();
 const { inputBgColor } = useInputBackground();
 
 const rules = computed(() => {
@@ -128,4 +149,6 @@ const rules = computed(() => {
 
 const optionValueKey = props.optionValue as string;
 const optionLabelKey = props.optionLabel as string;
+
+const inlineLabel = ref<string | undefined>(undefined);
 </script>

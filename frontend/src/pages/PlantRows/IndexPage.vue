@@ -1,0 +1,144 @@
+<template>
+  <PageLayout>
+    <EntityContainer
+      v-model:tab="subset"
+      v-model:search="search"
+      v-model:pagination="pagination"
+      v-model:visible-columns="visibleColumns"
+      :title="t('plantRows.title', 2)"
+      :tabs="tabs"
+      :search-placeholder="t('entity.searchPlaceholderName')"
+      :rows="data?.plant_rows || []"
+      :loading="fetching"
+      :all-columns="columns"
+      list-entities-path="/rows"
+      add-entity-path="/rows/new"
+      :view-entity-path-getter="(id) => `/rows/${id}`"
+    />
+  </PageLayout>
+  <router-view name="modal" />
+</template>
+
+<script setup lang="ts">
+import PageLayout from 'src/layouts/PageLayout.vue';
+import { useQuery } from '@urql/vue';
+import { ResultOf, graphql } from 'src/graphql';
+import { UnwrapRef, computed, watch } from 'vue';
+import { useI18n } from 'src/composables/useI18n';
+import { useQueryArg } from 'src/composables/useQueryArg';
+import EntityContainer from 'src/components/Entity/EntityContainer.vue';
+import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
+import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+
+const { t, d } = useI18n();
+
+const query = graphql(
+  `
+    query PlantRows(
+      $limit: Int!
+      $offset: Int!
+      $orderBy: [plant_rows_order_by!]
+      $where: plant_rows_bool_exp
+      $withPlants: Boolean = false
+    ) {
+      plant_rows_aggregate {
+        aggregate {
+          count
+        }
+      }
+      plant_rows(
+        where: $where
+        limit: $limit
+        offset: $offset
+        order_by: $orderBy
+      ) {
+        ...plantRowFragment
+      }
+    }
+  `,
+  [plantRowFragment],
+);
+
+const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
+  key: 'tab',
+  defaultValue: 'active',
+  replace: true,
+});
+const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
+  { value: 'active', label: t('entity.tabs.active') },
+  { value: 'disabled', label: t('entity.tabs.disabled') },
+  { value: 'all', label: t('entity.tabs.all') },
+];
+
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+  foreignKeys: ['orchard'],
+  subset,
+});
+
+const { data, fetching, error } = await useQuery({
+  query,
+  variables,
+  context: { additionalTypenames: ['plant_rows'] },
+});
+
+const plantRowsCount = computed(
+  () => data.value?.plant_rows_aggregate?.aggregate?.count || 0,
+);
+
+type PlantRow = ResultOf<typeof query>['plant_rows'][0];
+
+const columns = [
+  {
+    name: 'name',
+    label: t('entity.commonColumns.name'),
+    align: 'left' as const,
+    field: 'name',
+    sortable: true,
+  },
+  {
+    name: 'orchard',
+    label: t('plantRows.fields.orchard'),
+    align: 'left' as const,
+    field: (row: PlantRow) => row.orchard.name,
+    sortable: true,
+  },
+  {
+    name: 'modified',
+    label: t('entity.commonColumns.modified'),
+    align: 'left' as const,
+    field: (row: PlantRow) => (row.modified ? d(row.modified, 'ymdHis') : null),
+    sortable: true,
+  },
+  {
+    name: 'created',
+    label: t('entity.commonColumns.created'),
+    align: 'left' as const,
+    field: (row: PlantRow) => d(row.created, 'ymdHis'),
+    sortable: true,
+  },
+];
+
+const { queryArg: visibleColumns } = useQueryArg<string[]>({
+  key: 'col',
+  defaultValue: columns.map((column) => column.name).slice(0, 3),
+  replace: true,
+});
+
+watch(
+  error,
+  (newValue) => {
+    if (newValue) {
+      throw newValue;
+    }
+  },
+  { immediate: true },
+);
+
+watch(
+  plantRowsCount,
+  (newValue) => {
+    pagination.value.rowsNumber = newValue;
+  },
+  { immediate: true },
+);
+</script>

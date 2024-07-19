@@ -12,7 +12,7 @@ import { ChangePassword } from './auth/ChangePassword';
 /* example request
 body: {
   action: { name: 'InsertUser' },
-  input: { email: 'tester@breedersdb.com', password: 'Asdfasdf.1' },
+  input: { object: { email: 'tester@breedersdb.com', password: 'Asdfasdf.1' } },
   request_query: 'mutation InsertUser {\n' +
     '\n' +
     '  InsertUser(email: "tester@breedersdb.com", password: "Asdfasdf.1") {email}\n' +

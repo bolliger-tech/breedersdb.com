@@ -8,6 +8,7 @@
       :entity-loading="fetching"
       :entity-id="plant?.id || null"
       :entity-type="AttributableEntities.Plant"
+      :focus-entity-selector="plantSelectorRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#tree"
       @entity-step-completed="() => plantSelectorRef?.onManualInput()"
     >

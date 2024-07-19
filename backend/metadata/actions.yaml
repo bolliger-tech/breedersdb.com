@@ -54,7 +54,8 @@ actions:
       - role: user
 custom_types:
   enums: []
-  input_objects: []
+  input_objects:
+    - name: UserInsertInput
   objects:
     - name: FullUserOutput
     - name: SignOutOutput

@@ -4,13 +4,13 @@ import type { AttributableEntities } from './attributableEntities';
 
 const STORAGE_KEY = 'breedersdb-attribute-repeat-count';
 
-type Counters = {
+type Counter = {
   lastModified: string; // ISO date
   formId: number;
   entityId: number;
   entityType: AttributableEntities;
   count: number;
-}[];
+};
 
 type useRepeatCounterProps = {
   formId: number;
@@ -19,7 +19,7 @@ type useRepeatCounterProps = {
 };
 
 function getCounters() {
-  return LocalStorage.getItem<Counters>(STORAGE_KEY) || [];
+  return LocalStorage.getItem<Counter[]>(STORAGE_KEY) || [];
 }
 
 async function garbageCollect() {
@@ -37,18 +37,21 @@ export function useRepeatCounter({
   entityId,
   entityType,
 }: useRepeatCounterProps) {
-  const count = ref(0);
+  const _count = ref(0);
 
-  function get() {
+  function getCurrentCounter() {
     garbageCollect();
-    const counter = getCounters().find((counter) => {
+    return getCounters().find((counter) => {
       return (
         counter.formId === formId &&
         counter.entityId === entityId &&
         counter.entityType === entityType
       );
     });
-    count.value = counter?.count || 0;
+  }
+
+  function get() {
+    _count.value = getCurrentCounter()?.count || 0;
   }
 
   function set(value: number) {
@@ -74,12 +77,19 @@ export function useRepeatCounter({
     get();
   }
 
-  return computed<number>({
+  const count = computed<number>({
     get: () => {
       get();
       // use count.value to trigger reactivity
-      return count.value;
+      return _count.value;
     },
     set: (value: number) => set(value),
   });
+
+  const lastChanged = computed<Date | null>(() => {
+    const counter = getCurrentCounter();
+    return counter ? new Date(counter.lastModified) : null;
+  });
+
+  return { count, lastChanged };
 }

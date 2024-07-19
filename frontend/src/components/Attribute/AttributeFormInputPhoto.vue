@@ -31,7 +31,7 @@
         :multiple="false"
         bg-color="transparent"
         input-style="opacity: 0"
-        accept="image/jpeg"
+        accept="image/jpeg,image/png"
         capture="environment"
         clearable
         borderless

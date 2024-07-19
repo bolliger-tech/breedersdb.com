@@ -16,13 +16,13 @@ values ('PLANTS'),
 create table analyze_filters
 (
     id                 integer primary key generated always as identity,
-    name               varchar(45)        not null check (name ~ '^[^/\n]{1,45}$'),
+    name               varchar(45)              not null check (name ~ '^[^/\n]{1,45}$'),
     note               varchar(2047),
-    base_table         text               not null references analyze_filter_base_tables,
+    base_table         text                     not null references analyze_filter_base_tables,
     base_filter        jsonb,
     attribution_filter jsonb,
-    visible_columns    text[]             not null,
-    created            timestamp with time zone default now(),
+    visible_columns    text[]                   not null,
+    created            timestamp with time zone not null default now(),
     modified           timestamp with time zone
 );
 

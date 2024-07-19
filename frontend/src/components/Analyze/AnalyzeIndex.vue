@@ -1,23 +1,20 @@
 <template>
-  <PageLayout>
-    <EntityContainer
-      v-model:search="search"
-      v-model:pagination="pagination"
-      v-model:visible-columns="visibleColumns"
-      :title="t('analyze.title', { entity: entityLabel })"
-      :search-placeholder="t('entity.searchPlaceholderName')"
-      :rows="data?.analyze_filters || []"
-      :loading="fetching"
-      :all-columns="columns"
-      :list-entities-path="`${entityPath}/analyze`"
-      :add-entity-path="`${entityPath}/analyze/new`"
-      :view-entity-path-getter="(id) => `${entityPath}/analyze/${id}`"
-    />
-  </PageLayout>
+  <EntityContainer
+    v-model:search="search"
+    v-model:pagination="pagination"
+    v-model:visible-columns="visibleColumns"
+    :title="t('analyze.title', { entity: entityLabel })"
+    :search-placeholder="t('entity.searchPlaceholderName')"
+    :rows="data?.analyze_filters || []"
+    :loading="fetching"
+    :all-columns="columns"
+    :list-entities-path="`${entityPath}/analyze`"
+    :add-entity-path="`${entityPath}/analyze/new`"
+    :view-entity-path-getter="(id) => `${entityPath}/analyze/${id}`"
+  />
 </template>
 
 <script setup lang="ts">
-import PageLayout from 'src/layouts/PageLayout.vue';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQuery } from '@urql/vue';

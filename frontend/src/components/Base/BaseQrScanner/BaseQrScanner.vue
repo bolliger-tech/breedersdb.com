@@ -34,7 +34,7 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useInterval, useQuasar, useTimeout } from 'quasar';
-import BaseSpinner from './BaseSpinner.vue';
+import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import init, { read_qrcodes_from_image_data } from 'quircs-wasm';
 import wasmUrl from 'quircs-wasm/quircs_wasm_bg.wasm?url';
 

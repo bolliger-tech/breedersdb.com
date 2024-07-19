@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import BaseQrScanner from 'src/components/Base/BaseQrScanner.vue';
+import BaseQrScanner from 'src/components/Base/BaseQrScanner/BaseQrScanner.vue';
 
 const errorMessage = ref<string | undefined>(undefined);
 const enabled = ref<boolean>(true);

@@ -1,5 +1,5 @@
 <template>
-  <AnalyzeView :analyze-id="analyzeId" :base-table="BaseTable.Cultivars" />
+  <AnalyzeView :analyze-id="analyzeId" :base-table="BaseTable.Lots" />
 </template>
 
 <script setup lang="ts">

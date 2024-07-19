@@ -59,12 +59,12 @@ import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { AnalyzeFilterBaseTables } from 'src/graphql';
 
-export interface QueryHeaderNameDialogProps {
+export interface AnalyzeHeaderNameDialogProps {
   analyzeId: 'new' | number;
   baseTable: AnalyzeFilterBaseTables;
 }
 
-const props = defineProps<QueryHeaderNameDialogProps>();
+const props = defineProps<AnalyzeHeaderNameDialogProps>();
 const name = defineModel<string>('name', { required: true });
 const show = defineModel<boolean>('show', { required: true });
 const emit = defineEmits<{ save: [] }>();

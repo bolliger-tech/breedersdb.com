@@ -10,15 +10,15 @@
 
   <div
     v-if="fetching || !filter"
-    class="query-filter-root-node__filter-placeholder"
+    class="analyze-filter-root-node__filter-placeholder"
   >
     <q-spinner color="primary" />&nbsp;{{ t('base.loading') }}
   </div>
 
   <div v-else-if="isEmpty">
     <div
-      class="query-filter-root-node__filter-placeholder"
-      data-test="query-filter-root-node__filter-placeholder"
+      class="analyze-filter-root-node__filter-placeholder"
+      data-test="analyze-filter-root-node__filter-placeholder"
     >
       {{
         t('analyze.filter.noFilter', {
@@ -28,7 +28,7 @@
         })
       }}
     </div>
-    <QueryFilterRuleAddButton
+    <AnalyzeFilterRuleAddButton
       :node="filter"
       :conjunction="FilterConjunction.And"
     />
@@ -58,7 +58,7 @@
       {{ t('analyze.filter.valid') }}
     </div>
 
-    <QueryFilterNode
+    <AnalyzeFilterNode
       :node="filter"
       :conjunction="filter.getChildrensConjunction() || FilterConjunction.And"
       :columns="columns"
@@ -67,8 +67,8 @@
 </template>
 
 <script lang="ts" setup>
-import QueryFilterRuleAddButton from './AnalyzeFilterRuleAddButton.vue';
-import QueryFilterNode from './AnalyzeFilterNode.vue';
+import AnalyzeFilterRuleAddButton from './AnalyzeFilterRuleAddButton.vue';
+import AnalyzeFilterNode from './AnalyzeFilterNode.vue';
 import { computed, Ref, ref, watch } from 'vue';
 import { FilterNode, FilterConjunction, BaseTable } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
@@ -77,14 +77,14 @@ import { useEntityName } from 'src/composables/useEntityName';
 
 const { t } = useI18n();
 
-export interface QueryFilterRootNodeProps {
+export interface AnalyzeFilterRootNodeProps {
   baseTable: BaseTable;
   columns: FilterRuleColumn[];
   fetching: boolean;
   serializedFilter: string | undefined;
 }
 
-const props = defineProps<QueryFilterRootNodeProps>();
+const props = defineProps<AnalyzeFilterRootNodeProps>();
 
 const emit = defineEmits<{
   changed: [filter: FilterNode | undefined];
@@ -142,7 +142,7 @@ function simplify() {
 </script>
 
 <style scoped lang="scss">
-.query-filter-root-node__simplify {
+.analyze-filter-root-node__simplify {
   color: $negative;
   background: none;
   padding: 0;
@@ -151,13 +151,13 @@ function simplify() {
   cursor: pointer;
 }
 
-.query-filter-root-node__simplify:hover,
-.query-filter-root-node__simplify:focus {
+.analyze-filter-root-node__simplify:hover,
+.analyze-filter-root-node__simplify:focus {
   filter: brightness(125%);
   text-decoration: none;
 }
 
-.query-filter-root-node__filter-placeholder {
+.analyze-filter-root-node__filter-placeholder {
   background: var(--q-shade);
   width: 100%;
   min-height: 48px;

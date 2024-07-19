@@ -16,7 +16,7 @@
         @click="save"
       >
       </q-btn>
-      <QueryHeaderMoreMenu
+      <AnalyzeHeaderMoreMenu
         :analyze-id="analyzeId"
         :saving="saving"
         @rename="showNameDialog = true"
@@ -26,8 +26,8 @@
     </div>
   </div>
   <BaseGraphqlError v-if="saveError" :error="saveError" />
-  <QueryHeaderNote v-model="note" />
-  <QueryHeaderNameDialog
+  <AnalyzeHeaderNote v-model="note" />
+  <AnalyzeHeaderNameDialog
     v-model:show="showNameDialog"
     v-model:name="name"
     :analyze-id="analyzeId"
@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import QueryHeaderMoreMenu from './AnalyzeHeaderMoreMenu.vue';
+import AnalyzeHeaderMoreMenu from './AnalyzeHeaderMoreMenu.vue';
 import {
   BaseTable,
   FilterNode,
@@ -49,11 +49,11 @@ import { analyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFra
 import { ref, computed, nextTick } from 'vue';
 import { AnalyzeFilterBaseTables } from 'src/graphql';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import QueryHeaderNameDialog from './AnalyzeHeaderNameDialog.vue';
+import AnalyzeHeaderNameDialog from './AnalyzeHeaderNameDialog.vue';
 import { useRouter, useRoute } from 'vue-router';
-import QueryHeaderNote from './AnalyzeHeaderNote.vue';
+import AnalyzeHeaderNote from './AnalyzeHeaderNote.vue';
 
-export interface QueryHeaderProps {
+export interface AnalyzeHeaderProps {
   analyzeId: 'new' | number;
   name: string;
   note: string | null;
@@ -63,7 +63,7 @@ export interface QueryHeaderProps {
   visibleColumns: string[] | undefined;
 }
 
-const props = defineProps<QueryHeaderProps>();
+const props = defineProps<AnalyzeHeaderProps>();
 
 const name = ref(props.name);
 const note = ref(props.note);

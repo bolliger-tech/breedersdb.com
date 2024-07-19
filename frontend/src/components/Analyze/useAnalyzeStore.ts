@@ -3,9 +3,9 @@ import { FilterNode } from './Filter/filterNode';
 import { LocalStorage } from 'quasar';
 import { computed, ref } from 'vue';
 
-const LOCAL_STORAGE_EXPLAIN_KEY = 'breedersdb-query-explain';
+const LOCAL_STORAGE_EXPLAIN_KEY = 'breedersdb-analyze-explain';
 
-export const useAnalyzeStore = defineStore('query', () => {
+export const useAnalyzeStore = defineStore('analyze', () => {
   const filterDragNode = ref<FilterNode | undefined>(undefined);
 
   const _explain = ref<boolean>(

@@ -1,5 +1,5 @@
 <template>
-  <QueryResultTableCellAttribution
+  <AnalyzeResultTableCellAttribution
     v-if="attributions.length > 0"
     :color="color"
   >
@@ -21,13 +21,13 @@
           {{ aggregationName }}
         </template>
       </i18n-t>
-      <QueryResultTableCellAttributionValue
+      <AnalyzeResultTableCellAttributionValue
         v-for="attribution of attributions"
         :key="attribution.id"
         :attribution="attribution"
       />
     </template>
-  </QueryResultTableCellAttribution>
+  </AnalyzeResultTableCellAttribution>
 </template>
 
 <script lang="ts" setup>
@@ -36,19 +36,19 @@ import { QueryAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
-import QueryResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
-import QueryResultTableCellAttributionValue from './AnalyzeResultTableCellAttributionValue.vue';
+import AnalyzeResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
+import AnalyzeResultTableCellAttributionValue from './AnalyzeResultTableCellAttributionValue.vue';
 import { useQuasar } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
 import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 
-export interface QueryResultTableCellAttributionValueAggregatedProps {
+export interface AnalyzeResultTableCellAttributionValueAggregatedProps {
   attributions: QueryAttributionsViewFields[];
   aggregation: AttributionAggregation;
 }
 
 const props =
-  defineProps<QueryResultTableCellAttributionValueAggregatedProps>();
+  defineProps<AnalyzeResultTableCellAttributionValueAggregatedProps>();
 
 const { t } = useI18n();
 

@@ -1,7 +1,7 @@
 <template>
   <q-fab
     v-model="actionsVisible"
-    data-test="query-filter-node__action-btn"
+    data-test="analyze-filter-node__action-btn"
     :label="t('analyze.filter.operators.add')"
     :color="conjunction === FilterConjunction.And ? 'primary' : 'accent'"
     icon="add"
@@ -9,8 +9,8 @@
     unelevated
     padding="xs"
     :hide-label="!actionButtonHover && !actionsVisible"
-    class="query-filter-node__action-btn"
-    :class="{ 'query-filter-node__action-btn--root': node.isRoot() }"
+    class="analyze-filter-node__action-btn"
+    :class="{ 'analyze-filter-node__action-btn--root': node.isRoot() }"
     vertical-actions-align="left"
     @mouseenter="actionButtonHover = true"
     @mouseleave="actionButtonHover = false"
@@ -19,14 +19,14 @@
       :label="t('analyze.filter.operators.andFilter')"
       color="primary"
       padding="xs"
-      data-test="query-filter-node__action-btn-and"
+      data-test="analyze-filter-node__action-btn-and"
       @click="addLeafToCurrentNode(FilterConjunction.And)"
     />
     <q-fab-action
       :label="t('analyze.filter.operators.orFilter')"
       color="accent"
       padding="xs"
-      data-test="query-filter-node__action-btn-or"
+      data-test="analyze-filter-node__action-btn-or"
       @click="addLeafToCurrentNode(FilterConjunction.Or)"
     />
   </q-fab>
@@ -38,12 +38,12 @@ import { useI18n } from 'src/composables/useI18n';
 import { FilterNode, FilterConjunction } from './filterNode';
 import { addLeaf } from './filterNodeActions';
 
-export interface QueryFilterRuleAddButtonProps {
+export interface AnalyzeFilterRuleAddButtonProps {
   conjunction: FilterConjunction;
   node: FilterNode;
 }
 
-const props = defineProps<QueryFilterRuleAddButtonProps>();
+const props = defineProps<AnalyzeFilterRuleAddButtonProps>();
 
 const { t } = useI18n();
 
@@ -56,11 +56,11 @@ function addLeafToCurrentNode(conjunction: FilterConjunction) {
 </script>
 
 <style scoped>
-.query-filter-node__action-btn {
+.analyze-filter-node__action-btn {
   transform: translateX(18px);
 }
 
-.query-filter-node__action-btn--root {
+.analyze-filter-node__action-btn--root {
   transform: translateX(-15px);
 }
 </style>

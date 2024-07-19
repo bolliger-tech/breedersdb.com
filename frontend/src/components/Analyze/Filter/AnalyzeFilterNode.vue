@@ -1,20 +1,20 @@
 <template>
   <div
-    class="query-filter-node"
-    :class="{ 'query-filter-node--dragging': !!dragging }"
+    class="analyze-filter-node"
+    :class="{ 'analyze-filter-node--dragging': !!dragging }"
     :draggable="!!dragging"
     @dragstart="dragStart"
     @dragend="dragEnd"
   >
-    <QueryFilterRuleDropZone
+    <AnalyzeFilterRuleDropZone
       :active="dragActive && canBeTarget"
       :color="dropConjunction === FilterConjunction.And ? 'primary' : 'accent'"
       :dragging="!!dragObj"
-      class="query-filter-rule-tree__drop--before"
+      class="analyze-filter-rule-tree__drop--before"
       @drop.prevent="onDrop('before')"
     />
 
-    <QueryFilterRule
+    <AnalyzeFilterRule
       v-if="node.isLeaf()"
       :columns="columns"
       :node="node"
@@ -26,19 +26,19 @@
     <div v-else>
       <div class="row items-stretch">
         <div
-          class="query-filter-node__drag-bg row items-center"
+          class="analyze-filter-node__drag-bg row items-center"
           :class="{
-            'query-filter-node__drag-bg--and':
+            'analyze-filter-node__drag-bg--and':
               conjunction === FilterConjunction.And,
-            'query-filter-node__drag-bg--or':
+            'analyze-filter-node__drag-bg--or':
               conjunction === FilterConjunction.Or,
-            'query-filter-node__drag-bg--root': node.isRoot(),
+            'analyze-filter-node__drag-bg--root': node.isRoot(),
           }"
         >
           <q-icon
             name="drag_indicator"
             size="md"
-            class="query-filter-node__drag-handle"
+            class="analyze-filter-node__drag-handle"
             @mousedown="setDragObj(node)"
             @mouseup="setDragObj(undefined)"
           />
@@ -48,7 +48,7 @@
             v-for="(tree, idx) in node.getChildren()"
             :key="tree.getId()"
           >
-            <QueryFilterNode
+            <AnalyzeFilterNode
               :node="tree"
               :columns="columns"
               :conjunction="
@@ -59,11 +59,11 @@
             />
             <div
               v-if="idx + 1 < node.getChildCount()"
-              class="query-filter-node__conjunction"
+              class="analyze-filter-node__conjunction"
               :class="{
-                'query-filter-node__conjunction--and':
+                'analyze-filter-node__conjunction--and':
                   conjunction === FilterConjunction.And,
-                'query-filter-node__conjunction--or':
+                'analyze-filter-node__conjunction--or':
                   conjunction === FilterConjunction.Or,
               }"
             >
@@ -79,11 +79,11 @@
       <FilterRuleButtonAdd :conjunction="conjunction" :node="node" />
     </div>
 
-    <QueryFilterRuleDropZone
+    <AnalyzeFilterRuleDropZone
       :active="dragActive && canBeTarget"
       :color="dropConjunction === FilterConjunction.And ? 'primary' : 'accent'"
       :dragging="!!dragObj"
-      class="query-filter-rule-tree__drop--after"
+      class="analyze-filter-rule-tree__drop--after"
       @drop.prevent="onDrop('after')"
     />
   </div>
@@ -93,20 +93,20 @@
 import { computed, ref } from 'vue';
 import { moveNode } from './filterNodeActions';
 import { useI18n } from 'src/composables/useI18n';
-import QueryFilterRule from './AnalyzeFilterRule.vue';
+import AnalyzeFilterRule from './AnalyzeFilterRule.vue';
 import FilterRuleButtonAdd from './AnalyzeFilterRuleAddButton.vue';
 import { FilterNode, FilterConjunction } from './filterNode';
 import { useAnalyzeStore } from '../useAnalyzeStore';
-import QueryFilterRuleDropZone from './AnalyzeFilterRuleDropZone.vue';
+import AnalyzeFilterRuleDropZone from './AnalyzeFilterRuleDropZone.vue';
 import { FilterRuleColumn } from './filterRuleColumn';
 
-export interface QueryFilterNodeProps {
+export interface AnalyzeFilterNodeProps {
   node: FilterNode;
   columns: FilterRuleColumn[];
   conjunction: FilterConjunction;
 }
 
-const props = defineProps<QueryFilterNodeProps>();
+const props = defineProps<AnalyzeFilterNodeProps>();
 
 const { t } = useI18n();
 const store = useAnalyzeStore();
@@ -172,62 +172,62 @@ function onDrop(position: 'before' | 'after') {
 </script>
 
 <style scoped lang="scss">
-.query-filter-node {
+.analyze-filter-node {
   position: relative;
 }
 
-.query-filter-node--dragging {
+.analyze-filter-node--dragging {
   opacity: 0.4;
 }
 
-.query-filter-node__drag-bg {
+.analyze-filter-node__drag-bg {
   border-right-width: 3px;
   border-right-style: solid;
   background: var(--q-shade);
 }
 
-.query-filter-node__drag-bg--and {
+.analyze-filter-node__drag-bg--and {
   border-color: var(--q-primary);
 }
 
-.query-filter-node__drag-bg--or {
+.analyze-filter-node__drag-bg--or {
   border-color: var(--q-accent);
 }
 
-.query-filter-node__drag-bg--root {
+.analyze-filter-node__drag-bg--root {
   width: 0;
   overflow: hidden;
 }
 
-.query-filter-node__drag-handle {
+.analyze-filter-node__drag-handle {
   color: var(--q-text-muted);
   cursor: grab;
 }
 
-.query-filter-node__drag-handle:hover {
+.analyze-filter-node__drag-handle:hover {
   color: var(--q-primary);
 }
 
-.query-filter-node__conjunction {
+.analyze-filter-node__conjunction {
   text-transform: uppercase;
   font-size: 0.75rem;
   margin-left: 5px;
   font-weight: bold;
 }
 
-.query-filter-node__conjunction--and {
+.analyze-filter-node__conjunction--and {
   color: var(--q-primary);
 }
 
-.query-filter-node__conjunction--or {
+.analyze-filter-node__conjunction--or {
   color: var(--q-accent);
 }
 
-.query-filter-rule-tree__drop--before {
+.analyze-filter-rule-tree__drop--before {
   top: -18px;
 }
 
-.query-filter-rule-tree__drop--after {
+.analyze-filter-rule-tree__drop--after {
   bottom: -18px;
 }
 </style>

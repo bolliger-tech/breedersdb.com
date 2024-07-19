@@ -42,7 +42,7 @@ import { FilterRuleOperator } from './filterRuleOperator';
 import { computed } from 'vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 
-export interface QueryFilterRuleOperatorProps {
+export interface AnalyzeFilterRuleOperatorProps {
   disabled: boolean;
   modelValue?: FilterRuleOperator;
   columnType?: ColumnTypes;
@@ -54,7 +54,7 @@ defineEmits<{
   'update:modelValue': [value: FilterRuleOperator];
 }>();
 
-const props = defineProps<QueryFilterRuleOperatorProps>();
+const props = defineProps<AnalyzeFilterRuleOperatorProps>();
 
 const getOperators = createGetFilterRuleOperators();
 const applicableOptions = computed(() => {

@@ -151,11 +151,11 @@ import EntityName from 'src/components/Entity/EntityName.vue';
 import PlantCard from 'src/components/Plant/PlantCard.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 
-export interface QueryResultTableCellAttributionOverlayDetailsProps {
+export interface AnalyzeResultTableCellAttributionOverlayDetailsProps {
   data: AttributionDetails;
 }
 
-defineProps<QueryResultTableCellAttributionOverlayDetailsProps>();
+defineProps<AnalyzeResultTableCellAttributionOverlayDetailsProps>();
 
 const { t } = useI18n();
 </script>

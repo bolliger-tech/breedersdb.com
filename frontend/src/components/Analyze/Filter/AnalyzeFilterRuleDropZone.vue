@@ -1,11 +1,11 @@
 <template>
   <div
-    class="query-filter-rule-tree__drop"
+    class="analyze-filter-rule-tree__drop"
     :class="{
-      'query-filter-rule-tree__drop--hover': markHover,
-      'query-filter-rule-tree__drop--active': active,
-      'query-filter-rule-tree__drop--primary': color === 'primary',
-      'query-filter-rule-tree__drop--accent': color === 'accent',
+      'analyze-filter-rule-tree__drop--hover': markHover,
+      'analyze-filter-rule-tree__drop--active': active,
+      'analyze-filter-rule-tree__drop--primary': color === 'primary',
+      'analyze-filter-rule-tree__drop--accent': color === 'accent',
     }"
     @dragleave="mouseInDropZone = false"
     @dragenter="mouseInDropZone = true"
@@ -16,13 +16,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 
-export interface QueryFilterRuleDropZoneProps {
+export interface AnalyzeFilterRuleDropZoneProps {
   active: boolean;
   color: 'primary' | 'accent';
   dragging: boolean;
 }
 
-const props = defineProps<QueryFilterRuleDropZoneProps>();
+const props = defineProps<AnalyzeFilterRuleDropZoneProps>();
 
 const mouseInDropZone = ref(false);
 
@@ -49,7 +49,7 @@ watch(
 </script>
 
 <style scoped>
-.query-filter-rule-tree__drop {
+.analyze-filter-rule-tree__drop {
   height: 18px;
   width: calc(100% + 3px);
   opacity: 0.25;
@@ -60,20 +60,20 @@ watch(
   transform: translateX(-3px);
 }
 
-.query-filter-rule-tree__drop--active {
+.analyze-filter-rule-tree__drop--active {
   display: block;
   z-index: 10;
 }
 
-.query-filter-rule-tree__drop--primary {
+.analyze-filter-rule-tree__drop--primary {
   background-color: var(--q-primary);
 }
 
-.query-filter-rule-tree__drop--accent {
+.analyze-filter-rule-tree__drop--accent {
   background-color: var(--q-accent);
 }
 
-.query-filter-rule-tree__drop--hover {
+.analyze-filter-rule-tree__drop--hover {
   opacity: 1;
 }
 </style>

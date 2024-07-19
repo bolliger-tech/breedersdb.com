@@ -1,18 +1,18 @@
 <template>
   <div
-    class="query-filter-rule"
-    :class="{ 'query-filter-rule__tree--invalid': isInvalid }"
-    data-test="query-filter-rule"
+    class="analyze-filter-rule"
+    :class="{ 'analyze-filter-rule__tree--invalid': isInvalid }"
+    data-test="analyze-filter-rule"
   >
     <div
       :class="{
-        'query-filter-rule__tree--and': conjunction === FilterConjunction.And,
-        'query-filter-rule__tree--or': conjunction === FilterConjunction.Or,
+        'analyze-filter-rule__tree--and': conjunction === FilterConjunction.And,
+        'analyze-filter-rule__tree--or': conjunction === FilterConjunction.Or,
       }"
       class="row items-center"
     >
       <q-icon
-        class="query-filter-rule__drag-handle"
+        class="analyze-filter-rule__drag-handle"
         name="drag_indicator"
         size="md"
         @mousedown="$emit('dragMouseDown')"
@@ -20,14 +20,14 @@
       />
       <div class="col row q-col-gutter-sm">
         <div class="col-12 col-md-4">
-          <QueryFilterRuleColumn
+          <AnalyzeFilterRuleColumn
             :model-value="column"
             :options="columns"
             @update:model-value="updateColumn"
           />
         </div>
         <div class="col-12 col-md-4">
-          <QueryFilterRuleOperator
+          <AnalyzeFilterRuleOperator
             :disabled="!column"
             :model-value="operator"
             :column-type="filterRule?.type"
@@ -35,7 +35,7 @@
           />
         </div>
         <div class="col-12 col-md-4">
-          <QueryFilterRuleTerm
+          <AnalyzeFilterRuleTerm
             :disabled="operator === undefined"
             :hide="!requiresTerm"
             :model-value="term"
@@ -44,7 +44,7 @@
           />
         </div>
         <div v-if="isAttribute" class="text-body2 col-12">
-          <QueryFilterRuleNoAttributionsPredicate
+          <AnalyzeFilterRuleNoAttributionsPredicate
             :attributeName="column?.tableColumnLabel"
             :base-table="node.getBaseTable()"
             :model-value="includeEntitiesWithoutAttributions"
@@ -52,7 +52,7 @@
           />
         </div>
         <div v-if="explain" class="col-12">
-          <QueryFilterRuleExplainer
+          <AnalyzeFilterRuleExplainer
             :rule="filterRule || undefined"
             :base-table="node.getBaseTable()"
           />
@@ -65,7 +65,7 @@
         size="sm"
       />
       <q-btn
-        class="query-filter-rule__delete-button"
+        class="analyze-filter-rule__delete-button"
         dense
         flat
         icon="delete_outline"
@@ -79,18 +79,18 @@
 <script lang="ts" setup>
 import { computed, watch } from 'vue';
 import { FilterNode, FilterConjunction } from './filterNode';
-import QueryFilterRuleTerm from './AnalyzeFilterRuleTerm.vue';
-import QueryFilterRuleColumn from './AnalyzeFilterRuleColumn.vue';
-import QueryFilterRuleOperator from './AnalyzeFilterRuleOperator.vue';
-import QueryFilterRuleExplainer from './AnalyzeFilterRuleExplainer.vue';
-import QueryFilterRuleNoAttributionsPredicate from './AnalyzeFilterRuleNoAttributionsPredicate.vue';
+import AnalyzeFilterRuleTerm from './AnalyzeFilterRuleTerm.vue';
+import AnalyzeFilterRuleColumn from './AnalyzeFilterRuleColumn.vue';
+import AnalyzeFilterRuleOperator from './AnalyzeFilterRuleOperator.vue';
+import AnalyzeFilterRuleExplainer from './AnalyzeFilterRuleExplainer.vue';
+import AnalyzeFilterRuleNoAttributionsPredicate from './AnalyzeFilterRuleNoAttributionsPredicate.vue';
 import { FilterRuleColumn } from './filterRuleColumn';
 import { FilterRuleOperator } from './filterRuleOperator';
 import { FilterRuleTerm } from './filterRuleTerm';
 import { createGetFilterRuleOperators } from './createFilterRuleOperators';
 import { useAnalyzeStore } from '../useAnalyzeStore';
 
-export interface QueryFilterRuleProps {
+export interface AnalyzeFilterRuleProps {
   columns: FilterRuleColumn[];
   node: FilterNode;
   conjunction: FilterConjunction;
@@ -101,7 +101,7 @@ defineEmits<{
   dragMouseUp: [];
 }>();
 
-const props = defineProps<QueryFilterRuleProps>();
+const props = defineProps<AnalyzeFilterRuleProps>();
 
 const store = useAnalyzeStore();
 const explain = computed(() => store.explain);
@@ -203,34 +203,34 @@ watch(
 </script>
 
 <style scoped lang="scss">
-.query-filter-rule {
+.analyze-filter-rule {
   padding: 4px 3px 4px 1px;
   background: var(--q-shade);
 }
 
-.query-filter-rule__tree--and {
+.analyze-filter-rule__tree--and {
   border-left-color: var(--q-primary);
 }
 
-.query-filter-rule__tree--or {
+.analyze-filter-rule__tree--or {
   border-left-color: var(--q-accent);
 }
 
-.query-filter-rule__drag-handle {
+.analyze-filter-rule__drag-handle {
   color: var(--q-text-muted);
   cursor: grab;
 }
 
-.query-filter-rule__drag-handle:hover {
+.analyze-filter-rule__drag-handle:hover {
   color: var(--q-primary);
 }
 
-.query-filter-rule__delete-button {
+.analyze-filter-rule__delete-button {
   color: var(--q-text-muted);
 }
 
-.query-filter-rule__delete-button:hover,
-.query-filter-rule__delete-button:focus {
+.analyze-filter-rule__delete-button:hover,
+.analyze-filter-rule__delete-button:focus {
   color: var(--q-negative);
 }
 </style>

@@ -9,14 +9,14 @@ import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
 import { toPascalCase, toSnakeCase } from 'src/utils/stringUtils';
 import type { AttributeDataTypes } from 'src/graphql';
 
-export type QueryResult = {
+export type AnalyzeResult = {
   [K in BaseTable]: (
     | { [key: string]: null | number | string }
     | { [key: `attributes__${number}`]: QueryAttributionsViewFields[] }
   )[];
 } & { [K in `${BaseTable}_aggregate`]: { aggregate: { count: number } } };
 
-export type QueryResultPagination = {
+export type AnalyzeResultPagination = {
   sortBy?: string | null | undefined;
   descending?: boolean | undefined;
   page?: number | undefined;
@@ -36,7 +36,7 @@ export function filterToQuery({
   baseFilter: FilterNode;
   attributionFilter: FilterNode;
   columns: string[];
-  pagination: QueryResultPagination;
+  pagination: AnalyzeResultPagination;
 }) {
   const where = filterToWhere(baseFilter);
   const whereString =
@@ -100,7 +100,7 @@ function toPaginationString({
   columns,
 }: {
   baseTable: BaseTable;
-  pagination: QueryResultPagination;
+  pagination: AnalyzeResultPagination;
   columns: string[];
 }) {
   if (baseTable === BaseTable.Attributions) {

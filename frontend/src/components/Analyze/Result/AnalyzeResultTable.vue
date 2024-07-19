@@ -12,7 +12,7 @@
       <q-item v-bind="itemProps">
         <q-item-section>
           <q-item-label class="row align-center no-wrap">
-            <QueryResultTableColumnLabel
+            <AnalyzeResultTableColumnLabel
               :label="opt.label"
               orientation="horizontal"
             />
@@ -22,29 +22,32 @@
     </template>
 
     <template #header-cell-label="{ col }">
-      <QueryResultTableColumnLabel :label="col.label" orientation="vertical" />
+      <AnalyzeResultTableColumnLabel
+        :label="col.label"
+        orientation="vertical"
+      />
     </template>
 
     <template #body-cell="cellProps">
-      <QueryResultTableCell :cell-props="cellProps" />
+      <AnalyzeResultTableCell :cell-props="cellProps" />
     </template>
   </EntityListTable>
 </template>
 
 <script lang="ts" setup>
 import { QTableColumn, QTableProps } from 'quasar';
-import QueryResultTableCell from './AnalyzeResultTableCell.vue';
+import AnalyzeResultTableCell from './AnalyzeResultTableCell.vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
 import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
-import QueryResultTableColumnLabel from 'components/Analyze/Result/AnalyzeResultTableColumnLabel.vue';
+import AnalyzeResultTableColumnLabel from 'components/Analyze/Result/AnalyzeResultTableColumnLabel.vue';
 
-export interface QueryResultTableProps
-  extends QueryResultTablePropsWithoutModel {
+export interface AnalyzeResultTableProps
+  extends AnalyzeResultTablePropsWithoutModel {
   visibleColumns: string[];
   pagination: NonNullable<QTableProps['pagination']>;
 }
 
-interface QueryResultTablePropsWithoutModel {
+interface AnalyzeResultTablePropsWithoutModel {
   rows: (
     | { [key: string]: null | number | string }
     | { [key: `attributes.${number}`]: QueryAttributionsViewFields[] }
@@ -54,11 +57,11 @@ interface QueryResultTablePropsWithoutModel {
   dataIsFresh: boolean;
 }
 
-export type QueryResultTableRequestDataParams = Parameters<
+export type AnalyzeResultTableRequestDataParams = Parameters<
   NonNullable<QTableProps['onRequest']>
 >[0];
 
-withDefaults(defineProps<QueryResultTablePropsWithoutModel>(), {
+withDefaults(defineProps<AnalyzeResultTablePropsWithoutModel>(), {
   loading: false,
 });
 const visibleColumns = defineModel<string[]>('visibleColumns', {

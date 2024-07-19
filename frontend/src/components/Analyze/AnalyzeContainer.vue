@@ -1,7 +1,7 @@
 <template>
   <BaseGraphqlError v-if="error" :error="error" />
   <template v-else>
-    <QueryHeader
+    <AnalyzeHeader
       :analyze-id="initialData.id"
       :name="initialData.name"
       :note="initialData.note"
@@ -10,7 +10,7 @@
       :base-table="baseTable"
       :visible-columns="visibleColumns"
     />
-    <QueryFilter
+    <AnalyzeFilter
       :base-table="baseTable"
       :initial-base-filter="initialData.baseFilter"
       :base-filter-columns="baseTableColumnsWithAttributes"
@@ -23,7 +23,7 @@
       @base-filter-changed="updateBaseFilter"
       @attribution-filter-changed="updateAttributionFilter"
     />
-    <QueryResult
+    <AnalyzeResult
       :base-table="baseTable"
       :base-filter="baseFilter"
       :attribution-filter="attributionFilter"
@@ -41,9 +41,9 @@
 
 <script setup lang="ts">
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import QueryHeader from 'components/Analyze/Header/AnalyzeHeader.vue';
-import QueryFilter from 'src/components/Analyze/Filter/QueryFilter.vue';
-import QueryResult from 'components/Analyze/Result/AnalyzeResult.vue';
+import AnalyzeHeader from 'components/Analyze/Header/AnalyzeHeader.vue';
+import AnalyzeFilter from 'src/components/Analyze/Filter/AnalyzeFilter.vue';
+import AnalyzeResult from 'components/Analyze/Result/AnalyzeResult.vue';
 import { BaseTable, FilterNode } from './Filter/filterNode';
 import { useAttributesAsColumns } from './ColumnDefinitions/useAttributesAsColumns';
 import { computed, onMounted, Ref, ref } from 'vue';

@@ -18,13 +18,13 @@ import { computed } from 'vue';
 import { useEntityName } from 'src/composables/useEntityName';
 import { BaseTable } from './filterNode';
 
-export interface QueryFilterRuleNoAttributionsPredicateProps {
+export interface AnalyzeFilterRuleNoAttributionsPredicateProps {
   attributeName?: string;
   modelValue?: boolean;
   baseTable: BaseTable;
 }
 
-const props = defineProps<QueryFilterRuleNoAttributionsPredicateProps>();
+const props = defineProps<AnalyzeFilterRuleNoAttributionsPredicateProps>();
 
 defineEmits<{
   'update:modelValue': [value: boolean];

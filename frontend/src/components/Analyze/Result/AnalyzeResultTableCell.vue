@@ -1,13 +1,13 @@
 <template>
   <q-td :props="cellProps">
-    <QueryResultTableCellAttributionValueAggregated
+    <AnalyzeResultTableCellAttributionValueAggregated
       v-if="aggregation"
       :attributions="attributions ?? []"
       :aggregation="aggregation"
     />
 
     <template v-else-if="attributions">
-      <QueryResultTableCellAttributionValue
+      <AnalyzeResultTableCellAttributionValue
         v-for="attribution of attributions"
         :key="attribution.id"
         :attribution="attribution"
@@ -23,14 +23,14 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { QTableSlots } from 'quasar';
-import QueryResultTableCellAttributionValue from './AnalyzeResultTableCellAttributionValue.vue';
-import QueryResultTableCellAttributionValueAggregated from './AnalyzeResultTableCellAttributionValueAggregated.vue';
+import AnalyzeResultTableCellAttributionValue from './AnalyzeResultTableCellAttributionValue.vue';
+import AnalyzeResultTableCellAttributionValueAggregated from './AnalyzeResultTableCellAttributionValueAggregated.vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
 import { AttributionAggregation } from './attributionAggregationTypes';
 
 type BodyCellParameters = Parameters<QTableSlots['body-cell']>[0];
 
-export interface QueryResultTableCellProps {
+export interface AnalyzeResultTableCellProps {
   cellProps: Omit<BodyCellParameters, 'key' | 'value'> &
     (
       | {
@@ -44,7 +44,7 @@ export interface QueryResultTableCellProps {
     );
 }
 
-const props = defineProps<QueryResultTableCellProps>();
+const props = defineProps<AnalyzeResultTableCellProps>();
 
 const cellValue = computed(() => {
   const value = props.cellProps.value;

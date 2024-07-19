@@ -17,12 +17,12 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 
-export interface QueryResultColumnLabelProps {
+export interface AnalyzeResultColumnLabelProps {
   label: string;
   orientation: 'horizontal' | 'vertical';
 }
 
-const props = defineProps<QueryResultColumnLabelProps>();
+const props = defineProps<AnalyzeResultColumnLabelProps>();
 
 const parts = computed(() => {
   const [table, column, aggregation] = props.label.split(' > ');

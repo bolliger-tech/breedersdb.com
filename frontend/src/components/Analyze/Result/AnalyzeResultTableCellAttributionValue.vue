@@ -1,12 +1,12 @@
 <template>
-  <QueryResultTableCellAttribution :color="color">
+  <AnalyzeResultTableCellAttribution :color="color">
     <template #label>
       {{ label }}
     </template>
     <template #overlay>
-      <QueryResultTableCellAttributionOverlay :id="attribution.id" />
+      <AnalyzeResultTableCellAttributionOverlay :id="attribution.id" />
     </template>
-  </QueryResultTableCellAttribution>
+  </AnalyzeResultTableCellAttribution>
 </template>
 
 <script lang="ts" setup>
@@ -18,16 +18,16 @@ import {
   getAttributeValue,
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
-import QueryResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
-import QueryResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
+import AnalyzeResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
+import AnalyzeResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
 import { useQuasar } from 'quasar';
 import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 
-export interface QueryResultTableCellAttributionValueProps {
+export interface AnalyzeResultTableCellAttributionValueProps {
   attribution: QueryAttributionsViewFields;
 }
 
-const props = defineProps<QueryResultTableCellAttributionValueProps>();
+const props = defineProps<AnalyzeResultTableCellAttributionValueProps>();
 
 const { t } = useI18n();
 

@@ -1,7 +1,7 @@
 <template>
   <BaseSpinner v-if="fetching" size="xl" />
   <BaseGraphqlError v-else-if="error" :error="error" />
-  <QueryResultTableCellAttributionOverlayDetails
+  <AnalyzeResultTableCellAttributionOverlayDetails
     v-else-if="attribution"
     :data="attribution"
   />
@@ -14,7 +14,7 @@ import { ResultOf, graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import QueryResultTableCellAttributionOverlayDetails from './AnalyzeResultTableCellAttributionOverlayDetails.vue';
+import AnalyzeResultTableCellAttributionOverlayDetails from './AnalyzeResultTableCellAttributionOverlayDetails.vue';
 import {
   plantFragment,
   type PlantFragment,
@@ -25,23 +25,23 @@ import {
 } from 'src/components/Entity/entityAttributionsViewFragment';
 import { computed } from 'vue';
 
-export interface QueryResultTableCellAttributionOverlayProps {
+export interface AnalyzeResultTableCellAttributionOverlayProps {
   id: number;
 }
 
-type QueryResult = ResultOf<typeof query>['attributions_view'][0];
+type AnalyzeResult = ResultOf<typeof query>['attributions_view'][0];
 export type AttributionDetails = EntityAttributionsViewFragment & {
   plant: PlantFragment;
-  plant_group: QueryResult['plant_group'];
-  cultivar: QueryResult['cultivar'];
-  lot: QueryResult['lot'];
+  plant_group: AnalyzeResult['plant_group'];
+  cultivar: AnalyzeResult['cultivar'];
+  lot: AnalyzeResult['lot'];
 };
 
-const props = defineProps<QueryResultTableCellAttributionOverlayProps>();
+const props = defineProps<AnalyzeResultTableCellAttributionOverlayProps>();
 
 const query = graphql(
   `
-    query QueryResultTableCellAttributionDetails(
+    query AnalyzeResultTableCellAttributionDetails(
       $id: Int!
       $withAttributions: Boolean! = false
       $withSegments: Boolean! = true

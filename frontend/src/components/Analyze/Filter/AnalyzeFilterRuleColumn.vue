@@ -49,7 +49,7 @@ import {
 import { useInputBackground } from 'src/composables/useInputBackground';
 import { FilterRuleColumn } from './filterRuleColumn';
 
-export interface QueryFilterRuleColumnProps {
+export interface AnalyzeFilterRuleColumnProps {
   modelValue?: FilterRuleColumn;
   options: FilterRuleColumn[];
 }
@@ -60,7 +60,7 @@ defineEmits<{
   'update:modelValue': [value: FilterRuleColumn];
 }>();
 
-const props = defineProps<QueryFilterRuleColumnProps>();
+const props = defineProps<AnalyzeFilterRuleColumnProps>();
 
 const filteredOptions = ref(props.options);
 

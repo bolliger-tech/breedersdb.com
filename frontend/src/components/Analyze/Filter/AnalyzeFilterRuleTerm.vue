@@ -79,7 +79,7 @@ import { FilterRuleTerm } from './filterRuleTerm';
 import { QSelect } from 'quasar';
 import { FilterOperatorValue } from './filterRuleOperator';
 
-export interface QueryFilterRuleTermProps {
+export interface AnalyzeFilterRuleTermProps {
   disabled: boolean;
   hide: boolean;
   modelValue?: FilterRuleTerm;
@@ -92,7 +92,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: FilterRuleTerm];
 }>();
 
-const props = defineProps<QueryFilterRuleTermProps>();
+const props = defineProps<AnalyzeFilterRuleTermProps>();
 
 const enumUpdated = ref(false);
 const inputUpdated = ref(false);

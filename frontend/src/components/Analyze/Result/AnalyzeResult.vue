@@ -4,7 +4,7 @@
   <BaseGraphqlError v-if="error" :error="error" />
 
   <template v-else>
-    <QueryResultTable
+    <AnalyzeResultTable
       v-model:visible-columns="visibleColumns"
       v-model:pagination="pagination"
       :loading="fetching || fetchingColumns || debouncedFetching"
@@ -31,11 +31,11 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
-import QueryResultTable, {
-  QueryResultTableProps,
+import AnalyzeResultTable, {
+  AnalyzeResultTableProps,
 } from 'components/Analyze/Result/AnalyzeResultTable.vue';
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
-import { QueryResult, filterToQuery } from './filterToQuery';
+import { AnalyzeResult, filterToQuery } from './filterToQuery';
 import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { QTableColumn } from 'quasar';
@@ -44,7 +44,7 @@ import { debounce } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
 import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
 
-export interface QueryResultProps {
+export interface AnalyzeResultProps {
   baseTable: BaseTable;
   availableColumns: QTableColumn[];
   fetchingColumns: boolean;
@@ -53,7 +53,7 @@ export interface QueryResultProps {
   initialVisibleColumns: string[] | undefined;
 }
 
-const props = defineProps<QueryResultProps>();
+const props = defineProps<AnalyzeResultProps>();
 
 const emit = defineEmits<{
   'visible-columns-changed': [columns: string[] | undefined];
@@ -114,7 +114,7 @@ watch(
   { immediate: true },
 );
 
-const pagination = ref<QueryResultTableProps['pagination']>({
+const pagination = ref<AnalyzeResultTableProps['pagination']>({
   sortBy: null,
   descending: false,
   page: 1,
@@ -181,7 +181,7 @@ const {
   data,
   fetching,
   error: queryError,
-} = await useQuery<QueryResult>({
+} = await useQuery<AnalyzeResult>({
   query,
   variables,
 });
@@ -201,7 +201,7 @@ const rows = computed(() => {
       key.replaceAll('__', '.'),
       value,
     ]);
-    return Object.fromEntries(renamed) as QueryResultTableProps['rows'][0];
+    return Object.fromEntries(renamed) as AnalyzeResultTableProps['rows'][0];
   });
 });
 

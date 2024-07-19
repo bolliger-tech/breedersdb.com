@@ -25,11 +25,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-export interface QueryResultTableCellAttributionProps {
+export interface AnalyzeResultTableCellAttributionProps {
   color?: string;
 }
 
-defineProps<QueryResultTableCellAttributionProps>();
+defineProps<AnalyzeResultTableCellAttributionProps>();
 
 const showOverlay = ref(false);
 const autocloseOverlay = ref(true);

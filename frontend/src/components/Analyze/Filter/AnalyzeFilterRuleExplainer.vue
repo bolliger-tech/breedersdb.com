@@ -22,12 +22,12 @@ import { useEntityName } from 'src/composables/useEntityName';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import { BaseTable } from './filterNode';
 
-interface QueryFilterRuleExplainerProps {
+interface AnalyzeFilterRuleExplainerProps {
   rule?: FilterRule;
   baseTable: BaseTable;
 }
 
-const props = defineProps<QueryFilterRuleExplainerProps>();
+const props = defineProps<AnalyzeFilterRuleExplainerProps>();
 
 const { t } = useI18n();
 

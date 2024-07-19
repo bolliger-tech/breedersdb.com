@@ -2,7 +2,7 @@
   <p class="text-weight-bold q-mb-none q-mt-lg">
     {{ t('analyze.filter.baseFilter', { entityName }) }}
   </p>
-  <QueryFilterRootNode
+  <AnalyzeFilterRootNode
     :serialized-filter="initialBaseFilter"
     :base-table="props.baseTable"
     :columns="baseFilterColumns"
@@ -14,7 +14,7 @@
     <p class="text-weight-bold q-mb-sm q-mt-lg">
       {{ t('analyze.filter.attributionFilter') }}
     </p>
-    <QueryFilterRootNode
+    <AnalyzeFilterRootNode
       :serialized-filter="initialAttributionFilter"
       :base-table="BaseTable.Attributions"
       :columns="attributionFilterColumns || []"
@@ -26,13 +26,13 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import QueryFilterRootNode from './AnalyzeFilterRootNode.vue';
+import AnalyzeFilterRootNode from './AnalyzeFilterRootNode.vue';
 import { computed } from 'vue';
 import { useEntityName } from 'src/composables/useEntityName';
 import { BaseTable, FilterNode } from './filterNode';
 import { FilterRuleColumn } from './filterRuleColumn';
 
-export interface QueryFilterProps {
+export interface AnalyzeFilterProps {
   baseTable: BaseTable;
   initialBaseFilter: string | undefined;
   baseFilterColumns: FilterRuleColumn[];
@@ -42,7 +42,7 @@ export interface QueryFilterProps {
   attributionFilterColumnsFetching?: boolean;
 }
 
-const props = defineProps<QueryFilterProps>();
+const props = defineProps<AnalyzeFilterProps>();
 
 defineEmits<{
   baseFilterChanged: [filter: FilterNode | undefined];

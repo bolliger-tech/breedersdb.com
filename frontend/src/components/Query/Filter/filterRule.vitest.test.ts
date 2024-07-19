@@ -509,6 +509,28 @@ describe('FilterRule', () => {
     expect(filterRule.requiresTerm).toBe(true);
   });
 
+  it('should return true for requiresTerm: Rating', () => {
+    const column = new FilterRuleColumn({
+      tableName: 'tableName',
+      tableColumnName: 'tableColumnName',
+      tableLabel: 'tableLabel',
+      tableColumnLabel: 'tableColumnLabel',
+      schema: {
+        allowEmpty: true,
+        type: ColumnTypes.Rating,
+        validation: {
+          min: 0,
+          max: 9,
+          step: 1,
+        },
+      },
+    });
+
+    const filterRule = new FilterRule({ column });
+
+    expect(filterRule.requiresTerm).toBe(true);
+  });
+
   it('should return true for requiresTerm: Float', () => {
     const column = new FilterRuleColumn({
       tableName: 'tableName',

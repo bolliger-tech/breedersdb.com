@@ -227,6 +227,98 @@ describe('FilterTerm', () => {
     });
   });
 
+  describe('Rating', () => {
+    it('should not be a float', () => {
+      const value = '1.1';
+      const schema = {
+        type: ColumnTypes.Rating as const,
+        allowEmpty: false,
+        validation: {
+          min: 1,
+          max: 3,
+          step: 1 as const,
+        },
+      };
+
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
+
+      expect(filterTerm.isValid).toBe(false);
+    });
+
+    it('should not be too small', () => {
+      const value = '0';
+      const schema = {
+        type: ColumnTypes.Rating as const,
+        allowEmpty: false,
+        validation: {
+          min: 1,
+          max: 3,
+          step: 1 as const,
+        },
+      };
+
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
+
+      expect(filterTerm.isValid).toBe(false);
+    });
+
+    it('should not be too big', () => {
+      const value = '4';
+      const schema = {
+        type: ColumnTypes.Rating as const,
+        allowEmpty: false,
+        validation: {
+          min: 1,
+          max: 3,
+          step: 1 as const,
+        },
+      };
+
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
+
+      expect(filterTerm.isValid).toBe(false);
+    });
+
+    it('is a valid number', () => {
+      const value = 'NaN';
+      const schema = {
+        type: ColumnTypes.Rating as const,
+        allowEmpty: false,
+        validation: {
+          min: 1,
+          max: 3,
+          step: 1 as const,
+        },
+      };
+
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
+
+      expect(filterTerm.isValid).toBe(false);
+    });
+
+    it('should fit', () => {
+      const value = '3';
+      const schema = {
+        type: ColumnTypes.Rating as const,
+        allowEmpty: false,
+        validation: {
+          min: 1,
+          max: 3,
+          step: 1 as const,
+        },
+      };
+
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
+
+      expect(filterTerm.isValid).toBe(true);
+    });
+  });
+
   describe('Float', () => {
     it('should not be too small', () => {
       const value = '0.9';

@@ -73,6 +73,7 @@ export class FilterRuleOperator {
         return [
           ColumnTypes.String,
           ColumnTypes.Integer,
+          ColumnTypes.Rating,
           ColumnTypes.Float,
           ColumnTypes.Enum,
           ColumnTypes.Date,
@@ -85,6 +86,7 @@ export class FilterRuleOperator {
       case FilterOperatorValue.GreaterOrEqual:
         return [
           ColumnTypes.Integer,
+          ColumnTypes.Rating,
           ColumnTypes.Float,
           ColumnTypes.Date,
           ColumnTypes.DateTime,
@@ -101,6 +103,7 @@ export class FilterRuleOperator {
         return [
           ColumnTypes.String,
           ColumnTypes.Integer,
+          ColumnTypes.Rating,
           ColumnTypes.Float,
           ColumnTypes.Enum,
           ColumnTypes.Date,
@@ -111,6 +114,7 @@ export class FilterRuleOperator {
         return [
           ColumnTypes.String,
           ColumnTypes.Integer,
+          ColumnTypes.Rating,
           ColumnTypes.Float,
           ColumnTypes.Enum,
           ColumnTypes.Date,

@@ -171,6 +171,7 @@ const filteredOptions = ref(options.value);
 const inputType = computed(() => {
   switch (type.value) {
     case ColumnTypes.Integer:
+    case ColumnTypes.Rating:
     case ColumnTypes.Float:
       return 'number';
     case ColumnTypes.Boolean:

@@ -13,7 +13,9 @@ export const useQueryStore = defineStore('query', () => {
 
   const filterDragNode = ref<FilterNode | undefined>(undefined);
 
-  const _explainKey = computed(() => `query_explain--${baseTable.value}`);
+  const _explainKey = computed(
+    () => `breedersdb-query-explain--${baseTable.value}`,
+  );
   const _explain = ref<boolean>(
     LocalStorage.getItem(_explainKey.value) ?? true,
   );

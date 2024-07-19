@@ -10,6 +10,7 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 export type FilterRuleSchema =
   | StringSchema
   | IntegerSchema
+  | RatingSchema
   | FloatSchema
   | BooleanSchema
   | EnumSchema
@@ -140,6 +141,7 @@ export class FilterRule {
       case ColumnTypes.Date:
       case ColumnTypes.DateTime:
       case ColumnTypes.Integer:
+      case ColumnTypes.Rating:
       case ColumnTypes.Float:
       case ColumnTypes.Enum:
       case ColumnTypes.String:
@@ -224,6 +226,16 @@ interface IntegerSchema {
     min: number;
     max: number;
     step: number;
+  };
+}
+
+interface RatingSchema {
+  allowEmpty: boolean;
+  type: ColumnTypes.Rating;
+  validation: {
+    min: number;
+    max: number;
+    step: 1;
   };
 }
 

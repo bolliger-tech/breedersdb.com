@@ -385,6 +385,8 @@ function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnTypes }) {
       return term?.value || '';
     case ColumnTypes.Integer:
       return term ? parseInt(term.value) : NaN;
+    case ColumnTypes.Rating:
+      return term ? parseInt(term.value) : NaN;
     case ColumnTypes.Float:
       return term ? parseFloat(term.value) : NaN;
     case ColumnTypes.Boolean:
@@ -412,6 +414,7 @@ function columnTypeToGraphQLType(type: ColumnTypes) {
     case ColumnTypes.String:
       return 'String';
     case ColumnTypes.Integer:
+    case ColumnTypes.Rating:
       return 'Int';
     case ColumnTypes.Float:
       return 'float8';

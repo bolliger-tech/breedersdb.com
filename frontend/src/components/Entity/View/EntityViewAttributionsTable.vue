@@ -20,6 +20,7 @@
       <q-td key="value" :props="cellProps">
         <template v-if="cellProps.row.data_type === 'PHOTO'">
           <EntityViewAttributionImage
+            :file-name="cellProps.row.text_value"
             :attribution="cellProps.row"
             :plant="plant"
             :plant-group="plantGroup"
@@ -34,6 +35,21 @@
         </template>
       </q-td>
     </template>
+
+    <template #body-cell-photo_note="cellProps">
+      <q-td key="photo_note" :props="cellProps">
+        <EntityViewAttributionImage
+          v-if="cellProps.row.photo_note"
+          :file-name="cellProps.row.photo_note"
+          :attribution="cellProps.row"
+          :plant="plant"
+          :plant-group="plantGroup"
+          :cultivar="cultivar"
+          :lot="lot"
+          :crossing="crossing"
+        />
+      </q-td>
+    </template>
   </q-table>
 </template>
 
@@ -45,11 +61,13 @@ import { AttributeDataTypes, AttributeTypes } from 'src/graphql';
 import {
   formatResultColumnValue,
   dataTypeToColumnTypes,
+  getAttributeValue,
 } from 'src/utils/attributeUtils';
 import { localizeDate } from 'src/utils/dateUtils';
 import { watch } from 'vue';
 import { ref } from 'vue';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
+import { ColumnTypes } from 'src/utils/columnTypes';
 
 export interface EntityViewAttributionsTableProps {
   rows: EntityAttributionsViewFragment[];
@@ -82,12 +100,19 @@ const columns = [
     style: 'max-width: clamp(100px, 30vw, 300px);',
   },
   {
-    name: 'note',
-    label: t('attributions.columns.note'),
-    field: 'note',
+    name: 'text_note',
+    label: t('attributions.columns.textNote'),
+    field: 'text_note',
     align: 'left' as const,
     sortable: true,
     style: 'max-width: clamp(100px, 40vw, 300px);',
+  },
+  {
+    name: 'photo_note',
+    label: t('attributions.columns.photoNote'),
+    field: 'photo_note',
+    align: 'left' as const,
+    sortable: true,
   },
   {
     name: 'date_attributed',
@@ -116,20 +141,17 @@ const columns = [
 
 function getValue(row: EntityAttributionsViewFragment) {
   const type = dataTypeToColumnTypes(row.data_type as AttributeDataTypes);
+  const value = getAttributeValue(row);
 
-  const value =
-    row.text_value ??
-    row.integer_value ??
-    row.float_value ??
-    row.date_value ??
-    row.boolean_value;
-
-  // photo is handled in the template
+  if (type === ColumnTypes.Photo) {
+    // photo is handled in the template
+    return '';
+  }
 
   return formatResultColumnValue({ value, type });
 }
 
-const paginationKey = `entity-attributions-table-pagination__${props.attributeType}`;
+const paginationKey = `breedersdb-entity-attributions-table-pagination__${props.attributeType}`;
 const defaultPagination = {
   sortBy: 'date_attributed',
   descending: true,

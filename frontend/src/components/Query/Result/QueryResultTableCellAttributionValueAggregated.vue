@@ -11,6 +11,7 @@
         keypath="result.aggTitle"
         tag="h4"
         class="text-body2 text-weight-bold title"
+        scope="global"
       >
         <template #value>
           <span class="chip">{{ label }}</span
@@ -58,6 +59,11 @@ const label = computed(() => {
 
   const type = dataTypeToColumnTypes(props.attributions[0].data_type);
 
+  if (type === ColumnTypes.Photo) {
+    // this should never happen
+    throw new Error('Photo type not supported for aggregation');
+  }
+
   switch (props.aggregation) {
     case AttributionAggregation.Count:
       return formatResultColumnValue({
@@ -77,12 +83,18 @@ const label = computed(() => {
     case AttributionAggregation.Mean:
       return formatResultColumnValue({
         value: getMean(props.attributions, type),
-        type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
+        type:
+          type === ColumnTypes.Integer || type === ColumnTypes.Rating
+            ? ColumnTypes.Float
+            : type,
       });
     case AttributionAggregation.Median:
       return formatResultColumnValue({
         value: getMedian(props.attributions, type),
-        type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
+        type:
+          type === ColumnTypes.Integer || type === ColumnTypes.Rating
+            ? ColumnTypes.Float
+            : type,
       });
     case AttributionAggregation.StdDev:
       if (type === ColumnTypes.Date) {
@@ -91,7 +103,10 @@ const label = computed(() => {
       }
       return formatResultColumnValue({
         value: getStdDev(props.attributions, type),
-        type: type === ColumnTypes.Integer ? ColumnTypes.Float : type,
+        type:
+          type === ColumnTypes.Integer || type === ColumnTypes.Rating
+            ? ColumnTypes.Float
+            : type,
       });
     default:
       throw new Error(`Unsupported aggregation: ${props.aggregation}`);
@@ -167,7 +182,12 @@ function getValuesAsNumbers(
   type: ColumnTypes,
 ) {
   if (
-    ![ColumnTypes.Integer, ColumnTypes.Float, ColumnTypes.Date].includes(type)
+    ![
+      ColumnTypes.Integer,
+      ColumnTypes.Rating,
+      ColumnTypes.Float,
+      ColumnTypes.Date,
+    ].includes(type)
   ) {
     throw new Error(`Aggregation not available for: ${type}`);
   }
@@ -175,6 +195,7 @@ function getValuesAsNumbers(
     .map((a) => {
       switch (type) {
         case ColumnTypes.Integer:
+        case ColumnTypes.Rating:
           return a.integer_value;
         case ColumnTypes.Float:
           return a.float_value;

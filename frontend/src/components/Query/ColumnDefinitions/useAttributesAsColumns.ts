@@ -101,6 +101,17 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
           Attribute['validation_rule']
         >,
       };
+    case ColumnTypes.Rating:
+      return {
+        type,
+        allowEmpty: false,
+        validation: {
+          ...(attribute.validation_rule as NonNullable<
+            Attribute['validation_rule']
+          >),
+          step: 1 as const,
+        },
+      };
     case ColumnTypes.Photo:
       return {
         type,

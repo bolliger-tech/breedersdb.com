@@ -26,11 +26,15 @@ export const plants = {
       'Label ID is already in use. Next free label ID is {labelId}',
     labelIdNotUnique:
       'Label ID is already in use. Next free label ID is unknown.',
+    labelIdinvalid: 'Invalid label ID',
+    eliminatedNotAllowed: "Eliminated plants can't be used here",
+    labelIdNotFound: 'Plant {labelId} not found',
   },
 
   hints: {
     labelId:
       'Required. Number (max 8 digits). Prefixed with a # if plant was eliminated',
+    labelIdOmitZeros: 'You can omit leading zeros',
     distancePlantRowStart: 'Meters',
     dateEliminatedTrue:
       'Adding an elimination date will disable this plant and prefix the label id with a #',
@@ -40,4 +44,7 @@ export const plants = {
 
   eliminate: 'Eliminate',
   eliminateConfirmation: 'Are you sure you want to eliminate this plant?',
+
+  scanQrCode: 'Scan QR code',
+  enterLabelId: 'Enter label ID',
 };

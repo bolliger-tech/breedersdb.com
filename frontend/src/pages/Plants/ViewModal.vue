@@ -3,25 +3,18 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <EntityModalContent v-else-if="plant" @edit="edit">
-    <template #title>
-      <div class="row items-center no-wrap">
-        <BaseSpriteIcon name="tree" color="grey-7" size="50px" />
-        <div
-          class="q-ma-sm"
-          style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
-        >
-          <h2 class="q-ma-none">
-            <PlantLabelId :label-id="plant.label_id" />
-          </h2>
-          <EntityName
-            :plant-group="plant.plant_group"
-            :cultivar="plant.plant_group?.cultivar"
-            :lot="plant.plant_group?.cultivar.lot"
-            :crossing="plant.plant_group?.cultivar.lot.crossing"
-          />
-        </div>
-      </div>
+  <EntityModalContent v-else-if="plant" sprite-icon="tree" @edit="edit">
+    <template #title-text>
+      <PlantLabelId :label-id="plant.label_id" />
+    </template>
+    <template #subtitle-text>
+      <EntityName
+        v-if="plant.plant_group"
+        :plant-group="plant.plant_group"
+        :cultivar="plant.plant_group.cultivar"
+        :lot="plant.plant_group.cultivar?.lot"
+        :crossing="plant.plant_group.cultivar?.lot?.crossing"
+      />
     </template>
 
     <template #default>
@@ -90,21 +83,20 @@
   </EntityModalContent>
 
   <q-card v-else>
-    <BaseSpinner />
+    <BaseSpinner size="xl" />
   </q-card>
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue';
+import { CombinedError, useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
-import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
-import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
+import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
 import { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
@@ -112,16 +104,19 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import { useRoute, useRouter } from 'vue-router';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
-import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
+import {
+  RefreshAttributionsViewResult,
+  useRefreshAttributionsView,
+} from 'src/composables/useRefreshAttributionsView';
 
 const props = defineProps<{ entityId: number | string }>();
 
+const attributionsRefreshError = ref<CombinedError | undefined>();
+const attributionsRefresh = ref<RefreshAttributionsViewResult | undefined>();
 const {
   executeMutation: refreshAttributionsView,
   fetching: refreshingAttributionsView,
 } = useRefreshAttributionsView();
-const { error: attributionsRefreshError, data: attributionsRefresh } =
-  await refreshAttributionsView({});
 
 const query = graphql(
   `
@@ -138,13 +133,26 @@ const query = graphql(
   [plantFragment],
 );
 
-const { data, error: queryPlantError } = useQuery({
+const {
+  data,
+  error: queryPlantError,
+  executeQuery: executePlantQuery,
+} = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
-  pause: refreshingAttributionsView.value || !attributionsRefresh,
+  pause: refreshingAttributionsView.value || !attributionsRefresh.value,
+  requestPolicy: 'cache-and-network',
 });
 
-const error = computed(() => queryPlantError.value || attributionsRefreshError);
+refreshAttributionsView({}).then(({ data, error }) => {
+  attributionsRefresh.value = data;
+  attributionsRefreshError.value = error;
+  executePlantQuery();
+});
+
+const error = computed(
+  () => queryPlantError.value || attributionsRefreshError.value,
+);
 
 const plant = computed(() => data.value?.plants_by_pk);
 const attributions = computed(
@@ -153,7 +161,9 @@ const attributions = computed(
 );
 
 const images = computed(() =>
-  attributions.value.filter((row) => row.data_type === 'PHOTO'),
+  attributions.value.filter(
+    (row) => row.data_type === 'PHOTO' || row.photo_note,
+  ),
 );
 
 const { t } = useI18n();

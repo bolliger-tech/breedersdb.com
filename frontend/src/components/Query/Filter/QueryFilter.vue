@@ -51,7 +51,7 @@ watch(() => props.baseFilterColumns, initBaseFilter);
 
 function initBaseFilter() {
   const json = $q.localStorage.getItem<string>(
-    `base_filter--${props.baseTable}`,
+    `breedersdb-base-filter--${props.baseTable}`,
   );
   if (json) {
     store.baseFilter = FilterNode.FromJSON(json, null, props.baseFilterColumns);
@@ -69,7 +69,10 @@ watch(
   baseFilter,
   (filter) => {
     if (filter)
-      $q.localStorage.set(`base_filter--${props.baseTable}`, filter.toJSON());
+      $q.localStorage.set(
+        `breedersdb-base-filter--${props.baseTable}`,
+        filter.toJSON(),
+      );
   },
   { deep: true },
 );
@@ -78,7 +81,7 @@ watch(() => props.attributionFilterColumns, initAttributionFilter);
 
 function initAttributionFilter() {
   const json = $q.localStorage.getItem<string>(
-    `attribution_filter--${props.baseTable}`,
+    `breedersdb-attribution-filter--${props.baseTable}`,
   );
   if (json) {
     store.attributionFilter = FilterNode.FromJSON(
@@ -101,7 +104,7 @@ watch(
   (filter) => {
     if (filter)
       $q.localStorage.set(
-        `attribution_filter--${props.baseTable}`,
+        `breedersdb-attribution-filter--${props.baseTable}`,
         filter.toJSON(),
       );
   },

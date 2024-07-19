@@ -15,11 +15,17 @@
               class="q-my-xs"
               :style="`max-width: ${spriteIcon ? 'calc(100% - 58px)' : '100%'}`"
             >
-              <h2 v-if="title" class="q-ma-none nowrap-elipsis">
-                {{ title }}
+              <h2
+                v-if="title || $slots['title-text']"
+                class="q-ma-none nowrap-elipsis"
+              >
+                <slot name="title-text">{{ title }}</slot>
               </h2>
-              <h3 v-if="subtitle" class="text-body1 q-ma-none nowrap-elipsis">
-                {{ subtitle }}
+              <h3
+                v-if="subtitle || $slots['subtitle-text']"
+                class="text-body1 q-ma-none nowrap-elipsis"
+              >
+                <slot name="subtitle-text">{{ subtitle }}</slot>
               </h3>
             </div>
           </div>
@@ -77,28 +83,10 @@
               @mouseleave="$emit('resetErrors')"
               @focusout="$emit('resetErrors')"
             />
-            <q-tooltip
-              :model-value="!!saveError || !!validationError"
-              max-width="min(500px, 90svw)"
-              anchor="top middle"
-              self="bottom middle"
-              :hide-delay="2000"
-              no-parent-event
-              class="bg-dark shadow-3 entity-modal-content__error-tooltip"
-            >
-              <BaseGraphqlError v-if="saveError" :error="saveError" />
-              <div
-                v-else-if="validationError"
-                class="q-gutter-md row items-center"
-              >
-                <div class="col-auto">
-                  <q-icon name="warning" size="2em" class="text-negative" />
-                </div>
-                <div class="col">
-                  {{ validationError }}
-                </div>
-              </div>
-            </q-tooltip>
+            <BaseErrorTooltip
+              :graphql-error="saveError"
+              :message="validationError"
+            />
           </template>
         </slot>
       </div>
@@ -109,10 +97,10 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import EntityButtonDelete from './EntityButtonDelete.vue';
-import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { CombinedError } from '@urql/vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
+import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 
 export interface EntityModalContentProps {
   title?: string;
@@ -129,6 +117,8 @@ export interface EntityModalContentProps {
 defineProps<EntityModalContentProps>();
 defineSlots<{
   title: [];
+  'title-text': [];
+  'subtitle-text': [];
   default: [];
   'action-left': [];
   'action-right': [];

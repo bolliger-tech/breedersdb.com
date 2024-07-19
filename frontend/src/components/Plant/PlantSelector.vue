@@ -13,8 +13,8 @@
     >
       <!-- inputmode="tel": numeric keyboard with # -->
       <q-input
+        ref="inputRef"
         v-model="input"
-        :autofocus="true"
         inputmode="tel"
         outlined
         type="text"
@@ -57,6 +57,7 @@ import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { PlantFragment, plantFragment } from './plantFragment';
 import { onMounted } from 'vue';
+import { type QInput } from 'quasar';
 
 export interface PlantSelectorProps {
   rejectEliminated?: boolean;
@@ -72,7 +73,14 @@ const emit = defineEmits<{
 }>();
 onMounted(() => emit('plant', null));
 
-defineExpose({ onManualInput });
+const inputRef = ref<QInput | null>(null);
+
+defineExpose({
+  onManualInput,
+  focus: () => {
+    inputRef.value?.focus();
+  },
+});
 
 const LOCALSTORAGE_KEY = 'breedersdb-plant-selector-input-method';
 

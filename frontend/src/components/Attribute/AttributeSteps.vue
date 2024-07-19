@@ -5,6 +5,7 @@
     header-nav
     contracted
     class="attribute-steps"
+    @transition="handleTransition"
   >
     <q-step
       :name="1"
@@ -161,6 +162,7 @@ export interface AttributeStepsProps {
   entityType: AttributableEntities;
   entityLoading: boolean;
   entityIcon: string;
+  focusEntitySelector?: () => void;
 }
 
 const props = defineProps<AttributeStepsProps>();
@@ -207,7 +209,7 @@ export type AttributionForm = Form & {
 };
 
 const { t } = useI18n();
-const { localStorage, sessionStorage } = useQuasar();
+const { localStorage, sessionStorage, platform } = useQuasar();
 
 // step 1
 const { queryArg: formId } = useQueryArg<number>({
@@ -348,6 +350,19 @@ function getInitialStep() {
 }
 
 const step = ref(getInitialStep());
+
+function handleTransition(to: string | number, from: string | number) {
+  if (to === 3) {
+    if (platform.is.safari && from === 2) {
+      // else safari is going shaky
+      setTimeout(() => {
+        props.focusEntitySelector?.();
+      }, 100);
+    } else {
+      props.focusEntitySelector?.();
+    }
+  }
+}
 </script>
 
 <style scoped>

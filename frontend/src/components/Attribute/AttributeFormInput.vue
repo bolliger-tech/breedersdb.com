@@ -63,7 +63,7 @@
       "
     />
 
-    <div v-if="attribute.description">
+    <div v-if="attribute.description" style="word-wrap: break-word">
       {{ attribute.description }}
     </div>
 

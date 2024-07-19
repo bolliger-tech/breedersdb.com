@@ -54,6 +54,7 @@ export const base = {
   noData: 'No data',
 
   qr: {
+    title: 'QR scanner',
     permissionRequest: 'Failed to access camera. Please allow camera use.',
     loading: 'Loading QR code scanner…',
     enablePermanently: 'Enable permanently',

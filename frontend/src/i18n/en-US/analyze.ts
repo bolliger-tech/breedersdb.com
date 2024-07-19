@@ -1,4 +1,6 @@
 export const analyze = {
+  title: 'Analyze {entity}',
+
   header: {
     title: 'Analyze',
     more: 'More',

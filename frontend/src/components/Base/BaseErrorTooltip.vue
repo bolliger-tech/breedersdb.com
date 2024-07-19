@@ -1,6 +1,6 @@
 <template>
   <q-tooltip
-    :model-value="show || !!graphelError || !!message"
+    :model-value="show || !!graphqlError || !!message"
     max-width="min(500px, 90svw)"
     anchor="top middle"
     self="bottom middle"
@@ -9,7 +9,7 @@
     class="bg-dark shadow-3 entity-modal-content__error-tooltip"
   >
     <slot>
-      <BaseGraphqlError v-if="graphelError" :error="graphelError" />
+      <BaseGraphqlError v-if="graphqlError" :error="graphqlError" />
       <div v-if="message" class="q-gutter-md row items-center">
         <div class="col-auto">
           <q-icon name="warning" size="2em" class="text-negative" />
@@ -28,7 +28,7 @@ import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 
 export interface BaseErrorTooltipProps {
   show?: boolean;
-  graphelError?: CombinedError | null;
+  graphqlError?: CombinedError | null;
   message?: string | null;
 }
 

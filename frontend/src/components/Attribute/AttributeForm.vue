@@ -40,7 +40,7 @@
       <template #error>
         <BaseErrorTooltip
           :message="uploadError || validationError"
-          :graphel-error="insertError"
+          :graphql-error="insertError"
         />
       </template>
       <template v-if="repeatTarget > 1" #counter>

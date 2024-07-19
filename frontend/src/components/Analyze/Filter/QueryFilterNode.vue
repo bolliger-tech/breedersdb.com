@@ -96,7 +96,7 @@ import { useI18n } from 'src/composables/useI18n';
 import QueryFilterRule from './QueryFilterRule.vue';
 import FilterRuleButtonAdd from './QueryFilterRuleAddButton.vue';
 import { FilterNode, FilterConjunction } from './filterNode';
-import { useQueryStore } from '../useQueryStore';
+import { useAnalyzeStore } from '../useAnalyzeStore';
 import QueryFilterRuleDropZone from './QueryFilterRuleDropZone.vue';
 import { FilterRuleColumn } from './filterRuleColumn';
 
@@ -109,7 +109,7 @@ export interface QueryFilterNodeProps {
 const props = defineProps<QueryFilterNodeProps>();
 
 const { t } = useI18n();
-const store = useQueryStore();
+const store = useAnalyzeStore();
 
 const dragging = ref<FilterNode | undefined>(undefined);
 

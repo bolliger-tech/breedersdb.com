@@ -41,9 +41,9 @@
 
 <script setup lang="ts">
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import QueryHeader from 'src/components/Query/Header/QueryHeader.vue';
-import QueryFilter from 'src/components/Query/Filter/QueryFilter.vue';
-import QueryResult from 'src/components/Query/Result/QueryResult.vue';
+import QueryHeader from 'src/components/Analyze/Header/QueryHeader.vue';
+import QueryFilter from 'src/components/Analyze/Filter/QueryFilter.vue';
+import QueryResult from 'src/components/Analyze/Result/QueryResult.vue';
 import { BaseTable, FilterNode } from './Filter/filterNode';
 import { useAttributesAsColumns } from './ColumnDefinitions/useAttributesAsColumns';
 import { computed, onMounted, Ref, ref } from 'vue';
@@ -55,7 +55,7 @@ import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { AttributionAggregation } from './Result/attributionAggregationTypes';
 
-export type QueryContainerProps = {
+export type AnalyzeContainerProps = {
   initialData: {
     id: 'new' | number;
     name: string;
@@ -67,7 +67,7 @@ export type QueryContainerProps = {
   baseTable: Exclude<BaseTable, BaseTable.Attributions>;
 };
 
-const props = defineProps<QueryContainerProps>();
+const props = defineProps<AnalyzeContainerProps>();
 
 const emit = defineEmits<{
   baseFilterChanged: [filter: FilterNode | undefined];

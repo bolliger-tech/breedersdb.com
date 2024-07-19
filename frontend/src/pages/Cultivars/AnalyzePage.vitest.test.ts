@@ -15,18 +15,18 @@ import {
   FilterNode,
   FilterConjunction,
   BaseTable,
-} from 'src/components/Query/Filter/filterNode';
-import QueryFilterRuleColumn from 'src/components/Query/Filter/QueryFilterRuleColumn.vue';
-import QueryFilterRuleOperator from 'src/components/Query/Filter/QueryFilterRuleOperator.vue';
-import QueryFilterRuleTerm from 'src/components/Query/Filter/QueryFilterRuleTerm.vue';
+} from 'src/components/Analyze/Filter/filterNode';
+import QueryFilterRuleColumn from 'src/components/Analyze/Filter/QueryFilterRuleColumn.vue';
+import QueryFilterRuleOperator from 'src/components/Analyze/Filter/QueryFilterRuleOperator.vue';
+import QueryFilterRuleTerm from 'src/components/Analyze/Filter/QueryFilterRuleTerm.vue';
 import {
   FilterRuleOperator,
   FilterOperatorValue,
-} from 'src/components/Query/Filter/filterRuleOperator';
-import { FilterRuleTerm } from 'src/components/Query/Filter/filterRuleTerm';
+} from 'src/components/Analyze/Filter/filterRuleOperator';
+import { FilterRuleTerm } from 'src/components/Analyze/Filter/filterRuleTerm';
 import { useRoute } from 'vue-router';
 import { reactive } from 'vue';
-import type { FilterRuleColumn } from 'src/components/Query/Filter/filterRuleColumn';
+import type { FilterRuleColumn } from 'src/components/Analyze/Filter/filterRuleColumn';
 
 vi.mock('vue-router');
 

@@ -88,7 +88,7 @@ import { FilterRuleColumn } from './filterRuleColumn';
 import { FilterRuleOperator } from './filterRuleOperator';
 import { FilterRuleTerm } from './filterRuleTerm';
 import { createGetFilterRuleOperators } from './createFilterRuleOperators';
-import { useQueryStore } from '../useQueryStore';
+import { useAnalyzeStore } from '../useAnalyzeStore';
 
 export interface QueryFilterRuleProps {
   columns: FilterRuleColumn[];
@@ -103,7 +103,7 @@ defineEmits<{
 
 const props = defineProps<QueryFilterRuleProps>();
 
-const store = useQueryStore();
+const store = useAnalyzeStore();
 const explain = computed(() => store.explain);
 
 const filterRule = computed(() => props.node.getFilterRule());

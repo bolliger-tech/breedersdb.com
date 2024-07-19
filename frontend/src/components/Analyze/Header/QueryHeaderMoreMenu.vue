@@ -84,7 +84,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
-import { useQueryStore } from '../useQueryStore';
+import { useAnalyzeStore } from '../useAnalyzeStore';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 
 const props = defineProps<{
@@ -98,7 +98,7 @@ const emit = defineEmits<{
   deleted: [];
 }>();
 
-const store = useQueryStore();
+const store = useAnalyzeStore();
 const showMore = ref(false);
 const showDeleteDialog = ref(false);
 

@@ -5,7 +5,7 @@ import { computed, ref } from 'vue';
 
 const LOCAL_STORAGE_EXPLAIN_KEY = 'breedersdb-query-explain';
 
-export const useQueryStore = defineStore('query', () => {
+export const useAnalyzeStore = defineStore('query', () => {
   const filterDragNode = ref<FilterNode | undefined>(undefined);
 
   const _explain = ref<boolean>(

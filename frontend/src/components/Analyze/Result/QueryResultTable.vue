@@ -36,7 +36,7 @@ import { QTableColumn, QTableProps } from 'quasar';
 import QueryResultTableCell from './QueryResultTableCell.vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
 import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
-import QueryResultTableColumnLabel from 'src/components/Query/Result/QueryResultTableColumnLabel.vue';
+import QueryResultTableColumnLabel from 'src/components/Analyze/Result/QueryResultTableColumnLabel.vue';
 
 export interface QueryResultTableProps
   extends QueryResultTablePropsWithoutModel {

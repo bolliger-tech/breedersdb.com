@@ -2,7 +2,7 @@
   <ErrorNotFound v-if="show404" />
   <PageLayout v-else>
     <BaseGraphqlError v-if="error" :error="error" />
-    <QueryContainer
+    <AnalyzeContainer
       v-else
       :initial-data="initialData"
       :base-table="BaseTable.Cultivars"
@@ -15,14 +15,17 @@
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
-import QueryContainer from 'src/components/Query/QueryContainer.vue';
+import AnalyzeContainer from 'src/components/Analyze/AnalyzeContainer.vue';
 import { graphql } from 'src/graphql';
 import { computed, Ref, ref, watch } from 'vue';
 import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { analyzeFiltersFragment } from 'src/components/Query/analyzeFiltersFragment';
+import { analyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFragment';
 import { useQuasar } from 'quasar';
-import { BaseTable, FilterNode } from 'src/components/Query/Filter/filterNode';
+import {
+  BaseTable,
+  FilterNode,
+} from 'src/components/Analyze/Filter/filterNode';
 import ErrorNotFound from 'src/pages/ErrorNotFound.vue';
 
 const BASE_FILTER_LOCAL_STORAGE_KEY =

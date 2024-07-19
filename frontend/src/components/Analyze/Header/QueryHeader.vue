@@ -39,10 +39,13 @@
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 import QueryHeaderMoreMenu from './QueryHeaderMoreMenu.vue';
-import { BaseTable, FilterNode } from 'src/components/Query/Filter/filterNode';
+import {
+  BaseTable,
+  FilterNode,
+} from 'src/components/Analyze/Filter/filterNode';
 import { graphql } from 'src/graphql';
 import { useMutation } from '@urql/vue';
-import { analyzeFiltersFragment } from 'src/components/Query/analyzeFiltersFragment';
+import { analyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFragment';
 import { ref, computed, nextTick } from 'vue';
 import { AnalyzeFilterBaseTables } from 'src/graphql';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';

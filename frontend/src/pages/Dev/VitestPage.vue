@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
-import { useQueryStore } from 'src/components/Query/useQueryStore';
+import { useAnalyzeStore } from 'components/Analyze/useAnalyzeStore';
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 
@@ -37,7 +37,7 @@ async function fireADifferentQuery() {
   data.value = differentQuery.data.value;
 }
 
-const store = useQueryStore();
+const store = useAnalyzeStore();
 store.explain = true;
 
 const { t } = useI18n();

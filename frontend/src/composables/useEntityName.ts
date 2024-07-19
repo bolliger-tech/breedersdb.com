@@ -1,6 +1,6 @@
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 import { useI18n } from './useI18n';
-import { BaseTable } from 'src/components/Query/Filter/filterNode';
+import { BaseTable } from 'src/components/Analyze/Filter/filterNode';
 
 export function useEntityName() {
   const { t } = useI18n();

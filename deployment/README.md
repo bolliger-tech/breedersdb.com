@@ -125,7 +125,7 @@ gcloud sql connect $PG_INSTANCE_NAME --user=postgres
 # 1. install cloud-sql-proxy
 brew install cloud-sql-proxy
 # 2. start the proxy
-cloud-sql-proxy --private-ip $PROJECT_ID:$REGION:$PG_INSTANCE_NAME --port 35432 --gcloud-auth
+cloud-sql-proxy $PROJECT_ID:$REGION:$PG_INSTANCE_NAME --port 35432 --gcloud-auth
 # 3. connect to the database
 psql -h localhost -p 35432 -U postgres
 # check the env for the password

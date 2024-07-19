@@ -6,6 +6,7 @@
     :title="t('analyze.header.more')"
     direction="down"
     icon="more_vert"
+    active-icon="more_horiz"
     padding="sm"
     vertical-actions-align="right"
     color="grey-7"

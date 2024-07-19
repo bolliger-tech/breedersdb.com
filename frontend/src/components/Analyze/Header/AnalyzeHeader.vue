@@ -14,14 +14,23 @@
         icon="save"
         round
         @click="save"
-      >
-      </q-btn>
+      />
       <AnalyzeHeaderMoreMenu
         :analyze-id="analyzeId"
         :saving="saving"
         @rename="showNameDialog = true"
         @duplicate="onDuplicate"
         @deleted="onDeleted"
+      />
+      <q-btn
+        color="primary"
+        :title="t('base.close')"
+        :loading="saving"
+        :disable="saving"
+        flat
+        icon="close"
+        round
+        @click="$router.push(pathWithoutId)"
       />
     </div>
   </div>

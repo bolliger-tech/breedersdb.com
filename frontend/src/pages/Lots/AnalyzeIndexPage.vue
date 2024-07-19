@@ -1,9 +1,9 @@
 <template>
   <PageLayout>
     <AnalyzeIndex
-      :entity-label="t('cultivars.title', 2)"
-      entity-path="/cultivars"
-      base-table="CULTIVARS"
+      :entity-label="t('lots.title', 2)"
+      entity-path="/lots"
+      base-table="LOTS"
     />
   </PageLayout>
 </template>

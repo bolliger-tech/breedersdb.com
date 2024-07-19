@@ -19,21 +19,28 @@
       <BaseSpinner v-else-if="loading" size="xl" />
       <div v-else-if="!videoAccess" class="text-center text-negative">
         <q-icon name="no_photography" size="2em" /><br />
-        {{ t('base.qr.permissionRequest') }}
+        {{ internalErrorMessage }}
       </div>
     </div>
   </div>
+
+  <BaseQrScannerPermissions
+    :model-value="waitWithPermissionRequest"
+    @update:model-value="waitWithPermissionRequest = false"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useInterval } from 'quasar';
+import { useInterval, useQuasar, useTimeout } from 'quasar';
 import BaseSpinner from './BaseSpinner.vue';
 import init, { read_qrcodes_from_image_data } from 'quircs-wasm';
 import wasmUrl from 'quircs-wasm/quircs_wasm_bg.wasm?url';
 
 await init(wasmUrl);
+
+const READY_TIMEOUT_MS = 15 * 1000;
 
 interface Point {
   x: number;
@@ -49,6 +56,26 @@ defineProps<{
   errorMessage?: string;
   error?: boolean;
 }>();
+
+const $q = useQuasar();
+
+const cameraPermission = await navigator.permissions
+  // @ts-expect-error: firefox doesn't know about 'camera', the others do
+  // https://searchfox.org/mozilla-central/source/dom/webidl/Permissions.webidl#10
+  .query({ name: 'camera' })
+  .then((result) => result.state)
+  .catch(() => null);
+
+const waitWithPermissionRequest = ref(
+  !!(cameraPermission === 'prompt' && $q.platform.is.ios),
+);
+watch(waitWithPermissionRequest, (v) => {
+  if (!v) {
+    initVideo();
+  }
+});
+
+const internalErrorMessage = ref('');
 
 const { t } = useI18n();
 
@@ -72,7 +99,9 @@ onMounted(() => {
   } else {
     throw new Error('Failed to get canvas context');
   }
-  initVideo();
+  if (!waitWithPermissionRequest.value) {
+    initVideo();
+  }
 });
 
 onBeforeUnmount(() => {
@@ -94,7 +123,6 @@ async function initVideo() {
         width: { ideal: 640 },
         height: { ideal: 640 },
         aspectRatio: { ideal: 1 },
-        frameRate: { ideal: 10, max: 30 },
       },
     });
 
@@ -111,9 +139,13 @@ async function initVideo() {
     animationFrame = requestAnimationFrame(processVideoFrame);
   } catch (e) {
     if (e instanceof DOMException && e.name === 'NotAllowedError') {
+      internalErrorMessage.value = t('base.qr.permissionRequest');
       videoAccess.value = false;
       return;
     }
+
+    internalErrorMessage.value =
+      e instanceof Error ? e.message : 'Unknown error';
 
     videoAccess.value = false;
     console.error(e);
@@ -132,11 +164,16 @@ async function videoMetadataLoaded() {
 }
 
 const { registerInterval, removeInterval } = useInterval();
+const { registerTimeout, removeTimeout } = useTimeout();
 async function canvasAndVideoAreReady() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    registerTimeout(() => {
+      reject(new Error('Timeout waiting for video and canvas to be ready'));
+    }, READY_TIMEOUT_MS);
     registerInterval(() => {
       if (canvasElement.value && video.readyState === video.HAVE_ENOUGH_DATA) {
         removeInterval();
+        removeTimeout();
         resolve(true);
       }
     }, 25);
@@ -144,6 +181,7 @@ async function canvasAndVideoAreReady() {
 }
 onBeforeUnmount(() => {
   removeInterval();
+  removeTimeout();
 });
 
 function processVideoFrame() {

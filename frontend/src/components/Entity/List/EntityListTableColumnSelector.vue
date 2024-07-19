@@ -1,6 +1,6 @@
 <template>
   <q-select
-    :disable="possibleOptions.length === 0"
+    v-if="possibleOptions.length > 0"
     :label="t('entity.list.addColumn')"
     :model-value="null"
     :options="filteredOptions"

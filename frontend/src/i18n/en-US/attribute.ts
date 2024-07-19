@@ -24,12 +24,17 @@ export const attribute = {
   missingMetadata: 'Missing metadata.',
   addMetadata: 'Add metadata',
 
+  alreadyAttributed:
+    "You've already attributed this {entity} on this device with this form {timeAgo}.",
+
   counter: {
     description:
       "During the last 24h, you've added {count} marks with this form to this {entity} (target {total}).",
     reset: 'Reset counter',
     title: 'Count',
   },
+
+  sameAgainWarning: 'This form contains this attribute multiple times.',
 
   notes: 'Notes',
   addTextNote: 'Add note',
@@ -50,6 +55,9 @@ export const attribute = {
 
   saved: 'Attribute saved.',
   uploading: 'Saving… {percentage}%',
+
+  noValues: 'Nothing to save. Add some values or select a different {entity}.',
+  changeEntity: 'Change {entity}',
 
   addAttribute: 'Add attribute',
 };

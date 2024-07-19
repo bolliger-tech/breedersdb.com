@@ -9,23 +9,24 @@ import type { FullUserOutput } from './types';
 export async function InsertUserAction({
   input,
 }: ActionProps): Promise<ActionResult<FullUserOutput>> {
-  if (!input || !input.email || !input.password) {
+  if (!input?.object || !input.object.email || !input.object.password) {
     throw new ErrorWithStatus(400, 'Bad Request: Missing email or password');
   }
+  const inputObj = input.object;
 
-  validateEmail(input.email);
-  validatePassword(input.password);
+  validateEmail(inputObj.email);
+  validatePassword(inputObj.password);
 
-  const passwordHash = await hashAndSaltPassword(input.password);
+  const passwordHash = await hashAndSaltPassword(inputObj.password);
 
   // save user to db
   const data = await fetchGraphQL({
     query: InsertUserMutation,
     variables: {
       user_object: {
-        email: input.email,
+        email: inputObj.email,
         password_hash: passwordHash,
-        ...(input.locale && { locale: input.locale }),
+        ...(inputObj.locale && { locale: inputObj.locale }),
       },
     },
   });

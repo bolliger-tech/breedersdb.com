@@ -1,5 +1,10 @@
 <template>
   <BaseInputLabel :label="attribute.name" style="max-width: 592px">
+    <div v-if="hasSameAgain" class="row align-center">
+      <q-icon name="warning" class="col-auto" size="1.5em" color="warning" />
+      <div class="col q-ml-md">{{ t('attribute.sameAgainWarning') }}</div>
+    </div>
+
     <AttributeFormInputRating
       v-if="attribute.data_type === 'RATING'"
       :model-value="modelValue?.integer_value ?? attribute.default_value"
@@ -58,7 +63,7 @@
       "
     />
 
-    <div v-if="attribute.description">
+    <div v-if="attribute.description" style="word-wrap: break-word">
       {{ attribute.description }}
     </div>
 
@@ -112,6 +117,7 @@ import { useI18n } from 'src/composables/useI18n';
 export interface AttributeFormInputProps {
   attribute: AttributeFragment;
   exceptional: boolean;
+  hasSameAgain: boolean;
 }
 
 const props = defineProps<AttributeFormInputProps>();

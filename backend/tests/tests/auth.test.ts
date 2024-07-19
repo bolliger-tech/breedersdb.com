@@ -25,7 +25,7 @@ const deleteAllUsersMutation = /* GraphQL */ `
 
 const insertUserMutation = /* GraphQL */ `
   mutation InsertUser($email: citext!, $password: String!) {
-    InsertUser(email: $email, password: $password) {
+    InsertUser(object: { email: $email, password: $password }) {
       email
       last_signin
       failed_signin_attempts

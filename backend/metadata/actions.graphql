@@ -7,9 +7,7 @@ type Mutation {
 
 type Mutation {
   InsertUser(
-    email: citext!
-    password: String!
-    locale: String
+    object: UserInsertInput!
   ): FullUserOutput!
 }
 
@@ -26,6 +24,12 @@ type Mutation {
 
 type Mutation {
   SignOut: SignOutOutput!
+}
+
+input UserInsertInput {
+  email: citext!
+  password: String!
+  locale: String
 }
 
 type FullUserOutput {

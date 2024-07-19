@@ -22,7 +22,9 @@ $border: 1px solid $grey-4;
 
 .entity-view-table-row {
   white-space: nowrap;
-  border-bottom: $border;
+  &:not(:last-child) {
+    border-bottom: $border;
+  }
   &:first-child {
     border-top: $border;
   }

@@ -5,11 +5,13 @@
   >
     <div class="row no-wrap q-gutter-sm scroll">
       <div
-        v-for="(image, index) in images.filter((img) => img.text_value)"
+        v-for="(image, index) in images.filter(
+          (img) => img.text_value || img.photo_note,
+        )"
         :key="image.id"
       >
         <EntityViewAttributionImage
-          :file-name="image.text_value!"
+          :file-name="(image.text_value || image.photo_note)!"
           :attribution="image"
           :plant="plant"
           :plant-group="plantGroup"

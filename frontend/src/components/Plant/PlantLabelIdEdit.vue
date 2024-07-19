@@ -18,6 +18,7 @@
       <i18n-t
         keypath="plants.errors.labelIdNextFree"
         :values="{ labelId: nextFreeLabelId }"
+        scope="global"
       >
         <template #labelId>
           <button

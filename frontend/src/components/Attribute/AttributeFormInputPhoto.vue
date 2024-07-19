@@ -1,59 +1,77 @@
 <template>
-  <div
-    class="attribute-form-input-photo relative-position bg-black"
-    :style="!modelValue ? 'min-height: 200px;' : ''"
-  >
-    <img
-      ref="preview"
-      class="attribute-form-input-photo__preview"
-      :class="{ hidden: modelValue === null }"
-    />
+  <div>
+    <div
+      class="attribute-form-input-photo relative-position bg-black rounded-borders"
+      :style="!modelValue ? 'min-height: 200px;' : ''"
+    >
+      <img
+        ref="preview"
+        class="attribute-form-input-photo__preview"
+        :class="{ hidden: modelValue === null }"
+      />
 
-    <q-icon
-      v-if="!modelValue && !processing"
-      name="photo_camera"
-      size="50px"
-      class="absolute-center"
-      color="white"
-    />
+      <q-icon
+        v-if="!modelValue && !processing"
+        name="photo_camera"
+        size="50px"
+        class="absolute-center"
+        color="white"
+      />
 
-    <BaseSpinner
-      v-if="processing"
-      class="absolute-center q-ma-none"
-      style="line-height: 1"
-      size="xl"
-    />
+      <BaseSpinner
+        v-if="processing"
+        class="absolute-center q-ma-none"
+        style="line-height: 1"
+        size="xl"
+      />
 
-    <q-file
-      :model-value="modelValue?.file"
-      :multiple="false"
-      bg-color="transparent"
-      input-style="opacity: 0"
-      accept="image/jpeg"
-      capture="environment"
-      clearable
-      borderless
-      dark
-      class="attribute-form-input-photo__input"
-      @update:model-value="updateModelValue"
-    />
-  </div>
-  <div v-if="isInvalidImage" class="text-negative text-caption">
-    <q-icon name="warning" />&nbsp;{{ errorMessage }}
+      <q-file
+        ref="inputRef"
+        :model-value="modelValue"
+        :multiple="false"
+        bg-color="transparent"
+        input-style="opacity: 0"
+        accept="image/jpeg,image/png"
+        capture="environment"
+        clearable
+        borderless
+        dark
+        class="attribute-form-input-photo__input"
+        @update:model-value="updateModelValue"
+        @clear="$emit('clear')"
+      />
+    </div>
+    <div v-if="isInvalidImage" class="text-negative text-caption">
+      <q-icon name="warning" />&nbsp;{{ errorMessage }}
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 import { resizeImageFile } from 'src/composables/imageResizer';
-import { watch, ref } from 'vue';
+import { watch, ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { hashFile } from 'src/composables/useImageUploader';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
+import type { QFile } from 'quasar';
 
 const MAX_IMAGE_SIZE = 3840; // longest side, 4k
 const IMAGE_QUALITY = 0.9; // 0.0 - 1.0 (jpeg)
 
-const modelValue = defineModel<{ file: File; fileName: string } | null>({
+const modelValue = defineModel<File | null>({
   required: true,
+});
+
+const emit = defineEmits<{ clear: []; cancel: [] }>();
+
+const inputRef = ref<QFile | null>(null);
+defineExpose({ pickFiles: () => inputRef.value?.pickFiles() });
+
+const emitCancle = () => emit('cancel');
+watch(inputRef, () => {
+  inputRef.value?.nativeEl.addEventListener('cancel', emitCancle);
+});
+onBeforeUnmount(() => {
+  inputRef.value?.nativeEl.removeEventListener('cancel', emitCancle);
 });
 
 const { t } = useI18n();
@@ -63,7 +81,7 @@ const errorMessage = ref('');
 const isInvalidImage = ref(false);
 
 async function updateModelValue(file: File | null) {
-  if (!file) {
+  if (!file || file.size === 0) {
     modelValue.value = null;
     return;
   }
@@ -93,10 +111,10 @@ async function updateModelValue(file: File | null) {
   // if this fails something went terribly wrong. so let it throw
   const fileHash = await hashFile(resizedFile);
 
-  modelValue.value = {
-    file: resizedFile,
-    fileName: `${fileHash}.jpg`,
-  };
+  // create new file with the final name
+  modelValue.value = new File([resizedFile], `${fileHash}.jpg`, {
+    type: 'image/jpeg',
+  });
 
   processing.value = false;
 }
@@ -113,7 +131,7 @@ function loadPreview() {
     return;
   }
 
-  preview.value.src = URL.createObjectURL(modelValue.value.file);
+  preview.value.src = URL.createObjectURL(modelValue.value);
 }
 
 watch(modelValue, loadPreview, { immediate: true });

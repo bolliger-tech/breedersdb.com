@@ -123,7 +123,7 @@ export default configure((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['LoadingBar', 'LocalStorage', 'SessionStorage'],
+      plugins: ['LoadingBar', 'LocalStorage', 'SessionStorage', 'Notify'],
       cssAddon: true,
     },
 

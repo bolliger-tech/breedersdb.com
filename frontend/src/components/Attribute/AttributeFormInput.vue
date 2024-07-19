@@ -1,5 +1,10 @@
 <template>
-  <BaseInputLabel :label="attribute.name">
+  <BaseInputLabel :label="attribute.name" style="max-width: 592px">
+    <div v-if="hasSameAgain" class="row align-center">
+      <q-icon name="warning" class="col-auto" size="1.5em" color="warning" />
+      <div class="col q-ml-md">{{ t('attribute.sameAgainWarning') }}</div>
+    </div>
+
     <AttributeFormInputRating
       v-if="attribute.data_type === 'RATING'"
       :model-value="modelValue?.integer_value ?? attribute.default_value"
@@ -11,6 +16,7 @@
     />
     <AttributeFormInputNumber
       v-else-if="attribute.data_type === 'INTEGER'"
+      ref="integerInputRef"
       :model-value="modelValue?.integer_value ?? attribute.default_value"
       :validation="attribute.validation_rule"
       @update:model-value="
@@ -19,6 +25,7 @@
     />
     <AttributeFormInputNumber
       v-else-if="attribute.data_type === 'FLOAT'"
+      ref="floatInputRef"
       :model-value="modelValue?.float_value ?? attribute.default_value"
       :validation="attribute.validation_rule"
       @update:model-value="
@@ -27,6 +34,7 @@
     />
     <AttributeFormInputText
       v-else-if="attribute.data_type === 'TEXT'"
+      ref="textInputRef"
       :model-value="modelValue?.text_value ?? attribute.default_value"
       :validation="{ maxLen: 2047, pattern: null }"
       @update:model-value="
@@ -49,25 +57,52 @@
     />
     <AttributeFormInputPhoto
       v-else-if="attribute.data_type === 'PHOTO'"
-      v-model="photoInput"
+      :model-value="modelValue?.photo_value ?? null"
+      @update:model-value="
+        (val: File | null) => updateModelValue({ photo_value: val })
+      "
     />
 
-    <div v-if="attribute.description">
+    <div v-if="attribute.description" style="word-wrap: break-word">
       {{ attribute.description }}
     </div>
 
     <AttributeFormInputNote
+      ref="noteInputRef"
       v-model:photo-note="photoNote"
       v-model:text-note="textNote"
-      :allow-text-note="attribute.data_type !== 'TEXT'"
+      :allow-text-note="true"
       :allow-photo-note="attribute.data_type !== 'PHOTO'"
+      :disabled="hasNoValue"
     />
+
+    <q-dialog v-model="confirm">
+      <q-card>
+        <q-card-section class="row items-center no-wrap">
+          <q-icon name="warning" color="negative" size="xl" />
+          <p class="q-ma-none q-ml-md">{{ t('attribute.clearAttribute') }}</p>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat :label="t('base.cancel')" color="primary" />
+          <q-btn
+            flat
+            :label="t('base.delete')"
+            color="negative"
+            @click="
+              clearModelValue();
+              confirm = false;
+            "
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </BaseInputLabel>
 </template>
 
 <script setup lang="ts">
-import type { AttributeInsertData } from 'src/components/Attribute/AttributeForm.vue';
-import type { AttributeDefinition } from 'src/components/Attribute/AttributeSteps.vue';
+import type { AttributeValueWithPhoto } from 'src/components/Attribute/AttributeForm.vue';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import AttributeFormInputRating from 'src/components/Attribute/AttributeFormInputRating.vue';
 import AttributeFormInputNumber from 'src/components/Attribute/AttributeFormInputNumber.vue';
@@ -76,94 +111,68 @@ import AttributeFormInputDate from 'src/components/Attribute/AttributeFormInputD
 import AttributeFormInputBoolean from 'src/components/Attribute/AttributeFormInputBoolean.vue';
 import AttributeFormInputPhoto from 'src/components/Attribute/AttributeFormInputPhoto.vue';
 import AttributeFormInputNote from 'src/components/Attribute/AttributeFormInputNote.vue';
-import { computed } from 'vue';
+import { computed, ref, nextTick } from 'vue';
+import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributeFormInputProps {
-  attribute: AttributeDefinition;
+  attribute: AttributeFragment;
   exceptional: boolean;
+  hasSameAgain: boolean;
 }
 
 const props = defineProps<AttributeFormInputProps>();
 
-const modelValue = defineModel<AttributeInsertData | undefined>({
+const modelValue = defineModel<AttributeValueWithPhoto | undefined>({
   required: true,
 });
-const photo = defineModel<File | null>('photo', { required: true });
 
-const photoInput = computed({
-  get: () => {
-    const file = photo.value;
-    if (
-      !file ||
-      props.attribute.data_type !== 'PHOTO' ||
-      !modelValue.value?.text_value
-    ) {
-      return null;
-    }
-    return {
-      file,
-      fileName: modelValue.value?.text_value,
-    };
-  },
-  set: (input: { file: File; fileName: string } | null) => {
-    if (props.attribute.data_type !== 'PHOTO') {
-      throw new Error('Invalid data type for photo input');
-    }
-    if (!input) {
-      photo.value = null;
-      updateModelValue({ text_value: null });
-    } else {
-      photo.value = input.file;
-      updateModelValue({ text_value: input.fileName });
-    }
-  },
-});
+defineExpose({ validate, focus: focusInvalid });
 
 const photoNote = computed({
-  get: () => {
-    const file = photo.value;
-    if (
-      !file ||
-      props.attribute.data_type === 'PHOTO' ||
-      !modelValue.value?.photo_note
-    ) {
-      return null;
-    }
-    return {
-      file,
-      fileName: modelValue.value?.photo_note,
-    };
-  },
-  set: (input: { file: File; fileName: string } | null) => {
-    if (props.attribute.data_type === 'PHOTO') {
-      throw new Error('Invalid data type for photo note');
-    }
-    photo.value = input?.file ?? null;
-    if (modelValue.value) {
-      modelValue.value.photo_note = input?.fileName ?? null;
-    } else {
-      updateModelValue({ photo_note: input?.fileName ?? null });
-    }
-  },
+  get: () => modelValue.value?.photo_note ?? null,
+  set: (file: File | null) => updateModelValue({ photo_note: file ?? null }),
 });
 
 const textNote = computed({
   get: () => modelValue.value?.text_note ?? null,
-  set: (val: string | null) => {
-    if (modelValue.value) {
-      modelValue.value.text_note = val;
-    } else {
-      updateModelValue({ text_note: val });
-    }
-  },
+  set: (val: string | null) => updateModelValue({ text_note: val }),
 });
 
+const { t } = useI18n();
+const confirm = ref(false);
+const noteInputRef = ref<InstanceType<typeof AttributeFormInputNote> | null>(
+  null,
+);
+
+async function clearModelValue() {
+  if (!modelValue.value) {
+    return;
+  }
+
+  modelValue.value.integer_value = null;
+  modelValue.value.float_value = null;
+  modelValue.value.text_value = null;
+  modelValue.value.boolean_value = null;
+  modelValue.value.date_value = null;
+  modelValue.value.photo_value = null;
+  modelValue.value.text_note = null;
+  modelValue.value.photo_note = null;
+  noteInputRef.value?.clear();
+
+  if (document.activeElement instanceof HTMLElement) {
+    // required to reset state of star ratings
+    await nextTick();
+    document.activeElement.blur();
+  }
+}
+
 function updateModelValue({
-  integer_value = null,
-  float_value = null,
-  text_value = null,
-  boolean_value = null,
-  date_value = null,
+  integer_value,
+  float_value,
+  text_value,
+  boolean_value,
+  date_value,
+  photo_value,
   text_note,
   photo_note,
 }: {
@@ -172,8 +181,9 @@ function updateModelValue({
   text_value?: string | null;
   boolean_value?: boolean | null;
   date_value?: string | null;
-  text_note?: string | null | undefined;
-  photo_note?: string | null | undefined;
+  photo_value?: File | null;
+  text_note?: string | null;
+  photo_note?: File | null;
 }) {
   const model = modelValue.value ?? {
     attribute_id: props.attribute.id,
@@ -182,19 +192,108 @@ function updateModelValue({
     text_value: null,
     boolean_value: null,
     date_value: null,
+    photo_value: null,
     exceptional_attribution: props.exceptional,
     text_note: null,
     photo_note: null,
   };
 
-  model.integer_value = integer_value;
-  model.float_value = float_value;
-  model.text_value = text_value;
-  model.boolean_value = boolean_value;
-  model.date_value = date_value;
-  model.text_note = text_note ?? model.text_note;
-  model.photo_note = photo_note ?? model.photo_note;
+  if (
+    (integer_value === null ||
+      float_value === null ||
+      text_value === null ||
+      boolean_value === null ||
+      date_value === null ||
+      photo_value === null) &&
+    (model.text_note || model.photo_note)
+  ) {
+    confirm.value = true;
+    return;
+  }
+
+  model.integer_value =
+    integer_value === undefined ? model.integer_value : integer_value;
+  model.float_value =
+    float_value === undefined ? model.float_value : float_value;
+  model.text_value = text_value === undefined ? model.text_value : text_value;
+  model.boolean_value =
+    boolean_value === undefined ? model.boolean_value : boolean_value;
+  model.date_value = date_value === undefined ? model.date_value : date_value;
+  model.photo_value =
+    photo_value === undefined ? model.photo_value : photo_value;
+  model.text_note = text_note === undefined ? model.text_note : text_note;
+  model.photo_note = photo_note === undefined ? model.photo_note : photo_note;
 
   modelValue.value = model;
+}
+
+const hasNoValue = computed(() => {
+  return (
+    !modelValue.value ||
+    (modelValue.value.integer_value === null &&
+      modelValue.value.float_value === null &&
+      modelValue.value.text_value === null &&
+      modelValue.value.boolean_value === null &&
+      modelValue.value.date_value === null &&
+      modelValue.value.photo_value === null)
+  );
+});
+
+const integerInputRef = ref<InstanceType<
+  typeof AttributeFormInputNumber
+> | null>(null);
+const floatInputRef = ref<InstanceType<typeof AttributeFormInputNumber> | null>(
+  null,
+);
+const textInputRef = ref<InstanceType<typeof AttributeFormInputText> | null>(
+  null,
+);
+
+async function validate() {
+  let valueIsValid: Promise<boolean> = Promise.resolve(true);
+
+  switch (props.attribute.data_type) {
+    case 'INTEGER':
+      valueIsValid = Promise.resolve(
+        integerInputRef.value?.validate() ?? false,
+      );
+      break;
+    case 'FLOAT':
+      valueIsValid = Promise.resolve(floatInputRef.value?.validate() ?? false);
+      break;
+    case 'TEXT':
+      valueIsValid = Promise.resolve(textInputRef.value?.validate() ?? false);
+      break;
+  }
+
+  let noteIsValid: Promise<boolean> = Promise.resolve(true);
+  if (modelValue.value?.text_note) {
+    noteIsValid = Promise.resolve(noteInputRef.value?.validate() ?? false);
+  }
+
+  return (await Promise.all([valueIsValid, noteIsValid])).every(Boolean);
+}
+
+function focusInvalid() {
+  if (
+    modelValue.value?.text_note &&
+    noteInputRef.value &&
+    !noteInputRef.value.validate()
+  ) {
+    noteInputRef.value.focus();
+    return;
+  }
+
+  switch (props.attribute.data_type) {
+    case 'INTEGER':
+      integerInputRef.value?.focus();
+      break;
+    case 'FLOAT':
+      floatInputRef.value?.focus();
+      break;
+    case 'TEXT':
+      textInputRef.value?.focus();
+      break;
+  }
 }
 </script>

@@ -25,7 +25,8 @@
               t('base.validation.xIsRequired', {
                 x: t('entity.commonColumns.name'),
               }),
-            async () => (await isUnique()) || 'TODO', //TODO: t('base.validation.nameNotUnique'),
+            async () =>
+              (await isUnique()) || t('base.validation.nameNotUnique'),
           ]"
           required
           :loading="isUniqueFetching"

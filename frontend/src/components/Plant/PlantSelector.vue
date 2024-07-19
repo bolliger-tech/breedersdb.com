@@ -44,7 +44,7 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
 import BaseInputLabel from '../Base/BaseInputLabel.vue';
-import BaseQrScanner from '../Base/BaseQrScanner.vue';
+import BaseQrScanner from '../Base/BaseQrScanner/BaseQrScanner.vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import {
   isPrefixed,

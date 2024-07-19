@@ -37,7 +37,7 @@
 <script lang="ts" setup>
 import { QTableColumn, QTableProps } from 'quasar';
 import AnalyzeResultTableCell from './AnalyzeResultTableCell.vue';
-import { QueryAttributionsViewFields } from './filterToQuery';
+import { AnalyzeAttributionsViewFields } from './filterToQuery';
 import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
 import AnalyzeResultTableColumnLabel from 'components/Analyze/Result/AnalyzeResultTableColumnLabel.vue';
 
@@ -50,7 +50,7 @@ export interface AnalyzeResultTableProps
 interface AnalyzeResultTablePropsWithoutModel {
   rows: (
     | { [key: string]: null | number | string }
-    | { [key: `attributes.${number}`]: QueryAttributionsViewFields[] }
+    | { [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[] }
   )[];
   loading: boolean;
   allColumns: QTableColumn[];

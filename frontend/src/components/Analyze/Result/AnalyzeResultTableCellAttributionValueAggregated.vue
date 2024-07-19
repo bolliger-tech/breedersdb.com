@@ -32,7 +32,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { QueryAttributionsViewFields } from './filterToQuery';
+import { AnalyzeAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
@@ -43,7 +43,7 @@ import { AttributionAggregation } from './attributionAggregationTypes';
 import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 
 export interface AnalyzeResultTableCellAttributionValueAggregatedProps {
-  attributions: QueryAttributionsViewFields[];
+  attributions: AnalyzeAttributionsViewFields[];
   aggregation: AttributionAggregation;
 }
 
@@ -114,7 +114,7 @@ const label = computed(() => {
 });
 
 function getMin(
-  attributions: QueryAttributionsViewFields[],
+  attributions: AnalyzeAttributionsViewFields[],
   type: ColumnTypes,
 ) {
   const min = Math.min(...getValuesAsNumbers(attributions, type));
@@ -122,7 +122,7 @@ function getMin(
 }
 
 function getMax(
-  attributions: QueryAttributionsViewFields[],
+  attributions: AnalyzeAttributionsViewFields[],
   type: ColumnTypes,
 ) {
   const min = Math.max(...getValuesAsNumbers(attributions, type));
@@ -130,7 +130,7 @@ function getMax(
 }
 
 function getMean(
-  attributions: QueryAttributionsViewFields[],
+  attributions: AnalyzeAttributionsViewFields[],
   type: ColumnTypes,
 ) {
   const values = getValuesAsNumbers(attributions, type);
@@ -142,7 +142,7 @@ function getMean(
 }
 
 function getMedian(
-  attributions: QueryAttributionsViewFields[],
+  attributions: AnalyzeAttributionsViewFields[],
   type: ColumnTypes,
 ) {
   const sortedValues = getValuesAsNumbers(attributions, type).sort(
@@ -162,7 +162,7 @@ function getMedian(
 }
 
 function getStdDev(
-  attributions: QueryAttributionsViewFields[],
+  attributions: AnalyzeAttributionsViewFields[],
   type: ColumnTypes,
 ) {
   const values = getValuesAsNumbers(attributions, type);
@@ -178,7 +178,7 @@ function getStdDev(
 }
 
 function getValuesAsNumbers(
-  attributions: QueryAttributionsViewFields[],
+  attributions: AnalyzeAttributionsViewFields[],
   type: ColumnTypes,
 ) {
   if (

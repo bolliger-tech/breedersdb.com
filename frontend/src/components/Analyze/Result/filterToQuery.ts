@@ -12,7 +12,7 @@ import type { AttributeDataTypes } from 'src/graphql';
 export type AnalyzeResult = {
   [K in BaseTable]: (
     | { [key: string]: null | number | string }
-    | { [key: `attributes__${number}`]: QueryAttributionsViewFields[] }
+    | { [key: `attributes__${number}`]: AnalyzeAttributionsViewFields[] }
   )[];
 } & { [K in `${BaseTable}_aggregate`]: { aggregate: { count: number } } };
 
@@ -561,7 +561,7 @@ ${indentation}}
   return fields;
 }
 
-// IMPORTANT: adapt type `QueryAttributionsViewFields` if changing fragment
+// IMPORTANT: adapt type `AnalyzeAttributionsViewFields` if changing fragment
 const attributionFragment = `
 fragment AttributionFragment on attributions_view {
   id
@@ -577,7 +577,7 @@ fragment AttributionFragment on attributions_view {
 }
 `;
 
-export type QueryAttributionsViewFields = {
+export type AnalyzeAttributionsViewFields = {
   id: number;
   integer_value: number | null;
   float_value: number | null;

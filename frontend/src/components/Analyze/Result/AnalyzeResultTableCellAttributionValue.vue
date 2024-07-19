@@ -11,7 +11,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { QueryAttributionsViewFields } from './filterToQuery';
+import { AnalyzeAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
 import {
   formatResultColumnValue,
@@ -24,7 +24,7 @@ import { useQuasar } from 'quasar';
 import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 
 export interface AnalyzeResultTableCellAttributionValueProps {
-  attribution: QueryAttributionsViewFields;
+  attribution: AnalyzeAttributionsViewFields;
 }
 
 const props = defineProps<AnalyzeResultTableCellAttributionValueProps>();

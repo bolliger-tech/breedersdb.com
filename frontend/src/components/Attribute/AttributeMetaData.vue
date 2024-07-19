@@ -23,14 +23,14 @@
 
   <BaseInputLabel :label="t('attribute.repeat')">
     <q-toggle
-      :model-value="repeat > 0"
+      :model-value="showRepeat"
       :label="t('attribute.shouldRepeat')"
       @update:model-value="(v) => (repeat = v ? 100 : 0)"
     />
   </BaseInputLabel>
 
   <EntityInput
-    v-if="repeat > 0"
+    v-if="showRepeat"
     ref="repeatRef"
     v-model="repeat"
     :hint="t('attribute.repeatHint')"
@@ -54,7 +54,7 @@ import EntityInput, {
   EntityInputInstance,
 } from '../Entity/Edit/EntityInput.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const { t } = useI18n();
 
@@ -75,4 +75,8 @@ defineExpose({
     ]).then((results) => results.every((r) => r));
   },
 });
+
+const showRepeat = computed(
+  () => repeat.value > 0 || Number.isNaN(repeat.value),
+);
 </script>

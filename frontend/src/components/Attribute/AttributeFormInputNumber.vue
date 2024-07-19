@@ -1,13 +1,16 @@
 <template>
   <q-input
+    ref="inputRef"
     :bg-color="inputBgColor"
     dense
     outlined
     type="number"
+    input-mode="decimal"
+    :pattern="isIntegerOnly && $q.platform.is.ios ? '[0-9]*' : undefined"
     autocomplete="off"
     :placeholder="t('attribute.numberPlaceholder')"
     clearable
-    :input-mode="isIntegerOnly ? 'decimal' : 'numeric'"
+    :hide-bottom-space="!inputRef?.hasError"
     :min="validation.min"
     :max="validation.max"
     :step="validation.step"
@@ -18,9 +21,11 @@
 </template>
 <script setup lang="ts">
 import { useInputBackground } from 'src/composables/useInputBackground';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { isValidFloat, isValidInteger } from 'src/utils/validationUtils';
 import { useI18n } from 'src/composables/useI18n';
+import { type QInput } from 'quasar';
+import { focusInView } from 'src/utils/focusInView';
 
 export interface AttributeFormInputProps {
   validation: { min: number; max: number; step: number };
@@ -29,6 +34,13 @@ export interface AttributeFormInputProps {
 const props = defineProps<AttributeFormInputProps>();
 
 const modelValue = defineModel<number | null>({ required: true });
+
+const inputRef = ref<QInput | null>(null);
+
+defineExpose({
+  validate: () => inputRef.value?.validate(),
+  focus: () => inputRef.value && focusInView(inputRef.value),
+});
 
 const { t } = useI18n();
 

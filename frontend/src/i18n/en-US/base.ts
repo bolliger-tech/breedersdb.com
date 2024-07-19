@@ -56,6 +56,8 @@ export const base = {
   qr: {
     permissionRequest: 'Failed to access camera. Please allow camera use.',
     loading: 'Loading QR code scanner…',
+    enablePermanently: 'Enable permanently',
+    permanantlyEnableCameraOnIOS: 'Enable camera permanently on iOS',
   },
 
   notAvailable: 'N/A',
@@ -69,4 +71,9 @@ export const base = {
 
   yes: 'yes',
   no: 'no',
+
+  networkError: {
+    title: 'Network error',
+    message: 'Are you connected to the internet?',
+  },
 };

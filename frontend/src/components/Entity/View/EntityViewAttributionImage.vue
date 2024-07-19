@@ -53,8 +53,8 @@
           style="
             max-width: calc(100svw - 80px);
             width: calc(100svw - 80px);
-            max-height: calc(100svh - 202px);
-            height: calc(100svh - 202px);
+            max-height: calc(100svh - 222px);
+            height: calc(100svh - 222px);
           "
           :draggable="false"
         >
@@ -67,8 +67,15 @@
           </template>
         </q-img>
         <p class="text-caption q-ma-none text-center">
-          <span v-if="attribution.text_note">{{ attribution.text_note }}</span
-          >&nbsp;
+          <span>{{ description.primary }}</span>
+          <span
+            v-if="description.primary && description.additional"
+            class="text-muted"
+          >
+            –
+          </span>
+          <span class="text-muted">{{ description.additional }}</span>
+          <br />
           <span class="text-muted">{{ metadata }}</span>
         </p>
       </q-card-section>
@@ -165,15 +172,30 @@ const desiredFileName = computed(() => {
 });
 
 const metadata = computed(() => {
+  const attribute =
+    props.attribution.data_type === 'PHOTO'
+      ? `${props.attribution.attribute_name}, `
+      : '';
+  return `${attribute}${localizeDate(props.attribution.date_attributed)} ${props.attribution.author}, ${entityType.value} ${entityName.value}`;
+});
+
+const description = computed(() => {
   const type = dataTypeToColumnTypes(props.attribution.data_type);
+
+  if (type === ColumnTypes.Photo) {
+    return {
+      primary: props.attribution.text_note,
+      additional: '',
+    };
+  }
+
   const value = getAttributeValue(props.attribution);
+  const formattedValue = formatResultColumnValue({ value, type });
 
-  const attrValue =
-    type === ColumnTypes.Photo
-      ? ''
-      : `: ${formatResultColumnValue({ value, type })}`;
-
-  return `${props.attribution.attribute_name}${attrValue}, ${localizeDate(props.attribution.date_attributed)} ${props.attribution.author}, ${entityType.value} ${entityName.value}`;
+  return {
+    primary: `${props.attribution.attribute_name}: ${formattedValue}`,
+    additional: props.attribution.text_note,
+  };
 });
 
 const previewDimensions = computed(() => {

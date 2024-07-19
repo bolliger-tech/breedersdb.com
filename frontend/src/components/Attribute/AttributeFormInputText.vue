@@ -1,5 +1,6 @@
 <template>
   <q-input
+    ref="inputRef"
     v-model.trim="modelValue"
     :bg-color="inputBgColor"
     dense
@@ -8,6 +9,7 @@
     autocomplete="off"
     :placeholder="t('attribute.textPlaceholder')"
     clearable
+    :hide-bottom-space="!inputRef?.hasError"
     autogrow
     :maxlength="validation.maxLen ?? undefined"
     :pattern="validation.pattern ?? undefined"
@@ -15,7 +17,7 @@
       (value: string | null) =>
         value === null ||
         isValidString({ value, validation }) ||
-        t('base.validation.maxLen', { x: 45 }),
+        t('base.validation.maxLen', { x: validation.maxLen }),
     ]"
   />
 </template>
@@ -23,6 +25,9 @@
 import { useInputBackground } from 'src/composables/useInputBackground';
 import { isValidString } from 'src/utils/validationUtils';
 import { useI18n } from 'src/composables/useI18n';
+import { ref } from 'vue';
+import { type QInput } from 'quasar';
+import { focusInView } from 'src/utils/focusInView';
 
 export interface AttributeFormInputProps {
   validation: { maxLen: number | null; pattern: string | null };
@@ -30,6 +35,13 @@ export interface AttributeFormInputProps {
 
 defineProps<AttributeFormInputProps>();
 const modelValue = defineModel<string | null>({ required: true });
+
+const inputRef = ref<QInput | null>(null);
+
+defineExpose({
+  validate: () => inputRef.value?.validate(),
+  focus: () => inputRef.value && focusInView(inputRef.value),
+});
 
 const { t } = useI18n();
 const { inputBgColor } = useInputBackground();

@@ -94,6 +94,7 @@ const routes: RouteRecordRaw[] = [
             path: 'images',
             component: () => import('pages/Dev/ImageUpDownloadPage.vue'),
           },
+          { path: 'qr', component: () => import('pages/Dev/QrPage.vue') },
         ],
       },
 

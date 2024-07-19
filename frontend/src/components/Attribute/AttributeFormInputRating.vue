@@ -1,17 +1,23 @@
 <template>
   <div class="row items-start">
-    <q-btn
-      v-if="withZero"
-      color="primary"
-      :style="'opacity: ' + (modelValue === 0 ? 1 : 0.4)"
-      icon="exposure_zero"
-      outline
-      :size="`calc(min(calc((100svw - 64px - ${(steps - 1) * 2}px) / ${steps + 1}), 4em) * 0.58)`"
-      flat
-      dense
-      class="q-pa-none"
-      @click="zeroRatingClicked"
-    />
+    <div v-if="withZero" class="column">
+      <q-btn
+        color="primary"
+        icon="exposure_zero"
+        outline
+        :size="`calc(min(calc((100svw - 64px - ${(steps - 1) * 2}px) / ${steps + 1}), 4em) * 0.58)`"
+        flat
+        dense
+        :ripple="false"
+        class="q-pa-none attribute-form-input-rating__zero"
+        @click="zeroRatingClicked"
+      />
+      <div class="row justify-between">
+        <div v-if="labels.length > 0" style="width: 100%">
+          <small :class="{ legend }" class="label">{{ labels[0] }}</small>
+        </div>
+      </div>
+    </div>
     <div class="column">
       <q-rating
         :model-value="ratingValue"
@@ -24,7 +30,7 @@
       />
       <div class="row justify-between">
         <div
-          v-for="(item, index) in labels"
+          v-for="(item, index) in withZero ? labels.slice(1) : labels"
           :key="index"
           :style="`width: ${100 / labels.length}%`"
         >
@@ -82,9 +88,27 @@ const labels = computed(() => {
   }
   return numbers;
 });
+
+const opacityZero = computed(() => {
+  return modelValue.value === 0 ? 1 : 0.4;
+});
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.attribute-form-input-rating__zero {
+  min-height: 1em;
+  transform: translateY(0.1em);
+  opacity: v-bind(opacityZero);
+  transition: $button-transition;
+
+  &:hover {
+    opacity: 1;
+    transform: translateY(0.1em) scale(1.25);
+  }
+}
+:global(.attribute-form-input-rating__zero > .q-focus-helper) {
+  display: none !important;
+}
 .label {
   white-space: nowrap;
   font-weight: bolder;

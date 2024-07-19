@@ -11,6 +11,7 @@
         keypath="result.aggTitle"
         tag="h4"
         class="text-body2 text-weight-bold title"
+        scope="global"
       >
         <template #value>
           <span class="chip">{{ label }}</span

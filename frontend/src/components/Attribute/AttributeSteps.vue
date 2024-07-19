@@ -5,6 +5,7 @@
     header-nav
     contracted
     class="attribute-steps"
+    @transition="handleTransition"
   >
     <q-step
       :name="1"
@@ -12,7 +13,7 @@
       done-icon="svguse:/icons/sprite.svg#form"
       active-icon="svguse:/icons/sprite.svg#form"
       title=""
-      :done="formId > -1"
+      :done="step1Done"
     >
       <AttributeFormSelector ref="attributeFormSelectorRef" v-model="formId" />
 
@@ -31,8 +32,8 @@
       icon="sell"
       done-icon="sell"
       active-icon="sell"
-      :done="!!author && !!date"
-      :disable="formId === -1"
+      :done="step2Done"
+      :disable="!step1Done"
     >
       <AttributeMetaData
         ref="attributeMetaDataRef"
@@ -57,8 +58,8 @@
       :icon="entityIcon"
       :done-icon="entityIcon"
       :active-icon="entityIcon"
-      :disable="formId === -1 || !author || !date"
-      :done="entityId !== null"
+      :disable="!step1Done || !step2Done"
+      :done="step3Done"
     >
       <slot name="entity-selector"></slot>
       <q-stepper-navigation class="row justify-between">
@@ -78,7 +79,7 @@
       icon="svguse:/icons/sprite.svg#star"
       done-icon="svguse:/icons/sprite.svg#star"
       active-icon="svguse:/icons/sprite.svg#star"
-      :disable="formId === -1 || !author || !date || entityId === null"
+      :disable="!step1Done || !step2Done || !step3Done"
     >
       <BaseGraphqlError v-if="formFetchError" :error="formFetchError" />
       <BaseSpinner v-else-if="formFetching" />
@@ -112,21 +113,14 @@
 
       <template v-else>
         <slot name="entity-preview"></slot>
-        <AttributeRepeatCounter
-          v-if="repeatInt > 0"
-          class="q-mt-md"
-          :total="repeatInt"
-          :entity-type="entityType"
-          :count="repeatCount"
-          @reset="repeatCount = 0"
-        />
-
         <AttributeForm
+          :key="attributeFormKey"
           :entity-id="entityId"
           :entity-type="entityType"
           :form="form"
           :date="date"
           :author="author"
+          :repeat-target="repeatInt"
           @saved="completeStep4"
         />
       </template>
@@ -140,7 +134,6 @@
 <script setup lang="ts">
 import AttributeFormSelector from 'src/components/Attribute/AttributeFormSelector.vue';
 import AttributeMetaData from 'src/components/Attribute/AttributeMetaData.vue';
-import AttributeRepeatCounter from 'src/components/Attribute/AttributeRepeatCounter.vue';
 import AttributeForm from 'src/components/Attribute/AttributeForm.vue';
 import AttributeNoEntityError from 'src/components/Attribute/AttributeNoEntityError.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -152,17 +145,24 @@ import { computed, ref, watch } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
 import { AttributableEntities } from './attributableEntities';
-import { useRepeatCounter } from './useRepeatCounter';
+import { attributeFragment, type AttributeFragment } from './attributeFragment';
+import { useRoute } from 'vue-router';
 
 const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';
 const AUTHOR_STORAGE_KEY = 'breedersdb-attribution-author';
 const REPEAT_STORAGE_KEY = 'breedersdb-attribute-repeat-target';
+
+const FORM_ID_URL_KEY = 'form';
+const AUTHOR_URL_KEY = 'author';
+const DATE_URL_KEY = 'date';
+const REPEAT_URL_KEY = 'repeat';
 
 export interface AttributeStepsProps {
   entityId: number | null;
   entityType: AttributableEntities;
   entityLoading: boolean;
   entityIcon: string;
+  focusEntitySelector?: () => void;
 }
 
 const props = defineProps<AttributeStepsProps>();
@@ -176,95 +176,73 @@ const emit = defineEmits<{
   entityStepCompleted: [];
 }>();
 
-const formQuery = graphql(`
-  query AttributionForm($formId: Int!) {
-    attribution_forms_by_pk(id: $formId) {
-      id
-      name
-      description
-      attribution_form_fields(
-        where: { attribute: { disabled: { _eq: false } } }
-        order_by: { priority: asc }
-      ) {
+const formQuery = graphql(
+  `
+    query AttributionForm($formId: Int!) {
+      attribution_forms_by_pk(id: $formId) {
         id
-        priority
-        attribute {
+        name
+        description
+        attribution_form_fields(
+          where: { attribute: { disabled: { _eq: false } } }
+          order_by: { priority: asc }
+        ) {
           id
-          validation_rule
-          name
-          description
-          data_type
-          attribute_type
-          default_value
-          legend
+          priority
+          attribute {
+            ...attributeFragment
+          }
         }
       }
     }
-  }
-`);
+  `,
+  [attributeFragment],
+);
 
 type Form = NonNullable<ResultOf<typeof formQuery>['attribution_forms_by_pk']>;
-type Attribute = Form['attribution_form_fields'][0]['attribute'];
-export type AttributeDefinition =
-  | (Attribute & {
-      data_type: 'RATING';
-      legend: string[] | null;
-      default_value: number | null;
-      validation_rule: { min: number; max: number; step: 1 };
-    })
-  | (Attribute & {
-      data_type: 'INTEGER' | 'FLOAT';
-      legend: null;
-      default_value: number | null;
-      validation_rule: { min: number; max: number; step: number };
-    })
-  | (Attribute & {
-      data_type: 'TEXT' | 'DATE';
-      legend: null;
-      validation_rule: null;
-      default_value: string | null;
-    })
-  | (Attribute & {
-      data_type: 'BOOLEAN';
-      legend: null;
-      validation_rule: null;
-      default_value: boolean | null;
-    })
-  | (Attribute & {
-      data_type: 'PHOTO';
-      legend: null;
-      validation_rule: null;
-      default_value: null;
-    });
 export type AttributionForm = Form & {
   attribution_form_fields: {
-    attribute: AttributeDefinition;
+    attribute: AttributeFragment;
     priority: number;
     id: number;
   }[];
 };
 
 const { t } = useI18n();
-const { localStorage, sessionStorage } = useQuasar();
+const { localStorage, sessionStorage, platform } = useQuasar();
 
 // step 1
 const { queryArg: formId } = useQueryArg<number>({
-  key: 'form',
+  key: FORM_ID_URL_KEY,
   defaultValue: sessionStorage.getItem<number>(FORM_ID_STORAGE_KEY) ?? -1,
   replace: true,
   showDefaultInUrl: true,
 });
 watch(formId, (f) => sessionStorage.set(FORM_ID_STORAGE_KEY, f));
 
+const formVariables = computed(() => ({
+  formId: parseInt(formId.value.toString(), 10),
+}));
+
 const {
   data: formData,
   error: formFetchError,
   fetching: formFetching,
+  executeQuery: fetchForm,
 } = useQuery({
   query: formQuery,
-  variables: { formId: parseInt(formId.value.toString(), 10) },
-  pause: formId.value === -1,
+  variables: formVariables,
+  pause: true,
 });
+watch(
+  formVariables,
+  () => {
+    if (formId.value > -1) {
+      fetchForm();
+    }
+  },
+  { immediate: true, deep: true, flush: 'post' },
+);
 
 const form = computed(
   () => (formData.value?.attribution_forms_by_pk as AttributionForm) ?? null,
@@ -284,7 +262,7 @@ function completeStep1() {
 
 // step 2
 const { queryArg: author } = useQueryArg<string>({
-  key: 'author',
+  key: AUTHOR_URL_KEY,
   defaultValue: localStorage.getItem<string>(AUTHOR_STORAGE_KEY) ?? '',
   replace: true,
   showDefaultInUrl: true,
@@ -292,14 +270,14 @@ const { queryArg: author } = useQueryArg<string>({
 watch(author, (a) => localStorage.set(AUTHOR_STORAGE_KEY, a));
 
 const { queryArg: date } = useQueryArg({
-  key: 'date',
+  key: DATE_URL_KEY,
   defaultValue: new Date().toISOString().split('T')[0],
   replace: true,
   showDefaultInUrl: true,
 });
 
 const { queryArg: repeat } = useQueryArg<number>({
-  key: 'repeat',
+  key: REPEAT_URL_KEY,
   defaultValue: sessionStorage.getItem<number>(REPEAT_STORAGE_KEY) ?? 0,
   replace: true,
   showDefaultInUrl: true,
@@ -325,16 +303,20 @@ function completeStep3() {
 }
 
 // step 4
-const repeatCount = useRepeatCounter({
-  formId: form.value?.id || -1,
-  entityId: props.entityId || -1,
-  entityType: props.entityType,
-});
+const attributeFormKey = ref(0);
 
-function completeStep4() {
-  // TODO:
-  console.log(form);
+function completeStep4(repeatCount: number) {
+  if (repeatCount >= repeatInt.value) {
+    // select next entity
+    step.value = 3;
+  } else {
+    // stay on the same entity
+    // but reset the AttributeForm
+    attributeFormKey.value += 1;
+  }
 }
+
+const route = useRoute();
 
 watch(
   () => props.entityId,
@@ -345,7 +327,42 @@ watch(
   },
 );
 
-const step = ref(1);
+const step1Done = computed(
+  () =>
+    // look at url instead of formId so it can also be used to detect the initial step
+    !!route.query[FORM_ID_URL_KEY] &&
+    parseInt(route.query[FORM_ID_URL_KEY].toString()) > 0,
+);
+
+const step2Done = computed(
+  () =>
+    // look at url instead of author, date and repeat so it can also be used to detect the initial step
+    !!route.query[AUTHOR_URL_KEY] &&
+    !!route.query[DATE_URL_KEY] &&
+    typeof route.query[REPEAT_URL_KEY] !== 'undefined',
+);
+
+const step3Done = computed(() => props.entityId !== null);
+
+function getInitialStep() {
+  // never jump directly to step 4 to make very clear, that any attribution input is lost
+  return !step1Done.value ? 1 : !step2Done.value ? 2 : 3;
+}
+
+const step = ref(getInitialStep());
+
+function handleTransition(to: string | number, from: string | number) {
+  if (to === 3) {
+    if (platform.is.safari && from === 2) {
+      // else safari is going shaky
+      setTimeout(() => {
+        props.focusEntitySelector?.();
+      }, 100);
+    } else {
+      props.focusEntitySelector?.();
+    }
+  }
+}
 </script>
 
 <style scoped>

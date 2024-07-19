@@ -92,7 +92,6 @@ gcloud sql instances create $PG_INSTANCE_NAME \
   #--ssl-mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED \
   --ssl-mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED \
   --activation-policy=ALWAYS \
-  --no-assign-ip \
   --enable-google-private-path \
   --network=projects/$PROJECT_ID/global/networks/default \
   --availability-type=ZONAL \
@@ -110,6 +109,31 @@ gcloud sql instances describe $PG_INSTANCE_NAME
 # use connectionName to build connection string
 # postgres://postgres:<PASSWORD>@/<DATABASE_NAME>?host=/cloudsql/<CONNECTION_NAME>
 ```
+
+Access the database:
+
+```bash
+## FUTURE
+# in the future use the following command to connect to the database
+# currently there are some ipv6 issues…
+gcloud components install cloud_sql_proxy
+gcloud sql connect $PG_INSTANCE_NAME --user=postgres
+
+
+## NOW
+# NOTE: the instance needs a public IP to connect to it
+# 1. install cloud-sql-proxy
+brew install cloud-sql-proxy
+# 2. start the proxy
+cloud-sql-proxy $PROJECT_ID:$REGION:$PG_INSTANCE_NAME --port 35432 --gcloud-auth
+# 3. connect to the database
+psql -h localhost -p 35432 -U postgres
+# check the env for the password
+```
+
+Restoring a backup:
+
+You may need to reload the metadata in hasura after restoring the database.
 
 ## HASURA
 
@@ -143,9 +167,9 @@ gcloud run deploy $HASURA_SERVICE_NAME \
   --network=default \
   --use-http2
 
-hasura deploy --endpoint https://hasura-fbygdhvnga-oa.a.run.app --admin-secret SECRET
-# later:
-#hasura deploy --endpoint https://beta.breedersdb.com/api --admin-secret SECRET
+hasura deploy --endpoint https://beta.breedersdb.com/api/hasura --admin-secret SECRET
+# in case of error, try:
+#hasura deploy --endpoint https://hasura-fbygdhvnga-oa.a.run.app --admin-secret SECRET
 
 # hasura should now be available on the https://hasura-fbygdhvnga-oa.a.run.app
 # the following steps are preparations for the load balancer for using it with a
@@ -545,3 +569,5 @@ resource.type:(http_load_balancer) AND jsonPayload.enforcedSecurityPolicy.name:(
 Limit: If more than 30 requests are made in 3 minutes, the IP is banned for 1 hour.
 
 Attention `enforce-on-key=IP`: The requesting IP is hasuras IP, this means all requests from one hasura instance are counted together. This was done because google cloud does not easily support rate limiting on a trusted ip set by the load balancer.
+
+**Note**: Because the rate limiter sits in between hasura and the cloud function and hasura doesn't forward the `429` status code, there is no way to find out why the request failed in the frontend. This means there is no adequate error message.

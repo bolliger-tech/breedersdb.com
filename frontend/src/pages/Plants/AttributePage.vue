@@ -1,11 +1,14 @@
 <template>
   <PageLayout>
-    <h1>{{ t('attribute.title') }}</h1>
+    <h1>
+      {{ t('attribute.attributeEntity', { entity: t('plants.title', 1) }) }}
+    </h1>
     <AttributeSteps
       :entity-caption="entityCaption"
       :entity-loading="fetching"
       :entity-id="plant?.id || null"
       :entity-type="AttributableEntities.Plant"
+      :focus-entity-selector="plantSelectorRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#tree"
       @entity-step-completed="() => plantSelectorRef?.onManualInput()"
     >

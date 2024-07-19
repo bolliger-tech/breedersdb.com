@@ -1,5 +1,6 @@
 export const attribute = {
-  title: 'Add Attribute',
+  title: 'Attribute | Attributes',
+  attributeEntity: 'Attribute {entity}',
   attributions: 'Attributions',
 
   form: 'Form',
@@ -23,6 +24,9 @@ export const attribute = {
   missingMetadata: 'Missing metadata.',
   addMetadata: 'Add metadata',
 
+  alreadyAttributed:
+    "You've already attributed this {entity} on this device with this form {timeAgo}.",
+
   counter: {
     description:
       "During the last 24h, you've added {count} marks with this form to this {entity} (target {total}).",
@@ -30,13 +34,30 @@ export const attribute = {
     title: 'Count',
   },
 
-  addTextNote: 'Add Note',
-  addPhotoNote: 'Add Photo',
+  sameAgainWarning: 'This form contains this attribute multiple times.',
+
+  notes: 'Notes',
+  addTextNote: 'Add note',
+  addPhotoNote: 'Add photo',
 
   invalidNumber:
     'Invalid number. Valid values are between {min} and {max} with a step of {step}.',
   invalidPhoto: 'Invalid or unsupported image.',
+  invalidInput: 'Some inputs are invalid. Please check the form.',
+  notCurrentYearMonth:
+    'The selected date is outside the current year or month.',
 
   textPlaceholder: 'Enter some text…',
   numberPlaceholder: 'Enter a number…',
+
+  clearAttribute:
+    'Clearing this value will remove the comments for this attribute as well. Do you want to delete the comments?',
+
+  saved: 'Attribute saved.',
+  uploading: 'Saving… {percentage}%',
+
+  noValues: 'Nothing to save. Add some values or select a different {entity}.',
+  changeEntity: 'Change {entity}',
+
+  addAttribute: 'Add attribute',
 };

@@ -144,7 +144,7 @@
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { AttributionDetails } from './QueryResultTableCellAttributionOverlay.vue';
+import { AttributionDetails } from './AnalyzeResultTableCellAttributionOverlay.vue';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import { localizeDate } from 'src/utils/dateUtils';
 import EntityName from 'src/components/Entity/EntityName.vue';

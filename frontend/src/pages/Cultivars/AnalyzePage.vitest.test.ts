@@ -16,9 +16,9 @@ import {
   FilterConjunction,
   BaseTable,
 } from 'src/components/Analyze/Filter/filterNode';
-import QueryFilterRuleColumn from 'src/components/Analyze/Filter/QueryFilterRuleColumn.vue';
-import QueryFilterRuleOperator from 'src/components/Analyze/Filter/QueryFilterRuleOperator.vue';
-import QueryFilterRuleTerm from 'src/components/Analyze/Filter/QueryFilterRuleTerm.vue';
+import QueryFilterRuleColumn from 'components/Analyze/Filter/AnalyzeFilterRuleColumn.vue';
+import QueryFilterRuleOperator from 'components/Analyze/Filter/AnalyzeFilterRuleOperator.vue';
+import QueryFilterRuleTerm from 'components/Analyze/Filter/AnalyzeFilterRuleTerm.vue';
 import {
   FilterRuleOperator,
   FilterOperatorValue,

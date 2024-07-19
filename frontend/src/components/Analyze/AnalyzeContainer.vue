@@ -41,9 +41,9 @@
 
 <script setup lang="ts">
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import QueryHeader from 'src/components/Analyze/Header/QueryHeader.vue';
+import QueryHeader from 'components/Analyze/Header/AnalyzeHeader.vue';
 import QueryFilter from 'src/components/Analyze/Filter/QueryFilter.vue';
-import QueryResult from 'src/components/Analyze/Result/QueryResult.vue';
+import QueryResult from 'components/Analyze/Result/AnalyzeResult.vue';
 import { BaseTable, FilterNode } from './Filter/filterNode';
 import { useAttributesAsColumns } from './ColumnDefinitions/useAttributesAsColumns';
 import { computed, onMounted, Ref, ref } from 'vue';
@@ -145,7 +145,7 @@ const resultColumns = computed<QTableColumn[]>(() => {
           align: 'center',
           sortable: false,
           // only format base table columns because attributions must be treated
-          // differently (see QueryResultTableCellAttribution.vue)
+          // differently (see AnalyzeResultTableCellAttribution.vue)
         },
       ];
 

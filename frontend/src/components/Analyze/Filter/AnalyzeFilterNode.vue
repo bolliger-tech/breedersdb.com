@@ -93,11 +93,11 @@
 import { computed, ref } from 'vue';
 import { moveNode } from './filterNodeActions';
 import { useI18n } from 'src/composables/useI18n';
-import QueryFilterRule from './QueryFilterRule.vue';
-import FilterRuleButtonAdd from './QueryFilterRuleAddButton.vue';
+import QueryFilterRule from './AnalyzeFilterRule.vue';
+import FilterRuleButtonAdd from './AnalyzeFilterRuleAddButton.vue';
 import { FilterNode, FilterConjunction } from './filterNode';
 import { useAnalyzeStore } from '../useAnalyzeStore';
-import QueryFilterRuleDropZone from './QueryFilterRuleDropZone.vue';
+import QueryFilterRuleDropZone from './AnalyzeFilterRuleDropZone.vue';
 import { FilterRuleColumn } from './filterRuleColumn';
 
 export interface QueryFilterNodeProps {

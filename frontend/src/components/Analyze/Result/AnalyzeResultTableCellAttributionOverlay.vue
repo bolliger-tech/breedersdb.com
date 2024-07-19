@@ -14,7 +14,7 @@ import { ResultOf, graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import QueryResultTableCellAttributionOverlayDetails from './QueryResultTableCellAttributionOverlayDetails.vue';
+import QueryResultTableCellAttributionOverlayDetails from './AnalyzeResultTableCellAttributionOverlayDetails.vue';
 import {
   plantFragment,
   type PlantFragment,

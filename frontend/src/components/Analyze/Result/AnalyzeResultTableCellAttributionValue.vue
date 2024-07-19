@@ -18,8 +18,8 @@ import {
   getAttributeValue,
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
-import QueryResultTableCellAttributionOverlay from './QueryResultTableCellAttributionOverlay.vue';
-import QueryResultTableCellAttribution from './QueryResultTableCellAttribution.vue';
+import QueryResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
+import QueryResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
 import { useQuasar } from 'quasar';
 import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 

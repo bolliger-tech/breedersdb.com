@@ -79,11 +79,11 @@
 <script lang="ts" setup>
 import { computed, watch } from 'vue';
 import { FilterNode, FilterConjunction } from './filterNode';
-import QueryFilterRuleTerm from './QueryFilterRuleTerm.vue';
-import QueryFilterRuleColumn from './QueryFilterRuleColumn.vue';
-import QueryFilterRuleOperator from './QueryFilterRuleOperator.vue';
-import QueryFilterRuleExplainer from './QueryFilterRuleExplainer.vue';
-import QueryFilterRuleNoAttributionsPredicate from './QueryFilterRuleNoAttributionsPredicate.vue';
+import QueryFilterRuleTerm from './AnalyzeFilterRuleTerm.vue';
+import QueryFilterRuleColumn from './AnalyzeFilterRuleColumn.vue';
+import QueryFilterRuleOperator from './AnalyzeFilterRuleOperator.vue';
+import QueryFilterRuleExplainer from './AnalyzeFilterRuleExplainer.vue';
+import QueryFilterRuleNoAttributionsPredicate from './AnalyzeFilterRuleNoAttributionsPredicate.vue';
 import { FilterRuleColumn } from './filterRuleColumn';
 import { FilterRuleOperator } from './filterRuleOperator';
 import { FilterRuleTerm } from './filterRuleTerm';

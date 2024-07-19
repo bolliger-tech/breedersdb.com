@@ -67,8 +67,8 @@
 </template>
 
 <script lang="ts" setup>
-import QueryFilterRuleAddButton from './QueryFilterRuleAddButton.vue';
-import QueryFilterNode from './QueryFilterNode.vue';
+import QueryFilterRuleAddButton from './AnalyzeFilterRuleAddButton.vue';
+import QueryFilterNode from './AnalyzeFilterNode.vue';
 import { computed, Ref, ref, watch } from 'vue';
 import { FilterNode, FilterConjunction, BaseTable } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';

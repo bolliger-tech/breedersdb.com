@@ -23,8 +23,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { QTableSlots } from 'quasar';
-import QueryResultTableCellAttributionValue from './QueryResultTableCellAttributionValue.vue';
-import QueryResultTableCellAttributionValueAggregated from './QueryResultTableCellAttributionValueAggregated.vue';
+import QueryResultTableCellAttributionValue from './AnalyzeResultTableCellAttributionValue.vue';
+import QueryResultTableCellAttributionValueAggregated from './AnalyzeResultTableCellAttributionValueAggregated.vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
 import { AttributionAggregation } from './attributionAggregationTypes';
 

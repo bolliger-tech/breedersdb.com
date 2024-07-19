@@ -33,10 +33,10 @@
 
 <script lang="ts" setup>
 import { QTableColumn, QTableProps } from 'quasar';
-import QueryResultTableCell from './QueryResultTableCell.vue';
+import QueryResultTableCell from './AnalyzeResultTableCell.vue';
 import { QueryAttributionsViewFields } from './filterToQuery';
 import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
-import QueryResultTableColumnLabel from 'src/components/Analyze/Result/QueryResultTableColumnLabel.vue';
+import QueryResultTableColumnLabel from 'components/Analyze/Result/AnalyzeResultTableColumnLabel.vue';
 
 export interface QueryResultTableProps
   extends QueryResultTablePropsWithoutModel {

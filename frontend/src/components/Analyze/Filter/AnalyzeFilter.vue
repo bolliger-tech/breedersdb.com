@@ -26,7 +26,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import QueryFilterRootNode from './QueryFilterRootNode.vue';
+import QueryFilterRootNode from './AnalyzeFilterRootNode.vue';
 import { computed } from 'vue';
 import { useEntityName } from 'src/composables/useEntityName';
 import { BaseTable, FilterNode } from './filterNode';

@@ -33,7 +33,7 @@
 import { computed, ref, watch } from 'vue';
 import QueryResultTable, {
   QueryResultTableProps,
-} from 'components/Analyze/Result/QueryResultTable.vue';
+} from 'components/Analyze/Result/AnalyzeResultTable.vue';
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
 import { QueryResult, filterToQuery } from './filterToQuery';
 import { useQuery } from '@urql/vue';

@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import QueryHeaderMoreMenu from './QueryHeaderMoreMenu.vue';
+import QueryHeaderMoreMenu from './AnalyzeHeaderMoreMenu.vue';
 import {
   BaseTable,
   FilterNode,
@@ -49,9 +49,9 @@ import { analyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFra
 import { ref, computed, nextTick } from 'vue';
 import { AnalyzeFilterBaseTables } from 'src/graphql';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import QueryHeaderNameDialog from './QueryHeaderNameDialog.vue';
+import QueryHeaderNameDialog from './AnalyzeHeaderNameDialog.vue';
 import { useRouter, useRoute } from 'vue-router';
-import QueryHeaderNote from './QueryHeaderNote.vue';
+import QueryHeaderNote from './AnalyzeHeaderNote.vue';
 
 export interface QueryHeaderProps {
   analyzeId: 'new' | number;

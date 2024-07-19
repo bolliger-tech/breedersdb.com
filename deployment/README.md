@@ -107,10 +107,11 @@ gcloud sql instances create $PG_INSTANCE_NAME \
 
 gcloud sql instances describe $PG_INSTANCE_NAME
 # use connectionName to build connection string
+# the DATABASE_NAME you get after creating the customer database
 # postgres://postgres:<PASSWORD>@/<DATABASE_NAME>?host=/cloudsql/<CONNECTION_NAME>
 ```
 
-Access the database:
+### Access the database:
 
 ```bash
 ## FUTURE
@@ -127,11 +128,42 @@ brew install cloud-sql-proxy
 # 2. start the proxy
 cloud-sql-proxy $PROJECT_ID:$REGION:$PG_INSTANCE_NAME --port 35432 --gcloud-auth
 # 3. connect to the database
-psql -h localhost -p 35432 -U postgres
+psql -h localhost -p 35432 -U postgres [postgres / $PG_DB_NAME]
 # check the env for the password
 ```
 
+### Create customer database
+
+```bash
+export PG_DB_NAME=$INSTANCE
+
+# start cloud-sql-proxy then:
+
+psql -h localhost -p 35432 -U postgres <<EOF
+create database $PG_DB_NAME locale_provider "icu" icu_locale "en_US-u-kn-true" template template0;
+EOF
+```
+
+Links about collations:
+
+- https://www.postgresql.org/docs/current/collation.html
+- https://www.postgresql.org/docs/14/collation.html#COLLATION-CREATE
+- https://blog.testdouble.com/posts/2022-12-12-pg-natural-sorting/
+- https://github.com/unicode-org/cldr/blob/main/common/bcp47/collation.xml#L12
+
+### Backups
+
+Taking a backup:
+
+```bash
+pg_dump -h localhost -p 35432 -U postgres postgres --clean > $PG_INSTANCE_NAME-$PG_DB_NAME-$(date +"%Y.%m.%d_%H:%M:%S").sql
+```
+
 Restoring a backup:
+
+```bash
+psql -h localhost -p 35432 -U postgres $PG_DB_NAME < $PG_INSTANCE_NAME-$PG_DB_NAME-date.sql
+```
 
 You may need to reload the metadata in hasura after restoring the database.
 

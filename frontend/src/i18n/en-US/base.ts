@@ -10,6 +10,10 @@ export const base = {
     cultivar: 'cultivar | cultivars',
     plant: 'plant | plants',
     attribution: 'attribution | attributions',
+    orchard: 'orchard | orchards',
+    rootstock: 'rootstock | rootstocks',
+    grafting: 'grafting | graftings',
+    plantRow: 'row | rows',
   },
 
   timespan: {
@@ -23,6 +27,7 @@ export const base = {
   download: 'Download',
   close: 'Close',
   delete: 'Delete',
+  disable: 'Disable',
   edit: 'Edit',
   new: 'New',
   save: 'Save',
@@ -42,6 +47,7 @@ export const base = {
     min: 'Minimum value is {x}',
     max: 'Maximum value is {x}',
     integer: 'Must be an integer',
+    nameNotUnique: 'This name is already in use',
   },
 
   noResults: 'No results',
@@ -55,7 +61,8 @@ export const base = {
   },
 
   notAvailable: 'N/A',
-  deleteConfirmation: 'Are you sure you want to delete this item?',
+  deleteConfirmation: 'Are you sure you want to delete this {entity}?',
+  disableConfirmation: 'Are you sure you want to disable this {entity}?',
 
   locales: {
     'en-US': 'English',

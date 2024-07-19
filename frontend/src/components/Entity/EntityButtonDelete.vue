@@ -1,7 +1,7 @@
 <template>
   <q-btn
     flat
-    :label="t('base.delete')"
+    :label="label ? label : t('base.delete')"
     color="negative"
     :disable="disabled"
     @click="confirm = true"
@@ -9,14 +9,25 @@
 
   <q-dialog v-model="confirm" @hide="$emit('resetErrors')">
     <q-card>
-      <q-card-section class="row items-center">
-        <q-avatar icon="warning" color="negative" text-color="white" />
-        <span class="q-ml-sm">{{
-          message ? message : t('base.deleteConfirmation')
-        }}</span>
+      <q-card-section class="row items-center q-gutter-md">
+        <slot name="message">
+          <div class="col-auto">
+            <q-icon
+              name="warning"
+              :color="error ? 'negative' : 'warning'"
+              size="50px"
+            />
+          </div>
+          <div class="col">
+            <template v-if="foreignKeyError">{{ foreignKeyError }}</template>
+            <template v-else>
+              {{ message ? message : t('base.deleteConfirmation') }}
+            </template>
+          </div>
+        </slot>
       </q-card-section>
 
-      <template v-if="error">
+      <template v-if="error && !foreignKeyError">
         <q-separator />
         <q-card-section v-if="error">
           <BaseGraphqlError :error="error" />
@@ -25,11 +36,16 @@
       </template>
 
       <q-card-actions align="right">
-        <q-btn v-close-popup flat :label="t('base.cancel')" color="primary" />
+        <q-btn
+          v-close-popup
+          flat
+          :label="foreignKeyError ? t('base.ok') : t('base.cancel')"
+          color="primary"
+        />
         <q-btn
           v-if="!error"
           flat
-          :label="t('base.delete')"
+          :label="label ? label : t('base.delete')"
           :loading="fetching"
           color="negative"
           @click="$emit('delete')"
@@ -41,26 +57,46 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import BaseGraphqlError, {
   BaseGraphqlErrorProps,
 } from '../Base/BaseGraphqlError.vue';
 
 export interface EntityButtonEliminateProps {
+  label?: string;
   message?: string;
   error?: BaseGraphqlErrorProps['error'];
   fetching?: boolean;
   disabled?: boolean;
 }
 
-defineProps<EntityButtonEliminateProps>();
-
-const { t } = useI18n();
-
-const confirm = ref(false);
+const props = defineProps<EntityButtonEliminateProps>();
 
 defineEmits<{
   delete: [];
   resetErrors: [];
 }>();
+
+const foreignKeyError = computed(() => {
+  const regex =
+    /Foreign key violation\..* on table "([^"]+)" violates foreign key constraint.* on table "([^"]+)"/i;
+
+  if (!props.error?.message || !regex.test(props.error.message)) {
+    return null;
+  }
+
+  const [, currentTable, foreignTable] = props.error.message.match(
+    regex,
+  ) as string[];
+
+  const currentEntity = currentTable.replace('plant_', '').replace('_', ' ');
+  const foreignEntity = foreignTable.replace('plant_', '').replace('_', ' ');
+
+  // this is too tedious to translate…
+  return `Failed to delete ${currentEntity} because some ${foreignEntity} depend on it. Delete the ${foreignEntity} first.`;
+});
+
+const { t } = useI18n();
+
+const confirm = ref(false);
 </script>

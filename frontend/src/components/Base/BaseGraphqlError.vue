@@ -14,7 +14,13 @@
 
     <template v-else>
       <h3 class="q-mt-sm">GraphQL Error</h3>
-      <p class="base-graphql-error__msg">{{ error.message }}</p>
+      <p class="base-graphql-error__msg">
+        {{
+          error.message.startsWith('[GraphQL]')
+            ? error.message.slice(9)
+            : error.message
+        }}
+      </p>
       <pre class="q-ma-none base-graphql-error__msg">{{
         JSON.stringify(error, null, 2)
       }}</pre>
@@ -51,8 +57,6 @@ const { t } = useI18n();
 
 <style lang="scss" scoped>
 .base-graphql-error__msg {
-  font-size: 12px;
-
   pre {
     white-space: pre-wrap;
   }

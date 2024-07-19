@@ -1,17 +1,18 @@
 <template>
-  <EntityModalContent
-    :loading="savingEdit || savingInsert"
-    :save-error="saveError"
-    :validation-error="validationError"
+  <EntityModalEdit
+    :entity="plant"
+    :insert-mutation="insertMutation"
+    :edit-mutation="editMutation"
+    index-path="/plants"
     sprite-icon="tree"
-    :title="title"
     :subtitle="t('plants.title', 1)"
-    @cancel="cancel"
-    @save="save"
-    @reset-errors="resetErrors"
   >
-    <template #default>
-      <PlantEntityForm ref="formRef" :plant="plant" @change="onFormChange" />
+    <template #form="{ setFormRef, onChange }">
+      <PlantEntityForm
+        :ref="(el) => setFormRef(el)"
+        :plant="plant"
+        @change="onChange"
+      />
     </template>
 
     <template #action-left>
@@ -21,27 +22,19 @@
       />
       <div v-else></div>
     </template>
-  </EntityModalContent>
+  </EntityModalEdit>
 </template>
 
 <script setup lang="ts">
-import { useMutation } from '@urql/vue';
 import {
   PlantFragment,
   plantFragment,
 } from 'src/components/Plant/plantFragment';
-import { VariablesOf, graphql } from 'src/graphql';
-import { computed, ref, nextTick } from 'vue';
-import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
+import { graphql } from 'src/graphql';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
 import PlantEntityForm from 'src/components/Plant/PlantEntityForm.vue';
+import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { useI18n } from 'src/composables/useI18n';
-import {
-  closeModalSymbol,
-  makeModalPersistentSymbol,
-} from 'src/components/Entity/modalProvideSymbols';
-import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import { useCancel } from 'src/composables/useCancel';
 
 export type PlantEditInput = PlantFragment;
 export type PlantInsertInput = Omit<
@@ -60,124 +53,38 @@ export interface PlantModalEditProps {
   title: string;
 }
 
-const props = defineProps<PlantModalEditProps>();
-
-const { cancel } = useCancel({ path: '/plants' });
-
-const validationError = ref<string | null>(null);
-const closeModal = useInjectOrThrow(closeModalSymbol);
-const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
-const formRef = ref<InstanceType<typeof PlantEntityForm> | null>(null);
+defineProps<PlantModalEditProps>();
 
 const insertMutation = graphql(
   `
     mutation InsertPlant(
-      $plant: plants_insert_input!
+      $entity: plants_insert_input!
       $withSegments: Boolean = true
       $withAttributions: Boolean = false
     ) {
-      insert_plants_one(object: $plant) {
+      insert_plants_one(object: $entity) {
         ...plantFragment
       }
     }
   `,
   [plantFragment],
 );
-const insertData = ref<VariablesOf<typeof insertMutation>['plant']>();
-const {
-  executeMutation: executeInsertMutation,
-  fetching: savingInsert,
-  error: saveInsertError,
-} = useMutation(insertMutation);
 
 const editMutation = graphql(
   `
     mutation UpdatePlant(
       $id: Int!
-      $plant: plants_set_input!
+      $entity: plants_set_input!
       $withSegments: Boolean = true
       $withAttributions: Boolean = false
     ) {
-      update_plants_by_pk(pk_columns: { id: $id }, _set: $plant) {
+      update_plants_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...plantFragment
       }
     }
   `,
   [plantFragment],
 );
-const editedData = ref<VariablesOf<typeof editMutation>['plant']>();
-const {
-  executeMutation: executeEditMutation,
-  fetching: savingEdit,
-  error: saveEditError,
-} = useMutation(editMutation);
-
-function onFormChange(data: typeof editedData.value | typeof insertData.value) {
-  if (!data) {
-    return;
-  } else if ('id' in props.plant) {
-    editedData.value = data;
-  } else {
-    insertData.value = data;
-  }
-}
-
-async function save() {
-  const isValid = await formRef.value?.validate();
-  validationError.value = isValid ? null : t('base.validation.invalidFields');
-  if (!isValid) {
-    return;
-  }
-
-  if ('id' in props.plant) {
-    await saveEdit();
-  } else {
-    await saveInsert();
-  }
-
-  await nextTick();
-
-  if (!saveError.value) {
-    makeModalPersistent(false);
-    closeModal();
-  }
-}
-
-async function saveInsert() {
-  if (!insertData.value) {
-    closeModal();
-    return;
-  }
-
-  return executeInsertMutation({
-    plant: insertData.value,
-  });
-}
-
-async function saveEdit() {
-  if (!editedData.value) {
-    closeModal();
-    return;
-  }
-
-  if (!('id' in props.plant)) {
-    // this should never happen
-    throw new Error('Plant ID is missing');
-  }
-
-  return executeEditMutation({
-    id: props.plant.id,
-    plant: editedData.value,
-  });
-}
-
-const saveError = computed(() => saveInsertError.value || saveEditError.value);
-
-function resetErrors() {
-  saveInsertError.value = undefined;
-  saveEditError.value = undefined;
-  validationError.value = null;
-}
 
 const { t } = useI18n();
 </script>

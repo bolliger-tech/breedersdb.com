@@ -38,7 +38,7 @@ actions:
         - name: X-Actions-Secret
           value_from_env: ACTIONS_SECRET
         - name: X-Rate-Limit
-          value: 'signin'
+          value: signin
     permissions:
       - role: user
       - role: public
@@ -54,7 +54,8 @@ actions:
       - role: user
 custom_types:
   enums: []
-  input_objects: []
+  input_objects:
+    - name: UserInsertInput
   objects:
     - name: FullUserOutput
     - name: SignOutOutput

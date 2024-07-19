@@ -36,7 +36,9 @@ Check the documentation in [deployment](../deployment/README.md).
 - Inserting the first user is done by running the `InsertUser` mutation in hasura (x-hasura-admin-secret)
   ```graphql
   mutation InsertUser {
-    InsertUser(email: "tester@breedersdb.com", password: "Asdfasdf.1") {
+    InsertUser(
+      object: { email: "tester@breedersdb.com", password: "Asdfasdf.1" }
+    ) {
       email
     }
   }

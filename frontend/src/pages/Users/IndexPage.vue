@@ -19,15 +19,14 @@
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
-import { UseQueryArgs, useQuery } from '@urql/vue';
+import { useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, provide, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n, Locale } from 'src/composables/useI18n';
-import { usePagination } from 'src/components/Entity/List/usePagination';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { userFragment } from 'src/components/User/userFragment';
-import { userReexecuteQuerySymbol } from './userProvideSymbols';
+import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 
 const { t, d } = useI18n();
 
@@ -52,54 +51,16 @@ const query = graphql(
   [userFragment],
 );
 
-const { queryArg: search } = useQueryArg<string>({
-  key: 's',
-  defaultValue: '',
-  replace: true,
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+  defaultSortBy: 'email',
+  searchColumn: 'email',
 });
 
-const { pagination } = usePagination({
-  sortBy: 'email',
-  descending: false,
-  page: 1,
-  rowsPerPage: 100,
-  rowsNumber: 0,
-});
-
-const orderBy = computed(() => {
-  const order = pagination.value.descending ? 'desc' : 'asc';
-  const column = pagination.value.sortBy;
-
-  return [{ [column]: order }, { id: 'asc' }];
-});
-
-const where = computed(() => {
-  const where: UseQueryArgs<typeof query>['variables'] = { _and: [] };
-
-  if (search.value) {
-    where._and.push({
-      email: { _ilike: `%${search.value}%` },
-    });
-  }
-
-  return where;
-});
-
-const variables = computed(() => ({
-  limit: pagination.value.rowsPerPage,
-  offset: (pagination.value.page - 1) * pagination.value.rowsPerPage,
-  orderBy: orderBy.value,
-  where: where.value,
-}));
-
-const { data, fetching, error, executeQuery } = await useQuery({
+const { data, fetching, error } = await useQuery({
   query,
   variables,
+  context: { additionalTypenames: ['users', 'FullUserOutput'] },
 });
-
-provide(userReexecuteQuerySymbol, () =>
-  executeQuery({ requestPolicy: 'network-only' }),
-);
 
 const usersCount = computed(
   () => data.value?.users_aggregate?.aggregate?.count || 0,

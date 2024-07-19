@@ -64,4 +64,9 @@ export const base = {
 
   yes: 'yes',
   no: 'no',
+
+  networkError: {
+    title: 'Network error',
+    message: 'Are you connected to the internet?',
+  },
 };

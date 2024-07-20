@@ -71,11 +71,16 @@ const selectedColumns = ref<string[]>([]);
 const defaultColumns = computed(() => {
   return props.availableColumns.slice(0, 5).map((c) => c.name);
 });
+const validInitialVisibleColumns = computed(() =>
+  props.initialVisibleColumns?.filter((vc) =>
+    props.availableColumns.find((ac) => ac.name === vc),
+  ),
+);
 const visibleColumns = computed({
   get: () =>
     selectedColumns.value.length > 0
       ? selectedColumns.value
-      : props.initialVisibleColumns ?? defaultColumns.value,
+      : validInitialVisibleColumns.value ?? defaultColumns.value,
   set: (cols: string[]) => {
     selectedColumns.value = cols;
   },

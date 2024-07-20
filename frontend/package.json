@@ -61,8 +61,5 @@
     "@sentry/cli",
     "esbuild",
     "vue-demi"
-  ],
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.19.0"
-  }
+  ]
 }

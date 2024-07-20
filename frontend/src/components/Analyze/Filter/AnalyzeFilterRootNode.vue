@@ -1,4 +1,8 @@
 <template>
+  <p class="text-weight-bold q-mb-xs q-mt-lg">
+    {{ title }}
+  </p>
+
   <div v-if="deserializationError">
     <div class="row align-center text-negative">
       <q-icon name="warning" class="col-auto q-mr-xs" />
@@ -35,34 +39,35 @@
   </div>
 
   <template v-else>
-    <div v-if="isSimplifiable" class="text-negative q-mb-sm">
-      <q-icon name="warning" />
-      {{ t('analyze.filter.simplifiable') }}&nbsp;&nbsp;
-      <q-btn
-        size="sm"
-        color="negative"
-        dense
-        class="q-px-md"
-        unelevated
-        @click="simplify()"
-      >
-        {{ t('analyze.filter.simplify') }}
-      </q-btn>
-    </div>
-    <div v-else-if="!isValid" class="text-negative q-mb-sm">
-      <q-icon name="warning" />
-      {{ t('analyze.filter.invalid') }}
-    </div>
-    <div v-else class="text-positive q-mb-sm">
-      <q-icon name="check" />
-      {{ t('analyze.filter.valid') }}
-    </div>
-
     <AnalyzeFilterNode
       :node="filter"
       :conjunction="filter.getChildrensConjunction() || FilterConjunction.And"
       :columns="columns"
     />
+    <div style="margin: -26px 0 0 36px">
+      <div v-if="isSimplifiable" class="text-negative q-mb-sm">
+        <q-icon name="warning" />&nbsp;
+        {{ t('analyze.filter.simplifiable') }}&nbsp;&nbsp;
+        <q-btn
+          size="sm"
+          color="negative"
+          dense
+          class="q-px-md"
+          unelevated
+          @click="simplify()"
+        >
+          {{ t('analyze.filter.simplify') }}
+        </q-btn>
+      </div>
+      <div v-else-if="!isValid" class="text-negative q-mb-sm">
+        <q-icon name="warning" />&nbsp;
+        {{ t('analyze.filter.invalid') }}
+      </div>
+      <div v-else class="text-positive q-mb-sm">
+        <q-icon name="check" />&nbsp;
+        {{ t('analyze.filter.valid') }}
+      </div>
+    </div>
   </template>
 </template>
 
@@ -78,6 +83,7 @@ import { useEntityName } from 'src/composables/useEntityName';
 const { t } = useI18n();
 
 export interface AnalyzeFilterRootNodeProps {
+  title: string;
   baseTable: BaseTable;
   columns: FilterRuleColumn[];
   fetching: boolean;

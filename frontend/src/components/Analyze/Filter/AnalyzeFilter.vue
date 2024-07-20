@@ -1,8 +1,6 @@
 <template>
-  <p class="text-weight-bold q-mb-none q-mt-lg">
-    {{ t('analyze.filter.baseFilter', { entityName }) }}
-  </p>
   <AnalyzeFilterRootNode
+    :title="t('analyze.filter.baseFilter', { entityName })"
     :serialized-filter="initialBaseFilter"
     :base-table="props.baseTable"
     :columns="baseFilterColumns"
@@ -10,18 +8,15 @@
     @changed="$emit('baseFilterChanged', $event)"
   />
 
-  <template v-if="attributionFilterColumns || attributionFilterColumnsFetching">
-    <p class="text-weight-bold q-mb-sm q-mt-lg">
-      {{ t('analyze.filter.attributionFilter') }}
-    </p>
-    <AnalyzeFilterRootNode
-      :serialized-filter="initialAttributionFilter"
-      :base-table="BaseTable.Attributions"
-      :columns="attributionFilterColumns || []"
-      :fetching="attributionFilterColumnsFetching || false"
-      @changed="$emit('attributionFilterChanged', $event)"
-    />
-  </template>
+  <AnalyzeFilterRootNode
+    v-if="attributionFilterColumns || attributionFilterColumnsFetching"
+    :title="t('analyze.filter.attributionFilter')"
+    :serialized-filter="initialAttributionFilter"
+    :base-table="BaseTable.Attributions"
+    :columns="attributionFilterColumns || []"
+    :fetching="attributionFilterColumnsFetching || false"
+    @changed="$emit('attributionFilterChanged', $event)"
+  />
 </template>
 
 <script lang="ts" setup>

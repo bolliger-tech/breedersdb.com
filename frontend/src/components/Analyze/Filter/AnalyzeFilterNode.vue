@@ -96,9 +96,9 @@ import { useI18n } from 'src/composables/useI18n';
 import AnalyzeFilterRule from './AnalyzeFilterRule.vue';
 import FilterRuleButtonAdd from './AnalyzeFilterRuleAddButton.vue';
 import { FilterNode, FilterConjunction } from './filterNode';
-import { useAnalyzeStore } from '../useAnalyzeStore';
 import AnalyzeFilterRuleDropZone from './AnalyzeFilterRuleDropZone.vue';
 import { FilterRuleColumn } from './filterRuleColumn';
+import { useFilterDragNode } from './useFilterDragNode';
 
 export interface AnalyzeFilterNodeProps {
   node: FilterNode;
@@ -109,13 +109,11 @@ export interface AnalyzeFilterNodeProps {
 const props = defineProps<AnalyzeFilterNodeProps>();
 
 const { t } = useI18n();
-const store = useAnalyzeStore();
 
 const dragging = ref<FilterNode | undefined>(undefined);
 
-const dragObj = computed(() => {
-  return store.filterDragNode;
-});
+const { inject: injectDragObj } = useFilterDragNode();
+const dragObj = injectDragObj();
 
 const dragActive = computed(() => {
   const currentNodeType = props.node.getBaseTable();
@@ -146,7 +144,7 @@ const dropConjunction = computed(() => {
 
 function setDragObj(node: FilterNode | undefined) {
   dragging.value = node;
-  store.filterDragNode = node;
+  dragObj.value = node;
 }
 
 function dragStart(event: DragEvent) {

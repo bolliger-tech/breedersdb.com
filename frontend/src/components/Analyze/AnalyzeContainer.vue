@@ -57,6 +57,7 @@ import {
 } from 'src/utils/attributeUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { AttributionAggregation } from './Result/attributionAggregationTypes';
+import { useExplainFilters } from './useExplainFilters';
 
 type ColumnValue = PrimitiveColumnValue | { [key: string]: ColumnValue };
 
@@ -238,4 +239,7 @@ function updateVisibleColumns(columns: string[] | undefined) {
   visibleColumns.value = columns;
   emit('visibleColumnsChanged', columns);
 }
+
+const { provide: provideExplainFilters } = useExplainFilters();
+provideExplainFilters();
 </script>

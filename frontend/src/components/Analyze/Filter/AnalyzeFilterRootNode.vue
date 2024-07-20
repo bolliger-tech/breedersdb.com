@@ -79,6 +79,7 @@ import { FilterNode, FilterConjunction, BaseTable } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
 import { FilterRuleColumn } from './filterRuleColumn';
 import { useEntityName } from 'src/composables/useEntityName';
+import { useFilterDragNode } from './useFilterDragNode';
 
 const { t } = useI18n();
 
@@ -145,6 +146,9 @@ function simplify() {
     filter.value?.simplify();
   }
 }
+
+const { provide: provideDragObj } = useFilterDragNode();
+provideDragObj();
 </script>
 
 <style scoped lang="scss">

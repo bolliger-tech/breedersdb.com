@@ -14,14 +14,14 @@
   >
     <q-fab-action
       :label="
-        store.explain
+        explain
           ? t('analyze.header.hideExplanation')
           : t('analyze.header.showExplanation')
       "
       icon="info"
       label-position="left"
       color="grey-7"
-      @click="store.explain = !store.explain"
+      @click="explain = !explain"
     />
     <q-fab-action
       :label="t('base.rename')"
@@ -85,8 +85,8 @@ import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
-import { useAnalyzeStore } from '../useAnalyzeStore';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
+import { useExplainFilters } from '../useExplainFilters';
 
 const props = defineProps<{
   saving: boolean;
@@ -99,7 +99,8 @@ const emit = defineEmits<{
   deleted: [];
 }>();
 
-const store = useAnalyzeStore();
+const { inject: injectExplainFilters } = useExplainFilters();
+const explain = injectExplainFilters();
 const showMore = ref(false);
 const showDeleteDialog = ref(false);
 

@@ -1,6 +1,5 @@
-import { describe, it, beforeEach, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import VitestPage from './VitestPage.vue';
-import { setActivePinia, createPinia } from 'pinia';
 import {
   mountAsync,
   urqlResp,
@@ -12,24 +11,12 @@ import { flushPromises } from '@vue/test-utils';
 addQuasarPlugins();
 
 describe('VitestPage', () => {
-  beforeEach(() => {
-    setActivePinia(createPinia());
-  });
-
   it('should mount with api data', async () => {
     const wrapper = await mountAsync(VitestPage, {
       urqlMock: { executeQuery: urqlResp('hello tester') },
     });
 
     expect(wrapper.get('[data-test="query-resp"]').text()).toBe('hello tester');
-  });
-
-  it('should show state', async () => {
-    const wrapper = await mountAsync(VitestPage, {
-      urqlMock: { executeQuery: urqlResp(null) },
-    });
-
-    expect(wrapper.get('[data-test="state"]').text()).toBe('true');
   });
 
   it('should show translate keyed strings', async () => {

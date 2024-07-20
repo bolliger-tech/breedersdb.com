@@ -1,6 +1,5 @@
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import AnalyzePage from './AnalyzePage.vue';
-import { setActivePinia, createPinia } from 'pinia';
 import {
   mountAsync,
   urqlResp,
@@ -135,7 +134,6 @@ function prepareForRegex(str: string) {
 
 describe('AnalyzePage', () => {
   beforeEach(() => {
-    setActivePinia(createPinia());
     vi.mocked(useRoute).mockReturnValue(useRouteMock);
   });
 

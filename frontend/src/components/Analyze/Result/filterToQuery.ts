@@ -113,11 +113,22 @@ function toPaginationString({
   const offset = (page - 1) * limit;
 
   const order = pagination.descending ? 'desc' : 'asc';
-  const orderByColumn = pagination.sortBy || columns[0] || 'id';
-  const orderBy = orderByColumn
-    .replace(`${baseTable}.`, '')
+  const orderByPath = pagination.sortBy || columns[0] || 'id';
+  const orderByColumn = orderByPath.split('.').pop();
+  const orderByUnstable = orderByPath
+    .replace(`${baseTable}.`, '') // remove base table
     .split('.')
-    .reduceRight((acc, column) => `{ ${column}: ${acc} }`, order);
+    .slice(0, -1) // remove column
+    .map((table) => singularize(toSnakeCase(table)))
+    .reduceRight(
+      (acc, column) => `{ ${column}: ${acc} }`,
+      `{ ${orderByColumn}: ${order} }`,
+    );
+  // append `{ id: asc }` as additional criteria to ensure stable ordering
+  const orderBy =
+    orderByUnstable === '{ id: asc }'
+      ? orderByUnstable
+      : `[ ${orderByUnstable}, { id: asc } ]`;
 
   return `limit: ${limit}, offset: ${offset}, order_by: ${orderBy}`;
 }

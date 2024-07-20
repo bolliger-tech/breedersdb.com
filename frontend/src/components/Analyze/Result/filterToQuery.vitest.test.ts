@@ -1605,7 +1605,7 @@ cultivars(where: { _and: [
       });
 
       expect(query).toMatch(
-        new RegExp(prepareForRegex('order_by: { name: asc }')),
+        new RegExp(prepareForRegex('order_by: [ { name: asc }, { id: asc } ]')),
       );
     });
 
@@ -1657,7 +1657,7 @@ cultivars(where: { _and: [
       });
 
       expect(query).toMatch(
-        new RegExp(prepareForRegex('order_by: { name: asc }')),
+        new RegExp(prepareForRegex('order_by: [ { name: asc }, { id: asc } ]')),
       );
     });
 
@@ -1676,14 +1676,16 @@ cultivars(where: { _and: [
       });
 
       expect(query).toMatch(
-        new RegExp(prepareForRegex('order_by: { name: desc }')),
+        new RegExp(
+          prepareForRegex('order_by: [ { name: desc }, { id: asc } ]'),
+        ),
       );
     });
 
     it('should return orderBy nested field', () => {
       const filter = FilterNode.FilterRoot(filterRootArgs);
       const pagination = Object.assign({}, basicPagination, {
-        sortBy: 'cultivars.lot.name',
+        sortBy: 'cultivars.lots.name',
       });
 
       const { query } = filterToQuery({
@@ -1694,7 +1696,9 @@ cultivars(where: { _and: [
       });
 
       expect(query).toMatch(
-        new RegExp(prepareForRegex('order_by: { lot: { name: asc } }')),
+        new RegExp(
+          prepareForRegex('order_by: [ { lot: { name: asc } }, { id: asc } ]'),
+        ),
       );
     });
   });
@@ -1771,7 +1775,7 @@ cultivars(where: { _and: [
       });
 
       expect(query).toMatch(
-        new RegExp(prepareForRegex('cultivars__lot__name: lot { id name }')),
+        new RegExp(prepareForRegex('cultivars__lots__name: lot { id name }')),
       );
     });
 

@@ -1691,7 +1691,7 @@ cultivars(where: { _and: [
       const { query } = filterToQuery({
         baseFilter: filter,
         attributionFilter: emptyAttributionFilter,
-        columns: ['cultivars.id', 'cultivars.lot.name'],
+        columns: ['cultivars.id', 'cultivars.lots.name'],
         pagination,
       });
 
@@ -1770,7 +1770,7 @@ cultivars(where: { _and: [
       const { query } = filterToQuery({
         baseFilter: filter,
         attributionFilter: emptyAttributionFilter,
-        columns: ['cultivars.id', 'cultivars.lot.name'],
+        columns: ['cultivars.id', 'cultivars.lots.name'],
         pagination: basicPagination,
       });
 

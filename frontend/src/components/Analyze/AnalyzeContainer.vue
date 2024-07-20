@@ -51,9 +51,14 @@ import { useFilterColumns } from './ColumnDefinitions/useFilterColumns';
 import { QTableColumn } from 'quasar';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import { useI18n } from 'src/composables/useI18n';
-import { formatResultColumnValue } from 'src/utils/attributeUtils';
+import {
+  PrimitiveColumnValue,
+  formatResultColumnValue,
+} from 'src/utils/attributeUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { AttributionAggregation } from './Result/attributionAggregationTypes';
+
+type ColumnValue = PrimitiveColumnValue | { [key: string]: ColumnValue };
 
 export type AnalyzeContainerProps = {
   initialData: {
@@ -193,17 +198,24 @@ const resultColumns = computed<QTableColumn[]>(() => {
     return {
       name: column.name,
       label: column.label,
-      field: column.tableColumnName,
+      field: column.tableName.includes('.')
+        ? `${column.tableName}.${column.tableColumnName}`
+        : column.tableColumnName,
       align: isNum ? 'right' : 'left',
       sortable: true,
-      format: (value: string | number | Date | null | undefined) => {
+      format: (value: ColumnValue) => {
         if (column.type === ColumnTypes.Photo) {
           // this should never happen
           throw new Error('Photo columns are not supported');
         }
 
+        const unnestedValue =
+          value instanceof Object && !(value instanceof Date)
+            ? (value[column.tableColumnName] as PrimitiveColumnValue)
+            : value;
+
         return formatResultColumnValue({
-          value,
+          value: unnestedValue,
           type: column.type ?? ColumnTypes.String,
         });
       },

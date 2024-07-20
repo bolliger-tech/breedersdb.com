@@ -200,7 +200,7 @@ const rows = computed(() => {
     // replace double underscores (which were added for graphql
     // compatibility) with dots so the columns have the same name as in
     // `prop.availableColumns`
-    // e.g. `plants__rows__name` -> `plants.rows.name`
+    // e.g. `plants__plant_rows__name` -> `plants.plant_rows.name`
     const entries = Object.entries(row);
     const renamed = entries.map(([key, value]) => [
       key.replaceAll('__', '.'),

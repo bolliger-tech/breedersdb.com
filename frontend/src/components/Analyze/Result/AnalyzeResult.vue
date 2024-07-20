@@ -38,7 +38,7 @@ import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
 import { AnalyzeResult, filterToQuery } from './filterToQuery';
 import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { QTableColumn } from 'quasar';
+import { type QTableColumn, useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { debounce } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
@@ -58,6 +58,13 @@ const props = defineProps<AnalyzeResultProps>();
 const emit = defineEmits<{
   'visible-columns-changed': [columns: string[] | undefined];
 }>();
+
+const PAGINATION_PROPS_STORAGE_KEY = `breedersdb-analyze__pagination--${props.baseTable}`;
+type DefaultPaginationProps = {
+  sortBy: string | null;
+  descending: boolean;
+  rowsPerPage: number;
+};
 
 const { t } = useI18n();
 
@@ -119,13 +126,25 @@ watch(
   { immediate: true },
 );
 
+const { sessionStorage } = useQuasar();
+const defaultPagination = sessionStorage.getItem<DefaultPaginationProps>(
+  PAGINATION_PROPS_STORAGE_KEY,
+);
 const pagination = ref<AnalyzeResultTableProps['pagination']>({
   sortBy: null,
   descending: false,
   page: 1,
   rowsPerPage: 100,
   rowsNumber: 0,
+  ...defaultPagination,
 });
+watch(
+  pagination,
+  (newPagination) => {
+    sessionStorage.set(PAGINATION_PROPS_STORAGE_KEY, newPagination);
+  },
+  { deep: true },
+);
 
 const { executeMutation: refreshDbView } = useRefreshAttributionsView();
 const { data: lastRefresh, error: refreshError } = await refreshDbView({});

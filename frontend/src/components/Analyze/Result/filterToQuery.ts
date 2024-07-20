@@ -8,6 +8,7 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
 import { toPascalCase, toSnakeCase } from 'src/utils/stringUtils';
 import type { AttributeDataTypes } from 'src/graphql';
+import { singularize } from 'src/utils/stringUtils';
 
 export type AnalyzeResult = {
   [K in BaseTable]: (
@@ -220,7 +221,7 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
     const tables = table.split('.');
     tables.shift(); // remove base table
     criterion.conditions = tables.reduceRight(
-      (acc, t) => `{ ${t}: ${acc} }`,
+      (acc, t) => `{ ${singularize(t)}: ${acc} }`,
       criterion.conditions,
     );
   }
@@ -228,8 +229,8 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
   if (comparison.negate) {
     // apply negation to the whole criterion so nested tables without relation
     // work as expected. e.g.
-    // - `plant.row.name is null` will also return plants without a row
-    // - `plant.row.name starts not with Z` will also return plants without a row
+    // - `plant.plant_rows.name is null` will also return plants without a row
+    // - `plant.plant_rows.name starts not with Z` will also return plants without a row
     criterion.conditions = `{ _not: ${criterion.conditions} }`;
   }
 
@@ -516,7 +517,7 @@ function columnsToFields({
       fields += `${indentation}${toSnakeCase(field)}\n`;
     });
 
-  // nested columns. e.g. `plants.rows.name`
+  // nested columns. e.g. `plants.plant_rows.name`
   baseColumns
     .filter((column) => column.split('.').length > 2)
     .forEach((column) => {
@@ -532,11 +533,11 @@ function columnsToFields({
       }
 
       // replace dots with double underscores for graphql compatibility
-      // e.g. plants.rows.name -> plants__rows__name
+      // e.g. plants.plant_rows.name -> plants__plant_rows__name
       const alias = column.replaceAll('.', '__');
 
       const query = tables.reduceRight(
-        (acc, table) => `${toSnakeCase(table)} { id ${acc} }`,
+        (acc, table) => `${singularize(toSnakeCase(table))} { id ${acc} }`,
         toSnakeCase(field),
       );
 

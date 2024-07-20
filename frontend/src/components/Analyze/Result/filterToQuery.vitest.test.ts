@@ -858,7 +858,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-  cultivars(where: { _and: [ { lots: { integer_allow_empty: { _eq: $v000 } } } ] }`).replaceAll(
+  cultivars(where: { _and: [ { lot: { integer_allow_empty: { _eq: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -890,7 +890,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-  cultivars(where: { _and: [ { _not: { lots: { integer_allow_empty: { _eq: $v000 } } } } ] }`).replaceAll(
+  cultivars(where: { _and: [ { _not: { lot: { integer_allow_empty: { _eq: $v000 } } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -922,7 +922,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-  cultivars(where: { _and: [ { lots: { integer_allow_empty: { _lt: $v000 } } } ] }`).replaceAll(
+  cultivars(where: { _and: [ { lot: { integer_allow_empty: { _lt: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -954,7 +954,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-  cultivars(where: { _and: [ { lots: { integer_allow_empty: { _lte: $v000 } } } ] }`).replaceAll(
+  cultivars(where: { _and: [ { lot: { integer_allow_empty: { _lte: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -986,7 +986,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-  cultivars(where: { _and: [ { lots: { integer_allow_empty: { _gt: $v000 } } } ] }`).replaceAll(
+  cultivars(where: { _and: [ { lot: { integer_allow_empty: { _gt: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1018,7 +1018,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-  cultivars(where: { _and: [ { lots: { integer_allow_empty: { _gte: $v000 } } } ] }`).replaceAll(
+  cultivars(where: { _and: [ { lot: { integer_allow_empty: { _gte: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1050,7 +1050,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { lots: { string_allow_empty: { _ilike: $v000 } } } ] }`).replaceAll(
+    cultivars(where: { _and: [ { lot: { string_allow_empty: { _ilike: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1082,7 +1082,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { _not: { lots: { string_allow_empty: { _ilike: $v000 } } } } ] }`).replaceAll(
+    cultivars(where: { _and: [ { _not: { lot: { string_allow_empty: { _ilike: $v000 } } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1114,7 +1114,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { lots: { string_allow_empty: { _ilike: $v000 } } } ] }`).replaceAll(
+    cultivars(where: { _and: [ { lot: { string_allow_empty: { _ilike: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1146,7 +1146,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { _not: { lots: { string_allow_empty: { _ilike: $v000 } } } } ] }`).replaceAll(
+    cultivars(where: { _and: [ { _not: { lot: { string_allow_empty: { _ilike: $v000 } } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1178,7 +1178,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { lots: { string_allow_empty: { _ilike: $v000 } } } ] }`).replaceAll(
+    cultivars(where: { _and: [ { lot: { string_allow_empty: { _ilike: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1210,7 +1210,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { _not: { lots: { string_allow_empty: { _ilike: $v000 } } } } ] }`).replaceAll(
+    cultivars(where: { _and: [ { _not: { lot: { string_allow_empty: { _ilike: $v000 } } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1241,7 +1241,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-  cultivars(where: { _and: [ { _not: { lots: { integer_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
+  cultivars(where: { _and: [ { _not: { lot: { integer_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1272,7 +1272,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-  cultivars(where: { _and: [ { _not: { lots: { rating_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
+  cultivars(where: { _and: [ { _not: { lot: { rating_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1304,7 +1304,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-  cultivars(where: { _and: [ { lots: { _or: [ { string_allow_empty: { _is_null: true } }, { string_allow_empty: { _eq: "" } } ] } } ] }`),
+  cultivars(where: { _and: [ { lot: { _or: [ { string_allow_empty: { _is_null: true } }, { string_allow_empty: { _eq: "" } } ] } } ] }`),
               ),
             );
             expect(Object.values(variables).length).toBe(0);
@@ -1332,7 +1332,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-  cultivars(where: { _and: [ { _not: { lots: { _and: [ { string_allow_empty: { _is_null: false } }, { string_allow_empty: { _neq: "" } } ] } } } ] }`),
+  cultivars(where: { _and: [ { _not: { lot: { _and: [ { string_allow_empty: { _is_null: false } }, { string_allow_empty: { _neq: "" } } ] } } } ] }`),
               ),
             );
             expect(Object.values(variables).length).toBe(0);
@@ -1360,7 +1360,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { lots: { integer_allow_empty: { _is_null: $v000 } } } ] }`).replaceAll(
+    cultivars(where: { _and: [ { lot: { integer_allow_empty: { _is_null: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1391,7 +1391,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { lots: { rating_allow_empty: { _is_null: $v000 } } } ] }`).replaceAll(
+    cultivars(where: { _and: [ { lot: { rating_allow_empty: { _is_null: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1423,7 +1423,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { _not: { lots: { _or: [ { string_allow_empty: { _is_null: true } }, { string_allow_empty: { _eq: "" } } ] } } } ] }`),
+    cultivars(where: { _and: [ { _not: { lot: { _or: [ { string_allow_empty: { _is_null: true } }, { string_allow_empty: { _eq: "" } } ] } } } ] }`),
               ),
             );
             expect(Object.values(variables).length).toBe(0);
@@ -1451,7 +1451,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { lots: { _and: [ { string_allow_empty: { _is_null: false } }, { string_allow_empty: { _neq: "" } } ] } } ] }`),
+    cultivars(where: { _and: [ { lot: { _and: [ { string_allow_empty: { _is_null: false } }, { string_allow_empty: { _neq: "" } } ] } } ] }`),
               ),
             );
             expect(Object.values(variables).length).toBe(0);
@@ -1479,7 +1479,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { lots: { boolean: { _eq: $v000 } } } ] }`).replaceAll(
+    cultivars(where: { _and: [ { lot: { boolean: { _eq: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),
@@ -1510,7 +1510,7 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(`
-    cultivars(where: { _and: [ { _not: { lots: { boolean: { _eq: $v000 } } } } ] }`).replaceAll(
+    cultivars(where: { _and: [ { _not: { lot: { boolean: { _eq: $v000 } } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),

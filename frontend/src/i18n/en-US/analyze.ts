@@ -2,7 +2,7 @@ export const analyze = {
   title: 'Analyze {entity}',
 
   header: {
-    title: 'Analyze',
+    new: 'New Analysis',
     more: 'More',
     duplicate: 'Duplicate',
     showExplanation: 'Explain filters',

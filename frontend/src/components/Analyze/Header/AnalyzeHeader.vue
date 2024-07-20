@@ -2,7 +2,7 @@
   <div class="row items-center justify-between no-wrap">
     <h1 class="q-mr-lg">
       <template v-if="analyzeId !== 'new'">{{ name }}</template>
-      <template v-else>{{ t('analyze.header.title') }}</template>
+      <template v-else>{{ t('analyze.header.new') }}</template>
     </h1>
     <div class="row no-wrap justify-center content-center">
       <q-btn

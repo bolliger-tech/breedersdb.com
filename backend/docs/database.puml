@@ -17,7 +17,7 @@ entity "**analyze_filters**" {
   ""base_filter"": //jsonb //
   ""attribution_filter"": //jsonb //
   *""visible_columns"": //text[] //
-  ""created"": //timestamp with time zone //
+  *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
 }
 

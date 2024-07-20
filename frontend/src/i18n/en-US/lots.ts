@@ -9,5 +9,7 @@ export const lots = {
     datePlanted: 'Date planted',
     numbSeedlingsPlanted: 'Number of seedlings planted',
     plot: 'Plot',
+    crossing: 'Crossing',
+    orchard: 'Orchard',
   },
 };

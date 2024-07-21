@@ -58,12 +58,7 @@
       </PlantCard>
     </div>
     <div class="q-mt-sm text-body2">
-      <PlantEntityTable
-        :plant="data.plant"
-        row-padding-side="0"
-        dark
-        no-border
-      />
+      <PlantEntityTable :plant="data.plant" dense no-hover />
     </div>
   </template>
 
@@ -200,14 +195,15 @@ td {
   text-align: center;
 }
 
-.link {
+.link,
+:global(.undecorated-link) {
   color: #fff;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-    color: var(--bdb-secondary-100);
-  }
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 25%, transparent);
+}
+.link:hover,
+:global(a:hover) {
+  color: var(--bdb-primary-100);
 }
 
 img {

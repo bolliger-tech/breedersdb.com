@@ -19,7 +19,7 @@
 
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <PlantEntityTable :plant="plant" row-padding-side="16px" />
+      <PlantEntityTable :plant="plant" />
 
       <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
       <EntityViewAttributionImageGallery

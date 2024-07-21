@@ -82,8 +82,12 @@
     </template>
   </EntityModalContent>
 
+  <q-card v-else-if="fetching">
+    <BaseSpinner />
+  </q-card>
+
   <q-card v-else>
-    <BaseSpinner size="xl" />
+    <BaseNotFound />
   </q-card>
 </template>
 
@@ -108,6 +112,7 @@ import {
   RefreshAttributionsViewResult,
   useRefreshAttributionsView,
 } from 'src/composables/useRefreshAttributionsView';
+import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -137,6 +142,7 @@ const {
   data,
   error: queryPlantError,
   executeQuery: executePlantQuery,
+  fetching: fetchingPlant,
 } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
@@ -152,6 +158,10 @@ refreshAttributionsView({}).then(({ data, error }) => {
 
 const error = computed(
   () => queryPlantError.value || attributionsRefreshError.value,
+);
+
+const fetching = computed(
+  () => refreshingAttributionsView.value || fetchingPlant.value,
 );
 
 const plant = computed(() => data.value?.plants_by_pk);

@@ -86,8 +86,12 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else>
+  <q-card v-else-if="fetching">
     <BaseSpinner />
+  </q-card>
+
+  <q-card v-else>
+    <BaseNotFound />
   </q-card>
 </template>
 
@@ -108,6 +112,7 @@ import { localizeDate } from 'src/utils/dateUtils';
 import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
+import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -122,7 +127,7 @@ const query = graphql(
   [plantRowFragment],
 );
 
-const { data, error } = useQuery({
+const { data, error, fetching } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });

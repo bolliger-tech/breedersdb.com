@@ -13,18 +13,26 @@
 
   <q-card v-if="search !== undefined" class="bg-shade q-my-md" flat>
     <q-card-section>
-      <q-input
-        v-model="search"
-        outlined
-        :bg-color="inputBgColor"
-        dense
-        debounce="300"
-        :placeholder="searchPlaceholder || t('entity.search')"
-      >
-        <template #append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
+      <div class="row">
+        <div class="col">
+          <q-input
+            v-model="search"
+            class="full-width"
+            outlined
+            :bg-color="inputBgColor"
+            dense
+            debounce="300"
+            :placeholder="searchPlaceholder || t('entity.search')"
+          >
+            <template #append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </div>
+        <div v-if="hasQrScanner" class="col-auto q-ml-md">
+          <BaseQrScannerModal @change="$emit('scanned-qr', $event)" />
+        </div>
+      </div>
     </q-card-section>
   </q-card>
 
@@ -56,6 +64,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import type { Slot } from 'vue';
+import BaseQrScannerModal from 'src/components/Base/BaseQrScanner/BaseQrScannerModal.vue';
 
 export interface EntityListProps extends EntityListPropsWithoutModels {
   tab?: string;
@@ -67,6 +76,7 @@ interface EntityListPropsWithoutModels {
   tabs?: { value: string; label: string }[];
   searchPlaceholder?: string;
   hasAddButton?: boolean;
+  hasQrScanner?: boolean;
 }
 
 defineProps<EntityListPropsWithoutModels>();
@@ -77,6 +87,7 @@ defineSlots<{
 }>();
 defineEmits<{
   'add-new': [];
+  'scanned-qr': [data: string];
 }>();
 
 const { t } = useI18n();

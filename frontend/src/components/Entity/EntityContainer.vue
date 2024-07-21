@@ -5,6 +5,8 @@
     :tabs="tabs"
     :title="title"
     :search-placeholder="searchPlaceholder"
+    :has-qr-scanner="hasQrScanner"
+    @scanned-qr="$emit('scanned-qr', $event)"
     @add-new="addNew"
   >
     <template #default>
@@ -53,6 +55,7 @@ interface EntityContainerPropsWithoutModels {
   listEntitiesPath: string | MatcherLocationAsPath;
   addEntityPath: string | MatcherLocationAsPath;
   viewEntityPathGetter: (id: number | string) => string | MatcherLocationAsPath;
+  hasQrScanner?: boolean;
 }
 
 const props = defineProps<EntityContainerPropsWithoutModels>();
@@ -68,6 +71,9 @@ const visibleColumns = defineModel<EntityListTableProps['visibleColumns']>(
 
 defineSlots<{
   default: Slot;
+}>();
+defineEmits<{
+  'scanned-qr': [data: string];
 }>();
 
 const scrollPos = { x: 0, y: 0 };

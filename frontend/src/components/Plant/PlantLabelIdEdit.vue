@@ -80,7 +80,11 @@ function paddLabelId() {
   if (!labelId.value) {
     return;
   }
-  labelId.value = zeroFill(labelId.value);
+  const padded = zeroFill(labelId.value);
+  if (!isValidLabelId(padded)) {
+    return;
+  }
+  labelId.value = padded;
 }
 
 const uniqueQuery = graphql(`

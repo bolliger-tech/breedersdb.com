@@ -12,7 +12,7 @@
       </div>
       <div class="col">
         {{
-          t('base.disableConfirmation', {
+          t('plantRows.disableConfirmation', {
             entity: t('base.entityName.plantRow'),
           })
         }}

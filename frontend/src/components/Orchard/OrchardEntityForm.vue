@@ -15,7 +15,10 @@
     debounce="300"
     :loading="fetchingNameUnique"
   />
-  <BaseInputLabel :label="t('entity.commonColumns.disabled')">
+  <BaseInputLabel
+    :label="t('entity.commonColumns.disabled')"
+    :explainer="t('orchards.disableExplainer')"
+  >
     <EntityToggle
       :ref="(el: InputRef) => (refs.disabledRef = el)"
       v-model="data.disabled"

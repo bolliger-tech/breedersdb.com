@@ -50,12 +50,17 @@ $border: 1px solid $grey-4;
   }
   th {
     text-align: left;
-    padding: 4px 8px;
+    padding: 4px 8px 4px 16px;
     font-weight: bold;
   }
   td {
     text-align: right;
-    padding: 4px 8px;
+    padding: 4px 16px 4px 8px;
+
+    &[colspan='2'] {
+      text-align: left;
+      padding: 4px 16px;
+    }
   }
   & :is(td, th) {
     @media screen and (max-width: $breakpoint-xs-max) {

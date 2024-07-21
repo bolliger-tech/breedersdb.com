@@ -136,7 +136,7 @@ async function uniqueRule(newLabelId: string) {
 const labelIdIsNotUnique = computed(() => {
   return (
     !!labelId.value &&
-    !labelId.value.startsWith('#') &&
+    !isPrefixed(labelId.value) &&
     !!nextFreeLabelId.value &&
     nextFreeLabelId.value !== zeroFill(labelId.value)
   );

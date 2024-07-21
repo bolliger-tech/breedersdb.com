@@ -1,5 +1,5 @@
 <template>
-  <tr class="entity-view-table-row">
+  <tr v-if="!isEmpty || renderEmpty" class="entity-view-table-row">
     <th v-if="label">
       {{ label }}
     </th>
@@ -10,11 +10,22 @@
 </template>
 
 <script setup lang="ts">
+import { computed, type Slot } from 'vue';
+
 export interface EntityViewTableRow {
   label: string | undefined;
+  renderEmpty?: boolean;
 }
 
 defineProps<EntityViewTableRow>();
+
+const slots = defineSlots<{
+  default: Slot;
+}>();
+
+const isEmpty = computed(() => {
+  return !slots.default()[0].children;
+});
 </script>
 
 <style lang="scss" scoped>

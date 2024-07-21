@@ -1,5 +1,5 @@
 <template>
-  <ErrorNotFound v-if="show404" />
+  <BaseNotFound v-if="show404" />
   <PageLayout v-else>
     <BaseGraphqlError v-if="error" :error="error" />
     <AnalyzeContainer
@@ -26,7 +26,7 @@ import {
   BaseTable,
   FilterNode,
 } from 'src/components/Analyze/Filter/filterNode';
-import ErrorNotFound from 'src/pages/ErrorNotFound.vue';
+import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 
 export interface AnalyzeViewPageProps {
   analyzeId: 'new' | number;

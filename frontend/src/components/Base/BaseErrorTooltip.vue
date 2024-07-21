@@ -6,7 +6,7 @@
     self="bottom middle"
     :hide-delay="2000"
     no-parent-event
-    class="bg-dark shadow-3 entity-modal-content__error-tooltip"
+    class="bg-dark shadow-3 text-body2 entity-modal-content__error-tooltip"
   >
     <slot>
       <BaseGraphqlError v-if="graphqlError" :error="graphqlError" />

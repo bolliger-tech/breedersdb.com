@@ -39,7 +39,7 @@
   </EntityModalContent>
 
   <q-card v-else-if="fetching">
-    <BaseSpinner />
+    <BaseSpinner size="xl" />
   </q-card>
 
   <q-card v-else>

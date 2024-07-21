@@ -40,3 +40,12 @@ function onChange(data: string) {
 
 const { t } = useI18n();
 </script>
+
+<style global lang="scss">
+// override q-dialog max-width
+.q-dialog__inner--minimized > div {
+  @media screen and (min-width: $breakpoint-sm-min) {
+    max-width: 832px;
+  }
+}
+</style>

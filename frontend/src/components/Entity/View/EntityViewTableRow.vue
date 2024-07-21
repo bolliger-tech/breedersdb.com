@@ -3,7 +3,7 @@
     <th v-if="label">
       {{ label }}
     </th>
-    <td>
+    <td :colspan="label ? undefined : 2">
       <slot></slot>
     </td>
   </tr>
@@ -13,7 +13,7 @@
 import { computed, type Slot } from 'vue';
 
 export interface EntityViewTableRow {
-  label: string | undefined;
+  label?: string | undefined;
   renderEmpty?: boolean;
 }
 

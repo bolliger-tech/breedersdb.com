@@ -25,6 +25,7 @@
 <script lang="ts" setup>
 import { CombinedError } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
+import type { Slot } from 'vue';
 
 export interface BaseErrorTooltipProps {
   show?: boolean;
@@ -34,6 +35,6 @@ export interface BaseErrorTooltipProps {
 
 defineProps<BaseErrorTooltipProps>();
 defineSlots<{
-  default: [];
+  default: Slot;
 }>();
 </script>

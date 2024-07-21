@@ -260,7 +260,7 @@ async function onScannedQr(code: string) {
   variablesPlantByLabelId.value.labelId = code;
   await nextTick();
   const result = await executeQuery();
-  if (result.data.value?.plants.length) {
+  if (result.data.value?.plants.length === 1) {
     router.push({ path: `/plants/${result.data.value.plants[0].id}` });
   } else {
     search.value = code;

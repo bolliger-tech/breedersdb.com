@@ -1,9 +1,10 @@
 <template>
   <BaseInputLabel :label="attribute.name" style="max-width: 592px">
-    <div v-if="hasSameAgain" class="row align-center">
-      <q-icon name="warning" class="col-auto" size="1.5em" color="warning" />
-      <div class="col q-ml-md">{{ t('attribute.sameAgainWarning') }}</div>
-    </div>
+    <BaseMessage
+      v-if="hasSameAgain"
+      type="warning"
+      :message="t('attribute.sameAgainWarning')"
+    />
 
     <AttributeFormInputRating
       v-if="attribute.data_type === 'RATING'"
@@ -78,9 +79,12 @@
 
     <q-dialog v-model="confirm">
       <q-card>
-        <q-card-section class="row items-center no-wrap">
-          <q-icon name="warning" color="negative" size="xl" />
-          <p class="q-ma-none q-ml-md">{{ t('attribute.clearAttribute') }}</p>
+        <q-card-section>
+          <BaseMessage
+            type="warning"
+            :message="t('attribute.clearAttribute')"
+            icon-size="xl"
+          />
         </q-card-section>
 
         <q-card-actions align="right">
@@ -104,6 +108,7 @@
 import type { AttributeValueWithPhoto } from 'src/components/Attribute/AttributeForm.vue';
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import AttributeFormInputRating from 'src/components/Attribute/AttributeFormInputRating.vue';
 import AttributeFormInputNumber from 'src/components/Attribute/AttributeFormInputNumber.vue';
 import AttributeFormInputText from 'src/components/Attribute/AttributeFormInputText.vue';

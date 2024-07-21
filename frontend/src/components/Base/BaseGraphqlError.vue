@@ -1,12 +1,11 @@
 <template>
   <article class="q-my-md q-pa-sm bg-black text-negative rounded-borders">
     <template v-if="error.networkError?.message === 'Failed to fetch'">
-      <div class="row align-center">
-        <q-icon name="warning" color="error" size="50px" class="col-auto" />
-        <h3 class="q-ml-md q-my-none col text-white">
+      <BaseMessage type="error" icon-size="xl">
+        <h3 class="q-my-none col text-white">
           {{ t('base.networkError.title') }}
         </h3>
-      </div>
+      </BaseMessage>
       <p class="text-white q-mt-md q-mb-sm body-text1">
         {{ t('base.networkError.message') }}
       </p>
@@ -33,6 +32,7 @@ import { CombinedError } from '@urql/core';
 import { onMounted } from 'vue';
 import { captureException } from '@sentry/browser';
 import { useI18n } from 'src/composables/useI18n';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 export interface BaseGraphqlErrorProps {
   error: CombinedError;

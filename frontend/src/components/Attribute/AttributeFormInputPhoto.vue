@@ -41,9 +41,7 @@
         @clear="$emit('clear')"
       />
     </div>
-    <div v-if="isInvalidImage" class="text-negative text-caption">
-      <q-icon name="warning" />&nbsp;{{ errorMessage }}
-    </div>
+    <BaseMessage v-if="isInvalidImage" type="error" :message="errorMessage" />
   </div>
 </template>
 <script setup lang="ts">
@@ -52,6 +50,7 @@ import { watch, ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { hashFile } from 'src/composables/useImageUploader';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import type { QFile } from 'quasar';
 
 const MAX_IMAGE_SIZE = 3840; // longest side, 4k

@@ -10,14 +10,12 @@
   >
     <slot>
       <BaseGraphqlError v-if="graphqlError" :error="graphqlError" />
-      <div v-if="message" class="q-gutter-md row items-center">
-        <div class="col-auto">
-          <q-icon name="warning" size="2em" class="text-negative" />
-        </div>
-        <div class="col">
-          {{ message }}
-        </div>
-      </div>
+      <BaseMessage
+        v-else-if="message"
+        :message="message"
+        type="error"
+        icon-size="2em"
+      />
     </slot>
   </q-tooltip>
 </template>
@@ -25,6 +23,7 @@
 <script lang="ts" setup>
 import { CombinedError } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import type { Slot } from 'vue';
 
 export interface BaseErrorTooltipProps {

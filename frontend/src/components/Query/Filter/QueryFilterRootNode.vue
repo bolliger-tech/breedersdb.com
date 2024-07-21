@@ -26,12 +26,22 @@
   </div>
 
   <template v-else>
-    <div v-if="isSimplifiable" class="text-negative q-mb-sm">
-      <q-icon name="warning" />
+    <BaseMessage
+      v-if="!isValid"
+      type="error"
+      :message="t('filter.invalid')"
+      message-color="negative"
+      class="q-mb-sm"
+    />
+    <BaseMessage
+      v-else-if="isSimplifiable"
+      type="warning"
+      class="q-mb-sm text-warning"
+    >
       {{ t('filter.simplifiable') }}&nbsp;&nbsp;
       <q-btn
         size="sm"
-        color="negative"
+        color="warning"
         dense
         class="q-px-md"
         unelevated
@@ -39,15 +49,14 @@
       >
         {{ t('filter.simplify') }}
       </q-btn>
-    </div>
-    <div v-else-if="!isValid" class="text-negative q-mb-sm">
-      <q-icon name="warning" />
-      {{ t('filter.invalid') }}
-    </div>
-    <div v-else class="text-positive q-mb-sm">
-      <q-icon name="check" />
-      {{ t('filter.valid') }}
-    </div>
+    </BaseMessage>
+    <BaseMessage
+      v-else
+      type="success"
+      :message="t('filter.valid')"
+      message-color="positive"
+      class="q-mb-sm"
+    />
 
     <QueryFilterNode
       :node="filter"
@@ -66,6 +75,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { useQueryStore } from '../useQueryStore';
 import { FilterRuleColumn } from './filterRuleColumn';
 import { useEntityName } from 'src/composables/useEntityName';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 const { t } = useI18n();
 const store = useQueryStore();

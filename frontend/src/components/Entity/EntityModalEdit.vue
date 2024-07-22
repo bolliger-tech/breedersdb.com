@@ -24,11 +24,16 @@
   </EntityModalContent>
 </template>
 
+<script lang="ts">
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FormRefConstructor = new (...args: any) => any;
+</script>
+
 <script
   setup
   lang="ts"
   generic="
-    FormRef extends new (...args: any) => any,
+    FormRef extends FormRefConstructor,
     EditInput extends { id: number; [key: string]: any },
     InsertInput extends { [key: string]: any },
     InsertResult extends { [key: string]: any },

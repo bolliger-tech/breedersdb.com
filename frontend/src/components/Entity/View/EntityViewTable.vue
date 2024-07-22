@@ -6,7 +6,7 @@
 
 <script lang="ts">
 // use non-setup variant so we can export the entityViewTableProps symbol
-import type { InjectionKey, Reactive } from 'vue';
+import type { InjectionKey } from 'vue';
 import { provide } from 'vue';
 
 export interface EntityViewTableProps {
@@ -15,8 +15,8 @@ export interface EntityViewTableProps {
 }
 
 // prettier-ignore
-// prettier would remove the <Readonly<Reactive<EntityViewTableProps>>> 🤯
-export const entityViewTableProps = Symbol() as InjectionKey<Readonly<Reactive<EntityViewTableProps>>>;
+// prettier would remove the <Readonly<Partial<EntityViewTableProps>>> 🤯
+export const entityViewTableProps = Symbol() as InjectionKey<Readonly<Partial<EntityViewTableProps>>>;
 </script>
 
 <script setup lang="ts">

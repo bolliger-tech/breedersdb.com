@@ -7,19 +7,18 @@
     minimal
     @update:model-value="(val) => updateModelValue(val?.toString() ?? null)"
   />
-  <div v-if="notCurrentYearMonth" class="row align-center q-mt-sm">
-    <div class="col-auto">
-      <q-icon name="warning" class="text-warning" />
-    </div>
-    <div class="col text-caption q-ml-sm">
-      {{ t('attribute.notCurrentYearMonth') }}
-    </div>
-  </div>
+  <BaseMessage
+    v-if="notCurrentYearMonth"
+    type="warning"
+    :message="t('attribute.notCurrentYearMonth')"
+    class="q-mt-sm text-caption"
+  />
 </template>
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { watch, computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 const STORAGE_KEY = 'breedersdb-attribution-last-date-value';
 

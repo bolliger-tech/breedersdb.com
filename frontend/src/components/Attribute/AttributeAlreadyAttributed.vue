@@ -1,11 +1,10 @@
 <template>
   <q-separator spaced />
-  <div class="row align-center">
-    <q-icon name="warning" color="warning" size="50px" class="col-auto" />
-    <div class="col q-ml-md">
-      {{ t('attribute.alreadyAttributed', { timeAgo, entity }) }}
-    </div>
-  </div>
+  <BaseMessage
+    type="warning"
+    :message="t('attribute.alreadyAttributed', { timeAgo, entity })"
+    icon-size="xl"
+  />
   <q-separator spaced />
 </template>
 
@@ -15,6 +14,7 @@ import { computed } from 'vue';
 import { toLocaleRelativeTimeString } from 'src/utils/dateUtils';
 import type { AttributableEntities } from './attributableEntities';
 import { useAttributableEntityName } from 'src/components/Attribute/useAttributableEntityName';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 export interface AttributeAlreadyAttributedProps {
   date: Date;

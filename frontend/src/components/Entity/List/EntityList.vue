@@ -63,6 +63,7 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { useInputBackground } from 'src/composables/useInputBackground';
+import type { Slot } from 'vue';
 import BaseQrScannerModal from 'src/components/Base/BaseQrScanner/BaseQrScannerModal.vue';
 
 export interface EntityListProps extends EntityListPropsWithoutModels {
@@ -82,7 +83,7 @@ defineProps<EntityListPropsWithoutModels>();
 const tab = defineModel<string>('tab');
 const search = defineModel<string>('search');
 defineSlots<{
-  default: void;
+  default: Slot;
 }>();
 defineEmits<{
   'add-new': [];

@@ -8,9 +8,12 @@
 
   <q-dialog v-model="confirm">
     <q-card>
-      <q-card-section class="row items-center">
-        <q-avatar icon="warning" color="negative" text-color="white" />
-        <span class="q-ml-sm">{{ t('plants.eliminateConfirmation') }}</span>
+      <q-card-section>
+        <BaseMessage
+          type="warning"
+          icon-size="xl"
+          :message="t('plants.eliminateConfirmation')"
+        />
       </q-card-section>
 
       <template v-if="error">
@@ -42,6 +45,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { graphql } from 'src/graphql';
 import { ref } from 'vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
+import BaseMessage from '../Base/BaseMessage.vue';
 
 export interface PlantButtonEliminateProps {
   plantId: number;

@@ -35,7 +35,7 @@ import EntityListTable, {
 } from './List/EntityListTable.vue';
 import EntityModal from './EntityModal.vue';
 import { MatcherLocationAsPath, useRoute, useRouter } from 'vue-router';
-import { nextTick } from 'vue';
+import { nextTick, type Slot } from 'vue';
 
 export interface EntityContainerProps
   extends EntityContainerPropsWithoutModels {
@@ -70,7 +70,7 @@ const visibleColumns = defineModel<EntityListTableProps['visibleColumns']>(
 );
 
 defineSlots<{
-  default: void;
+  default: Slot;
 }>();
 defineEmits<{
   'scanned-qr': [data: string];

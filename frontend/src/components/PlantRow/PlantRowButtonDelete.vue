@@ -7,26 +7,23 @@
     @reset-errors="resetErrors"
   >
     <template v-if="plantRowHasPlants" #message>
-      <div class="col-auto">
-        <q-avatar icon="warning" color="negative" text-color="white" />
-      </div>
-      <div class="col">
-        {{
-          t('base.disableConfirmation', {
+      <BaseMessage
+        type="warning"
+        icon-size="xl"
+        :message="
+          t('plantRows.disableConfirmation', {
             entity: t('base.entityName.plantRow'),
           })
-        }}
-      </div>
+        "
+      />
     </template>
     <template v-else #message>
-      <div class="col-auto">
-        <q-avatar icon="warning" color="negative" text-color="white" />
-      </div>
-      <div class="col">
-        <span class="text-negative">{{
-          t('plantRows.deleteConfirmation')
-        }}</span>
-      </div>
+      <BaseMessage
+        type="warning"
+        icon-size="xl"
+        icon-color="negative"
+        :message="t('plantRows.deleteConfirmation')"
+      />
     </template>
   </EntityButtonDelete>
 </template>
@@ -37,6 +34,7 @@ import EntityButtonDelete from 'src/components/Entity/EntityButtonDelete.vue';
 import { graphql } from 'src/graphql';
 import { useI18n } from 'src/composables/useI18n';
 import { computed } from 'vue';
+import BaseMessage from '../Base/BaseMessage.vue';
 
 export interface PlantRowButtonDeleteProps {
   plantRowId: number;

@@ -19,7 +19,7 @@
 
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <PlantEntityTable :plant="plant" row-padding-side="16px" />
+      <PlantEntityTable :plant="plant" />
 
       <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
       <EntityViewAttributionImageGallery
@@ -82,8 +82,12 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else>
+  <q-card v-else-if="fetching">
     <BaseSpinner size="xl" />
+  </q-card>
+
+  <q-card v-else>
+    <BaseNotFound />
   </q-card>
 </template>
 
@@ -108,6 +112,7 @@ import {
   RefreshAttributionsViewResult,
   useRefreshAttributionsView,
 } from 'src/composables/useRefreshAttributionsView';
+import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -137,6 +142,7 @@ const {
   data,
   error: queryPlantError,
   executeQuery: executePlantQuery,
+  fetching: fetchingPlant,
 } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
@@ -152,6 +158,10 @@ refreshAttributionsView({}).then(({ data, error }) => {
 
 const error = computed(
   () => queryPlantError.value || attributionsRefreshError.value,
+);
+
+const fetching = computed(
+  () => refreshingAttributionsView.value || fetchingPlant.value,
 );
 
 const plant = computed(() => data.value?.plants_by_pk);

@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed } from 'vue';
+import { computed, type Slot } from 'vue';
 
 const props = defineProps<{
   disable: boolean;
@@ -75,8 +75,8 @@ defineEmits<{
 }>();
 
 defineSlots<{
-  counter: void;
-  error: void;
+  counter: Slot;
+  error: Slot;
 }>();
 
 const { t } = useI18n();

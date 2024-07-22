@@ -19,16 +19,16 @@
     @row-click="(_, row) => $emit('row-click', row)"
   >
     <template #top-left>
-      <div v-if="visibleColumns.length < 1" class="text-negative">
-        <q-icon name="warning" />&nbsp;&nbsp;{{
-          t('entity.list.noColumnError')
-        }}
-      </div>
-      <div v-else-if="!dataIsFresh" class="text-negative">
-        <q-icon name="warning" />&nbsp;&nbsp;{{
-          t('entity.list.dataIsNotFresh')
-        }}
-      </div>
+      <BaseMessage
+        v-if="visibleColumns.length < 1 || !dataIsFresh"
+        class="q-mr-md"
+        type="warning"
+        :message="
+          visibleColumns.length < 1
+            ? t('entity.list.noColumnError')
+            : t('entity.list.dataIsNotFresh')
+        "
+      />
     </template>
 
     <template #top-right>
@@ -102,6 +102,7 @@ import EntityListTableColumnSelector from './EntityListTableColumnSelector.vue';
 import EntityListTableHeaderCell from './EntityListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
   pagination?: QTableProps['pagination'];

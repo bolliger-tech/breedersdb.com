@@ -72,6 +72,7 @@ const data = ref({ ...initialData });
 const refs = ref<{ [key: string]: InputRef | null }>({
   nameRef: null,
   orchardRef: null,
+  dateEliminatedRef: null,
 });
 
 const { isDirty, validate } = useEntityForm({

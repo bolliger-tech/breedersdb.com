@@ -141,7 +141,7 @@ import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { graphql, ResultOf } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, type Slot } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
 import { AttributableEntities } from './attributableEntities';
@@ -168,8 +168,8 @@ export interface AttributeStepsProps {
 const props = defineProps<AttributeStepsProps>();
 
 defineSlots<{
-  'entity-selector': void;
-  'entity-preview': void;
+  'entity-selector': Slot;
+  'entity-preview': Slot;
 }>();
 
 const emit = defineEmits<{

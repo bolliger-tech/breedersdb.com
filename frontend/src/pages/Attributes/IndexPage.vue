@@ -15,12 +15,9 @@
     >
       <template #body-cell-default_value="cellProps">
         <q-td :props="cellProps">
-          <q-chip
-            v-if="cellProps.value !== '' && cellProps.value !== null"
-            color="grey-7"
-            size="sm"
-            >{{ cellProps.value }}</q-chip
-          >
+          <q-chip v-if="cellProps.value !== ''" color="grey-7" size="sm">
+            {{ cellProps.value }}
+          </q-chip>
         </q-td>
       </template>
 
@@ -130,7 +127,7 @@ const columns = [
 
       if (type === ColumnTypes.Photo) {
         // photos can't have a default value
-        return null;
+        return '';
       }
 
       const value = row.default_value;

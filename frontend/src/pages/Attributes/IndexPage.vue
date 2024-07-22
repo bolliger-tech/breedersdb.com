@@ -27,7 +27,11 @@
       <template #body-cell-description="cellProps">
         <q-td
           :props="cellProps"
-          style="max-width: 200px; overflow: hidden; text-overflow: ellipsis"
+          style="
+            max-width: clamp(300px, 30svw, 600px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+          "
         >
           {{ cellProps.value }}
         </q-td>

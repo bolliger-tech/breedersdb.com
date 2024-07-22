@@ -48,7 +48,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
 import { AttributableEntities } from './attributableEntities';
-import { useAttributableEntityName } from 'src/components/Attribute/useAttributableEntityName';
+import { useAttributableEntityName } from 'src/components/ToAttribute/useAttributableEntityName';
 
 defineEmits<{
   reset: [];

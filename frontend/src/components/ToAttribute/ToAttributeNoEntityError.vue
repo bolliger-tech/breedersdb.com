@@ -14,14 +14,14 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { AttributableEntities } from 'src/components/Attribute/attributableEntities';
-import { useAttributableEntityName } from 'src/components/Attribute/useAttributableEntityName';
+import { AttributableEntities } from 'src/components/ToAttribute/attributableEntities';
+import { useAttributableEntityName } from 'src/components/ToAttribute/useAttributableEntityName';
 
-export interface AttributeNoEntityErrorProps {
+export interface ToAttributeNoEntityErrorProps {
   entityType: AttributableEntities;
 }
 
-const props = defineProps<AttributeNoEntityErrorProps>();
+const props = defineProps<ToAttributeNoEntityErrorProps>();
 
 defineEmits<{
   click: [];

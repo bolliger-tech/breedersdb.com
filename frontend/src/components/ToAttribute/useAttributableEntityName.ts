@@ -1,4 +1,4 @@
-import { AttributableEntities } from 'src/components/Attribute/attributableEntities';
+import { AttributableEntities } from 'src/components/ToAttribute/attributableEntities';
 import { useI18n } from 'src/composables/useI18n';
 import { computed } from 'vue';
 

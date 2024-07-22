@@ -29,11 +29,11 @@ import { ref } from 'vue';
 import { type QInput } from 'quasar';
 import { focusInView } from 'src/utils/focusInView';
 
-export interface AttributeFormInputProps {
+export interface ToAttributeFormInputProps {
   validation: { maxLen: number | null; pattern: string | null };
 }
 
-defineProps<AttributeFormInputProps>();
+defineProps<ToAttributeFormInputProps>();
 const modelValue = defineModel<string | null>({ required: true });
 
 const inputRef = ref<QInput | null>(null);

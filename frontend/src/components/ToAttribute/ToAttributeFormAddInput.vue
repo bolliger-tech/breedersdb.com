@@ -18,7 +18,7 @@
       <q-separator />
 
       <q-card-section>
-        <AttributeSelect @update:model-value="add" />
+        <ToAttributeSelect @update:model-value="add" />
       </q-card-section>
 
       <q-separator />
@@ -32,8 +32,8 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
-import { type AttributeFragment } from 'src/components/Attribute/attributeFragment';
-import AttributeSelect from 'src/components/Attribute/AttributeSelect.vue';
+import { type AttributeFragment } from 'src/components/ToAttribute/attributeFragment';
+import ToAttributeSelect from 'src/components/ToAttribute/ToAttributeSelect.vue';
 
 const emit = defineEmits<{
   add: [attribute: AttributeFragment];

@@ -43,12 +43,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-export interface AttributeFormInputProps {
+export interface ToAttributeFormInputProps {
   validation: { min: number; max: number; step: 1 };
   legend: string[] | null;
 }
 
-const props = defineProps<AttributeFormInputProps>();
+const props = defineProps<ToAttributeFormInputProps>();
 
 const modelValue = defineModel<number | null>({ required: true });
 

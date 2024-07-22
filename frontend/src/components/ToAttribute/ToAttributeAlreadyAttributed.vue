@@ -13,15 +13,15 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed } from 'vue';
 import { toLocaleRelativeTimeString } from 'src/utils/dateUtils';
 import type { AttributableEntities } from './attributableEntities';
-import { useAttributableEntityName } from 'src/components/Attribute/useAttributableEntityName';
+import { useAttributableEntityName } from 'src/components/ToAttribute/useAttributableEntityName';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
-export interface AttributeAlreadyAttributedProps {
+export interface ToAttributeAlreadyAttributedProps {
   date: Date;
   entityType: AttributableEntities;
 }
 
-const props = defineProps<AttributeAlreadyAttributedProps>();
+const props = defineProps<ToAttributeAlreadyAttributedProps>();
 
 const { t, locale } = useI18n();
 

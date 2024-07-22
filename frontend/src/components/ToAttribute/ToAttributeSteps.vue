@@ -15,7 +15,10 @@
       title=""
       :done="step1Done"
     >
-      <AttributeFormSelector ref="attributeFormSelectorRef" v-model="formId" />
+      <ToAttributeFormSelector
+        ref="attributeFormSelectorRef"
+        v-model="formId"
+      />
 
       <q-stepper-navigation class="row justify-end">
         <q-btn
@@ -35,7 +38,7 @@
       :done="step2Done"
       :disable="!step1Done"
     >
-      <AttributeMetaData
+      <ToAttributeMetaData
         ref="attributeMetaDataRef"
         v-model:author="author"
         v-model:date="date"
@@ -105,7 +108,7 @@
           />
         </template>
       </q-banner>
-      <AttributeNoEntityError
+      <ToAttributeNoEntityError
         v-else-if="entityId === null"
         :entity-type="entityType"
         @click="step = 3"
@@ -113,7 +116,7 @@
 
       <template v-else>
         <slot name="entity-preview"></slot>
-        <AttributeForm
+        <ToAttributeForm
           :key="attributeFormKey"
           :entity-id="entityId"
           :entity-type="entityType"
@@ -132,10 +135,10 @@
 </template>
 
 <script setup lang="ts">
-import AttributeFormSelector from 'src/components/Attribute/AttributeFormSelector.vue';
-import AttributeMetaData from 'src/components/Attribute/AttributeMetaData.vue';
-import AttributeForm from 'src/components/Attribute/AttributeForm.vue';
-import AttributeNoEntityError from 'src/components/Attribute/AttributeNoEntityError.vue';
+import ToAttributeFormSelector from 'src/components/ToAttribute/ToAttributeFormSelector.vue';
+import ToAttributeMetaData from 'src/components/ToAttribute/ToAttributeMetaData.vue';
+import ToAttributeForm from 'src/components/ToAttribute/ToAttributeForm.vue';
+import ToAttributeNoEntityError from 'src/components/ToAttribute/ToAttributeNoEntityError.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { graphql, ResultOf } from 'src/graphql';
@@ -157,7 +160,7 @@ const AUTHOR_URL_KEY = 'author';
 const DATE_URL_KEY = 'date';
 const REPEAT_URL_KEY = 'repeat';
 
-export interface AttributeStepsProps {
+export interface ToAttributeStepsProps {
   entityId: number | null;
   entityType: AttributableEntities;
   entityLoading: boolean;
@@ -165,7 +168,7 @@ export interface AttributeStepsProps {
   focusEntitySelector?: () => void;
 }
 
-const props = defineProps<AttributeStepsProps>();
+const props = defineProps<ToAttributeStepsProps>();
 
 defineSlots<{
   'entity-selector': Slot;
@@ -249,7 +252,7 @@ const form = computed(
 );
 
 const attributeFormSelectorRef = ref<InstanceType<
-  typeof AttributeFormSelector
+  typeof ToAttributeFormSelector
 > | null>(null);
 
 function completeStep1() {
@@ -285,9 +288,9 @@ const { queryArg: repeat } = useQueryArg<number>({
 watch(repeat, (r) => sessionStorage.set(REPEAT_STORAGE_KEY, r));
 const repeatInt = computed(() => parseInt(repeat.value.toString(), 10));
 
-const attributeMetaDataRef = ref<InstanceType<typeof AttributeMetaData> | null>(
-  null,
-);
+const attributeMetaDataRef = ref<InstanceType<
+  typeof ToAttributeMetaData
+> | null>(null);
 
 function completeStep2() {
   Promise.resolve(attributeMetaDataRef.value?.validate()).then((valid) => {
@@ -311,7 +314,7 @@ function completeStep4(repeatCount: number) {
     step.value = 3;
   } else {
     // stay on the same entity
-    // but reset the AttributeForm
+    // but reset the ToAttributeForm
     attributeFormKey.value += 1;
   }
 }

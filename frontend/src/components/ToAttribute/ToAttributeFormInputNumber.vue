@@ -27,11 +27,11 @@ import { useI18n } from 'src/composables/useI18n';
 import { type QInput } from 'quasar';
 import { focusInView } from 'src/utils/focusInView';
 
-export interface AttributeFormInputProps {
+export interface ToAttributeFormInputProps {
   validation: { min: number; max: number; step: number };
 }
 
-const props = defineProps<AttributeFormInputProps>();
+const props = defineProps<ToAttributeFormInputProps>();
 
 const modelValue = defineModel<number | null>({ required: true });
 

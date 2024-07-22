@@ -139,8 +139,16 @@ async function initVideo() {
 
     animationFrame = requestAnimationFrame(processVideoFrame);
   } catch (e) {
-    if (e instanceof DOMException && e.name === 'NotAllowedError') {
-      internalErrorMessage.value = t('base.qr.permissionRequest');
+    if (
+      e instanceof DOMException &&
+      ['NotAllowedError', 'NotFoundError'].includes(e.name)
+    ) {
+      internalErrorMessage.value = [
+        t('base.qr.permissionRequest'),
+        $q.platform.is.mac && t('base.qr.permissionHintMac'),
+      ]
+        .filter(Boolean)
+        .join(' ');
       videoAccess.value = false;
       return;
     }

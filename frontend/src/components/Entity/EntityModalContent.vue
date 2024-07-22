@@ -101,6 +101,7 @@ import { CombinedError } from '@urql/vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
+import type { Slot } from 'vue';
 
 export interface EntityModalContentProps {
   title?: string;
@@ -116,12 +117,12 @@ export interface EntityModalContentProps {
 
 defineProps<EntityModalContentProps>();
 defineSlots<{
-  title: [];
-  'title-text': [];
-  'subtitle-text': [];
-  default: [];
-  'action-left': [];
-  'action-right': [];
+  title: Slot;
+  'title-text': Slot;
+  'subtitle-text': Slot;
+  default: Slot;
+  'action-left': Slot;
+  'action-right': Slot;
 }>();
 defineEmits<{
   edit: [];

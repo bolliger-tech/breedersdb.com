@@ -1,6 +1,6 @@
 <template>
   <EntitySelect
-    :ref="orchardRef"
+    ref="orchardRef"
     v-model="orchard"
     :label="t('orchards.title')"
     :options="orchardOptions"

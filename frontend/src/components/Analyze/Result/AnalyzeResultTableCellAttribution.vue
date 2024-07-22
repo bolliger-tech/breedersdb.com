@@ -78,9 +78,12 @@ function blurAnyFocusedElement() {
   color: white;
 }
 
+:global(.result-table-cell-attribution__overlay) {
+  width: 300px;
+}
+
 :global(.body--dark .result-table-cell-attribution__overlay) {
   box-shadow: none;
-  width: 300px;
   border: 1px solid $grey-7;
 }
 </style>

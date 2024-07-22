@@ -45,12 +45,22 @@
       :columns="columns"
     />
     <div style="margin: -26px 0 0 36px">
-      <div v-if="isSimplifiable" class="text-negative q-mb-sm">
-        <q-icon name="warning" />&nbsp;
+      <BaseMessage
+        v-if="!isValid"
+        type="error"
+        :message="t('analyze.filter.invalid')"
+        message-color="negative"
+        class="q-mb-sm"
+      />
+      <BaseMessage
+        v-else-if="isSimplifiable"
+        type="warning"
+        class="q-mb-sm text-warning"
+      >
         {{ t('analyze.filter.simplifiable') }}&nbsp;&nbsp;
         <q-btn
           size="sm"
-          color="negative"
+          color="warning"
           dense
           class="q-px-md"
           unelevated
@@ -58,15 +68,14 @@
         >
           {{ t('analyze.filter.simplify') }}
         </q-btn>
-      </div>
-      <div v-else-if="!isValid" class="text-negative q-mb-sm">
-        <q-icon name="warning" />&nbsp;
-        {{ t('analyze.filter.invalid') }}
-      </div>
-      <div v-else class="text-positive q-mb-sm">
-        <q-icon name="check" />&nbsp;
-        {{ t('analyze.filter.valid') }}
-      </div>
+      </BaseMessage>
+      <BaseMessage
+        v-else
+        type="success"
+        :message="t('analyze.filter.valid')"
+        message-color="positive"
+        class="q-mb-sm"
+      />
     </div>
   </template>
 </template>
@@ -80,6 +89,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { FilterRuleColumn } from './filterRuleColumn';
 import { useEntityName } from 'src/composables/useEntityName';
 import { useFilterDragNode } from './useFilterDragNode';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 const { t } = useI18n();
 

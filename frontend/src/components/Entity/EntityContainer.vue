@@ -5,6 +5,8 @@
     :tabs="tabs"
     :title="title"
     :search-placeholder="searchPlaceholder"
+    :has-qr-scanner="hasQrScanner"
+    @scanned-qr="$emit('scanned-qr', $event)"
     @add-new="addNew"
   >
     <template #default>
@@ -33,7 +35,7 @@ import EntityListTable, {
 } from './List/EntityListTable.vue';
 import EntityModal from './EntityModal.vue';
 import { MatcherLocationAsPath, useRoute, useRouter } from 'vue-router';
-import { nextTick } from 'vue';
+import { nextTick, type Slot } from 'vue';
 
 export interface EntityContainerProps
   extends EntityContainerPropsWithoutModels {
@@ -53,6 +55,7 @@ interface EntityContainerPropsWithoutModels {
   listEntitiesPath: string | MatcherLocationAsPath;
   addEntityPath: string | MatcherLocationAsPath;
   viewEntityPathGetter: (id: number | string) => string | MatcherLocationAsPath;
+  hasQrScanner?: boolean;
 }
 
 const props = defineProps<EntityContainerPropsWithoutModels>();
@@ -67,7 +70,10 @@ const visibleColumns = defineModel<EntityListTableProps['visibleColumns']>(
 );
 
 defineSlots<{
-  default: void;
+  default: Slot;
+}>();
+defineEmits<{
+  'scanned-qr': [data: string];
 }>();
 
 const scrollPos = { x: 0, y: 0 };

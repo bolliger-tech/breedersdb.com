@@ -59,10 +59,12 @@
           :draggable="false"
         >
           <template #error>
-            <div class="text-caption q-mx-md absolute-center text-center">
-              <q-icon name="warning" size="sm" class="q-mr-sm" />{{
-                t('entity.failedToLoadImage')
-              }}<br />{{ fileName }}
+            <div class="absolute-center column align-center">
+              <BaseMessage
+                type="warning"
+                :message="t('entity.failedToLoadImage')"
+              />
+              <p class="q-ma-none text-caption">{{ fileName }}</p>
             </div>
           </template>
         </q-img>
@@ -110,6 +112,7 @@ import {
   getAttributeValue,
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 const DEFAULT_PREVIEW_HEIGHT = 200;
 

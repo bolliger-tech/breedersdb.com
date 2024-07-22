@@ -80,7 +80,11 @@ function paddLabelId() {
   if (!labelId.value) {
     return;
   }
-  labelId.value = zeroFill(labelId.value);
+  const padded = zeroFill(labelId.value);
+  if (!isValidLabelId(padded)) {
+    return;
+  }
+  labelId.value = padded;
 }
 
 const uniqueQuery = graphql(`
@@ -132,7 +136,7 @@ async function uniqueRule(newLabelId: string) {
 const labelIdIsNotUnique = computed(() => {
   return (
     !!labelId.value &&
-    !labelId.value.startsWith('#') &&
+    !isPrefixed(labelId.value) &&
     !!nextFreeLabelId.value &&
     nextFreeLabelId.value !== zeroFill(labelId.value)
   );

@@ -60,7 +60,7 @@
       </div>
       <q-icon
         :color="isValid ? 'positive' : 'negative'"
-        :name="isValid ? 'check' : 'warning'"
+        :name="isValid ? 'check' : 'error'"
         class="q-ml-sm"
         size="sm"
       />

@@ -11,19 +11,13 @@
     <q-card>
       <q-card-section class="row items-center q-gutter-md">
         <slot name="message">
-          <div class="col-auto">
-            <q-icon
-              name="warning"
-              :color="error ? 'negative' : 'warning'"
-              size="50px"
-            />
-          </div>
-          <div class="col">
-            <template v-if="foreignKeyError">{{ foreignKeyError }}</template>
-            <template v-else>
-              {{ message ? message : t('base.deleteConfirmation') }}
-            </template>
-          </div>
+          <BaseMessage
+            :type="error ? 'error' : 'warning'"
+            :message="
+              foreignKeyError || message || t('base.deleteConfirmation')
+            "
+            icon-size="xl"
+          />
         </slot>
       </q-card-section>
 
@@ -61,6 +55,7 @@ import { computed, ref } from 'vue';
 import BaseGraphqlError, {
   BaseGraphqlErrorProps,
 } from '../Base/BaseGraphqlError.vue';
+import BaseMessage from '../Base/BaseMessage.vue';
 
 export interface EntityButtonEliminateProps {
   label?: string;

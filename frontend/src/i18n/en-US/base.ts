@@ -57,7 +57,10 @@ export const base = {
   noData: 'No data',
 
   qr: {
+    title: 'QR scanner',
     permissionRequest: 'Failed to access camera. Please allow camera use.',
+    permissionHintMac:
+      'On MacOS: Make sure the browser is allowed camera access in "System Settings" -> "Privacy & Security" -> "Camera".',
     loading: 'Loading QR code scanner…',
     enablePermanently: 'Enable permanently',
     permanantlyEnableCameraOnIOS: 'Enable camera permanently on iOS',

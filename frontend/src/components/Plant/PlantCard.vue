@@ -31,6 +31,7 @@ import EntityName, {
   PlantGroupNameProps,
 } from 'src/components/Entity/EntityName.vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
+import type { Slot } from 'vue';
 
 export interface PlantCardProps {
   labelId?: string;
@@ -45,7 +46,7 @@ export interface PlantCardProps {
 
 defineProps<PlantCardProps>();
 defineSlots<{
-  title: void;
-  subtitle: void;
+  title: Slot;
+  subtitle: Slot;
 }>();
 </script>

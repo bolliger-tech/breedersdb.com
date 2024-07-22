@@ -36,8 +36,12 @@
     </template>
   </EntityModalContent>
 
+  <q-card v-else-if="fetching">
+    <BaseSpinner size="xl" />
+  </q-card>
+
   <q-card v-else>
-    <BaseSpinner />
+    <BaseNotFound />
   </q-card>
 </template>
 
@@ -55,6 +59,7 @@ import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import { localizeDate } from 'src/utils/dateUtils';
+import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -69,7 +74,7 @@ const query = graphql(
   [graftingFragment],
 );
 
-const { data, error } = useQuery({
+const { data, error, fetching } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });

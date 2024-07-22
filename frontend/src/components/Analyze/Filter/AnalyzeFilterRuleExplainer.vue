@@ -1,17 +1,14 @@
 <template>
-  <template v-if="rule && rule.isValid">
-    <q-icon name="info" />&nbsp;
-    <span class="text-body2">
-      <strong>{{ t('analyze.filter.explainer.title') }}</strong>
-      {{ explainer }}
-    </span>
-  </template>
-  <template v-else>
-    <q-icon name="warning" class="text-negative" />&nbsp;
-    <span class="text-body2 text-negative">
-      {{ t('analyze.filter.explainer.invalidRule') }}
-    </span>
-  </template>
+  <BaseMessage v-if="rule && rule.isValid" type="info" class="text-body2">
+    <strong>{{ t('analyze.filter.explainer.title') }}</strong>
+    {{ explainer }}
+  </BaseMessage>
+  <BaseMessage
+    v-else
+    type="error"
+    :message="t('analyze.filter.explainer.invalidRule')"
+    class="text-body2"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -21,6 +18,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { useEntityName } from 'src/composables/useEntityName';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import { BaseTable } from './filterNode';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 interface AnalyzeFilterRuleExplainerProps {
   rule?: FilterRule;

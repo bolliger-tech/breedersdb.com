@@ -14,6 +14,8 @@
       list-entities-path="/plants"
       add-entity-path="/plants/new"
       :view-entity-path-getter="(id) => `/plants/${id}`"
+      :has-qr-scanner="true"
+      @scanned-qr="onScannedQr"
     />
   </PageLayout>
   <router-view name="modal" />
@@ -23,12 +25,13 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, watch, UnwrapRef } from 'vue';
+import { computed, watch, UnwrapRef, ref, nextTick } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { usePagination } from 'src/components/Entity/List/usePagination';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
+import { useRouter } from 'vue-router';
 
 const { t, d } = useI18n();
 
@@ -232,4 +235,35 @@ watch(search, (newValue) => {
     window.setTimeout(() => (subset.value = 'all'), 20);
   }
 });
+
+const router = useRouter();
+
+const variablesPlantByLabelId = ref({ labelId: '' });
+const queryPlantByLabelId = graphql(
+  `
+    query PlantIdByLabelId($labelId: String!) {
+      plants(where: { label_id: { _eq: $labelId } }) {
+        id
+      }
+    }
+  `,
+  [plantFragment],
+);
+
+const { executeQuery } = await useQuery({
+  query: queryPlantByLabelId,
+  variables: variablesPlantByLabelId,
+  pause: true,
+});
+
+async function onScannedQr(code: string) {
+  variablesPlantByLabelId.value.labelId = code;
+  await nextTick();
+  const result = await executeQuery();
+  if (result.data.value?.plants.length === 1) {
+    router.push({ path: `/plants/${result.data.value.plants[0].id}` });
+  } else {
+    search.value = code;
+  }
+}
 </script>

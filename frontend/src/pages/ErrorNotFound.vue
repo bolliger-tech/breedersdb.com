@@ -3,5 +3,5 @@
 </template>
 
 <script setup lang="ts">
-import BaseNotFound from 'src/components/Base/BaseSpriteIcon/BaseNotFound.vue';
+import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 </script>

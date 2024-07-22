@@ -1,177 +1,92 @@
 <template>
-  <table
-    class="plant-entity-table"
-    :class="{
-      'plant-entity-table--dark': dark,
-      'plant-entity-table--no-border': noBorder,
-    }"
-  >
+  <EntityViewTable :dense="dense">
     <template v-if="plant.plant_row">
-      <tr>
-        <th>{{ t('orchards.title', 1) }}</th>
-        <td>
-          <RouterLink
-            :to="`/orchards/${plant.plant_row.orchard.id}`"
-            class="undecorated-link"
-          >
-            {{ plant.plant_row.orchard.name }}
-          </RouterLink>
-        </td>
-      </tr>
-      <tr>
-        <th>{{ t('plantRows.title', 1) }}</th>
-        <td>
-          <RouterLink
-            :to="`/rows/${plant.plant_row.id}`"
-            class="undecorated-link"
-          >
-            {{ plant.plant_row.name }}
-          </RouterLink>
-        </td>
-      </tr>
-      <tr v-if="plant.serial_in_plant_row">
-        <th>{{ t('plants.fields.serialInPlantRow') }}</th>
-        <td>{{ plant.serial_in_plant_row }}</td>
-      </tr>
-      <tr v-if="plant.distance_plant_row_start">
-        <th>{{ t('plants.fields.distancePlantRowStart') }}</th>
-        <td>{{ plant.distance_plant_row_start }}</td>
-      </tr>
+      <EntityViewTableRow :label="t('orchards.title', 1)">
+        <RouterLink
+          :to="`/orchards/${plant.plant_row.orchard.id}`"
+          class="undecorated-link"
+        >
+          {{ plant.plant_row.orchard.name }}
+        </RouterLink>
+      </EntityViewTableRow>
+      <EntityViewTableRow :label="t('plantRows.title', 1)">
+        <RouterLink
+          :to="`/rows/${plant.plant_row.id}`"
+          class="undecorated-link"
+        >
+          {{ plant.plant_row.name }}
+        </RouterLink>
+      </EntityViewTableRow>
+      <EntityViewTableRow :label="t('plants.fields.serialInPlantRow')">
+        {{ plant.serial_in_plant_row }}
+      </EntityViewTableRow>
+      <EntityViewTableRow :label="t('plants.fields.distancePlantRowStart')">
+        {{ plant.distance_plant_row_start }}
+      </EntityViewTableRow>
     </template>
-    <tr v-if="plant.date_grafted">
-      <th>{{ t('plants.fields.dateGrafted') }}</th>
-      <td>{{ localizeDate(plant.date_grafted) }}</td>
-    </tr>
-    <tr v-if="plant.rootstock?.name">
-      <th>{{ t('plants.fields.rootstock') }}</th>
-      <td>
-        <RouterLink
-          :to="`/rootstocks/${plant.rootstock.id}`"
-          class="undecorated-link"
-        >
-          {{ plant.rootstock?.name }}
-        </RouterLink>
-      </td>
-    </tr>
-    <tr v-if="plant.grafting?.name">
-      <th>{{ t('plants.fields.grafting') }}</th>
-      <td>
-        <RouterLink
-          :to="`/graftings/${plant.grafting.id}`"
-          class="undecorated-link"
-        >
-          {{ plant.grafting?.name }}
-        </RouterLink>
-      </td>
-    </tr>
-    <tr v-if="plant.date_labeled">
-      <th>{{ t('plants.fields.dateLabeled') }}</th>
-      <td>{{ localizeDate(plant.date_labeled) }}</td>
-    </tr>
-    <tr v-if="plant.date_planted">
-      <th>{{ t('plants.fields.datePlanted') }}</th>
-      <td>{{ localizeDate(plant.date_planted) }}</td>
-    </tr>
-    <tr v-if="plant.date_eliminated">
-      <th>{{ t('plants.fields.dateEliminated') }}</th>
-      <td>{{ localizeDate(plant.date_eliminated) }}</td>
-    </tr>
-    <tr v-if="plant.created">
-      <th>{{ t('entity.commonColumns.created') }}</th>
-      <td>{{ localizeDate(plant.created) }}</td>
-    </tr>
-    <tr v-if="plant.modified">
-      <th>{{ t('entity.commonColumns.modified') }}</th>
-      <td>{{ localizeDate(plant.modified) }}</td>
-    </tr>
-    <tr v-if="plant.note">
-      <td colspan="2" class="plant-entity-table__note">
-        <strong>{{ t('entity.commonColumns.note') }}</strong>
-        <br />
-        <span style="white-space: pre-line">{{ plant.note }}</span>
-      </td>
-    </tr>
-  </table>
+    <EntityViewTableRow :label="t('plants.fields.dateGrafted')">
+      {{ localizeDate(plant.date_grafted) }}
+    </EntityViewTableRow>
+    <EntityViewTableRow
+      v-if="plant.rootstock"
+      :label="t('plants.fields.rootstock')"
+    >
+      <RouterLink
+        :to="`/rootstocks/${plant.rootstock.id}`"
+        class="undecorated-link"
+      >
+        {{ plant.rootstock?.name }}
+      </RouterLink>
+    </EntityViewTableRow>
+    <EntityViewTableRow
+      v-if="plant.grafting"
+      :label="t('plants.fields.grafting')"
+    >
+      <RouterLink
+        :to="`/graftings/${plant.grafting.id}`"
+        class="undecorated-link"
+      >
+        {{ plant.grafting?.name }}
+      </RouterLink>
+    </EntityViewTableRow>
+    <EntityViewTableRow :label="t('plants.fields.dateLabeled')">
+      {{ localizeDate(plant.date_labeled) }}
+    </EntityViewTableRow>
+    <EntityViewTableRow :label="t('plants.fields.datePlanted')">
+      {{ localizeDate(plant.date_planted) }}
+    </EntityViewTableRow>
+    <EntityViewTableRow :label="t('plants.fields.dateEliminated')">
+      {{ localizeDate(plant.date_eliminated) }}
+    </EntityViewTableRow>
+    <EntityViewTableRow :label="t('entity.commonColumns.created')">
+      {{ localizeDate(plant.created) }}
+    </EntityViewTableRow>
+    <EntityViewTableRow :label="t('entity.commonColumns.modified')">
+      {{
+        plant.modified ? localizeDate(plant.modified) : t('base.notAvailable')
+      }}
+    </EntityViewTableRow>
+    <EntityViewTableRow v-if="plant.note">
+      <strong>{{ t('entity.commonColumns.note') }}</strong>
+      <br />
+      <span style="white-space: pre-line">{{ plant.note }}</span>
+    </EntityViewTableRow>
+  </EntityViewTable>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { localizeDate } from 'src/utils/dateUtils';
 import { type PlantFragment } from './plantFragment';
+import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
+import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 
 export interface PlantEntityTableProps {
   plant: PlantFragment;
-  dark?: boolean;
-  rowPaddingSide: string;
-  noBorder?: boolean;
+  dense?: boolean;
 }
 
 defineProps<PlantEntityTableProps>();
 
 const { t } = useI18n();
 </script>
-
-<style lang="scss" scoped>
-$border: 1px solid $grey-4;
-
-tr {
-  white-space: nowrap;
-  border-bottom: $border;
-}
-tr:hover {
-  background: rgba(0, 0, 0, 0.03);
-}
-.body--dark tr,
-.plant-entity-table--dark tr {
-  border-color: $grey-8;
-}
-.body--dark tr:hover {
-  background: rgba(255, 255, 255, 0.07);
-}
-tr:first-child {
-  border-top: $border;
-}
-
-.plant-entity-table--no-border tr {
-  border-bottom: none;
-  border-top: none;
-}
-
-th {
-  text-align: left;
-  padding: 4px 8px;
-  font-weight: bold;
-}
-
-td {
-  text-align: right;
-  padding: 4px 8px;
-}
-th:first-child {
-  padding-left: v-bind(rowPaddingSide);
-}
-td:last-child {
-  padding-right: v-bind(rowPaddingSide);
-}
-
-.plant-entity-table__note {
-  text-align: left;
-  padding-left: v-bind(rowPaddingSide);
-  padding-right: v-bind(rowPaddingSide);
-}
-
-.plant-entity-table--no-border :is(td, th) {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.plant-entity-table--no-border tr:hover {
-  background: none;
-}
-
-.plant-entity-table {
-  width: 100%;
-  border-spacing: 0;
-  border-collapse: collapse;
-}
-</style>

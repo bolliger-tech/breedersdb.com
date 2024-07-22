@@ -9,6 +9,7 @@ import { result } from './query-result';
 import { datetimeFormats } from './datetime-formats';
 import { attributions } from './attributions';
 import { attribute } from './attribute';
+import { attributes } from './attributes';
 import { crossings } from './crossings';
 import { lots } from './lots';
 import { plantGroups } from './plant-groups';
@@ -29,6 +30,7 @@ const messages = {
 
   entity,
   attribute,
+  attributes,
   crossings,
   lots,
   plantGroups,

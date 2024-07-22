@@ -14,9 +14,9 @@ export interface EntityViewTableProps {
   noHover?: boolean;
 }
 
-// prettier-ignore
-// prettier would remove the <Readonly<Partial<EntityViewTableProps>>> 🤯
-export const entityViewTableProps = Symbol() as InjectionKey<Readonly<Partial<EntityViewTableProps>>>;
+export const entityViewTableProps = Symbol() as InjectionKey<
+  Readonly<Partial<EntityViewTableProps>>
+>;
 </script>
 
 <script setup lang="ts">

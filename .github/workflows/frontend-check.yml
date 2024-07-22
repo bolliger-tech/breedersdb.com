@@ -19,20 +19,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Switch to /frontend
-        run: cd frontend
-
       - name: Create .env file
         run: cp .env.example .env
+        working-directory: ./frontend
 
       - name: Install dependencies
         run: yarn install
+        working-directory: ./frontend
 
       - name: Run tsc
         run: yarn tsc --skipLibCheck
+        working-directory: ./frontend
 
       - name: Run lint
         run: yarn lint
+        working-directory: ./frontend
 
       - name: Run build
         run: yarn build
+        working-directory: ./frontend

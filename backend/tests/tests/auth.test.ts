@@ -288,7 +288,8 @@ test('sign in with wrong password', async () => {
     variables: { email: user1.email, password: 'wrong' },
   });
   expect(json.errors).not.toBe(undefined);
-  expect(json.errors[0].message).toBe('Unauthorized: Invalid password');
+  expect(json.errors[0].message).toStartWith('Unauthorized: Invalid password');
+  expect(json.errors[0].extensions.nextPossibleSignIn).not.toBe(undefined);
   expect(json.data).toBe(undefined);
 });
 

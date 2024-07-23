@@ -60,7 +60,7 @@ describe('FilterRuleOperator', () => {
 
   it('should return isValid: false when notEmpty but allowEmpty = false', () => {
     const operator = new FilterRuleOperator({
-      value: FilterOperatorValue.Empty,
+      value: FilterOperatorValue.NotEmpty,
     });
     operator.schema = {
       allowEmpty: false,

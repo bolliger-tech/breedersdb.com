@@ -6,7 +6,7 @@
 
 <script lang="ts">
 // use non-setup variant so we can export the entityViewTableProps symbol
-import type { InjectionKey, Reactive } from 'vue';
+import type { InjectionKey } from 'vue';
 import { provide } from 'vue';
 
 export interface EntityViewTableProps {
@@ -15,7 +15,7 @@ export interface EntityViewTableProps {
 }
 
 export const entityViewTableProps = Symbol() as InjectionKey<
-  Readonly<Reactive<EntityViewTableProps>>
+  Readonly<Partial<EntityViewTableProps>>
 >;
 </script>
 

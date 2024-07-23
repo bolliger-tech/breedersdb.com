@@ -523,7 +523,7 @@
     "@pnpm/network.ca-file" "^1.0.1"
     config-chain "^1.1.11"
 
-"@quasar/app-vite@^2.0.0-beta.14":
+"@quasar/app-vite@^2.0.0-beta.15":
   version "2.0.0-beta.15"
   resolved "https://registry.yarnpkg.com/@quasar/app-vite/-/app-vite-2.0.0-beta.15.tgz#d473e083f2c7db8cfe77b23c223596faadf46cf3"
   integrity sha512-sMFSf1M1S13F37e/SkU3Uy+VTCrA30fExh1y5epfEF54OnJ5H32nuhLMjjY7KBuFFT61EMjQg+JILpaXNgRYyw==
@@ -585,7 +585,7 @@
     route-cache "^0.5.0"
     update-notifier "^6.0.2"
 
-"@quasar/extras@^1.16.4":
+"@quasar/extras@^1.16.12":
   version "1.16.12"
   resolved "https://registry.yarnpkg.com/@quasar/extras/-/extras-1.16.12.tgz#2dac82eac8bb6b069a677d2817e479261d51f234"
   integrity sha512-hLlb3Buxo38Xg/2w0BTkz98RBh/VH8apZ2r6Fl8YpPgrVQ0diHyN/BVTvIOk5Kch2y38L2kvwOIddsB2UcCuIg==
@@ -2861,7 +2861,19 @@ glob-regex@^0.3.0:
   resolved "https://registry.yarnpkg.com/glob-regex/-/glob-regex-0.3.2.tgz#27348f2f60648ec32a4a53137090b9fb934f3425"
   integrity sha512-m5blUd3/OqDTWwzBBtWBPrGlAzatRywHameHeekAZyZrskYouOGdNB8T/q6JucucvJXtOuyHIn0/Yia7iDasDw==
 
-glob@^10.0.0, glob@^10.3.10, glob@^10.3.3:
+glob@^10.0.0, glob@^10.3.3:
+  version "10.4.2"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-10.4.2.tgz#bed6b95dade5c1f80b4434daced233aee76160e5"
+  integrity sha512-GwMlUF6PkPo3Gk21UxkCohOv0PLcIXVtKyLlpEI28R/cO/4eNOdmLk3CMW1wROV/WR/EsZOWAfBbBOqYvs88/w==
+  dependencies:
+    foreground-child "^3.1.0"
+    jackspeak "^3.1.2"
+    minimatch "^9.0.4"
+    minipass "^7.1.2"
+    package-json-from-dist "^1.0.0"
+    path-scurry "^1.11.1"
+
+glob@^10.3.10:
   version "10.4.5"
   resolved "https://registry.yarnpkg.com/glob/-/glob-10.4.5.tgz#f4d9f0b90ffdbab09c9d77f5f29b4262517b0956"
   integrity sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==
@@ -4160,7 +4172,7 @@ qs@6.11.0:
   dependencies:
     side-channel "^1.0.4"
 
-quasar@^2.16.4:
+quasar@^2.16.6:
   version "2.16.6"
   resolved "https://registry.yarnpkg.com/quasar/-/quasar-2.16.6.tgz#b022520581ee84e371a1e25b159298ee7133ebf0"
   integrity sha512-nFFS/WniZy052wUNr0UHxc46KVB0hVg7IlBpVScxQAANQxL5uJVqaiw0z2CEM8IM+MCObXANqxHX/m7woG7zIw==
@@ -5108,7 +5120,18 @@ vite-tsconfig-paths@^4.3.1:
     globrex "^0.1.2"
     tsconfck "^3.0.3"
 
-vite@^5.0.0, vite@^5.3.3:
+vite@^5.0.0:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-5.3.1.tgz#bb2ca6b5fd7483249d3e86b25026e27ba8a663e6"
+  integrity sha512-XBmSKRLXLxiaPYamLv3/hnP/KXDai1NDexN0FpkTaZXTfycHvkRHoenpgl/fvuK/kPbB6xAgoyiryAhQNxYmAQ==
+  dependencies:
+    esbuild "^0.21.3"
+    postcss "^8.4.38"
+    rollup "^4.13.0"
+  optionalDependencies:
+    fsevents "~2.3.3"
+
+vite@^5.3.3:
   version "5.3.4"
   resolved "https://registry.yarnpkg.com/vite/-/vite-5.3.4.tgz#b36ebd47c8a5e3a8727046375d5f10bf9fdf8715"
   integrity sha512-Cw+7zL3ZG9/NZBB8C+8QbQZmR54GwqIz+WMI4b3JgdYJvX+ny9AjJXqkGQlDXSXRP9rP0B4tbciRMOVEKulVOA==

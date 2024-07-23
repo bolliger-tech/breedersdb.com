@@ -1,0 +1,38 @@
+name: Frontend Check (tsc, lint, build)
+
+on:
+  push:
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-check.yml'
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: cp .env.example .env
+        working-directory: ./frontend
+
+      - name: Install dependencies
+        run: yarn install
+        working-directory: ./frontend
+
+      - name: Run tsc
+        run: yarn tsc --skipLibCheck
+        working-directory: ./frontend
+
+      - name: Run lint
+        run: yarn lint
+        working-directory: ./frontend
+
+      - name: Run build
+        run: yarn build
+        working-directory: ./frontend

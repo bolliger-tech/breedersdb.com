@@ -55,6 +55,10 @@ yarn build
 > If you really want to use bun, run `yarn build` first, bun should work
 > afterwards.
 
+> [!NOTE]
+> Before deploying, you should also upload the sourcemaps to sentry.
+> Use `yarn build:sentry` to build with sentry sourcemaps and upload them.
+
 ### Preview the app in production mode
 
 ```bash

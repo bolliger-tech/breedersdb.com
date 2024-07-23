@@ -11,6 +11,7 @@
       :rows="rows"
       :all-columns="availableColumns"
       :data-is-fresh="isValid"
+      :base-table="props.baseTable"
     />
     <!-- TODO: <ResultDownload :enabled="!fetching && !!result" /> -->
     <div v-if="lastRefreshDate" class="text-caption">
@@ -87,7 +88,7 @@ const visibleColumns = computed({
   get: () =>
     selectedColumns.value.length > 0
       ? selectedColumns.value
-      : validInitialVisibleColumns.value ?? defaultColumns.value,
+      : (validInitialVisibleColumns.value ?? defaultColumns.value),
   set: (cols: string[]) => {
     selectedColumns.value = cols;
   },

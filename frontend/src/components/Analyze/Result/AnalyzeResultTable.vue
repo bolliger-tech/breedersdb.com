@@ -7,6 +7,7 @@
     :all-columns="allColumns"
     :data-is-fresh="dataIsFresh"
     header-height="72px"
+    @row-click="onRowClick"
   >
     <template #column-selector-option="{ opt, itemProps }">
       <q-item v-bind="itemProps">
@@ -40,6 +41,8 @@ import AnalyzeResultTableCell from './AnalyzeResultTableCell.vue';
 import { AnalyzeAttributionsViewFields } from './filterToQuery';
 import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
 import AnalyzeResultTableColumnLabel from 'components/Analyze/Result/AnalyzeResultTableColumnLabel.vue';
+import { BaseTable } from '../Filter/filterNode';
+import { useRouter } from 'vue-router';
 
 export interface AnalyzeResultTableProps
   extends AnalyzeResultTablePropsWithoutModel {
@@ -48,20 +51,22 @@ export interface AnalyzeResultTableProps
 }
 
 interface AnalyzeResultTablePropsWithoutModel {
-  rows: (
-    | { [key: string]: null | number | string }
-    | { [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[] }
-  )[];
+  rows: {
+    id: number;
+    [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[];
+    [key: string]: null | number | string | AnalyzeAttributionsViewFields[];
+  }[];
   loading: boolean;
   allColumns: QTableColumn[];
   dataIsFresh: boolean;
+  baseTable: BaseTable;
 }
 
 export type AnalyzeResultTableRequestDataParams = Parameters<
   NonNullable<QTableProps['onRequest']>
 >[0];
 
-withDefaults(defineProps<AnalyzeResultTablePropsWithoutModel>(), {
+const props = withDefaults(defineProps<AnalyzeResultTablePropsWithoutModel>(), {
   loading: false,
 });
 const visibleColumns = defineModel<string[]>('visibleColumns', {
@@ -70,4 +75,21 @@ const visibleColumns = defineModel<string[]>('visibleColumns', {
 const pagination = defineModel<QTableProps['pagination']>('pagination', {
   required: true,
 });
+
+const router = useRouter();
+function onRowClick(row: AnalyzeResultTableProps['rows'][0]): void {
+  if (props.baseTable === BaseTable.Attributions) {
+    throw new Error('Attributions must not be the base table for results.');
+  }
+
+  const routes = {
+    [BaseTable.Plants]: '/plants',
+    [BaseTable.PlantGroups]: '/plant-groups',
+    [BaseTable.Cultivars]: '/cultivars',
+    [BaseTable.Lots]: '/lots',
+    [BaseTable.Crossings]: '/crossings',
+  };
+
+  router.push(`${routes[props.baseTable]}/${row.id}`);
+}
 </script>

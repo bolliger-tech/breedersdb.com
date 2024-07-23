@@ -5,7 +5,7 @@
         <h2 class="q-ma-none nowrap-elipsis" style="width: calc(100% - 34px)">
           {{ t('analyze.header.addName') }}
         </h2>
-        <q-btn v-close-popup icon="close" flat round dense />
+        <q-btn icon="close" flat round dense @click="onCancel" />
       </q-card-section>
 
       <q-separator />
@@ -32,7 +32,12 @@
 
       <q-separator />
       <q-card-actions align="right">
-        <q-btn v-close-popup flat :label="t('base.cancel')" color="primary" />
+        <q-btn
+          flat
+          :label="t('base.cancel')"
+          color="primary"
+          @click="onCancel"
+        />
         <q-btn
           flat
           :label="t('base.save')"
@@ -65,6 +70,7 @@ const show = defineModel<boolean>('show', { required: true });
 const emit = defineEmits<{ save: [] }>();
 
 const inputRef = ref<EntityInputInstance | null>(null);
+const oldName = ref(name.value);
 
 const variables = computed(() => ({
   name: name.value,
@@ -112,6 +118,11 @@ function validateNameAndSave() {
       emit('save');
     }
   });
+}
+
+function onCancel() {
+  name.value = oldName.value;
+  show.value = false;
 }
 
 const { t } = useI18n();

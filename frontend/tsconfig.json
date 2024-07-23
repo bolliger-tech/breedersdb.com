@@ -38,6 +38,10 @@
     "./node_modules",
     "./src-capacitor",
     "./src-cordova",
-    "./quasar.config.*.temporary.compiled*"
+    "./quasar.config.*.temporary.compiled*",
+    // 2024-07-22 CB: unresolved version mismatch of vite
+    // as it concerns testing only, we took the risk to exclude it.
+    // might be reenabled in the future.
+    "./vitest.config.mts"
   ]
 }

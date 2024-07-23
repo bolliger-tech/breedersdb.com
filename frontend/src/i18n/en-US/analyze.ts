@@ -9,7 +9,6 @@ export const analyze = {
     hideExplanation: 'Hide explanations',
     filter: 'filter',
     addName: 'Save as …',
-    editName: 'Edit name',
     leaveConfirmation: 'You have unsaved changes! Do you really want to leave?',
   },
 

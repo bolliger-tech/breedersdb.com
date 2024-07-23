@@ -3,12 +3,7 @@
     <q-card style="min-width: 300px">
       <q-card-section class="row items-center q-py-sm">
         <h2 class="q-ma-none nowrap-elipsis" style="width: calc(100% - 34px)">
-          <template v-if="analyzeId === 'new'"
-            >{{ t('analyze.header.addName') }}
-          </template>
-          <template v-else>
-            {{ t('analyze.header.editName') }}
-          </template>
+          {{ t('analyze.header.addName') }}
         </h2>
         <q-btn v-close-popup icon="close" flat round dense />
       </q-card-section>

@@ -3,6 +3,24 @@ title Database Schema
 hide circle
 skinparam linetype ortho
 
+entity "**analyze_filter_base_tables**" {
+  + ""enum"": //text [PK]//
+  --
+}
+
+entity "**analyze_filters**" {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //character varying(45) //
+  ""note"": //character varying(2047) //
+  *""base_table"": //text [FK]//
+  ""base_filter"": //jsonb //
+  ""attribution_filter"": //jsonb //
+  *""visible_columns"": //text[] //
+  *""created"": //timestamp with time zone //
+  ""modified"": //timestamp with time zone //
+}
+
 entity "**attribute_data_types**" #00ff0012 ##008800 {
   + ""enum"": //text [PK]//
   --
@@ -241,26 +259,6 @@ entity "**pollen**" #0000ff06 {
   ""modified"": //timestamp with time zone //
 }
 
-entity "**queries**" {
-  + ""id"": //integer [PK]//
-  --
-  *""name"": //character varying(45) //
-  *""my_query"": //jsonb //
-  ""note"": //character varying(2047) //
-  *""query_group_id"": //integer [FK]//
-  ""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-}
-
-entity "**query_groups**" {
-  + ""id"": //integer [PK]//
-  --
-  *""name"": //character varying(45) //
-  ""version"": //character varying(10) //
-  *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-}
-
 entity "**rootstocks**" #0000ff12 ##000088 {
   + ""id"": //integer [PK]//
   --
@@ -290,6 +288,8 @@ entity "**users**" {
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
 }
+
+"**analyze_filters**"   }--  "**analyze_filter_base_tables**"
 
 "**attribute_values**"   }--  "**attributes**"
 
@@ -342,8 +342,6 @@ entity "**users**" {
 "**plants**"   }--  "**rootstocks**"
 
 "**pollen**"   }--  "**cultivars**"
-
-"**queries**"   }--  "**query_groups**"
 
 "**user_tokens**"   }--  "**users**"
 @enduml

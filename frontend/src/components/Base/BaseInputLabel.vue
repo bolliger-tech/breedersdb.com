@@ -1,6 +1,9 @@
 <template>
   <div class="entity-label q-my-sm">
-    <div v-if="label" class="text-weight-bold q-mb-xs row align-center">
+    <div
+      v-if="label || $slots.label"
+      class="text-weight-bold q-mb-xs row align-center"
+    >
       <slot name="label">
         {{ label }}
       </slot>

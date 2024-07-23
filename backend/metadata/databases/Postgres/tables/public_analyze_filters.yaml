@@ -1,0 +1,53 @@
+table:
+  name: analyze_filters
+  schema: public
+object_relationships:
+  - name: analyze_filter_base_table
+    using:
+      foreign_key_constraint_on: base_table
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - attribution_filter
+        - base_filter
+        - base_table
+        - visible_columns
+        - name
+        - note
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - name
+        - note
+        - id
+        - attribution_filter
+        - base_filter
+        - base_table
+        - visible_columns
+        - created
+        - modified
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - attribution_filter
+        - base_filter
+        - base_table
+        - visible_columns
+        - name
+        - note
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

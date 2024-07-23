@@ -19,6 +19,14 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
   return type;
 }
 
+export type PrimitiveColumnValue =
+  | string
+  | number
+  | Date
+  | null
+  | boolean
+  | undefined;
+
 export function formatResultColumnValue({
   value,
   type,

@@ -11,3 +11,20 @@ export function toPascalCase(str: string) {
     str.replace(/([-_][a-z])/gi, ($1) => $1.replace(/[-_]/, '').toUpperCase()),
   );
 }
+
+export function singularize(word: string) {
+  // inspired by https://stackoverflow.com/a/76251896
+  if (word.endsWith('ses') || word.endsWith('xes') || word.endsWith('zes')) {
+    return word.slice(0, -3);
+  }
+  if (word.endsWith('shes') || word.endsWith('ches')) {
+    return word.slice(0, -4);
+  }
+  if (word.endsWith('ies')) {
+    return word.slice(0, -3) + 'y';
+  }
+  if (word.endsWith('s')) {
+    return word.slice(0, -1);
+  }
+  return word;
+}

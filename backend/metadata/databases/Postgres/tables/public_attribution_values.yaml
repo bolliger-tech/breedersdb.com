@@ -1,5 +1,5 @@
 table:
-  name: attribute_values
+  name: attribution_values
   schema: public
 object_relationships:
   - name: attribute

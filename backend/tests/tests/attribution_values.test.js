@@ -18,7 +18,7 @@ const insertMutation = /* GraphQL */ `
     $photo_note: String
     $exceptional_attribution: Boolean
   ) {
-    insert_attribute_values_one(
+    insert_attribution_values_one(
       object: {
         attribute: {
           data: {
@@ -95,7 +95,7 @@ afterEach(async () => {
   await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAllAttributeValues {
-        delete_attribute_values(where: {}) {
+        delete_attribution_values(where: {}) {
           affected_rows
         }
         delete_attributions(where: {}) {
@@ -148,29 +148,33 @@ test('insert', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.attribute.name).toBe(
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.attribute.name).toBe(
     'Attribution Attribute 1',
   );
-  expect(resp.data.insert_attribute_values_one.attribution_id).toBe(
+  expect(resp.data.insert_attribution_values_one.attribution_id).toBe(
     attribution.data.insert_attributions_one.id,
   );
-  expect(resp.data.insert_attribute_values_one.integer_value).toBeNull();
-  expect(resp.data.insert_attribute_values_one.float_value).toBeNull();
-  expect(resp.data.insert_attribute_values_one.text_value).toBe('Text Value 1');
-  expect(resp.data.insert_attribute_values_one.boolean_value).toBeNull();
-  expect(resp.data.insert_attribute_values_one.date_value).toBeNull();
-  expect(resp.data.insert_attribute_values_one.text_note).toBe('Description 1');
-  expect(resp.data.insert_attribute_values_one.photo_note).toBe(
+  expect(resp.data.insert_attribution_values_one.integer_value).toBeNull();
+  expect(resp.data.insert_attribution_values_one.float_value).toBeNull();
+  expect(resp.data.insert_attribution_values_one.text_value).toBe(
+    'Text Value 1',
+  );
+  expect(resp.data.insert_attribution_values_one.boolean_value).toBeNull();
+  expect(resp.data.insert_attribution_values_one.date_value).toBeNull();
+  expect(resp.data.insert_attribution_values_one.text_note).toBe(
+    'Description 1',
+  );
+  expect(resp.data.insert_attribution_values_one.photo_note).toBe(
     'c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2.jpeg',
   );
-  expect(resp.data.insert_attribute_values_one.exceptional_attribution).toBe(
+  expect(resp.data.insert_attribution_values_one.exceptional_attribution).toBe(
     true,
   );
-  expect(resp.data.insert_attribute_values_one.created).toMatch(
+  expect(resp.data.insert_attribution_values_one.created).toMatch(
     iso8601dateRegex,
   );
-  expect(resp.data.insert_attribute_values_one.modified).toBeNull();
+  expect(resp.data.insert_attribution_values_one.modified).toBeNull();
 });
 
 test('insert with offline data', async () => {
@@ -196,7 +200,7 @@ test('insert with offline data', async () => {
         $offline_id: uuid
         $created: timestamptz
       ) {
-        insert_attribute_values_one(
+        insert_attribution_values_one(
           object: {
             attribute: {
               data: {
@@ -229,11 +233,11 @@ test('insert with offline data', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.offline_id).toBe(
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.offline_id).toBe(
     '00000000-0000-0000-0000-000000000000',
   );
-  expect(resp.data.insert_attribute_values_one.created).toBe(
+  expect(resp.data.insert_attribution_values_one.created).toBe(
     '2021-01-01T00:00:00+00:00',
   );
 });
@@ -263,8 +267,8 @@ test('insert INTEGER valid low', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.integer_value).toBe(1);
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.integer_value).toBe(1);
 });
 
 test('insert INTEGER valid high', async () => {
@@ -292,8 +296,8 @@ test('insert INTEGER valid high', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.integer_value).toBe(9);
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.integer_value).toBe(9);
 });
 
 test('insert INTEGER too low', async () => {
@@ -471,8 +475,8 @@ test('insert FLOAT valid low', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.float_value).toBe(0);
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.float_value).toBe(0);
 });
 
 test('insert FLOAT valid high', async () => {
@@ -500,8 +504,8 @@ test('insert FLOAT valid high', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.float_value).toBe(1);
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.float_value).toBe(1);
 });
 
 test('insert FLOAT too low', async () => {
@@ -648,8 +652,10 @@ test('insert TEXT valid', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.text_value).toBe('Text Value 1');
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.text_value).toBe(
+    'Text Value 1',
+  );
 });
 
 test('insert TEXT too long', async () => {
@@ -763,8 +769,8 @@ test('insert BOOLEAN valid', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.boolean_value).toBe(false);
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.boolean_value).toBe(false);
 });
 
 test('insert BOOLEAN invalid value data type', async () => {
@@ -849,8 +855,8 @@ test('insert DATE valid', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.date_value).toBe('2021-01-01');
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.date_value).toBe('2021-01-01');
 });
 
 test('insert DATE out of range date', async () => {
@@ -931,8 +937,8 @@ test('insert DATE timestamp', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.date_value).toBe('2021-01-01');
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.date_value).toBe('2021-01-01');
 });
 
 test('insert DATE invalid value data type', async () => {
@@ -1015,8 +1021,8 @@ test('insert PHOTO jpg', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.text_value).toBe(
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.text_value).toBe(
     'b51fd56a7e0528c5c35f2669750e2c65.jpg',
   );
 });
@@ -1045,8 +1051,8 @@ test('insert PHOTO jpeg', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.text_value).toBe(
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.text_value).toBe(
     'b51fd56a7e0528c5c35f2669750e2c65.jpeg',
   );
 });
@@ -1076,8 +1082,8 @@ test('insert PHOTO long file name jpeg', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.text_value).toBe(
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.text_value).toBe(
     'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpeg',
   );
 });
@@ -1106,8 +1112,8 @@ test('insert PHOTO avif', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.text_value).toBe(
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.text_value).toBe(
     'b51fd56a7e0528c5c35f2669750e2c65.avif',
   );
 });
@@ -1255,7 +1261,7 @@ test('modified', async () => {
   const updated = await postOrFail({
     query: /* GraphQL */ `
       mutation UpdateAttribute($id: Int!, $text_value: String) {
-        update_attribute_values_by_pk(
+        update_attribution_values_by_pk(
           pk_columns: { id: $id }
           _set: { text_value: $text_value }
         ) {
@@ -1266,12 +1272,12 @@ test('modified', async () => {
       }
     `,
     variables: {
-      id: resp.data.insert_attribute_values_one.id,
+      id: resp.data.insert_attribution_values_one.id,
       text_value: 'Text Value 999',
     },
   });
 
-  expect(updated.data.update_attribute_values_by_pk.modified).toMatch(
+  expect(updated.data.update_attribution_values_by_pk.modified).toMatch(
     iso8601dateRegex,
   );
 });
@@ -1302,8 +1308,8 @@ test('insert photo_note jpg', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.photo_note).toBe(
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.photo_note).toBe(
     'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpg',
   );
 });
@@ -1334,8 +1340,8 @@ test('insert photo_note jpeg', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.photo_note).toBe(
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.photo_note).toBe(
     'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.jpeg',
   );
 });
@@ -1366,8 +1372,8 @@ test('insert photo_note avif', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.photo_note).toBe(
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.photo_note).toBe(
     'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.avif',
   );
 });
@@ -1399,7 +1405,7 @@ test('insert photo_note png invalid', async () => {
   });
 
   expect(resp.errors[0].message).toBe(
-    'Check constraint violation. new row for relation "attribute_values" violates check constraint "attribute_values_photo_note_check"',
+    'Check constraint violation. new row for relation "attribution_values" violates check constraint "attribution_values_photo_note_check"',
   );
 });
 
@@ -1429,7 +1435,7 @@ test('insert photo_note name invalid', async () => {
   });
 
   expect(resp.errors[0].message).toBe(
-    'Check constraint violation. new row for relation "attribute_values" violates check constraint "attribute_values_photo_note_check"',
+    'Check constraint violation. new row for relation "attribution_values" violates check constraint "attribution_values_photo_note_check"',
   );
 });
 
@@ -1459,7 +1465,7 @@ test('insert photo_note empty', async () => {
   });
 
   expect(resp.errors[0].message).toBe(
-    'Check constraint violation. new row for relation "attribute_values" violates check constraint "attribute_values_photo_note_check"',
+    'Check constraint violation. new row for relation "attribution_values" violates check constraint "attribution_values_photo_note_check"',
   );
 });
 
@@ -1488,7 +1494,7 @@ test('insert photo_note null', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
 });
 
 test('insert RATING valid low', async () => {
@@ -1516,8 +1522,8 @@ test('insert RATING valid low', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.integer_value).toBe(0);
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.integer_value).toBe(0);
 });
 
 test('insert RATING valid high', async () => {
@@ -1545,8 +1551,8 @@ test('insert RATING valid high', async () => {
     },
   });
 
-  expect(resp.data.insert_attribute_values_one.id).toBeGreaterThan(0);
-  expect(resp.data.insert_attribute_values_one.integer_value).toBe(9);
+  expect(resp.data.insert_attribution_values_one.id).toBeGreaterThan(0);
+  expect(resp.data.insert_attribution_values_one.integer_value).toBe(9);
 });
 
 test('insert RATING too low', async () => {

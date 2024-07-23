@@ -43,7 +43,7 @@ afterEach(async () => {
   await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAllAttributes {
-        delete_attribute_values(where: {}) {
+        delete_attribution_values(where: {}) {
           affected_rows
         }
         delete_attributions(where: {}) {
@@ -428,7 +428,7 @@ test('validation rule contains min, max, step for FLOAT', async () => {
   );
 });
 
-test('data type is immutable after insert of attribute_values', async () => {
+test('data type is immutable after insert of attribution_values', async () => {
   const resp = await postOrFail({
     query: insertMutation,
     variables: {
@@ -442,7 +442,7 @@ test('data type is immutable after insert of attribute_values', async () => {
   await postOrFail({
     query: /* GraphQL */ `
       mutation InsertAttributeValue($attribute_id: Int!) {
-        insert_attribute_values_one(
+        insert_attribution_values_one(
           object: {
             attribute_id: $attribute_id
             attribution: {

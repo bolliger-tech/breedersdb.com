@@ -10,6 +10,7 @@ export const analyze = {
     filter: 'filter',
     addName: 'Save as …',
     editName: 'Edit name',
+    leaveConfirmation: 'You have unsaved changes! Do you really want to leave?',
   },
 
   filter: {

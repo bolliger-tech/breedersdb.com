@@ -54,13 +54,18 @@ import {
 } from 'src/components/Analyze/Filter/filterNode';
 import { graphql } from 'src/graphql';
 import { useMutation } from '@urql/vue';
-import { analyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFragment';
+import {
+  AnalyzeFiltersFragment,
+  analyzeFiltersFragment,
+} from 'src/components/Analyze/analyzeFiltersFragment';
 import { ref, computed, nextTick } from 'vue';
 import { AnalyzeFilterBaseTables } from 'src/graphql';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import AnalyzeHeaderNameDialog from './AnalyzeHeaderNameDialog.vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router';
 import AnalyzeHeaderNote from './AnalyzeHeaderNote.vue';
+import type { InitialAnalyzeData } from 'src/components/Analyze/AnalyzeView.vue';
+import { is } from 'quasar';
 
 export interface AnalyzeHeaderProps {
   analyzeId: 'new' | number;
@@ -70,6 +75,7 @@ export interface AnalyzeHeaderProps {
   baseFilter: FilterNode | undefined;
   attributionFilter: FilterNode | undefined;
   visibleColumns: string[] | undefined;
+  initialData: InitialAnalyzeData;
 }
 
 const props = defineProps<AnalyzeHeaderProps>();
@@ -171,6 +177,19 @@ function filterToPojo(filter: FilterNode | undefined) {
   return filter ? JSON.parse(JSON.stringify(filter)) : null;
 }
 
+function getMutationVariables(id: number | undefined = undefined) {
+  return {
+    ...(id ? { id } : {}),
+    name: name.value,
+    note: note.value,
+    baseTable: baseTable.value,
+    baseFilter: filterToPojo(props.baseFilter),
+    attributionFilter: filterToPojo(props.attributionFilter),
+    visibleColumns: props.visibleColumns || null,
+  };
+}
+
+const savedData = ref(props.initialData);
 const showNameDialog = ref(false);
 
 async function save() {
@@ -179,25 +198,20 @@ async function save() {
     return;
   }
 
-  const variables = {
-    name: name.value,
-    note: note.value,
-    baseTable: baseTable.value,
-    baseFilter: filterToPojo(props.baseFilter),
-    attributionFilter: filterToPojo(props.attributionFilter),
-    visibleColumns: props.visibleColumns || null,
-  };
-
   let newId: number | undefined = undefined;
+  let respData: AnalyzeFiltersFragment | undefined = undefined;
 
   if (props.analyzeId === 'new') {
-    const resp = await executeInsertMutation(variables);
+    const resp = await executeInsertMutation(getMutationVariables());
     newId = resp.data?.insert_analyze_filters_one?.id;
+    respData = resp.data?.insert_analyze_filters_one || undefined;
   } else {
-    await executeEditMutation({
-      id: props.analyzeId,
-      ...variables,
-    });
+    const resp = await executeEditMutation(
+      getMutationVariables(props.analyzeId) as Required<
+        ReturnType<typeof getMutationVariables>
+      >,
+    );
+    respData = resp.data?.update_analyze_filters_by_pk || undefined;
   }
 
   await nextTick();
@@ -207,6 +221,17 @@ async function save() {
 
   saveInsertError.value = undefined;
   saveEditError.value = undefined;
+
+  if (respData) {
+    savedData.value = {
+      id: respData.id,
+      name: respData.name,
+      note: respData.note,
+      baseFilter: JSON.stringify(respData.base_filter),
+      attributionFilter: JSON.stringify(respData.attribution_filter),
+      visibleColumns: respData.visible_columns,
+    };
+  }
 
   if (props.analyzeId === 'new') {
     if (newId) {
@@ -234,6 +259,38 @@ function onDuplicate() {
     query: route.query,
   });
 }
+
+function isDirty() {
+  const current = getMutationVariables();
+  const initial = savedData.value;
+
+  // exclude id and baseTable as it can't change
+  return !(
+    current.name === initial.name &&
+    current.note === initial.note &&
+    is.deepEqual(
+      current.baseFilter,
+      JSON.parse(initial.baseFilter || 'null'),
+    ) &&
+    is.deepEqual(
+      current.attributionFilter,
+      JSON.parse(initial.attributionFilter || 'null'),
+    ) &&
+    is.deepEqual(current.visibleColumns, initial.visibleColumns)
+  );
+}
+
+onBeforeRouteLeave((to, from) => {
+  const isDuplication = to.path.endsWith('/new');
+  const isInitialSave =
+    to.path === from.path.replace(/\/new$/, `/${to.params.analyzeId}`);
+  const dirty = isDirty();
+
+  if (!isDuplication && !isInitialSave && dirty) {
+    const answer = window.confirm(t('analyze.header.leaveConfirmation'));
+    if (!answer) return false;
+  }
+});
 
 const { t } = useI18n();
 </script>

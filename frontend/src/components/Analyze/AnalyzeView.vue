@@ -17,13 +17,14 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import AnalyzeContainer from 'src/components/Analyze/AnalyzeContainer.vue';
 import { graphql } from 'src/graphql';
-import { computed, Ref, ref, watch } from 'vue';
+import { computed, type Ref, ref, watch, type UnwrapRef } from 'vue';
 import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { analyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFragment';
 import { useQuasar } from 'quasar';
 import {
   BaseTable,
+  FilterConjunction,
   FilterNode,
 } from 'src/components/Analyze/Filter/filterNode';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
@@ -32,6 +33,8 @@ export interface AnalyzeViewPageProps {
   analyzeId: 'new' | number;
   baseTable: Exclude<BaseTable, BaseTable.Attributions>;
 }
+
+export type InitialAnalyzeData = UnwrapRef<typeof initialData>;
 
 const props = defineProps<AnalyzeViewPageProps>();
 
@@ -80,9 +83,13 @@ const initialData = computed(() => {
 
 function getBaseFilter() {
   const filter =
-    props.analyzeId === 'new'
+    (props.analyzeId === 'new'
       ? $q.localStorage.getItem(BASE_FILTER_KEY)
-      : data.value?.analyze_filters_by_pk?.base_filter;
+      : data.value?.analyze_filters_by_pk?.base_filter) ||
+    FilterNode.FilterRoot({
+      childrensConjunction: FilterConjunction.And,
+      baseTable: props.baseTable,
+    });
 
   if (!filter) {
     return undefined;
@@ -92,9 +99,13 @@ function getBaseFilter() {
 }
 function getAttributionFilter() {
   const filter =
-    props.analyzeId === 'new'
+    (props.analyzeId === 'new'
       ? $q.localStorage.getItem(ATTRIBUTION_FILTER_KEY)
-      : data.value?.analyze_filters_by_pk?.attribution_filter;
+      : data.value?.analyze_filters_by_pk?.attribution_filter) ||
+    FilterNode.FilterRoot({
+      childrensConjunction: FilterConjunction.And,
+      baseTable: BaseTable.Attributions,
+    });
 
   if (!filter) {
     return undefined;

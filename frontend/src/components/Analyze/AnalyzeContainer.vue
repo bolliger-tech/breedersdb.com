@@ -9,6 +9,7 @@
       :attribution-filter="attributionFilter"
       :base-table="baseTable"
       :visible-columns="visibleColumns"
+      :initial-data="initialData"
     />
     <AnalyzeFilter
       :base-table="baseTable"
@@ -58,18 +59,12 @@ import {
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { AttributionAggregation } from './Result/attributionAggregationTypes';
 import { useExplainFilters } from './useExplainFilters';
+import type { InitialAnalyzeData } from './AnalyzeView.vue';
 
 type ColumnValue = PrimitiveColumnValue | { [key: string]: ColumnValue };
 
 export type AnalyzeContainerProps = {
-  initialData: {
-    id: 'new' | number;
-    name: string;
-    note: string | null;
-    baseFilter: string | undefined;
-    attributionFilter: string | undefined;
-    visibleColumns: string[] | undefined;
-  };
+  initialData: InitialAnalyzeData;
   baseTable: Exclude<BaseTable, BaseTable.Attributions>;
 };
 

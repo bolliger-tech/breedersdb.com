@@ -553,6 +553,29 @@ describe('FilterNode', () => {
       expect(root.getChildren()).toEqual([leaf]);
     });
 
+    it('should remove multiple unnecessary intermediate nodes', () => {
+      const root = FilterNode.FilterRoot({
+        baseTable: BaseTable.Cultivars,
+        childrensConjunction: FilterConjunction.And,
+      });
+      const node1 = FilterNode.FilterNode({
+        parent: root,
+        childrensConjunction: FilterConjunction.Or,
+      });
+      const node2 = FilterNode.FilterNode({
+        parent: node1,
+        childrensConjunction: FilterConjunction.And,
+      });
+      const leaf = FilterNode.FilterLeaf({
+        parent: node2,
+        filterRule: new FilterRule(),
+      });
+
+      root.simplify();
+
+      expect(root.getChildren()).toEqual([leaf]);
+    });
+
     it('should remove unnecessary intermediate nodes recursively', () => {
       const root = FilterNode.FilterRoot({
         baseTable: BaseTable.Cultivars,

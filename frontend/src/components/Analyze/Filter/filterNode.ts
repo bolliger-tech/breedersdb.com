@@ -291,7 +291,7 @@ export class FilterNode {
       }
     }
 
-    if (this.mergeableIntoParent()) {
+    if (this.mergeableIntoParent() && (this.hasChildren() || this.isLeaf())) {
       this.mergeIntoParent();
     }
   }

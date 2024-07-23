@@ -3,6 +3,7 @@ const UserFields = /* GraphQL */ `
   email
   locale
   password_hash
+  first_failed_signin_attempt
   failed_signin_attempts
   last_signin
   created
@@ -43,7 +44,11 @@ export const InsertUserTokenMutations = /* GraphQL */ `
     }
     update_users_by_pk(
       pk_columns: { id: $user_id }
-      _set: { last_signin: "now()", failed_signin_attempts: 0 }
+      _set: {
+        last_signin: "now()"
+        failed_signin_attempts: 0
+        first_failed_signin_attempt: null
+      }
     ) {
       id
     }
@@ -64,11 +69,15 @@ export const RollTokenLastVerifyMutation = /* GraphQL */ `
   }
 `;
 
-export const IncUserSigninAttemptsMutation = /* GraphQL */ `
-  mutation IncUserSigninAttemptsMutation($user_id: Int!) {
+export const SetUserSigninAttemptsMutation = /* GraphQL */ `
+  mutation SetUserSigninAttemptsMutation(
+    $user_id: Int!
+    $first_failed_signin_attempt: timestamptz!
+  ) {
     update_users_by_pk(
       pk_columns: { id: $user_id }
       _inc: { failed_signin_attempts: 1 }
+      _set: { first_failed_signin_attempt: $first_failed_signin_attempt }
     ) {
       id
     }

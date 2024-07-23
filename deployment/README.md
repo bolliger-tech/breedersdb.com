@@ -259,8 +259,14 @@ gcloud functions deploy ${FN_SERVICE_NAME} \
   --entry-point=func \
   --trigger-http \
   --allow-unauthenticated \
-  --memory=512M
+  --memory=512M \
+  --max-instances=5 \
+  --concurrency=5
 ```
+
+Note: `max-instance` and `concurrency` are set to establish some kind of bottleneck. Due to the cloud-function not being able to use database transactions this ensures that not an unlimited amount of SignIn attempts can be made concurrently. It also protects against accidental or intentional DDoS attacks causing high costs.
+
+todo: check hasura timeout limits
 
 ### FUNCTION NETWORKING
 

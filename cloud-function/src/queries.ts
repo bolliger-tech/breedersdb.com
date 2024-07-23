@@ -108,7 +108,11 @@ export const ChangePasswordMutation = /* GraphQL */ `
   mutation ChangePasswordMutation($user_id: Int!, $password_hash: String!) {
     update_users_by_pk(
       pk_columns: { id: $user_id }
-      _set: { password_hash: $password_hash }
+      _set: {
+        password_hash: $password_hash
+        failed_signin_attempts: 0
+        first_failed_signin_attempt: null
+      }
     ) {
       id
     }

@@ -2,7 +2,7 @@
   <q-btn
     color="primary"
     flat
-    :label="t('attribute.addAttribute')"
+    :label="t('attributions.add.addAttribute')"
     class="full-width"
     @click="showDialog = true"
   />
@@ -10,7 +10,7 @@
     <q-card style="width: clamp(310px, 90vw, 1000px); max-width: unset">
       <q-card-section class="row items-center q-py-sm">
         <h2 class="q-ma-none nowrap-elipsis" style="width: calc(100% - 34px)">
-          {{ t('attribute.addAttribute') }}
+          {{ t('attributions.add.addAttribute') }}
         </h2>
         <q-btn v-close-popup icon="close" flat round dense />
       </q-card-section>

@@ -2,7 +2,7 @@
   <q-separator spaced />
   <BaseMessage
     type="warning"
-    :message="t('attribute.alreadyAttributed', { timeAgo, entity })"
+    :message="t('attributions.add.alreadyAttributed', { timeAgo, entity })"
     icon-size="xl"
   />
   <q-separator spaced />

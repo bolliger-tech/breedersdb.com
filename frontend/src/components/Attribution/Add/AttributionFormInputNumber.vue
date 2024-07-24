@@ -8,7 +8,7 @@
     input-mode="decimal"
     :pattern="isIntegerOnly && $q.platform.is.ios ? '[0-9]*' : undefined"
     autocomplete="off"
-    :placeholder="t('attribute.numberPlaceholder')"
+    :placeholder="t('attributions.add.numberPlaceholder')"
     clearable
     :hide-bottom-space="!inputRef?.hasError"
     :min="validation.min"
@@ -70,7 +70,9 @@ const rules = computed(() => {
             validation: props.validation,
           });
 
-      return valid || t('attribute.invalidNumber', { ...props.validation });
+      return (
+        valid || t('attributions.add.invalidNumber', { ...props.validation })
+      );
     },
   ];
 });

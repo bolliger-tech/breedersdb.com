@@ -1,7 +1,9 @@
 <template>
   <PageLayout>
     <h1>
-      {{ t('attribute.attributeEntity', { entity: t('plants.title', 1) }) }}
+      {{
+        t('attributions.add.attributeEntity', { entity: t('plants.title', 1) })
+      }}
     </h1>
     <AttributionSteps
       :entity-caption="entityCaption"

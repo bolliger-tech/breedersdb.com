@@ -7,7 +7,7 @@
     outlined
     type="text"
     autocomplete="off"
-    :placeholder="t('attribute.textPlaceholder')"
+    :placeholder="t('attributions.add.textPlaceholder')"
     clearable
     :hide-bottom-space="!inputRef?.hasError"
     autogrow

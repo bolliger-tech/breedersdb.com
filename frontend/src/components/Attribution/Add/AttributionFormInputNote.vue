@@ -3,7 +3,7 @@
     v-if="showTextInput || showPhotoInput"
     class="text-caption text-weight-bold q-mb-none q-mt-md"
   >
-    {{ t('attribute.notes') }}
+    {{ t('attributions.add.notes') }}
   </h5>
 
   <div class="column" :class="{ reverse: openInputsOrdered[0] === 'photo' }">
@@ -36,7 +36,7 @@
       color="primary"
       flat
       size="sm"
-      :label="t('attribute.addTextNote')"
+      :label="t('attributions.add.addTextNote')"
       class="q-mt-sm"
       :disabled="disabled"
       @click="showTextInput = true"
@@ -46,7 +46,7 @@
       color="primary"
       flat
       size="sm"
-      :label="t('attribute.addPhotoNote')"
+      :label="t('attributions.add.addPhotoNote')"
       class="q-mt-sm"
       :disabled="disabled"
       @click="addPhotoNote"

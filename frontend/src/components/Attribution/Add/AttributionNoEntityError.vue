@@ -1,11 +1,11 @@
 <template>
   <q-banner class="text-white bg-negative">
-    {{ t('attribute.noEntitySelected', { entity }) }}
+    {{ t('attributions.add.noEntitySelected', { entity }) }}
     <template #action>
       <q-btn
         flat
         color="white"
-        :label="t('attribute.selectEntity', { entity })"
+        :label="t('attributions.add.selectEntity', { entity })"
         @click="$emit('click')"
       />
     </template>

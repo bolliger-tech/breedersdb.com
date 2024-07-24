@@ -2,7 +2,7 @@
   <EntitySelect
     :ref="inputRef"
     v-model="modelValue"
-    :label="t('attribute.title', 1)"
+    :label="t('attributes.title', 1)"
     :options="attributeOptions"
     option-value="id"
     option-label="name"

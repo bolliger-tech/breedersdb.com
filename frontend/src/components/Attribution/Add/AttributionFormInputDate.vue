@@ -10,7 +10,7 @@
   <BaseMessage
     v-if="notCurrentYearMonth"
     type="warning"
-    :message="t('attribute.notCurrentYearMonth')"
+    :message="t('attributions.add.notCurrentYearMonth')"
     class="q-mt-sm text-caption"
   />
 </template>

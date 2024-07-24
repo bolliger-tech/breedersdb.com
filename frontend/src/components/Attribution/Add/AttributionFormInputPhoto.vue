@@ -97,7 +97,7 @@ async function updateModelValue(file: File | null) {
       'image/jpeg',
     );
   } catch {
-    errorMessage.value = t('attribute.invalidPhoto');
+    errorMessage.value = t('attributions.add.invalidPhoto');
     isInvalidImage.value = true;
     processing.value = false;
   }

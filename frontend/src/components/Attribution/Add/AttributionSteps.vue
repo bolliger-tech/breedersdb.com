@@ -87,23 +87,23 @@
       <BaseGraphqlError v-if="formFetchError" :error="formFetchError" />
       <BaseSpinner v-else-if="formFetching" />
       <q-banner v-else-if="!form" class="text-white bg-negative">
-        {{ t('attribute.noFormSelected') }}
+        {{ t('attributions.add.noFormSelected') }}
         <template #action>
           <q-btn
             flat
             color="white"
-            :label="t('attribute.selectForm')"
+            :label="t('attributions.add.selectForm')"
             @click="step = 1"
           />
         </template>
       </q-banner>
       <q-banner v-else-if="!author || !date" class="text-white bg-negative">
-        {{ t('attribute.missingMetadata') }}
+        {{ t('attributions.add.missingMetadata') }}
         <template #action>
           <q-btn
             flat
             color="white"
-            :label="t('attribute.addMetadata')"
+            :label="t('attributions.add.addMetadata')"
             @click="step = 2"
           />
         </template>

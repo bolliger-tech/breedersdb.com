@@ -2,7 +2,7 @@
   <EntitySelect
     ref="selectRef"
     v-model="form"
-    :label="t('attribute.selectForm')"
+    :label="t('attributions.add.selectForm')"
     :options="options"
     option-value="id"
     option-label="name"

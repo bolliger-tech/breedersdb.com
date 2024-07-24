@@ -6,7 +6,6 @@ import { plants } from './plants';
 import { cultivars } from './cultivars';
 import { datetimeFormats } from './datetime-formats';
 import { attributions } from './attributions';
-import { attribute } from './attribute';
 import { attributes } from './attributes';
 import { crossings } from './crossings';
 import { lots } from './lots';
@@ -28,7 +27,6 @@ const messages = {
   auth,
 
   entity,
-  attribute,
   attributes,
   crossings,
   lots,

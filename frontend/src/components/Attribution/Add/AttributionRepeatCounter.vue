@@ -39,7 +39,7 @@
       class="q-px-sm"
       style="white-space: nowrap"
       @click="$emit('reset')"
-      >{{ t('attribute.counter.reset') }}</q-btn
+      >{{ t('attributions.add.counter.reset') }}</q-btn
     >
   </div>
 </template>

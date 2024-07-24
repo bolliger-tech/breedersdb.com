@@ -206,7 +206,7 @@ const {
 
 async function save() {
   if (!(await validate())) {
-    validationError.value = t('attribute.invalidInput');
+    validationError.value = t('attributions.add.invalidInput');
     return;
   }
 
@@ -290,7 +290,7 @@ async function save() {
   if (!insertError.value) {
     $q.notify({
       type: 'positive',
-      message: t('attribute.saved'),
+      message: t('attributions.add.saved'),
       color: 'primary',
       timeout: 3000,
       position: 'top',
@@ -375,13 +375,13 @@ const { entity: entityName } = useAttributableEntityName({
 function showNoDataNotification() {
   $q.notify({
     type: 'warning',
-    message: t('attribute.noValues', { entity: entityName.value }),
+    message: t('attributions.add.noValues', { entity: entityName.value }),
     color: 'warning',
     timeout: 3000,
     position: 'top',
     actions: [
       {
-        label: t('attribute.changeEntity', { entity: entityName.value }),
+        label: t('attributions.add.changeEntity', { entity: entityName.value }),
         handler: () => emit('saved', repeatCount.value),
         style: 'width: min-content',
       },

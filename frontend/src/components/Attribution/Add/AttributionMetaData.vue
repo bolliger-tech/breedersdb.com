@@ -2,7 +2,7 @@
   <EntityInput
     ref="authorRef"
     v-model="author"
-    :label="t('attribute.setAuthor')"
+    :label="t('attributions.add.setAuthor')"
     required
     :rules="[
       (v: string) => !!v || t('base.required'),
@@ -15,16 +15,16 @@
   <EntityInput
     ref="dateRef"
     v-model="date"
-    :label="t('attribute.setDate')"
+    :label="t('attributions.add.setDate')"
     :rules="[(v: string) => !!v || t('base.required')]"
     required
     type="date"
   />
 
-  <BaseInputLabel :label="t('attribute.repeat')">
+  <BaseInputLabel :label="t('attributions.add.repeat')">
     <q-toggle
       :model-value="showRepeat"
-      :label="t('attribute.shouldRepeat')"
+      :label="t('attributions.add.shouldRepeat')"
       @update:model-value="(v) => (repeat = v ? 100 : 0)"
     />
   </BaseInputLabel>
@@ -33,8 +33,8 @@
     v-if="showRepeat"
     ref="repeatRef"
     v-model="repeat"
-    :hint="t('attribute.repeatHint')"
-    :label="t('attribute.repeatCount')"
+    :hint="t('attributions.add.repeatHint')"
+    :label="t('attributions.add.repeatCount')"
     required
     :rules="[
       (v: number) => !!v || t('base.required'),

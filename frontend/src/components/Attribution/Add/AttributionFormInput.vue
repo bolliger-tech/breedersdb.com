@@ -3,7 +3,7 @@
     <BaseMessage
       v-if="hasSameAgain"
       type="warning"
-      :message="t('attribute.sameAgainWarning')"
+      :message="t('attributions.add.sameAgainWarning')"
     />
 
     <AttributionFormInputRating
@@ -82,7 +82,7 @@
         <q-card-section>
           <BaseMessage
             type="warning"
-            :message="t('attribute.clearAttribute')"
+            :message="t('attributions.add.clearAttribute')"
             icon-size="xl"
           />
         </q-card-section>

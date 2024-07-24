@@ -28,7 +28,9 @@
           <div class="absolute-full flex flex-center">
             <q-badge color="white" text-color="black">
               {{
-                t('attribute.uploading', { percentage: progress.toFixed(0) })
+                t('attributions.add.uploading', {
+                  percentage: progress.toFixed(0),
+                })
               }}
             </q-badge>
           </div>

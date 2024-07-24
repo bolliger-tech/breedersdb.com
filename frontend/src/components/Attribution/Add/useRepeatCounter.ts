@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import { LocalStorage } from 'quasar';
-import type { AttributableEntities } from './attributableEntities';
+import type { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 
 const STORAGE_KEY = 'breedersdb-attribute-repeat-count';
 

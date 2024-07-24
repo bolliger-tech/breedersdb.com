@@ -55,8 +55,8 @@
 </template>
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import AttributionFormInputPhoto from 'src/components/Attribution/AttributionFormInputPhoto.vue';
-import AttributionFormInputText from 'src/components/Attribution/AttributionFormInputText.vue';
+import AttributionFormInputPhoto from 'src/components/Attribution/Add/AttributionFormInputPhoto.vue';
+import AttributionFormInputText from 'src/components/Attribution/Add/AttributionFormInputText.vue';
 import { nextTick, ref, watch } from 'vue';
 import { focusInView } from 'src/utils/focusInView';
 

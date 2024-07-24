@@ -135,10 +135,10 @@
 </template>
 
 <script setup lang="ts">
-import AttributionFormSelector from 'src/components/Attribution/AttributionFormSelector.vue';
-import AttributionMetaData from 'src/components/Attribution/AttributionMetaData.vue';
-import AttributionForm from 'src/components/Attribution/AttributionForm.vue';
-import AttributionNoEntityError from 'src/components/Attribution/AttributionNoEntityError.vue';
+import AttributionFormSelector from 'src/components/Attribution/Add/AttributionFormSelector.vue';
+import AttributionMetaData from 'src/components/Attribution/Add/AttributionMetaData.vue';
+import AttributionForm from 'src/components/Attribution/Add/AttributionForm.vue';
+import AttributionNoEntityError from 'src/components/Attribution/Add/AttributionNoEntityError.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { graphql, ResultOf } from 'src/graphql';
@@ -147,8 +147,11 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed, ref, watch, type Slot } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
-import { AttributableEntities } from './attributableEntities';
-import { attributeFragment, type AttributeFragment } from './attributeFragment';
+import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
+import {
+  attributeFragment,
+  type AttributeFragment,
+} from 'src/components/Attribution/attributeFragment';
 import { useRoute } from 'vue-router';
 
 const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';

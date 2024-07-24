@@ -57,12 +57,12 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributionForm } from 'src/components/Attribution/AttributionSteps.vue';
+import type { AttributionForm } from 'src/components/Attribution/Add/AttributionSteps.vue';
 import { graphql, VariablesOf } from 'src/graphql';
 import { useMutation } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
-import AttributionFormInput from 'src/components/Attribution/AttributionFormInput.vue';
+import AttributionFormInput from 'src/components/Attribution/Add/AttributionFormInput.vue';
 import {
   useImageUploader,
   UploadProgress,
@@ -72,11 +72,11 @@ import { useI18n } from 'src/composables/useI18n';
 import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
 import { useRepeatCounter } from './useRepeatCounter';
 import AttributionFormSaveButton from './AttributionFormSaveButton.vue';
-import AttributionRepeatCounter from 'src/components/Attribution/AttributionRepeatCounter.vue';
+import AttributionRepeatCounter from 'src/components/Attribution/Add/AttributionRepeatCounter.vue';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
-import AttributionFormAddInput from 'src/components/Attribution/AttributionFormAddInput.vue';
+import AttributionFormAddInput from 'src/components/Attribution/Add/AttributionFormAddInput.vue';
 import { AttributeFragment } from 'src/components/Attribution/attributeFragment';
-import AttributionAlreadyAttributed from 'src/components/Attribution/AttributionAlreadyAttributed.vue';
+import AttributionAlreadyAttributed from 'src/components/Attribution/Add/AttributionAlreadyAttributed.vue';
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;

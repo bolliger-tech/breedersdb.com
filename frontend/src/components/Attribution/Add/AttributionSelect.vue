@@ -18,9 +18,12 @@ import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
   type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+} from 'src/components/Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
-import { attributeFragment, type AttributeFragment } from './attributeFragment';
+import {
+  attributeFragment,
+  type AttributeFragment,
+} from 'src/components/Attribution/attributeFragment';
 
 const inputRef = ref<EntitySelectInstance<AttributeFragment> | null>(null);
 

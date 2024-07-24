@@ -28,7 +28,7 @@ import { ResultOf, graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
   EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+} from 'src/components/Entity/Edit/EntitySelect.vue';
 
 export type AttributionForm = ResultOf<typeof query>['attribution_forms'][0];
 

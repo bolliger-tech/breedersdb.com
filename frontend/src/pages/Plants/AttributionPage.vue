@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
-import AttributionSteps from 'src/components/Attribution/AttributionSteps.vue';
+import AttributionSteps from 'src/components/Attribution/Add/AttributionSteps.vue';
 import PlantSelector from 'src/components/Plant/PlantSelector.vue';
 import PlantCard from 'src/components/Plant/PlantCard.vue';
 import { computed, ref } from 'vue';

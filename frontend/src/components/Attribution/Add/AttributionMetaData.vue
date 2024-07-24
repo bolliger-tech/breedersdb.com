@@ -52,7 +52,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import EntityInput, {
   EntityInputInstance,
-} from '../Entity/Edit/EntityInput.vue';
+} from 'src/components/Entity/Edit/EntityInput.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { ref, computed } from 'vue';
 

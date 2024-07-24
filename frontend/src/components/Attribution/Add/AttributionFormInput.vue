@@ -105,17 +105,17 @@
 </template>
 
 <script setup lang="ts">
-import type { ToAttributionValueWithPhoto } from 'src/components/Attribution/AttributionForm.vue';
+import type { ToAttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionForm.vue';
 import type { AttributeFragment } from 'src/components/Attribution/attributeFragment';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
-import AttributionFormInputRating from 'src/components/Attribution/AttributionFormInputRating.vue';
-import AttributionFormInputNumber from 'src/components/Attribution/AttributionFormInputNumber.vue';
-import AttributionFormInputText from 'src/components/Attribution/AttributionFormInputText.vue';
-import AttributionFormInputDate from 'src/components/Attribution/AttributionFormInputDate.vue';
-import AttributionFormInputBoolean from 'src/components/Attribution/AttributionFormInputBoolean.vue';
-import AttributionFormInputPhoto from 'src/components/Attribution/AttributionFormInputPhoto.vue';
-import AttributionFormInputNote from 'src/components/Attribution/AttributionFormInputNote.vue';
+import AttributionFormInputRating from 'src/components/Attribution/Add/AttributionFormInputRating.vue';
+import AttributionFormInputNumber from 'src/components/Attribution/Add/AttributionFormInputNumber.vue';
+import AttributionFormInputText from 'src/components/Attribution/Add/AttributionFormInputText.vue';
+import AttributionFormInputDate from 'src/components/Attribution/Add/AttributionFormInputDate.vue';
+import AttributionFormInputBoolean from 'src/components/Attribution/Add/AttributionFormInputBoolean.vue';
+import AttributionFormInputPhoto from 'src/components/Attribution/Add/AttributionFormInputPhoto.vue';
+import AttributionFormInputNote from 'src/components/Attribution/Add/AttributionFormInputNote.vue';
 import { computed, ref, nextTick } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 

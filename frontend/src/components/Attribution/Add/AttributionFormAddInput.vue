@@ -33,7 +33,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 import { type AttributeFragment } from 'src/components/Attribution/attributeFragment';
-import AttributionSelect from 'src/components/Attribution/AttributionSelect.vue';
+import AttributionSelect from 'src/components/Attribution/Add/AttributionSelect.vue';
 
 const emit = defineEmits<{
   add: [attribute: AttributeFragment];

@@ -11,25 +11,33 @@ export type AsyncComponentWrapper = Omit<VueWrapper, 'exists'>;
 
 export async function mountAsync(
   AsyncComponent: Component,
-  urqlMock?: Parameters<typeof createUrqlMockClient>[0],
+  options: {
+    urqlMock?: Parameters<typeof createUrqlMockClient>[0];
+    props?: Record<string, unknown>;
+  } = {},
 ): Promise<AsyncComponentWrapper> {
   const TestComponent = defineComponent({
     components: { AsyncComponent },
-    template: '<Suspense><AsyncComponent/></Suspense>',
+    data: () => ({ props: options.props }),
+    template: '<Suspense><AsyncComponent v-bind="props" /></Suspense>',
   });
 
-  const asyncWrapper = mount(TestComponent, urqlMock);
+  const asyncWrapper = mount(TestComponent, { urqlMock: options.urqlMock });
   await waitUntilMounted(asyncWrapper, AsyncComponent);
   return asyncWrapper.getComponent(AsyncComponent);
 }
 
 export function mount(
   Component: Component,
-  urqlMock?: Parameters<typeof createUrqlMockClient>[0],
+  options: {
+    urqlMock?: Parameters<typeof createUrqlMockClient>[0];
+    props?: Record<string, unknown>;
+  } = {},
 ) {
   return VTUmount(Component, {
+    props: options.props,
     global: {
-      plugins: [i18n, [urql, createUrqlMockClient(urqlMock)]],
+      plugins: [i18n, [urql, createUrqlMockClient(options.urqlMock)]],
     },
   });
 }

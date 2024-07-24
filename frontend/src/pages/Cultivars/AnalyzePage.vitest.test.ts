@@ -1,6 +1,5 @@
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import AnalyzePage from './AnalyzePage.vue';
-import { setActivePinia, createPinia } from 'pinia';
 import {
   mountAsync,
   urqlResp,
@@ -11,23 +10,22 @@ import {
 } from 'src/utils/testHelpers';
 import { flushPromises } from '@vue/test-utils';
 import { OperationDefinitionNode } from 'graphql';
-import { useQueryStore } from 'src/components/Query/useQueryStore';
 import {
   FilterNode,
   FilterConjunction,
   BaseTable,
-} from 'src/components/Query/Filter/filterNode';
-import QueryFilterRuleColumn from 'src/components/Query/Filter/QueryFilterRuleColumn.vue';
-import QueryFilterRuleOperator from 'src/components/Query/Filter/QueryFilterRuleOperator.vue';
-import QueryFilterRuleTerm from 'src/components/Query/Filter/QueryFilterRuleTerm.vue';
+} from 'src/components/Analyze/Filter/filterNode';
+import QueryFilterRuleColumn from 'components/Analyze/Filter/AnalyzeFilterRuleColumn.vue';
+import QueryFilterRuleOperator from 'components/Analyze/Filter/AnalyzeFilterRuleOperator.vue';
+import QueryFilterRuleTerm from 'components/Analyze/Filter/AnalyzeFilterRuleTerm.vue';
 import {
   FilterRuleOperator,
   FilterOperatorValue,
-} from 'src/components/Query/Filter/filterRuleOperator';
-import { FilterRuleTerm } from 'src/components/Query/Filter/filterRuleTerm';
+} from 'src/components/Analyze/Filter/filterRuleOperator';
+import { FilterRuleTerm } from 'src/components/Analyze/Filter/filterRuleTerm';
 import { useRoute } from 'vue-router';
 import { reactive } from 'vue';
-import type { FilterRuleColumn } from 'src/components/Query/Filter/filterRuleColumn';
+import type { FilterRuleColumn } from 'src/components/Analyze/Filter/filterRuleColumn';
 
 vi.mock('vue-router');
 
@@ -36,6 +34,32 @@ addQuasarPlugins();
 const queryMock: MockQuery = ({ query }) => {
   const queryName = (query.definitions[0] as OperationDefinitionNode).name
     ?.value;
+  if ('AnalyzeFilters' === queryName) {
+    return urqlResp({
+      analyze_filters_by_pk: {
+        id: 999,
+        name: 'Query 1',
+        note: 'Some description',
+        base_table: 'CULTIVARS',
+        base_filter: JSON.stringify(
+          FilterNode.FilterRoot({
+            childrensConjunction: FilterConjunction.And,
+            baseTable: BaseTable.Cultivars,
+          }),
+        ),
+        attribution_filter: null,
+        visible_columns: [
+          'cultivars.id',
+          'cultivars.display_name',
+          'cultivars.full_name',
+          'cultivars.name_override',
+          'cultivars.acronym',
+        ],
+        created: '2024-06-06T11:43:12Z',
+        modified: '2024-06-06T11:43:12Z',
+      },
+    })();
+  }
   if ('CultivarsFilterResults' === queryName) {
     return urqlResp({
       cultivars: [
@@ -110,42 +134,47 @@ function prepareForRegex(str: string) {
 
 describe('AnalyzePage', () => {
   beforeEach(() => {
-    setActivePinia(createPinia());
     vi.mocked(useRoute).mockReturnValue(useRouteMock);
   });
 
   describe('filter ui basics', () => {
     it('should mount without filter', async () => {
       const wrapper = await mountAsync(AnalyzePage, {
-        executeQuery: queryMock,
-        executeMutation: mutationMock,
+        urqlMock: {
+          executeQuery: queryMock,
+          executeMutation: mutationMock,
+        },
+        props: { analyzeId: 'new' },
       });
 
       expect(
         wrapper
-          .find('[data-test="query-filter-root-node__filter-placeholder"]')
+          .find('[data-test="analyze-filter-root-node__filter-placeholder"]')
           .exists(),
       ).toBe(true);
-      expect(wrapper.find('[data-test="query-filter-rule"]').exists()).toBe(
+      expect(wrapper.find('[data-test="analyze-filter-rule"]').exists()).toBe(
         false,
       );
     });
 
     it('should add filter rule', async () => {
       const wrapper = await mountAsync(AnalyzePage, {
-        executeQuery: queryMock,
-        executeMutation: mutationMock,
+        urqlMock: {
+          executeQuery: queryMock,
+          executeMutation: mutationMock,
+        },
+        props: { analyzeId: 'new' },
       });
 
       // click + button
       await wrapper
-        .getComponent('[data-test="query-filter-node__action-btn"]')
+        .getComponent('[data-test="analyze-filter-node__action-btn"]')
         .get('a')
         .trigger('click');
 
       // click add rule
       await wrapper
-        .getComponent('[data-test="query-filter-node__action-btn-and"]')
+        .getComponent('[data-test="analyze-filter-node__action-btn-and"]')
         .get('a')
         .trigger('click');
 
@@ -153,11 +182,11 @@ describe('AnalyzePage', () => {
 
       expect(
         wrapper
-          .find('[data-test="query-filter-root-node__dummy-filter"]')
+          .find('[data-test="analyze-filter-root-node__dummy-filter"]')
           .exists(),
       ).toBe(false);
 
-      expect(wrapper.find('[data-test="query-filter-rule"]').exists()).toBe(
+      expect(wrapper.find('[data-test="analyze-filter-rule"]').exists()).toBe(
         true,
       );
     });
@@ -167,26 +196,24 @@ describe('AnalyzePage', () => {
     const addAndRule = async (wrapper: AsyncComponentWrapper) => {
       // click + button
       await wrapper
-        .getComponent('[data-test="query-filter-node__action-btn"]')
+        .getComponent('[data-test="analyze-filter-node__action-btn"]')
         .get('a')
         .trigger('click');
 
       // click add rule
       await wrapper
-        .getComponent('[data-test="query-filter-node__action-btn-and"]')
+        .getComponent('[data-test="analyze-filter-node__action-btn-and"]')
         .get('a')
         .trigger('click');
     };
 
     it('should create correct cultivar id query', async () => {
-      const store = useQueryStore();
-      store.baseFilter = FilterNode.FilterRoot({
-        childrensConjunction: FilterConjunction.And,
-        baseTable: BaseTable.Cultivars,
-      });
       const wrapper = await mountAsync(AnalyzePage, {
-        executeQuery: queryMock,
-        executeMutation: mutationMock,
+        urqlMock: {
+          executeQuery: queryMock,
+          executeMutation: mutationMock,
+        },
+        props: { analyzeId: 999 },
       });
 
       await addAndRule(wrapper);
@@ -218,33 +245,33 @@ describe('AnalyzePage', () => {
       const queryShouldBe = new RegExp(
         prepareForRegex(
           `query CultivarsFilterResults( $v000: Int! ) {
-  cultivars(where: { _and: [ { id: { _gt: $v000 } } ] }, limit: 100, offset: 0, order_by: { id: asc }) {
-    id
-    display_name
-    full_name
-    name_override
-    acronym
-  }
+    cultivars(where: { _and: [ { id: { _gt: $v000 } } ] }, limit: 100, offset: 0, order_by: { id: asc }) {
+      id
+      display_name
+      full_name
+      name_override
+      acronym
+    }
 
-  cultivars_aggregate(where: { _and: [ { id: { _gt: $v000 } } ] }) {
-    aggregate {
-      count
+    cultivars_aggregate(where: { _and: [ { id: { _gt: $v000 } } ] }) {
+      aggregate {
+        count
+      }
     }
   }
-}
 
-fragment AttributionFragment on attributions_view {
-  id
-  integer_value
-  float_value
-  text_value
-  boolean_value
-  date_value
-  plant_id
-  cultivar_id
-  lot_id
-  data_type
-}`,
+  fragment AttributionFragment on attributions_view {
+    id
+    integer_value
+    float_value
+    text_value
+    boolean_value
+    date_value
+    plant_id
+    cultivar_id
+    lot_id
+    data_type
+  }`,
         ).replaceAll('$v000', '$v\\d+'),
       );
       const variablesShouldBe = new RegExp(

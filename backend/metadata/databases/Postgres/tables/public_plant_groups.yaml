@@ -13,6 +13,15 @@ array_relationships:
         table:
           name: attributions
           schema: public
+  - name: attributions_views
+    using:
+      manual_configuration:
+        column_mapping:
+          id: combined_plant_group_id
+        insertion_order: null
+        remote_table:
+          name: attributions_view
+          schema: public
   - name: plants
     using:
       foreign_key_constraint_on:

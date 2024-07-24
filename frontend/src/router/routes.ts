@@ -1,4 +1,29 @@
-import { RouteRecordRaw } from 'vue-router';
+import { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
+
+function createAnalyzeRoutes(entity: string) {
+  return {
+    path: 'analyze',
+    children: [
+      {
+        path: '',
+        component: () => import(`pages/${entity}/AnalyzeIndexPage.vue`),
+      },
+      {
+        path: ':analyzeId(\\d+)',
+        component: () => import(`pages/${entity}/AnalyzePage.vue`),
+        props: (route: RouteLocationNormalized) => ({
+          analyzeId: route.params.analyzeId,
+          key: route.params.analyzeId,
+        }),
+      },
+      {
+        path: 'new',
+        component: () => import(`pages/${entity}/AnalyzePage.vue`),
+        props: { analyzeId: 'new', key: 'new' },
+      },
+    ],
+  };
+}
 
 const routes: RouteRecordRaw[] = [
   {
@@ -15,6 +40,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/Auth/SignOutPage.vue'),
       },
       { path: '', redirect: '/plants' },
+
       {
         path: 'plants',
         children: [
@@ -43,16 +69,23 @@ const routes: RouteRecordRaw[] = [
             path: 'attribute',
             component: () => import('pages/Plants/AttributePage.vue'),
           },
+          createAnalyzeRoutes('Plants'),
         ],
       },
+
+      {
+        path: 'plant-groups',
+        children: [createAnalyzeRoutes('PlantGroups')],
+      },
+
       {
         path: 'cultivars',
-        children: [
-          {
-            path: 'analyze',
-            component: () => import('pages/Cultivars/AnalyzePage.vue'),
-          },
-        ],
+        children: [createAnalyzeRoutes('Cultivars')],
+      },
+
+      {
+        path: 'lots',
+        children: [createAnalyzeRoutes('Lots')],
       },
 
       ...['Users', 'Orchards', 'Rootstocks', 'Graftings', 'PlantRows'].map(

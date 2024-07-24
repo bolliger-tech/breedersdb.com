@@ -38,7 +38,7 @@ import { OrchardEditInput, OrchardInsertInput } from './OrchardModalEdit.vue';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import BaseInputLabel from '../Base/BaseInputLabel.vue';
 import { useIsUnique } from 'src/composables/useIsUnique';
-import EntityToggle from 'src/components/Entity/EntityToggle.vue';
+import EntityToggle from 'src/components/Entity/Edit/EntityToggle.vue';
 
 export interface OrchardEntityFormProps {
   orchard: OrchardInsertInput | OrchardEditInput;

@@ -75,7 +75,7 @@ import AttributionFormSaveButton from './AttributionFormSaveButton.vue';
 import AttributionRepeatCounter from 'src/components/Attribution/Add/AttributionRepeatCounter.vue';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import AttributionFormAddInput from 'src/components/Attribution/Add/AttributionFormAddInput.vue';
-import { AttributeFragment } from 'src/components/Attribution/attributeFragment';
+import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import AttributionAlreadyAttributed from 'src/components/Attribution/Add/AttributionAlreadyAttributed.vue';
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 
@@ -90,14 +90,11 @@ export interface AttributionFormProps {
   repeatTarget: number;
 }
 
-type ToAttributionValue = Omit<
+type AttributionValue = Omit<
   VariablesOf<typeof mutation>['attributionValues'][0],
   'attribution' | 'attribute'
 >;
-export type ToAttributionValueWithPhoto = Omit<
-  ToAttributionValue,
-  'photo_note'
-> & {
+export type AttributionValueWithPhoto = Omit<AttributionValue, 'photo_note'> & {
   photo_value: File | null | undefined;
   photo_note: File | null | undefined;
 };
@@ -137,9 +134,7 @@ const attributeInputs = computed<
 
 // !!! uses the PRIORITY as the key !!!
 // (to allow multiple inserts of the same attribute)
-const attributionValues = ref<{ [key: number]: ToAttributionValueWithPhoto }>(
-  {},
-);
+const attributionValues = ref<{ [key: number]: AttributionValueWithPhoto }>({});
 const attributeFormInputRefs = ref<{ [key: number]: InputRef | null }>({});
 
 const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
@@ -226,7 +221,7 @@ async function save() {
         av.date_value !== null ||
         av.photo_value !== null,
     )
-    // transform ToAttributionValueWithPhoto[] into ToAttributionValue[] and File[]
+    // transform AttributionValueWithPhoto[] into AttributionValue[] and File[]
     .map((av) => {
       const { photo_value, photo_note, ...rest } = av;
       if (photo_value) {
@@ -251,7 +246,7 @@ async function save() {
         }
         return acc;
       },
-      { photos: [] as File[], attributions: [] as ToAttributionValue[] },
+      { photos: [] as File[], attributions: [] as AttributionValue[] },
     );
 
   try {

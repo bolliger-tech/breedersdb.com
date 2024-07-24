@@ -23,7 +23,7 @@ import { focusInView } from 'src/utils/focusInView';
 import {
   attributeFragment,
   type AttributeFragment,
-} from 'src/components/Attribution/attributeFragment';
+} from 'src/components/Attribute/attributeFragment';
 
 const inputRef = ref<EntitySelectInstance<AttributeFragment> | null>(null);
 

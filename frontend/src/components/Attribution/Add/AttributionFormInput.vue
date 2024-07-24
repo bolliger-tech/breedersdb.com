@@ -105,8 +105,8 @@
 </template>
 
 <script setup lang="ts">
-import type { ToAttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionForm.vue';
-import type { AttributeFragment } from 'src/components/Attribution/attributeFragment';
+import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionForm.vue';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import AttributionFormInputRating from 'src/components/Attribution/Add/AttributionFormInputRating.vue';
@@ -127,7 +127,7 @@ export interface AttributionFormInputProps {
 
 const props = defineProps<AttributionFormInputProps>();
 
-const modelValue = defineModel<ToAttributionValueWithPhoto | undefined>({
+const modelValue = defineModel<AttributionValueWithPhoto | undefined>({
   required: true,
 });
 

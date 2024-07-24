@@ -151,7 +151,7 @@ import { AttributableEntities } from 'src/components/Attribution/attributableEnt
 import {
   attributeFragment,
   type AttributeFragment,
-} from 'src/components/Attribution/attributeFragment';
+} from 'src/components/Attribute/attributeFragment';
 import { useRoute } from 'vue-router';
 
 const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';

@@ -5,7 +5,7 @@ import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
 import {
   SetUserSigninAttemptsMutation,
-  InsertUserTokenMutations,
+  InsertUserTokenAndResetFailedSigninAttemptsMutations,
   UserQueryByEmail,
 } from '../queries';
 import type { ActionProps, ActionResult } from '../types';
@@ -78,11 +78,19 @@ export async function SignIn({
 
   // check signin attempts
   const now = new Date();
-  const nextPossibleSignIn = !!user.first_failed_signin_attempt
-    ? getNextPossibleSignIn(
-        new Date(user.first_failed_signin_attempt),
-        user.failed_signin_attempts,
-      )
+  // reset failed signin attempts 24 hours after the first try
+  const [firstFailedSigninAttempt, failedSigninAttempts] =
+    !!user.first_failed_signin_attempt &&
+    new Date(user.first_failed_signin_attempt).getTime() + 24 * 60 * 60 * 1000 >
+      now.getTime()
+      ? [
+          new Date(user.first_failed_signin_attempt),
+          user.failed_signin_attempts,
+        ]
+      : [null, 0];
+  // check if this request is within the time frame
+  const nextPossibleSignIn = !!firstFailedSigninAttempt
+    ? getNextPossibleSignIn(firstFailedSigninAttempt, failedSigninAttempts)
     : now;
   if (now < nextPossibleSignIn) {
     throw new ErrorWithStatus(
@@ -96,20 +104,27 @@ export async function SignIn({
   const verified = await verifyPassword(input.password, user.password_hash);
   if (!verified) {
     // increment signin attempts
-    const firstFailedSigninAttempt = user.first_failed_signin_attempt
-      ? new Date(user.first_failed_signin_attempt)
+    const newFirstFailedSigninAttempt = firstFailedSigninAttempt
+      ? firstFailedSigninAttempt
       : new Date();
-    await fetchGraphQL({
+    const newFailedSigninAttempts = failedSigninAttempts + 1;
+    const setResult = await fetchGraphQL({
       query: SetUserSigninAttemptsMutation,
       variables: {
         user_id: user.id,
-        first_failed_signin_attempt: firstFailedSigninAttempt,
-        // failed_signin_attempts is incremented by the mutation itself
+        first_failed_signin_attempt: newFirstFailedSigninAttempt,
+        failed_signin_attempts: newFailedSigninAttempts,
       },
     });
+    if (setResult.errors) {
+      throw new ErrorWithStatus(
+        500,
+        'Internal Server Error: Failed to update user sign in attempts',
+      );
+    }
     const newNextPossibleSignIn = getNextPossibleSignIn(
-      firstFailedSigninAttempt,
-      user.failed_signin_attempts + 1,
+      newFirstFailedSigninAttempt,
+      newFailedSigninAttempts,
     );
     throw new ErrorWithStatus(
       401,
@@ -124,7 +139,7 @@ export async function SignIn({
   const tokenHash = hashToken(token);
 
   const dbToken = await fetchGraphQL({
-    query: InsertUserTokenMutations,
+    query: InsertUserTokenAndResetFailedSigninAttemptsMutations,
     variables: {
       user_id: user.id,
       token_hash: tokenHash,

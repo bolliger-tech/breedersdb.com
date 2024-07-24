@@ -26,7 +26,7 @@ export const UserQueryByEmail = /* GraphQL */ `
   }
 `;
 
-export const InsertUserTokenMutations = /* GraphQL */ `
+export const InsertUserTokenAndResetFailedSigninAttemptsMutations = /* GraphQL */ `
   mutation InsertUserTokenMutations(
     $user_id: Int!
     $token_hash: String!
@@ -73,11 +73,14 @@ export const SetUserSigninAttemptsMutation = /* GraphQL */ `
   mutation SetUserSigninAttemptsMutation(
     $user_id: Int!
     $first_failed_signin_attempt: timestamptz!
+    $failed_signin_attempts: Int!
   ) {
     update_users_by_pk(
       pk_columns: { id: $user_id }
-      _inc: { failed_signin_attempts: 1 }
-      _set: { first_failed_signin_attempt: $first_failed_signin_attempt }
+      _set: {
+        first_failed_signin_attempt: $first_failed_signin_attempt
+        failed_signin_attempts: $failed_signin_attempts
+      }
     ) {
       id
     }

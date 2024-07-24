@@ -1,6 +1,6 @@
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 import { useI18n } from './useI18n';
-import { BaseTable } from 'src/components/Query/Filter/filterNode';
+import { BaseTable } from 'src/components/Analyze/Filter/filterNode';
 
 export function useEntityName() {
   const { t } = useI18n();
@@ -17,6 +17,12 @@ export function useEntityName() {
     const count = plural ? 2 : 1;
     let entityName = '';
     switch (table) {
+      case BaseTable.Crossings:
+        entityName = t('base.entityName.crossing', count);
+        break;
+      case BaseTable.PlantGroups:
+        entityName = t('base.entityName.plantGroup', count);
+        break;
       case BaseTable.Cultivars:
         entityName = t('base.entityName.cultivar', count);
         break;

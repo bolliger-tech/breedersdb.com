@@ -2,6 +2,13 @@ table:
   name: orchards
   schema: public
 array_relationships:
+  - name: lots
+    using:
+      foreign_key_constraint_on:
+        column: orchard_id
+        table:
+          name: lots
+          schema: public
   - name: plant_rows
     using:
       foreign_key_constraint_on:

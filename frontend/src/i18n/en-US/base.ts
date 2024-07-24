@@ -6,9 +6,11 @@ export const base = {
   },
 
   entityName: {
+    crossing: 'crossing | crossings',
     lot: 'lot | lots',
     cultivar: 'cultivar | cultivars',
     plant: 'plant | plants',
+    plantGroup: 'plant group | plant groups',
     attribution: 'attribution | attributions',
     orchard: 'orchard | orchards',
     rootstock: 'rootstock | rootstocks',
@@ -35,6 +37,7 @@ export const base = {
   ok: 'OK',
   continue: 'Continue',
   back: 'Back',
+  rename: 'Rename',
 
   error: 'Error',
   required: 'Required',

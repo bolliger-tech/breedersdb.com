@@ -1,15 +1,14 @@
 <template>
-  <PageLayout>
-    <h1>{{ t('cultivars.analyze.title') }}</h1>
-    <QueryContainer :base-table="BaseTable.Cultivars" />
-  </PageLayout>
+  <AnalyzeView :analyze-id="analyzeId" :base-table="BaseTable.Cultivars" />
 </template>
 
 <script setup lang="ts">
-import PageLayout from 'src/layouts/PageLayout.vue';
-import QueryContainer from 'src/components/Query/QueryContainer.vue';
-import { useI18n } from 'src/composables/useI18n';
-import { BaseTable } from 'src/components/Query/Filter/filterNode';
+import AnalyzeView from 'src/components/Analyze/AnalyzeView.vue';
+import { BaseTable } from 'src/components/Analyze/Filter/filterNode';
 
-const { t } = useI18n();
+export interface AnalyzeViewPageProps {
+  analyzeId: 'new' | number;
+}
+
+defineProps<AnalyzeViewPageProps>();
 </script>

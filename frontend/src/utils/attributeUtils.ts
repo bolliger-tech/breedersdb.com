@@ -2,6 +2,14 @@ import type { AttributeDataTypes, AttributeTypes } from 'src/graphql';
 import { ColumnTypes } from './columnTypes';
 import type { TFunc } from 'src/composables/useI18n';
 
+export type PrimitiveColumnValue =
+  | string
+  | number
+  | Date
+  | null
+  | boolean
+  | undefined;
+
 export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
   const type = {
     TEXT: ColumnTypes.String,

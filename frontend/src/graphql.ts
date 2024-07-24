@@ -8,7 +8,7 @@ export const graphql = initGraphQLTada<{
     float8: number;
     geography: GeographyPoint;
     citext: string;
-    // jsonb: Object;
+    jsonb: object;
     timestamptz: string;
     uuid: string;
   };
@@ -23,6 +23,10 @@ export type AttributeDataTypes = ReturnType<
 
 export type AttributeTypes = ReturnType<
   typeof graphql.scalar<'attribute_types_enum'>
+>;
+
+export type AnalyzeFilterBaseTables = ReturnType<
+  typeof graphql.scalar<'analyze_filter_base_tables_enum'>
 >;
 
 export type GeographyPoint = {

@@ -4,8 +4,6 @@ import { errorNotFound } from './error-not-found';
 import { auth } from './auth';
 import { plants } from './plants';
 import { cultivars } from './cultivars';
-import { filter } from './query-filter';
-import { result } from './query-result';
 import { datetimeFormats } from './datetime-formats';
 import { attributions } from './attributions';
 import { attribute } from './attribute';
@@ -21,6 +19,7 @@ import { plantRows } from './plant-rows';
 import { rootstocks } from './rootstocks';
 import { users } from './users';
 import { entity } from './entity';
+import { analyze } from './analyze';
 
 const messages = {
   base,
@@ -45,8 +44,7 @@ const messages = {
   rootstocks,
   users,
 
-  filter,
-  result,
+  analyze,
 };
 
 export default { messages, datetimeFormats };

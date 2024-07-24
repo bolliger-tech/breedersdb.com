@@ -5,6 +5,8 @@ export const plants = {
 
   fields: {
     labelId: 'Label ID',
+    cultivarName: 'Cultivar',
+    groupName: 'Group',
     serialInPlantRow: 'Number in row',
     distancePlantRowStart: 'Distance to row start',
     dateGrafted: 'Date grafted',

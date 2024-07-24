@@ -105,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ToAttributeValueWithPhoto } from 'src/components/ToAttribute/ToAttributeForm.vue';
+import type { ToAttributionValueWithPhoto } from 'src/components/ToAttribute/ToAttributeForm.vue';
 import type { AttributeFragment } from 'src/components/ToAttribute/attributeFragment';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
@@ -127,7 +127,7 @@ export interface ToAttributeFormInputProps {
 
 const props = defineProps<ToAttributeFormInputProps>();
 
-const modelValue = defineModel<ToAttributeValueWithPhoto | undefined>({
+const modelValue = defineModel<ToAttributionValueWithPhoto | undefined>({
   required: true,
 });
 

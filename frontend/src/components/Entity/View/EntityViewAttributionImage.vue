@@ -109,7 +109,7 @@ import { QDialogProps } from 'quasar';
 import {
   dataTypeToColumnTypes,
   formatResultColumnValue,
-  getAttributeValue,
+  getAttributionValue,
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
@@ -192,7 +192,7 @@ const description = computed(() => {
     };
   }
 
-  const value = getAttributeValue(props.attribution);
+  const value = getAttributionValue(props.attribution);
   const formattedValue = formatResultColumnValue({ value, type });
 
   return {

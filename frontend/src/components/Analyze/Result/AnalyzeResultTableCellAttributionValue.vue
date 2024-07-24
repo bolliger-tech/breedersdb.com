@@ -15,7 +15,7 @@ import { AnalyzeAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
 import {
   formatResultColumnValue,
-  getAttributeValue,
+  getAttributionValue,
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import AnalyzeResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
@@ -36,7 +36,7 @@ const label = computed(() => {
 
   if (type === ColumnTypes.Photo) return t('analyze.result.photo');
 
-  const value = getAttributeValue(props.attribution);
+  const value = getAttributionValue(props.attribution);
   return formatResultColumnValue({ value, type });
 });
 

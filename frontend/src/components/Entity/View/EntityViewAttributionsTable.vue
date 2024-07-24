@@ -61,7 +61,7 @@ import { AttributeDataTypes, AttributeTypes } from 'src/graphql';
 import {
   formatResultColumnValue,
   dataTypeToColumnTypes,
-  getAttributeValue,
+  getAttributionValue,
 } from 'src/utils/attributeUtils';
 import { localizeDate } from 'src/utils/dateUtils';
 import { watch } from 'vue';
@@ -141,7 +141,7 @@ const columns = [
 
 function getValue(row: EntityAttributionsViewFragment) {
   const type = dataTypeToColumnTypes(row.data_type as AttributeDataTypes);
-  const value = getAttributeValue(row);
+  const value = getAttributionValue(row);
 
   if (type === ColumnTypes.Photo) {
     // photo is handled in the template

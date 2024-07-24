@@ -87,7 +87,7 @@ export function formatResultColumnValue({
   return value;
 }
 
-export function getAttributeValue({
+export function getAttributionValue({
   integer_value,
   float_value,
   text_value,

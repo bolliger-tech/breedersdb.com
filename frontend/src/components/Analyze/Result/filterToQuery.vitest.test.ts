@@ -391,7 +391,7 @@ cultivars(where: { _or: [
 
     describe('field', () => {
       describe('attribution', () => {
-        describe('attributeValueCondition', () => {
+        describe('attributionValueCondition', () => {
           it('should value null', () => {
             const filter = FilterNode.FilterRoot(filterRootArgs);
             FilterNode.FilterLeaf({

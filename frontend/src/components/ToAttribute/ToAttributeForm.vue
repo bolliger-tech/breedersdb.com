@@ -12,7 +12,7 @@
           :ref="
             (el: InputRef) => (attributeFormInputRefs[formField.priority] = el)
           "
-          v-model="attributeValues[formField.priority]"
+          v-model="attributionValues[formField.priority]"
           :attribute="formField.attribute"
           :exceptional="formField.exceptional"
           :has-same-again="
@@ -90,11 +90,14 @@ export interface ToAttributeFormProps {
   repeatTarget: number;
 }
 
-type ToAttributeValue = Omit<
-  VariablesOf<typeof mutation>['attributeValues'][0],
+type ToAttributionValue = Omit<
+  VariablesOf<typeof mutation>['attributionValues'][0],
   'attribution' | 'attribute'
 >;
-export type ToAttributeValueWithPhoto = Omit<ToAttributeValue, 'photo_note'> & {
+export type ToAttributionValueWithPhoto = Omit<
+  ToAttributionValue,
+  'photo_note'
+> & {
   photo_value: File | null | undefined;
   photo_note: File | null | undefined;
 };
@@ -134,7 +137,9 @@ const attributeInputs = computed<
 
 // !!! uses the PRIORITY as the key !!!
 // (to allow multiple inserts of the same attribute)
-const attributeValues = ref<{ [key: number]: ToAttributeValueWithPhoto }>({});
+const attributionValues = ref<{ [key: number]: ToAttributionValueWithPhoto }>(
+  {},
+);
 const attributeFormInputRefs = ref<{ [key: number]: InputRef | null }>({});
 
 const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
@@ -144,7 +149,7 @@ const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
 });
 
 const hasValues = computed(() =>
-  Object.values(attributeValues.value).some(
+  Object.values(attributionValues.value).some(
     (av) =>
       av.integer_value !== null ||
       av.float_value !== null ||
@@ -164,7 +169,7 @@ const mutation = graphql(`
     $cultivarId: Int
     $plantGroupId: Int
     $plantId: Int
-    $attributeValues: [attribute_values_insert_input!]!
+    $attributionValues: [attribution_values_insert_input!]!
   ) {
     insert_attributions_one(
       object: {
@@ -175,7 +180,7 @@ const mutation = graphql(`
         cultivar_id: $cultivarId
         plant_group_id: $plantGroupId
         plant_id: $plantId
-        attribute_values: { data: $attributeValues }
+        attribution_values: { data: $attributionValues }
       }
     ) {
       id
@@ -188,7 +193,7 @@ const uploadError = ref<string | undefined>(undefined);
 const validationError = ref<string | undefined>(undefined);
 const { validate } = useEntityForm({
   refs: attributeFormInputRefs,
-  data: attributeValues,
+  data: attributionValues,
   initialData: {},
 });
 
@@ -210,7 +215,7 @@ async function save() {
     return;
   }
 
-  const { photos, attributions } = Object.values(attributeValues.value)
+  const { photos, attributions } = Object.values(attributionValues.value)
     // filter out attribution_values without a value
     .filter(
       (av) =>
@@ -221,7 +226,7 @@ async function save() {
         av.date_value !== null ||
         av.photo_value !== null,
     )
-    // transform ToAttributeValueWithPhoto[] into ToAttributeValue[] and File[]
+    // transform ToAttributionValueWithPhoto[] into ToAttributionValue[] and File[]
     .map((av) => {
       const { photo_value, photo_note, ...rest } = av;
       if (photo_value) {
@@ -246,7 +251,7 @@ async function save() {
         }
         return acc;
       },
-      { photos: [] as File[], attributions: [] as ToAttributeValue[] },
+      { photos: [] as File[], attributions: [] as ToAttributionValue[] },
     );
 
   try {
@@ -277,7 +282,7 @@ async function save() {
         : null,
     plantId:
       props.entityType === AttributableEntities.Plant ? props.entityId : null,
-    attributeValues: attributions,
+    attributionValues: attributions,
   });
 
   await nextTick();

@@ -49,7 +49,7 @@ import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import {
   AttributeFragment,
   attributeFragment,
-} from 'src/components/ToAttribute/attributeFragment';
+} from 'src/components/Attribution/attributeFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import {
   dataTypeToLabel,

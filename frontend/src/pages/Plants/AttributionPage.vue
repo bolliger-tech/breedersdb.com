@@ -3,7 +3,7 @@
     <h1>
       {{ t('attribute.attributeEntity', { entity: t('plants.title', 1) }) }}
     </h1>
-    <ToAttributeSteps
+    <AttributionSteps
       :entity-caption="entityCaption"
       :entity-loading="fetching"
       :entity-id="plant?.id || null"
@@ -27,21 +27,21 @@
           :label-id="plant.label_id"
           :plant-group="plant.plant_group"
         />
-        <!-- if the plant is missing ToAttributeSteps will handle it -->
+        <!-- if the plant is missing AttributionSteps will handle it -->
       </template>
-    </ToAttributeSteps>
+    </AttributionSteps>
   </PageLayout>
 </template>
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
-import ToAttributeSteps from 'src/components/ToAttribute/ToAttributeSteps.vue';
+import AttributionSteps from 'src/components/Attribution/AttributionSteps.vue';
 import PlantSelector from 'src/components/Plant/PlantSelector.vue';
 import PlantCard from 'src/components/Plant/PlantCard.vue';
 import { computed, ref } from 'vue';
 import { PlantFragment } from 'src/components/Plant/plantFragment';
-import { AttributableEntities } from 'src/components/ToAttribute/attributableEntities';
+import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 
 const { t } = useI18n();
 

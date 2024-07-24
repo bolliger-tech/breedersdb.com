@@ -67,7 +67,7 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: 'attribute',
-            component: () => import('pages/Plants/ToAttributePage.vue'),
+            component: () => import('pages/Plants/AttributionPage.vue'),
           },
           createAnalyzeRoutes('Plants'),
         ],

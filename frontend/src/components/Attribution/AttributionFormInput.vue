@@ -6,7 +6,7 @@
       :message="t('attribute.sameAgainWarning')"
     />
 
-    <ToAttributeFormInputRating
+    <AttributionFormInputRating
       v-if="attribute.data_type === 'RATING'"
       :model-value="modelValue?.integer_value ?? attribute.default_value"
       :validation="attribute.validation_rule"
@@ -15,7 +15,7 @@
         (val: number | null) => updateModelValue({ integer_value: val })
       "
     />
-    <ToAttributeFormInputNumber
+    <AttributionFormInputNumber
       v-else-if="attribute.data_type === 'INTEGER'"
       ref="integerInputRef"
       :model-value="modelValue?.integer_value ?? attribute.default_value"
@@ -24,7 +24,7 @@
         (val: number | null) => updateModelValue({ integer_value: val })
       "
     />
-    <ToAttributeFormInputNumber
+    <AttributionFormInputNumber
       v-else-if="attribute.data_type === 'FLOAT'"
       ref="floatInputRef"
       :model-value="modelValue?.float_value ?? attribute.default_value"
@@ -33,7 +33,7 @@
         (val: number | null) => updateModelValue({ float_value: val })
       "
     />
-    <ToAttributeFormInputText
+    <AttributionFormInputText
       v-else-if="attribute.data_type === 'TEXT'"
       ref="textInputRef"
       :model-value="modelValue?.text_value ?? attribute.default_value"
@@ -42,21 +42,21 @@
         (val: string | null) => updateModelValue({ text_value: val })
       "
     />
-    <ToAttributeFormInputDate
+    <AttributionFormInputDate
       v-else-if="attribute.data_type === 'DATE'"
       :model-value="modelValue?.date_value ?? attribute.default_value"
       @update:model-value="
         (val: string | null) => updateModelValue({ date_value: val })
       "
     />
-    <ToAttributeFormInputBoolean
+    <AttributionFormInputBoolean
       v-else-if="attribute.data_type === 'BOOLEAN'"
       :model-value="modelValue?.boolean_value ?? attribute.default_value"
       @update:model-value="
         (val: boolean | null) => updateModelValue({ boolean_value: val })
       "
     />
-    <ToAttributeFormInputPhoto
+    <AttributionFormInputPhoto
       v-else-if="attribute.data_type === 'PHOTO'"
       :model-value="modelValue?.photo_value ?? null"
       @update:model-value="
@@ -68,7 +68,7 @@
       {{ attribute.description }}
     </div>
 
-    <ToAttributeFormInputNote
+    <AttributionFormInputNote
       ref="noteInputRef"
       v-model:photo-note="photoNote"
       v-model:text-note="textNote"
@@ -105,27 +105,27 @@
 </template>
 
 <script setup lang="ts">
-import type { ToAttributionValueWithPhoto } from 'src/components/ToAttribute/ToAttributeForm.vue';
-import type { AttributeFragment } from 'src/components/ToAttribute/attributeFragment';
+import type { ToAttributionValueWithPhoto } from 'src/components/Attribution/AttributionForm.vue';
+import type { AttributeFragment } from 'src/components/Attribution/attributeFragment';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
-import ToAttributeFormInputRating from 'src/components/ToAttribute/ToAttributeFormInputRating.vue';
-import ToAttributeFormInputNumber from 'src/components/ToAttribute/ToAttributeFormInputNumber.vue';
-import ToAttributeFormInputText from 'src/components/ToAttribute/ToAttributeFormInputText.vue';
-import ToAttributeFormInputDate from 'src/components/ToAttribute/ToAttributeFormInputDate.vue';
-import ToAttributeFormInputBoolean from 'src/components/ToAttribute/ToAttributeFormInputBoolean.vue';
-import ToAttributeFormInputPhoto from 'src/components/ToAttribute/ToAttributeFormInputPhoto.vue';
-import ToAttributeFormInputNote from 'src/components/ToAttribute/ToAttributeFormInputNote.vue';
+import AttributionFormInputRating from 'src/components/Attribution/AttributionFormInputRating.vue';
+import AttributionFormInputNumber from 'src/components/Attribution/AttributionFormInputNumber.vue';
+import AttributionFormInputText from 'src/components/Attribution/AttributionFormInputText.vue';
+import AttributionFormInputDate from 'src/components/Attribution/AttributionFormInputDate.vue';
+import AttributionFormInputBoolean from 'src/components/Attribution/AttributionFormInputBoolean.vue';
+import AttributionFormInputPhoto from 'src/components/Attribution/AttributionFormInputPhoto.vue';
+import AttributionFormInputNote from 'src/components/Attribution/AttributionFormInputNote.vue';
 import { computed, ref, nextTick } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 
-export interface ToAttributeFormInputProps {
+export interface AttributionFormInputProps {
   attribute: AttributeFragment;
   exceptional: boolean;
   hasSameAgain: boolean;
 }
 
-const props = defineProps<ToAttributeFormInputProps>();
+const props = defineProps<AttributionFormInputProps>();
 
 const modelValue = defineModel<ToAttributionValueWithPhoto | undefined>({
   required: true,
@@ -145,7 +145,7 @@ const textNote = computed({
 
 const { t } = useI18n();
 const confirm = ref(false);
-const noteInputRef = ref<InstanceType<typeof ToAttributeFormInputNote> | null>(
+const noteInputRef = ref<InstanceType<typeof AttributionFormInputNote> | null>(
   null,
 );
 
@@ -245,12 +245,12 @@ const hasNoValue = computed(() => {
 });
 
 const integerInputRef = ref<InstanceType<
-  typeof ToAttributeFormInputNumber
+  typeof AttributionFormInputNumber
 > | null>(null);
 const floatInputRef = ref<InstanceType<
-  typeof ToAttributeFormInputNumber
+  typeof AttributionFormInputNumber
 > | null>(null);
-const textInputRef = ref<InstanceType<typeof ToAttributeFormInputText> | null>(
+const textInputRef = ref<InstanceType<typeof AttributionFormInputText> | null>(
   null,
 );
 

@@ -1,5 +1,5 @@
 <template>
-  <ToAttributeAlreadyAttributed
+  <AttributionAlreadyAttributed
     v-if="repeatTarget <= 1 && lastRepeat"
     :date="lastRepeat"
     :entity-type="entityType"
@@ -8,7 +8,7 @@
   <form>
     <ul class="attribute-form__list">
       <li v-for="formField in attributeInputs" :key="formField.priority">
-        <ToAttributeFormInput
+        <AttributionFormInput
           :ref="
             (el: InputRef) => (attributeFormInputRefs[formField.priority] = el)
           "
@@ -26,9 +26,9 @@
       </li>
     </ul>
 
-    <ToAttributeFormAddInput @add="(a) => extraAttributes.push(a)" />
+    <AttributionFormAddInput @add="(a) => extraAttributes.push(a)" />
 
-    <ToAttributeFormSaveButton
+    <AttributionFormSaveButton
       :disable="isSaving || !!insertedAttribution"
       :loading="isSaving"
       :show-progress="isSaving || !!insertedAttribution"
@@ -44,7 +44,7 @@
         />
       </template>
       <template v-if="repeatTarget > 1" #counter>
-        <ToAttributeRepeatCounter
+        <AttributionRepeatCounter
           :total="repeatTarget"
           :entity-type="entityType"
           :count="repeatCount"
@@ -52,17 +52,17 @@
           @reset="repeatCount = 0"
         />
       </template>
-    </ToAttributeFormSaveButton>
+    </AttributionFormSaveButton>
   </form>
 </template>
 
 <script setup lang="ts">
-import type { AttributionForm } from 'src/components/ToAttribute/ToAttributeSteps.vue';
+import type { AttributionForm } from 'src/components/Attribution/AttributionSteps.vue';
 import { graphql, VariablesOf } from 'src/graphql';
 import { useMutation } from '@urql/vue';
-import { AttributableEntities } from 'src/components/ToAttribute/attributableEntities';
+import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
-import ToAttributeFormInput from 'src/components/ToAttribute/ToAttributeFormInput.vue';
+import AttributionFormInput from 'src/components/Attribution/AttributionFormInput.vue';
 import {
   useImageUploader,
   UploadProgress,
@@ -71,17 +71,17 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
 import { useRepeatCounter } from './useRepeatCounter';
-import ToAttributeFormSaveButton from './ToAttributeFormSaveButton.vue';
-import ToAttributeRepeatCounter from 'src/components/ToAttribute/ToAttributeRepeatCounter.vue';
+import AttributionFormSaveButton from './AttributionFormSaveButton.vue';
+import AttributionRepeatCounter from 'src/components/Attribution/AttributionRepeatCounter.vue';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
-import ToAttributeFormAddInput from 'src/components/ToAttribute/ToAttributeFormAddInput.vue';
-import { AttributeFragment } from 'src/components/ToAttribute/attributeFragment';
-import ToAttributeAlreadyAttributed from 'src/components/ToAttribute/ToAttributeAlreadyAttributed.vue';
-import { useAttributableEntityName } from 'src/components/ToAttribute/useAttributableEntityName';
+import AttributionFormAddInput from 'src/components/Attribution/AttributionFormAddInput.vue';
+import { AttributeFragment } from 'src/components/Attribution/attributeFragment';
+import AttributionAlreadyAttributed from 'src/components/Attribution/AttributionAlreadyAttributed.vue';
+import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
-export interface ToAttributeFormProps {
+export interface AttributionFormProps {
   entityId: number;
   entityType: AttributableEntities;
   form: AttributionForm;
@@ -102,7 +102,7 @@ export type ToAttributionValueWithPhoto = Omit<
   photo_note: File | null | undefined;
 };
 
-const props = defineProps<ToAttributeFormProps>();
+const props = defineProps<AttributionFormProps>();
 
 const emit = defineEmits<{
   saved: [repeatCount: number];

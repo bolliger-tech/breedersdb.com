@@ -6,6 +6,7 @@ export const attributes = {
     description: 'Description',
     attributeType: 'Attribute type',
     defaultValue: 'Default value',
+    legend: 'Legend',
   },
 
   dataTypes: {
@@ -24,4 +25,15 @@ export const attributes = {
     treatment: 'Treatment',
     other: 'Other',
   },
+
+  disableConfirmation:
+    'Disabling will hide this attribute in existing forms and make it impossible to add it to forms. Do you really want to disable it?',
+  deleteConfirmation:
+    "This attribute wasn't used yet and will therefore be permanently deleted. Are you sure?",
+
+  preview: 'Preview',
+
+  min: 'Min',
+  max: 'Max',
+  step: 'Step',
 };

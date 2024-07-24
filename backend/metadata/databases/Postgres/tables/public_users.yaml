@@ -20,6 +20,7 @@ select_permissions:
         - locale
         - modified
         - failed_signin_attempts
+        - first_failed_signin_attempt
       filter:
         id:
           _eq: -1
@@ -31,6 +32,7 @@ select_permissions:
         - locale
         - id
         - failed_signin_attempts
+        - first_failed_signin_attempt
         - created
         - last_signin
         - modified

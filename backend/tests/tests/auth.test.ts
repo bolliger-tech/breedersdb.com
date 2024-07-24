@@ -7,6 +7,7 @@ const UserFields = /* GraphQL */ `
   email
   locale
   failed_signin_attempts
+  first_failed_signin_attempt
   last_signin
   created
   modified
@@ -81,8 +82,7 @@ const changePasswordMutation = /* GraphQL */ `
     ChangePassword(user_id: $user_id, password: $password) {
       id
       user {
-        created
-        modified
+        ${UserFields}
       }
     }
   }
@@ -253,6 +253,7 @@ test('me', async () => {
   expect(result.data.Me.user.locale).not.toBe(null);
   expect(result.data.Me.user.last_signin).not.toBe(null);
   expect(result.data.Me.user.failed_signin_attempts).toBe(0);
+  expect(result.data.Me.user.first_failed_signin_attempt).toBe(null);
 });
 
 test('sign out', async () => {
@@ -408,4 +409,86 @@ test('sign-in with new password', async () => {
     { Cookie: user1CookiesReqHeader },
   );
   expect(result.data.Me.user.email).toBe(user1.email);
+});
+
+// rate limiting
+test('sign in with wrong password rate limited', async () => {
+  const date_start = new Date();
+  for (let i = 0; i <= 3; i++) {
+    const json = await post({
+      query: signinMutation,
+      variables: { email: user1.email, password: 'wrong' },
+    });
+    expect(json.errors).not.toBe(undefined);
+    expect(json.data).toBe(undefined);
+
+    switch (i) {
+      case 0:
+      case 1:
+      case 2:
+        expect(json.errors[0].message).toStartWith(
+          'Unauthorized: Invalid password. Next possible sign in attempt is after',
+        );
+        break;
+      case 3:
+        expect(json.errors[0].message).toStartWith(
+          'Forbidden: Too many failed sign in attempts, try again after',
+        );
+        break;
+    }
+
+    expect(json.errors[0].extensions.nextPossibleSignIn).not.toBe(undefined);
+    const nextPossibleSignIn = new Date(
+      json.errors[0].extensions.nextPossibleSignIn,
+    );
+
+    switch (i) {
+      case 0:
+      case 1:
+        expect(nextPossibleSignIn.getTime()).toBeGreaterThan(
+          date_start.getTime(),
+        );
+        expect(nextPossibleSignIn.getTime()).toBeLessThan(
+          date_start.getTime() + 500,
+        );
+        break;
+      case 2:
+      case 3:
+        expect(nextPossibleSignIn.getTime()).toBeGreaterThan(
+          date_start.getTime() + 1500,
+        );
+        expect(nextPossibleSignIn.getTime()).toBeLessThan(
+          date_start.getTime() + 2500,
+        );
+        break;
+    }
+  }
+});
+
+test('failed sign in attempts after rate limited', async () => {
+  const result = await postOrFail({ query: usersQuery }, adminHeaders);
+  expect(result.data.users.length).toBe(2);
+  expect(result.data.users[0].email).toBe(user1.email);
+  expect(result.data.users[0].failed_signin_attempts).toBe(3);
+  expect(result.data.users[0].first_failed_signin_attempt).not.toBe(null);
+  expect(result.data.users[0].last_signin).not.toBe(null);
+  expect(result.data.users[0].locale).not.toBe(null);
+
+  expect(result.data.users[1].email).toBe(user2.email);
+  expect(result.data.users[1].failed_signin_attempts).toBe(0);
+  expect(result.data.users[1].first_failed_signin_attempt).toBe(null);
+  expect(result.data.users[1].last_signin).not.toBe(null);
+  expect(result.data.users[1].locale).not.toBe(null);
+});
+
+test('change password resets failed sign in attempts', async () => {
+  const result = await postOrFail({
+    query: changePasswordMutation,
+    variables: { user_id: user1Id, password: user1.password },
+  });
+  expect(result.data.ChangePassword.id).toBe(user1Id);
+  expect(result.data.ChangePassword.user.failed_signin_attempts).toBe(0);
+  expect(result.data.ChangePassword.user.first_failed_signin_attempt).toBe(
+    null,
+  );
 });

@@ -12,7 +12,6 @@ import type { ActionProps, ActionResult } from '../types';
 import type { FullUserOutput } from './types';
 
 // get exponential backoff seconds
-// T = 2 * 2^max(N-1,0) - 2
 // attempt 1: 0
 // attempt 2: 0
 // attempt 3: 2
@@ -105,6 +104,7 @@ export async function SignIn({
       variables: {
         user_id: user.id,
         first_failed_signin_attempt: firstFailedSigninAttempt,
+        // failed_signin_attempts is incremented by the mutation itself
       },
     });
     const newNextPossibleSignIn = getNextPossibleSignIn(

@@ -495,6 +495,74 @@ test('data type is immutable after insert of attribution_values', async () => {
   );
 });
 
+test("immutability of data type doesn't block other changes", async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: null,
+      data_type: 'TEXT',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation InsertAttributeValue($attribute_id: Int!) {
+        insert_attribution_values_one(
+          object: {
+            attribute_id: $attribute_id
+            attribution: {
+              data: {
+                author: "Author 1"
+                date_attributed: "2021-01-01"
+                attribution_form: { data: { name: "Attribution Form 1" } }
+                lot: {
+                  data: {
+                    name_segment: "24A"
+                    crossing: { data: { name: "Cross1" } }
+                    orchard: { data: { name: "Orchard1" } }
+                  }
+                }
+              }
+            }
+            text_value: "Value 1"
+          }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: { attribute_id: resp.data.insert_attributes_one.id },
+  });
+
+  const updated = await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdateAttribute(
+        $id: Int!
+        $name: String!
+        $data_type: attribute_data_types_enum
+      ) {
+        update_attributes_by_pk(
+          pk_columns: { id: $id }
+          _set: { name: $name, data_type: $data_type }
+        ) {
+          id
+          name
+          data_type
+        }
+      }
+    `,
+    variables: {
+      id: resp.data.insert_attributes_one.id,
+      name: 'New Name',
+      data_type: resp.data.insert_attributes_one.data_type,
+    },
+  });
+
+  expect(updated.data.update_attributes_by_pk.id).toBeGreaterThan(0);
+});
+
 test('modified', async () => {
   const resp = await postOrFail({
     query: insertMutation,

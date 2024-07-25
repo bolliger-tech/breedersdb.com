@@ -134,7 +134,7 @@ comment on table attributes is '""- validation_rule"":\n'
 create or replace function make_data_type_immutable() returns trigger as
 $$
 begin
-    if exists (select 1 from attribution_values where attribute_id = new.id) then
+    if new.data_type != old.data_type and exists (select 1 from attribution_values where attribute_id = new.id) then
         raise exception 'The data type of an attribution attribute cannot be changed once an attribution value has been inserted.';
     end if;
     return new;

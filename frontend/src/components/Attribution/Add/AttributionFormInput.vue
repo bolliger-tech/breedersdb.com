@@ -51,7 +51,12 @@
     />
     <AttributionFormInputBoolean
       v-else-if="attribute.data_type === 'BOOLEAN'"
-      :model-value="modelValue?.boolean_value ?? attribute.default_value"
+      :model-value="
+        typeof modelValue === 'undefined' ||
+        typeof modelValue.boolean_value === 'undefined'
+          ? attribute.default_value
+          : modelValue.boolean_value
+      "
       @update:model-value="
         (val: boolean | null) => updateModelValue({ boolean_value: val })
       "

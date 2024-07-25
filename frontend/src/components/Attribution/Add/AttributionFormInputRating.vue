@@ -13,7 +13,7 @@
         @click="zeroRatingClicked"
       />
       <div class="row justify-between">
-        <div v-if="labels.length > 0" style="width: 100%">
+        <div style="width: 100%">
           <small :class="{ legend }" class="label">{{ labels[0] }}</small>
         </div>
       </div>
@@ -83,7 +83,7 @@ const labels = computed(() => {
   }
 
   const numbers = [];
-  for (let i = ratingMin.value; i <= props.validation.max; i++) {
+  for (let i = props.validation.min; i <= props.validation.max; i++) {
     numbers.push(i);
   }
   return numbers;

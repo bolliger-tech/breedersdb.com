@@ -50,6 +50,7 @@
         error?.graphQLErrors[0]?.extensions.code as number,
       )
     "
+    class="graphql-error"
     :error="error"
   />
 </template>
@@ -167,5 +168,9 @@ onBeforeUnmount(() => {
 .form {
   width: 100%;
   min-width: 200px;
+  max-width: 400px;
+}
+.graphql-error {
+  max-width: 100%;
 }
 </style>

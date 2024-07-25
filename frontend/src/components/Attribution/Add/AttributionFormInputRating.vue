@@ -5,7 +5,7 @@
         color="primary"
         icon="exposure_zero"
         outline
-        :size="`calc(min(calc((100svw - 64px - ${(steps - 1) * 2}px) / ${steps + 1}), 4em) * 0.58)`"
+        :size="`calc(min((min(100svw - 64px, 592px) - ${(steps - 1) * 2}px) / ${steps + 1}, 4em) * 0.58)`"
         flat
         dense
         :ripple="false"
@@ -21,7 +21,7 @@
     <div class="column">
       <q-rating
         :model-value="ratingValue"
-        :size="`min(calc((100svw - 64px - ${(steps - 1) * 2}px) / ${steps + (withZero ? 1 : 0)}), 4em)`"
+        :size="`min((min(100svw - 64px, 592px) - ${(steps - 1) * 2}px) / ${steps + (withZero ? 1 : 0)}, 4em)`"
         :max="validation.max - ratingMin + 1"
         color="primary"
         icon="star_border"

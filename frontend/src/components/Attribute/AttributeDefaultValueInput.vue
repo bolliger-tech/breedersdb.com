@@ -12,7 +12,17 @@
     v-if="['BOOLEAN'].includes(props.dataType)"
     :label="t('attributes.columns.defaultValue')"
   >
-    <EntityToggle v-model="booleanModelValue" />
+    <EntityToggle
+      v-model="booleanModelValue"
+      :label="
+        booleanModelValue === null
+          ? t('attributes.noDefaultValue')
+          : modelValue
+            ? t('base.yes')
+            : t('base.no')
+      "
+      toggle-indeterminate
+    />
   </BaseInputLabel>
 </template>
 

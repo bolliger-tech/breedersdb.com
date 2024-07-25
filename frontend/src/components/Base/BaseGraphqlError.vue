@@ -68,8 +68,6 @@ const { t } = useI18n();
 
 <style lang="scss" scoped>
 .base-graphql-error__msg {
-  pre {
-    white-space: pre-wrap;
-  }
+  white-space: pre-wrap;
 }
 </style>

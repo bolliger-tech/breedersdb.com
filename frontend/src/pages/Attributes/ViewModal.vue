@@ -38,18 +38,6 @@
         <EntityViewTableRow :label="t('attributes.columns.defaultValue')">
           {{ defaultValue || t('base.notAvailable') }}
         </EntityViewTableRow>
-        <!-- <EntityViewTableRow
-          v-if="attribute.data_type === 'RATING' && attribute.legend"
-          :label="t('attributes.columns.legend')"
-        >
-          <div
-            v-for="(label, idx) in attribute.legend"
-            :key="idx"
-            class="text-caption"
-          >
-            {{ label }}
-          </div>
-        </EntityViewTableRow> -->
         <template v-if="attribute.data_type === 'RATING' && attribute.legend">
           <EntityViewTableRow
             v-for="(label, idx) in attribute.legend"

@@ -78,7 +78,7 @@ function zeroRatingClicked() {
 }
 
 const labels = computed(() => {
-  if (props.legend) {
+  if (props.legend?.some((v) => v)) {
     return props.legend;
   }
 

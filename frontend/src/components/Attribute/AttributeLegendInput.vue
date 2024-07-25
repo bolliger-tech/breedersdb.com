@@ -22,7 +22,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { type AttributeDataTypes } from 'src/graphql';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
-import { computed, watch, nextTick } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 
 export interface AttributeLegendInputProps {
   dataType: AttributeDataTypes;
@@ -49,8 +49,7 @@ watch(
     }
 
     if (!modelValue.value) {
-      modelValue.value = [];
-      await nextTick();
+      return;
     }
 
     // if the max was changed, we must adjust on the end
@@ -81,11 +80,20 @@ watch(
 );
 
 function setValue(step: number, value: string) {
-  if (!modelValue.value || modelValue.value.length !== steps.value) {
-    throw new Error("modelValue doesn't match steps");
-  }
-  modelValue.value[step] = value.trim();
+  const data = modelValue.value
+    ? [...modelValue.value]
+    : Array(steps.value).fill('');
+  const newVal = value.trim();
+
+  data[step] = newVal;
+
+  modelValue.value = data.some((v) => v) ? data : null;
 }
+
+onMounted(() => {
+  // set labels to null if all labels are empty (so numbers are displayed)
+  modelValue.value = modelValue.value?.some((v) => v) ? modelValue.value : null;
+});
 
 const { t } = useI18n();
 </script>

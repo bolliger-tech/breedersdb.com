@@ -1,0 +1,165 @@
+<template>
+  <EntityInput
+    v-if="['INTEGER', 'FLOAT'].includes(dataType)"
+    :ref="(el: InputRef) => (stepRef = el)"
+    :model-value="validationRule.step"
+    :label="t('attributes.step')"
+    :rules="[
+      (val: string) => nonEmptyStringRule(val, t('attributes.step')),
+      (val: string) =>
+        parseFloat(val) > 0 ||
+        t('base.validation.xMustBeGreaterThanZero', {
+          x: t('attributes.step'),
+        }),
+      integerUnlessTypeFloatRule,
+    ]"
+    type="number"
+    autocomplete="off"
+    required
+    :step="inputStep"
+    :min="'FLOAT' === dataType ? 0.001 : 1"
+    :max="inputMax"
+    @update:model-value="
+      (val) => {
+        validationRule.step = val ? parseFloat(val.toString()) : undefined;
+      }
+    "
+  />
+  <EntityInput
+    v-if="['INTEGER', 'FLOAT', 'RATING'].includes(dataType)"
+    :ref="(el: InputRef) => (minRef = el)"
+    :model-value="validationRule.min"
+    :label="t('attributes.min')"
+    :rules="[
+      (val: string) => nonEmptyStringRule(val, t('attributes.min')),
+      integerUnlessTypeFloatRule,
+      (val: string) => {
+        const minForType = 'RATING' === dataType ? 0 : Number.MIN_SAFE_INTEGER;
+        return (
+          parseFloat(val) >= minForType ||
+          t('base.validation.min', { x: minForType })
+        );
+      },
+      (val: string) => {
+        const maxForType = 'RATING' === dataType ? 9 : Number.MAX_SAFE_INTEGER;
+        const max = Math.min(maxForType, validationRule.max || maxForType);
+        return parseFloat(val) <= max || t('base.validation.max', { x: max });
+      },
+    ]"
+    type="number"
+    autocomplete="off"
+    required
+    :step="inputStep"
+    :min="inputMin"
+    :max="inputMax"
+    @update:model-value="
+      (val) => {
+        validationRule.min = val ? parseFloat(val.toString()) : undefined;
+      }
+    "
+  />
+  <EntityInput
+    v-if="['INTEGER', 'FLOAT', 'RATING'].includes(dataType)"
+    :ref="(el: InputRef) => (maxRef = el)"
+    :model-value="validationRule.max"
+    :label="t('attributes.max')"
+    :rules="[
+      (val: string) => nonEmptyStringRule(val, t('attributes.max')),
+      integerUnlessTypeFloatRule,
+      (val: string) => {
+        const minForType = 'RATING' === dataType ? 0 : Number.MIN_SAFE_INTEGER;
+        const min = Math.max(minForType, validationRule.min || minForType);
+        return parseFloat(val) >= min || t('base.validation.min', { x: min });
+      },
+      (val: string) => {
+        const maxForType = 'RATING' === dataType ? 9 : Number.MAX_SAFE_INTEGER;
+        return (
+          parseFloat(val) <= maxForType ||
+          t('base.validation.max', { x: maxForType })
+        );
+      },
+    ]"
+    type="number"
+    autocomplete="off"
+    required
+    :step="inputStep"
+    :min="inputMin"
+    :max="inputMax"
+    @update:model-value="
+      (val) => {
+        validationRule.max = val ? parseFloat(val.toString()) : undefined;
+      }
+    "
+  />
+</template>
+
+<script setup lang="ts">
+import { type AttributeDataTypes } from 'src/graphql';
+import { useI18n } from 'src/composables/useI18n';
+import { computed, ref, watch } from 'vue';
+import { InputRef } from 'src/composables/useEntityForm';
+import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import EntityInput from '../Entity/Edit/EntityInput.vue';
+
+export interface AttributeEntityFormValidationRuleProps {
+  dataType: AttributeDataTypes;
+}
+
+const props = defineProps<AttributeEntityFormValidationRuleProps>();
+const modelValue = defineModel<AttributeFragment['validation_rule']>({
+  required: true,
+});
+const stepRef = defineModel<InputRef | null>('stepRef', { required: true });
+const minRef = defineModel<InputRef | null>('minRef', { required: true });
+const maxRef = defineModel<InputRef | null>('maxRef', { required: true });
+
+function integerUnlessTypeFloatRule(val: string) {
+  return (
+    parseFloat(val) === parseInt(val) ||
+    props.dataType === 'FLOAT' ||
+    t('base.validation.integer')
+  );
+}
+
+function nonEmptyStringRule(val: string, fieldName: string) {
+  return '' !== val || t('base.validation.xIsRequired', { x: fieldName });
+}
+
+const inputStep = computed(() =>
+  ['INTEGER', 'RATING'].includes(props.dataType) ? 1 : 0.001,
+);
+const inputMin = computed(() => ('RATING' === props.dataType ? 0 : undefined));
+const inputMax = computed(() => ('RATING' === props.dataType ? 9 : undefined));
+
+const validationRule = ref({
+  min: modelValue.value?.min,
+  max: modelValue.value?.max,
+  step: modelValue.value?.step,
+});
+
+watch(
+  [validationRule, () => props.dataType],
+  () => {
+    if (['INTEGER', 'FLOAT'].includes(props.dataType)) {
+      modelValue.value = {
+        min: validationRule.value.min ?? Number.MAX_SAFE_INTEGER,
+        max: validationRule.value.max ?? Number.MIN_SAFE_INTEGER,
+        step:
+          validationRule.value.step ??
+          ('INTEGER' === props.dataType ? 1 : 0.001),
+      };
+    } else if ('RATING' === props.dataType) {
+      modelValue.value = {
+        min: validationRule.value.min ?? 1,
+        max: validationRule.value.max ?? 9,
+        step: 1,
+      };
+    } else {
+      modelValue.value = null;
+    }
+  },
+  { deep: true },
+);
+
+const { t } = useI18n();
+</script>

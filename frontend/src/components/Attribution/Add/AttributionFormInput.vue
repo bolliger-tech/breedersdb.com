@@ -64,7 +64,10 @@
       "
     />
 
-    <div v-if="attribute.description" style="word-wrap: break-word">
+    <div
+      v-if="attribute.description"
+      style="word-wrap: break-word; white-space: pre-line"
+    >
       {{ attribute.description }}
     </div>
 

@@ -1,0 +1,107 @@
+<template>
+  <EntityInput
+    v-if="['INTEGER', 'FLOAT', 'RATING', 'TEXT'].includes(props.dataType)"
+    :ref="(el: InputRef) => (inputRef = el)"
+    v-model="numberOrStringModelValue"
+    :label="t('attributes.columns.defaultValue')"
+    :rules="rules"
+    :type="inputType"
+    autocomplete="off"
+  />
+  <BaseInputLabel
+    v-if="['BOOLEAN'].includes(props.dataType)"
+    :label="t('attributes.columns.defaultValue')"
+  >
+    <EntityToggle v-model="booleanModelValue" />
+  </BaseInputLabel>
+</template>
+
+<script setup lang="ts">
+import { useI18n } from 'src/composables/useI18n';
+import { type AttributeDataTypes } from 'src/graphql';
+import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
+import EntityToggle from 'src/components/Entity/Edit/EntityToggle.vue';
+import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
+import { computed } from 'vue';
+import { InputRef } from 'src/composables/useEntityForm';
+import { isValidFloat, isValidInteger } from 'src/utils/validationUtils';
+
+export interface AttributeLegendInputProps {
+  dataType: AttributeDataTypes;
+  validationRule: AttributeFragment['validation_rule'];
+}
+
+const props = defineProps<AttributeLegendInputProps>();
+
+const modelValue = defineModel<AttributeFragment['default_value']>({
+  required: true,
+});
+const inputRef = defineModel<InputRef | null>('inputRef', {
+  required: true,
+});
+
+const inputType = computed(() => {
+  switch (props.dataType) {
+    case 'INTEGER':
+    case 'FLOAT':
+    case 'RATING':
+      return 'number';
+    default:
+      return 'text';
+  }
+});
+
+const numberOrStringModelValue = computed({
+  get: () => {
+    return ['INTEGER', 'FLOAT', 'RATING', 'TEXT'].includes(props.dataType)
+      ? (modelValue.value as string | number | null)
+      : null;
+  },
+  set: (val: string | number | null) => {
+    if ('TEXT' === props.dataType) {
+      modelValue.value = val ? val.toString() : null;
+    } else if (['INTEGER', 'FLOAT', 'RATING'].includes(props.dataType)) {
+      modelValue.value = val || val === 0 ? parseFloat(val.toString()) : null;
+    }
+  },
+});
+
+const booleanModelValue = computed({
+  get: () => {
+    return props.dataType === 'BOOLEAN'
+      ? (modelValue.value as boolean | null)
+      : null;
+  },
+  set: (val: boolean | null) => {
+    modelValue.value = val;
+  },
+});
+
+const rules = computed(() => {
+  const r = [];
+  if ('FLOAT' === props.dataType) {
+    r.push(
+      (val: string | null) =>
+        val === '' ||
+        val === null ||
+        !props.validationRule ||
+        isValidFloat({ value: val, validation: props.validationRule }) ||
+        t('attributions.add.invalidNumber', { ...props.validationRule }),
+    );
+  }
+  if (['INTEGER', 'RATING'].includes(props.dataType)) {
+    r.push(
+      (val: string | null) =>
+        val === '' ||
+        val === null ||
+        !props.validationRule ||
+        isValidInteger({ value: val, validation: props.validationRule }) ||
+        t('attributions.add.invalidNumber', { ...props.validationRule }),
+    );
+  }
+  return r;
+});
+
+const { t } = useI18n();
+</script>

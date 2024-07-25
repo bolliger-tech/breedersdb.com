@@ -16,6 +16,7 @@
         :attribute="attribute"
         :exceptional="false"
         :has-same-again="false"
+        hide-notes
       />
 
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>

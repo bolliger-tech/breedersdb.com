@@ -19,12 +19,12 @@
         v-model="password"
         :label="t('auth.password')"
         :bg-color="inputBgColor"
+        class="no-transition-input"
         type="password"
         autocomplete="current-password"
         required
         dense
         outlined
-        :hide-bottom-space="true"
         :error="
           error &&
           [401, 429].includes(
@@ -172,5 +172,27 @@ onBeforeUnmount(() => {
 }
 .graphql-error {
   max-width: 100%;
+}
+</style>
+
+<style lang="scss">
+.no-transition-input {
+  .q-transition--field-message {
+    &-enter-active,
+    &-leave-active {
+      transition: none;
+    }
+
+    &-enter-from,
+    &-leave-to {
+      opacity: unset;
+      transform: none;
+    }
+
+    &-leave-from,
+    &-leave-active {
+      opacity: 0;
+    }
+  }
 }
 </style>

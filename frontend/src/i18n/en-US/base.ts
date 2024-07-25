@@ -16,6 +16,7 @@ export const base = {
     rootstock: 'rootstock | rootstocks',
     grafting: 'grafting | graftings',
     plantRow: 'row | rows',
+    pollen: 'pollen | pollen',
   },
 
   timespan: {

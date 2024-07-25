@@ -71,39 +71,46 @@
       {{ attribute.description }}
     </div>
 
-    <AttributionFormInputNote
-      ref="noteInputRef"
-      v-model:photo-note="photoNote"
-      v-model:text-note="textNote"
-      :allow-text-note="true"
-      :allow-photo-note="attribute.data_type !== 'PHOTO'"
-      :disabled="hasNoValue"
-    />
+    <template v-if="!hideNotes">
+      <AttributionFormInputNote
+        ref="noteInputRef"
+        v-model:photo-note="photoNote"
+        v-model:text-note="textNote"
+        :allow-text-note="true"
+        :allow-photo-note="attribute.data_type !== 'PHOTO'"
+        :disabled="hasNoValue"
+      />
 
-    <q-dialog v-model="confirm">
-      <q-card>
-        <q-card-section>
-          <BaseMessage
-            type="warning"
-            :message="t('attributions.add.clearAttribute')"
-            icon-size="xl"
-          />
-        </q-card-section>
+      <q-dialog v-model="confirm">
+        <q-card>
+          <q-card-section>
+            <BaseMessage
+              type="warning"
+              :message="t('attributions.add.clearAttribute')"
+              icon-size="xl"
+            />
+          </q-card-section>
 
-        <q-card-actions align="right">
-          <q-btn v-close-popup flat :label="t('base.cancel')" color="primary" />
-          <q-btn
-            flat
-            :label="t('base.delete')"
-            color="negative"
-            @click="
-              clearModelValue();
-              confirm = false;
-            "
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+          <q-card-actions align="right">
+            <q-btn
+              v-close-popup
+              flat
+              :label="t('base.cancel')"
+              color="primary"
+            />
+            <q-btn
+              flat
+              :label="t('base.delete')"
+              color="negative"
+              @click="
+                clearModelValue();
+                confirm = false;
+              "
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </template>
   </BaseInputLabel>
 </template>
 
@@ -121,11 +128,13 @@ import AttributionFormInputPhoto from 'src/components/Attribution/Add/Attributio
 import AttributionFormInputNote from 'src/components/Attribution/Add/AttributionFormInputNote.vue';
 import { computed, ref, nextTick } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
+import type { DistributiveOmit } from 'src/utils/typescriptUtils';
 
 export interface AttributionFormInputProps {
-  attribute: AttributeFragment;
+  attribute: DistributiveOmit<AttributeFragment, 'created' | 'modified'>;
   exceptional: boolean;
   hasSameAgain: boolean;
+  hideNotes?: boolean;
 }
 
 const props = defineProps<AttributionFormInputProps>();

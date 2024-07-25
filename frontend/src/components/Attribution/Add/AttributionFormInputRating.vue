@@ -114,9 +114,15 @@ const opacityZero = computed(() => {
   font-weight: bolder;
   display: block;
   text-align: center;
+  max-width: 100%;
 }
 .legend {
   writing-mode: tb;
-  margin: 0.5em auto 0;
+  margin: 0.5em auto;
+  max-height: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: wrap;
+  text-align: start;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="row items-start">
+  <div class="row items-start no-wrap">
     <div v-if="withZero" class="column">
       <q-btn
         color="primary"
@@ -26,6 +26,7 @@
         color="primary"
         icon="star_border"
         icon-selected="star"
+        class="no-wrap"
         @update:model-value="ratingChanged"
       />
       <div class="row justify-between">

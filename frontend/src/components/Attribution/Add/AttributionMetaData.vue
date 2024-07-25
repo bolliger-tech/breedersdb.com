@@ -43,9 +43,9 @@
       (v: number) => Number.isInteger(v) || t('base.validation.integer'),
     ]"
     type="number"
-    min="1"
-    max="1000"
-    step="1"
+    :min="1"
+    :max="1000"
+    :step="1"
   />
 </template>
 <script setup lang="ts">

@@ -11,6 +11,10 @@
       :clearable="!required"
       :dark="$q.dark.isActive"
       :model-value="modelValue"
+      :min="min"
+      :max="max"
+      :step="step"
+      :pattern="pattern"
       @update:model-value="updateModelValue"
     >
       <template v-if="$slots.error" #error>
@@ -38,6 +42,10 @@ export type EntityInputProps = Omit<
   'bgColor' | 'dense' | 'outlined' | 'modelValue'
 > & {
   required?: boolean;
+  min?: number;
+  max?: number;
+  step?: number;
+  pattern?: string;
 };
 
 const props = defineProps<EntityInputProps>();

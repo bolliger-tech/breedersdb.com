@@ -18,8 +18,16 @@
   />
   <AttributeDataTypeSelect
     :ref="(el: InputRef) => (refs.attributeDataTypeRef = el)"
-    v-model="data.data_type"
+    :model-value="data.data_type"
     :required="true"
+    @update:model-value="
+      (val) => {
+        if (val) {
+          data.default_value = null;
+          data.data_type = val;
+        }
+      }
+    "
   />
   <AttributeValidationRuleInput
     v-model="data.validation_rule"

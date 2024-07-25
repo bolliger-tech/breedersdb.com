@@ -15,6 +15,7 @@
       :max="max"
       :step="step"
       :pattern="pattern"
+      :autocomplete="autocomplete"
       @update:model-value="updateModelValue"
     >
       <template v-if="$slots.error" #error>
@@ -46,6 +47,7 @@ export type EntityInputProps = Omit<
   max?: number;
   step?: number;
   pattern?: string;
+  autocomplete?: string;
 };
 
 const props = defineProps<EntityInputProps>();

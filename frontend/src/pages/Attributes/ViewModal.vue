@@ -10,15 +10,6 @@
     @edit="edit"
   >
     <template #default>
-      <h3 class="q-my-md">{{ t('attributes.preview') }}</h3>
-      <AttributionFormInput
-        v-model="previewModelValue"
-        :attribute="attribute"
-        :exceptional="false"
-        :has-same-again="false"
-        hide-notes
-      />
-
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <EntityViewTable>
         <EntityViewTableRow :label="t('entity.commonColumns.name')">
@@ -71,6 +62,9 @@
           }}
         </EntityViewTableRow>
       </EntityViewTable>
+
+      <h3 class="q-my-md">{{ t('attributes.preview') }}</h3>
+      <AttributePreview :attribute="attribute" />
     </template>
 
     <template #action-left>
@@ -99,7 +93,7 @@ import AttributeButtonDelete from 'src/components/Attribute/AttributeButtonDelet
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import {
   AttributeFragment,
   attributeFragment,
@@ -117,8 +111,7 @@ import {
   formatResultColumnValue,
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
-import AttributionFormInput from 'src/components/Attribution/Add/AttributionFormInput.vue';
-import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionForm.vue';
+import AttributePreview from 'src/components/Attribute/AttributePreview.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -165,6 +158,4 @@ function edit() {
     query: route.query,
   });
 }
-
-const previewModelValue = ref<AttributionValueWithPhoto | undefined>(undefined);
 </script>

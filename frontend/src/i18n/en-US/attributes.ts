@@ -26,14 +26,19 @@ export const attributes = {
     other: 'Other',
   },
 
-  disableConfirmation:
-    'Disabling will hide this attribute in existing forms and make it impossible to add it to forms. Do you really want to disable it?',
+  disableExplainer:
+    'Disabling will hide this attribute in existing forms and make it impossible to add it to forms.',
+  disableConfirmation: 'Do you really want to disable it?',
   deleteConfirmation:
     "This attribute wasn't used yet and will therefore be permanently deleted. Are you sure?",
 
   preview: 'Preview',
+  disabledPreviewMsg:
+    "This attribute is disabled and can't be used or previewed. Enable it to see the preview.",
 
   min: 'Min',
   max: 'Max',
   step: 'Step',
+
+  noDefaultValue: '(no default value)',
 };

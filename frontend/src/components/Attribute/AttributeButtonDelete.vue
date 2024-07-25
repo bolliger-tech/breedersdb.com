@@ -12,7 +12,7 @@
       <BaseMessage
         type="warning"
         icon-size="xl"
-        :message="t('attributes.disableConfirmation')"
+        :message="`${t('attributes.disableExplainer')} ${t('attributes.disableConfirmation')}`"
       />
     </template>
     <template v-else #message>

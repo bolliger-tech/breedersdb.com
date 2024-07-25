@@ -5,9 +5,11 @@
     :model-value="validationRule.step"
     :label="t('attributes.step')"
     :rules="[
-      (val: string | null) => nonEmptyStringRule(val, t('attributes.step')),
-      (val: string | null) =>
-        (val !== null && parseFloat(val) > 0) ||
+      (val: string | number | null | undefined) =>
+        nonEmptyStringRule(val, t('attributes.step')),
+      (val: string | number | null | undefined) =>
+        !val ||
+        parseFloat(val.toString()) > 0 ||
         t('base.validation.xMustBeGreaterThanZero', {
           x: t('attributes.step'),
         }),
@@ -31,20 +33,21 @@
     :model-value="validationRule.min"
     :label="t('attributes.min')"
     :rules="[
-      (val: string | null) => nonEmptyStringRule(val, t('attributes.min')),
+      (val: string | number | null | undefined) =>
+        nonEmptyStringRule(val, t('attributes.min')),
       integerUnlessTypeFloatRule,
-      (val: string | null) => {
+      (val: string | number | null | undefined) => {
         const minForType = 'RATING' === dataType ? 0 : Number.MIN_SAFE_INTEGER;
         return (
-          (val !== null && parseFloat(val) >= minForType) ||
+          ((!!val || val === 0) && parseFloat(val.toString()) >= minForType) ||
           t('base.validation.min', { x: minForType })
         );
       },
-      (val: string | null) => {
+      (val: string | number | null | undefined) => {
         const maxForType = 'RATING' === dataType ? 9 : Number.MAX_SAFE_INTEGER;
         const max = Math.min(maxForType, validationRule.max || maxForType);
         return (
-          (val !== null && parseFloat(val) <= max) ||
+          ((!!val || val === 0) && parseFloat(val.toString()) <= max) ||
           t('base.validation.max', { x: max })
         );
       },
@@ -67,20 +70,21 @@
     :model-value="validationRule.max"
     :label="t('attributes.max')"
     :rules="[
-      (val: string | null) => nonEmptyStringRule(val, t('attributes.max')),
+      (val: string | number | null | undefined) =>
+        nonEmptyStringRule(val, t('attributes.max')),
       integerUnlessTypeFloatRule,
-      (val: string | null) => {
+      (val: string | number | null | undefined) => {
         const minForType = 'RATING' === dataType ? 0 : Number.MIN_SAFE_INTEGER;
         const min = Math.max(minForType, validationRule.min || minForType);
         return (
-          (val !== null && parseFloat(val) >= min) ||
+          ((!!val || val === 0) && parseFloat(val.toString()) >= min) ||
           t('base.validation.min', { x: min })
         );
       },
-      (val: string | null) => {
+      (val: string | number | null | undefined) => {
         const maxForType = 'RATING' === dataType ? 9 : Number.MAX_SAFE_INTEGER;
         return (
-          (val !== null && parseFloat(val) <= maxForType) ||
+          ((!!val || val === 0) && parseFloat(val.toString()) <= maxForType) ||
           t('base.validation.max', { x: maxForType })
         );
       },
@@ -127,9 +131,12 @@ function integerUnlessTypeFloatRule(val: string | null) {
   );
 }
 
-function nonEmptyStringRule(val: string | null, fieldName: string) {
+function nonEmptyStringRule(
+  val: string | number | null | undefined,
+  fieldName: string,
+) {
   return (
-    (val !== null && val.trim() !== '') ||
+    ((!!val || val === 0) && val.toString().trim() !== '') ||
     t('base.validation.xIsRequired', { x: fieldName })
   );
 }

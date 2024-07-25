@@ -51,6 +51,7 @@ export const base = {
     max: 'Maximum value is {x}',
     integer: 'Must be an integer',
     nameNotUnique: 'This name is already in use',
+    xMustBeGreaterThanZero: '{x} must be greater than zero',
   },
 
   noResults: 'No results',

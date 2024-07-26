@@ -2,7 +2,7 @@
   <q-card
     :style="`max-width: ${attribute.data_type === 'RATING' ? 'min(100svw - 80px, calc(528px))' : '592px'}`"
   >
-    <q-card-section :class="{ 'q-py-xs': attribute.data_type === 'RATING' }">
+    <q-card-section :class="{ 'q-py-none': attribute.data_type === 'RATING' }">
       <div :class="{ scale: attribute.data_type === 'RATING' }">
         <AttributionFormInput
           v-model="previewModelValue"

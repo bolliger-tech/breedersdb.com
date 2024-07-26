@@ -4,16 +4,18 @@ import {
   type AttributeFragment,
 } from 'src/components/Attribute/attributeFragment';
 
+type Fragment = FragmentOf<typeof attributionFormFragment>;
+
 export type AttributionFormFragment = Omit<
-  FragmentOf<typeof attributionFormFragment>,
+  Fragment,
   'attribution_form_fields'
 > & {
-  attribution_form_fields: Omit<
-    FragmentOf<typeof attributionFormFragment>['attribution_form_fields'],
+  attribution_form_fields: (Omit<
+    Fragment['attribution_form_fields'][0],
     'attribute'
   > & {
     attribute: AttributeFragment;
-  };
+  })[];
 };
 
 export const attributionFormFragment = graphql(

@@ -15,6 +15,14 @@
         <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ attributionForm.name }}
         </EntityViewTableRow>
+        <EntityViewTableRow
+          v-if="attributionForm.description"
+          :label="t('attributionForms.columns.description')"
+        >
+          <span style="white-space: pre-line">{{
+            attributionForm.description
+          }}</span>
+        </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
           {{ localizeDate(attributionForm.created) }}
         </EntityViewTableRow>
@@ -26,6 +34,12 @@
           }}
         </EntityViewTableRow>
       </EntityViewTable>
+
+      <h3 class="q-my-md">{{ t('attributionForms.preview') }}</h3>
+      <AttributionFormPreview
+        :disabled="attributionForm.disabled"
+        :form-fields="formFields"
+      />
     </template>
 
     <template #action-left>
@@ -55,13 +69,17 @@ import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
-import { attributionFormFragment } from 'src/components/AttributionForm/attributionformFragment';
+import {
+  AttributionFormFragment,
+  attributionFormFragment,
+} from 'src/components/AttributionForm/attributionFormFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import { localizeDate } from 'src/utils/dateUtils';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import AttributionFormPreview from 'src/components/AttributionForm/AttributionFormPreview.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -81,7 +99,11 @@ const { data, error, fetching } = useQuery({
   variables: { id: parseInt(props.entityId.toString()) },
 });
 
-const attributionForm = computed(() => data.value?.attribution_forms_by_pk);
+const attributionForm = computed(
+  () =>
+    (data.value?.attribution_forms_by_pk ||
+      null) as AttributionFormFragment | null,
+);
 
 const { t } = useI18n();
 
@@ -93,4 +115,10 @@ function edit() {
     query: route.query,
   });
 }
+
+const formFields = computed(() => {
+  const fields = (attributionForm.value?.attribution_form_fields ||
+    []) as AttributionFormFragment['attribution_form_fields'];
+  return fields.map((f) => ({ ...f, exceptional: false }));
+});
 </script>

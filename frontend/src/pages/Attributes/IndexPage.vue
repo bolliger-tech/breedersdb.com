@@ -14,9 +14,9 @@
       :view-entity-path-getter="(id) => `/attributes/${id}`"
     >
       <template #body-cell-default_value="cellProps">
-        <q-td :props="cellProps">
+        <q-td :props="cellProps" style="max-width: clamp(300px, 30svw, 600px)">
           <q-chip v-if="cellProps.value !== ''" color="grey-7" size="sm">
-            {{ cellProps.value }}
+            <div class="ellipsis">{{ cellProps.value }}</div>
           </q-chip>
         </q-td>
       </template>

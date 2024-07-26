@@ -9,7 +9,18 @@
     autocomplete="off"
   />
   <BaseInputLabel
-    v-if="['BOOLEAN'].includes(props.dataType)"
+    v-else-if="['DATE'].includes(props.dataType)"
+    :label="t('attributes.columns.defaultValue')"
+  >
+    <q-date
+      v-model="dateModelValue"
+      first-day-of-week="1"
+      mask="YYYY-MM-DD"
+      minimal
+    />
+  </BaseInputLabel>
+  <BaseInputLabel
+    v-else-if="['BOOLEAN'].includes(props.dataType)"
     :label="t('attributes.columns.defaultValue')"
   >
     <EntityToggle
@@ -57,8 +68,12 @@ const inputType = computed(() => {
     case 'FLOAT':
     case 'RATING':
       return 'number';
+    case 'TEXT':
+      return 'textarea';
     default:
-      return 'text';
+      throw new Error(
+        `Default value not implemented for data type: ${props.dataType}`,
+      );
   }
 });
 
@@ -74,6 +89,17 @@ const numberOrStringModelValue = computed({
     } else if (['INTEGER', 'FLOAT', 'RATING'].includes(props.dataType)) {
       modelValue.value = val || val === 0 ? parseFloat(val.toString()) : null;
     }
+  },
+});
+
+const dateModelValue = computed({
+  get: () => {
+    return props.dataType === 'DATE'
+      ? (modelValue.value as string | null)
+      : null;
+  },
+  set: (val: string | null) => {
+    modelValue.value = val ? val : null;
   },
 });
 

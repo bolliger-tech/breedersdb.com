@@ -40,7 +40,8 @@ import {
 import { useI18n } from 'vue-i18n';
 
 export type PollenEditInput = Omit<PollenFragment, 'created' | 'modified'>;
-export type PollenInsertInput = Omit<PollenEditInput, 'id'>;
+export type PollenInsertInput = Omit<PollenEditInput, 'id' | 'cultivar_id'> &
+  Partial<Pick<PollenEditInput, 'cultivar_id'>>;
 
 export interface PollenModalEditProps {
   pollen: PollenEditInput | PollenInsertInput;

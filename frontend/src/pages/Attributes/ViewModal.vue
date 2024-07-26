@@ -18,10 +18,10 @@
         <EntityViewTableRow :label="t('attributes.columns.dataType')">
           {{ dataTypeToLabel(attribute.data_type, t) }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('attributes.min')">
+        <EntityViewTableRow :label="t('attributes.minLong')">
           {{ attribute.validation_rule?.min }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('attributes.max')">
+        <EntityViewTableRow :label="t('attributes.maxLong')">
           {{ attribute.validation_rule?.max }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('attributes.step')">

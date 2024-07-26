@@ -37,8 +37,14 @@ export const attributes = {
     "This attribute is disabled and can't be used or previewed. Enable it to see the preview.",
 
   min: 'Min',
+  minLong: 'Minimum value',
   max: 'Max',
+  maxLong: 'Maximum value',
   step: 'Step',
+  stepExplainerFloat:
+    'The percision of the value. For example, 0.1 will allow 0.1, 0.2, 0.3, etc. 0.01, will allow 0.01, 0.02, 0.03, etc.',
+  stepExplainerInteger:
+    'The distance between the values. For example, 2 will allow 2, 4, 6, etc. (assuming the minimum value is 0).',
 
   noDefaultValue: '(no default value)',
 };

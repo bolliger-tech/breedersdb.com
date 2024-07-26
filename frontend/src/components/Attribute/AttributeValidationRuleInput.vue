@@ -4,6 +4,11 @@
     :ref="(el: InputRef) => (stepRef = el)"
     :model-value="validationRule.step"
     :label="t('attributes.step')"
+    :explainer="
+      'INTEGER' === dataType
+        ? t('attributes.stepExplainerInteger')
+        : t('attributes.stepExplainerFloat')
+    "
     :rules="[
       (val: string | number | null | undefined) =>
         nonEmptyStringRule(val, t('attributes.step')),
@@ -31,7 +36,7 @@
     v-if="['INTEGER', 'FLOAT', 'RATING'].includes(dataType)"
     :ref="(el: InputRef) => (minRef = el)"
     :model-value="validationRule.min"
-    :label="t('attributes.min')"
+    :label="t('attributes.minLong')"
     :rules="[
       (val: string | number | null | undefined) =>
         nonEmptyStringRule(val, t('attributes.min')),
@@ -68,7 +73,7 @@
     v-if="['INTEGER', 'FLOAT', 'RATING'].includes(dataType)"
     :ref="(el: InputRef) => (maxRef = el)"
     :model-value="validationRule.max"
-    :label="t('attributes.max')"
+    :label="t('attributes.maxLong')"
     :rules="[
       (val: string | number | null | undefined) =>
         nonEmptyStringRule(val, t('attributes.max')),

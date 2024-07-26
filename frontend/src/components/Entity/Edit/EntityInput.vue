@@ -1,5 +1,5 @@
 <template>
-  <BaseInputLabel :label="label">
+  <BaseInputLabel :label="label" :explainer="explainer">
     <q-input
       v-bind="$props"
       ref="inputRef"
@@ -22,6 +22,9 @@
         <slot name="error"></slot>
       </template>
     </q-input>
+    <template v-if="$slots.explainer" #explainer>
+      <slot name="explainer"></slot>
+    </template>
   </BaseInputLabel>
 </template>
 
@@ -48,6 +51,7 @@ export type EntityInputProps = Omit<
   step?: number;
   pattern?: string;
   autocomplete?: string;
+  explainer?: string;
 };
 
 const props = defineProps<EntityInputProps>();
@@ -60,7 +64,7 @@ defineExpose({
 
 const modelValue = defineModel<QInputProps['modelValue']>();
 
-defineSlots<{ error: Slot }>();
+defineSlots<{ error: Slot; explainer: Slot }>();
 
 function updateModelValue(value: QInputProps['modelValue']) {
   if (!props.required && value === '') {

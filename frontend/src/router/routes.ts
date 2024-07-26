@@ -1,4 +1,5 @@
 import { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
+import { toKebabCase } from 'src/utils/stringUtils';
 
 function createAnalyzeRoutes(entity: string) {
   return {
@@ -95,9 +96,12 @@ const routes: RouteRecordRaw[] = [
         'Graftings',
         'PlantRows',
         'Attributes',
+        'AttributionForms',
       ].map((entity) => ({
-        // path is entityName minus 'Plant' prefix eg. PlantRows -> rows
-        path: entity.split('Plant').slice(-1)[0].toLowerCase(),
+        // path is kebab cased EntityName minus 'Plant' prefix
+        // eg. PlantRows -> rows,
+        // eg. AttributionForms -> attribution-forms
+        path: toKebabCase(entity.split('Plant').slice(-1)[0]),
         children: [
           {
             path: '',

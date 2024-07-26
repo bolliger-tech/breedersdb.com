@@ -97,6 +97,7 @@ export interface EntitySelectPropsWithoutModel<T> {
   optionDisable?: QSelectProps['optionDisable'];
   noSort?: boolean;
   explainer?: string;
+  rules?: QSelectProps['rules'];
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
@@ -107,6 +108,7 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   optionDisable: undefined,
   noSort: false,
   explainer: undefined,
+  rules: undefined,
 });
 
 const selectRef = ref<QSelect | null>(null);
@@ -149,15 +151,13 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
 const { inputBgColor } = useInputBackground();
 
 const rules = computed(() => {
-  return props.required
-    ? [
-        (val: T) =>
-          !!val ||
-          t('base.validation.xIsRequired', {
-            x: props.label,
-          }),
-      ]
-    : [];
+  const r = props.rules || [];
+  if (props.required) {
+    r.unshift(
+      (val: T) => !!val || t('base.validation.xIsRequired', { x: props.label }),
+    );
+  }
+  return r;
 });
 
 const optionValueKey = props.optionValue as string;

@@ -19,20 +19,21 @@
         v-model="password"
         :label="t('auth.password')"
         :bg-color="inputBgColor"
-        class="no-transition-input"
         type="password"
         autocomplete="current-password"
         required
         dense
         outlined
+        bottom-slots
         :error="
           error &&
-          [401, 429].includes(
-            error?.graphQLErrors[0]?.extensions.code as number,
-          )
+          [401, 429].includes(error.graphQLErrors[0]?.extensions.code as number)
         "
-        :error-message="formatFromNowErrorMessage(error as CombinedError)"
-      />
+      >
+        <template #error>
+          {{ error && formatFromNowErrorMessage(error) }}
+        </template>
+      </q-input>
     </div>
     <div class="q-mb-md text-right">
       <q-btn
@@ -172,27 +173,5 @@ onBeforeUnmount(() => {
 }
 .graphql-error {
   max-width: 100%;
-}
-</style>
-
-<style lang="scss">
-.no-transition-input {
-  .q-transition--field-message {
-    &-enter-active,
-    &-leave-active {
-      transition: none;
-    }
-
-    &-enter-from,
-    &-leave-to {
-      opacity: unset;
-      transform: none;
-    }
-
-    &-leave-from,
-    &-leave-active {
-      opacity: 0;
-    }
-  }
 }
 </style>

@@ -20,6 +20,8 @@
     :ref="(el: InputRef) => (refs.attributeDataTypeRef = el)"
     :model-value="data.data_type"
     :required="true"
+    :initial-data-type="initialData.data_type"
+    :attribute-id="'id' in attribute ? attribute.id : undefined"
     @update:model-value="
       (val) => {
         if (val) {

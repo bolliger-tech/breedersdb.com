@@ -8,27 +8,42 @@
     option-label="label"
     :required="required"
     :clearable="false"
+    :loading="fetching"
+    :rules="[
+      async (val: OptionType | null | undefined) =>
+        !attributeId ||
+        val?.value === initialDataType ||
+        !(await hasAttributions()) ||
+        t('attributes.dataTypeChangeNotAllowed'),
+    ]"
   />
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref } from 'vue';
+import { useQuery } from '@urql/vue';
+import { graphql } from 'src/graphql';
+import { ref, computed } from 'vue';
 import EntitySelect, {
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 import type { AttributeDataTypes } from 'src/graphql';
 
-export interface AttributeDataTypeSelectProps {
-  required?: boolean;
-}
-defineProps<AttributeDataTypeSelectProps>();
-
-const attributeDataTypeRef = ref<EntitySelectInstance<{
+type OptionType = {
   value: string;
   label: string;
-}> | null>(null);
+};
+
+export interface AttributeDataTypeSelectProps {
+  required?: boolean;
+  initialDataType: AttributeDataTypes;
+  attributeId?: number;
+}
+
+const props = defineProps<AttributeDataTypeSelectProps>();
+
+const attributeDataTypeRef = ref<EntitySelectInstance<OptionType> | null>(null);
 
 defineExpose({
   validate: () => attributeDataTypeRef.value?.validate(),
@@ -56,4 +71,38 @@ const attributeDataType = computed({
   set: (attributeDataType) =>
     (modelValue.value = attributeDataType?.value ?? null),
 });
+
+const query = graphql(`
+  query AttributeHasAttributions($attributeId: Int!) {
+    attribution_values_aggregate(
+      where: { attribute_id: { _eq: $attributeId } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+  }
+`);
+
+const variables = computed(() => ({ attributeId: props.attributeId }));
+
+const { executeQuery, fetching } = useQuery({
+  query,
+  variables,
+  pause: true,
+});
+
+async function hasAttributions() {
+  if (!props.attributeId) {
+    return false;
+  }
+  const result = await executeQuery();
+  if (result.error.value) {
+    console.error(result.error);
+    return false;
+  }
+  const count =
+    result.data?.value?.attribution_values_aggregate.aggregate?.count;
+  return !!count;
+}
 </script>

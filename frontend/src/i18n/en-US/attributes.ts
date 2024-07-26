@@ -47,4 +47,7 @@ export const attributes = {
     'The distance between the values. For example, 2 will allow 2, 4, 6, etc. (assuming the minimum value is 0).',
 
   noDefaultValue: '(no default value)',
+
+  dataTypeChangeNotAllowed:
+    'Because this attribute was already used for some attributions, changing the data type is not allowed. Either delete the attributions first or create a new attribute with the desired data type.',
 };

@@ -32,7 +32,7 @@
         v-if="'id' in attribute"
         :attribute-id="attribute.id"
         @deleted="
-          () => $router.push({ path: '/attribute', query: $route.query })
+          () => $router.push({ path: '/attributes', query: $route.query })
         "
       />
       <div v-else></div>

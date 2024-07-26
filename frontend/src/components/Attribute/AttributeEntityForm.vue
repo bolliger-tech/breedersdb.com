@@ -58,12 +58,13 @@
     v-model="data.attribute_type"
     :required="true"
   />
-  <BaseInputLabel
+  <EntityToggle
+    :ref="(el: InputRef) => (refs.disabledRef = el)"
+    v-model="data.disabled"
+    :required="true"
     :label="t('entity.commonColumns.disabled')"
     :explainer="t('attributes.disableExplainer')"
-  >
-    <EntityToggle v-model="data.disabled" />
-  </BaseInputLabel>
+  />
 </template>
 
 <script setup lang="ts">
@@ -85,7 +86,6 @@ import AttributeTypeSelect from './AttributeTypeSelect.vue';
 import AttributeValidationRuleInput from './AttributeValidationRuleInput.vue';
 import AttributeLegendInput from './AttributeLegendInput.vue';
 import AttributeDefaultValueInput from './AttributeDefaultValueInput.vue';
-import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { extend } from 'quasar';
 
 export interface AttributeEntityFormProps {
@@ -121,6 +121,7 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   // legend: there is no need to validate, so no ref here
   // description: there is no need to validate, so no ref here
   attributeTypeRef: null,
+  disabledRef: null,
 });
 
 const { isDirty, validate } = useEntityForm({

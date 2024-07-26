@@ -20,22 +20,18 @@
       minimal
     />
   </BaseInputLabel>
-  <BaseInputLabel
+  <EntityToggle
     v-else-if="['BOOLEAN'].includes(props.dataType)"
+    v-model="booleanModelValue"
     :label="t('attributes.columns.defaultValue')"
-  >
-    <EntityToggle
-      v-model="booleanModelValue"
-      :label="
-        booleanModelValue === null
-          ? t('attributes.noDefaultValue')
-          : modelValue
-            ? t('base.yes')
-            : t('base.no')
-      "
-      toggle-indeterminate
-    />
-  </BaseInputLabel>
+    :state-label="
+      booleanModelValue === null
+        ? t('attributes.noDefaultValue')
+        : modelValue
+          ? t('base.yes')
+          : t('base.no')
+    "
+  />
 </template>
 
 <script setup lang="ts">

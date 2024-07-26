@@ -14,7 +14,6 @@
         @change="
           (data) => {
             previewAttribute = { id: -1, ...data };
-            isDisabled = data.disabled;
             onChange({
               ...data,
               default_value: data.default_value as object | null,
@@ -23,8 +22,7 @@
         "
       />
       <h3 class="q-my-md">{{ t('attributes.preview') }}</h3>
-      <AttributePreview v-if="!isDisabled" :attribute="previewAttribute" />
-      <p v-else>{{ t('attributes.disabledPreviewMsg') }}</p>
+      <AttributePreview :attribute="previewAttribute" />
     </template>
 
     <template #action-left>
@@ -91,5 +89,4 @@ const editMutation = graphql(
 const { t } = useI18n();
 
 const previewAttribute = ref({ id: -1, ...props.attribute });
-const isDisabled = ref(props.attribute.disabled);
 </script>

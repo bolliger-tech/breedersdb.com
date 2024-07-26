@@ -2,7 +2,10 @@
   <q-card
     :style="`max-width: ${attribute.data_type === 'RATING' ? 'min(100svw - 80px, calc(528px))' : '592px'}`"
   >
-    <q-card-section :class="{ 'q-py-none': attribute.data_type === 'RATING' }">
+    <q-card-section
+      v-if="!attribute.disabled"
+      :class="{ 'q-py-none': attribute.data_type === 'RATING' }"
+    >
       <div :class="{ scale: attribute.data_type === 'RATING' }">
         <AttributionFormInput
           v-model="previewModelValue"
@@ -13,6 +16,9 @@
         />
       </div>
     </q-card-section>
+    <q-card-section v-else>
+      {{ t('attributes.disabledPreviewMsg') }}
+    </q-card-section>
   </q-card>
 </template>
 
@@ -22,6 +28,7 @@ import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/A
 import { ref } from 'vue';
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import type { DistributiveOmit } from 'src/utils/typescriptUtils';
+import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributePreviewProps {
   attribute: DistributiveOmit<AttributeFragment, 'created' | 'modified'>;
@@ -30,6 +37,8 @@ export interface AttributePreviewProps {
 defineProps<AttributePreviewProps>();
 
 const previewModelValue = ref<AttributionValueWithPhoto | undefined>(undefined);
+
+const { t } = useI18n();
 </script>
 
 <style scoped>

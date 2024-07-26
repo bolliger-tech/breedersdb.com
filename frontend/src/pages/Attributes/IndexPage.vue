@@ -1,10 +1,12 @@
 <template>
   <PageLayout>
     <EntityContainer
+      v-model:tab="subset"
       v-model:search="search"
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('attributes.title', 2)"
+      :tabs="tabs"
       :search-placeholder="t('entity.searchPlaceholderName')"
       :rows="attributes"
       :loading="fetching"
@@ -42,7 +44,7 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
-import { computed, watch } from 'vue';
+import { computed, watch, type UnwrapRef } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
@@ -87,7 +89,20 @@ const query = graphql(
   [attributeFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
+const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
+  key: 'tab',
+  defaultValue: 'active',
+  replace: true,
+});
+const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
+  { value: 'active', label: t('entity.tabs.active') },
+  { value: 'disabled', label: t('entity.tabs.disabled') },
+  { value: 'all', label: t('entity.tabs.all') },
+];
+
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+  subset,
+});
 
 const { data, fetching, error } = await useQuery({
   query,

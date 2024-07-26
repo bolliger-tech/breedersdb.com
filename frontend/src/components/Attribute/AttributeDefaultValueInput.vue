@@ -6,6 +6,7 @@
     :label="t('attributes.columns.defaultValue')"
     :rules="rules"
     :type="inputType"
+    :autogrow="props.dataType === 'TEXT'"
     autocomplete="off"
   />
   <BaseInputLabel
@@ -69,7 +70,7 @@ const inputType = computed(() => {
     case 'RATING':
       return 'number';
     case 'TEXT':
-      return 'textarea';
+      return 'text';
     default:
       throw new Error(
         `Default value not implemented for data type: ${props.dataType}`,

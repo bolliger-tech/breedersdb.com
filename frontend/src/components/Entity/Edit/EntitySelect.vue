@@ -1,5 +1,9 @@
 <template>
-  <BaseInputLabel :label="label">
+  <BaseInputLabel :label="label" :explainer="explainer">
+    <template v-if="$slots.explainer" #explainer>
+      <slot name="explainer"></slot>
+    </template>
+
     <q-select
       v-if="!error"
       ref="selectRef"
@@ -47,7 +51,13 @@
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { QSelect, QSelectProps, QSelectSlots } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
-import { ComponentPublicInstance, VNodeRef, computed, ref } from 'vue';
+import {
+  type ComponentPublicInstance,
+  type VNodeRef,
+  computed,
+  ref,
+  type Slot,
+} from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import {
   FilterSelectOptionsUpdateFn,
@@ -86,6 +96,7 @@ export interface EntitySelectPropsWithoutModel<T> {
   clearable?: boolean;
   optionDisable?: QSelectProps['optionDisable'];
   noSort?: boolean;
+  explainer?: string;
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
@@ -95,6 +106,7 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   clearable: true,
   optionDisable: undefined,
   noSort: false,
+  explainer: undefined,
 });
 
 const selectRef = ref<QSelect | null>(null);
@@ -105,6 +117,7 @@ defineExpose({
 
 defineSlots<{
   option: QSelectSlots['option'];
+  explainer: Slot;
 }>();
 
 const modelValue = defineModel<T | null | undefined>();

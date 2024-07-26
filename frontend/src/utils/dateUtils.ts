@@ -14,6 +14,8 @@ export function localizeDate(date: Date | string | null | undefined) {
 
 // get a relative time string
 // examples:
+// now
+// (in 5 seconds)
 // this minute
 // in 1 min.
 // 1 min. ago
@@ -26,17 +28,24 @@ export function localizeDate(date: Date | string | null | undefined) {
 export function toLocaleRelativeTimeString(
   date: Date,
   locale: Locale,
-  options: Intl.RelativeTimeFormatOptions = {
+  options: Intl.RelativeTimeFormatOptions | undefined = {
     numeric: 'auto',
     style: 'short',
   },
+  secondsPrecision: boolean | undefined = false,
 ) {
   const rtf = new Intl.RelativeTimeFormat(locale, options);
   const diff = new Date().getTime() - date.getTime();
 
+  const diffSeconds = Math.trunc(diff / 1000);
   const diffMinutes = Math.trunc(diff / 1000 / 60);
   const diffHours = Math.trunc(diff / 1000 / 60 / 60);
   const diffDays = Math.trunc(diff / 1000 / 60 / 60 / 24);
+
+  if (secondsPrecision && Math.abs(diffSeconds) < 60) {
+    return rtf.format(-diffSeconds, 'second');
+  }
+
   if (Math.abs(diffMinutes) < 60) {
     return rtf.format(-diffMinutes, 'minute');
   }

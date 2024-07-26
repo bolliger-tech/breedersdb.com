@@ -1,5 +1,5 @@
 <template>
-  <div class="q-px-md absolute-center column items-center signin-page-content">
+  <div class="q-pa-md column items-center signin-page-content">
     <h1 class="q-mb-lg">{{ orgName }}</h1>
     <h2>{{ t('auth.signInTitle') }}</h2>
     <SignInForm />
@@ -23,6 +23,14 @@ const orgName = import.meta.env.VITE_ORG;
 <style lang="scss" scoped>
 .signin-page-content {
   width: 100%;
-  max-width: 400px;
+
+  // absolute-center only when no graphql-error (set by SignInForm)
+  // otherwise the top and bottom escape the viewport on small screens
+  &:not(:has(.graphql-error)) {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+  }
 }
 </style>

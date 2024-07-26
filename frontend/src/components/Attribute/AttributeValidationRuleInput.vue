@@ -1,38 +1,5 @@
 <template>
   <EntityInput
-    v-if="['INTEGER', 'FLOAT'].includes(dataType)"
-    :ref="(el: InputRef) => (stepRef = el)"
-    :model-value="validationRule.step"
-    :label="t('attributes.step')"
-    :explainer="
-      'INTEGER' === dataType
-        ? t('attributes.stepExplainerInteger')
-        : t('attributes.stepExplainerFloat')
-    "
-    :rules="[
-      (val: string | number | null | undefined) =>
-        nonEmptyStringRule(val, t('attributes.step')),
-      (val: string | number | null | undefined) =>
-        !val ||
-        parseFloat(val.toString()) > 0 ||
-        t('base.validation.xMustBeGreaterThanZero', {
-          x: t('attributes.step'),
-        }),
-      integerUnlessTypeFloatRule,
-    ]"
-    type="number"
-    autocomplete="off"
-    required
-    :step="inputStep"
-    :min="'FLOAT' === dataType ? 0.001 : 1"
-    :max="inputMax"
-    @update:model-value="
-      (val) => {
-        validationRule.step = val ? parseFloat(val.toString()) : undefined;
-      }
-    "
-  />
-  <EntityInput
     v-if="['INTEGER', 'FLOAT', 'RATING'].includes(dataType)"
     :ref="(el: InputRef) => (minRef = el)"
     :model-value="validationRule.min"
@@ -103,6 +70,39 @@
     @update:model-value="
       (val) => {
         validationRule.max = val ? parseFloat(val.toString()) : undefined;
+      }
+    "
+  />
+  <EntityInput
+    v-if="['INTEGER', 'FLOAT'].includes(dataType)"
+    :ref="(el: InputRef) => (stepRef = el)"
+    :model-value="validationRule.step"
+    :label="t('attributes.step')"
+    :explainer="
+      'INTEGER' === dataType
+        ? t('attributes.stepExplainerInteger')
+        : t('attributes.stepExplainerFloat')
+    "
+    :rules="[
+      (val: string | number | null | undefined) =>
+        nonEmptyStringRule(val, t('attributes.step')),
+      (val: string | number | null | undefined) =>
+        !val ||
+        parseFloat(val.toString()) > 0 ||
+        t('base.validation.xMustBeGreaterThanZero', {
+          x: t('attributes.step'),
+        }),
+      integerUnlessTypeFloatRule,
+    ]"
+    type="number"
+    autocomplete="off"
+    required
+    :step="inputStep"
+    :min="'FLOAT' === dataType ? 0.001 : 1"
+    :max="inputMax"
+    @update:model-value="
+      (val) => {
+        validationRule.step = val ? parseFloat(val.toString()) : undefined;
       }
     "
   />

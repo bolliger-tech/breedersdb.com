@@ -87,7 +87,7 @@
       (val: string | number | null | undefined) =>
         nonEmptyStringRule(val, t('attributes.step')),
       (val: string | number | null | undefined) =>
-        !val ||
+        (!val && val !== 0) ||
         parseFloat(val.toString()) > 0 ||
         t('base.validation.xMustBeGreaterThanZero', {
           x: t('attributes.step'),

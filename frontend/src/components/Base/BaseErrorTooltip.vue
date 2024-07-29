@@ -1,30 +1,53 @@
 <template>
-  <q-tooltip
-    :model-value="show || !!graphqlError || !!message"
+  <q-menu
+    :model-value="show || !!_graphqlError || !!_message"
     max-width="min(500px, 90svw)"
     anchor="top middle"
     self="bottom middle"
-    :hide-delay="2000"
+    :offset="[0, 8]"
     no-parent-event
-    class="bg-dark shadow-3 text-body2 entity-modal-content__error-tooltip"
+    class="bg-dark shadow-3 q-pa-sm q-ma-md text-body2 entity-modal-content__error-tooltip"
+    @hide="
+      _graphqlError = null;
+      _message = null;
+    "
+    @mouseleave="
+      _graphqlError = null;
+      _message = null;
+    "
   >
-    <slot>
-      <BaseGraphqlError v-if="graphqlError" :error="graphqlError" />
-      <BaseMessage
-        v-else-if="message"
-        :message="message"
-        type="error"
-        icon-size="2em"
+    <div class="row no-wrap">
+      <div>
+        <slot>
+          <BaseGraphqlError v-if="_graphqlError" :error="_graphqlError" />
+          <BaseMessage
+            v-else-if="_message"
+            :message="_message"
+            type="error"
+            icon-size="2em"
+          />
+        </slot>
+      </div>
+      <q-btn
+        class="self-start"
+        icon="close"
+        flat
+        round
+        size="xs"
+        @click="
+          _graphqlError = null;
+          _message = null;
+        "
       />
-    </slot>
-  </q-tooltip>
+    </div>
+  </q-menu>
 </template>
 
 <script lang="ts" setup>
 import { CombinedError } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
-import type { Slot } from 'vue';
+import { type Slot, ref, watch } from 'vue';
 
 export interface BaseErrorTooltipProps {
   show?: boolean;
@@ -32,8 +55,24 @@ export interface BaseErrorTooltipProps {
   message?: string | null;
 }
 
-defineProps<BaseErrorTooltipProps>();
+const props = defineProps<BaseErrorTooltipProps>();
 defineSlots<{
   default: Slot;
 }>();
+
+const _graphqlError = ref(props.graphqlError);
+const _message = ref(props.message);
+
+watch(
+  [() => props.graphqlError, () => props.message],
+  ([graphqlError, message]) => {
+    if (!graphqlError && !message) {
+      // keep the data so the tooltip is not automatically hidden
+      return;
+    }
+
+    _graphqlError.value = graphqlError;
+    _message.value = message;
+  },
+);
 </script>

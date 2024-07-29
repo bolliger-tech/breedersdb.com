@@ -4,10 +4,7 @@
       v-for="step in steps"
       :key="step"
       :model-value="modelValue ? modelValue[step - 1] : ''"
-      :label="
-        t('attributes.columns.legend') +
-        ` ${step + (props.validationRule?.min || 0) - 1}`
-      "
+      :label="t('attributes.columns.legend') + ` ${step + (min || 0) - 1}`"
       type="text"
       autocomplete="off"
       @update:model-value="
@@ -36,9 +33,11 @@ const modelValue = defineModel<AttributeFragment['legend']>({
   required: true,
 });
 
-const steps = computed(
-  () => (props.validationRule?.max || 0) - (props.validationRule?.min || 0) + 1,
-);
+// limit min & max, so the form doesn't explode in case of invalid validation rules
+const min = computed(() => Math.max(props.validationRule?.min || 0, 0));
+const max = computed(() => Math.min(props.validationRule?.max || 0, 9));
+
+const steps = computed(() => max.value - min.value + 1);
 
 watch(
   [() => props.validationRule, () => props.dataType],

@@ -19,7 +19,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { type AttributeDataTypes } from 'src/graphql';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
-import { computed, onMounted, watch } from 'vue';
+import { computed, onMounted, watch, ref } from 'vue';
 
 export interface AttributeLegendInputProps {
   dataType: AttributeDataTypes;
@@ -36,8 +36,17 @@ const modelValue = defineModel<AttributeFragment['legend']>({
 // limit min & max, so the form doesn't explode in case of invalid validation rules
 const min = computed(() => Math.max(props.validationRule?.min || 0, 0));
 const max = computed(() => Math.min(props.validationRule?.max || 0, 9));
-
 const steps = computed(() => max.value - min.value + 1);
+
+const backup = ref(
+  Object.fromEntries(
+    (props.initialData || []).map((v, idx) => [min.value + idx, v]),
+  ),
+);
+watch(modelValue, (newValues) => {
+  if (!newValues) return;
+  newValues.forEach((v, idx) => (backup.value[min.value + idx] = v));
+});
 
 watch(
   [() => props.validationRule, () => props.dataType],
@@ -55,7 +64,7 @@ watch(
     if (newValidationRule?.max !== oldValidationRule?.max) {
       while (modelValue.value.length < steps.value) {
         modelValue.value.push(
-          props.initialData?.[modelValue.value.length] || '',
+          backup.value[min.value + modelValue.value.length] || '',
         );
       }
       while (modelValue.value.length > steps.value) {
@@ -66,9 +75,7 @@ watch(
     // if the min was changed, we must adjust on the start
     if (newValidationRule?.min !== oldValidationRule?.min) {
       while (modelValue.value.length < steps.value) {
-        // we don't remember the old values here, as it is a very rare use case
-        // and tedious to implement
-        modelValue.value.unshift('');
+        modelValue.value.unshift(backup.value[min.value] || '');
       }
       while (modelValue.value.length > steps.value) {
         modelValue.value.shift();

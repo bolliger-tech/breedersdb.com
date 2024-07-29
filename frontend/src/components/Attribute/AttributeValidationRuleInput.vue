@@ -179,6 +179,10 @@ watch(
     } else {
       modelValue.value = null;
     }
+
+    minRef.value?.validate();
+    maxRef.value?.validate();
+    stepRef.value?.validate();
   },
   { deep: true },
 );

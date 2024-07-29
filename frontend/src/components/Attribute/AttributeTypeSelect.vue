@@ -2,7 +2,7 @@
   <EntitySelect
     ref="attributeTypeRef"
     v-model="attributeType"
-    :label="t('attributes.columns.dataType')"
+    :label="t('attributes.columns.attributeType')"
     :options="attributeTypeOptions"
     option-value="value"
     option-label="label"

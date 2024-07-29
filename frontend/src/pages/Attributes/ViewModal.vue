@@ -69,11 +69,13 @@
 
     <template #action-left>
       <AttributeButtonDelete
+        v-if="!attribute.disabled"
         :attribute-id="attribute.id"
         @deleted="
           () => router.push({ path: '/attributes', query: route.query })
         "
       />
+      <div v-else></div>
     </template>
   </EntityModalContent>
 

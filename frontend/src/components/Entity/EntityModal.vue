@@ -12,11 +12,12 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from 'vue';
+import { provide, ref, watch } from 'vue';
 import {
   closeModalSymbol,
   makeModalPersistentSymbol,
 } from './modalProvideSymbols';
+import { useRoute } from 'vue-router';
 
 const visible = defineModel<boolean>();
 defineEmits<{
@@ -25,6 +26,12 @@ defineEmits<{
 }>();
 
 const persistent = ref(false);
+
+const route = useRoute();
+watch(
+  () => route.path,
+  () => (persistent.value = false),
+);
 
 provide(makeModalPersistentSymbol, (value: boolean) => {
   persistent.value = value;

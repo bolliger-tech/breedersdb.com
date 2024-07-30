@@ -8,6 +8,7 @@
     option-label="name"
     :loading="fetching"
     :error="error"
+    :clearable="false"
   />
 </template>
 

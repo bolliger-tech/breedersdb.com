@@ -7,6 +7,7 @@
     @dragend="onDragEnd"
   >
     <q-icon
+      v-if="!notDraggable"
       name="drag_indicator"
       style="color: var(--q-text-muted); transform: translateY(-0.35em)"
       :style="{ cursor: draggable ? 'grabbing' : 'grab' }"
@@ -18,6 +19,7 @@
       @touchend="draggable = false"
       @click.prevent.stop=""
     />
+    <div v-else style="width: 36px"></div>
     <AttributeSelect
       ref="inputRef"
       v-model="modelValue"
@@ -81,6 +83,7 @@ import { useQuasar } from 'quasar';
 
 export interface AttributionFormSortableAttributeSelectProps {
   dropZoneActive: boolean;
+  notDraggable?: boolean;
 }
 
 defineProps<AttributionFormSortableAttributeSelectProps>();

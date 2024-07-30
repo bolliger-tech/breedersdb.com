@@ -13,4 +13,7 @@ export const attributionForms = {
   disableExplainer:
     'Disabling will hide this form and thus make it impossible to add attributions with it.',
   disableConfirmation: 'Do you really want to disable it?',
+
+  fieldsExplainer:
+    'Add as many form fields as you wish. You can reorder them by dragging and dropping.',
 };

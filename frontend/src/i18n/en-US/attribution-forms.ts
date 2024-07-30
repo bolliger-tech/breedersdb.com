@@ -9,4 +9,8 @@ export const attributionForms = {
   preview: 'Preview',
   disabledPreviewMsg:
     "This form is disabled and can't be used or previewed. Enable it to see the preview.",
+
+  disableExplainer:
+    'Disabling will hide this form and thus make it impossible to add attributions with it.',
+  disableConfirmation: 'Do you really want to disable it?',
 };

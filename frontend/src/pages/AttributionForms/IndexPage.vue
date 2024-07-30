@@ -33,7 +33,7 @@
           <q-chip
             v-for="field in cellProps.value"
             :key="field.priority"
-            color="grey-7"
+            :color="$q.dark.isActive ? 'grey-9' : 'grey-3'"
             size="sm"
           >
             <div class="ellipsis">{{ field.attribute.name }}</div>

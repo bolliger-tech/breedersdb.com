@@ -86,7 +86,7 @@ export interface EntitySelectProps<T> extends EntitySelectPropsWithoutModel<T> {
 
 // for generic components we have to export all interfaces or none. else it currently throws an error
 export interface EntitySelectPropsWithoutModel<T> {
-  label: string;
+  label: string | undefined;
   required?: boolean;
   optionValue: keyof T;
   optionLabel: keyof T;

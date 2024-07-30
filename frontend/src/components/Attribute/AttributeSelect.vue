@@ -2,7 +2,7 @@
   <EntitySelect
     ref="inputRef"
     v-model="modelValue"
-    :label="t('attributes.title', 1)"
+    :label="hideLabel ? undefined : t('attributes.title', 1)"
     :options="attributeOptions"
     option-value="id"
     option-label="name"
@@ -24,6 +24,12 @@ import {
   attributeFragment,
   type AttributeFragment,
 } from 'src/components/Attribute/attributeFragment';
+
+export interface AttributeSelectProps {
+  hideLabel?: boolean;
+}
+
+defineProps<AttributeSelectProps>();
 
 const inputRef = ref<EntitySelectInstance<AttributeFragment> | null>(null);
 

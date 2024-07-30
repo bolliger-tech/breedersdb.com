@@ -1,6 +1,6 @@
 <template>
   <EntitySelect
-    :ref="inputRef"
+    ref="inputRef"
     v-model="modelValue"
     :label="t('attributes.title', 1)"
     :options="attributeOptions"

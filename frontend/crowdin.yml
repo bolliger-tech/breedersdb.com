@@ -2,7 +2,7 @@ project_id_env: CROWDIN_PROJECT_ID
 api_token_env: CROWDIN_PERSONAL_TOKEN
 
 files:
-  - source: /frontend/src/i18n/en-US/*.ts
-    translation: /frontend/src/i18n/%locale%/%original_file_name%
+  - source: /src/i18n/en-US/*.ts
+    translation: /src/i18n/%locale%/%original_file_name%
     ignore:
-      - /frontend/src/i18n/**/index.ts
+      - /src/i18n/**/index.ts

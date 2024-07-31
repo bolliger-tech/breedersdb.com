@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - main
+    branches-ignore:
+      - l10n/**
     paths:
       - frontend/src/i18n/en-US/**
       - .github/workflows/l10n.yml
@@ -12,6 +14,7 @@ on:
   push:
     branches-ignore:
       - main
+      - l10n/**
     paths:
       - frontend/src/i18n/en-US/**
       - .github/workflows/l10n.yml
@@ -55,7 +58,7 @@ jobs:
           download_translations: true
 
           # GitHub PR
-          localization_branch_name: ${{ env.BRANCH_NAME }}-l10n
+          localization_branch_name: l10n/${{ env.BRANCH_NAME }}
           create_pull_request: true
           commit_message: 'Latest translations from Crowdin'
           pull_request_title: 'Translations for ${{ env.BRANCH_NAME }}'

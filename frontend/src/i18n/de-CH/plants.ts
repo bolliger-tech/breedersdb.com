@@ -1,40 +1,40 @@
 export const plants = {
-  title: false,
-  searchPlaceholder: false,
+  title: 'Plant | Plants',
+  searchPlaceholder: 'Search by label ID or cultivar name',
   fields: {
-    labelId: false,
-    cultivarName: false,
-    groupName: false,
-    serialInPlantRow: false,
-    distancePlantRowStart: false,
-    dateGrafted: false,
-    datePlanted: false,
-    dateEliminated: false,
-    dateLabeled: false,
-    plantGroup: false,
-    plantRow: false,
-    grafting: false,
-    rootstock: false
+    labelId: 'Label ID',
+    cultivarName: 'Cultivar',
+    groupName: 'Group',
+    serialInPlantRow: 'Number in row',
+    distancePlantRowStart: 'Distance to row start',
+    dateGrafted: 'Date grafted',
+    datePlanted: 'Date planted',
+    dateEliminated: 'Date eliminated',
+    dateLabeled: 'Date labeled',
+    plantGroup: 'Group',
+    plantRow: 'Row',
+    grafting: 'Grafting',
+    rootstock: 'Rootstock'
   },
   errors: {
-    labelId: false,
-    distancePlantRowStart: false,
-    labelIdQueryError: false,
-    labelIdNextFree: false,
-    labelIdNotUnique: false,
-    labelIdinvalid: false,
-    eliminatedNotAllowed: false,
-    labelIdNotFound: false
+    labelId: 'Label ID can only be numbers (max 8 digits). If the plant was eliminated, the label ID must be prefixed with a #',
+    distancePlantRowStart: 'Distance to row start must be a positive number',
+    labelIdQueryError: 'Failed to check if label ID is unique',
+    labelIdNextFree: 'Label ID is already in use. Next free label ID is {labelId}',
+    labelIdNotUnique: 'Label ID is already in use. Next free label ID is unknown.',
+    labelIdinvalid: 'Invalid label ID',
+    eliminatedNotAllowed: "Eliminated plants can't be used here",
+    labelIdNotFound: 'Plant {labelId} not found'
   },
   hints: {
-    labelId: false,
-    labelIdOmitZeros: false,
-    distancePlantRowStart: false,
-    dateEliminatedTrue: false,
-    dateEliminatedFalse: false
+    labelId: 'Required. Number (max 8 digits). Prefixed with a # if plant was eliminated',
+    labelIdOmitZeros: 'You can omit leading zeros',
+    distancePlantRowStart: 'Meters',
+    dateEliminatedTrue: 'Adding an elimination date will disable this plant and prefix the label id with a #',
+    dateEliminatedFalse: 'Removing the elimination date will enable this plant and remove the # prefix from the label id'
   },
-  eliminate: false,
-  eliminateConfirmation: false,
-  scanQrCode: false,
-  enterLabelId: false
+  eliminate: 'Eliminate',
+  eliminateConfirmation: 'Eliminating will move this plant to the list of disbled plants, it will make it impossible to add any further attributions and it will prefix the label id with a #. Are you sure you want to eliminate this plant?',
+  scanQrCode: 'Scan QR code',
+  enterLabelId: 'Enter label ID'
 };

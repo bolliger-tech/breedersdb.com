@@ -1,3 +1,3 @@
 export const rootstocks = {
-  title: false
+  title: 'Rootstock | Rootstocks'
 };

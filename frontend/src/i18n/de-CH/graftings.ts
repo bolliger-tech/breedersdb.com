@@ -1,3 +1,3 @@
 export const graftings = {
-  title: false
+  title: 'Grafting | Graftings'
 };

@@ -1,14 +1,14 @@
 export const lots = {
-  title: false,
+  title: 'Lot | Lots',
   fields: {
-    dateSowed: false,
-    numbSeedsSowed: false,
-    numbSeedlingsGrown: false,
-    seedTray: false,
-    datePlanted: false,
-    numbSeedlingsPlanted: false,
-    plot: false,
-    crossing: false,
-    orchard: false
+    dateSowed: 'Date sowed',
+    numbSeedsSowed: 'Number of seeds sowed',
+    numbSeedlingsGrown: 'Number of seedlings grown',
+    seedTray: 'Seed tray',
+    datePlanted: 'Date planted',
+    numbSeedlingsPlanted: 'Number of seedlings planted',
+    plot: 'Plot',
+    crossing: 'Crossing',
+    orchard: 'Orchard'
   }
 };

@@ -1,13 +1,13 @@
 export const plantRows = {
-  title: false,
+  title: 'Row | Rows',
   fields: {
-    orchard: false,
-    dateEliminated: false
+    orchard: 'Orchard',
+    dateEliminated: 'Date disabled'
   },
   hints: {
-    dateEliminatedTrue: false,
-    dateEliminatedFalse: false
+    dateEliminatedTrue: 'Adding an disabled date will disable this row',
+    dateEliminatedFalse: 'Removing the disabled date will enable this row'
   },
-  disableConfirmation: false,
-  deleteConfirmation: false
+  disableConfirmation: 'Disabling will make it impossible to add plants to this row. Do you really want to disable it?',
+  deleteConfirmation: "This row doesn't have any plants and will therefore be permanently deleted. Are you sure?"
 };

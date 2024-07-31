@@ -1,3 +1,3 @@
 export const motherPlants = {
-  title: false
+  title: 'Mother Plant | Mother Plants'
 };

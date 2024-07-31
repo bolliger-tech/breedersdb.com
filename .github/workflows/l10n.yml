@@ -62,7 +62,6 @@ jobs:
           pull_request_title: 'Translations for ${{ env.BRANCH_NAME }}'
           pull_request_body: |
             Translations for ${{ env.BRANCH_NAME }} branch.
-            May also contain translations from other branches.
 
             PR was automatically created by the l10n workflow.
           pull_request_labels: l10n

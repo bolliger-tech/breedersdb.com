@@ -7,6 +7,7 @@ on:
     paths:
       - frontend/src/i18n/en-US/**
       - .github/workflows/l10n.yml
+      - frontend/crowdin.yml
 
   push:
     branches-ignore:
@@ -14,6 +15,7 @@ on:
     paths:
       - frontend/src/i18n/en-US/**
       - .github/workflows/l10n.yml
+      - frontend/crowdin.yml
 
   workflow_dispatch:
 

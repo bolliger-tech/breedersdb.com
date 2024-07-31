@@ -44,11 +44,13 @@
 
     <template #action-left>
       <AttributionFormButtonDelete
+        v-if="!attributionForm.disabled"
         :attribution-form-id="attributionForm.id"
         @deleted="
           () => router.push({ path: '/attribution-forms', query: route.query })
         "
       />
+      <div v-else></div>
     </template>
   </EntityModalContent>
 

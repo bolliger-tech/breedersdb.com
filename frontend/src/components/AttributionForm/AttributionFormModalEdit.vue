@@ -30,7 +30,7 @@
 
     <template #action-left>
       <AttributionFormButtonDelete
-        v-if="'id' in attributionForm"
+        v-if="'id' in attributionForm && !attributionForm.disabled"
         :attribution-form-id="attributionForm.id"
         @deleted="
           () =>

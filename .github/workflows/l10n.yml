@@ -41,9 +41,8 @@ jobs:
       - name: crowdin action
         uses: crowdin/github-action@v2
         with:
-          # files
-          source: frontend/src/i18n/en-US/*.ts
-          translation: frontend/src/i18n/%locale%/%original_file_name%
+          # config file
+          config: frontend/crowdin.yml
 
           # crowdin branch
           crowdin_branch_name: ${{ env.BRANCH_NAME }}
@@ -52,7 +51,6 @@ jobs:
           upload_sources: true
           upload_translations: true
           download_translations: true
-          skip_untranslated_strings: true
 
           # GitHub PR
           localization_branch_name: ${{ env.BRANCH_NAME }}-l10n

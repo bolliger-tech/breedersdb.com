@@ -20,9 +20,7 @@ on:
 jobs:
   synchronize-with-crowdin:
     runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-      cancel-in-progress: true
+    concurrency: l10n-sync
 
     steps:
       - name: Checkout
@@ -53,10 +51,8 @@ jobs:
           # what to do
           upload_sources: true
           upload_translations: true
-          download_sources: false
           download_translations: true
           skip_untranslated_strings: true
-          skip_untranslated_files: true
 
           # GitHub PR
           localization_branch_name: ${{ env.BRANCH_NAME }}-l10n

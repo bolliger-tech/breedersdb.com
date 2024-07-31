@@ -1,5 +1,9 @@
 <template>
-  <BaseInputLabel :label="label">
+  <BaseInputLabel :label="label" :explainer="explainer">
+    <template v-if="$slots.explainer" #explainer>
+      <slot name="explainer"></slot>
+    </template>
+
     <q-select
       v-if="!error"
       ref="selectRef"
@@ -47,7 +51,13 @@
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { QSelect, QSelectProps, QSelectSlots } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
-import { ComponentPublicInstance, VNodeRef, computed, ref } from 'vue';
+import {
+  type ComponentPublicInstance,
+  type VNodeRef,
+  computed,
+  ref,
+  type Slot,
+} from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import {
   FilterSelectOptionsUpdateFn,
@@ -86,6 +96,8 @@ export interface EntitySelectPropsWithoutModel<T> {
   clearable?: boolean;
   optionDisable?: QSelectProps['optionDisable'];
   noSort?: boolean;
+  explainer?: string;
+  rules?: QSelectProps['rules'];
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
@@ -95,6 +107,8 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   clearable: true,
   optionDisable: undefined,
   noSort: false,
+  explainer: undefined,
+  rules: undefined,
 });
 
 const selectRef = ref<QSelect | null>(null);
@@ -105,6 +119,7 @@ defineExpose({
 
 defineSlots<{
   option: QSelectSlots['option'];
+  explainer: Slot;
 }>();
 
 const modelValue = defineModel<T | null | undefined>();
@@ -136,15 +151,13 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
 const { inputBgColor } = useInputBackground();
 
 const rules = computed(() => {
-  return props.required
-    ? [
-        (val: T) =>
-          !!val ||
-          t('base.validation.xIsRequired', {
-            x: props.label,
-          }),
-      ]
-    : [];
+  const r = props.rules || [];
+  if (props.required) {
+    r.unshift(
+      (val: T) => !!val || t('base.validation.xIsRequired', { x: props.label }),
+    );
+  }
+  return r;
 });
 
 const optionValueKey = props.optionValue as string;

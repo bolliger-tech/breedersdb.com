@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import type { FilterColumnConstructorData } from './useFilterColumns';
 import { ColumnTypes } from 'src/utils/columnTypes';
+import { MAX_INT_PG } from 'src/utils/constants';
 
 export function usePlantGroupsColumnDefinitions() {
   const data = ref<FilterColumnConstructorData[]>([]);
@@ -27,7 +28,7 @@ const columnData: FilterColumnConstructorData[] = [
       allowEmpty: false,
       validation: {
         min: 1,
-        max: Number.MAX_SAFE_INTEGER,
+        max: MAX_INT_PG,
         step: 1,
       },
     },

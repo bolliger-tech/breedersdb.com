@@ -204,7 +204,7 @@ const items: NavLevel0Props['items'] = [
           },
           {
             label: t('nav.more.attributionForms.attributes'),
-            to: 'attributes',
+            to: '/attributes',
           },
         ],
       },

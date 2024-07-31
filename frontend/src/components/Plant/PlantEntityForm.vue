@@ -25,7 +25,7 @@
     ]"
     type="number"
     autocomplete="off"
-    step="0.01"
+    :step="0.01"
     :hint="t('plants.hints.distancePlantRowStart')"
   />
   <EntityInput

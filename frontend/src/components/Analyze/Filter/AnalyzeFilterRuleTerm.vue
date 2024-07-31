@@ -135,7 +135,7 @@ const maxValue = computed<number | undefined>(() => {
 
 const maxLen = computed<number | undefined>(() => {
   return validationOptions.value && 'maxLen' in validationOptions.value
-    ? validationOptions.value.maxLen ?? undefined
+    ? (validationOptions.value.maxLen ?? undefined)
     : undefined;
 });
 

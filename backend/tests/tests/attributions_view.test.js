@@ -235,7 +235,7 @@ const insertAttributeValue = /* GraphQL */ `
     $photo_note: String
     $exceptional_attribution: Boolean = false
   ) {
-    insert_attribute_values_one(
+    insert_attribution_values_one(
       object: {
         attribution_id: $attribution_id
         attribute_id: $attribute_id
@@ -272,7 +272,7 @@ afterEach(async () => {
   await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAll {
-        delete_attribute_values(where: {}) {
+        delete_attribution_values(where: {}) {
           affected_rows
         }
         delete_attributions(where: {}) {
@@ -438,7 +438,7 @@ async function insertAttributeValueWithAssociatedData({
     form_id: form.data.insert_attribution_forms_one.id,
     attribute_id: attribute.data.insert_attributes_one.id,
     attribution_id: attribution.data.insert_attributions_one.id,
-    value_id: value.data.insert_attribute_values_one.id,
+    value_id: value.data.insert_attribution_values_one.id,
   };
 }
 

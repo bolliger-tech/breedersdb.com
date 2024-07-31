@@ -44,7 +44,10 @@ export const attributeFragment = graphql(`
     description
     data_type
     attribute_type
+    disabled
     default_value
     legend
+    created
+    modified
   }
 `);

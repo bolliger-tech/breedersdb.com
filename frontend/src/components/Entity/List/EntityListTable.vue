@@ -86,6 +86,14 @@
         {{ cellProps.value }}
       </slot>
     </template>
+
+    <template
+      v-for="slotName in bodyCellSlotNames"
+      :key="slotName"
+      #[`body-cell-${slotName}`]="slotProps"
+    >
+      <slot :name="`body-cell-${slotName}`" v-bind="slotProps"></slot>
+    </template>
   </q-table>
 </template>
 
@@ -132,11 +140,18 @@ defineEmits<{
   'row-click': [row: QTableProps['rows'][0]];
 }>();
 
-defineSlots<{
+const slots = defineSlots<{
   'body-cell': QTableSlots['body-cell'];
   'column-selector-option': QSelectSlots['option'];
   'header-cell-label': QTableSlots['header-cell'];
+  [key: `body-cell-${string}`]: QTableSlots[`body-cell-${string}`];
 }>();
+
+const bodyCellSlotNames = computed(() =>
+  Object.keys(slots)
+    .filter((slotName) => slotName.startsWith('body-cell-'))
+    .map((slotName) => slotName.slice(10)),
+);
 
 const { t } = useI18n();
 

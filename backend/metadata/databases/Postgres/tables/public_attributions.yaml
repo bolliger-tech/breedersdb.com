@@ -18,12 +18,12 @@ object_relationships:
     using:
       foreign_key_constraint_on: plant_group_id
 array_relationships:
-  - name: attribute_values
+  - name: attribution_values
     using:
       foreign_key_constraint_on:
         column: attribution_id
         table:
-          name: attribute_values
+          name: attribution_values
           schema: public
 insert_permissions:
   - role: user

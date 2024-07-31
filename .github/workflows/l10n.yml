@@ -6,12 +6,14 @@ on:
       - main
     paths:
       - frontend/src/i18n/en-US/**
+      - .github/workflows/l10n.yml
 
   push:
     branches-ignore:
       - main
     paths:
       - frontend/src/i18n/en-US/**
+      - .github/workflows/l10n.yml
 
   workflow_dispatch:
 

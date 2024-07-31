@@ -9,14 +9,14 @@
         nonEmptyStringRule(val, t('attributes.min')),
       integerUnlessTypeFloatRule,
       (val: string | number | null | undefined) => {
-        const minForType = 'RATING' === dataType ? 0 : Number.MIN_SAFE_INTEGER;
+        const minForType = 'RATING' === dataType ? 0 : MIN_INT_PG;
         return (
           ((!!val || val === 0) && parseFloat(val.toString()) >= minForType) ||
           t('base.validation.min', { x: minForType })
         );
       },
       (val: string | number | null | undefined) => {
-        const maxForType = 'RATING' === dataType ? 9 : Number.MAX_SAFE_INTEGER;
+        const maxForType = 'RATING' === dataType ? 9 : MAX_INT_PG;
         const max = Math.min(maxForType, validationRule.max || maxForType);
         return (
           ((!!val || val === 0) && parseFloat(val.toString()) <= max) ||
@@ -46,7 +46,7 @@
         nonEmptyStringRule(val, t('attributes.max')),
       integerUnlessTypeFloatRule,
       (val: string | number | null | undefined) => {
-        const minForType = 'RATING' === dataType ? 0 : Number.MIN_SAFE_INTEGER;
+        const minForType = 'RATING' === dataType ? 0 : MIN_INT_PG;
         const min = Math.max(minForType, validationRule.min || minForType);
         return (
           ((!!val || val === 0) && parseFloat(val.toString()) >= min) ||
@@ -54,7 +54,7 @@
         );
       },
       (val: string | number | null | undefined) => {
-        const maxForType = 'RATING' === dataType ? 9 : Number.MAX_SAFE_INTEGER;
+        const maxForType = 'RATING' === dataType ? 9 : MAX_INT_PG;
         return (
           ((!!val || val === 0) && parseFloat(val.toString()) <= maxForType) ||
           t('base.validation.max', { x: maxForType })
@@ -87,7 +87,7 @@
       (val: string | number | null | undefined) =>
         nonEmptyStringRule(val, t('attributes.step')),
       (val: string | number | null | undefined) =>
-        !val ||
+        (!val && val !== 0) ||
         parseFloat(val.toString()) > 0 ||
         t('base.validation.xMustBeGreaterThanZero', {
           x: t('attributes.step'),
@@ -115,6 +115,7 @@ import { computed, ref, watch } from 'vue';
 import { InputRef } from 'src/composables/useEntityForm';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
+import { MAX_INT_PG, MIN_INT_PG } from 'src/utils/constants';
 
 export interface AttributeEntityFormValidationRuleProps {
   dataType: AttributeDataTypes;
@@ -163,8 +164,8 @@ watch(
   () => {
     if (['INTEGER', 'FLOAT'].includes(props.dataType)) {
       modelValue.value = {
-        min: validationRule.value.min ?? Number.MAX_SAFE_INTEGER,
-        max: validationRule.value.max ?? Number.MIN_SAFE_INTEGER,
+        min: validationRule.value.min ?? MIN_INT_PG,
+        max: validationRule.value.max ?? MAX_INT_PG,
         step:
           validationRule.value.step ??
           ('INTEGER' === props.dataType ? 1 : 0.001),
@@ -178,6 +179,10 @@ watch(
     } else {
       modelValue.value = null;
     }
+
+    minRef.value?.validate();
+    maxRef.value?.validate();
+    stepRef.value?.validate();
   },
   { deep: true },
 );

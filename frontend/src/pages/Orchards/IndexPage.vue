@@ -16,7 +16,6 @@
       :view-entity-path-getter="(id) => `/orchards/${id}`"
     />
   </PageLayout>
-  <router-view name="modal" />
 </template>
 
 <script setup lang="ts">

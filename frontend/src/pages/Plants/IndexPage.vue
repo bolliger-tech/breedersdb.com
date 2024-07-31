@@ -18,7 +18,6 @@
       @scanned-qr="onScannedQr"
     />
   </PageLayout>
-  <router-view name="modal" />
 </template>
 
 <script setup lang="ts">

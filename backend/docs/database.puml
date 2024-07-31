@@ -68,7 +68,7 @@ entity "**attribution_forms**" #00ff0012 ##008800 {
   ""modified"": //timestamp with time zone //
 }
 
-entity "**attribution_values**" {
+entity "**attribution_values**" #00ff0012 ##008800 {
   ""- text_value"" is trimmed.\n""- integer_value"" and ""float_value"" are checked against the\n""  ""corresponding ""attribute.validation_rule"".\n""  ""The checking is performed on insert and update of the value\n""  ""but not revalidated if the ""validation_rule"" changes.
   ..
   + ""id"": //integer [PK]//
@@ -287,6 +287,7 @@ entity "**users**" {
   *""failed_signin_attempts"": //integer  : Failed attempts only. Reset on successful signin.//
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
+  ""first_failed_signin_attempt"": //timestamp with time zone //
 }
 
 "**analyze_filters**"   }--  "**analyze_filter_base_tables**"

@@ -21,7 +21,7 @@
 </template>
 <script setup lang="ts">
 import { useInputBackground } from 'src/composables/useInputBackground';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { isValidFloat, isValidInteger } from 'src/utils/validationUtils';
 import { useI18n } from 'src/composables/useI18n';
 import { type QInput } from 'quasar';
@@ -90,6 +90,12 @@ function updateModelValue(value: string | number | null) {
 function normalizeDecimalSeparator(value: string | number) {
   return value.toString().replace(',', '.');
 }
+
+watch(
+  () => props.validation,
+  () => inputRef.value?.validate(),
+  { deep: true },
+);
 
 const { inputBgColor } = useInputBackground();
 </script>

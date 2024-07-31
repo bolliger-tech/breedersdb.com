@@ -25,7 +25,7 @@
 import { useInputBackground } from 'src/composables/useInputBackground';
 import { isValidString } from 'src/utils/validationUtils';
 import { useI18n } from 'src/composables/useI18n';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { type QInput } from 'quasar';
 import { focusInView } from 'src/utils/focusInView';
 
@@ -33,7 +33,7 @@ export interface AttributionFormInputProps {
   validation: { maxLen: number | null; pattern: string | null };
 }
 
-defineProps<AttributionFormInputProps>();
+const props = defineProps<AttributionFormInputProps>();
 const modelValue = defineModel<string | null>({ required: true });
 
 const inputRef = ref<QInput | null>(null);
@@ -42,6 +42,12 @@ defineExpose({
   validate: () => inputRef.value?.validate(),
   focus: () => inputRef.value && focusInView(inputRef.value),
 });
+
+watch(
+  () => props.validation,
+  () => inputRef.value?.validate(),
+  { deep: true },
+);
 
 const { t } = useI18n();
 const { inputBgColor } = useInputBackground();

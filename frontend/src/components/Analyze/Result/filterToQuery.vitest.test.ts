@@ -9,6 +9,7 @@ import {
   FilterRuleOperator,
 } from '../Filter/filterRuleOperator';
 import { FilterRuleTerm } from '../Filter/filterRuleTerm';
+import { MAX_INT_PG } from 'src/utils/constants';
 
 function prepareForRegex(str: string) {
   return (
@@ -51,7 +52,7 @@ const filterRules = {
         type: ColumnTypes.Integer,
         validation: {
           min: 0,
-          max: Number.MAX_SAFE_INTEGER,
+          max: MAX_INT_PG,
           step: 1,
         },
       },

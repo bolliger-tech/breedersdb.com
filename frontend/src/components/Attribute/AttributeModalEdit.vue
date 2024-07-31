@@ -27,7 +27,7 @@
 
     <template #action-left>
       <AttributeButtonDelete
-        v-if="'id' in attribute"
+        v-if="'id' in attribute && !attribute.disabled"
         :attribute-id="attribute.id"
         @deleted="
           () => $router.push({ path: '/attributes', query: $route.query })

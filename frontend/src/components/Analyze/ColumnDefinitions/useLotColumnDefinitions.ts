@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import type { FilterColumnConstructorData } from './useFilterColumns';
 import { ColumnTypes } from 'src/utils/columnTypes';
+import { MAX_INT_PG } from 'src/utils/constants';
 
 export function useLotColumnDefinitions() {
   const data = ref<FilterColumnConstructorData[]>([]);
@@ -27,7 +28,7 @@ const columnData: FilterColumnConstructorData[] = [
       allowEmpty: false,
       validation: {
         min: 1,
-        max: Number.MAX_SAFE_INTEGER,
+        max: MAX_INT_PG,
         step: 1,
       },
     },
@@ -102,7 +103,7 @@ const columnData: FilterColumnConstructorData[] = [
       allowEmpty: true,
       validation: {
         min: 0,
-        max: Number.MAX_SAFE_INTEGER,
+        max: MAX_INT_PG,
         step: 1,
       },
     },
@@ -116,7 +117,7 @@ const columnData: FilterColumnConstructorData[] = [
       allowEmpty: true,
       validation: {
         min: 0,
-        max: Number.MAX_SAFE_INTEGER,
+        max: MAX_INT_PG,
         step: 1,
       },
     },
@@ -152,7 +153,7 @@ const columnData: FilterColumnConstructorData[] = [
       allowEmpty: true,
       validation: {
         min: 0,
-        max: Number.MAX_SAFE_INTEGER,
+        max: MAX_INT_PG,
         step: 1,
       },
     },

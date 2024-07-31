@@ -38,6 +38,7 @@ type FullUserOutput {
   locale: String!
   last_signin: timestamptz
   failed_signin_attempts: Int!
+  first_failed_signin_attempt: timestamptz
   created: timestamptz!
   modified: timestamptz
 }

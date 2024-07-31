@@ -24,9 +24,16 @@
         required
         dense
         outlined
-        :error="error?.graphQLErrors[0]?.extensions.code === 401"
-        :error-message="t('auth.errors.401')"
-      />
+        bottom-slots
+        :error="
+          error &&
+          [401, 429].includes(error.graphQLErrors[0]?.extensions.code as number)
+        "
+      >
+        <template #error>
+          {{ error && formatFromNowErrorMessage(error) }}
+        </template>
+      </q-input>
     </div>
     <div class="q-mb-md text-right">
       <q-btn
@@ -40,25 +47,31 @@
   <BaseGraphqlError
     v-if="
       error &&
-      ![401, 404].includes(error?.graphQLErrors[0]?.extensions.code as number)
+      ![401, 404, 429].includes(
+        error?.graphQLErrors[0]?.extensions.code as number,
+      )
     "
+    class="graphql-error"
     :error="error"
   />
 </template>
 
 <script setup lang="ts">
-import { useMutation } from '@urql/vue';
+import { CombinedError, useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
-import { ref } from 'vue';
+import { onBeforeUnmount, ref } from 'vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getUserFromCookie } from 'src/utils/authUtils';
 import { useI18n } from 'src/composables/useI18n';
 import type { Locale } from 'src/composables/useI18n';
 import { useInputBackground } from 'src/composables/useInputBackground';
+import { toLocaleRelativeTimeString } from 'src/utils/dateUtils';
+import { useInterval } from 'quasar';
 const i18n = useI18n({ useScope: 'global' });
-const { t } = i18n;
+const { t, locale } = i18n;
 const { inputBgColor } = useInputBackground();
+const { registerInterval, removeInterval } = useInterval();
 
 const route = useRoute();
 const router = useRouter();
@@ -103,11 +116,62 @@ function onSubmit() {
     redirect();
   });
 }
+
+const now = ref(new Date());
+
+function formatFromNowErrorMessage(error: CombinedError | null): string {
+  if (!error) {
+    return '';
+  }
+  now.value = new Date();
+
+  const nextPossibleSignIn =
+    typeof error.graphQLErrors[0]?.extensions.nextPossibleSignIn === 'string'
+      ? new Date(error.graphQLErrors[0]?.extensions.nextPossibleSignIn)
+      : null;
+
+  let nextTry = '';
+  if (nextPossibleSignIn) {
+    const diffSecs =
+      (nextPossibleSignIn.getTime() - now.value.getTime()) / 1000;
+
+    if (diffSecs > 1) {
+      nextTry = t('auth.errors.nextTry', {
+        fromNow: toLocaleRelativeTimeString(
+          nextPossibleSignIn,
+          locale.value,
+          undefined,
+          true,
+        ),
+      });
+
+      registerInterval(
+        () => {
+          now.value = new Date();
+        },
+        diffSecs > 120 ? 30000 : 1000,
+      );
+    } else {
+      removeInterval();
+    }
+  }
+
+  const code = error.graphQLErrors[0]?.extensions.code as 401 | 429;
+  return t(`auth.errors.${code}`, { nextTry });
+}
+
+onBeforeUnmount(() => {
+  removeInterval();
+});
 </script>
 
 <style lang="scss" scoped>
 .form {
   width: 100%;
   min-width: 200px;
+  max-width: 400px;
+}
+.graphql-error {
+  max-width: 100%;
 }
 </style>

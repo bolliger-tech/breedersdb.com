@@ -76,6 +76,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: l10n/${{ env.BRANCH_NAME }}
+          base: ${{ env.BRANCH_NAME }}
           title: '[L10N] translations for ${{ env.BRANCH_NAME }}'
           body: |
             Translations for ${{ env.BRANCH_NAME }} branch.

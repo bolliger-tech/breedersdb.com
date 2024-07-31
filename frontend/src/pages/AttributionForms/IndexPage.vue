@@ -100,7 +100,6 @@ const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
   subset,
-  // TODO: check foreign keys
 });
 
 const { data, fetching, error } = await useQuery({

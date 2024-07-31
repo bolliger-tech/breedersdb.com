@@ -80,8 +80,6 @@
               color="primary"
               :loading="loading"
               @click="$emit('save')"
-              @mouseleave="$emit('resetErrors')"
-              @focusout="$emit('resetErrors')"
             />
             <BaseErrorTooltip
               :graphql-error="saveError"

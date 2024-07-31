@@ -2,10 +2,14 @@
   <q-card style="max-width: 636px">
     <q-card-section v-if="!disabled">
       <AttributionFormFieldList
+        v-if="formFields.length"
         v-model="attributionValues"
         :fields="formFields"
         no-bottom-border
       />
+      <p v-else class="q-ma-none">
+        {{ t('attributionForms.noFieldsMsg') }}
+      </p>
     </q-card-section>
     <q-card-section v-else>
       {{ t('attributionForms.disabledPreviewMsg') }}

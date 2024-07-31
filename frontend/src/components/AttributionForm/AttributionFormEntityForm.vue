@@ -39,15 +39,16 @@
     :key="formField.id"
     v-model="formField.attribute"
     :drop-zone-active="currentDragItemId !== null"
+    :not-draggable="data.attribution_form_fields.length < 2"
+    :no-space-before="data.attribution_form_fields.length < 2"
     @dragstart="currentDragItemId = index"
     @dragend="currentDragItemId = null"
     @drop="(pos) => onDrop(pos, index)"
     @delete="data.attribution_form_fields.splice(index, 1)"
   />
-  <AttributionFormSortableAttributeSelect
+  <AttributeSelect
     :key="data.attribution_form_fields.length"
-    :drop-zone-active="false"
-    :not-draggable="true"
+    :label="t('attributionForms.addField')"
     @update:model-value="addFormField"
   />
 </template>
@@ -70,6 +71,7 @@ import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import { extend } from 'quasar';
 import { type AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import AttributeSelect from 'src/components/Attribute/AttributeSelect.vue';
 
 export interface AttributionFormEntityFormProps {
   attributionForm: AttributionFormInsertInput | AttributionFormEditInput;

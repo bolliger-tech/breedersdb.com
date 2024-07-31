@@ -6,20 +6,22 @@
     @dragstart="onDragStart"
     @dragend="onDragEnd"
   >
-    <q-icon
-      v-if="!notDraggable"
-      name="drag_indicator"
-      style="color: var(--q-text-muted); transform: translateY(-0.35em)"
-      :style="{ cursor: draggable ? 'grabbing' : 'grab' }"
-      size="md"
-      class="col-auto q-mr-xs"
-      @mousedown="draggable = true"
-      @touchstart="draggable = true"
-      @mouseup="draggable = false"
-      @touchend="draggable = false"
-      @click.prevent.stop=""
-    />
-    <div v-else style="width: 36px"></div>
+    <template v-if="!noSpaceBefore">
+      <q-icon
+        v-if="!notDraggable"
+        name="drag_indicator"
+        style="color: var(--q-text-muted); transform: translateY(-0.35em)"
+        :style="{ cursor: draggable ? 'grabbing' : 'grab' }"
+        size="md"
+        class="col-auto q-mr-xs"
+        @mousedown="draggable = true"
+        @touchstart="draggable = true"
+        @mouseup="draggable = false"
+        @touchend="draggable = false"
+        @click.prevent.stop=""
+      />
+      <div v-else style="width: 36px"></div>
+    </template>
     <AttributeSelect
       ref="inputRef"
       v-model="modelValue"
@@ -84,6 +86,7 @@ import { useQuasar } from 'quasar';
 export interface AttributionFormSortableAttributeSelectProps {
   dropZoneActive: boolean;
   notDraggable?: boolean;
+  noSpaceBefore?: boolean;
 }
 
 defineProps<AttributionFormSortableAttributeSelectProps>();

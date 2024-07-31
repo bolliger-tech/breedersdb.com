@@ -3,8 +3,10 @@ export const attributionForms = {
 
   columns: {
     description: 'Description',
-    fields: 'Fields',
+    fields: 'Attribution Input Fields',
   },
+
+  addField: 'Add Field',
 
   preview: 'Preview',
   disabledPreviewMsg:

@@ -70,7 +70,7 @@ jobs:
 
         env:
           # https://docs.github.com/en/actions/security-guides/automatic-token-authentication
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
           # A numeric ID, found at https://crowdin.com/project/<projectName>/tools/api
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}

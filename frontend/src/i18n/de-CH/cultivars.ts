@@ -1,11 +1,11 @@
 export const cultivars = {
-  title: false,
+  title: 'Cultivar | Cultivars',
   analyze: {
-    title: false
+    title: 'Analyze'
   },
   fields: {
-    acronym: false,
-    breeder: false,
-    registration: false
+    acronym: 'Acronym',
+    breeder: 'Breeder',
+    registration: 'Registration'
   }
 };

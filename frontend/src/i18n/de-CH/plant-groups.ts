@@ -1,7 +1,7 @@
 export const plantGroups = {
-  title: false,
+  title: 'Group | Groups',
   fields: {
-    labelId: false,
-    cultivar: false
+    labelId: 'Label ID',
+    cultivar: 'Cultivar'
   }
 };

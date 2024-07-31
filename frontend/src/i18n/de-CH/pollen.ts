@@ -1,3 +1,3 @@
 export const pollen = {
-  title: false
+  title: 'Pollen | Pollen'
 };

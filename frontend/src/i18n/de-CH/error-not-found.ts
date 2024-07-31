@@ -1,4 +1,4 @@
 export const errorNotFound = {
-  title: false,
-  message: false
+  title: 'Nothing here!',
+  message: 'The page you are looking for does not exist.'
 };

@@ -1,21 +1,21 @@
 export const users = {
-  title: false,
-  searchPlaceholder: false,
+  title: 'User | Users',
+  searchPlaceholder: 'Search by email',
   fields: {
-    email: false,
-    locale: false,
-    failedSigninAttempts: false,
-    lastSignin: false,
-    password: false,
-    newPassword: false
+    email: 'Email',
+    locale: 'Locale',
+    failedSigninAttempts: 'Failed signin attempts',
+    lastSignin: 'Last signin',
+    password: 'Password',
+    newPassword: 'New Password'
   },
   validation: {
-    invalidEmail: false,
-    invalidPassword: false,
-    emailNotUnique: false
+    invalidEmail: 'Invalid email address',
+    invalidPassword: 'Make the password longer or more complex. (8 characters if: uppercase+lowercase+number+special character, 12 characters if: uppercase+lowercase+number, 32 characters otherwise)',
+    emailNotUnique: 'There is already an account with this email address. Please use the existing account.'
   },
-  deleteConfirmation: false,
-  changePassword: false,
-  changePasswordWarningOthers: false,
-  changePasswordWarningMe: false
+  deleteConfirmation: 'Are you sure you want to delete this user?',
+  changePassword: 'Change Password',
+  changePasswordWarningOthers: 'Changing the password will immediately log out the user on all devices!',
+  changePasswordWarningMe: 'Changing the password will immediately log you out on all devices, including this one!'
 };

@@ -1,37 +1,37 @@
 export const nav = {
   shared: {
-    list: false,
-    new: false,
-    addAttribute: false,
-    analyze: false
+    list: 'List',
+    new: 'New',
+    addAttribute: 'Add attribute',
+    analyze: 'Analyze'
   },
   plants: {
-    plant: false,
-    eliminate: false
+    plant: 'Plant',
+    eliminate: 'Eliminate'
   },
   cultivars: {
     new: {
-      main: false,
-      breedersCultivar: false,
-      variety: false
+      main: 'New',
+      breedersCultivar: 'Breeders Cultivar',
+      variety: 'Variety'
     }
   },
   more: {
-    main: false,
+    main: 'More',
     attributionForms: {
-      main: false,
-      forms: false,
-      attributes: false
+      main: 'Attribution Forms',
+      forms: 'Forms',
+      attributes: 'Attributes'
     },
-    settings: false,
+    settings: 'Settings',
     darkMode: {
-      main: false,
-      on: false,
-      off: false
+      main: 'Dark mode',
+      on: 'On',
+      off: 'Off'
     },
     language: {
-      main: false
+      main: 'Language'
     },
-    logout: false
+    logout: 'Logout'
   }
 };

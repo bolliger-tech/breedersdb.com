@@ -1,4 +1,4 @@
 export const orchards = {
-  title: false,
-  disableExplainer: false
+  title: 'Orchard | Orchards',
+  disableExplainer: 'Disabling will make it impossible to add rows or lots to this orchard.'
 };

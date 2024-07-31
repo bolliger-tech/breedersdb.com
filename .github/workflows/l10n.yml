@@ -1,0 +1,76 @@
+name: Crowdin Localization
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - frontend/src/i18n/en-US/**
+
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - frontend/src/i18n/en-US/**
+
+  workflow_dispatch:
+
+jobs:
+  synchronize-with-crowdin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get branch name on pull request
+        run: echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+        if: github.event_name == 'pull_request'
+
+      - name: Get branch name on push
+        run: echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+        if: github.event_name == 'push'
+
+      - name: Get branch name on workflow dispatch
+        run: echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+        if: github.event_name == 'workflow_dispatch'
+
+      - name: crowdin action
+        uses: crowdin/github-action@v2
+        with:
+          # files
+          source: frontend/src/i18n/en-US/*.ts
+          translation: frontend/src/i18n/%locale%/%original_file_name%
+
+          # crowdin branch
+          crowdin_branch_name: ${{ env.BRANCH_NAME }}
+
+          # what to do
+          upload_sources: true
+          upload_translations: true
+          download_translations: true
+          skip_untranslated_strings: true
+
+          # GitHub PR
+          localization_branch_name: ${{ env.BRANCH_NAME }}-l10n
+          create_pull_request: true
+          commit_message: 'Latest translations from Crowdin'
+          pull_request_title: 'Translations for ${{ env.BRANCH_NAME }}'
+          pull_request_body: |
+            Translations for ${{ env.BRANCH_NAME }} branch.
+            May also contain translations from other branches.
+
+            PR was automatically created by the l10n workflow.
+          pull_request_labels: l10n
+          pull_request_base_branch_name: ${{ env.BRANCH_NAME }}
+          pull_request_reviewers: ${{ github.actor }}
+
+        env:
+          # https://docs.github.com/en/actions/security-guides/automatic-token-authentication
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+          # A numeric ID, found at https://crowdin.com/project/<projectName>/tools/api
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+
+          # Visit https://crowdin.com/settings#api-key to create this token
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}

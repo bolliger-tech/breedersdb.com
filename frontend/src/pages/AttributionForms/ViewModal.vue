@@ -35,7 +35,7 @@
         </EntityViewTableRow>
       </EntityViewTable>
 
-      <h3 class="q-my-md">{{ t('attributionForms.preview') }}</h3>
+      <h3 class="q-my-md">{{ t('attributionForms.columns.fields') }}</h3>
       <AttributionFormPreview
         :disabled="attributionForm.disabled"
         :form-fields="formFields"

@@ -2,8 +2,6 @@ name: Crowdin Localization
 
 on:
   pull_request:
-    branches:
-      - main
     branches-ignore:
       - l10n/**
     paths:

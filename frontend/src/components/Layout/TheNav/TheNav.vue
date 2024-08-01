@@ -196,11 +196,11 @@ const items: NavLevel0Props['items'] = [
       {
         label: t('nav.more.attributionForms.main'),
         icon: 'form',
-        to: 'attribution-forms',
+        to: 'attribution',
         children: [
           {
             label: t('nav.more.attributionForms.forms'),
-            to: 'forms',
+            to: '/attribution-forms',
           },
           {
             label: t('nav.more.attributionForms.attributes'),

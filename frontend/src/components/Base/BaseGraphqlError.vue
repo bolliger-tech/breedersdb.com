@@ -16,7 +16,7 @@
       <p class="base-graphql-error__msg">
         {{
           error.message.startsWith('[GraphQL]')
-            ? error.message.slice(9)
+            ? error.message.slice(10)
             : error.message
         }}
       </p>

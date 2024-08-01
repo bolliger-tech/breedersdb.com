@@ -56,6 +56,7 @@ import BaseGraphqlError, {
   BaseGraphqlErrorProps,
 } from '../Base/BaseGraphqlError.vue';
 import BaseMessage from '../Base/BaseMessage.vue';
+import { singularize } from 'src/utils/stringUtils';
 
 export interface EntityButtonEliminateProps {
   label?: string;
@@ -84,7 +85,9 @@ const foreignKeyError = computed(() => {
     regex,
   ) as string[];
 
-  const currentEntity = currentTable.replace('plant_', '').replace('_', ' ');
+  const currentEntity = singularize(
+    currentTable.replace('plant_', '').replace('_', ' '),
+  );
   const foreignEntity = foreignTable.replace('plant_', '').replace('_', ' ');
 
   // this is too tedious to translate…

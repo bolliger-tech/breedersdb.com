@@ -5,7 +5,7 @@
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('pollen.title', 2)"
-      :search-placeholder="t('entity.searchPlaceholderName')"
+      :search-placeholder="t('pollen.searchPlaceholder')"
       :rows="data?.pollen || []"
       :loading="fetching"
       :all-columns="columns"
@@ -37,7 +37,7 @@ const query = graphql(
       $offset: Int!
       $orderBy: [pollen_order_by!]
       $where: pollen_bool_exp
-      $withCultivar: Boolean = false
+      $withCultivar: Boolean = true
       $withMotherPlants: Boolean = false
     ) {
       pollen_aggregate {
@@ -58,7 +58,9 @@ const query = graphql(
   [pollenFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+  searchColumns: ['name', 'cultivar.display_name'],
+});
 
 const { data, fetching, error } = await useQuery({
   query,
@@ -78,6 +80,13 @@ const columns = [
     label: t('entity.commonColumns.name'),
     align: 'left' as const,
     field: 'name',
+    sortable: true,
+  },
+  {
+    name: 'cultivar.name',
+    label: t('pollen.fields.cultivarName'),
+    align: 'left' as const,
+    field: (row: Pollen) => row.cultivar?.display_name,
     sortable: true,
   },
   {
@@ -106,7 +115,7 @@ const columns = [
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 2),
+  defaultValue: columns.map((column) => column.name).slice(0, 3),
   replace: true,
 });
 

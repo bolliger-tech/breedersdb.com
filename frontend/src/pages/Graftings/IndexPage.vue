@@ -14,7 +14,6 @@
       :view-entity-path-getter="(id) => `/graftings/${id}`"
     />
   </PageLayout>
-  <router-view name="modal" />
 </template>
 
 <script setup lang="ts">

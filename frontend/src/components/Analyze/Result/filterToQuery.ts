@@ -185,12 +185,12 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
   if (rule.isAttribute) {
     const attributeId = parseInt(field);
     const attributeIdCondition = `{ attribute_id: { _eq: ${attributeId} } }`;
-    comparison.negate = false; // negation is handled in toAttributeValueCondition
-    const attributeValueCondition = toAttributeValueCondition({
+    comparison.negate = false; // negation is handled in toAttributionValueCondition
+    const attributionValueCondition = toAttributionValueCondition({
       comparison,
       rule,
     });
-    const attributionCondition = `{ attributions_views: { _and: [ ${attributeIdCondition}, ${attributeValueCondition} ] } }`;
+    const attributionCondition = `{ attributions_views: { _and: [ ${attributeIdCondition}, ${attributionValueCondition} ] } }`;
     if (rule.includeEntitiesWithoutAttributions) {
       const noAttributionsCondition = `{ attributions_views_aggregate: { count: { predicate: { _eq: 0 }, filter: ${attributeIdCondition} } } }`;
       criterion = {
@@ -447,7 +447,7 @@ function columnTypeToGraphQLType(type: ColumnTypes) {
   }
 }
 
-function toAttributeValueCondition({
+function toAttributionValueCondition({
   comparison,
   rule,
 }: {

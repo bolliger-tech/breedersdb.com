@@ -1,4 +1,5 @@
 import { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
+import { toKebabCase } from 'src/utils/stringUtils';
 
 function createAnalyzeRoutes(entity: string) {
   return {
@@ -27,8 +28,10 @@ function createAnalyzeRoutes(entity: string) {
 
 function createEntityRoutes(entity: string) {
   return {
-    // path is entityName minus 'Plant' prefix eg. PlantRows -> rows
-    path: entity.split('Plant').slice(-1)[0].toLowerCase(),
+    // path is kebab cased EntityName minus 'Plant' prefix
+    // eg. PlantRows -> rows,
+    // eg. AttributionForms -> attribution-forms
+    path: toKebabCase(entity.split('Plant').slice(-1)[0]),
     children: [
       {
         path: '',
@@ -97,7 +100,7 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: 'attribute',
-            component: () => import('pages/Plants/AttributePage.vue'),
+            component: () => import('pages/Plants/AttributionPage.vue'),
           },
           createAnalyzeRoutes('Plants'),
         ],
@@ -123,9 +126,15 @@ const routes: RouteRecordRaw[] = [
         children: [createEntityRoutes('Pollen')],
       },
 
-      ...['Users', 'Orchards', 'Rootstocks', 'Graftings', 'PlantRows'].map(
-        (entity) => createEntityRoutes(entity),
-      ),
+      ...[
+        'Users',
+        'Orchards',
+        'Rootstocks',
+        'Graftings',
+        'PlantRows',
+        'Attributes',
+        'AttributionForms',
+      ].map((entity) => createEntityRoutes(entity)),
 
       {
         path: 'dev',

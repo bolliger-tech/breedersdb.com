@@ -17,7 +17,15 @@
         :loading="loading"
         :all-columns="allColumns"
         @row-click="(row) => view(row.id)"
-      />
+      >
+        <template
+          v-for="slotName in bodyCellSlotNames"
+          :key="slotName"
+          #[`body-cell-${slotName}`]="slotProps"
+        >
+          <slot :name="`body-cell-${slotName}`" v-bind="slotProps"></slot>
+        </template>
+      </EntityListTable>
     </template>
   </EntityList>
   <EntityModal
@@ -35,7 +43,8 @@ import EntityListTable, {
 } from './List/EntityListTable.vue';
 import EntityModal from './EntityModal.vue';
 import { MatcherLocationAsPath, useRoute, useRouter } from 'vue-router';
-import { nextTick, type Slot } from 'vue';
+import { nextTick, type Slot, computed } from 'vue';
+import { QTableSlots } from 'quasar';
 
 export interface EntityContainerProps
   extends EntityContainerPropsWithoutModels {
@@ -69,12 +78,19 @@ const visibleColumns = defineModel<EntityListTableProps['visibleColumns']>(
   { required: true },
 );
 
-defineSlots<{
+const slots = defineSlots<{
   default: Slot;
+  [key: `body-cell-${string}`]: QTableSlots[`body-cell-${string}`];
 }>();
 defineEmits<{
   'scanned-qr': [data: string];
 }>();
+
+const bodyCellSlotNames = computed(() =>
+  Object.keys(slots)
+    .filter((slotName) => slotName.startsWith('body-cell-'))
+    .map((slotName) => slotName.slice(10)),
+);
 
 const scrollPos = { x: 0, y: 0 };
 function saveScrollPos() {

@@ -70,24 +70,45 @@ function validateNumber({
   if (value < validation.min) return false;
   if (value > validation.max) return false;
 
-  const remainder = modulo(value - validation.min, validation.step);
+  const precision = getMaxPrecision(value, validation.min);
+
+  const remainder = modulo(
+    round(value - validation.min, precision),
+    validation.step,
+  );
 
   if (remainder !== 0) return false;
 
   return true;
 }
 
+function getMaxPrecision(...values: number[]) {
+  return values.reduce((maxPrecision, val) => {
+    const precision =
+      val
+        .toLocaleString('fullwide', {
+          useGrouping: false,
+          maximumFractionDigits: 20,
+        }) // use to locale string to correctly handle scientific notation
+        .split('.')[1]?.length || 0;
+    return Math.max(maxPrecision, precision);
+  }, 0);
+}
+
+function round(value: number, precision: number) {
+  const factor = Math.pow(10, precision);
+  return Math.round(value * factor) / factor;
+}
+
 function modulo(n: number, d: number) {
-  const nPrecision = n.toString().split('.')[1]?.length || 0;
-  const dPrecision = d.toString().split('.')[1]?.length || 0;
-  const precision = Math.max(nPrecision, dPrecision);
+  const precision = getMaxPrecision(n, d);
   const power = Math.pow(10, precision);
 
   // make integers out of the floats
   // beacuse float operations may lead to wrong results
   // (e.g. 0.5 % 0.1 = 0.09999999999999998)
-  const nInt = n * power;
-  const dInt = d * power;
+  const nInt = Math.round(n * power);
+  const dInt = Math.round(d * power);
 
   // get the modulo instead of the remainder.
   // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder

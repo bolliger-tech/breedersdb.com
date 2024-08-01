@@ -43,7 +43,7 @@ afterEach(async () => {
   await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAllAttributes {
-        delete_attribute_values(where: {}) {
+        delete_attribution_values(where: {}) {
           affected_rows
         }
         delete_attributions(where: {}) {
@@ -428,7 +428,7 @@ test('validation rule contains min, max, step for FLOAT', async () => {
   );
 });
 
-test('data type is immutable after insert of attribute_values', async () => {
+test('data type is immutable after insert of attribution_values', async () => {
   const resp = await postOrFail({
     query: insertMutation,
     variables: {
@@ -442,7 +442,7 @@ test('data type is immutable after insert of attribute_values', async () => {
   await postOrFail({
     query: /* GraphQL */ `
       mutation InsertAttributeValue($attribute_id: Int!) {
-        insert_attribute_values_one(
+        insert_attribution_values_one(
           object: {
             attribute_id: $attribute_id
             attribution: {
@@ -493,6 +493,74 @@ test('data type is immutable after insert of attribute_values', async () => {
   expect(updated.errors[0].extensions.internal.error.message).toBe(
     'The data type of an attribution attribute cannot be changed once an attribution value has been inserted.',
   );
+});
+
+test("immutability of data type doesn't block other changes", async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: null,
+      data_type: 'TEXT',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation InsertAttributeValue($attribute_id: Int!) {
+        insert_attribution_values_one(
+          object: {
+            attribute_id: $attribute_id
+            attribution: {
+              data: {
+                author: "Author 1"
+                date_attributed: "2021-01-01"
+                attribution_form: { data: { name: "Attribution Form 1" } }
+                lot: {
+                  data: {
+                    name_segment: "24A"
+                    crossing: { data: { name: "Cross1" } }
+                    orchard: { data: { name: "Orchard1" } }
+                  }
+                }
+              }
+            }
+            text_value: "Value 1"
+          }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: { attribute_id: resp.data.insert_attributes_one.id },
+  });
+
+  const updated = await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdateAttribute(
+        $id: Int!
+        $name: String!
+        $data_type: attribute_data_types_enum
+      ) {
+        update_attributes_by_pk(
+          pk_columns: { id: $id }
+          _set: { name: $name, data_type: $data_type }
+        ) {
+          id
+          name
+          data_type
+        }
+      }
+    `,
+    variables: {
+      id: resp.data.insert_attributes_one.id,
+      name: 'New Name',
+      data_type: resp.data.insert_attributes_one.data_type,
+    },
+  });
+
+  expect(updated.data.update_attributes_by_pk.id).toBeGreaterThan(0);
 });
 
 test('modified', async () => {

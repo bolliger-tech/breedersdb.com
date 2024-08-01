@@ -15,16 +15,14 @@
     debounce="300"
     :loading="fetchingNameUnique"
   />
-  <BaseInputLabel
+  <EntityToggle
+    :ref="(el: InputRef) => (refs.disabledRef = el)"
+    v-model="data.disabled"
     :label="t('entity.commonColumns.disabled')"
     :explainer="t('orchards.disableExplainer')"
-  >
-    <EntityToggle
-      :ref="(el: InputRef) => (refs.disabledRef = el)"
-      v-model="data.disabled"
-      color="primary"
-    />
-  </BaseInputLabel>
+    :required="true"
+    color="primary"
+  />
 </template>
 
 <script setup lang="ts">
@@ -36,9 +34,8 @@ import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { OrchardEditInput, OrchardInsertInput } from './OrchardModalEdit.vue';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
-import BaseInputLabel from '../Base/BaseInputLabel.vue';
 import { useIsUnique } from 'src/composables/useIsUnique';
-import EntityToggle from 'src/components/Entity/EntityToggle.vue';
+import EntityToggle from 'src/components/Entity/Edit/EntityToggle.vue';
 
 export interface OrchardEntityFormProps {
   orchard: OrchardInsertInput | OrchardEditInput;

@@ -1,5 +1,5 @@
 <template>
-  <BaseInputLabel :label="label">
+  <BaseInputLabel :label="label" :explainer="explainer">
     <q-input
       v-bind="$props"
       ref="inputRef"
@@ -11,12 +11,20 @@
       :clearable="!required"
       :dark="$q.dark.isActive"
       :model-value="modelValue"
+      :min="min"
+      :max="max"
+      :step="step"
+      :pattern="pattern"
+      :autocomplete="autocomplete"
       @update:model-value="updateModelValue"
     >
       <template v-if="$slots.error" #error>
         <slot name="error"></slot>
       </template>
     </q-input>
+    <template v-if="$slots.explainer" #explainer>
+      <slot name="explainer"></slot>
+    </template>
   </BaseInputLabel>
 </template>
 
@@ -38,6 +46,12 @@ export type EntityInputProps = Omit<
   'bgColor' | 'dense' | 'outlined' | 'modelValue'
 > & {
   required?: boolean;
+  min?: number;
+  max?: number;
+  step?: number;
+  pattern?: string;
+  autocomplete?: string;
+  explainer?: string;
 };
 
 const props = defineProps<EntityInputProps>();
@@ -50,7 +64,7 @@ defineExpose({
 
 const modelValue = defineModel<QInputProps['modelValue']>();
 
-defineSlots<{ error: Slot }>();
+defineSlots<{ error: Slot; explainer: Slot }>();
 
 function updateModelValue(value: QInputProps['modelValue']) {
   if (!props.required && value === '') {

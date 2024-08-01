@@ -1,0 +1,391 @@
+<template>
+  <q-stepper
+    v-model="step"
+    animated
+    header-nav
+    contracted
+    class="attribute-steps"
+    @transition="handleTransition"
+  >
+    <q-step
+      :name="1"
+      icon="svguse:/icons/sprite.svg#form"
+      done-icon="svguse:/icons/sprite.svg#form"
+      active-icon="svguse:/icons/sprite.svg#form"
+      title=""
+      :done="step1Done"
+    >
+      <AttributionFormSelector
+        ref="attributeFormSelectorRef"
+        v-model="formId"
+      />
+
+      <q-stepper-navigation class="row justify-end">
+        <q-btn
+          color="primary"
+          :label="t('base.continue')"
+          @click="completeStep1"
+        />
+      </q-stepper-navigation>
+    </q-step>
+
+    <q-step
+      :name="2"
+      title=""
+      icon="sell"
+      done-icon="sell"
+      active-icon="sell"
+      :done="step2Done"
+      :disable="!step1Done"
+    >
+      <AttributionMetaData
+        ref="attributeMetaDataRef"
+        v-model:author="author"
+        v-model:date="date"
+        v-model:repeat="repeat"
+      />
+
+      <q-stepper-navigation class="row justify-between">
+        <q-btn flat color="primary" :label="t('base.back')" @click="step = 1" />
+        <q-btn
+          color="primary"
+          :label="t('base.continue')"
+          @click="completeStep2"
+        />
+      </q-stepper-navigation>
+    </q-step>
+
+    <q-step
+      :name="3"
+      title=""
+      :icon="entityIcon"
+      :done-icon="entityIcon"
+      :active-icon="entityIcon"
+      :disable="!step1Done || !step2Done"
+      :done="step3Done"
+    >
+      <slot name="entity-selector"></slot>
+      <q-stepper-navigation class="row justify-between">
+        <q-btn flat color="primary" :label="t('base.back')" @click="step = 2" />
+        <q-btn
+          color="primary"
+          :label="t('base.continue')"
+          :loading="entityLoading"
+          @click="completeStep3"
+        />
+      </q-stepper-navigation>
+    </q-step>
+
+    <q-step
+      :name="4"
+      title=""
+      icon="svguse:/icons/sprite.svg#star"
+      done-icon="svguse:/icons/sprite.svg#star"
+      active-icon="svguse:/icons/sprite.svg#star"
+      :disable="!step1Done || !step2Done || !step3Done"
+    >
+      <BaseGraphqlError v-if="formFetchError" :error="formFetchError" />
+      <BaseSpinner v-else-if="formFetching" />
+      <q-banner v-else-if="!form" class="text-white bg-negative">
+        {{ t('attributions.add.noFormSelected') }}
+        <template #action>
+          <q-btn
+            flat
+            color="white"
+            :label="t('attributions.add.selectForm')"
+            @click="step = 1"
+          />
+        </template>
+      </q-banner>
+      <q-banner v-else-if="!author || !date" class="text-white bg-negative">
+        {{ t('attributions.add.missingMetadata') }}
+        <template #action>
+          <q-btn
+            flat
+            color="white"
+            :label="t('attributions.add.addMetadata')"
+            @click="step = 2"
+          />
+        </template>
+      </q-banner>
+      <AttributionNoEntityError
+        v-else-if="entityId === null"
+        :entity-type="entityType"
+        @click="step = 3"
+      />
+
+      <template v-else>
+        <slot name="entity-preview"></slot>
+        <AttributionForm
+          :key="attributeFormKey"
+          :entity-id="entityId"
+          :entity-type="entityType"
+          :form="form"
+          :date="date"
+          :author="author"
+          :repeat-target="repeatInt"
+          @saved="completeStep4"
+        />
+      </template>
+      <q-stepper-navigation>
+        <q-btn flat color="primary" :label="t('base.back')" @click="step = 3" />
+      </q-stepper-navigation>
+    </q-step>
+  </q-stepper>
+</template>
+
+<script setup lang="ts">
+import AttributionFormSelector from 'src/components/Attribution/Add/AttributionFormSelector.vue';
+import AttributionMetaData from 'src/components/Attribution/Add/AttributionMetaData.vue';
+import AttributionForm from 'src/components/Attribution/Add/AttributionForm.vue';
+import AttributionNoEntityError from 'src/components/Attribution/Add/AttributionNoEntityError.vue';
+import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
+import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
+import { graphql, ResultOf } from 'src/graphql';
+import { useQuery } from '@urql/vue';
+import { useI18n } from 'src/composables/useI18n';
+import { computed, ref, watch, type Slot } from 'vue';
+import { useQueryArg } from 'src/composables/useQueryArg';
+import { useQuasar } from 'quasar';
+import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
+import {
+  attributeFragment,
+  type AttributeFragment,
+} from 'src/components/Attribute/attributeFragment';
+import { useRoute } from 'vue-router';
+
+const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';
+const AUTHOR_STORAGE_KEY = 'breedersdb-attribution-author';
+const REPEAT_STORAGE_KEY = 'breedersdb-attribute-repeat-target';
+
+const FORM_ID_URL_KEY = 'form';
+const AUTHOR_URL_KEY = 'author';
+const DATE_URL_KEY = 'date';
+const REPEAT_URL_KEY = 'repeat';
+
+export interface AttributionStepsProps {
+  entityId: number | null;
+  entityType: AttributableEntities;
+  entityLoading: boolean;
+  entityIcon: string;
+  focusEntitySelector?: () => void;
+}
+
+const props = defineProps<AttributionStepsProps>();
+
+defineSlots<{
+  'entity-selector': Slot;
+  'entity-preview': Slot;
+}>();
+
+const emit = defineEmits<{
+  entityStepCompleted: [];
+}>();
+
+const formQuery = graphql(
+  `
+    query AttributionForm($formId: Int!) {
+      attribution_forms_by_pk(id: $formId) {
+        id
+        name
+        description
+        attribution_form_fields(
+          where: { attribute: { disabled: { _eq: false } } }
+          order_by: { priority: asc }
+        ) {
+          id
+          priority
+          attribute {
+            ...attributeFragment
+          }
+        }
+      }
+    }
+  `,
+  [attributeFragment],
+);
+
+type Form = NonNullable<ResultOf<typeof formQuery>['attribution_forms_by_pk']>;
+export type AttributionForm = Form & {
+  attribution_form_fields: {
+    attribute: AttributeFragment;
+    priority: number;
+    id: number;
+  }[];
+};
+
+const { t } = useI18n();
+const { localStorage, sessionStorage, platform } = useQuasar();
+
+// step 1
+const { queryArg: formId } = useQueryArg<number>({
+  key: FORM_ID_URL_KEY,
+  defaultValue: sessionStorage.getItem<number>(FORM_ID_STORAGE_KEY) ?? -1,
+  replace: true,
+  showDefaultInUrl: true,
+});
+watch(formId, (f) => sessionStorage.set(FORM_ID_STORAGE_KEY, f));
+
+const formVariables = computed(() => ({
+  formId: parseInt(formId.value.toString(), 10),
+}));
+
+const {
+  data: formData,
+  error: formFetchError,
+  fetching: formFetching,
+  executeQuery: fetchForm,
+} = useQuery({
+  query: formQuery,
+  variables: formVariables,
+  pause: true,
+});
+watch(
+  formVariables,
+  () => {
+    if (formId.value > -1) {
+      fetchForm();
+    }
+  },
+  { immediate: true, deep: true, flush: 'post' },
+);
+
+const form = computed(
+  () => (formData.value?.attribution_forms_by_pk as AttributionForm) ?? null,
+);
+
+const attributeFormSelectorRef = ref<InstanceType<
+  typeof AttributionFormSelector
+> | null>(null);
+
+function completeStep1() {
+  Promise.resolve(attributeFormSelectorRef.value?.validate()).then((valid) => {
+    if (valid) {
+      step.value = 2;
+    }
+  });
+}
+
+// step 2
+const { queryArg: author } = useQueryArg<string>({
+  key: AUTHOR_URL_KEY,
+  defaultValue: localStorage.getItem<string>(AUTHOR_STORAGE_KEY) ?? '',
+  replace: true,
+  showDefaultInUrl: true,
+});
+watch(author, (a) => localStorage.set(AUTHOR_STORAGE_KEY, a));
+
+const { queryArg: date } = useQueryArg({
+  key: DATE_URL_KEY,
+  defaultValue: new Date().toISOString().split('T')[0],
+  replace: true,
+  showDefaultInUrl: true,
+});
+
+const { queryArg: repeat } = useQueryArg<number>({
+  key: REPEAT_URL_KEY,
+  defaultValue: sessionStorage.getItem<number>(REPEAT_STORAGE_KEY) ?? 0,
+  replace: true,
+  showDefaultInUrl: true,
+});
+watch(repeat, (r) => sessionStorage.set(REPEAT_STORAGE_KEY, r));
+const repeatInt = computed(() => parseInt(repeat.value.toString(), 10));
+
+const attributeMetaDataRef = ref<InstanceType<
+  typeof AttributionMetaData
+> | null>(null);
+
+function completeStep2() {
+  Promise.resolve(attributeMetaDataRef.value?.validate()).then((valid) => {
+    if (valid) {
+      step.value = 3;
+    }
+  });
+}
+
+// step 3
+function completeStep3() {
+  emit('entityStepCompleted');
+}
+
+// step 4
+const attributeFormKey = ref(0);
+
+function completeStep4(repeatCount: number) {
+  if (repeatCount >= repeatInt.value) {
+    // select next entity
+    step.value = 3;
+  } else {
+    // stay on the same entity
+    // but reset the AttributionForm
+    attributeFormKey.value += 1;
+  }
+}
+
+const route = useRoute();
+
+watch(
+  () => props.entityId,
+  () => {
+    if (props.entityId !== null) {
+      step.value = 4;
+    }
+  },
+);
+
+const step1Done = computed(
+  () =>
+    // look at url instead of formId so it can also be used to detect the initial step
+    !!route.query[FORM_ID_URL_KEY] &&
+    parseInt(route.query[FORM_ID_URL_KEY].toString()) > 0,
+);
+
+const step2Done = computed(
+  () =>
+    // look at url instead of author, date and repeat so it can also be used to detect the initial step
+    !!route.query[AUTHOR_URL_KEY] &&
+    !!route.query[DATE_URL_KEY] &&
+    typeof route.query[REPEAT_URL_KEY] !== 'undefined',
+);
+
+const step3Done = computed(() => props.entityId !== null);
+
+function getInitialStep() {
+  // never jump directly to step 4 to make very clear, that any attribution input is lost
+  return !step1Done.value ? 1 : !step2Done.value ? 2 : 3;
+}
+
+const step = ref(getInitialStep());
+
+function handleTransition(to: string | number, from: string | number) {
+  if (to === 3) {
+    if (platform.is.safari && from === 2) {
+      // else safari is going shaky
+      setTimeout(() => {
+        props.focusEntitySelector?.();
+      }, 100);
+    } else {
+      props.focusEntitySelector?.();
+    }
+  }
+}
+</script>
+
+<style scoped>
+:global(.attribute-steps .q-stepper__tab--active) {
+  background: color-mix(in srgb, currentColor 9%, white 5%);
+}
+:global(
+    .attribute-steps :is(.q-stepper__tab--active, .q-stepper__tab--done) .q-icon
+  ) {
+  color: white;
+}
+
+:global(.attribute-steps .q-stepper__header) {
+  min-height: 50px;
+}
+:global(.attribute-steps .q-stepper__header .q-stepper__tab) {
+  padding: 0 max(0.5em, calc(10svw - 24px - 4px));
+  min-height: clamp(50px, 7svw, 72px);
+}
+</style>

@@ -29,6 +29,7 @@ export function useIsUnique({
     query,
     variables,
     pause: true,
+    requestPolicy: 'cache-and-network',
   });
 
   async function isUnique(newName: string) {

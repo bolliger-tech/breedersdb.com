@@ -1,13 +1,14 @@
 <template>
   <EntitySelect
-    :ref="inputRef"
+    ref="inputRef"
     v-model="modelValue"
-    :label="t('attribute.title', 1)"
+    :label="hideLabel ? undefined : t('attributes.title', 1)"
     :options="attributeOptions"
     option-value="id"
     option-label="name"
     :loading="fetching"
     :error="error"
+    :clearable="false"
   />
 </template>
 
@@ -18,9 +19,18 @@ import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
   type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+} from 'src/components/Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
-import { attributeFragment, type AttributeFragment } from './attributeFragment';
+import {
+  attributeFragment,
+  type AttributeFragment,
+} from 'src/components/Attribute/attributeFragment';
+
+export interface AttributeSelectProps {
+  hideLabel?: boolean;
+}
+
+defineProps<AttributeSelectProps>();
 
 const inputRef = ref<EntitySelectInstance<AttributeFragment> | null>(null);
 

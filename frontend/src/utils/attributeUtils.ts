@@ -1,5 +1,14 @@
-import type { AttributeDataTypes } from 'src/graphql';
+import type { AttributeDataTypes, AttributeTypes } from 'src/graphql';
 import { ColumnTypes } from './columnTypes';
+import type { TFunc } from 'src/composables/useI18n';
+
+export type PrimitiveColumnValue =
+  | string
+  | number
+  | Date
+  | null
+  | boolean
+  | undefined;
 
 export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
   const type = {
@@ -19,13 +28,38 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
   return type;
 }
 
-export type PrimitiveColumnValue =
-  | string
-  | number
-  | Date
-  | null
-  | boolean
-  | undefined;
+export function dataTypeToLabel(dataType: AttributeDataTypes, t: TFunc) {
+  const type = {
+    TEXT: t('attributes.dataTypes.text'),
+    INTEGER: t('attributes.dataTypes.integer'),
+    FLOAT: t('attributes.dataTypes.float'),
+    BOOLEAN: t('attributes.dataTypes.boolean'),
+    DATE: t('attributes.dataTypes.date'),
+    PHOTO: t('attributes.dataTypes.photo'),
+    RATING: t('attributes.dataTypes.rating'),
+  }[dataType];
+
+  if (typeof type === 'undefined') {
+    throw Error(`Unknown attribute.data_type: ${dataType}`);
+  }
+
+  return type;
+}
+
+export function attributeTypeToLabel(attributeType: AttributeTypes, t: TFunc) {
+  const type = {
+    OBSERVATION: t('attributes.attributeTypes.observation'),
+    SAMPLE: t('attributes.attributeTypes.sample'),
+    TREATMENT: t('attributes.attributeTypes.treatment'),
+    OTHER: t('attributes.attributeTypes.other'),
+  }[attributeType];
+
+  if (typeof type === 'undefined') {
+    throw Error(`Unknown attribute.attribute_type: ${attributeType}`);
+  }
+
+  return type;
+}
 
 export function formatResultColumnValue({
   value,
@@ -53,7 +87,7 @@ export function formatResultColumnValue({
   return value;
 }
 
-export function getAttributeValue({
+export function getAttributionValue({
   integer_value,
   float_value,
   text_value,

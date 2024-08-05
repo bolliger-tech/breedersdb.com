@@ -37,8 +37,8 @@ export function useIsUnique({
     await nextTick(); // wait for the refs to be updated
     const result = await executeQuery();
     if (result.error.value) {
-      console.error(result.error);
-      return true;
+      console.error(result.error.value);
+      throw new Error(result.error.value.message);
     }
     const data = result.data?.value as Record<TableName, { id: number }[]>;
     return (

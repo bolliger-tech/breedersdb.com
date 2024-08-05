@@ -37,7 +37,7 @@ const query = graphql(
       $offset: Int!
       $orderBy: [pollen_order_by!]
       $where: pollen_bool_exp
-      $withCultivar: Boolean = true
+      $withCultivars: Boolean = true
       $withMotherPlants: Boolean = false
     ) {
       pollen_aggregate {

@@ -106,7 +106,7 @@ const query = graphql(
   `
     query Pollen(
       $id: Int!
-      $withCultivar: Boolean = true
+      $withCultivars: Boolean = true
       $withMotherPlants: Boolean = false
     ) {
       pollen_by_pk(id: $id) {

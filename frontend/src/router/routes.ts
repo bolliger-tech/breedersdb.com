@@ -31,7 +31,9 @@ function createEntityRoutes(entity: string) {
     // path is kebab cased EntityName minus 'Plant' prefix
     // eg. PlantRows -> rows,
     // eg. AttributionForms -> attribution-forms
-    path: toKebabCase(entity.split('Plant').slice(-1)[0]),
+    path: toKebabCase(
+      entity.startsWith('Plant') ? entity.split('Plant').slice(-1)[0] : entity,
+    ),
     children: [
       {
         path: '',
@@ -123,7 +125,7 @@ const routes: RouteRecordRaw[] = [
 
       {
         path: 'crossings',
-        children: [createEntityRoutes('Pollen')],
+        children: ['Pollen', 'MotherPlants'].map(createEntityRoutes),
       },
 
       ...[
@@ -134,7 +136,7 @@ const routes: RouteRecordRaw[] = [
         'PlantRows',
         'Attributes',
         'AttributionForms',
-      ].map((entity) => createEntityRoutes(entity)),
+      ].map(createEntityRoutes),
 
       {
         path: 'dev',

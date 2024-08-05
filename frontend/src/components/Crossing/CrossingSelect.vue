@@ -1,9 +1,9 @@
 <template>
   <EntitySelect
-    ref="pollenRef"
-    v-model="pollen"
-    :label="t('pollen.title')"
-    :options="pollenOptions"
+    ref="crossingRef"
+    v-model="crossing"
+    :label="t('crossings.title')"
+    :options="crossingOptions"
     option-value="id"
     option-label="name"
     :loading="fetching"
@@ -22,31 +22,26 @@ import EntitySelect, {
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 
-export interface PollenSelectProps {
+export interface CrossingSelectProps {
   required?: boolean;
-  includeId?: number;
 }
-const props = defineProps<PollenSelectProps>();
+defineProps<CrossingSelectProps>();
 
-const pollenRef = ref<EntitySelectInstance<{
+const crossingRef = ref<EntitySelectInstance<{
   id: number;
   name: string;
 }> | null>(null);
 
 defineExpose({
-  validate: () => pollenRef.value?.validate(),
-  focus: () => pollenRef.value && focusInView(pollenRef.value),
+  validate: () => crossingRef.value?.validate(),
+  focus: () => crossingRef.value && focusInView(crossingRef.value),
 });
 
 const modelValue = defineModel<number | null | undefined>({ required: true });
 
-const where = computed(() => ({
-  _and: [...(props.includeId ? [{ id: { _eq: props.includeId } }] : [])],
-}));
-
 const query = graphql(`
-  query Pollen($where: pollen_bool_exp!) {
-    pollen(order_by: { name: asc }, where: $where) {
+  query Crossings {
+    crossings(order_by: { name: asc }) {
       id
       name
     }
@@ -55,14 +50,13 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
-  variables: { where },
 });
 
-const pollenOptions = computed(() => data.value?.pollen ?? []);
+const crossingOptions = computed(() => data.value?.crossings ?? []);
 
-const pollen = computed({
-  get: () => pollenOptions.value.find((o) => o.id === modelValue.value),
-  set: (pollen) => (modelValue.value = pollen?.id ?? null),
+const crossing = computed({
+  get: () => crossingOptions.value.find((o) => o.id === modelValue.value),
+  set: (crossing) => (modelValue.value = crossing?.id ?? null),
 });
 
 const { t } = useI18n();

@@ -1,9 +1,9 @@
 <template>
   <EntitySelect
-    ref="pollenRef"
-    v-model="pollen"
-    :label="t('pollen.title')"
-    :options="pollenOptions"
+    ref="motherPlantRef"
+    v-model="motherPlant"
+    :label="t('motherPlants.title')"
+    :options="motherPlantOptions"
     option-value="id"
     option-label="name"
     :loading="fetching"
@@ -22,31 +22,26 @@ import EntitySelect, {
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 
-export interface PollenSelectProps {
+export interface MotherPlantSelectProps {
   required?: boolean;
-  includeId?: number;
 }
-const props = defineProps<PollenSelectProps>();
+defineProps<MotherPlantSelectProps>();
 
-const pollenRef = ref<EntitySelectInstance<{
+const motherPlantRef = ref<EntitySelectInstance<{
   id: number;
   name: string;
 }> | null>(null);
 
 defineExpose({
-  validate: () => pollenRef.value?.validate(),
-  focus: () => pollenRef.value && focusInView(pollenRef.value),
+  validate: () => motherPlantRef.value?.validate(),
+  focus: () => motherPlantRef.value && focusInView(motherPlantRef.value),
 });
 
 const modelValue = defineModel<number | null | undefined>({ required: true });
 
-const where = computed(() => ({
-  _and: [...(props.includeId ? [{ id: { _eq: props.includeId } }] : [])],
-}));
-
 const query = graphql(`
-  query Pollen($where: pollen_bool_exp!) {
-    pollen(order_by: { name: asc }, where: $where) {
+  query MotherPlants {
+    mother_plants(order_by: { name: asc }) {
       id
       name
     }
@@ -55,14 +50,13 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
-  variables: { where },
 });
 
-const pollenOptions = computed(() => data.value?.pollen ?? []);
+const motherPlantOptions = computed(() => data.value?.mother_plants ?? []);
 
-const pollen = computed({
-  get: () => pollenOptions.value.find((o) => o.id === modelValue.value),
-  set: (pollen) => (modelValue.value = pollen?.id ?? null),
+const motherPlant = computed({
+  get: () => motherPlantOptions.value.find((o) => o.id === modelValue.value),
+  set: (motherPlant) => (modelValue.value = motherPlant?.id ?? null),
 });
 
 const { t } = useI18n();

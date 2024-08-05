@@ -4,17 +4,16 @@
       v-model:search="search"
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
-      :title="t('pollen.title', 2)"
-      :search-placeholder="t('pollen.searchPlaceholder')"
-      :rows="data?.pollen || []"
+      :title="t('motherPlants.title', 2)"
+      :search-placeholder="t('entity.searchPlaceholderName')"
+      :rows="data?.mother_plants || []"
       :loading="fetching"
       :all-columns="columns"
-      list-entities-path="/crossings/pollen"
-      add-entity-path="/crossings/pollen/new"
-      :view-entity-path-getter="(id) => `/crossings/pollen/${id}`"
+      list-entities-path="/crossings/mother-plants"
+      add-entity-path="/crossings/mother-plants/new"
+      :view-entity-path-getter="(id) => `/crossings/mother-plants/${id}`"
     />
   </PageLayout>
-  <router-view name="modal" />
 </template>
 
 <script setup lang="ts">
@@ -25,54 +24,58 @@ import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
-import { pollenFragment } from 'src/components/Pollen/pollenFragment';
+import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 
 const { t, d } = useI18n();
 
 const query = graphql(
   `
-    query Pollen(
+    query MotherPlants(
       $limit: Int!
       $offset: Int!
-      $orderBy: [pollen_order_by!]
-      $where: pollen_bool_exp
-      $withCultivar: Boolean = true
+      $orderBy: [mother_plants_order_by!]
+      $where: mother_plants_bool_exp
+      $withPlant: Boolean = false
+      $withPollen: Boolean = false
+      $withCrossing: Boolean = false
+      $withParentCultivar: Boolean = false
+      $withCultivar: Boolean = false
       $withMotherPlants: Boolean = false
+      $withSegments: Boolean = false
+      $withAttributions: Boolean = false
     ) {
-      pollen_aggregate {
+      mother_plants_aggregate {
         aggregate {
           count
         }
       }
-      pollen(
+      mother_plants(
         where: $where
         limit: $limit
         offset: $offset
         order_by: $orderBy
       ) {
-        ...pollenFragment
+        ...motherPlantFragment
       }
     }
   `,
-  [pollenFragment],
+  [motherPlantFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
-  searchColumns: ['name', 'cultivar.display_name'],
-});
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
 
 const { data, fetching, error } = await useQuery({
   query,
   variables,
-  context: { additionalTypenames: ['pollen'] },
+  context: { additionalTypenames: ['motherPlants'] },
 });
 
-const pollenCount = computed(
-  () => data.value?.pollen_aggregate?.aggregate?.count || 0,
+const motherPlantsCount = computed(
+  () => data.value?.mother_plants_aggregate?.aggregate?.count || 0,
 );
 
-type Pollen = ResultOf<typeof query>['pollen'][0];
+type MotherPlant = ResultOf<typeof query>['mother_plants'][0];
 
 const columns = [
   {
@@ -83,39 +86,25 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'cultivar.name',
-    label: t('pollen.fields.cultivarName'),
-    align: 'left' as const,
-    field: (row: Pollen) => row.cultivar?.display_name,
-    sortable: true,
-  },
-  {
-    name: 'date_harvested',
-    label: t('pollen.fields.dateHarvested'),
-    align: 'left' as const,
-    field: (row: Pollen) =>
-      row.date_harvested ? d(row.date_harvested, 'ymd') : null,
-    sortable: true,
-  },
-  {
     name: 'modified',
     label: t('entity.commonColumns.modified'),
     align: 'left' as const,
-    field: (row: Pollen) => (row.modified ? d(row.modified, 'ymdHis') : null),
+    field: (row: MotherPlant) =>
+      row.modified ? d(row.modified, 'ymdHis') : null,
     sortable: true,
   },
   {
     name: 'created',
     label: t('entity.commonColumns.created'),
     align: 'left' as const,
-    field: (row: Pollen) => d(row.created, 'ymdHis'),
+    field: (row: MotherPlant) => d(row.created, 'ymdHis'),
     sortable: true,
   },
 ];
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 3),
+  defaultValue: columns.map((column) => column.name).slice(0, 2),
   replace: true,
 });
 
@@ -130,7 +119,7 @@ watch(
 );
 
 watch(
-  pollenCount,
+  motherPlantsCount,
   (newValue) => {
     pagination.value.rowsNumber = newValue;
   },

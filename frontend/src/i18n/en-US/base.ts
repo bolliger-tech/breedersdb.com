@@ -17,6 +17,7 @@ export const base = {
     grafting: 'grafting | graftings',
     plantRow: 'row | rows',
     pollen: 'pollen | pollen',
+    motherPlant: 'mother plant | mother plants',
   },
 
   timespan: {

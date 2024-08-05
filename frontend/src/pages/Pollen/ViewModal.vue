@@ -53,7 +53,7 @@
         <template #body-cell-plant_group="cellProps">
           <q-td key="value" :props="cellProps">
             <RouterLink
-              :to="`/crossings/mother-plants/${cellProps.row.id}`"
+              :to="`/crossings/crossings/mother-plants/${cellProps.row.id}`"
               class="undecorated-link"
             >
               {{ cellProps.row.name }}
@@ -106,7 +106,7 @@ const query = graphql(
   `
     query Pollen(
       $id: Int!
-      $withCultivars: Boolean = true
+      $withCultivar: Boolean = true
       $withMotherPlants: Boolean = false
     ) {
       pollen_by_pk(id: $id) {

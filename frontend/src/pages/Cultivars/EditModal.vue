@@ -3,9 +3,9 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <PollenModalEdit
-    v-else-if="pollen"
-    :pollen="pollen"
+  <CultivarModalEdit
+    v-else-if="cultivar"
+    :cultivar="cultivar"
     :title="t('base.edit')"
   />
 
@@ -16,37 +16,32 @@
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
-import { pollenFragment } from 'src/components/Pollen/pollenFragment';
+import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { useI18n } from 'src/composables/useI18n';
-import PollenModalEdit from 'src/components/Pollen/PollenModalEdit.vue';
+import CultivarModalEdit from 'src/components/Cultivar/CultivarModalEdit.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query Pollen(
-      $id: Int!
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withLot: Boolean = false
-    ) {
-      pollen_by_pk(id: $id) {
-        ...pollenFragment
+    query Cultivar($id: Int!, $withLot: Boolean = false) {
+      cultivars_by_pk(id: $id) {
+        ...cultivarFragment
       }
     }
   `,
-  [pollenFragment],
+  [cultivarFragment],
 );
 
 const { data, error } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });
-const pollen = computed(() => data.value?.pollen_by_pk);
+const cultivar = computed(() => data.value?.cultivars_by_pk);
 
 const { t } = useI18n();
 </script>

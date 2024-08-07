@@ -48,7 +48,7 @@ import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { PollenEditInput, PollenInsertInput } from './PollenModalEdit.vue';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
-import CultivarSelect from '../Cultivars/CultivarSelect.vue';
+import CultivarSelect from '../Cultivar/CultivarSelect.vue';
 
 export interface PollenEntityFormProps {
   pollen: PollenInsertInput | PollenEditInput;

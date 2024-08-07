@@ -4,17 +4,16 @@
       v-model:search="search"
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
-      :title="t('pollen.title', 2)"
-      :search-placeholder="t('pollen.searchPlaceholder')"
-      :rows="data?.pollen || []"
+      :title="t('cultivars.title', 2)"
+      :search-placeholder="t('entity.searchPlaceholderName')"
+      :rows="data?.cultivars || []"
       :loading="fetching"
       :all-columns="columns"
-      list-entities-path="/crossings/pollen"
-      add-entity-path="/crossings/pollen/new"
-      :view-entity-path-getter="(id) => `/crossings/pollen/${id}`"
+      list-entities-path="/cultivars"
+      add-entity-path="/cultivars/new"
+      :view-entity-path-getter="(id) => `/cultivars/${id}`"
     />
   </PageLayout>
-  <router-view name="modal" />
 </template>
 
 <script setup lang="ts">
@@ -25,91 +24,82 @@ import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
-import { pollenFragment } from 'src/components/Pollen/pollenFragment';
+import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 
 const { t, d } = useI18n();
 
 const query = graphql(
   `
-    query Pollen(
+    query Cultivars(
       $limit: Int!
       $offset: Int!
-      $orderBy: [pollen_order_by!]
-      $where: pollen_bool_exp
-      $withCultivar: Boolean = true
-      $withMotherPlants: Boolean = false
-      $withLot: Boolean = false
+      $orderBy: [cultivars_order_by!]
+      $where: cultivars_bool_exp
+      $withLot: Boolean = true
     ) {
-      pollen_aggregate {
+      cultivars_aggregate {
         aggregate {
           count
         }
       }
-      pollen(
+      cultivars(
         where: $where
         limit: $limit
         offset: $offset
         order_by: $orderBy
       ) {
-        ...pollenFragment
+        ...cultivarFragment
       }
     }
   `,
-  [pollenFragment],
+  [cultivarFragment],
 );
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
-  searchColumns: ['name', 'cultivar.display_name'],
+  defaultSortBy: 'display_name',
+  searchColumns: ['display_name'],
 });
 
 const { data, fetching, error } = await useQuery({
   query,
   variables,
-  context: { additionalTypenames: ['pollen'] },
+  context: { additionalTypenames: ['cultivars'] },
 });
 
-const pollenCount = computed(
-  () => data.value?.pollen_aggregate?.aggregate?.count || 0,
+const cultivarsCount = computed(
+  () => data.value?.cultivars_aggregate?.aggregate?.count || 0,
 );
 
-type Pollen = ResultOf<typeof query>['pollen'][0];
+type Cultivar = ResultOf<typeof query>['cultivars'][0];
 
 const columns = [
   {
-    name: 'name',
-    label: t('entity.commonColumns.name'),
+    name: 'display_name',
+    label: t('entity.commonColumns.displayName'),
     align: 'left' as const,
-    field: 'name',
+    field: 'display_name',
     sortable: true,
   },
   {
-    name: 'cultivar.name',
-    label: t('pollen.fields.cultivarName'),
+    name: 'lot',
+    label: t('cultivars.fields.lot'),
     align: 'left' as const,
-    field: (row: Pollen) => row.cultivar?.display_name,
-    sortable: true,
-  },
-  {
-    name: 'date_harvested',
-    label: t('pollen.fields.dateHarvested'),
-    align: 'left' as const,
-    field: (row: Pollen) =>
-      row.date_harvested ? d(row.date_harvested, 'ymd') : null,
+    field: (row: Cultivar) => row.lot?.display_name,
     sortable: true,
   },
   {
     name: 'modified',
     label: t('entity.commonColumns.modified'),
     align: 'left' as const,
-    field: (row: Pollen) => (row.modified ? d(row.modified, 'ymdHis') : null),
+    field: (row: Cultivar) => (row.modified ? d(row.modified, 'ymdHis') : null),
     sortable: true,
   },
   {
     name: 'created',
     label: t('entity.commonColumns.created'),
     align: 'left' as const,
-    field: (row: Pollen) => d(row.created, 'ymdHis'),
+    field: (row: Cultivar) => d(row.created, 'ymdHis'),
     sortable: true,
   },
 ];
@@ -131,7 +121,7 @@ watch(
 );
 
 watch(
-  pollenCount,
+  cultivarsCount,
   (newValue) => {
     pagination.value.rowsNumber = newValue;
   },

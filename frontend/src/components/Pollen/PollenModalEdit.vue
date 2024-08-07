@@ -55,6 +55,7 @@ const insertMutation = graphql(
       $entity: pollen_insert_input!
       $withCultivar: Boolean = false
       $withMotherPlants: Boolean = false
+      $withLot: Boolean = false
     ) {
       insert_pollen_one(object: $entity) {
         ...pollenFragment
@@ -73,6 +74,7 @@ const editMutation = graphql(
       $entity: pollen_set_input!
       $withCultivar: Boolean = false
       $withMotherPlants: Boolean = false
+      $withLot: Boolean = false
     ) {
       update_pollen_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...pollenFragment

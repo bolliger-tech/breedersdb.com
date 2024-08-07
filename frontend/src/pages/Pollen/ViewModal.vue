@@ -108,6 +108,7 @@ const query = graphql(
       $id: Int!
       $withCultivar: Boolean = true
       $withMotherPlants: Boolean = false
+      $withLot: Boolean = false
     ) {
       pollen_by_pk(id: $id) {
         ...pollenFragment

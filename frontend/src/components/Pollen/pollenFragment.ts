@@ -1,5 +1,5 @@
 import { graphql, type FragmentOf } from 'src/graphql';
-import { cultivarFragment } from '../Cultivars/cultivarFragment';
+import { cultivarFragment } from '../Cultivar/cultivarFragment';
 
 export type PollenFragment = FragmentOf<typeof pollenFragment>;
 

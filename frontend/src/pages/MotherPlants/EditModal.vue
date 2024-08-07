@@ -38,6 +38,7 @@ const query = graphql(
       $withMotherPlants: Boolean = false
       $withSegments: Boolean = false
       $withAttributions: Boolean = false
+      $withLot: Boolean = false
     ) {
       mother_plants_by_pk(id: $id) {
         ...motherPlantFragment

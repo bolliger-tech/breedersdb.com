@@ -117,6 +117,5 @@ const { isUnique: isEmailUnique, fetching: fetchingEmailUnique } = useIsUnique({
   tableName: 'users',
   existingId: ('id' in props.user && props.user.id) || undefined,
   columnName: 'email',
-  columnType: 'citext',
 });
 </script>

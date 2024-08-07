@@ -34,6 +34,3 @@ export const motherPlantFragment = graphql(
   `,
   [plantFragment, pollenFragment, crossingFragment],
 );
-//crossing @include(if: $withCrossing) {
-//  ...crossingFragment
-//}

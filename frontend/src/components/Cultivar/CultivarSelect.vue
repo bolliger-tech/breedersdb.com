@@ -2,7 +2,7 @@
   <EntitySelect
     ref="cultivarRef"
     v-model="cultivar"
-    :label="t('cultivars.title')"
+    :label="label || t('cultivars.title')"
     :options="cultivarOptions"
     option-value="id"
     option-label="display_name"
@@ -25,6 +25,7 @@ import { focusInView } from 'src/utils/focusInView';
 export interface CultivarSelectProps {
   required?: boolean;
   includeId?: number;
+  label?: string;
 }
 const props = defineProps<CultivarSelectProps>();
 

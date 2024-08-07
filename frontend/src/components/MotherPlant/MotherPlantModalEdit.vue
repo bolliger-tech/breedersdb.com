@@ -83,6 +83,7 @@ const insertMutation = graphql(
       $withSegments: Boolean = false
       $withAttributions: Boolean = false
       $withLot: Boolean = false
+      $withLots: Boolean = false
     ) {
       insert_mother_plants_one(object: $entity) {
         ...motherPlantFragment
@@ -108,6 +109,7 @@ const editMutation = graphql(
       $withSegments: Boolean = false
       $withAttributions: Boolean = false
       $withLot: Boolean = false
+      $withLots: Boolean = false
     ) {
       update_mother_plants_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...motherPlantFragment

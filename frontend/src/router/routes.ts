@@ -135,6 +135,7 @@ const routes: RouteRecordRaw[] = [
         'Graftings',
         'PlantRows',
         'Cultivars',
+        'Crossings',
         'Attributes',
         'AttributionForms',
       ].map(createEntityRoutes),

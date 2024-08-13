@@ -48,11 +48,7 @@ defineProps<OrchardModalEditProps>();
 
 const insertMutation = graphql(
   `
-    mutation InsertOrchard(
-      $entity: orchards_insert_input!
-      $withPlantRows: Boolean = false
-      $withPlants: Boolean = false
-    ) {
+    mutation InsertOrchard($entity: orchards_insert_input!) {
       insert_orchards_one(object: $entity) {
         ...orchardFragment
       }
@@ -65,12 +61,7 @@ export type OrchardEditInsertMutation = typeof insertMutation;
 
 const editMutation = graphql(
   `
-    mutation UpdateOrchard(
-      $id: Int!
-      $entity: orchards_set_input!
-      $withPlantRows: Boolean = false
-      $withPlants: Boolean = false
-    ) {
+    mutation UpdateOrchard($id: Int!, $entity: orchards_set_input!) {
       update_orchards_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...orchardFragment
       }

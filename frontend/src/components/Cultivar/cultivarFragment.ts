@@ -18,7 +18,7 @@ export const cultivarFragment = graphql(
       created
       modified
       lot_id
-      lot @include(if: $withLot) {
+      lot @include(if: $CultivarWithLot) {
         ...lotFragment
       }
     }

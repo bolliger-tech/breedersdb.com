@@ -88,7 +88,12 @@ const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query Cultivar($id: Int!, $withLot: Boolean = true) {
+    query Cultivar(
+      $id: Int!
+      $CultivarWithLot: Boolean = true
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
+    ) {
       cultivars_by_pk(id: $id) {
         ...cultivarFragment
       }

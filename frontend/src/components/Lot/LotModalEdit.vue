@@ -36,9 +36,19 @@ import { useI18n } from 'src/composables/useI18n';
 
 export type LotEditInput = Omit<
   LotFragment,
-  'created' | 'modified' | 'crossing' | 'orchard'
+  | 'created'
+  | 'modified'
+  | 'crossing'
+  | 'orchard'
+  | 'full_name'
+  | 'display_name'
+  | 'is_variety'
 >;
-export type LotInsertInput = Omit<LotEditInput, 'id'>;
+export type LotInsertInput = Omit<
+  LotEditInput,
+  'id' | 'orchard_id' | 'crossing_id'
+> &
+  Partial<Pick<LotEditInput, 'orchard_id' | 'crossing_id'>>;
 
 export interface LotModalEditProps {
   lot: LotEditInput | LotInsertInput;

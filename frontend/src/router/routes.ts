@@ -138,6 +138,7 @@ const routes: RouteRecordRaw[] = [
         'Crossings',
         'Attributes',
         'AttributionForms',
+        'Lots',
       ].map(createEntityRoutes),
 
       {

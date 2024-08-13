@@ -12,4 +12,12 @@ export const lots = {
     crossing: 'Crossing',
     orchard: 'Orchard',
   },
+
+  validation: {
+    invalidNameSegmentFormat:
+      'The name must be two digits followed by a capital letter. Example: 24A. Hint: Use the year as the first two digits.',
+    nameNotUniqueWithCrossing:
+      'This name is already in use for the selected crossing',
+    invalidNameOverrideFormat: 'Dots or newlines are not allowed.',
+  },
 };

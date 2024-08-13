@@ -16,6 +16,11 @@
       :step="step"
       :pattern="pattern"
       :autocomplete="autocomplete"
+      :input-style="
+        autogrow && type === 'textarea' && !inputStyle
+          ? 'min-height: 5em'
+          : inputStyle
+      "
       @update:model-value="updateModelValue"
     >
       <template v-if="$slots.error" #error>

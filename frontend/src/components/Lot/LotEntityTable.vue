@@ -49,6 +49,11 @@
     <EntityViewTableRow :label="t('entity.commonColumns.modified')">
       {{ lot.modified ? localizeDate(lot.modified) : t('base.notAvailable') }}
     </EntityViewTableRow>
+    <EntityViewTableRow v-if="lot.note">
+      <strong>{{ t('entity.commonColumns.note') }}</strong>
+      <br />
+      <span style="white-space: pre-line">{{ lot.note }}</span>
+    </EntityViewTableRow>
   </EntityViewTable>
 </template>
 

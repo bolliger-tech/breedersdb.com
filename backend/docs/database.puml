@@ -114,6 +114,7 @@ entity "**crossings**" #ffff0012 ##888800 {
   ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
+  *""is_variety"": //boolean //
 }
 
 entity "**cultivars**" #ffff0012 ##888800 {
@@ -130,6 +131,7 @@ entity "**cultivars**" #ffff0012 ##888800 {
   ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
+  *""is_variety"": //boolean  : Set by triggers.//
 }
 
 entity "**graftings**" #0000ff12 ##000088 {
@@ -159,6 +161,7 @@ entity "**lots**" #ffff0012 ##888800 {
   ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
+  *""is_variety"": //boolean  : Set by triggers.//
 }
 
 entity "**materialized_view_refreshes**" {

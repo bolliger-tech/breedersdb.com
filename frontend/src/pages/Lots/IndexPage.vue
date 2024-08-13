@@ -54,10 +54,19 @@ const query = graphql(
   [lotFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+const {
+  search,
+  pagination,
+  variables: _variables,
+} = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'display_name',
   searchColumns: ['display_name'],
 });
+
+const variables = computed(() => ({
+  ..._variables.value,
+  where: { ..._variables.value.where, is_variety: { _eq: false } },
+}));
 
 const { data, fetching, error } = await useQuery({
   query,

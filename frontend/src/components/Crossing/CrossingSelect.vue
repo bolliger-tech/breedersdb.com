@@ -41,7 +41,7 @@ const modelValue = defineModel<number | null | undefined>({ required: true });
 
 const query = graphql(`
   query Crossings {
-    crossings(order_by: { name: asc }) {
+    crossings(where: { is_variety: { _eq: false } }, order_by: { name: asc }) {
       id
       name
     }

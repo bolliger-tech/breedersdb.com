@@ -106,12 +106,17 @@ const query = graphql(
   `
     query Pollen(
       $id: Int!
-      $withCultivar: Boolean = true
-      $withMotherPlants: Boolean = false
-      $withLot: Boolean = false
+      $PollenWithCultivar: Boolean = true
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       pollen_by_pk(id: $id) {
         ...pollenFragment
+        mother_plants {
+          id
+          name
+        }
       }
     }
   `,

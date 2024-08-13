@@ -56,7 +56,9 @@ const insertMutation = graphql(
   `
     mutation InsertCultivar(
       $entity: cultivars_insert_input!
-      $withLot: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       insert_cultivars_one(object: $entity) {
         ...cultivarFragment
@@ -73,7 +75,9 @@ const editMutation = graphql(
     mutation UpdateCultivar(
       $id: Int!
       $entity: cultivars_set_input!
-      $withLot: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       update_cultivars_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...cultivarFragment

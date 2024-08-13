@@ -84,6 +84,7 @@ import { ResultOf, graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { orchardFragment } from 'src/components/Orchard/orchardFragment';
+import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
@@ -96,17 +97,16 @@ const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query Orchard(
-      $id: Int!
-      $withPlantRows: Boolean = true
-      $withPlants: Boolean = false
-    ) {
+    query Orchard($id: Int!) {
       orchards_by_pk(id: $id) {
         ...orchardFragment
+        plant_rows(where: { disabled: { _eq: false } }) {
+          ...plantRowFragment
+        }
       }
     }
   `,
-  [orchardFragment],
+  [orchardFragment, plantRowFragment],
 );
 
 const { data, error, fetching } = useQuery({

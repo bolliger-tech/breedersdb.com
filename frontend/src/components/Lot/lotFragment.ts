@@ -22,6 +22,7 @@ export const lotFragment = graphql(
       note
       created
       modified
+      is_variety
       orchard_id
       orchard @include(if: $LotWithOrchard) {
         ...orchardFragment

@@ -35,7 +35,12 @@ const query = graphql(
       $limit: Int!
       $offset: Int!
       $orderBy: [lots_order_by!]
-      $where: lots_bool_exp
+      $where: lots_bool_exp!
+      $LotWithOrchard: Boolean! = true
+      $LotWithCrossing: Boolean! = false
+      $withParentCultivar: Boolean! = false
+      $withMotherPlants: Boolean! = false
+      $withPlantRows: Boolean! = false
     ) {
       lots_aggregate {
         aggregate {
@@ -44,10 +49,6 @@ const query = graphql(
       }
       lots(where: $where, limit: $limit, offset: $offset, order_by: $orderBy) {
         ...lotFragment
-        orchard {
-          id
-          name
-        }
       }
     }
   `,
@@ -145,7 +146,7 @@ const columns = [
     name: 'orchard',
     label: t('plantRows.fields.orchard'),
     align: 'left' as const,
-    field: (row: Lot) => row.orchard.name,
+    field: (row: Lot) => row.orchard?.name,
     sortable: true,
   },
   {

@@ -1,5 +1,5 @@
 import { test, expect, afterEach } from 'bun:test';
-import { post } from '../fetch';
+import { post, postOrFail } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
@@ -16,10 +16,12 @@ const insertMutation = /* GraphQL */ `
     $plot: String
     $orchard_name: String
     $note: String
+    $is_variety: Boolean = false
   ) {
     insert_crossings_one(
       object: {
         name: $crossing_name
+        is_variety: $is_variety
         lots: {
           data: {
             name_segment: $name_segment
@@ -55,13 +57,15 @@ const insertMutation = /* GraphQL */ `
         note
         created
         modified
+        is_variety
+        orchard_id
       }
     }
   }
 `;
 
 afterEach(async () => {
-  await post({
+  await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAllLots {
         delete_lots(where: {}) {
@@ -80,7 +84,7 @@ afterEach(async () => {
 
 test('insert', async () => {
   const date = '2024-03-21';
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
@@ -115,10 +119,11 @@ test('insert', async () => {
     iso8601dateRegex,
   );
   expect(resp.data.insert_crossings_one.lots[0].modified).toBeNull();
+  expect(resp.data.insert_crossings_one.lots[0].is_variety).toBe(false);
 });
 
 test('crossing_name is unique', async () => {
-  const resp1 = await post({
+  const resp1 = await postOrFail({
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
@@ -153,7 +158,7 @@ test('name_segment is required', async () => {
 });
 
 test('updated full_name crossing', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
@@ -162,7 +167,7 @@ test('updated full_name crossing', async () => {
     },
   });
 
-  const updated = await post({
+  const updated = await postOrFail({
     query: `mutation UpdateCrossing($id: Int!, $name: String!) {
       update_crossings_by_pk(pk_columns: {id: $id}, _set: {name: $name}) {
         id
@@ -184,7 +189,7 @@ test('updated full_name crossing', async () => {
 });
 
 test('updated full_name lot', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
@@ -193,7 +198,7 @@ test('updated full_name lot', async () => {
     },
   });
 
-  const updated = await post({
+  const updated = await postOrFail({
     query: `mutation UpdateLot($id: Int!, $name_segment: String!) {
       update_lots_by_pk(pk_columns: {id: $id}, _set: {name_segment: $name_segment}) {
         id
@@ -210,7 +215,7 @@ test('updated full_name lot', async () => {
 });
 
 test('display_name contains full_name', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
@@ -225,7 +230,7 @@ test('display_name contains full_name', async () => {
 });
 
 test('display_name contains name_override', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
@@ -245,7 +250,7 @@ test('display_name contains name_override', async () => {
 });
 
 test('modified', async () => {
-  const resp = await post({
+  const resp = await postOrFail({
     query: insertMutation,
     variables: {
       crossing_name: 'Abcd',
@@ -254,7 +259,7 @@ test('modified', async () => {
     },
   });
 
-  const updated = await post({
+  const updated = await postOrFail({
     query: /* GraphQL */ `
       mutation UpdateLot($id: Int!, $name_segment: String) {
         update_lots_by_pk(
@@ -274,4 +279,147 @@ test('modified', async () => {
   });
 
   expect(updated.data.update_lots_by_pk.modified).toMatch(iso8601dateRegex);
+});
+
+test('updating is_variety on crossings updates it on lots', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      orchard_name: 'Orchard1',
+      name_segment: '24A',
+      is_variety: false,
+    },
+  });
+
+  const updated = await post({
+    query: /* GraphQL */ `
+      mutation UpdateCrossing($id: Int!) {
+        update_crossings_by_pk(
+          pk_columns: { id: $id }
+          _set: { is_variety: true }
+        ) {
+          id
+          lots {
+            id
+            is_variety
+          }
+        }
+      }
+    `,
+    variables: {
+      id: resp.data.insert_crossings_one.id,
+    },
+  });
+
+  expect(updated.data.update_crossings_by_pk.lots[0].is_variety).toBe(true);
+});
+
+test('updating the crossing_id updates is_variety', async () => {
+  const notVariety = await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      orchard_name: 'Orchard1',
+      name_segment: '24A',
+      is_variety: false,
+    },
+  });
+  const isVariety = await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'APPLE',
+      orchard_name: 'Orchard2',
+      name_segment: '000',
+      is_variety: true,
+    },
+  });
+
+  const updated = await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdateLot($id: Int!, $crossing_id: Int!) {
+        update_lots_by_pk(
+          pk_columns: { id: $id }
+          _set: { crossing_id: $crossing_id }
+        ) {
+          id
+          is_variety
+        }
+      }
+    `,
+    variables: {
+      id: notVariety.data.insert_crossings_one.lots[0].id,
+      crossing_id: isVariety.data.insert_crossings_one.id,
+    },
+  });
+
+  expect(updated.data.update_lots_by_pk.is_variety).toBe(true);
+});
+
+test('direct updates on is_variety are impossible', async () => {
+  const notVariety = await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      orchard_name: 'Orchard1',
+      name_segment: '24A',
+      is_variety: false,
+    },
+  });
+
+  const updated = await post({
+    query: /* GraphQL */ `
+      mutation UpdateLot($id: Int!) {
+        update_lots_by_pk(pk_columns: { id: $id }, _set: { is_variety: true }) {
+          id
+          is_variety
+        }
+      }
+    `,
+    variables: {
+      id: notVariety.data.insert_crossings_one.lots[0].id,
+    },
+  });
+
+  expect(updated.errors[0].message).toEqual(
+    "field 'is_variety' not found in type: 'lots_set_input'",
+  );
+});
+
+test('direct inserts of is_variety are impossible', async () => {
+  const notVariety = await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      orchard_name: 'Orchard1',
+      name_segment: '24A',
+      is_variety: false,
+    },
+  });
+
+  const inserted = await post({
+    query: /* GraphQL */ `
+      mutation InsertLot($crossing_id: Int!, $orchard_id: Int!) {
+        insert_lots_one(
+          object: {
+            crossing_id: $crossing_id
+            orchard_id: $orchard_id
+            name_segment: "000"
+            is_variety: true
+          }
+        ) {
+          id
+          is_variety
+        }
+      }
+    `,
+    variables: {
+      crossing_id: notVariety.data.insert_crossings_one.id,
+      orchard_id: notVariety.data.insert_crossings_one.lots[0].orchard_id,
+    },
+  });
+
+  expect(inserted.errors[0].message).toEqual(
+    "field 'is_variety' not found in type: 'lots_insert_input'",
+  );
 });

@@ -68,17 +68,18 @@ select_permissions:
     permission:
       columns:
         - acronym
-        - name_segment
-        - lot_id
-        - id
-        - note
         - breeder
-        - registration
         - created
-        - modified
-        - full_name
         - display_name
+        - full_name
+        - id
+        - is_variety
+        - lot_id
+        - modified
         - name_override
+        - name_segment
+        - note
+        - registration
       filter: {}
       allow_aggregations: true
     comment: ""

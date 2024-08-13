@@ -61,8 +61,10 @@ select_permissions:
         - display_name
         - full_name
         - id
+        - is_variety
         - modified
         - name_override
+        - name_segment
         - note
         - numb_seedlings_grown
         - numb_seedlings_planted
@@ -70,7 +72,6 @@ select_permissions:
         - orchard_id
         - plot
         - seed_tray
-        - name_segment
       filter: {}
       allow_aggregations: true
     comment: ""

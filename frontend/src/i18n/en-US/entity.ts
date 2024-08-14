@@ -6,6 +6,7 @@ export const entity = {
     created: 'Created',
     modified: 'Last updated',
     displayName: 'Name',
+    explicitDisplayName: 'Display name',
     nameOverride: 'Common name',
     nameSegment: 'Name segment',
     fullName: 'Breeding name',
@@ -39,4 +40,10 @@ export const entity = {
   noImages: 'No images available',
   failedToLoadImage: 'Failed to load image',
   noData: 'No data available',
+
+  nameExplainerIntro: {
+    base: 'This is the {structuredName} (required). If you prefer a different name, you can override it with a {freeFormName}.',
+    structuredName: 'structured breeding name',
+    freeFormName: 'free form display name',
+  },
 };

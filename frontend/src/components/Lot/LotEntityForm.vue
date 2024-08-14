@@ -5,28 +5,11 @@
     :required="true"
     @update:model-value="() => refs.nameSegmentRef?.validate()"
   />
-  <EntityInput
+  <LotNameInput
     :ref="(el: InputRef) => (refs.nameSegmentRef = el)"
-    v-model="data.name_segment"
-    :label="t('entity.commonColumns.nameSegment')"
-    :rules="[
-      (val: string | null | undefined) =>
-        !!val ||
-        t('base.validation.xIsRequired', {
-          x: t('entity.commonColumns.nameSegment'),
-        }),
-      (val: string) =>
-        (val && /^(\d{2}[A-Z]|000)$/.test(val)) ||
-        t('lots.validation.invalidNameSegmentFormat'),
-      async (val: string) =>
-        (await isNameSegmentUnique(val)) ||
-        t('lots.validation.nameNotUniqueWithCrossing'),
-    ]"
-    type="text"
-    autocomplete="off"
-    debounce="300"
-    :loading="fetchingNameSegmentUnique"
-    required
+    v-model:name-segment="data.name_segment"
+    :crossing-id="data.crossing_id"
+    :lot-id="('id' in props.lot && props.lot.id) || undefined"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.nameOverrideRef = el)"
@@ -168,7 +151,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
@@ -180,6 +163,7 @@ import CrossingSelect from '../Crossing/CrossingSelect.vue';
 import OrchardSelect from '../Orchard/OrchardSelect.vue';
 import { MAX_INT_PG } from 'src/utils/constants';
 import { isValidInteger } from 'src/utils/validationUtils';
+import LotNameInput from './LotNameInput.vue';
 
 export interface LotEntityFormProps {
   lot: LotInsertInput | LotEditInput;
@@ -237,23 +221,6 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
-
-const additionalWhere = computed(() => {
-  if (!data.value.crossing_id) {
-    return {};
-  }
-  return {
-    crossing_id: { _eq: data.value.crossing_id },
-  };
-});
-
-const { isUnique: isNameSegmentUnique, fetching: fetchingNameSegmentUnique } =
-  useIsUnique({
-    tableName: 'lots',
-    existingId: ('id' in props.lot && props.lot.id) || undefined,
-    columnName: 'name_segment',
-    additionalWhere,
-  });
 
 const { isUnique: isNameOverrideUnique, fetching: fetchingNameOverrideUnique } =
   useIsUnique({

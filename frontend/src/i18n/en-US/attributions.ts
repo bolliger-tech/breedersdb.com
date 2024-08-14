@@ -16,7 +16,7 @@ export const attributions = {
   observations: 'Observations',
   treatments: 'Treatments',
   samples: 'Samples',
-  others: 'Others',
+  others: 'Other attributions',
 
   photos: 'Photos',
 

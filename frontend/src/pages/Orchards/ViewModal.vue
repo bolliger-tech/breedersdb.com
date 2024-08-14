@@ -33,20 +33,14 @@
       <h3 class="q-mb-md">
         {{ t('plantRows.title', 2) }}
       </h3>
-      <q-table
-        v-if="orchard.plant_rows"
-        class="q-mt-md"
-        flat
-        dense
-        :rows="orchard.plant_rows"
+      <EntityViewRelatedEntityTable
+        entity-key="plant_rows"
+        :rows="orchard.plant_rows || []"
         :columns="plantRowsColumns"
-        :rows-per-page-options="[0]"
-        hide-pagination
-        wrap-cells
-        binary-state-sort
+        default-sort-by="name"
       >
-        <template #body-cell-plant_group="cellProps">
-          <q-td key="value" :props="cellProps">
+        <template #body-cell-name="cellProps">
+          <q-td key="name" :props="cellProps">
             <RouterLink
               :to="`/rows/${cellProps.row.id}`"
               class="undecorated-link"
@@ -55,7 +49,7 @@
             </RouterLink>
           </q-td>
         </template>
-      </q-table>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -80,7 +74,7 @@ import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import OrchardButtonDelete from 'src/components/Orchard/OrchardButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { ResultOf, graphql } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { orchardFragment } from 'src/components/Orchard/orchardFragment';
@@ -91,6 +85,7 @@ import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vu
 import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -116,7 +111,7 @@ const { data, error, fetching } = useQuery({
 
 const orchard = computed(() => data.value?.orchards_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -128,18 +123,30 @@ function edit() {
   });
 }
 
-type PlantRow = NonNullable<
-  NonNullable<ResultOf<typeof query>['orchards_by_pk']>['plant_rows']
->[0];
-
 const plantRowsColumns = [
   {
-    name: 'plant_group',
+    name: 'name',
     label: t('entity.commonColumns.name'),
-    field: 'plant_group',
+    field: 'name',
     align: 'left' as const,
     sortable: true,
-    sort: (a: PlantRow, b: PlantRow) => localizedSortPredicate(a.name, b.name),
+    sort: (a: string, b: string) => localizedSortPredicate(a, b),
+  },
+  {
+    name: 'date_elimitated',
+    label: t('plantRows.fields.dateEliminated'),
+    field: 'date_elimitated',
+    align: 'left' as const,
+    sortable: true,
+    format: (val: string | Date | null) => localizeDate(val),
+  },
+  {
+    name: 'created',
+    label: t('entity.commonColumns.created'),
+    field: 'created',
+    align: 'left' as const,
+    sortable: true,
+    format: (val: string | Date) => d(val, 'ymdHis'),
   },
 ];
 </script>

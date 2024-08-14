@@ -46,20 +46,14 @@
       <h3 class="q-mb-md">
         {{ t('lots.title', 2) }}
       </h3>
-      <q-table
-        v-if="crossing.lots"
-        class="q-mt-md"
-        flat
-        dense
-        :rows="crossing.lots"
+      <EntityViewRelatedEntityTable
+        entity-key="lots"
+        :rows="crossing.lots || []"
         :columns="lotsColumns"
-        :rows-per-page-options="[0]"
-        hide-pagination
-        wrap-cells
-        binary-state-sort
+        default-sort-by="display_name"
       >
-        <template #body-cell-lot="cellProps">
-          <q-td key="value" :props="cellProps">
+        <template #body-cell-display_name="cellProps">
+          <q-td key="display_name" :props="cellProps">
             <RouterLink
               :to="`/lots/${cellProps.row.id}`"
               class="undecorated-link"
@@ -68,25 +62,19 @@
             </RouterLink>
           </q-td>
         </template>
-      </q-table>
+      </EntityViewRelatedEntityTable>
 
       <h3 class="q-mb-md">
         {{ t('motherPlants.title', 2) }}
       </h3>
-      <q-table
-        v-if="crossing.mother_plants"
-        class="q-mt-md"
-        flat
-        dense
-        :rows="crossing.mother_plants"
+      <EntityViewRelatedEntityTable
+        entity-key="mother_plants"
+        :rows="crossing.mother_plants || []"
         :columns="motherPlantsColumns"
-        :rows-per-page-options="[0]"
-        hide-pagination
-        wrap-cells
-        binary-state-sort
+        default-sort-by="name"
       >
-        <template #body-cell-mother_plant="cellProps">
-          <q-td key="value" :props="cellProps">
+        <template #body-cell-name="cellProps">
+          <q-td key="name" :props="cellProps">
             <RouterLink
               :to="`/crossings/mother-plants/${cellProps.row.id}`"
               class="undecorated-link"
@@ -95,7 +83,7 @@
             </RouterLink>
           </q-td>
         </template>
-      </q-table>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -131,6 +119,7 @@ import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vu
 import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -176,13 +165,13 @@ type Lot = NonNullable<
 
 const lotsColumns = [
   {
-    name: 'lot',
+    name: 'display_name',
     label: t('entity.commonColumns.name'),
     field: 'display_name',
     align: 'left' as const,
     sortable: true,
-    sort: (a: Lot, b: Lot) =>
-      localizedSortPredicate(a.display_name, b.display_name),
+    sort: (a: Lot['display_name'], b: Lot['display_name']) =>
+      localizedSortPredicate(a, b),
   },
 ];
 
@@ -192,13 +181,13 @@ type MotherPlant = NonNullable<
 
 const motherPlantsColumns = [
   {
-    name: 'mother_plant',
+    name: 'name',
     label: t('entity.commonColumns.name'),
     field: 'name',
     align: 'left' as const,
     sortable: true,
-    sort: (a: MotherPlant, b: MotherPlant) =>
-      localizedSortPredicate(a.name, b.name),
+    sort: (a: MotherPlant['name'], b: MotherPlant['name']) =>
+      localizedSortPredicate(a, b),
   },
 ];
 </script>

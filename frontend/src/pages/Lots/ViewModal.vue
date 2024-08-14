@@ -13,8 +13,6 @@
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <LotEntityTable :lot="lot" />
 
-      <!-- TODO: related cultivars -->
-
       <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
       <EntityViewAttributionImageGallery
         :images="images"
@@ -53,6 +51,25 @@
         :lot="lot"
         :crossing="lot.crossing"
       />
+
+      <h3 class="q-mb-md">{{ t('cultivars.title', 2) }}</h3>
+      <EntityViewRelatedEntityTable
+        entity-key="cultivars"
+        :rows="lot.cultivars || []"
+        :columns="cultivarsColumns"
+        default-sort-by="display_name"
+      >
+        <template #body-cell-display_name="cellProps">
+          <q-td key="display_name" :props="cellProps">
+            <RouterLink
+              :to="`/cultivars/${cellProps.row.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.display_name }}
+            </RouterLink>
+          </q-td>
+        </template>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -77,7 +94,7 @@ import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import LotButtonDelete from 'src/components/Lot/LotButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { graphql } from 'src/graphql';
+import { graphql, ResultOf } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
@@ -91,6 +108,8 @@ import {
 } from 'src/components/Entity/entityAttributionsViewFragment';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -106,6 +125,7 @@ const query = graphql(
         cultivars {
           id
           display_name
+          created
         }
         attributions_views {
           ...entityAttributionsViewFragment
@@ -145,8 +165,6 @@ const other = computed(() =>
   attributions.value.filter((row) => row.attribute_type === 'OTHER'),
 );
 
-const { t } = useI18n();
-
 const route = useRoute();
 const router = useRouter();
 function edit() {
@@ -155,4 +173,31 @@ function edit() {
     query: route.query,
   });
 }
+
+const { t, d } = useI18n();
+const { localizedSortPredicate } = useLocalizedSort();
+
+type Cultivars = NonNullable<
+  NonNullable<ResultOf<typeof query>['lots_by_pk']>['cultivars']
+>[0];
+
+const cultivarsColumns = [
+  {
+    name: 'display_name',
+    label: t('entity.commonColumns.name'),
+    field: 'display_name',
+    align: 'left' as const,
+    sortable: true,
+    sort: (a: Cultivars['display_name'], b: Cultivars['display_name']) =>
+      localizedSortPredicate(a, b),
+  },
+  {
+    name: 'created',
+    label: t('entity.commonColumns.created'),
+    field: 'created',
+    align: 'left' as const,
+    sortable: true,
+    format: (val: string | Date) => d(val, 'ymdHis'),
+  },
+];
 </script>

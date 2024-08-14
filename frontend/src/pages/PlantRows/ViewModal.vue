@@ -41,17 +41,11 @@
       <h3 class="q-mb-md">
         {{ t('plants.title', 2) }}
       </h3>
-      <q-table
-        v-if="plantRow.plants"
-        class="q-mt-md"
-        flat
-        dense
-        :rows="plantRow.plants"
+      <EntityViewRelatedEntityTable
+        entity-key="plants"
+        :rows="plantRow.plants || []"
         :columns="plantsColumns"
-        :rows-per-page-options="[0]"
-        hide-pagination
-        wrap-cells
-        binary-state-sort
+        default-sort-by="label_id"
       >
         <template #body-cell-label_id="cellProps">
           <q-td key="value" :props="cellProps">
@@ -73,7 +67,7 @@
             />
           </q-td>
         </template>
-      </q-table>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -113,6 +107,7 @@ import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

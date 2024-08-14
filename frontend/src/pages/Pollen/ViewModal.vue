@@ -38,30 +38,23 @@
       <h3 class="q-mb-md">
         {{ t('motherPlants.title', 2) }}
       </h3>
-      <q-table
-        v-if="pollen.mother_plants"
-        class="q-mt-md"
-        flat
-        dense
-        :rows="pollen.mother_plants"
+      <EntityViewRelatedEntityTable
+        entity-key="mother_plants"
+        :rows="pollen.mother_plants || []"
         :columns="motherPlantsColumns"
-        :rows-per-page-options="[0]"
-        hide-pagination
-        wrap-cells
-        binary-state-sort
+        default-sort-by="name"
       >
-        <template #body-cell-plant_group="cellProps">
-          <q-td key="value" :props="cellProps">
+        <template #body-cell-name="cellProps">
+          <q-td key="name" :props="cellProps">
             <RouterLink
-              :to="`/crossings/crossings/mother-plants/${cellProps.row.id}`"
+              :to="`/crossings/mother-plants/${cellProps.row.id}`"
               class="undecorated-link"
             >
               {{ cellProps.row.name }}
             </RouterLink>
           </q-td>
         </template>
-      </q-table>
-      <template v-else> {{ t('base.noData') }} </template>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -88,7 +81,7 @@ import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PollenButtonDelete from 'src/components/Pollen/PollenButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { ResultOf, graphql } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';
@@ -99,6 +92,7 @@ import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vu
 import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -107,7 +101,7 @@ const query = graphql(
     query Pollen(
       $id: Int!
       $withCultivar: Boolean = true
-      $withMotherPlants: Boolean = false
+      $withMotherPlants: Boolean = true
       $withLot: Boolean = false
     ) {
       pollen_by_pk(id: $id) {
@@ -125,7 +119,7 @@ const { data, error, fetching } = useQuery({
 
 const pollen = computed(() => data.value?.pollen_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -137,19 +131,30 @@ function edit() {
   });
 }
 
-type MotherPlant = NonNullable<
-  NonNullable<ResultOf<typeof query>['pollen_by_pk']>['mother_plants']
->[0];
-
 const motherPlantsColumns = [
   {
-    name: 'mother_plant',
+    name: 'name',
     label: t('entity.commonColumns.name'),
-    field: 'mother_plant',
+    field: 'name',
     align: 'left' as const,
     sortable: true,
-    sort: (a: MotherPlant, b: MotherPlant) =>
-      localizedSortPredicate(a.name, b.name),
+    sort: (a: string, b: string) => localizedSortPredicate(a, b),
+  },
+  {
+    name: 'date_impregnated',
+    label: t('motherPlants.fields.dateImpregnated'),
+    field: 'date_impregnated',
+    align: 'left' as const,
+    sortable: true,
+    format: (val: string | Date | null) => localizeDate(val),
+  },
+  {
+    name: 'created',
+    label: t('entity.commonColumns.created'),
+    field: 'created',
+    align: 'left' as const,
+    sortable: true,
+    format: (val: string | Date) => d(val, 'ymdHis'),
   },
 ];
 </script>

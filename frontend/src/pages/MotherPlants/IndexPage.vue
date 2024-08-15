@@ -26,6 +26,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { localizeDate } from 'src/utils/dateUtils';
 
 const { t, d } = useI18n();
 
@@ -36,9 +37,9 @@ const query = graphql(
       $offset: Int!
       $orderBy: [mother_plants_order_by!]
       $where: mother_plants_bool_exp
-      $MotherPlantWithPlant: Boolean = false
-      $MotherPlantWithCrossing: Boolean = false
-      $MotherPlantWithPollen: Boolean = false
+      $MotherPlantWithPlant: Boolean = true
+      $MotherPlantWithCrossing: Boolean = true
+      $MotherPlantWithPollen: Boolean = true
       $PollenWithCultivar: Boolean = false
       $PlantWithSegments: Boolean = false
       $CultivarWithLot: Boolean = false
@@ -86,6 +87,57 @@ const columns = [
     sortable: true,
   },
   {
+    name: 'crossing.name',
+    label: t('motherPlants.fields.crossing'),
+    align: 'left' as const,
+    field: (row: MotherPlant) => row.crossing?.name,
+    sortable: true,
+  },
+  {
+    name: 'plant.label_id',
+    label: t('plants.fields.labelId'),
+    align: 'left' as const,
+    field: (row: MotherPlant) => row.plant?.label_id,
+    sortable: true,
+  },
+  {
+    name: 'date_impregnated',
+    label: t('motherPlants.fields.dateImpregnated'),
+    align: 'left' as const,
+    field: 'date_impregnated',
+    sortable: true,
+    format: (v: MotherPlant['date_impregnated']) => localizeDate(v) || '',
+  },
+  {
+    name: 'pollen.name',
+    label: t('motherPlants.fields.pollen'),
+    align: 'left' as const,
+    field: (row: MotherPlant) => row.pollen?.name,
+    sortable: true,
+  },
+  {
+    name: 'numb_flowers',
+    label: t('motherPlants.fields.numbFlowers'),
+    align: 'left' as const,
+    field: 'numb_flowers',
+    sortable: true,
+  },
+  {
+    name: 'date_fruits_harvested',
+    label: t('motherPlants.fields.dateFruitsHarvested'),
+    align: 'left' as const,
+    field: 'date_fruits_harvested',
+    sortable: true,
+    format: (v: MotherPlant['date_fruits_harvested']) => localizeDate(v) || '',
+  },
+  {
+    name: 'numb_seeds',
+    label: t('motherPlants.fields.numbSeeds'),
+    align: 'left' as const,
+    field: 'numb_seeds',
+    sortable: true,
+  },
+  {
     name: 'modified',
     label: t('entity.commonColumns.modified'),
     align: 'left' as const,
@@ -104,7 +156,7 @@ const columns = [
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 2),
+  defaultValue: columns.map((column) => column.name).slice(0, 9),
   replace: true,
 });
 

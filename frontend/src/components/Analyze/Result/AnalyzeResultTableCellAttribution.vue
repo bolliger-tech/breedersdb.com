@@ -2,7 +2,7 @@
   <div
     class="result-table-cell-attribution__chip"
     :class="{ open: showOverlay }"
-    @click="toggleOverlay"
+    @click.stop="toggleOverlay"
     @mouseenter="displayOverlay"
     @mouseleave="maybeCloseOverlay"
   >

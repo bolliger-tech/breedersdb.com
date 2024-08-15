@@ -219,7 +219,7 @@ const route = useRoute();
 const router = useRouter();
 function edit() {
   router.push({
-    path: `/rows/${props.entityId}/edit`,
+    path: `/groups/${props.entityId}/edit`,
     query: route.query,
   });
 }

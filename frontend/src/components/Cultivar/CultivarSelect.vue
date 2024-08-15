@@ -39,7 +39,7 @@ defineExpose({
   focus: () => cultivarRef.value && focusInView(cultivarRef.value),
 });
 
-const modelValue = defineModel<number | null>({ required: true });
+const modelValue = defineModel<number | null | undefined>({ required: true });
 
 const where = computed(() => ({
   _and: [...(props.includeId ? [{ id: { _eq: props.includeId } }] : [])],

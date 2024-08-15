@@ -43,6 +43,7 @@ export const plantGroupFragment = graphql(
         ...cultivarFragment
       }
       name_segment
+      name_override
       full_name
       display_name
       note

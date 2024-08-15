@@ -72,11 +72,6 @@ export interface PlantSelectorProps {
   labelSmall?: boolean;
 }
 
-export interface PlantSelectorEmits {
-  plant: [data: PlantFragment | null];
-  fetching: [data: boolean];
-}
-
 export type PlantSelectorInstance =
   ComponentPublicInstance<PlantSelectorProps> & {
     onManualInput: () => void;
@@ -87,7 +82,10 @@ const props = withDefaults(defineProps<PlantSelectorProps>(), {
   rejectEliminated: false,
 });
 
-const emit = defineEmits<PlantSelectorEmits>();
+const emit = defineEmits<{
+  plant: [data: PlantFragment | null];
+  fetching: [data: boolean];
+}>();
 onMounted(() => emit('plant', null));
 
 const inputRef = ref<QInput | null>(null);

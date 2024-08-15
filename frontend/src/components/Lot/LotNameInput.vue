@@ -77,12 +77,12 @@
     <template #default>
       <q-input
         ref="nameSegmentRef"
+        v-model="nameSegment"
         :bg-color="inputBgColor"
         dense
         outlined
         bottom-slots
         :dark="$q.dark.isActive"
-        :model-value="nameSegment"
         autocomplete="off"
         :rules="[
           (val: string | null | undefined) =>
@@ -95,13 +95,15 @@
             t('lots.validation.invalidNameSegmentFormat'),
           async (val: string) =>
             (await isNameSegmentUnique(val)) ||
-            t('lots.validation.nameNotUniqueWithCrossing'),
+            t('lots.validation.nameNotUniqueWithCrossing', {
+              name: nextFreeNameSegment,
+            }),
         ]"
         type="text"
-        debounce="300"
         required
         mask="##A"
         fill-mask="#"
+        unmasked-value
         :loading="fetchingCrossing || fetchingLots || fetchingNameSegmentUnique"
       >
         <template v-if="crossing" #prepend>
@@ -111,12 +113,11 @@
         </template>
 
         <template v-if="!fetchingLots && nextFreeNameSegment" #append>
-          <!-- TODO: fix this. it currently only works once -->
           <q-btn
             :label="t('lots.autoGenerate')"
             flat
             dense
-            @click="nameSegmentValue = nextFreeNameSegment"
+            @click="nameSegment = nextFreeNameSegment"
           />
         </template>
 
@@ -144,7 +145,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import type { QInput } from 'quasar';
 import { focusInView } from 'src/utils/focusInView';
@@ -155,7 +156,7 @@ export interface LotNameInputProps {
 }
 
 const props = defineProps<LotNameInputProps>();
-const nameSegmentValue = defineModel<string>('nameSegment', { required: true });
+const nameSegment = defineModel<string>('nameSegment', { required: true });
 // const nameOverride = defineModel<string>('nameOverride', { required: true });
 
 const nameSegmentRef = ref<QInput | null>(null);
@@ -178,16 +179,28 @@ const crossingQuery = graphql(`
   }
 `);
 const crossingQueryVariables = computed(() => ({ id: props.crossingId }));
-const crossingQueryPause = computed(() => !props.crossingId);
 const {
   data: crossingData,
   error: crossingError,
   fetching: fetchingCrossing,
+  resume: resumeCrossingQuery,
+  pause: pauseCrossingQuery,
 } = useQuery({
   query: crossingQuery,
   variables: crossingQueryVariables,
-  pause: crossingQueryPause,
+  pause: !props.crossingId,
 });
+watch(
+  () => props.crossingId,
+  (newValue) => {
+    if (newValue) {
+      resumeCrossingQuery();
+    } else {
+      pauseCrossingQuery();
+      crossingData.value = undefined;
+    }
+  },
+);
 const crossing = computed(() => crossingData.value?.crossings_by_pk);
 
 const lotsQuery = graphql(`
@@ -199,16 +212,28 @@ const lotsQuery = graphql(`
   }
 `);
 const lotsQueryVariables = computed(() => ({ crossingId: props.crossingId }));
-const lotsQueryPause = computed(() => !props.crossingId);
 const {
   data: lotsData,
   error: lotsError,
   fetching: fetchingLots,
+  resume: resumeLotsQuery,
+  pause: pauseLotsQuery,
 } = useQuery({
   query: lotsQuery,
   variables: lotsQueryVariables,
-  pause: lotsQueryPause,
+  pause: !props.crossingId,
 });
+watch(
+  () => props.crossingId,
+  (newValue) => {
+    if (newValue) {
+      resumeLotsQuery();
+    } else {
+      pauseLotsQuery();
+      lotsData.value = undefined;
+    }
+  },
+);
 
 const nextFreeNameSegment = computed(() => {
   if (!lotsData.value) {

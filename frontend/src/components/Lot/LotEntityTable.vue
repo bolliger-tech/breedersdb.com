@@ -1,5 +1,15 @@
 <template>
   <EntityViewTable :dense="dense">
+    <template v-if="!lot.is_variety && lot.name_override">
+      <EntityViewTableRow :label="t('entity.commonColumns.fullName')">
+        {{ lot.full_name }}
+      </EntityViewTableRow>
+      <EntityViewTableRow
+        :label="t('entity.commonColumns.explicitDisplayName')"
+      >
+        {{ lot.display_name }}
+      </EntityViewTableRow>
+    </template>
     <EntityViewTableRow v-if="lot.crossing" :label="t('lots.fields.crossing')">
       <RouterLink
         :to="`/crossings/${lot.crossing.id}`"

@@ -39,6 +39,7 @@
         :cultivar="plantGroup.cultivar"
         :lot="plantGroup.cultivar?.lot"
         :crossing="plantGroup.cultivar?.lot?.crossing"
+        show-entity
       />
 
       <h3 class="q-mb-md">{{ t('attributions.treatments') }}</h3>
@@ -49,6 +50,7 @@
         :cultivar="plantGroup.cultivar"
         :lot="plantGroup.cultivar?.lot"
         :crossing="plantGroup.cultivar?.lot?.crossing"
+        show-entity
       />
 
       <h3 class="q-mb-md">{{ t('attributions.samples') }}</h3>
@@ -59,6 +61,7 @@
         :cultivar="plantGroup.cultivar"
         :lot="plantGroup.cultivar?.lot"
         :crossing="plantGroup.cultivar?.lot?.crossing"
+        show-entity
       />
 
       <h3 class="q-mb-md">{{ t('attributions.others') }}</h3>
@@ -69,6 +72,7 @@
         :cultivar="plantGroup.cultivar"
         :lot="plantGroup.cultivar?.lot"
         :crossing="plantGroup.cultivar?.lot?.crossing"
+        show-entity
       />
 
       <h3 class="q-mb-md">{{ t('plants.title', 2) }}</h3>
@@ -123,7 +127,7 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else-if="fetching">
+  <q-card v-else-if="fetching || refreshingAttributionsView">
     <BaseSpinner size="xl" />
   </q-card>
 
@@ -157,6 +161,7 @@ import {
 import { localizeDate } from 'src/utils/dateUtils';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
+import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -169,6 +174,7 @@ const query = graphql(
       $LotWithOrchard: Boolean! = false
       $LotWithCrossing: Boolean! = true
       $PlantWithSegments: Boolean! = false
+      $AttributionsViewWithEntites: Boolean! = true
     ) {
       plant_groups_by_pk(id: $id) {
         ...plantGroupFragment
@@ -184,11 +190,28 @@ const query = graphql(
   [plantGroupFragment, plantFragment, entityAttributionsViewFragment],
 );
 
-const { data, error, fetching } = useQuery({
+const {
+  data,
+  error: plantGroupError,
+  fetching,
+  resume: enablePlantGroupQuery,
+} = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  pause: true,
+  requestPolicy: 'cache-and-network',
 });
 
+const {
+  executeMutation: refreshAttributionsView,
+  fetching: refreshingAttributionsView,
+  error: attributionsRefreshError,
+} = useRefreshAttributionsView();
+refreshAttributionsView({}).then(() => enablePlantGroupQuery());
+
+const error = computed(
+  () => plantGroupError.value || attributionsRefreshError.value,
+);
 const plantGroup = computed(() => data.value?.plant_groups_by_pk);
 
 const attributions = computed(

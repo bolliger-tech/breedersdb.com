@@ -4,13 +4,17 @@
     <q-separator v-if="!data.photo_note" class="q-my-sm" dark />
   </div>
 
-  <EntityViewAttributionImage
+  <div
     v-if="data.photo_note || ('PHOTO' === data.data_type && data.text_value)"
-    :file-name="(data.photo_note || data.text_value)!"
-    :attribution="data"
-    preview
-    :preview-width="282"
-  />
+    class="row justify-center bg-black"
+  >
+    <EntityViewAttributionImage
+      :file-name="(data.photo_note || data.text_value)!"
+      :attribution="data"
+      preview
+      :preview-width="282"
+    />
+  </div>
 
   <template v-if="data.text_note">
     <div class="text-body2" style="white-space: pre-line">

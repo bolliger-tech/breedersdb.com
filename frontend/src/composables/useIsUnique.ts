@@ -1,6 +1,6 @@
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
-import { nextTick, ref, watch, type ComputedRef } from 'vue';
+import { nextTick, ref, computed, type Ref } from 'vue';
 
 type TableName = string;
 
@@ -13,8 +13,8 @@ export function useIsUnique({
   tableName: TableName;
   existingId?: number;
   columnName?: string;
-  additionalWhere?: ComputedRef<Record<string, unknown>>;
   additionalWhere?: Ref<Record<string, unknown>>;
+}) {
   const query = graphql(`
     query UniqueQueryFor_${tableName}($where: ${tableName}_bool_exp!) {
       ${tableName}(where: $where, limit: 1) {

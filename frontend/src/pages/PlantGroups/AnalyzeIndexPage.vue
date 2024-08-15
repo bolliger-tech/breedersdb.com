@@ -2,7 +2,7 @@
   <PageLayout>
     <AnalyzeIndex
       :entity-label="t('plantGroups.title', 2)"
-      entity-path="/plant-groups"
+      entity-path="/groups"
       base-table="PLANT_GROUPS"
     />
   </PageLayout>

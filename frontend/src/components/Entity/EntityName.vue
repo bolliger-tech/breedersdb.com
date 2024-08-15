@@ -51,7 +51,7 @@ const segments = computed(() => {
 
   if (props.plantGroup) {
     parts.push({
-      link: `/plant-groups/${props.plantGroup.id}`,
+      link: `/groups/${props.plantGroup.id}`,
       label: props.plantGroup.name_override || props.plantGroup.name_segment,
       title: t('plantGroups.title', 1),
     });

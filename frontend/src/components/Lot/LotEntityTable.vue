@@ -44,10 +44,10 @@
       </RouterLink>
     </EntityViewTableRow>
     <EntityViewTableRow :label="t('entity.commonColumns.created')">
-      {{ localizeDate(lot.created) }}
+      {{ d(lot.created, 'ymdHis') }}
     </EntityViewTableRow>
     <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-      {{ lot.modified ? localizeDate(lot.modified) : t('base.notAvailable') }}
+      {{ lot.modified ? d(lot.modified, 'ymdHis') : t('base.notAvailable') }}
     </EntityViewTableRow>
     <EntityViewTableRow v-if="lot.note">
       <strong>{{ t('entity.commonColumns.note') }}</strong>
@@ -71,5 +71,5 @@ export interface LotEntityTableProps {
 
 defineProps<LotEntityTableProps>();
 
-const { t, n } = useI18n();
+const { t, n, d } = useI18n();
 </script>

@@ -3,34 +3,16 @@
     :ref="(el: InputRef) => (refs.crossingRef = el)"
     v-model="data.crossing_id"
     :required="true"
-    @update:model-value="() => refs.nameSegmentRef?.validate()"
+    @update:model-value="
+      () => data.name_segment && refs.nameInputsRef?.validate()
+    "
   />
-  <LotNameInput
-    :ref="(el: InputRef) => (refs.nameSegmentRef = el)"
+  <LotNameInputs
+    :ref="(el: InputRef) => (refs.nameInputsRef = el)"
     v-model:name-segment="data.name_segment"
+    v-model:name-override="data.name_override"
     :crossing-id="data.crossing_id"
     :lot-id="('id' in props.lot && props.lot.id) || undefined"
-  />
-  <EntityInput
-    :ref="(el: InputRef) => (refs.nameOverrideRef = el)"
-    v-model="data.name_override"
-    :label="t('entity.commonColumns.nameOverride')"
-    :rules="[
-      (val: string | null | undefined) =>
-        !val || val.length <= 25 || t('base.validation.maxLen', { x: 25 }),
-      (val: string | null | undefined) =>
-        !val ||
-        /^[^\n\.]{1,25}$/.test(val) ||
-        t('lots.validation.invalidNameOverrideFormat'),
-      async (val: string | null | undefined) =>
-        !val ||
-        (await isNameOverrideUnique(val)) ||
-        t('base.validation.nameNotUnique'),
-    ]"
-    type="text"
-    autocomplete="off"
-    debounce="300"
-    :loading="fetchingNameOverrideUnique"
   />
   <OrchardSelect
     :ref="(el: InputRef) => (refs.orchardRef = el)"
@@ -158,12 +140,11 @@ import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { LotEditInput, LotInsertInput } from './LotModalEdit.vue';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
-import { useIsUnique } from 'src/composables/useIsUnique';
 import CrossingSelect from '../Crossing/CrossingSelect.vue';
 import OrchardSelect from '../Orchard/OrchardSelect.vue';
 import { MAX_INT_PG } from 'src/utils/constants';
 import { isValidInteger } from 'src/utils/validationUtils';
-import LotNameInput from './LotNameInput.vue';
+import LotNameInputs from './LotNameInputs.vue';
 
 export interface LotEntityFormProps {
   lot: LotInsertInput | LotEditInput;
@@ -193,8 +174,7 @@ const initialData = {
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameSegmentRef: null,
-  nameOverrideRef: null,
+  nameInputsRef: null,
   dateSowedRef: null,
   numbSeedsSowedRef: null,
   numbSeedlingsGrownRef: null,
@@ -221,11 +201,4 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
-
-const { isUnique: isNameOverrideUnique, fetching: fetchingNameOverrideUnique } =
-  useIsUnique({
-    tableName: 'lots',
-    existingId: ('id' in props.lot && props.lot.id) || undefined,
-    columnName: 'name_override',
-  });
 </script>

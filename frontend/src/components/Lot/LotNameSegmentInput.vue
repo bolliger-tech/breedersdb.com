@@ -7,9 +7,9 @@
             t('entity.nameExplainerIntro.structuredName')
           }}</strong></template
         >
-        <template #freeFormName
+        <template #displayName
           ><strong>{{
-            t('entity.nameExplainerIntro.freeFormName')
+            t('entity.nameExplainerIntro.displayName')
           }}</strong></template
         >
       </i18n-t>
@@ -50,34 +50,15 @@
               ><strong>{{ t('lots.explainer.2.hint') }}</strong></template
             >
           </i18n-t>
-        </ul>
-      </div>
-      <div>
-        <strong>{{ t('entity.commonColumns.explicitDisplayName') }}</strong>
-        <ul>
-          <i18n-t tag="li" keypath="lots.explainer.3.base" scope="global">
-            <template #freeFormText
-              ><strong>{{
-                t('lots.explainer.3.freeFormText')
-              }}</strong></template
-            >
-          </i18n-t>
-          <li>
-            <strong>{{ t('lots.explainer.examples') }}</strong>
-            <ul>
-              <li>{{ t('lots.title', 1) }} 1</li>
-              <li>{{ t('lots.title', 1) }} 2</li>
-              <li>{{ t('lots.title', 1) }} 3</li>
-            </ul>
-          </li>
+          <li>{{ t('entity.nameOverrideHint') }}</li>
         </ul>
       </div>
     </template>
 
     <template #default>
       <q-input
-        ref="nameSegmentRef"
-        v-model="nameSegment"
+        ref="inputRef"
+        v-model="modelValue"
         :bg-color="inputBgColor"
         dense
         outlined
@@ -104,7 +85,7 @@
         mask="##A"
         fill-mask="#"
         unmasked-value
-        :loading="fetchingCrossing || fetchingLots || fetchingNameSegmentUnique"
+        :loading="loading || fetchingLots || fetchingNameSegmentUnique"
       >
         <template v-if="crossing" #prepend>
           <div style="font-size: 14px; opacity: 0.9">
@@ -117,7 +98,7 @@
             :label="t('lots.autoGenerate')"
             flat
             dense
-            @click="nameSegment = nextFreeNameSegment"
+            @click="modelValue = nextFreeNameSegment"
           />
         </template>
 
@@ -136,7 +117,6 @@
       </q-input>
     </template>
   </BaseInputLabel>
-  <!-- TODO: add name_override field -->
 </template>
 
 <script setup lang="ts">
@@ -151,57 +131,28 @@ import type { QInput } from 'quasar';
 import { focusInView } from 'src/utils/focusInView';
 
 export interface LotNameInputProps {
-  lotId: number | null | undefined;
-  crossingId: number | null | undefined;
+  lotId: number | undefined;
+  crossing: {
+    id: number;
+    name: string;
+  } | null;
+  loading: boolean;
+  crossingError: boolean;
 }
 
 const props = defineProps<LotNameInputProps>();
-const nameSegment = defineModel<string>('nameSegment', { required: true });
-// const nameOverride = defineModel<string>('nameOverride', { required: true });
+const modelValue = defineModel<string>({ required: true });
 
-const nameSegmentRef = ref<QInput | null>(null);
+const inputRef = ref<QInput | null>(null);
 defineExpose({
-  validate: () => nameSegmentRef.value?.validate(),
-  focus: () => nameSegmentRef.value && focusInView(nameSegmentRef.value),
+  validate: () => inputRef.value?.validate(),
+  focus: () => inputRef.value && focusInView(inputRef.value),
 });
 
 const { inputBgColor } = useInputBackground();
 const { t } = useI18n();
 
 const currentYear = parseInt(new Date().getFullYear().toString().slice(-2));
-
-const crossingQuery = graphql(`
-  query Crossing($id: Int!) {
-    crossings_by_pk(id: $id) {
-      id
-      name
-    }
-  }
-`);
-const crossingQueryVariables = computed(() => ({ id: props.crossingId }));
-const {
-  data: crossingData,
-  error: crossingError,
-  fetching: fetchingCrossing,
-  resume: resumeCrossingQuery,
-  pause: pauseCrossingQuery,
-} = useQuery({
-  query: crossingQuery,
-  variables: crossingQueryVariables,
-  pause: !props.crossingId,
-});
-watch(
-  () => props.crossingId,
-  (newValue) => {
-    if (newValue) {
-      resumeCrossingQuery();
-    } else {
-      pauseCrossingQuery();
-      crossingData.value = undefined;
-    }
-  },
-);
-const crossing = computed(() => crossingData.value?.crossings_by_pk);
 
 const lotsQuery = graphql(`
   query Lots($crossingId: Int!) {
@@ -211,7 +162,7 @@ const lotsQuery = graphql(`
     }
   }
 `);
-const lotsQueryVariables = computed(() => ({ crossingId: props.crossingId }));
+const lotsQueryVariables = computed(() => ({ crossingId: props.crossing?.id }));
 const {
   data: lotsData,
   error: lotsError,
@@ -221,10 +172,10 @@ const {
 } = useQuery({
   query: lotsQuery,
   variables: lotsQueryVariables,
-  pause: !props.crossingId,
+  pause: !props.crossing,
 });
 watch(
-  () => props.crossingId,
+  () => props.crossing,
   (newValue) => {
     if (newValue) {
       resumeLotsQuery();
@@ -255,11 +206,11 @@ const nextFreeNameSegment = computed(() => {
 });
 
 const additionalWhere = computed(() => {
-  if (!props.crossingId) {
+  if (!props.crossing?.id) {
     return {};
   }
   return {
-    crossing_id: { _eq: props.crossingId },
+    crossing_id: { _eq: props.crossing.id },
   };
 });
 const { isUnique: isNameSegmentUnique, fetching: fetchingNameSegmentUnique } =

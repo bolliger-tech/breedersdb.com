@@ -16,6 +16,7 @@
       :step="step"
       :pattern="pattern"
       :autocomplete="autocomplete"
+      :placeholder="placeholder"
       :input-style="
         autogrow && type === 'textarea' && !inputStyle
           ? 'min-height: 5em'
@@ -57,6 +58,7 @@ export type EntityInputProps = Omit<
   pattern?: string;
   autocomplete?: string;
   explainer?: string;
+  placeholder?: string;
 };
 
 const props = defineProps<EntityInputProps>();

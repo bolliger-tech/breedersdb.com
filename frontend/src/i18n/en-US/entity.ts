@@ -42,8 +42,11 @@ export const entity = {
   noData: 'No data available',
 
   nameExplainerIntro: {
-    base: 'This is the {structuredName} (required). If you prefer a different name, you can override it with a {freeFormName}.',
+    base: 'This is the {structuredName} (required). If you prefer a different name, you can override it with the {displayName} field below.',
     structuredName: 'structured breeding name',
-    freeFormName: 'free form display name',
+    displayName: 'display name',
   },
+
+  nameOverrideHint:
+    'If you wish the system to show a different name, you can use the display name field below.',
 };

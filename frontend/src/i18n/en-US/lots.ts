@@ -34,13 +34,11 @@ export const lots = {
       base: '{hint}: Use the current year as digits and ascending letters for lots of the same cross.',
       hint: 'Hint',
     },
-    3: {
-      base: 'Can be any {freeFormText} up to 25 characters.',
-      freeFormText: 'free form text',
-    },
   },
 
   autoGenerate: 'Auto-generate',
   nameSegmentDataError:
     'Failed to load data. Auto-generate not available, limited validation only.',
+  nameOverrideHint:
+    'This is how the lot will be displayed. Leave it empty to use the breeding name.',
 };

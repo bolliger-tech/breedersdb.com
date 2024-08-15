@@ -57,6 +57,7 @@ const query = graphql(`
 const { data, error, fetching } = useQuery({
   query,
   variables: { where },
+  requestPolicy: 'cache-and-network',
 });
 
 const cultivarOptions = computed(() => data.value?.cultivars ?? []);

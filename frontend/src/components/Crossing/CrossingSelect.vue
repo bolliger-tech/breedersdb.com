@@ -50,6 +50,7 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
+  requestPolicy: 'cache-and-network',
 });
 
 const crossingOptions = computed(() => data.value?.crossings ?? []);

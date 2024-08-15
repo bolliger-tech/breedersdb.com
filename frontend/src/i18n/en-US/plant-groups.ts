@@ -5,4 +5,6 @@ export const plantGroups = {
     labelId: 'Label ID',
     cultivar: 'Cultivar',
   },
+
+  searchPlaceholderName: 'Search by name or label ID',
 };

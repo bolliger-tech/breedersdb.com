@@ -19,9 +19,7 @@
       <PollenButtonDelete
         v-if="'id' in pollen"
         :pollen-id="pollen.id"
-        @deleted="
-          () => $router.push({ path: '/crossings/pollen', query: $route.query })
-        "
+        @deleted="() => $router.push({ path: '/pollen', query: $route.query })"
       />
       <div v-else></div>
     </template>

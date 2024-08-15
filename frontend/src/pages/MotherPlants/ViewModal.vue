@@ -26,7 +26,7 @@
         <EntityViewTableRow :label="t('motherPlants.fields.pollen')">
           <RouterLink
             v-if="motherPlant.pollen"
-            :to="`/crossings/pollen/${motherPlant.pollen?.id}`"
+            :to="`/pollen/${motherPlant.pollen?.id}`"
             class="undecorated-link"
           >
             {{ motherPlant.pollen?.name }}
@@ -91,7 +91,7 @@
         @deleted="
           () =>
             router.push({
-              path: '/crossings/mother-plants',
+              path: '/mother-plants',
               query: route.query,
             })
         "

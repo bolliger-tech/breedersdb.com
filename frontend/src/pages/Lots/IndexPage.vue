@@ -26,6 +26,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { localizeDate } from 'src/utils/dateUtils';
 
 const { t, d, n } = useI18n();
 
@@ -93,7 +94,7 @@ const columns = [
     name: 'date_sowed',
     label: t('lots.fields.dateSowed'),
     align: 'left' as const,
-    field: (row: Lot) => (row.date_sowed ? d(row.date_sowed, 'ymdHis') : null),
+    field: (row: Lot) => localizeDate(row.date_sowed),
     sortable: true,
   },
   {
@@ -123,8 +124,7 @@ const columns = [
     name: 'date_planted',
     label: t('lots.fields.datePlanted'),
     align: 'left' as const,
-    field: (row: Lot) =>
-      row.date_planted ? d(row.date_planted, 'ymdHis') : null,
+    field: (row: Lot) => localizeDate(row.date_planted),
     sortable: true,
   },
   {

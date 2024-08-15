@@ -3,12 +3,10 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <EntityModalContent
-    v-else-if="lot"
-    sprite-icon="lot"
-    :title="lot.display_name"
-    @edit="edit"
-  >
+  <EntityModalContent v-else-if="lot" sprite-icon="lot" @edit="edit">
+    <template #title-text>
+      <EntityName :lot="lot" :crossing="lot.crossing" no-link />
+    </template>
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <LotEntityTable :lot="lot" />
@@ -110,6 +108,7 @@ import EntityViewAttributionImageGallery from 'src/components/Entity/View/Entity
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
+import EntityName from 'src/components/Entity/EntityName.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

@@ -54,10 +54,7 @@ defineProps<CrossingModalEditProps>();
 
 const insertMutation = graphql(
   `
-    mutation InsertCrossing(
-      $entity: crossings_insert_input!
-      $CultivarWithLot: Boolean = false
-    ) {
+    mutation InsertCrossing($entity: crossings_insert_input!) {
       insert_crossings_one(object: $entity) {
         ...crossingFragment
       }
@@ -70,11 +67,7 @@ export type CrossingEditInsertMutation = typeof insertMutation;
 
 const editMutation = graphql(
   `
-    mutation UpdateCrossing(
-      $id: Int!
-      $entity: crossings_set_input!
-      $CultivarWithLot: Boolean = false
-    ) {
+    mutation UpdateCrossing($id: Int!, $entity: crossings_set_input!) {
       update_crossings_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...crossingFragment
       }

@@ -45,11 +45,6 @@
           <EntityViewAttributionImage
             :file-name="cellProps.row.text_value"
             :attribution="cellProps.row"
-            :plant="plant"
-            :plant-group="plantGroup"
-            :cultivar="cultivar"
-            :lot="lot"
-            :crossing="crossing"
           />
         </template>
 
@@ -65,11 +60,6 @@
           v-if="cellProps.row.photo_note"
           :file-name="cellProps.row.photo_note"
           :attribution="cellProps.row"
-          :plant="plant"
-          :plant-group="plantGroup"
-          :cultivar="cultivar"
-          :lot="lot"
-          :crossing="crossing"
         />
       </q-td>
     </template>
@@ -96,11 +86,6 @@ export interface EntityViewAttributionsTableProps {
   rows: EntityAttributionsViewFragment[];
   attributeType?: AttributeTypes;
   showEntity?: boolean;
-  plant?: { label_id: string };
-  plantGroup?: { display_name: string };
-  cultivar?: { display_name: string };
-  lot?: { display_name: string };
-  crossing?: { name: string };
 }
 
 const props = defineProps<EntityViewAttributionsTableProps>();

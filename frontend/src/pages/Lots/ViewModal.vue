@@ -12,43 +12,25 @@
       <LotEntityTable :lot="lot" />
 
       <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
-      <EntityViewAttributionImageGallery
-        :images="images"
-        :lot="lot"
-        :crossing="lot.crossing"
-      />
+      <EntityViewAttributionImageGallery :images="images" />
 
       <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="OBSERVATION"
         :rows="observations"
-        :lot="lot"
-        :crossing="lot.crossing"
       />
 
       <h3 class="q-mb-md">{{ t('attributions.treatments') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="TREATMENT"
         :rows="treatments"
-        :lot="lot"
-        :crossing="lot.crossing"
       />
 
       <h3 class="q-mb-md">{{ t('attributions.samples') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="SAMPLE"
-        :rows="samples"
-        :lot="lot"
-        :crossing="lot.crossing"
-      />
+      <EntityViewAttributionsTable attribute-type="SAMPLE" :rows="samples" />
 
       <h3 class="q-mb-md">{{ t('attributions.others') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="OTHER"
-        :rows="other"
-        :lot="lot"
-        :crossing="lot.crossing"
-      />
+      <EntityViewAttributionsTable attribute-type="OTHER" :rows="other" />
 
       <h3 class="q-mb-md">{{ t('cultivars.title', 2) }}</h3>
       <EntityViewRelatedEntityTable
@@ -119,7 +101,7 @@ const query = graphql(
       $id: Int!
       $LotWithOrchard: Boolean! = true
       $LotWithCrossing: Boolean! = true
-      $AttributionsViewWithEntites: Boolean! = false
+      $AttributionsViewWithEntites: Boolean! = true
     ) {
       lots_by_pk(id: $id) {
         ...lotFragment

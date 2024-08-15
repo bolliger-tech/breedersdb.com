@@ -113,17 +113,13 @@ import {
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
+import { captureException } from '@sentry/browser';
 
 const DEFAULT_PREVIEW_HEIGHT = 200;
 
 export interface EntityViewAttributionImageProps {
   fileName: string;
   attribution: EntityAttributionsViewFragment;
-  plant?: { label_id: string };
-  plantGroup?: { display_name: string };
-  cultivar?: { display_name: string };
-  lot?: { display_name: string };
-  crossing?: { name: string };
   preview?: boolean;
   previewWidth?: number;
   previewHeight?: number;
@@ -142,28 +138,34 @@ const open = defineModel<boolean>({ required: false, default: false });
 const { t } = useI18n();
 
 const entityName = computed(() => {
-  return (
-    props.plant?.label_id ??
-    props.plantGroup?.display_name ??
-    props.cultivar?.display_name ??
-    props.lot?.display_name ??
-    props.crossing?.name ??
-    'unknown'
-  );
+  const name =
+    props.attribution.plant?.label_id ??
+    props.attribution.plant_group?.display_name ??
+    props.attribution.cultivar?.display_name ??
+    props.attribution.lot?.display_name;
+
+  if (!name) {
+    // report but don't fail
+    const error = new Error(
+      'No entity name found for attribution. Consider using the `entityAttributionsViewFragment` with `$AttributionsViewWithEntites = true`.',
+    );
+    console.error(error.message, error.stack);
+    captureException(error);
+  }
+
+  return name || 'unknown';
 });
 
-const entityType = computed(() => {
-  return props.plant
+const entityTypeName = computed(() => {
+  return props.attribution.plant
     ? t('plants.title', 1)
-    : props.plantGroup
+    : props.attribution.plant_group
       ? t('plantGroups.title', 1)
-      : props.cultivar
+      : props.attribution.cultivar
         ? t('cultivars.title', 1)
-        : props.lot
+        : props.attribution.lot
           ? t('lots.title', 1)
-          : props.crossing
-            ? t('crossings.title', 1)
-            : 'unknown';
+          : 'unknown';
 });
 
 const desiredFileName = computed(() => {
@@ -179,7 +181,7 @@ const metadata = computed(() => {
     props.attribution.data_type === 'PHOTO'
       ? `${props.attribution.attribute_name}, `
       : '';
-  return `${attribute}${localizeDate(props.attribution.date_attributed)} ${props.attribution.author}, ${entityType.value} ${entityName.value}`;
+  return `${attribute}${localizeDate(props.attribution.date_attributed)} ${props.attribution.author}, ${entityTypeName.value} ${entityName.value}`;
 });
 
 const description = computed(() => {

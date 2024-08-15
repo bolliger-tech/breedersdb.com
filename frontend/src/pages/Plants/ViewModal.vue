@@ -22,58 +22,25 @@
       <PlantEntityTable :plant="plant" />
 
       <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
-      <EntityViewAttributionImageGallery
-        :images="images"
-        :plant="plant"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group?.cultivar"
-        :lot="plant.plant_group?.cultivar.lot"
-        :crossing="plant.plant_group?.cultivar.lot.crossing"
-      />
+      <EntityViewAttributionImageGallery :images="images" />
 
       <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="OBSERVATION"
         :rows="observations"
-        :plant="plant"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group?.cultivar"
-        :lot="plant.plant_group?.cultivar.lot"
-        :crossing="plant.plant_group?.cultivar.lot.crossing"
       />
 
       <h3 class="q-mb-md">{{ t('attributions.treatments') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="TREATMENT"
         :rows="treatments"
-        :plant="plant"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group?.cultivar"
-        :lot="plant.plant_group?.cultivar.lot"
-        :crossing="plant.plant_group?.cultivar.lot.crossing"
       />
 
       <h3 class="q-mb-md">{{ t('attributions.samples') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="SAMPLE"
-        :rows="samples"
-        :plant="plant"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group?.cultivar"
-        :lot="plant.plant_group?.cultivar.lot"
-        :crossing="plant.plant_group?.cultivar.lot.crossing"
-      />
+      <EntityViewAttributionsTable attribute-type="SAMPLE" :rows="samples" />
 
       <h3 class="q-mb-md">{{ t('attributions.others') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="OTHER"
-        :rows="other"
-        :plant="plant"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group?.cultivar"
-        :lot="plant.plant_group?.cultivar.lot"
-        :crossing="plant.plant_group?.cultivar.lot.crossing"
-      />
+      <EntityViewAttributionsTable attribute-type="OTHER" :rows="other" />
     </template>
 
     <template #action-left>
@@ -119,7 +86,7 @@ const query = graphql(
     query Plant(
       $id: Int!
       $PlantWithSegments: Boolean = true
-      $AttributionsViewWithEntites: Boolean = false
+      $AttributionsViewWithEntites: Boolean = true
     ) {
       plants_by_pk(id: $id) {
         ...plantFragment

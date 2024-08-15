@@ -23,22 +23,12 @@
       <PlantGroupEntityTable :plant-group="plantGroup" />
 
       <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
-      <EntityViewAttributionImageGallery
-        :images="images"
-        :plant-group="plantGroup"
-        :cultivar="plantGroup.cultivar"
-        :lot="plantGroup.cultivar?.lot"
-        :crossing="plantGroup.cultivar?.lot?.crossing"
-      />
+      <EntityViewAttributionImageGallery :images="images" />
 
       <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="OBSERVATION"
         :rows="observations"
-        :plant-group="plantGroup"
-        :cultivar="plantGroup.cultivar"
-        :lot="plantGroup.cultivar?.lot"
-        :crossing="plantGroup.cultivar?.lot?.crossing"
         show-entity
       />
 
@@ -46,10 +36,6 @@
       <EntityViewAttributionsTable
         attribute-type="TREATMENT"
         :rows="treatments"
-        :plant-group="plantGroup"
-        :cultivar="plantGroup.cultivar"
-        :lot="plantGroup.cultivar?.lot"
-        :crossing="plantGroup.cultivar?.lot?.crossing"
         show-entity
       />
 
@@ -57,10 +43,6 @@
       <EntityViewAttributionsTable
         attribute-type="SAMPLE"
         :rows="samples"
-        :plant-group="plantGroup"
-        :cultivar="plantGroup.cultivar"
-        :lot="plantGroup.cultivar?.lot"
-        :crossing="plantGroup.cultivar?.lot?.crossing"
         show-entity
       />
 
@@ -68,10 +50,6 @@
       <EntityViewAttributionsTable
         attribute-type="OTHER"
         :rows="other"
-        :plant-group="plantGroup"
-        :cultivar="plantGroup.cultivar"
-        :lot="plantGroup.cultivar?.lot"
-        :crossing="plantGroup.cultivar?.lot?.crossing"
         show-entity
       />
 

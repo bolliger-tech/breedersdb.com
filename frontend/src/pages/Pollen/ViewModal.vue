@@ -54,6 +54,26 @@
             </RouterLink>
           </q-td>
         </template>
+        <template #body-cell-crossing__name="cellProps">
+          <q-td key="crossing.name" :props="cellProps">
+            <RouterLink
+              :to="`/crossings/${cellProps.row.crossing?.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.crossing?.name }}
+            </RouterLink>
+          </q-td>
+        </template>
+        <template #body-cell-label_id="cellProps">
+          <q-td key="label_id" :props="cellProps">
+            <RouterLink
+              :to="`/plants/${cellProps.row.plant?.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.plant?.label_id }}
+            </RouterLink>
+          </q-td>
+        </template>
       </EntityViewRelatedEntityTable>
     </template>
 
@@ -79,7 +99,7 @@ import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PollenButtonDelete from 'src/components/Pollen/PollenButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { graphql } from 'src/graphql';
+import { ResultOf, graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';
@@ -110,6 +130,14 @@ const query = graphql(
           name
           date_impregnated
           created
+          plant {
+            id
+            label_id
+          }
+          crossing {
+            id
+            name
+          }
         }
       }
     }
@@ -124,7 +152,7 @@ const { data, error, fetching } = useQuery({
 
 const pollen = computed(() => data.value?.pollen_by_pk);
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -136,6 +164,10 @@ function edit() {
   });
 }
 
+type MotherPlant = NonNullable<
+  NonNullable<ResultOf<typeof query>['pollen_by_pk']>['mother_plants']
+>[0];
+
 const motherPlantsColumns = [
   {
     name: 'name',
@@ -143,7 +175,30 @@ const motherPlantsColumns = [
     field: 'name',
     align: 'left' as const,
     sortable: true,
-    sort: (a: string, b: string) => localizedSortPredicate(a, b),
+    sort: (a: MotherPlant['name'], b: MotherPlant['name']) =>
+      localizedSortPredicate(a, b),
+  },
+  {
+    name: 'crossing__name',
+    label: t('motherPlants.fields.crossing'),
+    field: (row: MotherPlant) => row.crossing?.name,
+    align: 'left' as const,
+    sortable: true,
+    sort: (
+      a: NonNullable<MotherPlant['crossing']>['name'],
+      b: NonNullable<MotherPlant['crossing']>['name'],
+    ) => localizedSortPredicate(a, b),
+  },
+  {
+    name: 'label_id',
+    label: t('plants.fields.labelId'),
+    field: (row: MotherPlant) => row.plant?.label_id,
+    align: 'left' as const,
+    sortable: true,
+    sort: (
+      a: NonNullable<MotherPlant['plant']>['label_id'],
+      b: NonNullable<MotherPlant['plant']>['label_id'],
+    ) => localizedSortPredicate(a, b),
   },
   {
     name: 'date_impregnated',
@@ -151,15 +206,12 @@ const motherPlantsColumns = [
     field: 'date_impregnated',
     align: 'left' as const,
     sortable: true,
-    format: (val: string | Date | null) => localizeDate(val),
-  },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    field: 'created',
-    align: 'left' as const,
-    sortable: true,
-    format: (val: string | Date) => d(val, 'ymdHis'),
+    sort: (
+      a: MotherPlant['date_impregnated'],
+      b: MotherPlant['date_impregnated'],
+    ) => localizedSortPredicate(a || '', b || ''),
+    format: (v: MotherPlant['date_impregnated']) =>
+      v ? localizeDate(v) : t('base.notAvailable'),
   },
 ];
 </script>

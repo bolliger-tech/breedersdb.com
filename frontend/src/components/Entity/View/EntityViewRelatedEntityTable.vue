@@ -5,7 +5,7 @@
   <q-table
     v-else
     v-model:pagination="pagination"
-    class="q-mt-md"
+    class="q-mt-md entity-view-related-entity-table"
     flat
     dense
     :rows="rows"
@@ -58,3 +58,9 @@ watch(pagination, (value: Pagination) => {
 
 const { t } = useI18n();
 </script>
+
+<style scoped>
+:global(.entity-view-related-entity-table th) {
+  text-wrap: nowrap;
+}
+</style>

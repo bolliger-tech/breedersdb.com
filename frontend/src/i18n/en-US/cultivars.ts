@@ -1,6 +1,8 @@
 export const cultivars = {
   title: 'Cultivar | Cultivars',
 
+  searchPlaceholder: 'Search by name or acronym',
+
   analyze: {
     title: 'Analyze',
   },

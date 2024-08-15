@@ -5,7 +5,7 @@
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('cultivars.title', 2)"
-      :search-placeholder="t('entity.searchPlaceholderName')"
+      :search-placeholder="t('cultivars.searchPlaceholder')"
       :rows="data?.cultivars || []"
       :loading="fetching"
       :all-columns="columns"

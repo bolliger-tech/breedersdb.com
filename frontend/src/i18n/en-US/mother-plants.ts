@@ -1,6 +1,8 @@
 export const motherPlants = {
   title: 'Mother Plant | Mother Plants',
 
+  searchPlaceholder: 'Search by name, crossing name or plant label ID',
+
   fields: {
     dateImpregnated: 'Date impregnated',
     dateFruitsHarvested: 'Date fruits harvested',

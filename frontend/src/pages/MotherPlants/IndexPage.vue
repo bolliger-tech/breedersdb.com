@@ -5,13 +5,15 @@
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('motherPlants.title', 2)"
-      :search-placeholder="t('entity.searchPlaceholderName')"
+      :search-placeholder="t('motherPlants.searchPlaceholder')"
       :rows="data?.mother_plants || []"
       :loading="fetching"
       :all-columns="columns"
       list-entities-path="/mother-plants"
       add-entity-path="/mother-plants/new"
       :view-entity-path-getter="(id) => `/mother-plants/${id}`"
+      :has-qr-scanner="true"
+      @scanned-qr="(code) => (search = code)"
     />
   </PageLayout>
 </template>
@@ -64,7 +66,9 @@ const query = graphql(
   [motherPlantFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+  searchColumns: ['name', 'crossing.name', 'plant.label_id'],
+});
 
 const { data, fetching, error } = await useQuery({
   query,

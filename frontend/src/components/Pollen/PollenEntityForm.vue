@@ -22,7 +22,6 @@
   <CultivarSelect
     :ref="(el: InputRef) => (refs.cultivarRef = el)"
     v-model="data.cultivar_id"
-    :include-id="props.pollen.cultivar_id"
     :required="true"
   />
   <EntityInput

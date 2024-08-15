@@ -26,7 +26,7 @@ export interface PollenSelectProps {
   required?: boolean;
   includeId?: number;
 }
-const props = defineProps<PollenSelectProps>();
+defineProps<PollenSelectProps>();
 
 const pollenRef = ref<EntitySelectInstance<{
   id: number;
@@ -40,13 +40,9 @@ defineExpose({
 
 const modelValue = defineModel<number | null | undefined>({ required: true });
 
-const where = computed(() => ({
-  _and: [...(props.includeId ? [{ id: { _eq: props.includeId } }] : [])],
-}));
-
 const query = graphql(`
-  query Pollen($where: pollen_bool_exp!) {
-    pollen(order_by: { name: asc }, where: $where) {
+  query Pollen {
+    pollen(order_by: { name: asc }) {
       id
       name
     }
@@ -55,7 +51,6 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
-  variables: { where },
   requestPolicy: 'cache-and-network',
 });
 

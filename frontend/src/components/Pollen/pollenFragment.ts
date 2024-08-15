@@ -16,12 +16,6 @@ export const pollenFragment = graphql(
       cultivar @include(if: $withCultivar) {
         ...cultivarFragment
       }
-      mother_plants @include(if: $withMotherPlants) {
-        id
-        name
-        date_impregnated
-        created
-      }
     }
   `,
   [cultivarFragment],

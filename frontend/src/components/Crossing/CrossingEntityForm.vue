@@ -7,6 +7,10 @@
       (val: string) =>
         !!val ||
         t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
+      (val: string) => {
+        const regex = new RegExp('^[-_\\w\\d]{1,8}$');
+        return regex.test(val) || t('crossings.validation.nameInvalid');
+      },
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"

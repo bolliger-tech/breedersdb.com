@@ -54,6 +54,8 @@ export const base = {
     integer: 'Must be an integer',
     nameNotUnique: 'This name is already in use',
     xMustBeGreaterThanZero: '{x} must be greater than zero',
+    noNewLines45Chars:
+      'Invalid characters or length. No new lines allowed. It must be between 1 and 45 characters long.',
   },
 
   noResults: 'No results',

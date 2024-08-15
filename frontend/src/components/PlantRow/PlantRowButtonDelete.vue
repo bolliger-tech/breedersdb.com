@@ -10,11 +10,7 @@
       <BaseMessage
         type="warning"
         icon-size="xl"
-        :message="
-          t('plantRows.disableConfirmation', {
-            entity: t('base.entityName.plantRow'),
-          })
-        "
+        :message="t('plantRows.disableConfirmation')"
       />
     </template>
     <template v-else #message>

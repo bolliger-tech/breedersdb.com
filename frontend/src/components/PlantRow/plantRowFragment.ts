@@ -16,13 +16,6 @@ export const plantRowFragment = graphql(
       }
       created
       modified
-      plants(where: { disabled: { _eq: false } }) @include(if: $withPlants) {
-        id
-        label_id
-        plant_group {
-          ...plantGroupSegmentsFragment
-        }
-      }
     }
   `,
   [plantGroupSegmentsFragment],

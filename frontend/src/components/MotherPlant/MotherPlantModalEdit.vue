@@ -74,16 +74,11 @@ const insertMutation = graphql(
   `
     mutation InsertMotherPlant(
       $entity: mother_plants_insert_input!
-      $withPlant: Boolean = false
-      $withPollen: Boolean = false
-      $withCrossing: Boolean = false
-      $withParentCultivar: Boolean = false
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withSegments: Boolean = false
-      $withAttributions: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
+      $MotherPlantWithPlant: Boolean = false
+      $MotherPlantWithCrossing: Boolean = false
+      $PollenWithCultivar: Boolean = false
+      $PlantWithSegments: Boolean = false
+      $CultivarWithLot: Boolean = false
     ) {
       insert_mother_plants_one(object: $entity) {
         ...motherPlantFragment
@@ -100,16 +95,11 @@ const editMutation = graphql(
     mutation UpdateMotherPlant(
       $id: Int!
       $entity: mother_plants_set_input!
-      $withPlant: Boolean = false
-      $withPollen: Boolean = false
-      $withCrossing: Boolean = false
-      $withParentCultivar: Boolean = false
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withSegments: Boolean = false
-      $withAttributions: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
+      $MotherPlantWithPlant: Boolean = false
+      $MotherPlantWithCrossing: Boolean = false
+      $PollenWithCultivar: Boolean = false
+      $PlantWithSegments: Boolean = false
+      $CultivarWithLot: Boolean = false
     ) {
       update_mother_plants_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...motherPlantFragment

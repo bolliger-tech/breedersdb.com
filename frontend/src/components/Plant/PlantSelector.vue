@@ -151,8 +151,7 @@ const query = graphql(
   `
     query PlantByLabelId(
       $where: plants_bool_exp!
-      $withSegments: Boolean = true
-      $withAttributions: Boolean = false
+      $PlantWithSegments: Boolean = true
     ) {
       plants(where: $where) {
         ...plantFragment

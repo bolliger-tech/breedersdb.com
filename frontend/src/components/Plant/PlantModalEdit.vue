@@ -59,8 +59,7 @@ const insertMutation = graphql(
   `
     mutation InsertPlant(
       $entity: plants_insert_input!
-      $withSegments: Boolean = true
-      $withAttributions: Boolean = false
+      $PlantWithSegments: Boolean = true
     ) {
       insert_plants_one(object: $entity) {
         ...plantFragment
@@ -75,8 +74,7 @@ const editMutation = graphql(
     mutation UpdatePlant(
       $id: Int!
       $entity: plants_set_input!
-      $withSegments: Boolean = true
-      $withAttributions: Boolean = false
+      $PlantWithSegments: Boolean = true
     ) {
       update_plants_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...plantFragment

@@ -36,16 +36,14 @@ const query = graphql(
       $offset: Int!
       $orderBy: [mother_plants_order_by!]
       $where: mother_plants_bool_exp
-      $withPlant: Boolean = false
-      $withPollen: Boolean = false
-      $withCrossing: Boolean = false
-      $withParentCultivar: Boolean = false
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withSegments: Boolean = false
-      $withAttributions: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
+      $MotherPlantWithPlant: Boolean = false
+      $MotherPlantWithCrossing: Boolean = false
+      $MotherPlantWithPollen: Boolean = false
+      $PollenWithCultivar: Boolean = false
+      $PlantWithSegments: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       mother_plants_aggregate {
         aggregate {

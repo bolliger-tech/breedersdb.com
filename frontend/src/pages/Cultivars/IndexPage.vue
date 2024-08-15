@@ -36,7 +36,9 @@ const query = graphql(
       $offset: Int!
       $orderBy: [cultivars_order_by!]
       $where: cultivars_bool_exp
-      $withLot: Boolean = true
+      $CultivarWithLot: Boolean = true
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       cultivars_aggregate {
         aggregate {

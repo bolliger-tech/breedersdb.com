@@ -126,7 +126,11 @@ const {
 
 const query = graphql(
   `
-    query Plant($id: Int!, $PlantWithSegments: Boolean = true) {
+    query Plant(
+      $id: Int!
+      $PlantWithSegments: Boolean = true
+      $AttributionsViewWithEntites: Boolean = false
+    ) {
       plants_by_pk(id: $id) {
         ...plantFragment
         attributions_views {

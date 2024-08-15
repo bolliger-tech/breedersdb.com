@@ -118,6 +118,7 @@ const query = graphql(
       $id: Int!
       $LotWithOrchard: Boolean! = true
       $LotWithCrossing: Boolean! = true
+      $AttributionsViewWithEntites: Boolean! = false
     ) {
       lots_by_pk(id: $id) {
         ...lotFragment

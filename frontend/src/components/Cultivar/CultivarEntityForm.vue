@@ -9,6 +9,10 @@
         t('base.validation.xIsRequired', {
           x: t('entity.commonColumns.nameSegment'),
         }),
+      (val: string) => {
+        const regex = new RegExp('^[-_\\w\\d]{1,25}$');
+        return regex.test(val) || t('cultivars.validation.nameSegmentInvalid');
+      },
       async (val: string) =>
         (await isNameSegmentUnique(val)) ||
         t('cultivars.validation.nameNotUniqueWithLot'),
@@ -29,6 +33,10 @@
         t('base.validation.xIsRequired', {
           x: t('entity.commonColumns.nameOverride'),
         }),
+      (val: string) => {
+        const regex = new RegExp('^[^\\n\\.]{1,51}$');
+        return regex.test(val) || t('cultivars.validation.nameOverrideInvalid');
+      },
       async (val: string) =>
         (await isNameOverrideUnique(val)) || t('base.validation.nameNotUnique'),
     ]"

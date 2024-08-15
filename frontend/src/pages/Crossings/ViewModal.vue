@@ -83,6 +83,16 @@
             </RouterLink>
           </q-td>
         </template>
+        <template #body-cell-label_id="cellProps">
+          <q-td key="label_id" :props="cellProps">
+            <RouterLink
+              :to="`/plants/${cellProps.row.plant?.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.plant?.label_id }}
+            </RouterLink>
+          </q-td>
+        </template>
       </EntityViewRelatedEntityTable>
     </template>
 
@@ -133,7 +143,7 @@ const query = graphql(
       $CultivarWithLot: Boolean = false
       $LotWithOrchard: Boolean = false
       $LotWithCrossing: Boolean = false
-      $MotherPlantWithPlant: Boolean = false
+      $MotherPlantWithPlant: Boolean = true
       $MotherPlantWithPollen: Boolean = false
       $MotherPlantWithCrossing: Boolean = false
       $PlantWithSegments: Boolean = false
@@ -207,6 +217,30 @@ const motherPlantsColumns = [
     sortable: true,
     sort: (a: MotherPlant['name'], b: MotherPlant['name']) =>
       localizedSortPredicate(a, b),
+  },
+  {
+    name: 'label_id',
+    label: t('plants.fields.labelId'),
+    field: (row: MotherPlant) => row.plant?.label_id,
+    align: 'left' as const,
+    sortable: true,
+    sort: (
+      a: NonNullable<MotherPlant['plant']>['label_id'],
+      b: NonNullable<MotherPlant['plant']>['label_id'],
+    ) => localizedSortPredicate(a, b),
+  },
+  {
+    name: 'date_impregnated',
+    label: t('motherPlants.fields.dateImpregnated'),
+    field: 'date_impregnated',
+    align: 'left' as const,
+    sortable: true,
+    sort: (
+      a: MotherPlant['date_impregnated'],
+      b: MotherPlant['date_impregnated'],
+    ) => localizedSortPredicate(a || '', b || ''),
+    format: (v: MotherPlant['date_impregnated']) =>
+      v ? localizeDate(v) : t('base.notAvailable'),
   },
 ];
 </script>

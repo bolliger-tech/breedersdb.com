@@ -15,6 +15,14 @@
         <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ motherPlant.name }}
         </EntityViewTableRow>
+        <EntityViewTableRow :label="t('motherPlants.fields.crossing')">
+          <RouterLink
+            :to="`/crossings/${motherPlant.crossing?.id}`"
+            class="undecorated-link"
+          >
+            {{ motherPlant.crossing?.name }}
+          </RouterLink>
+        </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.plant')">
           <RouterLink
             :to="`/plants/${motherPlant.plant?.id}`"
@@ -22,6 +30,13 @@
           >
             {{ motherPlant.plant?.label_id }}
           </RouterLink>
+        </EntityViewTableRow>
+        <EntityViewTableRow :label="t('motherPlants.fields.dateImpregnated')">
+          {{
+            motherPlant.date_impregnated
+              ? localizeDate(motherPlant.date_impregnated)
+              : t('base.notAvailable')
+          }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.pollen')">
           <RouterLink
@@ -33,21 +48,11 @@
           </RouterLink>
           <template v-else>{{ t('base.notAvailable') }}</template>
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('motherPlants.fields.crossing')">
-          <RouterLink
-            :to="`/crossings/${motherPlant.crossing?.id}`"
-            class="undecorated-link"
-          >
-            {{ motherPlant.crossing?.name }}
-          </RouterLink>
+        <EntityViewTableRow :label="t('motherPlants.fields.numbFlowers')">
+          {{ motherPlant.numb_flowers }}
         </EntityViewTableRow>
-
-        <EntityViewTableRow :label="t('motherPlants.fields.dateImpregnated')">
-          {{
-            motherPlant.date_impregnated
-              ? localizeDate(motherPlant.date_impregnated)
-              : t('base.notAvailable')
-          }}
+        <EntityViewTableRow :label="t('motherPlants.fields.numbFruits')">
+          {{ motherPlant.numb_fruits }}
         </EntityViewTableRow>
         <EntityViewTableRow
           :label="t('motherPlants.fields.dateFruitsHarvested')"
@@ -57,12 +62,6 @@
               ? localizeDate(motherPlant.date_fruits_harvested)
               : t('base.notAvailable')
           }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('motherPlants.fields.numbFlowers')">
-          {{ motherPlant.numb_flowers }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('motherPlants.fields.numbFruits')">
-          {{ motherPlant.numb_fruits }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.numbSeeds')">
           {{ motherPlant.numb_seeds }}

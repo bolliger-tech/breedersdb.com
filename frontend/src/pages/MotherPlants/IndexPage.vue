@@ -127,6 +127,13 @@ const columns = [
     sortable: true,
   },
   {
+    name: 'numb_fruits',
+    label: t('motherPlants.fields.numbFruits'),
+    align: 'left' as const,
+    field: 'numb_fruits',
+    sortable: true,
+  },
+  {
     name: 'date_fruits_harvested',
     label: t('motherPlants.fields.dateFruitsHarvested'),
     align: 'left' as const,
@@ -160,7 +167,7 @@ const columns = [
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 9),
+  defaultValue: columns.map((column) => column.name).slice(0, 10),
   replace: true,
 });
 

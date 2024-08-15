@@ -16,7 +16,7 @@
     :loading="fetchingNameUnique"
   />
   <CultivarSelect
-    :ref="(el: InputRef) => (refs.orchardRef = el)"
+    :ref="(el: InputRef) => (refs.cultivarRef = el)"
     v-model="data.cultivar_id"
     :include-id="props.pollen.cultivar_id"
     :required="true"
@@ -34,7 +34,7 @@
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"
-    auto-grow
+    autogrow
   />
 </template>
 

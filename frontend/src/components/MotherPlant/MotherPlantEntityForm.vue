@@ -70,7 +70,7 @@
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"
-    auto-grow
+    autogrow
   />
 </template>
 

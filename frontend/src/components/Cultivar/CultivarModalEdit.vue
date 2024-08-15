@@ -3,7 +3,7 @@
     :entity="cultivar"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
-    index-path="/cultivar"
+    index-path="/cultivars"
     sprite-icon="cultivar"
     :subtitle="t('cultivars.title', 1)"
   >

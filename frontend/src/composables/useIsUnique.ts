@@ -14,7 +14,7 @@ export function useIsUnique({
   existingId?: number;
   columnName?: string;
   additionalWhere?: ComputedRef<Record<string, unknown>>;
-}) {
+  additionalWhere?: Ref<Record<string, unknown>>;
   const query = graphql(`
     query UniqueQueryFor_${tableName}($where: ${tableName}_bool_exp!) {
       ${tableName}(where: $where, limit: 1) {
@@ -23,18 +23,10 @@ export function useIsUnique({
     }
   `);
 
-  const variables = ref({
-    where: { [columnName]: { _eq: '' }, ...additionalWhere?.value },
-  });
-  function setColumnValue(value: string) {
-    variables.value.where[columnName] = { _eq: value };
-  }
-  if (additionalWhere) {
-    watch(additionalWhere, (val) => {
-      variables.value.where = { ...variables.value.where, ...val };
-    });
-  }
-
+  const term = ref('');
+  const variables = computed(() => ({
+    where: { [columnName]: { _eq: term.value }, ...additionalWhere?.value },
+  }));
   const { executeQuery, fetching } = useQuery({
     query: query,
     variables,
@@ -43,7 +35,7 @@ export function useIsUnique({
   });
 
   async function isUnique(newName: string) {
-    setColumnValue(newName);
+    term.value = newName;
     await nextTick(); // wait for the refs to be updated
     const result = await executeQuery();
     if (result.error.value) {

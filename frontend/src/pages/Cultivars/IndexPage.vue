@@ -60,7 +60,7 @@ const query = graphql(
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'display_name',
-  searchColumns: ['display_name'],
+  searchColumns: ['display_name', 'acronym'],
 });
 
 const { data, fetching, error } = await useQuery({
@@ -87,7 +87,7 @@ const columns = [
     name: 'lot',
     label: t('cultivars.fields.lot'),
     align: 'left' as const,
-    field: (row: Cultivar) => row.lot?.display_name,
+    field: (row: Cultivar) => row.lot_id === 1 ? '' : row.lot?.display_name,
     sortable: true,
   },
   {

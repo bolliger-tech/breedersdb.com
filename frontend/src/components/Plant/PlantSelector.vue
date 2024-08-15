@@ -73,8 +73,8 @@ export interface PlantSelectorProps {
 }
 
 export interface PlantSelectorEmits {
-  (e: 'plant', data: PlantFragment | null): void;
-  (e: 'fetching', data: boolean): void;
+  plant: [data: PlantFragment | null];
+  fetching: [data: boolean];
 }
 
 export type PlantSelectorInstance =
@@ -92,7 +92,7 @@ onMounted(() => emit('plant', null));
 
 const inputRef = ref<QInput | null>(null);
 
-const modelValue = defineModel<number | null | undefined>({ required: false });
+const modelValue = defineModel<number | null | undefined>();
 
 defineExpose({
   onManualInput,

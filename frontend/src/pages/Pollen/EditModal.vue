@@ -32,6 +32,8 @@ const query = graphql(
       $id: Int!
       $PollenWithCultivar: Boolean = false
       $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       pollen_by_pk(id: $id) {
         ...pollenFragment

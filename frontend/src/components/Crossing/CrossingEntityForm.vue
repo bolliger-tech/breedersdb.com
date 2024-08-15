@@ -20,14 +20,12 @@
     v-model="data.mother_cultivar_id"
     :label="t('crossings.fields.motherCultivar')"
     :include-id="props.crossing.mother_cultivar_id || undefined"
-    :required="true"
   />
   <CultivarSelect
     :ref="(el: InputRef) => (refs.fatherCultivarRef = el)"
     v-model="data.father_cultivar_id"
     :label="t('crossings.fields.fatherCultivar')"
     :include-id="props.crossing.father_cultivar_id || undefined"
-    :required="true"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.noteRef = el)"
@@ -35,7 +33,7 @@
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"
-    auto-grow
+    autogrow
   />
 </template>
 
@@ -80,6 +78,7 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   nameRef: null,
   motherCultivarRef: null,
   fatherCultivarRef: null,
+  noteRef: null,
 });
 
 const { isDirty, validate } = useEntityForm({

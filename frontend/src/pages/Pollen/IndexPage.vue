@@ -9,9 +9,9 @@
       :rows="data?.pollen || []"
       :loading="fetching"
       :all-columns="columns"
-      list-entities-path="/crossings/pollen"
-      add-entity-path="/crossings/pollen/new"
-      :view-entity-path-getter="(id) => `/crossings/pollen/${id}`"
+      list-entities-path="/pollen"
+      add-entity-path="/pollen/new"
+      :view-entity-path-getter="(id) => `/pollen/${id}`"
     />
   </PageLayout>
   <router-view name="modal" />

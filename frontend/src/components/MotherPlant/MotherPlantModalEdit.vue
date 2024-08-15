@@ -3,7 +3,7 @@
     :entity="motherPlant"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
-    index-path="/crossings/mother-plant"
+    index-path="/mother-plants"
     sprite-icon="female"
     :subtitle="t('motherPlants.title', 1)"
   >
@@ -22,7 +22,7 @@
         @deleted="
           () =>
             $router.push({
-              path: '/crossings/mother-plant',
+              path: '/mother-plants',
               query: $route.query,
             })
         "
@@ -76,9 +76,12 @@ const insertMutation = graphql(
       $entity: mother_plants_insert_input!
       $MotherPlantWithPlant: Boolean = false
       $MotherPlantWithCrossing: Boolean = false
+      $MotherPlantWithPollen: Boolean = false
       $PollenWithCultivar: Boolean = false
       $PlantWithSegments: Boolean = false
       $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       insert_mother_plants_one(object: $entity) {
         ...motherPlantFragment
@@ -97,9 +100,12 @@ const editMutation = graphql(
       $entity: mother_plants_set_input!
       $MotherPlantWithPlant: Boolean = false
       $MotherPlantWithCrossing: Boolean = false
+      $MotherPlantWithPollen: Boolean = false
       $PollenWithCultivar: Boolean = false
       $PlantWithSegments: Boolean = false
       $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       update_mother_plants_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...motherPlantFragment

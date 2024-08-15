@@ -15,7 +15,7 @@
         <EntityViewTableRow :label="t('entity.commonColumns.displayName')">
           {{ cultivar.display_name }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('cultivars.fields.lot')">
+        <EntityViewTableRow v-if="cultivar.lot_id !== 1" :label="t('cultivars.fields.lot')">
           <RouterLink
             :to="`/lots/${cultivar.lot?.id}`"
             class="undecorated-link"

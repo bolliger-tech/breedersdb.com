@@ -76,7 +76,7 @@
         <template #body-cell-name="cellProps">
           <q-td key="name" :props="cellProps">
             <RouterLink
-              :to="`/crossings/mother-plants/${cellProps.row.id}`"
+              :to="`/mother-plants/${cellProps.row.id}`"
               class="undecorated-link"
             >
               {{ cellProps.row.name }}

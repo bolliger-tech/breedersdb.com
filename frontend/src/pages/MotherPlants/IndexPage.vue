@@ -9,9 +9,9 @@
       :rows="data?.mother_plants || []"
       :loading="fetching"
       :all-columns="columns"
-      list-entities-path="/crossings/mother-plants"
-      add-entity-path="/crossings/mother-plants/new"
-      :view-entity-path-getter="(id) => `/crossings/mother-plants/${id}`"
+      list-entities-path="/mother-plants"
+      add-entity-path="/mother-plants/new"
+      :view-entity-path-getter="(id) => `/mother-plants/${id}`"
     />
   </PageLayout>
 </template>

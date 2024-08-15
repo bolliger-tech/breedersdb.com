@@ -160,7 +160,7 @@ const route = useRoute();
 const router = useRouter();
 function edit() {
   router.push({
-    path: `/crossings/mother-plants/${props.entityId}/edit`,
+    path: `/mother-plants/${props.entityId}/edit`,
     query: route.query,
   });
 }

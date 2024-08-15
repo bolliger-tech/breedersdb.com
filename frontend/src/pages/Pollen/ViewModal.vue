@@ -61,7 +61,7 @@
       <PollenButtonDelete
         :pollen-id="pollen.id"
         @deleted="
-          () => router.push({ path: '/crossings/pollen', query: route.query })
+          () => router.push({ path: '/pollen', query: route.query })
         "
       />
     </template>
@@ -133,7 +133,7 @@ const route = useRoute();
 const router = useRouter();
 function edit() {
   router.push({
-    path: `/crossings/pollen/${props.entityId}/edit`,
+    path: `/pollen/${props.entityId}/edit`,
     query: route.query,
   });
 }

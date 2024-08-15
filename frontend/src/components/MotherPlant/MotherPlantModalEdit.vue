@@ -3,7 +3,7 @@
     :entity="motherPlant"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
-    index-path="/crossings/mother-plant"
+    index-path="/mother-plants"
     sprite-icon="female"
     :subtitle="t('motherPlants.title', 1)"
   >
@@ -22,7 +22,7 @@
         @deleted="
           () =>
             $router.push({
-              path: '/crossings/mother-plant',
+              path: '/mother-plants',
               query: $route.query,
             })
         "

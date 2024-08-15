@@ -3,7 +3,7 @@
     :entity="pollen"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
-    index-path="/crossings/pollen"
+    index-path="/pollen"
     sprite-icon="male"
     :subtitle="t('pollen.title', 1)"
   >

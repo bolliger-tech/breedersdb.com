@@ -113,6 +113,7 @@ import {
   useRefreshAttributionsView,
 } from 'src/composables/useRefreshAttributionsView';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import { entityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -125,17 +126,16 @@ const {
 
 const query = graphql(
   `
-    query Plant(
-      $id: Int!
-      $withAttributions: Boolean = true
-      $withSegments: Boolean = true
-    ) {
+    query Plant($id: Int!, $PlantWithSegments: Boolean = true) {
       plants_by_pk(id: $id) {
         ...plantFragment
+        attributions_views {
+          ...entityAttributionsViewFragment
+        }
       }
     }
   `,
-  [plantFragment],
+  [plantFragment, entityAttributionsViewFragment],
 );
 
 const {

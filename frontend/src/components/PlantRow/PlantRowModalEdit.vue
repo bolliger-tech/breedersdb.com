@@ -49,10 +49,7 @@ defineProps<PlantRowModalEditProps>();
 
 const insertMutation = graphql(
   `
-    mutation InsertPlantRow(
-      $entity: plant_rows_insert_input!
-      $withPlants: Boolean = false
-    ) {
+    mutation InsertPlantRow($entity: plant_rows_insert_input!) {
       insert_plant_rows_one(object: $entity) {
         ...plantRowFragment
       }
@@ -63,11 +60,7 @@ const insertMutation = graphql(
 
 const editMutation = graphql(
   `
-    mutation UpdatePlantRow(
-      $id: Int!
-      $entity: plant_rows_set_input!
-      $withPlants: Boolean = false
-    ) {
+    mutation UpdatePlantRow($id: Int!, $entity: plant_rows_set_input!) {
       update_plant_rows_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...plantRowFragment
       }

@@ -130,16 +130,14 @@ const query = graphql(
   `
     query MotherPlant(
       $id: Int!
-      $withPlant: Boolean = true
-      $withPollen: Boolean = true
-      $withCrossing: Boolean = true
-      $withParentCultivar: Boolean = false
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withSegments: Boolean = false
-      $withAttributions: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
+      $MotherPlantWithPlant: Boolean = true
+      $MotherPlantWithPollen: Boolean = true
+      $MotherPlantWithCrossing: Boolean = true
+      $PollenWithCultivar: Boolean = false
+      $PlantWithSegments: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       mother_plants_by_pk(id: $id) {
         ...motherPlantFragment

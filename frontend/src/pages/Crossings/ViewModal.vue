@@ -120,6 +120,9 @@ import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import { lotFragment } from 'src/components/Lot/lotFragment';
+import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
+import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -127,17 +130,33 @@ const query = graphql(
   `
     query Crossing(
       $id: Int!
-      $withParentCultivar: Boolean = true
-      $withLot: Boolean = false
-      $withLots: Boolean = true
-      $withMotherPlants: Boolean = true
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
+      $MotherPlantWithPlant: Boolean = false
+      $MotherPlantWithPollen: Boolean = false
+      $MotherPlantWithCrossing: Boolean = false
+      $PlantWithSegments: Boolean = false
+      $PollenWithCultivar: Boolean = false
     ) {
       crossings_by_pk(id: $id) {
         ...crossingFragment
+        lots {
+          ...lotFragment
+        }
+        mother_plants {
+          ...motherPlantFragment
+        }
+        mother_cultivar {
+          ...cultivarFragment
+        }
+        father_cultivar {
+          ...cultivarFragment
+        }
       }
     }
   `,
-  [crossingFragment],
+  [crossingFragment, lotFragment, motherPlantFragment, cultivarFragment],
 );
 
 const { data, error, fetching } = useQuery({

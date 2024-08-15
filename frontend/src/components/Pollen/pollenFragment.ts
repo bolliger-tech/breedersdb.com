@@ -13,7 +13,7 @@ export const pollenFragment = graphql(
       created
       modified
       cultivar_id
-      cultivar @include(if: $withCultivar) {
+      cultivar @include(if: $PollenWithCultivar) {
         ...cultivarFragment
       }
     }

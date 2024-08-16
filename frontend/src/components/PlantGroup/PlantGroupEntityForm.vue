@@ -5,6 +5,7 @@
     :label="t('plantGroups.fields.labelId')"
     type="text"
     readonly
+    disable
     :hint="t('plantGroups.labelIdHint')"
   />
   <CultivarSelect

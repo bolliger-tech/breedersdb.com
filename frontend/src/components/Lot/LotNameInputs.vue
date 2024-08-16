@@ -3,8 +3,8 @@
     ref="nameSegmentRef"
     v-model="nameSegment"
     :crossing="crossing"
-    :loading="fetchingCrossing"
-    :crossing-error="!!crossingError"
+    :loading="fetching"
+    :crossing-error="!!error"
     :lot-id="lotId"
   />
   <LotNameOverrideInput
@@ -53,7 +53,7 @@ defineExpose({
   },
 });
 
-const crossingQuery = graphql(`
+const query = graphql(`
   query Crossing($id: Int!) {
     crossings_by_pk(id: $id) {
       id
@@ -61,16 +61,10 @@ const crossingQuery = graphql(`
     }
   }
 `);
-const crossingQueryVariables = computed(() => ({ id: props.crossingId }));
-const {
-  data: crossingData,
-  error: crossingError,
-  fetching: fetchingCrossing,
-  resume: resumeCrossingQuery,
-  pause: pauseCrossingQuery,
-} = useQuery({
-  query: crossingQuery,
-  variables: crossingQueryVariables,
+const variables = computed(() => ({ id: props.crossingId }));
+const { data, error, fetching, resume, pause } = useQuery({
+  query: query,
+  variables: variables,
   pause: !props.crossingId,
   requestPolicy: 'cache-first',
 });
@@ -78,14 +72,14 @@ watch(
   () => props.crossingId,
   (newValue) => {
     if (newValue) {
-      resumeCrossingQuery();
+      resume();
     } else {
-      pauseCrossingQuery();
-      crossingData.value = undefined;
+      pause();
+      data.value = undefined;
     }
   },
 );
-const crossing = computed(() => crossingData.value?.crossings_by_pk || null);
+const crossing = computed(() => data.value?.crossings_by_pk || null);
 
 const fullName = computed(() => {
   if (!crossing.value || !nameSegment.value) {

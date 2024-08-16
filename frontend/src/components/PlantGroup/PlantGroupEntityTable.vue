@@ -1,5 +1,8 @@
 <template>
   <EntityViewTable :dense="dense">
+    <EntityViewTableRow :label="t('plantGroups.fields.labelId')">
+      {{ plantGroup.label_id }}
+    </EntityViewTableRow>
     <template v-if="plantGroup.name_override">
       <EntityViewTableRow :label="t('entity.commonColumns.fullName')">
         {{ plantGroup.full_name }}

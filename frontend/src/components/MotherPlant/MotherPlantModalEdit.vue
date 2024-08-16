@@ -45,24 +45,13 @@ import { useI18n } from 'vue-i18n';
 
 export type MotherPlantEditInput = Omit<
   MotherPlantFragment,
-  'created' | 'modified'
+  'created' | 'modified' | 'plant' | 'pollen' | 'crossing'
 >;
 export type MotherPlantInsertInput = Omit<
   MotherPlantEditInput,
-  | 'id'
-  | 'plant_id'
-  | 'pollen_id'
-  | 'crossing_id'
-  | 'plant'
-  | 'pollen'
-  | 'crossing'
+  'id' | 'plant_id' | 'pollen_id' | 'crossing_id'
 > &
-  Partial<
-    Pick<
-      MotherPlantEditInput,
-      'plant' | 'pollen' | 'crossing' | 'plant_id' | 'pollen_id' | 'crossing_id'
-    >
-  >;
+  Partial<Pick<MotherPlantEditInput, 'plant_id' | 'pollen_id' | 'crossing_id'>>;
 
 export interface MotherPlantModalEditProps {
   motherPlant: MotherPlantEditInput | MotherPlantInsertInput;

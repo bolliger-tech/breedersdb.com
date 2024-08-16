@@ -10,6 +10,7 @@ export const plantRowFragment = graphql(
       name
       disabled
       date_eliminated
+      orchard_id
       orchard {
         id
         name

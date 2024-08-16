@@ -36,16 +36,13 @@ import PlantEntityForm from 'src/components/Plant/PlantEntityForm.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { useI18n } from 'src/composables/useI18n';
 
-export type PlantEditInput = PlantFragment;
-export type PlantInsertInput = Omit<
+export type PlantEditInput = Omit<
   PlantFragment,
-  | 'id'
-  | 'label_id'
-  | 'cultivar_name'
-  | 'plant_group_name'
-  | 'created'
-  | 'modified'
-  | 'attributions_views'
+  'created' | 'modified' | 'attributions_views'
+>;
+export type PlantInsertInput = Omit<
+  PlantEditInput,
+  'id' | 'label_id' | 'cultivar_name' | 'plant_group_name'
 >;
 
 export interface PlantModalEditProps {

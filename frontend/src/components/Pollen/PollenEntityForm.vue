@@ -1,6 +1,6 @@
 <template>
   <EntityInput
-    :ref="(el: InputRef) => (refs.nameRef = el)"
+    :ref="(el: InputRef) => (refs.name = el)"
     v-model="data.name"
     :label="t('entity.commonColumns.name')"
     :rules="[
@@ -21,21 +21,22 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
+    :required="true"
   />
   <CultivarSelect
-    :ref="(el: InputRef) => (refs.cultivarRef = el)"
+    :ref="(el: InputRef) => (refs.cultivarId = el)"
     v-model="data.cultivar_id"
     :required="true"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.dateHarvestedRef = el)"
+    :ref="(el: InputRef) => (refs.dateHarvested = el)"
     v-model="data.date_harvested"
     :label="t('pollen.fields.dateHarvested')"
     type="date"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.noteRef = el)"
+    :ref="(el: InputRef) => (refs.note = el)"
     v-model="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
@@ -68,18 +69,18 @@ const emits = defineEmits<{
 
 const initialData = {
   name: props.pollen.name,
+  cultivar_id: props.pollen.cultivar_id || null,
   date_harvested: props.pollen.date_harvested,
   note: props.pollen.note,
-  cultivar_id: props.pollen.cultivar_id || null,
 };
 
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameRef: null,
-  dateHarvestedRef: null,
-  noteRef: null,
-  cultivarRef: null,
+  name: null,
+  cultivarId: null,
+  dateHarvested: null,
+  note: null,
 });
 
 const { isDirty, validate } = useEntityForm({

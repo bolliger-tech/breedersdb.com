@@ -1,6 +1,6 @@
 <template>
   <EntityInput
-    :ref="(el: InputRef) => (refs.nameRef = el)"
+    :ref="(el: InputRef) => (refs.name = el)"
     v-model="data.name"
     :label="t('entity.commonColumns.name')"
     :rules="[
@@ -21,58 +21,59 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
+    :required="true"
   />
   <CrossingSelect
-    :ref="(el: InputRef) => (refs.crossingRef = el)"
+    :ref="(el: InputRef) => (refs.crossingId = el)"
     v-model="data.crossing_id"
     :required="true"
   />
   <PlantSelect
-    :ref="(el: InputRef) => (refs.plantRef = el)"
+    :ref="(el: InputRef) => (refs.plantId = el)"
     v-model="data.plant_id"
     reject-eliminated
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.dateImpregnatedRef = el)"
+    :ref="(el: InputRef) => (refs.dateImpregnated = el)"
     v-model="data.date_impregnated"
     :label="t('motherPlants.fields.dateImpregnated')"
     type="date"
     autocomplete="off"
   />
   <PollenSelect
-    :ref="(el: InputRef) => (refs.pollenRef = el)"
+    :ref="(el: InputRef) => (refs.pollenId = el)"
     v-model="data.pollen_id"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.numbFlowersRef = el)"
+    :ref="(el: InputRef) => (refs.numbFlowers = el)"
     v-model="data.numb_flowers"
     :label="t('motherPlants.fields.numbFlowers')"
     type="number"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.numbFruitsRef = el)"
+    :ref="(el: InputRef) => (refs.numbFruits = el)"
     v-model="data.numb_fruits"
     :label="t('motherPlants.fields.numbFruits')"
     type="number"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.dateFruitsHarvestedRef = el)"
+    :ref="(el: InputRef) => (refs.dateFruitsHarvested = el)"
     v-model="data.date_fruits_harvested"
     :label="t('motherPlants.fields.dateFruitsHarvested')"
     type="date"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.numbSeedsRef = el)"
+    :ref="(el: InputRef) => (refs.numbSeeds = el)"
     v-model="data.numb_seeds"
     :label="t('motherPlants.fields.numbSeeds')"
     type="number"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.noteRef = el)"
+    :ref="(el: InputRef) => (refs.note = el)"
     v-model="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
@@ -109,26 +110,31 @@ const emits = defineEmits<{
 // for defineExpose() see below
 
 const initialData = {
-  ...props.motherPlant,
-  created: undefined,
-  modified: undefined,
-  id: undefined,
-  __typename: undefined,
+  name: props.motherPlant.name,
+  crossing_id: props.motherPlant.crossing_id || null,
+  plant_id: props.motherPlant.plant_id || null,
+  date_impregnated: props.motherPlant.date_impregnated,
+  pollen_id: props.motherPlant.pollen_id || null,
+  numb_flowers: props.motherPlant.numb_flowers,
+  numb_fruits: props.motherPlant.numb_fruits,
+  date_fruits_harvested: props.motherPlant.date_fruits_harvested,
+  numb_seeds: props.motherPlant.numb_seeds,
+  note: props.motherPlant.note,
 };
 
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameRef: null,
-  dateImpregnatedRef: null,
-  dateFruitsHarvestedRef: null,
-  numbFlowersRef: null,
-  numbFruitsRef: null,
-  numbSeedsRef: null,
-  noteRef: null,
-  plantRef: null,
-  pollenRef: null,
-  crossingRef: null,
+  name: null,
+  crossingId: null,
+  plantId: null,
+  dateImpregnated: null,
+  pollenId: null,
+  numbFlowers: null,
+  numbFruits: null,
+  dateFruitsHarvested: null,
+  numbSeeds: null,
+  note: null,
 });
 
 const { isDirty, validate } = useEntityForm({

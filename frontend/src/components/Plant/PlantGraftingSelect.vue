@@ -44,6 +44,7 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
+  requestPolicy: 'cache-and-network',
 });
 
 const graftingOptions = computed(() => data.value?.graftings ?? []);

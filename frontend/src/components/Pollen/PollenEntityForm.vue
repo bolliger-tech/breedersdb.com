@@ -7,6 +7,10 @@
       (val: string) =>
         !!val ||
         t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
+      (val: string) => {
+        const regex = new RegExp('^[^\\n]{1,45}$');
+        return regex.test(val) || t('base.validation.noNewLines45Chars');
+      },
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"
@@ -18,7 +22,6 @@
   <CultivarSelect
     :ref="(el: InputRef) => (refs.cultivarRef = el)"
     v-model="data.cultivar_id"
-    :include-id="props.pollen.cultivar_id"
     :required="true"
   />
   <EntityInput

@@ -59,8 +59,8 @@
           <slot name="inputHint"></slot>
         </template>
 
-        <template v-if="$slots.inputError" #error>
-          <slot name="inputError"></slot>
+        <template v-if="fetchError" #error>
+          {{ t('entity.nameSegmentDataError') }}
         </template>
       </q-input>
     </template>
@@ -75,17 +75,18 @@ import { ref } from 'vue';
 import type { QInput, QInputProps } from 'quasar';
 import { focusInView } from 'src/utils/focusInView';
 
-export interface LotNameInputProps {
+export interface EntityNameSegmentInputProps {
   rules: QInputProps['rules'];
-  mask: QInputProps['mask'];
-  fillMask: QInputProps['fillMask'];
-  unmaskedValue: QInputProps['unmaskedValue'];
+  mask?: QInputProps['mask'];
+  fillMask?: QInputProps['fillMask'];
+  unmaskedValue?: QInputProps['unmaskedValue'];
   loading: QInputProps['loading'];
   prefix: string | null;
   nextFreeNameSegment: string | null;
+  fetchError: boolean;
 }
 
-defineProps<LotNameInputProps>();
+defineProps<EntityNameSegmentInputProps>();
 const modelValue = defineModel<string>({ required: true });
 
 const inputRef = ref<QInput | null>(null);

@@ -23,6 +23,7 @@
     :prefix="crossing?.name || null"
     :next-free-name-segment="nextFreeNameSegment"
     :loading="loading || fetchingLots || fetchingNameSegmentUnique"
+    :fetch-error="crossingError || !!lotsError"
   >
     <template #explainerFullNameListItems>
       <i18n-t tag="li" keypath="lots.explainer.1.base" scope="global">
@@ -68,10 +69,6 @@
           ><code>{{ currentYear }}A</code></template
         >
       </i18n-t>
-    </template>
-
-    <template v-if="crossingError || lotsError" #inputError>
-      {{ t('lots.nameSegmentDataError') }}
     </template>
   </EntityNameSegmentInput>
 </template>

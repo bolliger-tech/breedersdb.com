@@ -34,7 +34,4 @@ export const lots = {
       hint: 'Hint',
     },
   },
-
-  nameSegmentDataError:
-    'Failed to load data. Auto-generate not available, limited validation only.',
 };

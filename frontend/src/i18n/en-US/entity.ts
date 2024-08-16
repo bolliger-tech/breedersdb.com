@@ -47,6 +47,10 @@ export const entity = {
     displayName: 'display name',
   },
 
-  nameOverrideHint:
-    'If you wish the system to show a different name, you can use the display name field below.',
+  nameOverrideHint: {
+    onNameSegment:
+      'If you wish the system to show a different name, fill in the display name field below.',
+    onNameOverride:
+      'This is how the {entity} will be displayed. Leave it empty to use the breeding name.',
+  },
 };

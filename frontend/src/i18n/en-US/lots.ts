@@ -18,7 +18,6 @@ export const lots = {
       'The name must be two digits followed by a capital letter. Example: 24A. Hint: Use the year as the first two digits.',
     nameNotUniqueWithCrossing:
       'This name is already in use for the selected crossing. Next available name: {name}',
-    invalidNameOverrideFormat: 'Dots or newlines are not allowed.',
   },
 
   segmentNameHint:
@@ -39,6 +38,4 @@ export const lots = {
   autoGenerate: 'Auto-generate',
   nameSegmentDataError:
     'Failed to load data. Auto-generate not available, limited validation only.',
-  nameOverrideHint:
-    'This is how the lot will be displayed. Leave it empty to use the breeding name.',
 };

@@ -58,6 +58,7 @@ export const base = {
     xMustBeGreaterThanZero: '{x} must be greater than zero.',
     noNewLines45Chars:
       'Invalid characters or length. No new lines allowed. It must be between 1 and 45 characters long.',
+    noDotsOrNewLines: 'Dots and line breaks are not allowed.',
   },
 
   noResults: 'No results',

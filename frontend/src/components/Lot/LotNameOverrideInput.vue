@@ -8,14 +8,18 @@
       (val: string | null | undefined) =>
         !val ||
         /^[^\n\.]{1,25}$/.test(val) ||
-        t('lots.validation.invalidNameOverrideFormat'),
+        t('base.validation.noDotsOrNewLines'),
       async (val: string | null | undefined) =>
         !val ||
         (await isNameOverrideUnique(val)) ||
         t('base.validation.nameNotUnique'),
     ]"
     :loading="fetchingNameOverrideUnique"
-    :hint="t('lots.nameOverrideHint')"
+    :hint="
+      t('entity.nameOverrideHint.onNameOverride', {
+        entity: t('base.entityName.lot', 1),
+      })
+    "
   />
 </template>
 

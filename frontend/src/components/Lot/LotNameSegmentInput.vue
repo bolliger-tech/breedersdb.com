@@ -50,7 +50,7 @@
               ><strong>{{ t('lots.explainer.2.hint') }}</strong></template
             >
           </i18n-t>
-          <li>{{ t('entity.nameOverrideHint') }}</li>
+          <li>{{ t('entity.nameOverrideHint.onNameSegment') }}</li>
         </ul>
       </div>
     </template>

@@ -7,6 +7,10 @@
       (val: string) =>
         !!val ||
         t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
+      (val: string) => {
+        const regex = new RegExp('^[^\\n]{1,45}$');
+        return regex.test(val) || t('base.validation.noNewLines45Chars');
+      },
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"
@@ -15,19 +19,16 @@
     debounce="300"
     :loading="fetchingNameUnique"
   />
-  <PlantSelect
-    :ref="(el: InputRef) => (refs.plantRef = el)"
-    v-model="data.plant_id"
-    reject-eliminated
-  />
-  <PollenSelect
-    :ref="(el: InputRef) => (refs.pollenRef = el)"
-    v-model="data.pollen_id"
-  />
   <CrossingSelect
     :ref="(el: InputRef) => (refs.crossingRef = el)"
     v-model="data.crossing_id"
     :required="true"
+    :include-id="data.crossing_id"
+  />
+  <PlantSelect
+    :ref="(el: InputRef) => (refs.plantRef = el)"
+    v-model="data.plant_id"
+    reject-eliminated
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateImpregnatedRef = el)"
@@ -36,12 +37,9 @@
     type="date"
     autocomplete="off"
   />
-  <EntityInput
-    :ref="(el: InputRef) => (refs.dateFruitsHarvestedRef = el)"
-    v-model="data.date_fruits_harvested"
-    :label="t('motherPlants.fields.dateFruitsHarvested')"
-    type="date"
-    autocomplete="off"
+  <PollenSelect
+    :ref="(el: InputRef) => (refs.pollenRef = el)"
+    v-model="data.pollen_id"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.numbFlowersRef = el)"
@@ -55,6 +53,13 @@
     v-model="data.numb_fruits"
     :label="t('motherPlants.fields.numbFruits')"
     type="number"
+    autocomplete="off"
+  />
+  <EntityInput
+    :ref="(el: InputRef) => (refs.dateFruitsHarvestedRef = el)"
+    v-model="data.date_fruits_harvested"
+    :label="t('motherPlants.fields.dateFruitsHarvested')"
+    type="date"
     autocomplete="off"
   />
   <EntityInput

@@ -24,10 +24,9 @@ import { focusInView } from 'src/utils/focusInView';
 
 export interface CultivarSelectProps {
   required?: boolean;
-  includeId?: number;
   label?: string;
 }
-const props = defineProps<CultivarSelectProps>();
+defineProps<CultivarSelectProps>();
 
 const cultivarRef = ref<EntitySelectInstance<{
   id: number;
@@ -41,13 +40,9 @@ defineExpose({
 
 const modelValue = defineModel<number | null | undefined>({ required: true });
 
-const where = computed(() => ({
-  _and: [...(props.includeId ? [{ id: { _eq: props.includeId } }] : [])],
-}));
-
 const query = graphql(`
-  query Cultivars($where: cultivars_bool_exp!) {
-    cultivars(order_by: { display_name: asc }, where: $where) {
+  query Cultivars {
+    cultivars(order_by: { display_name: asc }) {
       id
       display_name
     }
@@ -56,7 +51,7 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
-  variables: { where },
+  requestPolicy: 'cache-and-network',
 });
 
 const cultivarOptions = computed(() => data.value?.cultivars ?? []);

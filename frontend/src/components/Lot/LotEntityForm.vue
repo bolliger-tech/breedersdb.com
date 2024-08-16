@@ -3,6 +3,7 @@
     :ref="(el: InputRef) => (refs.crossingRef = el)"
     v-model="data.crossing_id"
     :required="true"
+    :include-id="data.crossing_id || undefined"
     @update:model-value="
       () => data.name_segment && refs.nameInputsRef?.validate()
     "

@@ -7,6 +7,10 @@
       (val: string) =>
         !!val ||
         t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
+      (val: string) => {
+        const regex = new RegExp('^[-_\\w\\d]{1,8}$');
+        return regex.test(val) || t('crossings.validation.nameInvalid');
+      },
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"
@@ -14,18 +18,17 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
+    :required="true"
   />
   <CultivarSelect
     :ref="(el: InputRef) => (refs.motherCultivarRef = el)"
     v-model="data.mother_cultivar_id"
     :label="t('crossings.fields.motherCultivar')"
-    :include-id="props.crossing.mother_cultivar_id || undefined"
   />
   <CultivarSelect
     :ref="(el: InputRef) => (refs.fatherCultivarRef = el)"
     v-model="data.father_cultivar_id"
     :label="t('crossings.fields.fatherCultivar')"
-    :include-id="props.crossing.father_cultivar_id || undefined"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.noteRef = el)"

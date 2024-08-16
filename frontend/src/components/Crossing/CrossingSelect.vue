@@ -24,8 +24,9 @@ import { focusInView } from 'src/utils/focusInView';
 
 export interface CrossingSelectProps {
   required?: boolean;
+  includeId?: number;
 }
-defineProps<CrossingSelectProps>();
+const props = defineProps<CrossingSelectProps>();
 
 const crossingRef = ref<EntitySelectInstance<{
   id: number;
@@ -39,9 +40,16 @@ defineExpose({
 
 const modelValue = defineModel<number | null | undefined>({ required: true });
 
+const where = computed(() => ({
+  _or: [
+    { is_variety: { _eq: false } },
+    ...(props.includeId ? [{ id: { _eq: props.includeId } }] : []),
+  ],
+}));
+
 const query = graphql(`
-  query Crossings {
-    crossings(where: { is_variety: { _eq: false } }, order_by: { name: asc }) {
+  query Crossings($where: crossings_bool_exp!) {
+    crossings(where: $where, order_by: { name: asc }) {
       id
       name
     }
@@ -50,6 +58,8 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
+  variables: { where },
+  requestPolicy: 'cache-and-network',
 });
 
 const crossingOptions = computed(() => data.value?.crossings ?? []);

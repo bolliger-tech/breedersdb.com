@@ -176,6 +176,7 @@ const {
   query,
   pause: true,
   variables,
+  requestPolicy: 'cache-and-network',
 });
 
 watch(fetching, (f) => emit('fetching', f));

@@ -48,6 +48,7 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
+  requestPolicy: 'cache-and-network',
 });
 
 const plantGroupOptions = computed(() => data.value?.plant_groups ?? []);

@@ -54,7 +54,7 @@ export function useEntityIndexHooks<T>({
       return { [column]: { name: order } };
     }
 
-    return [{ [column]: order }, { id: 'asc' }];
+    return [nestObject({ [column]: order }), { id: 'asc' }];
   });
 
   const where = computed(() => {

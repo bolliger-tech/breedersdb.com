@@ -14,7 +14,7 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
-    :required="true"
+    required
   />
 </template>
 

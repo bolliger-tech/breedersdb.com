@@ -21,12 +21,12 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
-    :required="true"
+    required
   />
   <CultivarSelect
     :ref="(el: InputRef) => (refs.cultivarId = el)"
     v-model="data.cultivar_id"
-    :required="true"
+    required
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateHarvested = el)"

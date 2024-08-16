@@ -14,14 +14,14 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
-    :required="true"
+    required
   />
   <EntityToggle
     :ref="(el: InputRef) => (refs.disabled = el)"
     v-model="data.disabled"
     :label="t('entity.commonColumns.disabled')"
     :explainer="t('orchards.disableExplainer')"
-    :required="true"
+    required
     color="primary"
   />
 </template>

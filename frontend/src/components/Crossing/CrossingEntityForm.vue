@@ -21,7 +21,7 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
-    :required="true"
+    required
   />
   <CultivarSelect
     :ref="(el: InputRef) => (refs.motherCultivarId = el)"

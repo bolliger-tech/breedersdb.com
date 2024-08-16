@@ -21,12 +21,12 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
-    :required="true"
+    required
   />
   <CrossingSelect
     :ref="(el: InputRef) => (refs.crossingId = el)"
     v-model="data.crossing_id"
-    :required="true"
+    required
   />
   <PlantSelect
     :ref="(el: InputRef) => (refs.plantId = el)"

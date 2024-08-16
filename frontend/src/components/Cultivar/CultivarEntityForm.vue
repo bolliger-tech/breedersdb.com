@@ -50,12 +50,12 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameOverrideUnique"
-    :required="true"
+    required
   />
   <LotSelect
     :ref="(el: InputRef) => (refs.lotId = el)"
     v-model="data.lot_id"
-    :required="true"
+    required
     @update:model-value="() => refs.nameSegmentRef?.validate()"
   />
   <EntityInput

@@ -53,4 +53,6 @@ export const entity = {
     onNameOverride:
       'This is how the {entity} will be displayed. Leave it empty to use the breeding name.',
   },
+
+  autoFillNextSegment: 'Auto-fill',
 };

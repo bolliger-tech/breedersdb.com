@@ -13,4 +13,9 @@ export const motherPlants = {
     pollen: 'Pollen',
     crossing: 'Crossing',
   },
+
+  hints: {
+    crossing:
+      'WIP: The crossing is determined by plant -> group -> cultivar -> lot -> crossing',
+  },
 };

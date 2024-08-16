@@ -23,15 +23,19 @@
     :loading="fetchingNameUnique"
     required
   />
-  <CrossingSelect
-    :ref="(el: InputRef) => (refs.crossingId = el)"
-    v-model="data.crossing_id"
-    required
-  />
   <PlantSelect
     :ref="(el: InputRef) => (refs.plantId = el)"
     v-model="data.plant_id"
+    :include-id="motherPlant.plant_id || undefined"
+    required
     reject-eliminated
+    @plant="newPlantSelected"
+  />
+  <CrossingSelect
+    :ref="(el: InputRef) => (refs.crossingId = el)"
+    v-model="data.crossing_id"
+    readonly
+    :hint="t('motherPlants.hints.crossing')"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateImpregnated = el)"
@@ -95,7 +99,7 @@ import {
 } from './MotherPlantModalEdit.vue';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
-import PlantSelect from '../Plant/PlantSelect.vue';
+import PlantSelect, { PlantSelectPlant } from '../Plant/PlantSelect.vue';
 import PollenSelect from '../Pollen/PollenSelect.vue';
 import CrossingSelect from '../Crossing/CrossingSelect.vue';
 
@@ -136,6 +140,11 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   numbSeeds: null,
   note: null,
 });
+
+function newPlantSelected(plant: PlantSelectPlant) {
+  // TODO: this does not seem to be correct
+  data.value.crossing_id = plant.plant_group.cultivar.lot.crossing.id;
+}
 
 const { isDirty, validate } = useEntityForm({
   refs,

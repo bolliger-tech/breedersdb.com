@@ -9,6 +9,7 @@
     :loading="fetching"
     :error="error"
     :required="required"
+    :readonly="readonly"
   />
 </template>
 
@@ -24,6 +25,7 @@ import { focusInView } from 'src/utils/focusInView';
 
 export interface CrossingSelectProps {
   required?: boolean;
+  readonly?: boolean;
 }
 defineProps<CrossingSelectProps>();
 

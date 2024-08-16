@@ -1,6 +1,9 @@
 <template>
   <EntityInput
-    v-if="props.plantGroup.label_id"
+    v-if="
+      'label_id' in props.plantGroup &&
+      typeof props.plantGroup.label_id === 'string'
+    "
     :model-value="props.plantGroup.label_id"
     :label="t('plantGroups.fields.labelId')"
     type="text"

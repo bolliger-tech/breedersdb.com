@@ -39,7 +39,13 @@ import { useI18n } from 'src/composables/useI18n';
 
 export type PlantGroupEditInput = Omit<
   PlantGroupFragment,
-  'created' | 'modified' | 'cultivar'
+  | 'created'
+  | 'modified'
+  | 'cultivar'
+  | 'full_name'
+  | 'display_name'
+  | 'label_id'
+  | 'cultivar_name'
 >;
 export type PlantGroupInsertInput = Omit<
   PlantGroupEditInput,

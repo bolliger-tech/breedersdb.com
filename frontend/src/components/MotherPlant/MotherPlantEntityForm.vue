@@ -28,6 +28,7 @@
     :ref="(el: InputRef) => (refs.crossingRef = el)"
     v-model="data.crossing_id"
     :required="true"
+    :include-id="data.crossing_id"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateImpregnatedRef = el)"

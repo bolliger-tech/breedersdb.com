@@ -11,7 +11,10 @@
         }),
       (val: string) => {
         const regex = new RegExp('^[-_\\w\\d]{1,25}$');
-        return regex.test(val) || t('cultivars.validation.nameSegmentInvalid');
+        return (
+          regex.test(val) ||
+          t('base.validation.noSpecialCharsMaxLength', { max: 25 })
+        );
       },
       async (val: string) =>
         (await isNameSegmentUnique(val)) ||
@@ -35,7 +38,10 @@
         }),
       (val: string) => {
         const regex = new RegExp('^[^\\n\\.]{1,51}$');
-        return regex.test(val) || t('cultivars.validation.nameOverrideInvalid');
+        return (
+          regex.test(val) ||
+          t('base.validation.noNewLinesMaxLength', { max: 51 })
+        );
       },
       async (val: string) =>
         (await isNameOverrideUnique(val)) || t('base.validation.nameNotUnique'),

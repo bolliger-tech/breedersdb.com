@@ -1,8 +1,7 @@
 <template>
-  <EntityInput
-    ref="inputRef"
-    :model-value="modelValue"
-    :label="t('entity.commonColumns.explicitDisplayName')"
+  <EntityNameOverrideInput
+    v-model="modelValue"
+    :full-name="fullName"
     :rules="[
       (val: string | null | undefined) =>
         !val || val.length <= 25 || t('base.validation.maxLen', { x: 25 }),
@@ -15,18 +14,13 @@
         (await isNameOverrideUnique(val)) ||
         t('base.validation.nameNotUnique'),
     ]"
-    type="text"
-    autocomplete="off"
-    debounce="300"
     :loading="fetchingNameOverrideUnique"
     :hint="t('lots.nameOverrideHint')"
-    :placeholder="fullName"
-    @update:model-value="updateModelValue"
   />
 </template>
 
 <script setup lang="ts">
-import EntityInput from '../Entity/Edit/EntityInput.vue';
+import EntityNameOverrideInput from '../Entity/Edit/EntityNameOverrideInput.vue';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
@@ -55,11 +49,4 @@ const { isUnique: isNameOverrideUnique, fetching: fetchingNameOverrideUnique } =
   });
 
 const { t } = useI18n();
-
-function updateModelValue(
-  value: InstanceType<typeof EntityInput>['modelValue'],
-) {
-  const clean = value?.toString().trim();
-  modelValue.value = !clean ? null : clean;
-}
 </script>

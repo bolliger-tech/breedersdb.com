@@ -51,4 +51,6 @@ export const plants = {
 
   scanQrCode: 'Scan QR code',
   enterLabelId: 'Enter label ID',
+
+  plantSelect: 'Plant (label ID)',
 };

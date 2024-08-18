@@ -2,7 +2,7 @@
   <EntitySelect
     ref="plantRef"
     v-model="plant"
-    :label="t('plants.title')"
+    :label="t('plants.plantSelect')"
     :options="plantOptions"
     option-value="id"
     option-label="label_id"

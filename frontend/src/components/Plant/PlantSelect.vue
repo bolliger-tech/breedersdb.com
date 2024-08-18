@@ -11,6 +11,13 @@
     :required="required"
     :filter-fn="filterOptions"
     :no-option-text="t('plants.selectSearchNoOption')"
+    :rules="[
+      (v) =>
+        !rejectEliminated ||
+        !v ||
+        !v.disabled ||
+        t('plants.errors.eliminatedNotAllowed'),
+    ]"
   />
 </template>
 
@@ -27,10 +34,12 @@ import {
   FilterSelectOptionsUpdateFn,
   selectFirstOption,
 } from 'src/utils/selectOptionFilter';
+import { zeroFill } from 'src/utils/labelIdUtils';
 
 export interface PlantSelectProps {
   required?: boolean;
   includeId?: number;
+  rejectEliminated?: boolean;
 }
 const props = defineProps<PlantSelectProps>();
 
@@ -54,23 +63,15 @@ const modelValue = defineModel<number | null>({ required: true });
 const search = ref(modelValue.value?.toString() || '');
 
 const where = computed(() => {
-  const clause: UseQueryArgs<typeof query>['variables'] = {
-    _or: [...(props.includeId ? [{ id: { _eq: props.includeId } }] : [])],
-  };
+  const or: UseQueryArgs<typeof query>['variables'] = [
+    { label_id: { _eq: `${zeroFill(search.value)}` } },
+  ];
 
-  const or = clause._or;
-
-  if (search.value.match(/^\d+$/)) {
-    or.push({ label_id: { _eq: `${search.value.padStart(8, '0')}` } });
+  if (props.includeId) {
+    or.push({ id: { _eq: props.includeId } });
   }
 
-  if (search.value.match(/^#\d+$/)) {
-    or.push({
-      label_id: { _eq: `#${search.value.replace('#', '').padStart(8, '0')}` },
-    });
-  }
-
-  return clause;
+  return { _or: or };
 });
 
 const query = graphql(`
@@ -130,7 +131,7 @@ async function filterOptions(
     );
     return;
   }
-  search.value = value;
+  search.value = value.trim();
   await nextTick();
   const result = await executeQuery();
   update(

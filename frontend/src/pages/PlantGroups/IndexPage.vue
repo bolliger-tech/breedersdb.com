@@ -14,6 +14,8 @@
       list-entities-path="/groups"
       add-entity-path="/groups/new"
       :view-entity-path-getter="(id) => `/groups/${id}`"
+      :has-qr-scanner="true"
+      @scanned-qr="onScannedQr"
     />
   </PageLayout>
 </template>
@@ -22,13 +24,14 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { UnwrapRef, computed, watch } from 'vue';
+import { UnwrapRef, computed, nextTick, ref, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
+import { useRouter } from 'vue-router';
 
 const { t, d } = useI18n();
 
@@ -150,4 +153,50 @@ watch(
   },
   { immediate: true },
 );
+
+const router = useRouter();
+
+const queryPlantGroupIdByLabelId = graphql(`
+  query PlantGroupIdByLabelId($labelId: String!) {
+    plant_groups(where: { label_id: { _eq: $labelId } }) {
+      id
+    }
+  }
+`);
+const queryPlantGroupIdByPlantLabelId = graphql(`
+  query PlantGroupIdByPlantLabelId($labelId: String!) {
+    plants(where: { label_id: { _eq: $labelId } }) {
+      id
+      plant_group_id
+    }
+  }
+`);
+const scannedLabelId = ref({ labelId: '' });
+const queryPlantGroupId = computed(() =>
+  scannedLabelId.value.labelId.startsWith('G')
+    ? queryPlantGroupIdByLabelId
+    : queryPlantGroupIdByPlantLabelId,
+);
+
+const { executeQuery } = await useQuery({
+  query: queryPlantGroupId,
+  variables: scannedLabelId,
+  pause: true,
+});
+
+async function onScannedQr(code: string) {
+  scannedLabelId.value.labelId = code;
+  await nextTick();
+  const { data } = await executeQuery();
+  const id =
+    data.value?.plant_groups?.[0]?.id ||
+    (data.value as unknown as ResultOf<typeof queryPlantGroupIdByPlantLabelId>)
+      ?.plants?.[0]?.plant_group_id;
+
+  if (id) {
+    router.push({ path: `/groups/${id}` });
+  } else {
+    search.value = code;
+  }
+}
 </script>

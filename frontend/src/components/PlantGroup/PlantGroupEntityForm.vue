@@ -28,6 +28,13 @@
     "
     :cultivar-id="data.cultivar_id || null"
   />
+  <EntityToggle
+    :ref="(el: InputRef) => (refs.disabledRef = el)"
+    v-model="data.disabled"
+    :required="true"
+    :label="t('entity.commonColumns.disabled')"
+    :explainer="t('plantGroups.disableExplainer')"
+  />
   <EntityInput
     :ref="(el: InputRef) => (refs.noteRef = el)"
     v-model="data.note"
@@ -42,6 +49,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
+import EntityToggle from '../Entity/Edit/EntityToggle.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
@@ -67,6 +75,7 @@ const initialData = {
   cultivar_id: props.plantGroup.cultivar_id,
   name_segment: props.plantGroup.name_segment,
   name_override: props.plantGroup.name_override,
+  disabled: props.plantGroup.disabled,
   note: props.plantGroup.note,
 };
 
@@ -75,6 +84,7 @@ const data = ref({ ...initialData });
 const refs = ref<{ [key: string]: InputRef | null }>({
   cultivarRef: null,
   nameInputsRef: null,
+  disabledRef: null,
   noteRef: null,
 });
 

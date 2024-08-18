@@ -95,7 +95,7 @@ const {
     mutation DisablePlantGroup($id: Int!) {
       update_plant_groups_by_pk(
         pk_columns: { id: $id }
-        _set: { date_eliminated: "now()" }
+        _set: { disabled: true }
       ) {
         id
       }

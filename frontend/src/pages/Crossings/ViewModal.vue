@@ -237,12 +237,7 @@ const motherPlantsColumns = [
     field: 'date_impregnated',
     align: 'left' as const,
     sortable: true,
-    sort: (
-      a: MotherPlant['date_impregnated'],
-      b: MotherPlant['date_impregnated'],
-    ) => localizedSortPredicate(a || '', b || ''),
-    format: (v: MotherPlant['date_impregnated']) =>
-      v ? localizeDate(v) : t('base.notAvailable'),
+    format: (v: MotherPlant['date_impregnated']) => (v ? localizeDate(v) : ''),
   },
 ];
 </script>

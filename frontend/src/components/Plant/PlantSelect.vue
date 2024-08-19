@@ -23,7 +23,7 @@
     :hint="hint"
   >
     <template #after-options>
-      <q-item dense class="shade">
+      <q-item dense>
         <q-item-section class="text-grey text-caption text-italic">
           {{ t('plants.selectSearchNoOption') }}
         </q-item-section>

@@ -12,18 +12,21 @@
     :filter-fn="filterOptions"
     :no-option-text="t('plants.selectSearchNoOption')"
     :rules="[
-      (v) =>
-        !rejectEliminated ||
+      (v: PlantSelectPlant | null | undefined) =>
         !v ||
+        !rejectEliminated ||
+        (includeId && v?.id === includeId) ||
         !v.disabled ||
         t('plants.errors.eliminatedNotAllowed'),
     ]"
+    :hint="hint"
+    @update:model-value="(p: PlantSelectPlant) => $emit('plantChanged', p)"
   />
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ShallowRef, UnwrapRef, computed, nextTick, ref, watch } from 'vue';
+import { ShallowRef, UnwrapRef, computed, nextTick, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import EntitySelect, {
@@ -40,6 +43,7 @@ export interface PlantSelectProps {
   required?: boolean;
   includeId?: number;
   rejectEliminated?: boolean;
+  hint?: string;
 }
 const props = defineProps<PlantSelectProps>();
 
@@ -53,9 +57,9 @@ defineExpose({
   focus: () => plantRef.value && focusInView(plantRef.value),
 });
 
-export type PlantSelectPlant = NonNullable<typeof data.value>['plants'][0];
-const emit = defineEmits<{
-  plant: [data: PlantSelectPlant];
+export type PlantSelectPlant = typeof plant.value;
+defineEmits<{
+  plantChanged: [plant: PlantSelectPlant];
 }>();
 
 const modelValue = defineModel<number | null>({ required: true });
@@ -84,13 +88,7 @@ const query = graphql(`
         id
         cultivar {
           id
-          lot {
-            id
-            crossing {
-              id
-              name
-            }
-          }
+          display_name
         }
       }
     }
@@ -109,12 +107,6 @@ const plantOptions = computed(() => data.value?.plants ?? []);
 const plant = computed({
   get: () => plantOptions.value.find((o) => o.id === modelValue.value),
   set: (plant) => (modelValue.value = plant?.id ?? null),
-});
-
-watch(plant, () => {
-  if (plant.value) {
-    emit('plant', plant.value);
-  }
 });
 
 const { t } = useI18n();

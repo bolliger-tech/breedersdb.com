@@ -38,6 +38,7 @@
       (c) => {
         selectedCrossing = c ? c : null;
         refs.plantId?.validate();
+        refs.pollenId?.validate();
       }
     "
   />
@@ -49,7 +50,7 @@
     reject-eliminated
     :hint="
       selectedPlant
-        ? t('motherPlants.plantCultivar', {
+        ? t('motherPlants.hints.plantCultivar', {
             cultivar: selectedPlant.plant_group.cultivar.display_name,
           })
         : undefined
@@ -60,7 +61,7 @@
         !selectedCrossing ||
         !selectedCrossing.mother_cultivar ||
         v.plant_group.cultivar.id === selectedCrossing.mother_cultivar.id ||
-        t('motherPlants.crossingCultivarMismatch', {
+        t('motherPlants.crossingPlantCultivarMismatch', {
           plantCultivar: v.plant_group.cultivar.display_name,
           crossingMotherPlantCultivar:
             selectedCrossing.mother_cultivar.display_name,
@@ -78,6 +79,27 @@
   <PollenSelect
     :ref="(el: InputRef) => (refs.pollenId = el)"
     v-model="data.pollen_id"
+    :required="!!selectedCrossing?.father_cultivar"
+    :hint="
+      selectedPollen
+        ? t('motherPlants.hints.pollenCultivar', {
+            cultivar: selectedPollen.cultivar.display_name,
+          })
+        : undefined
+    "
+    :rules="[
+      (v: PollenSelectPollen | null | undefined) =>
+        !v ||
+        !selectedCrossing ||
+        !selectedCrossing.father_cultivar ||
+        v.cultivar.id === selectedCrossing.father_cultivar.id ||
+        t('motherPlants.crossingPollenCultivarMismatch', {
+          pollenCultivar: v.cultivar.display_name,
+          crossingFatherPlantCultivar:
+            selectedCrossing.father_cultivar.display_name,
+        }),
+    ]"
+    @pollen-changed="(p) => (selectedPollen = p ? p : null)"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.numbFlowers = el)"
@@ -131,7 +153,7 @@ import {
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import PlantSelect, { PlantSelectPlant } from '../Plant/PlantSelect.vue';
-import PollenSelect from '../Pollen/PollenSelect.vue';
+import PollenSelect, { PollenSelectPollen } from '../Pollen/PollenSelect.vue';
 import CrossingSelect, {
   CrossingSelectCrossing,
 } from '../Crossing/CrossingSelect.vue';
@@ -196,4 +218,5 @@ const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
 
 const selectedPlant = ref<PlantSelectPlant | null>(null);
 const selectedCrossing = ref<CrossingSelectCrossing | null>(null);
+const selectedPollen = ref<PollenSelectPollen | null>(null);
 </script>

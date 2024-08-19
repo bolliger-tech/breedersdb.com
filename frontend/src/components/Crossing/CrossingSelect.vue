@@ -62,6 +62,10 @@ const query = graphql(`
         id
         display_name
       }
+      father_cultivar {
+        id
+        display_name
+      }
     }
   }
 `);

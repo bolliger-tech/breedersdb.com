@@ -9,6 +9,7 @@
     :loading="fetching"
     :error="error"
     :required="required"
+    @update:model-value="(p: PollenSelectPollen) => $emit('pollenChanged', p)"
   />
 </template>
 
@@ -38,6 +39,11 @@ defineExpose({
   focus: () => pollenRef.value && focusInView(pollenRef.value),
 });
 
+export type PollenSelectPollen = typeof pollen.value;
+defineEmits<{
+  pollenChanged: [plant: PollenSelectPollen];
+}>();
+
 const modelValue = defineModel<number | null | undefined>({ required: true });
 
 const query = graphql(`
@@ -45,6 +51,10 @@ const query = graphql(`
     pollen(order_by: { name: asc }) {
       id
       name
+      cultivar {
+        id
+        display_name
+      }
     }
   }
 `);

@@ -29,7 +29,9 @@
     :hint="
       selectedCrossing?.mother_cultivar
         ? t('motherPlants.hints.crossing', {
-            cultivar: selectedCrossing.mother_cultivar.display_name,
+            motherCultivar: selectedCrossing.mother_cultivar.display_name,
+            fatherCultivar:
+              selectedCrossing.father_cultivar?.display_name || '–',
           })
         : undefined
     "
@@ -37,8 +39,8 @@
     @crossing-changed="
       (c) => {
         selectedCrossing = c ? c : null;
-        refs.plantId?.validate();
-        refs.pollenId?.validate();
+        data.plant_id && refs.plantId?.validate();
+        data.pollen_id && refs.pollenId?.validate();
       }
     "
   />

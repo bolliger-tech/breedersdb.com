@@ -10,6 +10,9 @@
     :error="error"
     :required="required"
     :readonly="readonly"
+    @update:model-value="
+      (c: CrossingSelectCrossing) => $emit('crossingChanged', c)
+    "
   />
 </template>
 
@@ -40,6 +43,11 @@ defineExpose({
   focus: () => crossingRef.value && focusInView(crossingRef.value),
 });
 
+export type CrossingSelectCrossing = typeof crossing.value;
+defineEmits<{
+  crossingChanged: [crossing: CrossingSelectCrossing];
+}>();
+
 const modelValue = defineModel<number | null | undefined>({ required: true });
 
 const query = graphql(`
@@ -47,6 +55,10 @@ const query = graphql(`
     crossings(where: $where, order_by: { name: asc }) {
       id
       name
+      mother_cultivar {
+        id
+        display_name
+      }
     }
   }
 `);

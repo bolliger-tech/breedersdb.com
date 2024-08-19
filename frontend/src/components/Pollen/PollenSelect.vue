@@ -9,13 +9,12 @@
     :loading="fetching"
     :error="error"
     :required="required"
-    @update:model-value="(p: PollenSelectPollen) => $emit('pollenChanged', p)"
   />
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
@@ -40,7 +39,7 @@ defineExpose({
 });
 
 export type PollenSelectPollen = typeof pollen.value;
-defineEmits<{
+const emit = defineEmits<{
   pollenChanged: [plant: PollenSelectPollen];
 }>();
 
@@ -70,6 +69,8 @@ const pollen = computed({
   get: () => pollenOptions.value.find((o) => o.id === modelValue.value),
   set: (pollen) => (modelValue.value = pollen?.id ?? null),
 });
+
+watch(pollen, (newPollen) => emit('pollenChanged', newPollen));
 
 const { t } = useI18n();
 </script>

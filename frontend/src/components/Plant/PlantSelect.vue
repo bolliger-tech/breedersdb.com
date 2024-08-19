@@ -21,7 +21,6 @@
       ...rules,
     ]"
     :hint="hint"
-    @update:model-value="(p: PlantSelectPlant) => $emit('plantChanged', p)"
   >
     <template #after-options>
       <q-item dense class="shade">
@@ -35,7 +34,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ShallowRef, UnwrapRef, computed, nextTick, ref } from 'vue';
+import { ShallowRef, UnwrapRef, computed, nextTick, ref, watch } from 'vue';
 import { graphql } from 'src/graphql';
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import EntitySelect, {
@@ -69,7 +68,7 @@ defineExpose({
 });
 
 export type PlantSelectPlant = typeof plant.value;
-defineEmits<{
+const emit = defineEmits<{
   plantChanged: [plant: PlantSelectPlant];
 }>();
 
@@ -119,6 +118,8 @@ const plant = computed({
   get: () => plantOptions.value.find((o) => o.id === modelValue.value),
   set: (plant) => (modelValue.value = plant?.id ?? null),
 });
+
+watch(plant, (newValue) => emit('plantChanged', newValue));
 
 const { t } = useI18n();
 

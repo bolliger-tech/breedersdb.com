@@ -11,15 +11,12 @@
     :required="required"
     :readonly="readonly"
     :rules="rules"
-    @update:model-value="
-      (c: CrossingSelectCrossing) => $emit('crossingChanged', c)
-    "
   />
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
@@ -47,7 +44,7 @@ defineExpose({
 });
 
 export type CrossingSelectCrossing = typeof crossing.value;
-defineEmits<{
+const emit = defineEmits<{
   crossingChanged: [crossing: CrossingSelectCrossing];
 }>();
 
@@ -89,6 +86,8 @@ const crossing = computed({
   get: () => crossingOptions.value.find((o) => o.id === modelValue.value),
   set: (crossing) => (modelValue.value = crossing?.id ?? null),
 });
+
+watch(crossing, (newCrossing) => emit('crossingChanged', newCrossing));
 
 const { t } = useI18n();
 </script>

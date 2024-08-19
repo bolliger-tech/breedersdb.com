@@ -14,8 +14,12 @@ export const motherPlants = {
     crossing: 'Crossing',
   },
 
+  plantCultivar: 'Cultivar of the selected plant: {cultivar}',
+
   hints: {
-    crossing:
-      'WIP: The crossing is determined by plant -> group -> cultivar -> lot -> crossing',
+    crossing: 'Mother cultivar of the selected crossing: {cultivar}',
   },
+
+  crossingCultivarMismatch:
+    'The cultivar of the selected plant ({plantCultivar}) does not match the mother cultivar of the crossing ({crossingMotherPlantCultivar}).',
 };

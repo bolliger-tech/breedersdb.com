@@ -18,6 +18,7 @@
         (includeId && v?.id === includeId) ||
         !v.disabled ||
         t('plants.errors.eliminatedNotAllowed'),
+      ...rules,
     ]"
     :hint="hint"
     @update:model-value="(p: PlantSelectPlant) => $emit('plantChanged', p)"
@@ -30,6 +31,7 @@ import { ShallowRef, UnwrapRef, computed, nextTick, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { UseQueryArgs, useQuery } from '@urql/vue';
 import EntitySelect, {
+  EntitySelectProps,
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
@@ -44,6 +46,7 @@ export interface PlantSelectProps {
   includeId?: number;
   rejectEliminated?: boolean;
   hint?: string;
+  rules?: EntitySelectProps<unknown>['rules'];
 }
 const props = defineProps<PlantSelectProps>();
 

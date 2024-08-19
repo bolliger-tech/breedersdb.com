@@ -10,6 +10,7 @@
     :error="error"
     :required="required"
     :readonly="readonly"
+    :rules="rules"
     @update:model-value="
       (c: CrossingSelectCrossing) => $emit('crossingChanged', c)
     "
@@ -22,6 +23,7 @@ import { computed, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
+  EntitySelectProps,
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
@@ -30,6 +32,7 @@ export interface CrossingSelectProps {
   required?: boolean;
   readonly?: boolean;
   includeId?: number;
+  rules?: EntitySelectProps<unknown>['rules'];
 }
 const props = defineProps<CrossingSelectProps>();
 

@@ -23,19 +23,50 @@
     :loading="fetchingNameUnique"
     required
   />
+  <CrossingSelect
+    :ref="(el: InputRef) => (refs.crossingId = el)"
+    v-model="data.crossing_id"
+    :hint="
+      selectedCrossing?.mother_cultivar
+        ? t('motherPlants.hints.crossing', {
+            cultivar: selectedCrossing.mother_cultivar.display_name,
+          })
+        : undefined
+    "
+    required
+    @crossing-changed="
+      (c) => {
+        selectedCrossing = c ? c : null;
+        refs.plantId?.validate();
+      }
+    "
+  />
   <PlantSelect
     :ref="(el: InputRef) => (refs.plantId = el)"
     v-model="data.plant_id"
     :include-id="motherPlant.plant_id || undefined"
     required
     reject-eliminated
-    @plant="newPlantSelected"
-  />
-  <CrossingSelect
-    :ref="(el: InputRef) => (refs.crossingId = el)"
-    v-model="data.crossing_id"
-    readonly
-    :hint="t('motherPlants.hints.crossing')"
+    :hint="
+      selectedPlant
+        ? t('motherPlants.plantCultivar', {
+            cultivar: selectedPlant.plant_group.cultivar.display_name,
+          })
+        : undefined
+    "
+    :rules="[
+      (v: PlantSelectPlant | null | undefined) =>
+        !v ||
+        !selectedCrossing ||
+        !selectedCrossing.mother_cultivar ||
+        v.plant_group.cultivar.id === selectedCrossing.mother_cultivar.id ||
+        t('motherPlants.crossingCultivarMismatch', {
+          plantCultivar: v.plant_group.cultivar.display_name,
+          crossingMotherPlantCultivar:
+            selectedCrossing.mother_cultivar.display_name,
+        }),
+    ]"
+    @plant-changed="(p) => (selectedPlant = p ? p : null)"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateImpregnated = el)"
@@ -101,7 +132,9 @@ import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import PlantSelect, { PlantSelectPlant } from '../Plant/PlantSelect.vue';
 import PollenSelect from '../Pollen/PollenSelect.vue';
-import CrossingSelect from '../Crossing/CrossingSelect.vue';
+import CrossingSelect, {
+  CrossingSelectCrossing,
+} from '../Crossing/CrossingSelect.vue';
 
 export interface MotherPlantEntityFormProps {
   motherPlant: MotherPlantInsertInput | MotherPlantEditInput;
@@ -141,11 +174,6 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   note: null,
 });
 
-function newPlantSelected(plant: PlantSelectPlant) {
-  // TODO: this does not seem to be correct
-  data.value.crossing_id = plant.plant_group.cultivar.lot.crossing.id;
-}
-
 const { isDirty, validate } = useEntityForm({
   refs,
   data,
@@ -165,4 +193,7 @@ const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
   tableName: 'mother_plants',
   existingId: ('id' in props.motherPlant && props.motherPlant.id) || undefined,
 });
+
+const selectedPlant = ref<PlantSelectPlant | null>(null);
+const selectedCrossing = ref<CrossingSelectCrossing | null>(null);
 </script>

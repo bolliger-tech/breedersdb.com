@@ -32,11 +32,7 @@
           </RouterLink>
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.dateImpregnated')">
-          {{
-            motherPlant.date_impregnated
-              ? localizeDate(motherPlant.date_impregnated)
-              : t('base.notAvailable')
-          }}
+          {{ localizeDate(motherPlant.date_impregnated) }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.pollen')">
           <RouterLink
@@ -57,11 +53,7 @@
         <EntityViewTableRow
           :label="t('motherPlants.fields.dateFruitsHarvested')"
         >
-          {{
-            motherPlant.date_fruits_harvested
-              ? localizeDate(motherPlant.date_fruits_harvested)
-              : t('base.notAvailable')
-          }}
+          {{ localizeDate(motherPlant.date_fruits_harvested) }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.numbSeeds')">
           {{ motherPlant.numb_seeds }}

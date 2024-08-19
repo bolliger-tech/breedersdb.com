@@ -41,6 +41,7 @@
       <EntityViewRelatedEntityTable
         entity-key="mother_plants"
         :rows="pollen.mother_plants || []"
+        row-key="id"
         :columns="motherPlantsColumns"
         default-sort-by="name"
       >

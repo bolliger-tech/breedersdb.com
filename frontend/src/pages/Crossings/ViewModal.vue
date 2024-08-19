@@ -49,6 +49,7 @@
       <EntityViewRelatedEntityTable
         entity-key="lots"
         :rows="crossing.lots || []"
+        row-key="id"
         :columns="lotsColumns"
         default-sort-by="display_name"
       >
@@ -70,6 +71,7 @@
       <EntityViewRelatedEntityTable
         entity-key="mother_plants"
         :rows="crossing.mother_plants || []"
+        row-key="id"
         :columns="motherPlantsColumns"
         default-sort-by="name"
       >

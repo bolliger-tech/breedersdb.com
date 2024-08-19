@@ -17,7 +17,9 @@
         v-model="input"
         inputmode="tel"
         outlined
+        dense
         type="text"
+        :bg-color="inputBgColor"
         :error-message="error?.message"
         :error="!!error"
         :hint="t('plants.hints.labelIdOmitZeros')"
@@ -40,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { useInputBackground } from 'src/composables/useInputBackground';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
@@ -183,4 +186,6 @@ async function loadPlant() {
   await nextTick(); // ensure the useQuery({variables}) is updated
   await executeQuery();
 }
+
+const { inputBgColor } = useInputBackground();
 </script>

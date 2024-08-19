@@ -41,6 +41,10 @@
       <template v-if="$slots.option" #option="option">
         <slot name="option" v-bind="option"></slot>
       </template>
+
+      <template v-if="$slots['after-options']" #after-options>
+        <slot name="after-options"></slot>
+      </template>
     </q-select>
 
     <q-card v-else>
@@ -136,6 +140,7 @@ defineSlots<{
   option: QSelectSlots['option'];
   explainer: Slot;
   hint: Slot;
+  'after-options': QSelectSlots['after-options'];
 }>();
 
 const modelValue = defineModel<T | null | undefined>();

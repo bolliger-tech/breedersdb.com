@@ -10,7 +10,7 @@
     :error="error"
     :required="required"
     :filter-fn="filterOptions"
-    :no-option-text="t('plants.selectSearchNoOption')"
+    :no-option-text="search ? undefined : t('plants.selectSearchNoOption')"
     :rules="[
       (v: PlantSelectPlant | null | undefined) =>
         !v ||
@@ -22,7 +22,15 @@
     ]"
     :hint="hint"
     @update:model-value="(p: PlantSelectPlant) => $emit('plantChanged', p)"
-  />
+  >
+    <template #after-options>
+      <q-item dense class="shade">
+        <q-item-section class="text-grey text-caption text-italic">
+          {{ t('plants.selectSearchNoOption') }}
+        </q-item-section>
+      </q-item>
+    </template>
+  </EntitySelect>
 </template>
 
 <script setup lang="ts">

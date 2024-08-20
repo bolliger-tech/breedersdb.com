@@ -46,7 +46,7 @@ import {
   UploadResponse,
   hashFile,
 } from 'src/composables/useImageUploader';
-import { resizeImageFile } from 'src/composables/imageResizer';
+import { resizeImageFile } from 'src/utils/imageResizer';
 
 const MAX_IMAGE_SIZE = 3840; // longest side, 4k
 const IMAGE_QUALITY = 0.9; // 0.0 - 1.0 (jpeg)

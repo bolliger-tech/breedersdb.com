@@ -54,6 +54,7 @@
       <EntityViewRelatedEntityTable
         entity-key="cultivars"
         :rows="lot.cultivars || []"
+        row-key="id"
         :columns="cultivarsColumns"
         default-sort-by="display_name"
       >

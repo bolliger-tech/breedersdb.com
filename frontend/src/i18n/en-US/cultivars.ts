@@ -1,7 +1,10 @@
 export const cultivars = {
   title: 'Cultivar | Cultivars',
 
-  searchPlaceholder: 'Search by name or acronym',
+  searchPlaceholder: {
+    subset: 'Search {subset} by name or acronym',
+    all: 'Search by name or acronym',
+  },
 
   analyze: {
     title: 'Analyze',
@@ -18,4 +21,7 @@ export const cultivars = {
     nameNotUniqueWithLot:
       'This name is already in use in combination with the selected lot',
   },
+
+  breedersCultivar: 'breeders cultivar | breeders cultivars',
+  variety: 'variety | varieties',
 };

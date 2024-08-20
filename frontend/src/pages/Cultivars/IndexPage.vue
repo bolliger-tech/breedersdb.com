@@ -1,11 +1,13 @@
 <template>
   <PageLayout>
     <EntityContainer
+      v-model:tab="subset"
       v-model:search="search"
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('cultivars.title', 2)"
-      :search-placeholder="t('cultivars.searchPlaceholder')"
+      :tabs="tabs"
+      :search-placeholder="searchPlaceholder"
       :rows="data?.cultivars || []"
       :loading="fetching"
       :all-columns="columns"
@@ -22,13 +24,14 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, watch, ref, nextTick } from 'vue';
+import { computed, watch, ref, nextTick, UnwrapRef } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useRouter } from 'vue-router';
+import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 
 const { t, d } = useI18n();
 
@@ -61,9 +64,59 @@ const query = graphql(
   [cultivarFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+const { queryArg: subset } = useQueryArg<
+  'breeders_cultivars' | 'varieties' | 'all'
+>({
+  key: 'tab',
+  defaultValue: 'breeders_cultivars',
+  replace: true,
+});
+const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
+  {
+    value: 'breeders_cultivars',
+    label: uppercaseFirstLetter(t('cultivars.breedersCultivar', 2)),
+  },
+  {
+    value: 'varieties',
+    label: uppercaseFirstLetter(t('cultivars.variety', 2)),
+  },
+  { value: 'all', label: t('entity.tabs.all') },
+];
+
+const searchPlaceholder = computed(() => {
+  if (subset.value === 'breeders_cultivars') {
+    return t('cultivars.searchPlaceholder.subset', {
+      subset: t('cultivars.breedersCultivar', 2),
+    });
+  } else if (subset.value === 'varieties') {
+    return t('cultivars.searchPlaceholder.subset', {
+      subset: t('cultivars.variety', 2),
+    });
+  }
+  return t('cultivars.searchPlaceholder.all');
+});
+
+const {
+  search,
+  pagination,
+  variables: _variables,
+} = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'display_name',
   searchColumns: ['display_name', 'acronym'],
+});
+
+const variables = computed(() => {
+  const where = { _and: [_variables.value.where] };
+  if (subset.value === 'breeders_cultivars') {
+    where._and.push({ is_variety: { _eq: false } });
+  } else if (subset.value === 'varieties') {
+    where._and.push({ is_variety: { _eq: true } });
+  }
+
+  return {
+    ..._variables.value,
+    where,
+  };
 });
 
 const { data, fetching, error } = await useQuery({

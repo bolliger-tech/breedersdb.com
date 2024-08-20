@@ -6,9 +6,13 @@
     :options="cultivarOptions"
     option-value="id"
     option-label="display_name"
-    :loading="fetching"
+    :loading="fetching || loading"
     :error="error"
     :required="required"
+    :rules="rules"
+    :hint="hint"
+    :disable="disable"
+    :readonly="readonly"
   />
 </template>
 
@@ -18,13 +22,21 @@ import { computed, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
+  EntitySelectProps,
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 
+export type CultivarSelectCultivar = typeof cultivar.value;
+
 export interface CultivarSelectProps {
   required?: boolean;
   label?: string;
+  rules?: EntitySelectProps<unknown>['rules'];
+  readonly?: EntitySelectProps<unknown>['readonly'];
+  disable?: EntitySelectProps<unknown>['disable'];
+  hint?: EntitySelectProps<unknown>['hint'];
+  loading?: boolean;
 }
 defineProps<CultivarSelectProps>();
 

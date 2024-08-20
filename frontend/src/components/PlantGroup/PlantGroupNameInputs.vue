@@ -41,10 +41,6 @@ defineExpose({
   validate: () =>
     nameSegmentRef.value?.validate() && nameOverrideRef.value?.validate(),
   focus: () => {
-    if (!nameSegmentRef.value?.validate()) {
-      nameSegmentRef.value && focusInView(nameSegmentRef.value);
-      return;
-    }
     if (!nameOverrideRef.value?.validate()) {
       nameOverrideRef.value && focusInView(nameOverrideRef.value);
       return;

@@ -1,6 +1,6 @@
 <template>
   <EntityInput
-    :ref="(el: InputRef) => (refs.nameRef = el)"
+    :ref="(el: InputRef) => (refs.name = el)"
     v-model="data.name"
     :label="t('entity.commonColumns.name')"
     :rules="[
@@ -9,7 +9,10 @@
         t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
       (val: string) => {
         const regex = new RegExp('^[-_\\w\\d]{1,8}$');
-        return regex.test(val) || t('crossings.validation.nameInvalid');
+        return (
+          regex.test(val) ||
+          t('base.validation.noSpecialCharsMaxLength', { max: 8 })
+        );
       },
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
@@ -18,20 +21,20 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
-    :required="true"
+    required
   />
   <CultivarSelect
-    :ref="(el: InputRef) => (refs.motherCultivarRef = el)"
+    :ref="(el: InputRef) => (refs.motherCultivarId = el)"
     v-model="data.mother_cultivar_id"
     :label="t('crossings.fields.motherCultivar')"
   />
   <CultivarSelect
-    :ref="(el: InputRef) => (refs.fatherCultivarRef = el)"
+    :ref="(el: InputRef) => (refs.fatherCultivarId = el)"
     v-model="data.father_cultivar_id"
     :label="t('crossings.fields.fatherCultivar')"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.noteRef = el)"
+    :ref="(el: InputRef) => (refs.note = el)"
     v-model="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
@@ -66,22 +69,19 @@ const emits = defineEmits<{
 // for defineExpose() see below
 
 const initialData = {
-  ...props.crossing,
-  created: undefined,
-  modified: undefined,
-  id: undefined,
-  __typename: undefined,
+  name: props.crossing.name,
   mother_cultivar_id: props.crossing.mother_cultivar_id || null,
   father_cultivar_id: props.crossing.father_cultivar_id || null,
+  note: props.crossing.note,
 };
 
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameRef: null,
-  motherCultivarRef: null,
-  fatherCultivarRef: null,
-  noteRef: null,
+  name: null,
+  motherCultivarId: null,
+  fatherCultivarId: null,
+  note: null,
 });
 
 const { isDirty, validate } = useEntityForm({

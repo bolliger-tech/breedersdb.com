@@ -1,80 +1,146 @@
 <template>
-  <BaseInputLabel
-    :label="t('plants.title')"
-    :class="{ 'error-border': showRequiredError }"
+  <EntitySelect
+    ref="plantRef"
+    v-model="plant"
+    :label="t('plants.plantSelect')"
+    :options="plantOptions"
+    option-value="id"
+    option-label="label_id"
+    :loading="fetching"
+    :error="error"
+    :required="required"
+    :filter-fn="filterOptions"
+    :no-option-text="search ? undefined : t('plants.selectSearchNoOption')"
+    :rules="[
+      (v: PlantSelectPlant | null | undefined) =>
+        !v ||
+        !rejectEliminated ||
+        (includeId && v?.id === includeId) ||
+        !v.disabled ||
+        t('plants.errors.eliminatedNotAllowed'),
+      ...rules,
+    ]"
+    :hint="hint"
   >
-    <PlantSelector
-      v-bind="$attrs"
-      ref="plantRef"
-      v-model="modelValue"
-      label-small
-    />
-
-    <div
-      v-if="showRequiredError"
-      class="q-field q-field--error"
-      :class="{ 'q-field--dark': $q.dark.isActive }"
-    >
-      <div class="q-field__bottom">
-        <div class="q-field__messages">
-          <div>
-            {{
-              t('base.validation.xIsRequired', {
-                x: t('plants.title'),
-              })
-            }}
-          </div>
-        </div>
-      </div>
-    </div>
-  </BaseInputLabel>
+    <template #after-options>
+      <q-item dense>
+        <q-item-section class="text-grey text-caption text-italic">
+          {{ t('plants.selectSearchNoOption') }}
+        </q-item-section>
+      </q-item>
+    </template>
+  </EntitySelect>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { defineProps, ref, watch } from 'vue';
-import type {
-  PlantSelectorInstance,
-  PlantSelectorProps,
-} from './PlantSelector.vue';
-import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
-import PlantSelector from 'src/components/Plant/PlantSelector.vue';
+import { ShallowRef, UnwrapRef, computed, nextTick, ref, watch } from 'vue';
+import { graphql } from 'src/graphql';
+import { UseQueryArgs, useQuery } from '@urql/vue';
+import EntitySelect, {
+  EntitySelectProps,
+  type EntitySelectInstance,
+} from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
+import {
+  FilterSelectOptionsUpdateFn,
+  selectFirstOption,
+} from 'src/utils/selectOptionFilter';
+import { zeroFill } from 'src/utils/labelIdUtils';
 
-export type PlantSelectProps = PlantSelectorProps;
-
-defineProps<PlantSelectProps>();
-
-const modelValue = defineModel<number | null | undefined>({ required: true });
-const plantRef = ref<PlantSelectorInstance | null>(null);
-
-watch(modelValue, () => {
-  validate();
-});
-
-const showRequiredError = ref(false);
-
-function validate() {
-  const isValid = !!modelValue.value;
-  showRequiredError.value = !isValid;
-  return isValid;
+export interface PlantSelectProps {
+  required?: boolean;
+  includeId?: number;
+  rejectEliminated?: boolean;
+  hint?: string;
+  rules?: EntitySelectProps<unknown>['rules'];
 }
+const props = defineProps<PlantSelectProps>();
+
+const plantRef = ref<EntitySelectInstance<{
+  id: number;
+  name: string;
+}> | null>(null);
 
 defineExpose({
-  validate,
+  validate: () => plantRef.value?.validate(),
   focus: () => plantRef.value && focusInView(plantRef.value),
 });
 
-const { t } = useI18n();
-</script>
+export type PlantSelectPlant = typeof plant.value;
+const emit = defineEmits<{
+  plantChanged: [plant: PlantSelectPlant];
+}>();
 
-<style scoped>
-.error-border {
-  border-color: var(--q-negative);
-  border-style: solid;
-  border-width: 0 0 0 2px;
-  border-radius: 2px;
-  padding-left: 8px;
-  margin-left: -8px;
+const modelValue = defineModel<number | null>({ required: true });
+
+const search = ref(modelValue.value?.toString() || '');
+
+const where = computed(() => {
+  const or: UseQueryArgs<typeof query>['variables'] = [
+    { label_id: { _eq: `${zeroFill(search.value)}` } },
+  ];
+
+  if (props.includeId) {
+    or.push({ id: { _eq: props.includeId } });
+  }
+
+  return { _or: or };
+});
+
+const query = graphql(`
+  query Plants($where: plants_bool_exp!) {
+    plants(order_by: { label_id: asc }, where: $where, limit: 20) {
+      id
+      label_id
+      disabled
+      plant_group {
+        id
+        cultivar {
+          id
+          display_name
+        }
+      }
+    }
+  }
+`);
+
+const { data, error, fetching, executeQuery } = useQuery({
+  query,
+  variables: { where },
+  pause: !props.includeId,
+  requestPolicy: 'cache-and-network',
+});
+
+const plantOptions = computed(() => data.value?.plants ?? []);
+
+const plant = computed({
+  get: () => plantOptions.value.find((o) => o.id === modelValue.value),
+  set: (plant) => (modelValue.value = plant?.id ?? null),
+});
+
+watch(plant, (newValue) => emit('plantChanged', newValue));
+
+const { t } = useI18n();
+
+async function filterOptions(
+  value: string,
+  update: FilterSelectOptionsUpdateFn,
+  filteredOptions: ShallowRef<UnwrapRef<typeof plantOptions>>,
+) {
+  if (!value.length) {
+    update(
+      () => (filteredOptions.value = plantOptions.value),
+      (ref) => selectFirstOption(ref, value),
+    );
+    return;
+  }
+  search.value = value.trim();
+  await nextTick();
+  const result = await executeQuery();
+  update(
+    () => (filteredOptions.value = result.data?.value?.plants ?? []),
+    (ref) => selectFirstOption(ref, value),
+  );
 }
-</style>
+</script>

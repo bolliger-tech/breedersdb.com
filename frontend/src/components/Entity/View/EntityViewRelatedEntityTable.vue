@@ -10,7 +10,7 @@
     dense
     :rows="rows"
     :columns="columns"
-    row-key="name"
+    :row-key="rowKey"
     :rows-per-page-options="[0]"
     hide-pagination
     wrap-cells
@@ -34,6 +34,7 @@ import { ref, watch } from 'vue';
 export interface EntityViewRelatedEntityTableProps {
   entityKey: string;
   rows: QTable['rows'];
+  rowKey: QTable['rowKey'];
   columns: QTable['columns'];
   defaultSortBy?: string;
   defaultDescending?: boolean;

@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
@@ -38,6 +38,11 @@ defineExpose({
   focus: () => pollenRef.value && focusInView(pollenRef.value),
 });
 
+export type PollenSelectPollen = typeof pollen.value;
+const emit = defineEmits<{
+  pollenChanged: [plant: PollenSelectPollen];
+}>();
+
 const modelValue = defineModel<number | null | undefined>({ required: true });
 
 const query = graphql(`
@@ -45,6 +50,10 @@ const query = graphql(`
     pollen(order_by: { name: asc }) {
       id
       name
+      cultivar {
+        id
+        display_name
+      }
     }
   }
 `);
@@ -60,6 +69,8 @@ const pollen = computed({
   get: () => pollenOptions.value.find((o) => o.id === modelValue.value),
   set: (pollen) => (modelValue.value = pollen?.id ?? null),
 });
+
+watch(pollen, (newPollen) => emit('pollenChanged', newPollen));
 
 const { t } = useI18n();
 </script>

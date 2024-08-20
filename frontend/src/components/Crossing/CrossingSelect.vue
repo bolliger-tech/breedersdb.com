@@ -9,22 +9,27 @@
     :loading="fetching"
     :error="error"
     :required="required"
+    :readonly="readonly"
+    :rules="rules"
   />
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
+  EntitySelectProps,
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 
 export interface CrossingSelectProps {
   required?: boolean;
+  readonly?: boolean;
   includeId?: number;
+  rules?: EntitySelectProps<unknown>['rules'];
 }
 const props = defineProps<CrossingSelectProps>();
 
@@ -38,7 +43,29 @@ defineExpose({
   focus: () => crossingRef.value && focusInView(crossingRef.value),
 });
 
+export type CrossingSelectCrossing = typeof crossing.value;
+const emit = defineEmits<{
+  crossingChanged: [crossing: CrossingSelectCrossing];
+}>();
+
 const modelValue = defineModel<number | null | undefined>({ required: true });
+
+const query = graphql(`
+  query Crossings($where: crossings_bool_exp!) {
+    crossings(where: $where, order_by: { name: asc }) {
+      id
+      name
+      mother_cultivar {
+        id
+        display_name
+      }
+      father_cultivar {
+        id
+        display_name
+      }
+    }
+  }
+`);
 
 const where = computed(() => ({
   _or: [
@@ -46,15 +73,6 @@ const where = computed(() => ({
     ...(props.includeId ? [{ id: { _eq: props.includeId } }] : []),
   ],
 }));
-
-const query = graphql(`
-  query Crossings($where: crossings_bool_exp!) {
-    crossings(where: $where, order_by: { name: asc }) {
-      id
-      name
-    }
-  }
-`);
 
 const { data, error, fetching } = useQuery({
   query,
@@ -68,6 +86,8 @@ const crossing = computed({
   get: () => crossingOptions.value.find((o) => o.id === modelValue.value),
   set: (crossing) => (modelValue.value = crossing?.id ?? null),
 });
+
+watch(crossing, (newCrossing) => emit('crossingChanged', newCrossing));
 
 const { t } = useI18n();
 </script>

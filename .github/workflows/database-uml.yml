@@ -8,6 +8,9 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'backend/migrations/**'
+      - '.github/workflows/database-uml.yml'
 
 jobs:
   generate-uml:

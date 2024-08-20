@@ -1,20 +1,20 @@
 <template>
   <PlantLabelIdEdit
-    :ref="(el: InputRef) => (refs.labelIdRef = el)"
+    :ref="(el: InputRef) => (refs.labelId = el)"
     v-model="data.label_id"
     :eliminated="!!data.date_eliminated"
     :stored-label-id="initialLabelId"
   />
   <PlantPlantGroupSelect
-    :ref="(el: InputRef) => (refs.plantGroupRef = el)"
+    :ref="(el: InputRef) => (refs.plantGroupId = el)"
     v-model="data.plant_group_id"
   />
   <PlantPlantRowSelect
-    :ref="(el: InputRef) => (refs.plantRowRef = el)"
+    :ref="(el: InputRef) => (refs.plantRowId = el)"
     v-model="data.plant_row_id"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.distancePlantRowStartRef = el)"
+    :ref="(el: InputRef) => (refs.distancePlantRowStart = el)"
     v-model="data.distance_plant_row_start"
     :label="t('plants.fields.distancePlantRowStart')"
     :rules="[
@@ -29,36 +29,36 @@
     :hint="t('plants.hints.distancePlantRowStart')"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.dateGraftedRef = el)"
+    :ref="(el: InputRef) => (refs.dateGrafted = el)"
     v-model="data.date_grafted"
     :label="t('plants.fields.dateGrafted')"
     type="date"
     autocomplete="off"
   />
   <PlantRootstockSelect
-    :ref="(el: InputRef) => (refs.rootstockRef = el)"
+    :ref="(el: InputRef) => (refs.rootstockId = el)"
     v-model="data.rootstock_id"
   />
   <PlantGraftingSelect
-    :ref="(el: InputRef) => (refs.graftingRef = el)"
+    :ref="(el: InputRef) => (refs.graftingId = el)"
     v-model="data.grafting_id"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.datePlantedRef = el)"
+    :ref="(el: InputRef) => (refs.datePlanted = el)"
     v-model="data.date_planted"
     :label="t('plants.fields.datePlanted')"
     type="date"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.dateLabeledRef = el)"
+    :ref="(el: InputRef) => (refs.dateLabeled = el)"
     v-model="data.date_labeled"
     :label="t('plants.fields.dateLabeled')"
     type="date"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.dateEliminatedRef = el)"
+    :ref="(el: InputRef) => (refs.dateEliminated = el)"
     v-model="data.date_eliminated"
     :label="t('plants.fields.dateEliminated')"
     type="date"
@@ -134,16 +134,16 @@ watch(
 );
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  labelIdRef: null,
-  plantGroupRef: null,
-  plantRowRef: null,
-  distancePlantRowStartRef: null,
-  dateGraftedRef: null,
-  datePlantedRef: null,
-  dateEliminatedRef: null,
-  dateLabeledRef: null,
-  rootstockRef: null,
-  graftingRef: null,
+  labelId: null,
+  plantGroupId: null,
+  plantRowId: null,
+  distancePlantRowStart: null,
+  dateGrafted: null,
+  rootstockId: null,
+  graftingId: null,
+  datePlanted: null,
+  dateLabeled: null,
+  dateEliminated: null,
   note: null,
 });
 

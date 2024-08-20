@@ -37,7 +37,10 @@ import {
 } from 'src/components/Pollen/pollenFragment';
 import { useI18n } from 'vue-i18n';
 
-export type PollenEditInput = Omit<PollenFragment, 'created' | 'modified'>;
+export type PollenEditInput = Omit<
+  PollenFragment,
+  'created' | 'modified' | 'cultivar' | 'mother_plants'
+>;
 export type PollenInsertInput = Omit<PollenEditInput, 'id' | 'cultivar_id'> &
   Partial<Pick<PollenEditInput, 'cultivar_id'>>;
 

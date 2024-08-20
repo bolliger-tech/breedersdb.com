@@ -39,12 +39,12 @@ import {
 } from 'src/components/Cultivar/cultivarFragment';
 import { useI18n } from 'vue-i18n';
 
-export type CultivarEditInput = Omit<CultivarFragment, 'created' | 'modified'>;
-export type CultivarInsertInput = Omit<
-  CultivarEditInput,
-  'id' | 'lot_id' | 'lot'
-> &
-  Partial<Pick<CultivarEditInput, 'lot_id' | 'lot'>>;
+export type CultivarEditInput = Omit<
+  CultivarFragment,
+  'created' | 'modified' | 'lot'
+>;
+export type CultivarInsertInput = Omit<CultivarEditInput, 'id' | 'lot_id'> &
+  Partial<Pick<CultivarEditInput, 'lot_id'>>;
 
 export interface CultivarModalEditProps {
   cultivar: CultivarEditInput | CultivarInsertInput;

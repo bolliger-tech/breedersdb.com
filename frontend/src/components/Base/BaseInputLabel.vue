@@ -1,9 +1,8 @@
 <template>
-  <div class="entity-label" :class="{ 'q-my-sm': !dense }">
+  <div class="entity-label q-my-sm">
     <div
       v-if="label || $slots.label"
       class="text-weight-bold q-mb-xs row align-center"
-      :style="!!labelSmall ? 'font-size: 0.85em' : ''"
     >
       <slot name="label">
         {{ label }}
@@ -30,8 +29,6 @@ import { type Slot } from 'vue';
 export interface BaseInputLabelProps {
   label?: string;
   explainer?: string;
-  dense?: boolean;
-  labelSmall?: boolean;
 }
 
 defineProps<BaseInputLabelProps>();

@@ -19,12 +19,12 @@
           {{ localizeDate(pollen.date_harvested) }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(pollen.created) }}
+          {{ d(pollen.created, 'ymdHis') }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.modified')">
           {{
             pollen.modified
-              ? localizeDate(pollen.modified)
+              ? d(pollen.modified, 'ymdHis')
               : t('base.notAvailable')
           }}
         </EntityViewTableRow>
@@ -41,6 +41,7 @@
       <EntityViewRelatedEntityTable
         entity-key="mother_plants"
         :rows="pollen.mother_plants || []"
+        row-key="id"
         :columns="motherPlantsColumns"
         default-sort-by="name"
       >
@@ -152,7 +153,7 @@ const { data, error, fetching } = useQuery({
 
 const pollen = computed(() => data.value?.pollen_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -206,12 +207,7 @@ const motherPlantsColumns = [
     field: 'date_impregnated',
     align: 'left' as const,
     sortable: true,
-    sort: (
-      a: MotherPlant['date_impregnated'],
-      b: MotherPlant['date_impregnated'],
-    ) => localizedSortPredicate(a || '', b || ''),
-    format: (v: MotherPlant['date_impregnated']) =>
-      v ? localizeDate(v) : t('base.notAvailable'),
+    format: (v: MotherPlant['date_impregnated']) => localizeDate(v),
   },
 ];
 </script>

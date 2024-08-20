@@ -37,9 +37,12 @@ import PlantRowEntityForm from 'src/components/PlantRow/PlantRowEntityForm.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { useI18n } from 'src/composables/useI18n';
 
-export type PlantRowEditInput = Omit<PlantRowFragment, 'created' | 'modified'>;
-export type PlantRowInsertInput = Omit<PlantRowEditInput, 'id' | 'orchard'> &
-  Partial<Pick<PlantRowEditInput, 'orchard'>>;
+export type PlantRowEditInput = Omit<
+  PlantRowFragment,
+  'created' | 'modified' | 'orchard'
+>;
+export type PlantRowInsertInput = Omit<PlantRowEditInput, 'id' | 'orchard_id'> &
+  Partial<Pick<PlantRowEditInput, 'orchard_id'>>;
 
 export interface PlantRowModalEditProps {
   plantRow: PlantRowEditInput | PlantRowInsertInput;

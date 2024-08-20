@@ -44,6 +44,7 @@
       <EntityViewRelatedEntityTable
         entity-key="plants"
         :rows="plantRow.plants || []"
+        row-key="id"
         :columns="plantsColumns"
         default-sort-by="label_id"
       >

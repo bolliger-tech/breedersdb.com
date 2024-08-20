@@ -41,7 +41,7 @@ import { useI18n } from 'vue-i18n';
 
 export type CultivarEditInput = Omit<
   CultivarFragment,
-  'created' | 'modified' | 'lot'
+  'created' | 'modified' | 'lot' | 'is_variety'
 >;
 export type CultivarInsertInput = Omit<CultivarEditInput, 'id' | 'lot_id'> &
   Partial<Pick<CultivarEditInput, 'lot_id'>>;

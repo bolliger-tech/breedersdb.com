@@ -59,12 +59,12 @@
           {{ motherPlant.numb_seeds }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(motherPlant.created) }}
+          {{ d(motherPlant.created, 'ymdHis') }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.modified')">
           {{
             motherPlant.modified
-              ? localizeDate(motherPlant.modified)
+              ? d(motherPlant.modified, 'ymdHis')
               : t('base.notAvailable')
           }}
         </EntityViewTableRow>
@@ -145,7 +145,7 @@ const { data, error, fetching } = useQuery({
 
 const motherPlant = computed(() => data.value?.mother_plants_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

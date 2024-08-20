@@ -19,12 +19,12 @@
           {{ localizeDate(pollen.date_harvested) }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(pollen.created) }}
+          {{ d(pollen.created, 'ymdHis') }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.modified')">
           {{
             pollen.modified
-              ? localizeDate(pollen.modified)
+              ? d(pollen.modified, 'ymdHis')
               : t('base.notAvailable')
           }}
         </EntityViewTableRow>
@@ -153,7 +153,7 @@ const { data, error, fetching } = useQuery({
 
 const pollen = computed(() => data.value?.pollen_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();

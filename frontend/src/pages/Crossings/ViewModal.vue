@@ -32,12 +32,12 @@
           </RouterLink>
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(crossing.created) }}
+          {{ d(crossing.created, 'ymdHis') }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.modified')">
           {{
             crossing.modified
-              ? localizeDate(crossing.modified)
+              ? d(crossing.modified, 'ymdHis')
               : t('base.notAvailable')
           }}
         </EntityViewTableRow>
@@ -178,7 +178,7 @@ const { data, error, fetching } = useQuery({
 
 const crossing = computed(() => data.value?.crossings_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();

@@ -27,11 +27,23 @@
     :ref="(el: InputRef) => (refs.motherCultivarId = el)"
     v-model="data.mother_cultivar_id"
     :label="t('crossings.fields.motherCultivar')"
+    :loading="fetchingMotherPlants"
+    :disable="hasMotherPlants"
+    :readonly="hasMotherPlants"
+    :hint="hasMotherPlants ? t('crossings.hints.readonlyCultivar') : undefined"
   />
   <CultivarSelect
     :ref="(el: InputRef) => (refs.fatherCultivarId = el)"
     v-model="data.father_cultivar_id"
     :label="t('crossings.fields.fatherCultivar')"
+    :loading="fetchingMotherPlants"
+    :disable="hasMotherPlantsWithPollen"
+    :readonly="hasMotherPlantsWithPollen"
+    :hint="
+      hasMotherPlantsWithPollen
+        ? t('crossings.hints.readonlyCultivar')
+        : undefined
+    "
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"
@@ -45,7 +57,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
@@ -57,6 +69,8 @@ import {
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import CultivarSelect from '../Cultivar/CultivarSelect.vue';
+import { graphql } from 'src/graphql';
+import { useQuery } from '@urql/vue';
 
 export interface CrossingEntityFormProps {
   crossing: CrossingInsertInput | CrossingEditInput;
@@ -103,4 +117,31 @@ const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
   tableName: 'crossings',
   existingId: ('id' in props.crossing && props.crossing.id) || undefined,
 });
+
+const motherPlantsQuery = graphql(`
+  query MotherPlants($crossingId: Int!) {
+    mother_plants(where: { crossing_id: { _eq: $crossingId } }) {
+      id
+      plant_id
+      pollen_id
+    }
+  }
+`);
+
+const { data: motherPlantsData, fetching: fetchingMotherPlants } = useQuery({
+  query: motherPlantsQuery,
+  variables: { crossingId: 'id' in props.crossing ? props.crossing.id : -1 },
+  pause: !('id' in props.crossing),
+  requestPolicy: 'cache-and-network',
+});
+
+const hasMotherPlants = computed(
+  () => !!motherPlantsData.value?.mother_plants?.length,
+);
+
+const hasMotherPlantsWithPollen = computed(
+  () =>
+    !!motherPlantsData.value?.mother_plants?.filter((mp) => mp.pollen_id)
+      .length,
+);
 </script>

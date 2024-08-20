@@ -26,6 +26,7 @@
       :label="inlineLabel"
       bottom-slots
       :readonly="readonly"
+      :disable="disable"
       @popup-show="() => (inlineLabel = label)"
       @popup-hide="() => (inlineLabel = undefined)"
       @filter="filterOptions"
@@ -111,7 +112,8 @@ export interface EntitySelectPropsWithoutModel<T> {
     filteredOptions: ShallowRef<T[]>,
   ) => void;
   noOptionText?: string;
-  readonly?: boolean;
+  readonly?: QSelectProps['readonly'];
+  disable?: QSelectProps['disable'];
   hint?: string;
 }
 
@@ -127,6 +129,7 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   filterFn: undefined,
   noOptionText: undefined,
   readonly: false,
+  disable: false,
   hint: undefined,
 });
 

@@ -32,7 +32,7 @@ export async function postOrFailRaw(
   if (json.errors) {
     const error =
       json.errors[0].extensions?.internal?.error ?? json.errors[0].message;
-    throw new Error(JSON.stringify(error));
+    throw new Error('GraphQL error\n' + JSON.stringify(error, null, 2));
   }
 
   return { json, resp };

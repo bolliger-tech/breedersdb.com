@@ -10,7 +10,7 @@
         }),
       (val: string) =>
         (val && /^[-_\w\d]{1,25}$/.test(val)) ||
-        t('base.validation.noNewLinesMaxLength', { max: 25 }),
+        t('base.validation.noSpecialCharsMaxLength', { max: 25 }),
       async (val: string) =>
         (await isNameSegmentUnique(val)) ||
         t('plantGroups.validation.nameNotUniqueWithCultivar'),

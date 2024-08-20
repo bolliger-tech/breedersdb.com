@@ -3,7 +3,9 @@
     v-for="(segment, index) in segments.slice().reverse()"
     :key="segment.link"
   >
+    <template v-if="noLink">{{ segment.label }}</template>
     <router-link
+      v-else
       :to="segment.link"
       :title="segment.title"
       class="undecorated-link"
@@ -38,6 +40,7 @@ export interface PlantGroupNameProps {
     name: string;
   };
   dark?: boolean;
+  noLink?: boolean;
 }
 
 const props = defineProps<PlantGroupNameProps>();

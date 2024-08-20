@@ -26,6 +26,7 @@
   <CrossingSelect
     :ref="(el: InputRef) => (refs.crossingId = el)"
     v-model="data.crossing_id"
+    :include-id="data.crossing_id || undefined"
     :hint="
       selectedCrossing?.mother_cultivar
         ? t('motherPlants.hints.crossing', {

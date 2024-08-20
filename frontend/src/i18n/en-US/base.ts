@@ -48,12 +48,14 @@ export const base = {
     xIsRequired: '{x} is required',
     invalidFields:
       'Invalid form fields. Please check the form fields for errors and try again.',
-    maxLen: 'Maximum length is {x}',
-    min: 'Minimum value is {x}',
-    max: 'Maximum value is {x}',
-    integer: 'Must be an integer',
-    nameNotUnique: 'This name is already in use',
-    xMustBeGreaterThanZero: '{x} must be greater than zero',
+    maxLen: 'The maximum length is {x}.',
+    min: 'The minimum value is {x}.',
+    max: 'The maximum value is {x}.',
+    integer: 'Must be an integer.',
+    integerBetween:
+      'Must be an integer between {min} and {max} with a step of {step}.',
+    nameNotUnique: 'This name is already in use.',
+    xMustBeGreaterThanZero: '{x} must be greater than zero.',
     noNewLinesMaxLength:
       'Invalid characters or length. No new lines allowed. It must be between 1 and {max} characters long.',
     noSpecialCharsMaxLength:

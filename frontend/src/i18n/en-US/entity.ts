@@ -6,6 +6,7 @@ export const entity = {
     created: 'Created',
     modified: 'Last updated',
     displayName: 'Name',
+    explicitDisplayName: 'Display name',
     nameOverride: 'Common name',
     nameSegment: 'Name segment',
     fullName: 'Breeding name',
@@ -39,4 +40,13 @@ export const entity = {
   noImages: 'No images available',
   failedToLoadImage: 'Failed to load image',
   noData: 'No data available',
+
+  nameExplainerIntro: {
+    base: 'This is the {structuredName} (required). If you prefer a different name, you can override it with the {displayName} field below.',
+    structuredName: 'structured breeding name',
+    displayName: 'display name',
+  },
+
+  nameOverrideHint:
+    'If you wish the system to show a different name, you can use the display name field below.',
 };

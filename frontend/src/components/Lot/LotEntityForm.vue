@@ -7,6 +7,7 @@
     @update:model-value="() => data.name_segment && refs.nameInputs?.validate()"
   />
   <LotNameInputs
+    v-if="!isVariety"
     :ref="(el: InputRef) => (refs.nameInputs = el)"
     v-model:name-segment="data.name_segment"
     v-model:name-override="data.name_override"
@@ -147,6 +148,7 @@ import LotNameInputs from './LotNameInputs.vue';
 
 export interface LotEntityFormProps {
   lot: LotInsertInput | LotEditInput;
+  isVariety: boolean;
 }
 
 const props = defineProps<LotEntityFormProps>();

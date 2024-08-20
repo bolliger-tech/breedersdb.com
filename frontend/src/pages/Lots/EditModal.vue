@@ -3,7 +3,12 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <LotModalEdit v-else-if="lot" :lot="lot" :title="t('base.edit')" />
+  <LotModalEdit
+    v-else-if="lot"
+    :lot="lot"
+    :title="t('base.edit')"
+    :is-variety="lot.is_variety"
+  />
 
   <q-card v-else>
     <BaseSpinner size="xl" />

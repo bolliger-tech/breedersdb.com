@@ -19,12 +19,12 @@
           {{ localizeDate(pollen.date_harvested) }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(pollen.created) }}
+          {{ d(pollen.created, 'ymdHis') }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.modified')">
           {{
             pollen.modified
-              ? localizeDate(pollen.modified)
+              ? d(pollen.modified, 'ymdHis')
               : t('base.notAvailable')
           }}
         </EntityViewTableRow>
@@ -38,38 +38,50 @@
       <h3 class="q-mb-md">
         {{ t('motherPlants.title', 2) }}
       </h3>
-      <q-table
-        v-if="pollen.mother_plants"
-        class="q-mt-md"
-        flat
-        dense
-        :rows="pollen.mother_plants"
+      <EntityViewRelatedEntityTable
+        entity-key="mother_plants"
+        :rows="pollen.mother_plants || []"
+        row-key="id"
         :columns="motherPlantsColumns"
-        :rows-per-page-options="[0]"
-        hide-pagination
-        wrap-cells
-        binary-state-sort
+        default-sort-by="name"
       >
-        <template #body-cell-plant_group="cellProps">
-          <q-td key="value" :props="cellProps">
+        <template #body-cell-name="cellProps">
+          <q-td key="name" :props="cellProps">
             <RouterLink
-              :to="`/crossings/crossings/mother-plants/${cellProps.row.id}`"
+              :to="`/mother-plants/${cellProps.row.id}`"
               class="undecorated-link"
             >
               {{ cellProps.row.name }}
             </RouterLink>
           </q-td>
         </template>
-      </q-table>
-      <template v-else> {{ t('base.noData') }} </template>
+        <template #body-cell-crossing__name="cellProps">
+          <q-td key="crossing.name" :props="cellProps">
+            <RouterLink
+              :to="`/crossings/${cellProps.row.crossing?.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.crossing?.name }}
+            </RouterLink>
+          </q-td>
+        </template>
+        <template #body-cell-label_id="cellProps">
+          <q-td key="label_id" :props="cellProps">
+            <RouterLink
+              :to="`/plants/${cellProps.row.plant?.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.plant?.label_id }}
+            </RouterLink>
+          </q-td>
+        </template>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
       <PollenButtonDelete
         :pollen-id="pollen.id"
-        @deleted="
-          () => router.push({ path: '/crossings/pollen', query: route.query })
-        "
+        @deleted="() => router.push({ path: '/pollen', query: route.query })"
       />
     </template>
   </EntityModalContent>
@@ -99,6 +111,7 @@ import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vu
 import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -106,12 +119,27 @@ const query = graphql(
   `
     query Pollen(
       $id: Int!
-      $withCultivar: Boolean = true
-      $withMotherPlants: Boolean = false
-      $withLot: Boolean = false
+      $PollenWithCultivar: Boolean = true
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       pollen_by_pk(id: $id) {
         ...pollenFragment
+        mother_plants {
+          id
+          name
+          date_impregnated
+          created
+          plant {
+            id
+            label_id
+          }
+          crossing {
+            id
+            name
+          }
+        }
       }
     }
   `,
@@ -125,14 +153,14 @@ const { data, error, fetching } = useQuery({
 
 const pollen = computed(() => data.value?.pollen_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
 const router = useRouter();
 function edit() {
   router.push({
-    path: `/crossings/pollen/${props.entityId}/edit`,
+    path: `/pollen/${props.entityId}/edit`,
     query: route.query,
   });
 }
@@ -143,13 +171,43 @@ type MotherPlant = NonNullable<
 
 const motherPlantsColumns = [
   {
-    name: 'mother_plant',
+    name: 'name',
     label: t('entity.commonColumns.name'),
-    field: 'mother_plant',
+    field: 'name',
     align: 'left' as const,
     sortable: true,
-    sort: (a: MotherPlant, b: MotherPlant) =>
-      localizedSortPredicate(a.name, b.name),
+    sort: (a: MotherPlant['name'], b: MotherPlant['name']) =>
+      localizedSortPredicate(a, b),
+  },
+  {
+    name: 'crossing__name',
+    label: t('motherPlants.fields.crossing'),
+    field: (row: MotherPlant) => row.crossing?.name,
+    align: 'left' as const,
+    sortable: true,
+    sort: (
+      a: NonNullable<MotherPlant['crossing']>['name'],
+      b: NonNullable<MotherPlant['crossing']>['name'],
+    ) => localizedSortPredicate(a, b),
+  },
+  {
+    name: 'label_id',
+    label: t('plants.fields.labelId'),
+    field: (row: MotherPlant) => row.plant?.label_id,
+    align: 'left' as const,
+    sortable: true,
+    sort: (
+      a: NonNullable<MotherPlant['plant']>['label_id'],
+      b: NonNullable<MotherPlant['plant']>['label_id'],
+    ) => localizedSortPredicate(a, b),
+  },
+  {
+    name: 'date_impregnated',
+    label: t('motherPlants.fields.dateImpregnated'),
+    field: 'date_impregnated',
+    align: 'left' as const,
+    sortable: true,
+    format: (v: MotherPlant['date_impregnated']) => localizeDate(v),
   },
 ];
 </script>

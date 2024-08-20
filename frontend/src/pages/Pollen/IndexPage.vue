@@ -9,9 +9,9 @@
       :rows="data?.pollen || []"
       :loading="fetching"
       :all-columns="columns"
-      list-entities-path="/crossings/pollen"
-      add-entity-path="/crossings/pollen/new"
-      :view-entity-path-getter="(id) => `/crossings/pollen/${id}`"
+      list-entities-path="/pollen"
+      add-entity-path="/pollen/new"
+      :view-entity-path-getter="(id) => `/pollen/${id}`"
     />
   </PageLayout>
   <router-view name="modal" />
@@ -27,6 +27,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { localizeDate } from 'src/utils/dateUtils';
 
 const { t, d } = useI18n();
 
@@ -37,9 +38,10 @@ const query = graphql(
       $offset: Int!
       $orderBy: [pollen_order_by!]
       $where: pollen_bool_exp
-      $withCultivar: Boolean = true
-      $withMotherPlants: Boolean = false
-      $withLot: Boolean = false
+      $PollenWithCultivar: Boolean = true
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       pollen_aggregate {
         aggregate {
@@ -94,8 +96,7 @@ const columns = [
     name: 'date_harvested',
     label: t('pollen.fields.dateHarvested'),
     align: 'left' as const,
-    field: (row: Pollen) =>
-      row.date_harvested ? d(row.date_harvested, 'ymd') : null,
+    field: (row: Pollen) => localizeDate(row.date_harvested),
     sortable: true,
   },
   {

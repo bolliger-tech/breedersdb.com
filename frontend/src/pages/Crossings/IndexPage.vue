@@ -26,6 +26,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { crossingFragment } from 'src/components/Crossing/crossingFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 
 const { t, d } = useI18n();
 
@@ -36,10 +37,9 @@ const query = graphql(
       $offset: Int!
       $orderBy: [crossings_order_by!]
       $where: crossings_bool_exp
-      $withParentCultivar: Boolean = true
-      $withLot: Boolean = false
-      $withLots: Boolean = false
-      $withMotherPlants: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       crossings_aggregate {
         aggregate {
@@ -53,10 +53,16 @@ const query = graphql(
         order_by: $orderBy
       ) {
         ...crossingFragment
+        mother_cultivar {
+          ...cultivarFragment
+        }
+        father_cultivar {
+          ...cultivarFragment
+        }
       }
     }
   `,
-  [crossingFragment],
+  [crossingFragment, cultivarFragment],
 );
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>();

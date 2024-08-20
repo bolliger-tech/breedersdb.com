@@ -10,8 +10,6 @@
     <BaseInputLabel
       v-if="inputMethod === 'keyboard'"
       :label="t('plants.fields.labelId')"
-      dense
-      :label-small="labelSmall"
     >
       <!-- inputmode="tel": numeric keyboard with # -->
       <q-input
@@ -19,7 +17,9 @@
         v-model="input"
         inputmode="tel"
         outlined
+        dense
         type="text"
+        :bg-color="inputBgColor"
         :error-message="error?.message"
         :error="!!error"
         :hint="t('plants.hints.labelIdOmitZeros')"
@@ -42,15 +42,10 @@
 </template>
 
 <script setup lang="ts">
+import { useInputBackground } from 'src/composables/useInputBackground';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
-import {
-  ref,
-  watch,
-  nextTick,
-  onBeforeUnmount,
-  ComponentPublicInstance,
-} from 'vue';
+import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
 import BaseInputLabel from '../Base/BaseInputLabel.vue';
 import BaseQrScanner from '../Base/BaseQrScanner/BaseQrScanner.vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
@@ -69,30 +64,19 @@ import { type QInput } from 'quasar';
 
 export interface PlantSelectorProps {
   rejectEliminated?: boolean;
-  labelSmall?: boolean;
 }
-
-export interface PlantSelectorEmits {
-  (e: 'plant', data: PlantFragment | null): void;
-  (e: 'fetching', data: boolean): void;
-}
-
-export type PlantSelectorInstance =
-  ComponentPublicInstance<PlantSelectorProps> & {
-    onManualInput: () => void;
-    focus: () => void;
-  };
 
 const props = withDefaults(defineProps<PlantSelectorProps>(), {
   rejectEliminated: false,
 });
 
-const emit = defineEmits<PlantSelectorEmits>();
+const emit = defineEmits<{
+  plant: [data: PlantFragment | null];
+  fetching: [data: boolean];
+}>();
 onMounted(() => emit('plant', null));
 
 const inputRef = ref<QInput | null>(null);
-
-const modelValue = defineModel<number | null | undefined>({ required: false });
 
 defineExpose({
   onManualInput,
@@ -150,11 +134,10 @@ const error = computed<
 const query = graphql(
   `
     query PlantByLabelId(
-      $where: plants_bool_exp!
-      $withSegments: Boolean = true
-      $withAttributions: Boolean = false
+      $label_id: String!
+      $PlantWithSegments: Boolean = true
     ) {
-      plants(where: $where) {
+      plants(where: { label_id: { _eq: $label_id } }) {
         ...plantFragment
       }
     }
@@ -162,13 +145,7 @@ const query = graphql(
   [plantFragment],
 );
 
-const variables = computed(() => ({
-  where: !!labelId.value.length
-    ? { label_id: { _eq: labelId.value } }
-    : { id: { _eq: modelValue.value } },
-}));
-
-console.log(modelValue.value);
+const variables = computed(() => ({ label_id: labelId.value }));
 
 const {
   executeQuery,
@@ -186,10 +163,7 @@ onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
   if (d?.plants.length) {
-    const plant = d.plants[0];
-    modelValue.value = plant.id;
-    emit('plant', plant);
-    input.value = plant.label_id;
+    emit('plant', d.plants[0]);
   }
 });
 
@@ -204,10 +178,6 @@ function onQrInput(data: string) {
   loadPlant();
 }
 
-if (modelValue.value) {
-  loadPlant();
-}
-
 async function loadPlant() {
   if (error.value && error.value.type !== 'notFound') {
     return;
@@ -216,4 +186,6 @@ async function loadPlant() {
   await nextTick(); // ensure the useQuery({variables}) is updated
   await executeQuery();
 }
+
+const { inputBgColor } = useInputBackground();
 </script>

@@ -3,7 +3,7 @@
     :entity="motherPlant"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
-    index-path="/crossings/mother-plant"
+    index-path="/mother-plants"
     sprite-icon="female"
     :subtitle="t('motherPlants.title', 1)"
   >
@@ -22,7 +22,7 @@
         @deleted="
           () =>
             $router.push({
-              path: '/crossings/mother-plant',
+              path: '/mother-plants',
               query: $route.query,
             })
         "
@@ -45,24 +45,13 @@ import { useI18n } from 'vue-i18n';
 
 export type MotherPlantEditInput = Omit<
   MotherPlantFragment,
-  'created' | 'modified'
+  'created' | 'modified' | 'plant' | 'pollen' | 'crossing'
 >;
 export type MotherPlantInsertInput = Omit<
   MotherPlantEditInput,
-  | 'id'
-  | 'plant_id'
-  | 'pollen_id'
-  | 'crossing_id'
-  | 'plant'
-  | 'pollen'
-  | 'crossing'
+  'id' | 'plant_id' | 'pollen_id' | 'crossing_id'
 > &
-  Partial<
-    Pick<
-      MotherPlantEditInput,
-      'plant' | 'pollen' | 'crossing' | 'plant_id' | 'pollen_id' | 'crossing_id'
-    >
-  >;
+  Partial<Pick<MotherPlantEditInput, 'plant_id' | 'pollen_id' | 'crossing_id'>>;
 
 export interface MotherPlantModalEditProps {
   motherPlant: MotherPlantEditInput | MotherPlantInsertInput;
@@ -74,16 +63,14 @@ const insertMutation = graphql(
   `
     mutation InsertMotherPlant(
       $entity: mother_plants_insert_input!
-      $withPlant: Boolean = false
-      $withPollen: Boolean = false
-      $withCrossing: Boolean = false
-      $withParentCultivar: Boolean = false
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withSegments: Boolean = false
-      $withAttributions: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
+      $MotherPlantWithPlant: Boolean = false
+      $MotherPlantWithCrossing: Boolean = false
+      $MotherPlantWithPollen: Boolean = false
+      $PollenWithCultivar: Boolean = false
+      $PlantWithSegments: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       insert_mother_plants_one(object: $entity) {
         ...motherPlantFragment
@@ -100,16 +87,14 @@ const editMutation = graphql(
     mutation UpdateMotherPlant(
       $id: Int!
       $entity: mother_plants_set_input!
-      $withPlant: Boolean = false
-      $withPollen: Boolean = false
-      $withCrossing: Boolean = false
-      $withParentCultivar: Boolean = false
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withSegments: Boolean = false
-      $withAttributions: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
+      $MotherPlantWithPlant: Boolean = false
+      $MotherPlantWithCrossing: Boolean = false
+      $MotherPlantWithPollen: Boolean = false
+      $PollenWithCultivar: Boolean = false
+      $PlantWithSegments: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       update_mother_plants_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...motherPlantFragment

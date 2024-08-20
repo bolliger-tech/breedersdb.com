@@ -3,7 +3,7 @@
     :entity="pollen"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
-    index-path="/crossings/pollen"
+    index-path="/pollen"
     sprite-icon="male"
     :subtitle="t('pollen.title', 1)"
   >
@@ -19,9 +19,7 @@
       <PollenButtonDelete
         v-if="'id' in pollen"
         :pollen-id="pollen.id"
-        @deleted="
-          () => $router.push({ path: '/crossings/pollen', query: $route.query })
-        "
+        @deleted="() => $router.push({ path: '/pollen', query: $route.query })"
       />
       <div v-else></div>
     </template>
@@ -39,7 +37,10 @@ import {
 } from 'src/components/Pollen/pollenFragment';
 import { useI18n } from 'vue-i18n';
 
-export type PollenEditInput = Omit<PollenFragment, 'created' | 'modified'>;
+export type PollenEditInput = Omit<
+  PollenFragment,
+  'created' | 'modified' | 'cultivar' | 'mother_plants'
+>;
 export type PollenInsertInput = Omit<PollenEditInput, 'id' | 'cultivar_id'> &
   Partial<Pick<PollenEditInput, 'cultivar_id'>>;
 
@@ -53,9 +54,10 @@ const insertMutation = graphql(
   `
     mutation InsertPollen(
       $entity: pollen_insert_input!
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withLot: Boolean = false
+      $PollenWithCultivar: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       insert_pollen_one(object: $entity) {
         ...pollenFragment
@@ -72,9 +74,10 @@ const editMutation = graphql(
     mutation UpdatePollen(
       $id: Int!
       $entity: pollen_set_input!
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withLot: Boolean = false
+      $PollenWithCultivar: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       update_pollen_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...pollenFragment

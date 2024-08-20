@@ -1,6 +1,6 @@
 <template>
   <EntityInput
-    :ref="(el: InputRef) => (refs.nameSegmentRef = el)"
+    :ref="(el: InputRef) => (refs.nameSegment = el)"
     v-model="data.name_segment"
     :label="t('entity.commonColumns.nameSegment')"
     :rules="[
@@ -9,6 +9,13 @@
         t('base.validation.xIsRequired', {
           x: t('entity.commonColumns.nameSegment'),
         }),
+      (val: string) => {
+        const regex = new RegExp('^[-_\\w\\d]{1,25}$');
+        return (
+          regex.test(val) ||
+          t('base.validation.noSpecialCharsMaxLength', { max: 25 })
+        );
+      },
       async (val: string) =>
         (await isNameSegmentUnique(val)) ||
         t('cultivars.validation.nameNotUniqueWithLot'),
@@ -20,7 +27,7 @@
     required
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.nameOverrideRef = el)"
+    :ref="(el: InputRef) => (refs.nameOverride = el)"
     v-model="data.name_override"
     :label="t('entity.commonColumns.nameOverride')"
     :rules="[
@@ -29,6 +36,13 @@
         t('base.validation.xIsRequired', {
           x: t('entity.commonColumns.nameOverride'),
         }),
+      (val: string) => {
+        const regex = new RegExp('^[^\\n\\.]{1,51}$');
+        return (
+          regex.test(val) ||
+          t('base.validation.noNewLinesMaxLength', { max: 51 })
+        );
+      },
       async (val: string) =>
         (await isNameOverrideUnique(val)) || t('base.validation.nameNotUnique'),
     ]"
@@ -36,41 +50,42 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameOverrideUnique"
+    required
   />
   <LotSelect
-    :ref="(el: InputRef) => (refs.lotRef = el)"
+    :ref="(el: InputRef) => (refs.lotId = el)"
     v-model="data.lot_id"
-    :required="true"
+    required
     @update:model-value="() => refs.nameSegmentRef?.validate()"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.acronymRef = el)"
+    :ref="(el: InputRef) => (refs.acronym = el)"
     v-model="data.acronym"
     :label="t('cultivars.fields.acronym')"
     type="text"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.breederRef = el)"
+    :ref="(el: InputRef) => (refs.breeder = el)"
     v-model="data.breeder"
     :label="t('cultivars.fields.breeder')"
     type="text"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.registrationRef = el)"
+    :ref="(el: InputRef) => (refs.registration = el)"
     v-model="data.registration"
     :label="t('cultivars.fields.registration')"
     type="text"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.noteRef = el)"
+    :ref="(el: InputRef) => (refs.note = el)"
     v-model="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"
-    auto-grow
+    autogrow
   />
 </template>
 
@@ -100,23 +115,25 @@ const emits = defineEmits<{
 // for defineExpose() see below
 
 const initialData = {
-  ...props.cultivar,
-  created: undefined,
-  modified: undefined,
-  id: undefined,
-  __typename: undefined,
+  name_segment: props.cultivar.name_segment,
+  name_override: props.cultivar.name_override,
+  lot_id: props.cultivar.lot_id || null,
+  acronym: props.cultivar.acronym,
+  breeder: props.cultivar.breeder,
+  registration: props.cultivar.registration,
+  note: props.cultivar.note,
 };
 
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameSegmentRef: null,
-  nameOverrideRef: null,
-  lotRef: null,
-  acronymRef: null,
-  breederRef: null,
-  registrationRef: null,
-  noteRef: null,
+  nameSegment: null,
+  nameOverride: null,
+  lotId: null,
+  acronym: null,
+  breeder: null,
+  registration: null,
+  note: null,
 });
 
 const { isDirty, validate } = useEntityForm({

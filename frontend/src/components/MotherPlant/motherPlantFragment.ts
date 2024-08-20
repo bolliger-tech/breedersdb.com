@@ -19,15 +19,15 @@ export const motherPlantFragment = graphql(
       created
       modified
       plant_id
-      plant @include(if: $withPlant) {
+      plant @include(if: $MotherPlantWithPlant) {
         ...plantFragment
       }
       pollen_id
-      pollen @include(if: $withPollen) {
+      pollen @include(if: $MotherPlantWithPollen) {
         ...pollenFragment
       }
       crossing_id
-      crossing @include(if: $withCrossing) {
+      crossing @include(if: $MotherPlantWithCrossing) {
         ...crossingFragment
       }
     }

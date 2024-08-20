@@ -15,24 +15,6 @@
         <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ motherPlant.name }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('motherPlants.fields.plant')">
-          <RouterLink
-            :to="`/plants/${motherPlant.plant?.id}`"
-            class="undecorated-link"
-          >
-            {{ motherPlant.plant?.label_id }}
-          </RouterLink>
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('motherPlants.fields.pollen')">
-          <RouterLink
-            v-if="motherPlant.pollen"
-            :to="`/crossings/pollen/${motherPlant.pollen?.id}`"
-            class="undecorated-link"
-          >
-            {{ motherPlant.pollen?.name }}
-          </RouterLink>
-          <template v-else>{{ t('base.notAvailable') }}</template>
-        </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.crossing')">
           <RouterLink
             :to="`/crossings/${motherPlant.crossing?.id}`"
@@ -41,22 +23,26 @@
             {{ motherPlant.crossing?.name }}
           </RouterLink>
         </EntityViewTableRow>
-
-        <EntityViewTableRow :label="t('motherPlants.fields.dateImpregnated')">
-          {{
-            motherPlant.date_impregnated
-              ? localizeDate(motherPlant.date_impregnated)
-              : t('base.notAvailable')
-          }}
+        <EntityViewTableRow :label="t('motherPlants.fields.plant')">
+          <RouterLink
+            :to="`/plants/${motherPlant.plant?.id}`"
+            class="undecorated-link"
+          >
+            {{ motherPlant.plant?.label_id }}
+          </RouterLink>
         </EntityViewTableRow>
-        <EntityViewTableRow
-          :label="t('motherPlants.fields.dateFruitsHarvested')"
-        >
-          {{
-            motherPlant.date_fruits_harvested
-              ? localizeDate(motherPlant.date_fruits_harvested)
-              : t('base.notAvailable')
-          }}
+        <EntityViewTableRow :label="t('motherPlants.fields.dateImpregnated')">
+          {{ localizeDate(motherPlant.date_impregnated) }}
+        </EntityViewTableRow>
+        <EntityViewTableRow :label="t('motherPlants.fields.pollen')">
+          <RouterLink
+            v-if="motherPlant.pollen"
+            :to="`/pollen/${motherPlant.pollen?.id}`"
+            class="undecorated-link"
+          >
+            {{ motherPlant.pollen?.name }}
+          </RouterLink>
+          <template v-else>{{ t('base.notAvailable') }}</template>
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.numbFlowers')">
           {{ motherPlant.numb_flowers }}
@@ -64,16 +50,21 @@
         <EntityViewTableRow :label="t('motherPlants.fields.numbFruits')">
           {{ motherPlant.numb_fruits }}
         </EntityViewTableRow>
+        <EntityViewTableRow
+          :label="t('motherPlants.fields.dateFruitsHarvested')"
+        >
+          {{ localizeDate(motherPlant.date_fruits_harvested) }}
+        </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.numbSeeds')">
           {{ motherPlant.numb_seeds }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(motherPlant.created) }}
+          {{ d(motherPlant.created, 'ymdHis') }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.modified')">
           {{
             motherPlant.modified
-              ? localizeDate(motherPlant.modified)
+              ? d(motherPlant.modified, 'ymdHis')
               : t('base.notAvailable')
           }}
         </EntityViewTableRow>
@@ -91,7 +82,7 @@
         @deleted="
           () =>
             router.push({
-              path: '/crossings/mother-plants',
+              path: '/mother-plants',
               query: route.query,
             })
         "
@@ -130,16 +121,14 @@ const query = graphql(
   `
     query MotherPlant(
       $id: Int!
-      $withPlant: Boolean = true
-      $withPollen: Boolean = true
-      $withCrossing: Boolean = true
-      $withParentCultivar: Boolean = false
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withSegments: Boolean = false
-      $withAttributions: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
+      $MotherPlantWithPlant: Boolean = true
+      $MotherPlantWithPollen: Boolean = true
+      $MotherPlantWithCrossing: Boolean = true
+      $PollenWithCultivar: Boolean = false
+      $PlantWithSegments: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       mother_plants_by_pk(id: $id) {
         ...motherPlantFragment
@@ -156,13 +145,13 @@ const { data, error, fetching } = useQuery({
 
 const motherPlant = computed(() => data.value?.mother_plants_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
 function edit() {
   router.push({
-    path: `/crossings/mother-plants/${props.entityId}/edit`,
+    path: `/mother-plants/${props.entityId}/edit`,
     query: route.query,
   });
 }

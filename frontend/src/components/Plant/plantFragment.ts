@@ -1,5 +1,4 @@
 import { graphql, type FragmentOf } from 'src/graphql';
-import { entityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 import { plantGroupSegmentsFragment } from '../PlantGroup/plantGroupFragment';
 
 export type PlantFragment = FragmentOf<typeof plantFragment>;
@@ -11,7 +10,7 @@ export const plantFragment = graphql(
       label_id
       cultivar_name
       plant_group_name
-      plant_group @include(if: $withSegments) {
+      plant_group @include(if: $PlantWithSegments) {
         ...plantGroupSegmentsFragment
       }
       serial_in_plant_row
@@ -42,10 +41,7 @@ export const plantFragment = graphql(
       disabled
       created
       modified
-      attributions_views @include(if: $withAttributions) {
-        ...entityAttributionsViewFragment
-      }
     }
   `,
-  [entityAttributionsViewFragment, plantGroupSegmentsFragment],
+  [plantGroupSegmentsFragment],
 );

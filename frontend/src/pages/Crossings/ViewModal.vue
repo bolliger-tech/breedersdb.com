@@ -32,12 +32,12 @@
           </RouterLink>
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(crossing.created) }}
+          {{ d(crossing.created, 'ymdHis') }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.modified')">
           {{
             crossing.modified
-              ? localizeDate(crossing.modified)
+              ? d(crossing.modified, 'ymdHis')
               : t('base.notAvailable')
           }}
         </EntityViewTableRow>
@@ -46,20 +46,15 @@
       <h3 class="q-mb-md">
         {{ t('lots.title', 2) }}
       </h3>
-      <q-table
-        v-if="crossing.lots"
-        class="q-mt-md"
-        flat
-        dense
-        :rows="crossing.lots"
+      <EntityViewRelatedEntityTable
+        entity-key="lots"
+        :rows="crossing.lots || []"
+        row-key="id"
         :columns="lotsColumns"
-        :rows-per-page-options="[0]"
-        hide-pagination
-        wrap-cells
-        binary-state-sort
+        default-sort-by="display_name"
       >
-        <template #body-cell-lot="cellProps">
-          <q-td key="value" :props="cellProps">
+        <template #body-cell-display_name="cellProps">
+          <q-td key="display_name" :props="cellProps">
             <RouterLink
               :to="`/lots/${cellProps.row.id}`"
               class="undecorated-link"
@@ -68,34 +63,39 @@
             </RouterLink>
           </q-td>
         </template>
-      </q-table>
+      </EntityViewRelatedEntityTable>
 
       <h3 class="q-mb-md">
         {{ t('motherPlants.title', 2) }}
       </h3>
-      <q-table
-        v-if="crossing.mother_plants"
-        class="q-mt-md"
-        flat
-        dense
-        :rows="crossing.mother_plants"
+      <EntityViewRelatedEntityTable
+        entity-key="mother_plants"
+        :rows="crossing.mother_plants || []"
+        row-key="id"
         :columns="motherPlantsColumns"
-        :rows-per-page-options="[0]"
-        hide-pagination
-        wrap-cells
-        binary-state-sort
+        default-sort-by="name"
       >
-        <template #body-cell-mother_plant="cellProps">
-          <q-td key="value" :props="cellProps">
+        <template #body-cell-name="cellProps">
+          <q-td key="name" :props="cellProps">
             <RouterLink
-              :to="`/crossings/mother-plants/${cellProps.row.id}`"
+              :to="`/mother-plants/${cellProps.row.id}`"
               class="undecorated-link"
             >
               {{ cellProps.row.name }}
             </RouterLink>
           </q-td>
         </template>
-      </q-table>
+        <template #body-cell-label_id="cellProps">
+          <q-td key="label_id" :props="cellProps">
+            <RouterLink
+              :to="`/plants/${cellProps.row.plant?.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.plant?.label_id }}
+            </RouterLink>
+          </q-td>
+        </template>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -131,6 +131,10 @@ import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vu
 import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import { lotFragment } from 'src/components/Lot/lotFragment';
+import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
+import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -138,17 +142,33 @@ const query = graphql(
   `
     query Crossing(
       $id: Int!
-      $withParentCultivar: Boolean = true
-      $withLot: Boolean = false
-      $withLots: Boolean = true
-      $withMotherPlants: Boolean = true
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
+      $MotherPlantWithPlant: Boolean = true
+      $MotherPlantWithPollen: Boolean = false
+      $MotherPlantWithCrossing: Boolean = false
+      $PlantWithSegments: Boolean = false
+      $PollenWithCultivar: Boolean = false
     ) {
       crossings_by_pk(id: $id) {
         ...crossingFragment
+        lots {
+          ...lotFragment
+        }
+        mother_plants {
+          ...motherPlantFragment
+        }
+        mother_cultivar {
+          ...cultivarFragment
+        }
+        father_cultivar {
+          ...cultivarFragment
+        }
       }
     }
   `,
-  [crossingFragment],
+  [crossingFragment, lotFragment, motherPlantFragment, cultivarFragment],
 );
 
 const { data, error, fetching } = useQuery({
@@ -158,7 +178,7 @@ const { data, error, fetching } = useQuery({
 
 const crossing = computed(() => data.value?.crossings_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -176,13 +196,13 @@ type Lot = NonNullable<
 
 const lotsColumns = [
   {
-    name: 'lot',
+    name: 'display_name',
     label: t('entity.commonColumns.name'),
     field: 'display_name',
     align: 'left' as const,
     sortable: true,
-    sort: (a: Lot, b: Lot) =>
-      localizedSortPredicate(a.display_name, b.display_name),
+    sort: (a: Lot['display_name'], b: Lot['display_name']) =>
+      localizedSortPredicate(a, b),
   },
 ];
 
@@ -192,13 +212,32 @@ type MotherPlant = NonNullable<
 
 const motherPlantsColumns = [
   {
-    name: 'mother_plant',
+    name: 'name',
     label: t('entity.commonColumns.name'),
     field: 'name',
     align: 'left' as const,
     sortable: true,
-    sort: (a: MotherPlant, b: MotherPlant) =>
-      localizedSortPredicate(a.name, b.name),
+    sort: (a: MotherPlant['name'], b: MotherPlant['name']) =>
+      localizedSortPredicate(a, b),
+  },
+  {
+    name: 'label_id',
+    label: t('plants.fields.labelId'),
+    field: (row: MotherPlant) => row.plant?.label_id,
+    align: 'left' as const,
+    sortable: true,
+    sort: (
+      a: NonNullable<MotherPlant['plant']>['label_id'],
+      b: NonNullable<MotherPlant['plant']>['label_id'],
+    ) => localizedSortPredicate(a, b),
+  },
+  {
+    name: 'date_impregnated',
+    label: t('motherPlants.fields.dateImpregnated'),
+    field: 'date_impregnated',
+    align: 'left' as const,
+    sortable: true,
+    format: (v: MotherPlant['date_impregnated']) => (v ? localizeDate(v) : ''),
   },
 ];
 </script>

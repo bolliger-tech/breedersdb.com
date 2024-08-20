@@ -42,21 +42,9 @@ import { useI18n } from 'vue-i18n';
 export type CrossingEditInput = Omit<CrossingFragment, 'created' | 'modified'>;
 export type CrossingInsertInput = Omit<
   CrossingEditInput,
-  | 'id'
-  | 'mother_cultivar_id'
-  | 'father_cultivar_id'
-  | 'mother_cultivar'
-  | 'father_cultivar'
+  'id' | 'mother_cultivar_id' | 'father_cultivar_id'
 > &
-  Partial<
-    Pick<
-      CrossingEditInput,
-      | 'mother_cultivar_id'
-      | 'father_cultivar_id'
-      | 'mother_cultivar'
-      | 'father_cultivar'
-    >
-  >;
+  Partial<Pick<CrossingEditInput, 'mother_cultivar_id' | 'father_cultivar_id'>>;
 
 export interface CrossingModalEditProps {
   crossing: CrossingEditInput | CrossingInsertInput;
@@ -66,13 +54,7 @@ defineProps<CrossingModalEditProps>();
 
 const insertMutation = graphql(
   `
-    mutation InsertCrossing(
-      $entity: crossings_insert_input!
-      $withParentCultivar: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
-      $withMotherPlants: Boolean = false
-    ) {
+    mutation InsertCrossing($entity: crossings_insert_input!) {
       insert_crossings_one(object: $entity) {
         ...crossingFragment
       }
@@ -85,14 +67,7 @@ export type CrossingEditInsertMutation = typeof insertMutation;
 
 const editMutation = graphql(
   `
-    mutation UpdateCrossing(
-      $id: Int!
-      $entity: crossings_set_input!
-      $withParentCultivar: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
-      $withMotherPlants: Boolean = false
-    ) {
+    mutation UpdateCrossing($id: Int!, $entity: crossings_set_input!) {
       update_crossings_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...crossingFragment
       }

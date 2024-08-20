@@ -28,13 +28,7 @@ const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query Crossing(
-      $id: Int!
-      $withParentCultivar: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
-      $withMotherPlants: Boolean = false
-    ) {
+    query Crossing($id: Int!) {
       crossings_by_pk(id: $id) {
         ...crossingFragment
       }

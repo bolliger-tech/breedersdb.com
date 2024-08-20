@@ -5,7 +5,7 @@
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('cultivars.title', 2)"
-      :search-placeholder="t('entity.searchPlaceholderName')"
+      :search-placeholder="t('cultivars.searchPlaceholder')"
       :rows="data?.cultivars || []"
       :loading="fetching"
       :all-columns="columns"
@@ -36,7 +36,9 @@ const query = graphql(
       $offset: Int!
       $orderBy: [cultivars_order_by!]
       $where: cultivars_bool_exp
-      $withLot: Boolean = true
+      $CultivarWithLot: Boolean = true
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       cultivars_aggregate {
         aggregate {
@@ -58,7 +60,7 @@ const query = graphql(
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'display_name',
-  searchColumns: ['display_name'],
+  searchColumns: ['display_name', 'acronym'],
 });
 
 const { data, fetching, error } = await useQuery({
@@ -82,10 +84,31 @@ const columns = [
     sortable: true,
   },
   {
+    name: 'acronym',
+    label: t('cultivars.fields.acronym'),
+    align: 'left' as const,
+    field: 'acronym',
+    sortable: true,
+  },
+  {
+    name: 'breeder',
+    label: t('cultivars.fields.breeder'),
+    align: 'left' as const,
+    field: 'breeder',
+    sortable: true,
+  },
+  {
+    name: 'registration',
+    label: t('cultivars.fields.registration'),
+    align: 'left' as const,
+    field: 'registration',
+    sortable: true,
+  },
+  {
     name: 'lot',
     label: t('cultivars.fields.lot'),
     align: 'left' as const,
-    field: (row: Cultivar) => row.lot?.display_name,
+    field: (row: Cultivar) => (row.lot_id === 1 ? '' : row.lot?.display_name),
     sortable: true,
   },
   {
@@ -106,7 +129,7 @@ const columns = [
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 3),
+  defaultValue: columns.map((column) => column.name).slice(0, 6),
   replace: true,
 });
 

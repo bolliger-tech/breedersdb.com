@@ -5,13 +5,15 @@
       v-model:pagination="pagination"
       v-model:visible-columns="visibleColumns"
       :title="t('motherPlants.title', 2)"
-      :search-placeholder="t('entity.searchPlaceholderName')"
+      :search-placeholder="t('motherPlants.searchPlaceholder')"
       :rows="data?.mother_plants || []"
       :loading="fetching"
       :all-columns="columns"
-      list-entities-path="/crossings/mother-plants"
-      add-entity-path="/crossings/mother-plants/new"
-      :view-entity-path-getter="(id) => `/crossings/mother-plants/${id}`"
+      list-entities-path="/mother-plants"
+      add-entity-path="/mother-plants/new"
+      :view-entity-path-getter="(id) => `/mother-plants/${id}`"
+      :has-qr-scanner="true"
+      @scanned-qr="(code) => (search = code)"
     />
   </PageLayout>
 </template>
@@ -26,6 +28,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { localizeDate } from 'src/utils/dateUtils';
 
 const { t, d } = useI18n();
 
@@ -36,16 +39,14 @@ const query = graphql(
       $offset: Int!
       $orderBy: [mother_plants_order_by!]
       $where: mother_plants_bool_exp
-      $withPlant: Boolean = false
-      $withPollen: Boolean = false
-      $withCrossing: Boolean = false
-      $withParentCultivar: Boolean = false
-      $withCultivar: Boolean = false
-      $withMotherPlants: Boolean = false
-      $withSegments: Boolean = false
-      $withAttributions: Boolean = false
-      $withLot: Boolean = false
-      $withLots: Boolean = false
+      $MotherPlantWithPlant: Boolean = true
+      $MotherPlantWithCrossing: Boolean = true
+      $MotherPlantWithPollen: Boolean = true
+      $PollenWithCultivar: Boolean = false
+      $PlantWithSegments: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       mother_plants_aggregate {
         aggregate {
@@ -65,7 +66,9 @@ const query = graphql(
   [motherPlantFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+  searchColumns: ['name', 'crossing.name', 'plant.label_id'],
+});
 
 const { data, fetching, error } = await useQuery({
   query,
@@ -88,6 +91,64 @@ const columns = [
     sortable: true,
   },
   {
+    name: 'crossing.name',
+    label: t('motherPlants.fields.crossing'),
+    align: 'left' as const,
+    field: (row: MotherPlant) => row.crossing?.name,
+    sortable: true,
+  },
+  {
+    name: 'plant.label_id',
+    label: t('plants.fields.labelId'),
+    align: 'left' as const,
+    field: (row: MotherPlant) => row.plant?.label_id,
+    sortable: true,
+  },
+  {
+    name: 'date_impregnated',
+    label: t('motherPlants.fields.dateImpregnated'),
+    align: 'left' as const,
+    field: 'date_impregnated',
+    sortable: true,
+    format: (v: MotherPlant['date_impregnated']) => localizeDate(v) || '',
+  },
+  {
+    name: 'pollen.name',
+    label: t('motherPlants.fields.pollen'),
+    align: 'left' as const,
+    field: (row: MotherPlant) => row.pollen?.name,
+    sortable: true,
+  },
+  {
+    name: 'numb_flowers',
+    label: t('motherPlants.fields.numbFlowers'),
+    align: 'left' as const,
+    field: 'numb_flowers',
+    sortable: true,
+  },
+  {
+    name: 'numb_fruits',
+    label: t('motherPlants.fields.numbFruits'),
+    align: 'left' as const,
+    field: 'numb_fruits',
+    sortable: true,
+  },
+  {
+    name: 'date_fruits_harvested',
+    label: t('motherPlants.fields.dateFruitsHarvested'),
+    align: 'left' as const,
+    field: 'date_fruits_harvested',
+    sortable: true,
+    format: (v: MotherPlant['date_fruits_harvested']) => localizeDate(v) || '',
+  },
+  {
+    name: 'numb_seeds',
+    label: t('motherPlants.fields.numbSeeds'),
+    align: 'left' as const,
+    field: 'numb_seeds',
+    sortable: true,
+  },
+  {
     name: 'modified',
     label: t('entity.commonColumns.modified'),
     align: 'left' as const,
@@ -106,7 +167,7 @@ const columns = [
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 2),
+  defaultValue: columns.map((column) => column.name).slice(0, 10),
   replace: true,
 });
 

@@ -24,7 +24,7 @@
   <EntityToggle
     :ref="(el: InputRef) => (refs.disabledRef = el)"
     v-model="data.disabled"
-    :required="true"
+    required
     :label="t('entity.commonColumns.disabled')"
     :explainer="t('attributionForms.disableExplainer')"
   />

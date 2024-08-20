@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
@@ -26,7 +26,7 @@ export interface PollenSelectProps {
   required?: boolean;
   includeId?: number;
 }
-const props = defineProps<PollenSelectProps>();
+defineProps<PollenSelectProps>();
 
 const pollenRef = ref<EntitySelectInstance<{
   id: number;
@@ -38,24 +38,29 @@ defineExpose({
   focus: () => pollenRef.value && focusInView(pollenRef.value),
 });
 
+export type PollenSelectPollen = typeof pollen.value;
+const emit = defineEmits<{
+  pollenChanged: [plant: PollenSelectPollen];
+}>();
+
 const modelValue = defineModel<number | null | undefined>({ required: true });
 
-const where = computed(() => ({
-  _and: [...(props.includeId ? [{ id: { _eq: props.includeId } }] : [])],
-}));
-
 const query = graphql(`
-  query Pollen($where: pollen_bool_exp!) {
-    pollen(order_by: { name: asc }, where: $where) {
+  query Pollen {
+    pollen(order_by: { name: asc }) {
       id
       name
+      cultivar {
+        id
+        display_name
+      }
     }
   }
 `);
 
 const { data, error, fetching } = useQuery({
   query,
-  variables: { where },
+  requestPolicy: 'cache-and-network',
 });
 
 const pollenOptions = computed(() => data.value?.pollen ?? []);
@@ -64,6 +69,8 @@ const pollen = computed({
   get: () => pollenOptions.value.find((o) => o.id === modelValue.value),
   set: (pollen) => (modelValue.value = pollen?.id ?? null),
 });
+
+watch(pollen, (newPollen) => emit('pollenChanged', newPollen));
 
 const { t } = useI18n();
 </script>

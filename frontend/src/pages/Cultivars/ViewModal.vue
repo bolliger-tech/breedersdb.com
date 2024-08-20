@@ -15,7 +15,7 @@
         <EntityViewTableRow :label="t('entity.commonColumns.displayName')">
           {{ cultivar.display_name }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('cultivars.fields.lot')">
+        <EntityViewTableRow v-if="cultivar.lot_id !== 1" :label="t('cultivars.fields.lot')">
           <RouterLink
             :to="`/lots/${cultivar.lot?.id}`"
             class="undecorated-link"
@@ -88,7 +88,12 @@ const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query Cultivar($id: Int!, $withLot: Boolean = true) {
+    query Cultivar(
+      $id: Int!
+      $CultivarWithLot: Boolean = true
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
+    ) {
       cultivars_by_pk(id: $id) {
         ...cultivarFragment
       }

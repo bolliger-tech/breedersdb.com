@@ -3,7 +3,7 @@
     :entity="cultivar"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
-    index-path="/cultivar"
+    index-path="/cultivars"
     sprite-icon="cultivar"
     :subtitle="t('cultivars.title', 1)"
   >
@@ -39,12 +39,12 @@ import {
 } from 'src/components/Cultivar/cultivarFragment';
 import { useI18n } from 'vue-i18n';
 
-export type CultivarEditInput = Omit<CultivarFragment, 'created' | 'modified'>;
-export type CultivarInsertInput = Omit<
-  CultivarEditInput,
-  'id' | 'lot_id' | 'lot'
-> &
-  Partial<Pick<CultivarEditInput, 'lot_id' | 'lot'>>;
+export type CultivarEditInput = Omit<
+  CultivarFragment,
+  'created' | 'modified' | 'lot'
+>;
+export type CultivarInsertInput = Omit<CultivarEditInput, 'id' | 'lot_id'> &
+  Partial<Pick<CultivarEditInput, 'lot_id'>>;
 
 export interface CultivarModalEditProps {
   cultivar: CultivarEditInput | CultivarInsertInput;
@@ -56,7 +56,9 @@ const insertMutation = graphql(
   `
     mutation InsertCultivar(
       $entity: cultivars_insert_input!
-      $withLot: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       insert_cultivars_one(object: $entity) {
         ...cultivarFragment
@@ -73,7 +75,9 @@ const editMutation = graphql(
     mutation UpdateCultivar(
       $id: Int!
       $entity: cultivars_set_input!
-      $withLot: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       update_cultivars_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...cultivarFragment

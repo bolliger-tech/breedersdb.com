@@ -1,12 +1,19 @@
 <template>
   <EntityInput
-    :ref="(el: InputRef) => (refs.nameRef = el)"
+    :ref="(el: InputRef) => (refs.name = el)"
     v-model="data.name"
     :label="t('entity.commonColumns.name')"
     :rules="[
       (val: string) =>
         !!val ||
         t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
+      (val: string) => {
+        const regex = new RegExp('^[-_\\w\\d]{1,8}$');
+        return (
+          regex.test(val) ||
+          t('base.validation.noSpecialCharsMaxLength', { max: 8 })
+        );
+      },
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"
@@ -14,28 +21,25 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
+    required
   />
   <CultivarSelect
-    :ref="(el: InputRef) => (refs.motherCultivarRef = el)"
+    :ref="(el: InputRef) => (refs.motherCultivarId = el)"
     v-model="data.mother_cultivar_id"
     :label="t('crossings.fields.motherCultivar')"
-    :include-id="props.crossing.mother_cultivar_id || undefined"
-    :required="true"
   />
   <CultivarSelect
-    :ref="(el: InputRef) => (refs.fatherCultivarRef = el)"
+    :ref="(el: InputRef) => (refs.fatherCultivarId = el)"
     v-model="data.father_cultivar_id"
     :label="t('crossings.fields.fatherCultivar')"
-    :include-id="props.crossing.father_cultivar_id || undefined"
-    :required="true"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.noteRef = el)"
+    :ref="(el: InputRef) => (refs.note = el)"
     v-model="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"
-    auto-grow
+    autogrow
   />
 </template>
 
@@ -65,21 +69,19 @@ const emits = defineEmits<{
 // for defineExpose() see below
 
 const initialData = {
-  ...props.crossing,
-  created: undefined,
-  modified: undefined,
-  id: undefined,
-  __typename: undefined,
+  name: props.crossing.name,
   mother_cultivar_id: props.crossing.mother_cultivar_id || null,
   father_cultivar_id: props.crossing.father_cultivar_id || null,
+  note: props.crossing.note,
 };
 
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameRef: null,
-  motherCultivarRef: null,
-  fatherCultivarRef: null,
+  name: null,
+  motherCultivarId: null,
+  fatherCultivarId: null,
+  note: null,
 });
 
 const { isDirty, validate } = useEntityForm({

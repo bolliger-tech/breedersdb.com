@@ -37,9 +37,12 @@ import PlantRowEntityForm from 'src/components/PlantRow/PlantRowEntityForm.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { useI18n } from 'src/composables/useI18n';
 
-export type PlantRowEditInput = Omit<PlantRowFragment, 'created' | 'modified'>;
-export type PlantRowInsertInput = Omit<PlantRowEditInput, 'id' | 'orchard'> &
-  Partial<Pick<PlantRowEditInput, 'orchard'>>;
+export type PlantRowEditInput = Omit<
+  PlantRowFragment,
+  'created' | 'modified' | 'orchard'
+>;
+export type PlantRowInsertInput = Omit<PlantRowEditInput, 'id' | 'orchard_id'> &
+  Partial<Pick<PlantRowEditInput, 'orchard_id'>>;
 
 export interface PlantRowModalEditProps {
   plantRow: PlantRowEditInput | PlantRowInsertInput;
@@ -49,10 +52,7 @@ defineProps<PlantRowModalEditProps>();
 
 const insertMutation = graphql(
   `
-    mutation InsertPlantRow(
-      $entity: plant_rows_insert_input!
-      $withPlants: Boolean = false
-    ) {
+    mutation InsertPlantRow($entity: plant_rows_insert_input!) {
       insert_plant_rows_one(object: $entity) {
         ...plantRowFragment
       }
@@ -63,11 +63,7 @@ const insertMutation = graphql(
 
 const editMutation = graphql(
   `
-    mutation UpdatePlantRow(
-      $id: Int!
-      $entity: plant_rows_set_input!
-      $withPlants: Boolean = false
-    ) {
+    mutation UpdatePlantRow($id: Int!, $entity: plant_rows_set_input!) {
       update_plant_rows_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...plantRowFragment
       }

@@ -1,34 +1,32 @@
 <template>
   <CrossingSelect
-    :ref="(el: InputRef) => (refs.crossingRef = el)"
+    :ref="(el: InputRef) => (refs.crossingId = el)"
     v-model="data.crossing_id"
     :required="true"
     :include-id="data.crossing_id || undefined"
-    @update:model-value="
-      () => data.name_segment && refs.nameInputsRef?.validate()
-    "
+    @update:model-value="() => data.name_segment && refs.nameInputs?.validate()"
   />
   <LotNameInputs
-    :ref="(el: InputRef) => (refs.nameInputsRef = el)"
+    :ref="(el: InputRef) => (refs.nameInputs = el)"
     v-model:name-segment="data.name_segment"
     v-model:name-override="data.name_override"
     :crossing-id="data.crossing_id"
     :lot-id="('id' in props.lot && props.lot.id) || undefined"
   />
   <OrchardSelect
-    :ref="(el: InputRef) => (refs.orchardRef = el)"
+    :ref="(el: InputRef) => (refs.orchardId = el)"
     v-model="data.orchard_id"
     :required="true"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.dateSowedRef = el)"
+    :ref="(el: InputRef) => (refs.dateSowed = el)"
     v-model="data.date_sowed"
     :label="t('lots.fields.dateSowed')"
     type="date"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.numbSeedsSowedRef = el)"
+    :ref="(el: InputRef) => (refs.numbSeedsSowed = el)"
     v-model="data.numb_seeds_sowed"
     :label="t('lots.fields.numbSeedsSowed')"
     type="number"
@@ -49,7 +47,7 @@
     ]"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.numbSeedlingsGrownRef = el)"
+    :ref="(el: InputRef) => (refs.numbSeedlingsGrown = el)"
     v-model="data.numb_seedlings_grown"
     :label="t('lots.fields.numbSeedlingsGrown')"
     type="number"
@@ -70,7 +68,7 @@
     ]"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.seedTrayRef = el)"
+    :ref="(el: InputRef) => (refs.seedTray = el)"
     v-model="data.seed_tray"
     :label="t('lots.fields.seedTray')"
     type="text"
@@ -82,14 +80,14 @@
     ]"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.datePlantedRef = el)"
+    :ref="(el: InputRef) => (refs.datePlanted = el)"
     v-model="data.date_planted"
     :label="t('lots.fields.datePlanted')"
     type="date"
     autocomplete="off"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.numbSeedlingsPlantedRef = el)"
+    :ref="(el: InputRef) => (refs.numbSeedlingsPlanted = el)"
     v-model="data.numb_seedlings_planted"
     :label="t('lots.fields.numbSeedlingsPlanted')"
     type="number"
@@ -110,7 +108,7 @@
     ]"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.plotRef = el)"
+    :ref="(el: InputRef) => (refs.plot = el)"
     v-model="data.plot"
     :label="t('lots.fields.plot')"
     type="text"
@@ -123,7 +121,7 @@
     ]"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.noteRef = el)"
+    :ref="(el: InputRef) => (refs.note = el)"
     v-model="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
@@ -175,17 +173,17 @@ const initialData = {
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameInputsRef: null,
-  dateSowedRef: null,
-  numbSeedsSowedRef: null,
-  numbSeedlingsGrownRef: null,
-  seedTrayRef: null,
-  datePlantedRef: null,
-  numbSeedlingsPlantedRef: null,
-  plotRef: null,
-  noteRef: null,
-  orchardRef: null,
-  crossingRef: null,
+  crossingId: null,
+  nameInputs: null,
+  orchardId: null,
+  dateSowed: null,
+  numbSeedsSowed: null,
+  numbSeedlingsGrown: null,
+  seedTray: null,
+  datePlanted: null,
+  numbSeedlingsPlanted: null,
+  plot: null,
+  note: null,
 });
 
 const { isDirty, validate } = useEntityForm({

@@ -28,22 +28,24 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - name
         - father_cultivar_id
+        - is_variety
         - mother_cultivar_id
+        - name
         - note
     comment: ""
 select_permissions:
   - role: user
     permission:
       columns:
-        - name
+        - created
         - father_cultivar_id
         - id
-        - mother_cultivar_id
-        - note
-        - created
+        - is_variety
         - modified
+        - mother_cultivar_id
+        - name
+        - note
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -51,9 +53,10 @@ update_permissions:
   - role: user
     permission:
       columns:
-        - name
         - father_cultivar_id
+        - is_variety
         - mother_cultivar_id
+        - name
         - note
       filter: {}
       check: {}

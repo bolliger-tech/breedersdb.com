@@ -11,26 +11,7 @@
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <LotEntityTable :lot="lot" />
 
-      <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
-      <EntityViewAttributionImageGallery :images="images" />
-
-      <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="OBSERVATION"
-        :rows="observations"
-      />
-
-      <h3 class="q-mb-md">{{ t('attributions.treatments') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="TREATMENT"
-        :rows="treatments"
-      />
-
-      <h3 class="q-mb-md">{{ t('attributions.samples') }}</h3>
-      <EntityViewAttributionsTable attribute-type="SAMPLE" :rows="samples" />
-
-      <h3 class="q-mb-md">{{ t('attributions.others') }}</h3>
-      <EntityViewAttributionsTable attribute-type="OTHER" :rows="other" />
+      <EntityViewAllAttributions :attributions="attributions" show-entity />
 
       <h3 class="q-mb-md">{{ t('cultivars.title', 2) }}</h3>
       <EntityViewRelatedEntityTable
@@ -86,8 +67,7 @@ import {
   entityAttributionsViewFragment,
   type EntityAttributionsViewFragment,
 } from 'src/components/Entity/entityAttributionsViewFragment';
-import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
-import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
+import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityName from 'src/components/Entity/EntityName.vue';
@@ -129,23 +109,6 @@ const lot = computed(() => data.value?.lots_by_pk);
 const attributions = computed(
   () =>
     (lot.value?.attributions_views || []) as EntityAttributionsViewFragment[],
-);
-const images = computed(() =>
-  attributions.value.filter(
-    (row) => row.data_type === 'PHOTO' || row.photo_note,
-  ),
-);
-const observations = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'OBSERVATION'),
-);
-const treatments = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'TREATMENT'),
-);
-const samples = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'SAMPLE'),
-);
-const other = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'OTHER'),
 );
 
 const route = useRoute();

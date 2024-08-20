@@ -21,26 +21,7 @@
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <PlantEntityTable :plant="plant" />
 
-      <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
-      <EntityViewAttributionImageGallery :images="images" />
-
-      <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="OBSERVATION"
-        :rows="observations"
-      />
-
-      <h3 class="q-mb-md">{{ t('attributions.treatments') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="TREATMENT"
-        :rows="treatments"
-      />
-
-      <h3 class="q-mb-md">{{ t('attributions.samples') }}</h3>
-      <EntityViewAttributionsTable attribute-type="SAMPLE" :rows="samples" />
-
-      <h3 class="q-mb-md">{{ t('attributions.others') }}</h3>
-      <EntityViewAttributionsTable attribute-type="OTHER" :rows="other" />
+      <EntityViewAllAttributions :attributions="attributions" />
     </template>
 
     <template #action-left>
@@ -68,10 +49,9 @@ import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
-import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
+import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 import { useI18n } from 'src/composables/useI18n';
-import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import { useRoute, useRouter } from 'vue-router';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
@@ -109,26 +89,7 @@ const attributions = computed(
     (plant.value?.attributions_views || []) as EntityAttributionsViewFragment[],
 );
 
-const images = computed(() =>
-  attributions.value.filter(
-    (row) => row.data_type === 'PHOTO' || row.photo_note,
-  ),
-);
-
 const { t } = useI18n();
-
-const observations = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'OBSERVATION'),
-);
-const treatments = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'TREATMENT'),
-);
-const samples = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'SAMPLE'),
-);
-const other = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'OTHER'),
-);
 
 const route = useRoute();
 const router = useRouter();

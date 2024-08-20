@@ -218,7 +218,7 @@ test('mother cultivar can not be changed to a cultivar different from linked mot
   );
 });
 
-test('mother cultivar can be changed to the same cultivar as the linked mother plants cultivar', async () => {
+test('mother cultivar & father cultivar can be changed to the same cultivar as the linked mother plants cultivars', async () => {
   const crossing = await postOrFail({
     query: insertMutation,
     variables: {
@@ -447,7 +447,7 @@ test('father cultivar can not be changed to a cultivar different from linked pol
   );
 });
 
-test('father & mother cultivar can changed if no mother plant is linked', async () => {
+test('father & mother cultivar can be changed if no mother plant is linked', async () => {
   const crossing = await postOrFail({
     query: insertMutation,
     variables: {

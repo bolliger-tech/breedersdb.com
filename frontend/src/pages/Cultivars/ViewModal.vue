@@ -82,7 +82,7 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else-if="fetching || refreshingAttributionsView">
+  <q-card v-else-if="fetching">
     <BaseSpinner size="xl" />
   </q-card>
 
@@ -92,7 +92,6 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import CultivarButtonDelete from 'src/components/Cultivar/CultivarButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -111,7 +110,7 @@ import {
 } from 'src/components/Entity/entityAttributionsViewFragment';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
-import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
+import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
@@ -142,28 +141,10 @@ const query = graphql(
   [cultivarFragment, plantGroupFragment, entityAttributionsViewFragment],
 );
 
-const {
-  data,
-  error: cultivarError,
-  fetching,
-  resume: enableCultivarQuery,
-} = useQuery({
+const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
-  pause: true,
-  requestPolicy: 'cache-and-network',
 });
-
-const {
-  executeMutation: refreshAttributionsView,
-  fetching: refreshingAttributionsView,
-  error: attributionsRefreshError,
-} = useRefreshAttributionsView();
-refreshAttributionsView({}).then(() => enableCultivarQuery());
-
-const error = computed(
-  () => cultivarError.value || attributionsRefreshError.value,
-);
 
 const cultivar = computed(() => data.value?.cultivars_by_pk);
 

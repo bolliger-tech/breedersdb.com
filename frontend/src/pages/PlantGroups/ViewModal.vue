@@ -106,7 +106,7 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else-if="fetching || refreshingAttributionsView">
+  <q-card v-else-if="fetching">
     <BaseSpinner size="xl" />
   </q-card>
 
@@ -116,7 +116,6 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PlantGroupButtonDelete from 'src/components/PlantGroup/PlantGroupButtonDelete.vue';
 import PlantGroupEntityTable from 'src/components/PlantGroup/PlantGroupEntityTable.vue';
@@ -140,7 +139,7 @@ import {
 import { localizeDate } from 'src/utils/dateUtils';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
-import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
+import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -169,28 +168,11 @@ const query = graphql(
   [plantGroupFragment, plantFragment, entityAttributionsViewFragment],
 );
 
-const {
-  data,
-  error: plantGroupError,
-  fetching,
-  resume: enablePlantGroupQuery,
-} = useQuery({
+const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
-  pause: true,
-  requestPolicy: 'cache-and-network',
 });
 
-const {
-  executeMutation: refreshAttributionsView,
-  fetching: refreshingAttributionsView,
-  error: attributionsRefreshError,
-} = useRefreshAttributionsView();
-refreshAttributionsView({}).then(() => enablePlantGroupQuery());
-
-const error = computed(
-  () => plantGroupError.value || attributionsRefreshError.value,
-);
 const plantGroup = computed(() => data.value?.plant_groups_by_pk);
 
 const attributions = computed(

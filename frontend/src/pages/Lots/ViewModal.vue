@@ -61,7 +61,7 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else-if="fetching || refreshingAttributionsView">
+  <q-card v-else-if="fetching">
     <BaseSpinner size="xl" />
   </q-card>
 
@@ -71,7 +71,6 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import LotButtonDelete from 'src/components/Lot/LotButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -92,7 +91,7 @@ import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAt
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityName from 'src/components/Entity/EntityName.vue';
-import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
+import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -120,26 +119,11 @@ const query = graphql(
   [lotFragment, entityAttributionsViewFragment],
 );
 
-const {
-  data,
-  error: lotError,
-  fetching,
-  resume: enableLotQuery,
-} = useQuery({
+const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
-  pause: true,
-  requestPolicy: 'cache-and-network',
 });
 
-const {
-  executeMutation: refreshAttributionsView,
-  fetching: refreshingAttributionsView,
-  error: attributionsRefreshError,
-} = useRefreshAttributionsView();
-refreshAttributionsView({}).then(() => enableLotQuery());
-
-const error = computed(() => lotError.value || attributionsRefreshError.value);
 const lot = computed(() => data.value?.lots_by_pk);
 
 const attributions = computed(

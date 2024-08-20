@@ -49,7 +49,7 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else-if="fetching || refreshingAttributionsView">
+  <q-card v-else-if="fetching">
     <BaseSpinner size="xl" />
   </q-card>
 
@@ -59,7 +59,6 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
@@ -75,7 +74,7 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import { useRoute, useRouter } from 'vue-router';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
-import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
+import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import { entityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 
@@ -99,29 +98,10 @@ const query = graphql(
   [plantFragment, entityAttributionsViewFragment],
 );
 
-const {
-  data,
-  error: plantError,
-  fetching,
-  resume: enablePlantQuery,
-} = useQuery({
+const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
-  pause: true,
-  requestPolicy: 'cache-and-network',
 });
-
-const {
-  executeMutation: refreshAttributionsView,
-  fetching: refreshingAttributionsView,
-  error: attributionsRefreshError,
-} = useRefreshAttributionsView();
-
-refreshAttributionsView({}).then(() => enablePlantQuery());
-
-const error = computed(
-  () => plantError.value || attributionsRefreshError.value,
-);
 
 const plant = computed(() => data.value?.plants_by_pk);
 const attributions = computed(

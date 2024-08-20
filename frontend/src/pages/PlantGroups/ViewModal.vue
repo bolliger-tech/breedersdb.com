@@ -225,7 +225,7 @@ function edit() {
   });
 }
 
-const { t } = useI18n();
+const { t, n } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 type Plant = NonNullable<
@@ -255,8 +255,9 @@ const plantColumns = [
     name: 'distance_plant_row_start',
     label: t('plants.fields.distancePlantRowStart'),
     field: 'distance_plant_row_start',
-    align: 'left' as const,
+    align: 'right' as const,
     sortable: true,
+    format: n,
   },
   {
     name: 'orchard',

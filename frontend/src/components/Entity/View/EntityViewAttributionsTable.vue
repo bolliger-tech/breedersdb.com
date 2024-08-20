@@ -35,7 +35,7 @@
           :to="`/lots/${cellProps.row.lot.id}`"
           class="undecorated-link"
         >
-          {{ cellProps.row.lot.name }}
+          {{ cellProps.row.lot.display_name }}
         </RouterLink>
       </q-td>
     </template>

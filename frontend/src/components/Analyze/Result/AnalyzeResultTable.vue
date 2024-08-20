@@ -84,7 +84,7 @@ function onRowClick(row: AnalyzeResultTableProps['rows'][0]): void {
 
   const routes = {
     [BaseTable.Plants]: '/plants',
-    [BaseTable.PlantGroups]: '/plant-groups',
+    [BaseTable.PlantGroups]: '/groups',
     [BaseTable.Cultivars]: '/cultivars',
     [BaseTable.Lots]: '/lots',
     [BaseTable.Crossings]: '/crossings',

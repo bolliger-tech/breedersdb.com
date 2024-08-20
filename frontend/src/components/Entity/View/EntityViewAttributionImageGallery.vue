@@ -13,11 +13,6 @@
         <EntityViewAttributionImage
           :file-name="(image.text_value || image.photo_note)!"
           :attribution="image"
-          :plant="plant"
-          :plant-group="plantGroup"
-          :cultivar="cultivar"
-          :lot="lot"
-          :crossing="crossing"
           preview
           :preview-height="200"
           :model-value="open === image.id"
@@ -54,11 +49,6 @@ const TRANSITION_DURATION = 300;
 
 export interface EntityViewAttributionsImageGalleryProps {
   images: EntityAttributionsViewFragment[];
-  plant?: { label_id: string };
-  plantGroup?: { display_name: string };
-  cultivar?: { display_name: string };
-  lot?: { display_name: string };
-  crossing?: { name: string };
 }
 
 defineProps<EntityViewAttributionsImageGalleryProps>();

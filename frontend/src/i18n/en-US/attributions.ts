@@ -11,6 +11,7 @@ export const attributions = {
     photoNote: 'Photo on value',
     photoNoteLong: 'Photo',
     attributeName: 'Attribute',
+    entity: 'Entity',
   },
 
   observations: 'Observations',

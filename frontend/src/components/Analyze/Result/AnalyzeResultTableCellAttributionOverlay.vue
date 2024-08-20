@@ -10,7 +10,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import { ResultOf, graphql } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -19,22 +19,32 @@ import {
   plantFragment,
   type PlantFragment,
 } from 'src/components/Plant/plantFragment';
+import { lotFragment, type LotFragment } from 'src/components/Lot/lotFragment';
 import {
   entityAttributionsViewFragment,
   type EntityAttributionsViewFragment,
 } from 'src/components/Entity/entityAttributionsViewFragment';
+import {
+  plantGroupFragment,
+  type PlantGroupFragment,
+} from 'src/components/PlantGroup/plantGroupFragment';
+import {
+  cultivarFragment,
+  type CultivarFragment,
+} from 'src/components/Cultivar/cultivarFragment';
 import { computed } from 'vue';
 
 export interface AnalyzeResultTableCellAttributionOverlayProps {
   id: number;
 }
 
-type AnalyzeResult = ResultOf<typeof query>['attributions_view'][0];
 export type AttributionDetails = EntityAttributionsViewFragment & {
-  plant: PlantFragment;
-  plant_group: AnalyzeResult['plant_group'];
-  cultivar: AnalyzeResult['cultivar'];
-  lot: AnalyzeResult['lot'];
+  plant: Omit<PlantFragment, 'plant_group'> & {
+    plant_group: Required<PlantFragment['plant_group']>;
+  };
+  plant_group: Omit<PlantGroupFragment, 'cultivar'>;
+  cultivar: Omit<CultivarFragment, 'lot'>;
+  lot: Omit<LotFragment, 'orchard' | 'crossing'>;
 };
 
 const props = defineProps<AnalyzeResultTableCellAttributionOverlayProps>();
@@ -44,6 +54,11 @@ const query = graphql(
     query AnalyzeResultTableCellAttributionDetails(
       $id: Int!
       $PlantWithSegments: Boolean! = true
+      $PlantGroupWithCultivar: Boolean! = false
+      $CultivarWithLot: Boolean! = false
+      $AttributionsViewWithEntites: Boolean! = false
+      $LotWithOrchard: Boolean! = false
+      $LotWithCrossing: Boolean! = false
     ) {
       attributions_view(where: { id: { _eq: $id } }) {
         ...entityAttributionsViewFragment
@@ -51,34 +66,24 @@ const query = graphql(
           ...plantFragment
         }
         plant_group {
-          id
-          display_name
-          note
+          ...plantGroupFragment
         }
         cultivar {
-          id
-          display_name
-          acronym
-          breeder
-          registration
-          note
+          ...cultivarFragment
         }
         lot {
-          id
-          display_name
-          date_sowed
-          numb_seeds_sowed
-          numb_seedlings_grown
-          seed_tray
-          date_planted
-          numb_seedlings_planted
-          plot
-          note
+          ...lotFragment
         }
       }
     }
   `,
-  [plantFragment, entityAttributionsViewFragment],
+  [
+    entityAttributionsViewFragment,
+    plantFragment,
+    plantGroupFragment,
+    cultivarFragment,
+    lotFragment,
+  ],
 );
 
 const { data, fetching, error } = useQuery({

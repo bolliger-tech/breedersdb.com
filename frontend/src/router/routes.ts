@@ -109,7 +109,7 @@ const routes: RouteRecordRaw[] = [
       },
 
       {
-        path: 'plant-groups',
+        path: 'groups',
         children: [createAnalyzeRoutes('PlantGroups')],
       },
 
@@ -136,6 +136,7 @@ const routes: RouteRecordRaw[] = [
         'Attributes',
         'AttributionForms',
         'Lots',
+        'PlantGroups',
       ].map(createEntityRoutes),
 
       {

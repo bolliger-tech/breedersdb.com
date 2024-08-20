@@ -4,17 +4,17 @@
     <q-separator v-if="!data.photo_note" class="q-my-sm" dark />
   </div>
 
-  <EntityViewAttributionImage
+  <div
     v-if="data.photo_note || ('PHOTO' === data.data_type && data.text_value)"
-    :file-name="(data.photo_note || data.text_value)!"
-    :attribution="data"
-    :plant="data.plant || undefined"
-    :plant-group="data.plant_group || undefined"
-    :cultivar="data.cultivar || undefined"
-    :lot="data.lot || undefined"
-    preview
-    :preview-width="282"
-  />
+    class="row justify-center bg-black"
+  >
+    <EntityViewAttributionImage
+      :file-name="(data.photo_note || data.text_value)!"
+      :attribution="data"
+      preview
+      :preview-width="282"
+    />
+  </div>
 
   <template v-if="data.text_note">
     <div class="text-body2" style="white-space: pre-line">
@@ -62,6 +62,8 @@
     </div>
   </template>
 
+  <!-- TODO: add plant_group -->
+
   <template v-else-if="data.cultivar">
     <div class="row no-wrap items-center text-body2 q-pt-xs">
       <BaseSpriteIcon name="cultivar" color="grey-7" size="lg" />
@@ -69,6 +71,7 @@
         {{ data.cultivar.display_name }}
       </RouterLink>
     </div>
+    <!-- TODO: replace with CultivarEntityTable -->
     <table style="width: 100%" class="text-body2">
       <tr v-if="data.cultivar.acronym">
         <th>{{ t('cultivars.fields.acronym') }}</th>
@@ -97,6 +100,7 @@
         {{ data.lot.display_name }}
       </RouterLink>
     </div>
+    <!-- TODO: replace with LotEntityTable -->
     <table style="width: 100%" class="text-body2">
       <tr v-if="data.lot.date_sowed">
         <th>{{ t('lots.fields.dateSowed') }}</th>

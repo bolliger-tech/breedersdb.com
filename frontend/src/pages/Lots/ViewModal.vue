@@ -12,43 +12,25 @@
       <LotEntityTable :lot="lot" />
 
       <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
-      <EntityViewAttributionImageGallery
-        :images="images"
-        :lot="lot"
-        :crossing="lot.crossing"
-      />
+      <EntityViewAttributionImageGallery :images="images" />
 
       <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="OBSERVATION"
         :rows="observations"
-        :lot="lot"
-        :crossing="lot.crossing"
       />
 
       <h3 class="q-mb-md">{{ t('attributions.treatments') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="TREATMENT"
         :rows="treatments"
-        :lot="lot"
-        :crossing="lot.crossing"
       />
 
       <h3 class="q-mb-md">{{ t('attributions.samples') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="SAMPLE"
-        :rows="samples"
-        :lot="lot"
-        :crossing="lot.crossing"
-      />
+      <EntityViewAttributionsTable attribute-type="SAMPLE" :rows="samples" />
 
       <h3 class="q-mb-md">{{ t('attributions.others') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="OTHER"
-        :rows="other"
-        :lot="lot"
-        :crossing="lot.crossing"
-      />
+      <EntityViewAttributionsTable attribute-type="OTHER" :rows="other" />
 
       <h3 class="q-mb-md">{{ t('cultivars.title', 2) }}</h3>
       <EntityViewRelatedEntityTable
@@ -79,7 +61,7 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else-if="fetching">
+  <q-card v-else-if="fetching || refreshingAttributionsView">
     <BaseSpinner size="xl" />
   </q-card>
 
@@ -110,6 +92,7 @@ import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAt
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityName from 'src/components/Entity/EntityName.vue';
+import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -119,6 +102,7 @@ const query = graphql(
       $id: Int!
       $LotWithOrchard: Boolean! = true
       $LotWithCrossing: Boolean! = true
+      $AttributionsViewWithEntites: Boolean! = true
     ) {
       lots_by_pk(id: $id) {
         ...lotFragment
@@ -136,11 +120,26 @@ const query = graphql(
   [lotFragment, entityAttributionsViewFragment],
 );
 
-const { data, error, fetching } = useQuery({
+const {
+  data,
+  error: lotError,
+  fetching,
+  resume: enableLotQuery,
+} = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  pause: true,
+  requestPolicy: 'cache-and-network',
 });
 
+const {
+  executeMutation: refreshAttributionsView,
+  fetching: refreshingAttributionsView,
+  error: attributionsRefreshError,
+} = useRefreshAttributionsView();
+refreshAttributionsView({}).then(() => enableLotQuery());
+
+const error = computed(() => lotError.value || attributionsRefreshError.value);
 const lot = computed(() => data.value?.lots_by_pk);
 
 const attributions = computed(

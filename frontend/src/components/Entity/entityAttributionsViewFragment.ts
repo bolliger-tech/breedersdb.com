@@ -47,5 +47,21 @@ export const entityAttributionsViewFragment = graphql(`
     attribution_id
     geo_location
     geo_location_accuracy
+    plant @include(if: $AttributionsViewWithEntites) {
+      id
+      label_id
+    }
+    plant_group @include(if: $AttributionsViewWithEntites) {
+      id
+      display_name
+    }
+    cultivar @include(if: $AttributionsViewWithEntites) {
+      id
+      display_name
+    }
+    lot @include(if: $AttributionsViewWithEntites) {
+      id
+      display_name
+    }
   }
 `);

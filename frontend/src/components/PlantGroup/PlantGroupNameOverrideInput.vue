@@ -4,10 +4,10 @@
     :full-name="fullName"
     :rules="[
       (val: string | null | undefined) =>
-        !val || val.length <= 25 || t('base.validation.maxLen', { x: 25 }),
+        !val || val.length <= 77 || t('base.validation.maxLen', { x: 77 }),
       (val: string | null | undefined) =>
         !val ||
-        /^[^\n\.]{1,25}$/.test(val) ||
+        /^[^\n\.]{1,77}$/.test(val) ||
         t('base.validation.noDotsOrNewLines'),
       async (val: string | null | undefined) =>
         !val ||
@@ -17,14 +17,14 @@
     :loading="fetchingNameOverrideUnique"
     :hint="
       t('entity.nameOverrideHint.onNameOverride', {
-        entity: t('base.entityName.lot', 1),
+        entity: t('base.entityName.plantGroup', 1),
       })
     "
   />
 </template>
 
 <script setup lang="ts">
-import EntityNameOverrideInput from '../Entity/Edit/EntityNameOverrideInput.vue';
+import EntityNameOverrideInput from 'src/components/Entity/Edit/EntityNameOverrideInput.vue';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
@@ -32,7 +32,7 @@ import { focusInView } from 'src/utils/focusInView';
 import { InputRef } from 'src/composables/useEntityForm';
 
 export interface LotNameInputProps {
-  lotId: number | undefined;
+  plantGroupId: number | undefined;
   fullName: string | undefined;
 }
 
@@ -47,8 +47,8 @@ defineExpose({
 
 const { isUnique: isNameOverrideUnique, fetching: fetchingNameOverrideUnique } =
   useIsUnique({
-    tableName: 'lots',
-    existingId: props.lotId || undefined,
+    tableName: 'plant_groups',
+    existingId: props.plantGroupId || undefined,
     columnName: 'name_override',
   });
 

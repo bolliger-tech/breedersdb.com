@@ -1,16 +1,18 @@
 <template>
   <EntityButtonDelete
-    :label="plantRowHasPlants ? t('base.disable') : t('base.delete')"
+    :label="plantGroupHasPlants ? t('base.disable') : t('base.delete')"
     :error="queryError || deleteError || disableError"
     :fetching="queryFetching || deleting || disabling"
-    @delete="() => (plantRowHasPlants ? disablePlantRow() : deletePlantRow())"
+    @delete="
+      () => (plantGroupHasPlants ? disablePlantGroup() : deletePlantGroup())
+    "
     @reset-errors="resetErrors"
   >
-    <template v-if="plantRowHasPlants" #message>
+    <template v-if="plantGroupHasPlants" #message>
       <BaseMessage
         type="warning"
         icon-size="xl"
-        :message="t('plantRows.disableConfirmation')"
+        :message="t('plantGroups.disableConfirmation')"
       />
     </template>
     <template v-else #message>
@@ -18,7 +20,7 @@
         type="warning"
         icon-size="xl"
         icon-color="negative"
-        :message="t('plantRows.deleteConfirmation')"
+        :message="t('plantGroups.deleteConfirmation')"
       />
     </template>
   </EntityButtonDelete>
@@ -32,10 +34,10 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed } from 'vue';
 import BaseMessage from '../Base/BaseMessage.vue';
 
-export interface PlantRowButtonDeleteProps {
-  plantRowId: number;
+export interface PlantGroupButtonDeleteProps {
+  plantGroupId: number;
 }
-const props = defineProps<PlantRowButtonDeleteProps>();
+const props = defineProps<PlantGroupButtonDeleteProps>();
 
 const emit = defineEmits<{
   deleted: [];
@@ -47,13 +49,13 @@ function resetErrors() {
 }
 
 const {
-  data: plantRowData,
+  data: plantGroupData,
   error: queryError,
   fetching: queryFetching,
 } = useQuery({
   query: graphql(`
-    query PlantRowsCountPlants($id: Int!) {
-      plant_rows_by_pk(id: $id) {
+    query PlantGroupsCountPlants($id: Int!) {
+      plant_groups_by_pk(id: $id) {
         plants_aggregate {
           aggregate {
             count
@@ -62,22 +64,22 @@ const {
       }
     }
   `),
-  variables: { id: props.plantRowId },
+  variables: { id: props.plantGroupId },
 });
 
-const plantRowHasPlants = computed(() => {
-  return !!plantRowData.value?.plant_rows_by_pk?.plants_aggregate?.aggregate
+const plantGroupHasPlants = computed(() => {
+  return !!plantGroupData.value?.plant_groups_by_pk?.plants_aggregate?.aggregate
     ?.count;
 });
 
 const {
   error: deleteError,
-  executeMutation: executeDeletePlantRow,
+  executeMutation: executeDeletePlantGroup,
   fetching: deleting,
 } = useMutation(
   graphql(`
-    mutation DeletePlantRow($id: Int!) {
-      delete_plant_rows_by_pk(id: $id) {
+    mutation DeletePlantGroup($id: Int!) {
+      delete_plant_groups_by_pk(id: $id) {
         id
       }
     }
@@ -86,14 +88,14 @@ const {
 
 const {
   error: disableError,
-  executeMutation: executeDisablePlantRow,
+  executeMutation: executeDisablePlantGroup,
   fetching: disabling,
 } = useMutation(
   graphql(`
-    mutation DisablePlantRow($id: Int!) {
-      update_plant_rows_by_pk(
+    mutation DisablePlantGroup($id: Int!) {
+      update_plant_groups_by_pk(
         pk_columns: { id: $id }
-        _set: { date_eliminated: "now()" }
+        _set: { disabled: true }
       ) {
         id
       }
@@ -101,20 +103,20 @@ const {
   `),
 );
 
-function deletePlantRow() {
-  executeDeletePlantRow({ id: props.plantRowId }).then((result) => {
-    if (!result.data?.delete_plant_rows_by_pk) {
-      console.error(`Failed to delete plantRow ${props.plantRowId}`);
+function deletePlantGroup() {
+  executeDeletePlantGroup({ id: props.plantGroupId }).then((result) => {
+    if (!result.data?.delete_plant_groups_by_pk) {
+      console.error(`Failed to delete plantGroup ${props.plantGroupId}`);
     } else {
       emit('deleted');
     }
   });
 }
 
-function disablePlantRow() {
-  executeDisablePlantRow({ id: props.plantRowId }).then((result) => {
-    if (!result.data?.update_plant_rows_by_pk) {
-      console.error(`Failed to disable plantRow ${props.plantRowId}`);
+function disablePlantGroup() {
+  executeDisablePlantGroup({ id: props.plantGroupId }).then((result) => {
+    if (!result.data?.update_plant_groups_by_pk) {
+      console.error(`Failed to disable plantGroup ${props.plantGroupId}`);
     } else {
       emit('deleted');
     }

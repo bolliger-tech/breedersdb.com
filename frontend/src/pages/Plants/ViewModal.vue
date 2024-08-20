@@ -22,58 +22,25 @@
       <PlantEntityTable :plant="plant" />
 
       <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
-      <EntityViewAttributionImageGallery
-        :images="images"
-        :plant="plant"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group?.cultivar"
-        :lot="plant.plant_group?.cultivar.lot"
-        :crossing="plant.plant_group?.cultivar.lot.crossing"
-      />
+      <EntityViewAttributionImageGallery :images="images" />
 
       <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="OBSERVATION"
         :rows="observations"
-        :plant="plant"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group?.cultivar"
-        :lot="plant.plant_group?.cultivar.lot"
-        :crossing="plant.plant_group?.cultivar.lot.crossing"
       />
 
       <h3 class="q-mb-md">{{ t('attributions.treatments') }}</h3>
       <EntityViewAttributionsTable
         attribute-type="TREATMENT"
         :rows="treatments"
-        :plant="plant"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group?.cultivar"
-        :lot="plant.plant_group?.cultivar.lot"
-        :crossing="plant.plant_group?.cultivar.lot.crossing"
       />
 
       <h3 class="q-mb-md">{{ t('attributions.samples') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="SAMPLE"
-        :rows="samples"
-        :plant="plant"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group?.cultivar"
-        :lot="plant.plant_group?.cultivar.lot"
-        :crossing="plant.plant_group?.cultivar.lot.crossing"
-      />
+      <EntityViewAttributionsTable attribute-type="SAMPLE" :rows="samples" />
 
       <h3 class="q-mb-md">{{ t('attributions.others') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="OTHER"
-        :rows="other"
-        :plant="plant"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group?.cultivar"
-        :lot="plant.plant_group?.cultivar.lot"
-        :crossing="plant.plant_group?.cultivar.lot.crossing"
-      />
+      <EntityViewAttributionsTable attribute-type="OTHER" :rows="other" />
     </template>
 
     <template #action-left>
@@ -82,7 +49,7 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else-if="fetching">
+  <q-card v-else-if="fetching || refreshingAttributionsView">
     <BaseSpinner size="xl" />
   </q-card>
 
@@ -92,12 +59,12 @@
 </template>
 
 <script setup lang="ts">
-import { CombinedError, useQuery } from '@urql/vue';
+import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
@@ -108,25 +75,19 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import { useRoute, useRouter } from 'vue-router';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
-import {
-  RefreshAttributionsViewResult,
-  useRefreshAttributionsView,
-} from 'src/composables/useRefreshAttributionsView';
+import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import { entityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 
 const props = defineProps<{ entityId: number | string }>();
 
-const attributionsRefreshError = ref<CombinedError | undefined>();
-const attributionsRefresh = ref<RefreshAttributionsViewResult | undefined>();
-const {
-  executeMutation: refreshAttributionsView,
-  fetching: refreshingAttributionsView,
-} = useRefreshAttributionsView();
-
 const query = graphql(
   `
-    query Plant($id: Int!, $PlantWithSegments: Boolean = true) {
+    query Plant(
+      $id: Int!
+      $PlantWithSegments: Boolean = true
+      $AttributionsViewWithEntites: Boolean = true
+    ) {
       plants_by_pk(id: $id) {
         ...plantFragment
         attributions_views {
@@ -140,28 +101,26 @@ const query = graphql(
 
 const {
   data,
-  error: queryPlantError,
-  executeQuery: executePlantQuery,
-  fetching: fetchingPlant,
+  error: plantError,
+  fetching,
+  resume: enablePlantQuery,
 } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
-  pause: refreshingAttributionsView.value || !attributionsRefresh.value,
+  pause: true,
   requestPolicy: 'cache-and-network',
 });
 
-refreshAttributionsView({}).then(({ data, error }) => {
-  attributionsRefresh.value = data;
-  attributionsRefreshError.value = error;
-  executePlantQuery();
-});
+const {
+  executeMutation: refreshAttributionsView,
+  fetching: refreshingAttributionsView,
+  error: attributionsRefreshError,
+} = useRefreshAttributionsView();
+
+refreshAttributionsView({}).then(() => enablePlantQuery());
 
 const error = computed(
-  () => queryPlantError.value || attributionsRefreshError.value,
-);
-
-const fetching = computed(
-  () => refreshingAttributionsView.value || fetchingPlant.value,
+  () => plantError.value || attributionsRefreshError.value,
 );
 
 const plant = computed(() => data.value?.plants_by_pk);

@@ -1,35 +1,35 @@
 <template>
-  <LotNameSegmentInput
+  <PlantGroupNameSegmentInput
     ref="nameSegmentRef"
     v-model="nameSegment"
-    :crossing="crossing"
+    :cultivar="cultivar"
     :loading="fetching"
-    :crossing-error="!!error"
-    :lot-id="lotId"
+    :cultivar-error="!!error"
+    :plant-group-id="plantGroupId"
   />
-  <LotNameOverrideInput
+  <PlantGroupNameOverrideInput
     ref="nameOverrideRef"
     v-model="nameOverride"
-    :lot-id="lotId"
+    :plant-group-id="plantGroupId"
     :full-name="fullName"
   />
 </template>
 
 <script setup lang="ts">
-import LotNameSegmentInput from './LotNameSegmentInput.vue';
-import LotNameOverrideInput from './LotNameOverrideInput.vue';
+import PlantGroupNameSegmentInput from './PlantGroupNameSegmentInput.vue';
+import PlantGroupNameOverrideInput from './PlantGroupNameOverrideInput.vue';
 import { InputRef } from 'src/composables/useEntityForm';
 import { focusInView } from 'src/utils/focusInView';
 import { computed, ref, watch } from 'vue';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
 
-export interface LotNameInputProps {
-  lotId: number | undefined;
-  crossingId: number | null;
+export interface PlantGroupNameInputProps {
+  plantGroupId: number | undefined;
+  cultivarId: number | null;
 }
 
-const props = defineProps<LotNameInputProps>();
+const props = defineProps<PlantGroupNameInputProps>();
 const nameSegment = defineModel<string>('nameSegment', { required: true });
 const nameOverride = defineModel<string | null>('nameOverride', {
   required: true,
@@ -50,22 +50,22 @@ defineExpose({
 });
 
 const query = graphql(`
-  query Crossing($id: Int!) {
-    crossings_by_pk(id: $id) {
+  query Cultivars($id: Int!) {
+    cultivars_by_pk(id: $id) {
       id
-      name
+      display_name
     }
   }
 `);
-const variables = computed(() => ({ id: props.crossingId }));
+const variables = computed(() => ({ id: props.cultivarId }));
 const { data, error, fetching, resume, pause } = useQuery({
   query: query,
   variables: variables,
-  pause: !props.crossingId,
+  pause: !props.cultivarId,
   requestPolicy: 'cache-first',
 });
 watch(
-  () => props.crossingId,
+  () => props.cultivarId,
   (newValue) => {
     if (newValue) {
       resume();
@@ -75,12 +75,12 @@ watch(
     }
   },
 );
-const crossing = computed(() => data.value?.crossings_by_pk || null);
+const cultivar = computed(() => data.value?.cultivars_by_pk || null);
 
 const fullName = computed(() => {
-  if (!crossing.value || !nameSegment.value) {
+  if (!cultivar.value || !nameSegment.value) {
     return undefined;
   }
-  return `${crossing.value.name}.${nameSegment.value}`;
+  return `${cultivar.value.display_name}.${nameSegment.value}`;
 });
 </script>

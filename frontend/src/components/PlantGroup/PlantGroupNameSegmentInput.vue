@@ -160,11 +160,3 @@ const { isUnique: isNameSegmentUnique, fetching: fetchingNameSegmentUnique } =
     additionalWhere,
   });
 </script>
-
-<style scoped>
-code {
-  background: rgba(0, 0, 0, 0.25);
-  padding: 0.1em 0.25em;
-  border-radius: 0.25em;
-}
-</style>

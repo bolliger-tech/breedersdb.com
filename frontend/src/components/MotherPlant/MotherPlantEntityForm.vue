@@ -81,7 +81,6 @@
   <PollenSelect
     :ref="(el: InputRef) => (refs.pollenId = el)"
     v-model="data.pollen_id"
-    :required="!!selectedCrossing?.father_cultivar"
     :hint="
       selectedPollen
         ? t('motherPlants.hints.pollenCultivar', {

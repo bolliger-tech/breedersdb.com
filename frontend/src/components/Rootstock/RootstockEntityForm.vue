@@ -1,6 +1,6 @@
 <template>
   <EntityInput
-    :ref="(el: InputRef) => (refs.nameRef = el)"
+    :ref="(el: InputRef) => (refs.name = el)"
     v-model="data.name"
     :label="t('entity.commonColumns.name')"
     :rules="[
@@ -14,6 +14,7 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
+    required
   />
 </template>
 
@@ -48,7 +49,7 @@ const initialData = {
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameRef: null,
+  name: null,
 });
 
 const { isDirty, validate } = useEntityForm({

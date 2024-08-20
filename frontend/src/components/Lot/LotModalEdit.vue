@@ -11,6 +11,7 @@
       <LotEntityForm
         :ref="(el) => setFormRef(el)"
         :lot="lot"
+        :is-variety="isVariety"
         @change="onChange"
       />
     </template>
@@ -52,6 +53,7 @@ export type LotInsertInput = Omit<
 
 export interface LotModalEditProps {
   lot: LotEditInput | LotInsertInput;
+  isVariety: boolean;
 }
 
 defineProps<LotModalEditProps>();

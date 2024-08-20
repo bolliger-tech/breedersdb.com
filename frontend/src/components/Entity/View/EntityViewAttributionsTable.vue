@@ -2,6 +2,7 @@
   <EntityViewRelatedEntityTable
     :entity-key="`attributions-table-${props.attributeType}`"
     :rows="rows"
+    row-key="id"
     :columns="columns"
     default-sort-by="date_attributed"
     :default-descending="true"

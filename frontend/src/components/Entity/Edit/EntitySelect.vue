@@ -22,8 +22,10 @@
       hide-selected
       :clearable="clearable"
       :loading="loading"
-      :hint="required ? t('base.required') : ''"
+      :hint="hint ? hint : required ? t('base.required') : ''"
       :label="inlineLabel"
+      bottom-slots
+      :readonly="readonly"
       @popup-show="() => (inlineLabel = label)"
       @popup-hide="() => (inlineLabel = undefined)"
       @filter="filterOptions"
@@ -31,13 +33,17 @@
       <template #no-option>
         <q-item>
           <q-item-section class="text-grey">
-            {{ t('base.noResults') }}
+            {{ noOptionText || t('base.noResults') }}
           </q-item-section>
         </q-item>
       </template>
 
       <template v-if="$slots.option" #option="option">
         <slot name="option" v-bind="option"></slot>
+      </template>
+
+      <template v-if="$slots['after-options']" #after-options>
+        <slot name="after-options"></slot>
       </template>
     </q-select>
 
@@ -57,6 +63,7 @@ import {
   computed,
   ref,
   type Slot,
+  type ShallowRef,
 } from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import {
@@ -98,6 +105,14 @@ export interface EntitySelectPropsWithoutModel<T> {
   noSort?: boolean;
   explainer?: string;
   rules?: QSelectProps['rules'];
+  filterFn?: (
+    value: string,
+    update: FilterSelectOptionsUpdateFn,
+    filteredOptions: ShallowRef<T[]>,
+  ) => void;
+  noOptionText?: string;
+  readonly?: boolean;
+  hint?: string;
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
@@ -109,6 +124,10 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   noSort: false,
   explainer: undefined,
   rules: undefined,
+  filterFn: undefined,
+  noOptionText: undefined,
+  readonly: false,
+  hint: undefined,
 });
 
 const selectRef = ref<QSelect | null>(null);
@@ -120,6 +139,8 @@ defineExpose({
 defineSlots<{
   option: QSelectSlots['option'];
   explainer: Slot;
+  hint: Slot;
+  'after-options': QSelectSlots['after-options'];
 }>();
 
 const modelValue = defineModel<T | null | undefined>();
@@ -139,13 +160,15 @@ const options = computed(() => {
 
 const filteredOptions = shallowRef([...options.value]);
 function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
-  filterSelectOptions({
-    value,
-    update,
-    allOptions: Object.freeze([...options.value]),
-    filteredOptions,
-    valueExtractorFn: (item) => item[props.optionLabel],
-  });
+  props.filterFn
+    ? props.filterFn(value, update, filteredOptions)
+    : filterSelectOptions({
+        value,
+        update,
+        allOptions: Object.freeze([...options.value]),
+        filteredOptions,
+        valueExtractorFn: (item) => item[props.optionLabel],
+      });
 }
 
 const { inputBgColor } = useInputBackground();

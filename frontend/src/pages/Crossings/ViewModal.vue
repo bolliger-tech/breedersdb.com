@@ -32,12 +32,12 @@
           </RouterLink>
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(crossing.created) }}
+          {{ d(crossing.created, 'ymdHis') }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.modified')">
           {{
             crossing.modified
-              ? localizeDate(crossing.modified)
+              ? d(crossing.modified, 'ymdHis')
               : t('base.notAvailable')
           }}
         </EntityViewTableRow>
@@ -49,6 +49,7 @@
       <EntityViewRelatedEntityTable
         entity-key="lots"
         :rows="crossing.lots || []"
+        row-key="id"
         :columns="lotsColumns"
         default-sort-by="display_name"
       >
@@ -70,6 +71,7 @@
       <EntityViewRelatedEntityTable
         entity-key="mother_plants"
         :rows="crossing.mother_plants || []"
+        row-key="id"
         :columns="motherPlantsColumns"
         default-sort-by="name"
       >
@@ -176,7 +178,7 @@ const { data, error, fetching } = useQuery({
 
 const crossing = computed(() => data.value?.crossings_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -235,12 +237,7 @@ const motherPlantsColumns = [
     field: 'date_impregnated',
     align: 'left' as const,
     sortable: true,
-    sort: (
-      a: MotherPlant['date_impregnated'],
-      b: MotherPlant['date_impregnated'],
-    ) => localizedSortPredicate(a || '', b || ''),
-    format: (v: MotherPlant['date_impregnated']) =>
-      v ? localizeDate(v) : t('base.notAvailable'),
+    format: (v: MotherPlant['date_impregnated']) => (v ? localizeDate(v) : ''),
   },
 ];
 </script>

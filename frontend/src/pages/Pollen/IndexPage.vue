@@ -27,6 +27,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { localizeDate } from 'src/utils/dateUtils';
 
 const { t, d } = useI18n();
 
@@ -95,8 +96,7 @@ const columns = [
     name: 'date_harvested',
     label: t('pollen.fields.dateHarvested'),
     align: 'left' as const,
-    field: (row: Pollen) =>
-      row.date_harvested ? d(row.date_harvested, 'ymd') : null,
+    field: (row: Pollen) => localizeDate(row.date_harvested),
     sortable: true,
   },
   {

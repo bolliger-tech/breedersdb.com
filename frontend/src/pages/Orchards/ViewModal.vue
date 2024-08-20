@@ -36,6 +36,7 @@
       <EntityViewRelatedEntityTable
         entity-key="plant_rows"
         :rows="orchard.plant_rows || []"
+        row-key="id"
         :columns="plantRowsColumns"
         default-sort-by="name"
       >

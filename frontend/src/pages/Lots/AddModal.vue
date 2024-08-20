@@ -1,5 +1,5 @@
 <template>
-  <LotModalEdit :lot="lot" :title="t('base.new')" />
+  <LotModalEdit :lot="lot" :title="t('base.new')" :is-variety="false" />
 </template>
 
 <script setup lang="ts">

@@ -36,16 +36,13 @@ import PlantEntityForm from 'src/components/Plant/PlantEntityForm.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { useI18n } from 'src/composables/useI18n';
 
-export type PlantEditInput = PlantFragment;
-export type PlantInsertInput = Omit<
+export type PlantEditInput = Omit<
   PlantFragment,
-  | 'id'
-  | 'label_id'
-  | 'cultivar_name'
-  | 'plant_group_name'
-  | 'created'
-  | 'modified'
-  | 'attributions_views'
+  'created' | 'modified' | 'attributions_views'
+>;
+export type PlantInsertInput = Omit<
+  PlantEditInput,
+  'id' | 'label_id' | 'cultivar_name' | 'plant_group_name'
 >;
 
 export interface PlantModalEditProps {
@@ -59,8 +56,7 @@ const insertMutation = graphql(
   `
     mutation InsertPlant(
       $entity: plants_insert_input!
-      $withSegments: Boolean = true
-      $withAttributions: Boolean = false
+      $PlantWithSegments: Boolean = true
     ) {
       insert_plants_one(object: $entity) {
         ...plantFragment
@@ -75,8 +71,7 @@ const editMutation = graphql(
     mutation UpdatePlant(
       $id: Int!
       $entity: plants_set_input!
-      $withSegments: Boolean = true
-      $withAttributions: Boolean = false
+      $PlantWithSegments: Boolean = true
     ) {
       update_plants_by_pk(pk_columns: { id: $id }, _set: $entity) {
         ...plantFragment

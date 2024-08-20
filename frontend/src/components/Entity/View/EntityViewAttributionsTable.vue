@@ -1,20 +1,11 @@
 <template>
-  <div v-if="rows.length === 0" class="text-caption q-mx-md">
-    {{ t('entity.noData') }}
-  </div>
-  <q-table
-    v-else
-    v-model:pagination="pagination"
-    class="q-mt-md"
-    flat
-    dense
+  <EntityViewRelatedEntityTable
+    :entity-key="`attributions-table-${props.attributeType}`"
     :rows="rows"
+    row-key="id"
     :columns="columns"
-    row-key="name"
-    :rows-per-page-options="[0]"
-    hide-pagination
-    wrap-cells
-    binary-state-sort
+    default-sort-by="date_attributed"
+    :default-descending="true"
   >
     <template #body-cell-value="cellProps">
       <q-td key="value" :props="cellProps">
@@ -50,11 +41,10 @@
         />
       </q-td>
     </template>
-  </q-table>
+  </EntityViewRelatedEntityTable>
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
 import type { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { AttributeDataTypes, AttributeTypes } from 'src/graphql';
@@ -64,10 +54,9 @@ import {
   getAttributionValue,
 } from 'src/utils/attributeUtils';
 import { localizeDate } from 'src/utils/dateUtils';
-import { watch } from 'vue';
-import { ref } from 'vue';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
+import EntityViewRelatedEntityTable from './EntityViewRelatedEntityTable.vue';
 
 export interface EntityViewAttributionsTableProps {
   rows: EntityAttributionsViewFragment[];
@@ -150,18 +139,4 @@ function getValue(row: EntityAttributionsViewFragment) {
 
   return formatResultColumnValue({ value, type });
 }
-
-const paginationKey = `breedersdb-entity-attributions-table-pagination__${props.attributeType}`;
-const defaultPagination = {
-  sortBy: 'date_attributed',
-  descending: true,
-};
-type Pagination = typeof defaultPagination;
-const $q = useQuasar();
-const pagination = ref(
-  $q.localStorage.getItem<Pagination>(paginationKey) || defaultPagination,
-);
-watch(pagination, (value: Pagination) => {
-  $q.localStorage.set(paginationKey, value);
-});
 </script>

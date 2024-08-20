@@ -1,6 +1,6 @@
 <template>
   <EntityInput
-    :ref="(el: InputRef) => (refs.emailRef = el)"
+    :ref="(el: InputRef) => (refs.email = el)"
     v-model="data.email"
     :label="t('users.fields.email')"
     :rules="[
@@ -15,7 +15,7 @@
     required
   />
   <EntitySelect
-    :ref="(el: InputRef) => (refs.localeRef = el)"
+    :ref="(el: InputRef) => (refs.locale = el)"
     :model-value="
       data.locale
         ? ({
@@ -37,7 +37,7 @@
   />
   <EntityInput
     v-if="!('id' in props.user)"
-    :ref="(el: InputRef) => (refs.passwordRef = el)"
+    :ref="(el: InputRef) => (refs.password = el)"
     v-model="data.password"
     :label="t('users.fields.password')"
     type="password"
@@ -92,9 +92,9 @@ const initialData = {
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  emailRef: null,
-  localeRef: null,
-  passwordRef: null,
+  email: null,
+  locale: null,
+  password: null,
 });
 
 const { isDirty, validate } = useEntityForm({
@@ -117,6 +117,5 @@ const { isUnique: isEmailUnique, fetching: fetchingEmailUnique } = useIsUnique({
   tableName: 'users',
   existingId: ('id' in props.user && props.user.id) || undefined,
   columnName: 'email',
-  columnType: 'citext',
 });
 </script>

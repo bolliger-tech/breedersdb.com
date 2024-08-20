@@ -16,6 +16,8 @@ export const base = {
     rootstock: 'rootstock | rootstocks',
     grafting: 'grafting | graftings',
     plantRow: 'row | rows',
+    pollen: 'pollen | pollen',
+    motherPlant: 'mother plant | mother plants',
   },
 
   timespan: {
@@ -52,6 +54,10 @@ export const base = {
     integer: 'Must be an integer',
     nameNotUnique: 'This name is already in use',
     xMustBeGreaterThanZero: '{x} must be greater than zero',
+    noNewLinesMaxLength:
+      'Invalid characters or length. No new lines allowed. It must be between 1 and {max} characters long.',
+    noSpecialCharsMaxLength:
+      'Invalid characters or length. Allowed are only numbers and letters, hyphens and underscores (no spaces or special characters). It must be between 1 and {max} characters long.',
   },
 
   noResults: 'No results',

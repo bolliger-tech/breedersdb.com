@@ -1,6 +1,6 @@
 <template>
   <EntityInput
-    :ref="(el: InputRef) => (refs.nameRef = el)"
+    :ref="(el: InputRef) => (refs.name = el)"
     v-model="data.name"
     :label="t('entity.commonColumns.name')"
     :rules="[
@@ -17,13 +17,13 @@
     required
   />
   <OrchardSelect
-    :ref="(el: InputRef) => (refs.orchardRef = el)"
+    :ref="(el: InputRef) => (refs.orchardId = el)"
     v-model="data.orchard_id"
-    :include-id="props.plantRow.orchard?.id"
-    :required="true"
+    :include-id="props.plantRow.orchard_id"
+    required
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.dateEliminatedRef = el)"
+    :ref="(el: InputRef) => (refs.dateEliminated = el)"
     v-model="data.date_eliminated"
     :label="t('plantRows.fields.dateEliminated')"
     type="date"
@@ -63,16 +63,16 @@ const emits = defineEmits<{
 
 const initialData = {
   name: props.plantRow.name,
-  orchard_id: props.plantRow.orchard?.id || null,
+  orchard_id: props.plantRow.orchard_id || null,
   date_eliminated: props.plantRow.date_eliminated,
 };
 
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameRef: null,
-  orchardRef: null,
-  dateEliminatedRef: null,
+  name: null,
+  orchardId: null,
+  dateEliminated: null,
 });
 
 const { isDirty, validate } = useEntityForm({

@@ -1,0 +1,53 @@
+<template>
+  <q-card v-if="error">
+    <BaseGraphqlError :error="error" />
+  </q-card>
+
+  <PollenModalEdit
+    v-else-if="pollen"
+    :pollen="pollen"
+    :title="t('base.edit')"
+  />
+
+  <q-card v-else>
+    <BaseSpinner size="xl" />
+  </q-card>
+</template>
+
+<script setup lang="ts">
+import { useQuery } from '@urql/vue';
+import { pollenFragment } from 'src/components/Pollen/pollenFragment';
+import { graphql } from 'src/graphql';
+import { computed } from 'vue';
+import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
+import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
+import { useI18n } from 'src/composables/useI18n';
+import PollenModalEdit from 'src/components/Pollen/PollenModalEdit.vue';
+
+const props = defineProps<{ entityId: number | string }>();
+
+const query = graphql(
+  `
+    query Pollen(
+      $id: Int!
+      $PollenWithCultivar: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
+    ) {
+      pollen_by_pk(id: $id) {
+        ...pollenFragment
+      }
+    }
+  `,
+  [pollenFragment],
+);
+
+const { data, error } = useQuery({
+  query,
+  variables: { id: parseInt(props.entityId.toString()) },
+});
+const pollen = computed(() => data.value?.pollen_by_pk);
+
+const { t } = useI18n();
+</script>

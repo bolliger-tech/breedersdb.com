@@ -1,6 +1,6 @@
 <template>
   <EntityInput
-    :ref="(el: InputRef) => (refs.nameRef = el)"
+    :ref="(el: InputRef) => (refs.name = el)"
     v-model="data.name"
     :label="t('entity.commonColumns.name')"
     :rules="[
@@ -14,13 +14,14 @@
     autocomplete="off"
     debounce="300"
     :loading="fetchingNameUnique"
+    required
   />
   <EntityToggle
-    :ref="(el: InputRef) => (refs.disabledRef = el)"
+    :ref="(el: InputRef) => (refs.disabled = el)"
     v-model="data.disabled"
     :label="t('entity.commonColumns.disabled')"
     :explainer="t('orchards.disableExplainer')"
-    :required="true"
+    required
     color="primary"
   />
 </template>
@@ -55,8 +56,8 @@ const initialData = {
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameRef: null,
-  disabledRef: null,
+  name: null,
+  disabled: null,
 });
 
 const { isDirty, validate } = useEntityForm({

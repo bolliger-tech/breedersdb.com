@@ -1,7 +1,7 @@
 export const crossings = {
   title: 'Crossing | Crossings',
 
-  columns: {
+  fields: {
     motherCultivar: 'Mother Cultivar',
     fatherCultivar: 'Father Cultivar',
   },

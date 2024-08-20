@@ -158,7 +158,7 @@ const items: NavLevel0Props['items'] = [
       },
       {
         label: t('motherPlants.title', 2),
-        to: 'mother-plants',
+        to: '/mother-plants',
         icon: 'female',
         children: [
           {
@@ -173,7 +173,7 @@ const items: NavLevel0Props['items'] = [
       },
       {
         label: t('pollen.title', 2),
-        to: 'pollen',
+        to: '/pollen',
         icon: 'male',
         children: [
           {

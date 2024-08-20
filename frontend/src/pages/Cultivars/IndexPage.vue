@@ -12,6 +12,8 @@
       list-entities-path="/cultivars"
       add-entity-path="/cultivars/new"
       :view-entity-path-getter="(id) => `/cultivars/${id}`"
+      :has-qr-scanner="true"
+      @scanned-qr="onScannedQr"
     />
   </PageLayout>
 </template>
@@ -20,12 +22,13 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
-import { computed, watch } from 'vue';
+import { computed, watch, ref, nextTick } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { useRouter } from 'vue-router';
 
 const { t, d } = useI18n();
 
@@ -150,4 +153,54 @@ watch(
   },
   { immediate: true },
 );
+
+const router = useRouter();
+
+const queryCultivarIdByPlantGroupLabelId = graphql(`
+  query CultivarIdByPlantGroupLabelId($labelId: String!) {
+    plant_groups(where: { label_id: { _eq: $labelId } }) {
+      id
+      cultivar_id
+    }
+  }
+`);
+const queryCultivarIdByPlantLabelId = graphql(`
+  query CultivarIdByPlantLabelId($labelId: String!) {
+    plants(where: { label_id: { _eq: $labelId } }) {
+      id
+      plant_group {
+        id
+        cultivar_id
+      }
+    }
+  }
+`);
+const scannedLabelId = ref({ labelId: '' });
+const queryCultivarId = computed(() =>
+  scannedLabelId.value.labelId.startsWith('G')
+    ? queryCultivarIdByPlantGroupLabelId
+    : queryCultivarIdByPlantLabelId,
+);
+
+const { executeQuery } = await useQuery({
+  query: queryCultivarId,
+  variables: scannedLabelId,
+  pause: true,
+});
+
+async function onScannedQr(code: string) {
+  scannedLabelId.value.labelId = code;
+  await nextTick();
+  const { data } = await executeQuery();
+  const id =
+    data.value?.plant_groups?.[0]?.cultivar_id ||
+    (data.value as unknown as ResultOf<typeof queryCultivarIdByPlantLabelId>)
+      ?.plants?.[0]?.plant_group.cultivar_id;
+
+  if (id) {
+    router.push({ path: `/cultivars/${id}` });
+  } else {
+    search.value = code;
+  }
+}
 </script>

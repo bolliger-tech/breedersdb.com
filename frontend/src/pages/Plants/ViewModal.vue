@@ -22,6 +22,37 @@
       <PlantEntityTable :plant="plant" />
 
       <EntityViewAllAttributions :attributions="attributions" />
+
+      <h3 class="q-my-md">{{ t('motherPlants.title', 2) }}</h3>
+      <EntityViewRelatedEntityTable
+        entity-key="plants"
+        :rows="plant.mother_plants || []"
+        row-key="id"
+        :columns="motherPlantColumns"
+        default-sort-by="name"
+      >
+        <template #body-cell-name="cellProps">
+          <q-td key="name" :props="cellProps">
+            <RouterLink
+              :to="`/mother-plants/${cellProps.row.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.name }}
+            </RouterLink>
+          </q-td>
+        </template>
+        <template #body-cell-pollen="cellProps">
+          <q-td key="pollen" :props="cellProps">
+            <RouterLink
+              v-if="cellProps.row.pollen"
+              :to="`/pollen/${cellProps.row.pollen.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.pollen.name }}
+            </RouterLink>
+          </q-td>
+        </template>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -57,6 +88,9 @@ import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue'
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import { entityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
+import { localizeDate } from 'src/utils/dateUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -66,16 +100,26 @@ const query = graphql(
       $id: Int!
       $PlantWithSegments: Boolean = true
       $AttributionsViewWithEntites: Boolean = true
+      $MotherPlantWithPlant: Boolean = false
+      $MotherPlantWithPollen: Boolean = true
+      $MotherPlantWithCrossing: Boolean = false
+      $PollenWithCultivar: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       plants_by_pk(id: $id) {
         ...plantFragment
         attributions_views {
           ...entityAttributionsViewFragment
         }
+        mother_plants {
+          ...motherPlantFragment
+        }
       }
     }
   `,
-  [plantFragment, entityAttributionsViewFragment],
+  [plantFragment, motherPlantFragment, entityAttributionsViewFragment],
 );
 
 const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
@@ -89,8 +133,6 @@ const attributions = computed(
     (plant.value?.attributions_views || []) as EntityAttributionsViewFragment[],
 );
 
-const { t } = useI18n();
-
 const route = useRoute();
 const router = useRouter();
 function edit() {
@@ -99,4 +141,79 @@ function edit() {
     query: route.query,
   });
 }
+
+const { t, n, d } = useI18n();
+
+const motherPlantColumns = [
+  {
+    name: 'name',
+    field: 'name',
+    label: t('entity.commonColumns.name'),
+    align: 'left' as const,
+    sortable: true,
+  },
+  {
+    name: 'date_impregnated',
+    field: 'date_impregnated',
+    label: t('motherPlants.fields.dateImpregnated'),
+    align: 'left' as const,
+    sortable: true,
+    format: (v: string | null) => localizeDate(v),
+  },
+  {
+    name: 'pollen',
+    field: 'pollen.name',
+    label: t('motherPlants.fields.pollen'),
+    align: 'left' as const,
+    sortable: true,
+  },
+  {
+    name: 'numb_flowers',
+    field: 'numb_flowers',
+    label: t('motherPlants.fields.numbFlowers'),
+    align: 'right' as const,
+    sortable: true,
+    format: (v: number | null) => (v ? n(v) : v),
+  },
+  {
+    name: 'numb_fruits',
+    field: 'numb_fruits',
+    label: t('motherPlants.fields.numbFruits'),
+    align: 'right' as const,
+    sortable: true,
+    format: (v: number | null) => (v ? n(v) : v),
+  },
+  {
+    name: 'date_fruits_harvested',
+    field: 'date_fruits_harvested',
+    label: t('motherPlants.fields.dateFruitsHarvested'),
+    align: 'left' as const,
+    sortable: true,
+    format: (v: string | null) => localizeDate(v),
+  },
+  {
+    name: 'numb_seeds',
+    field: 'numb_seeds',
+    label: t('motherPlants.fields.numbSeeds'),
+    align: 'right' as const,
+    sortable: true,
+    format: (v: number | null) => (v ? n(v) : v),
+  },
+  {
+    name: 'created',
+    field: 'created',
+    label: t('entity.commonColumns.created'),
+    align: 'left' as const,
+    sortable: true,
+    format: (v: string) => d(v, 'ymdHis'),
+  },
+  {
+    name: 'modified',
+    field: 'modified',
+    label: t('entity.commonColumns.modified'),
+    align: 'left' as const,
+    sortable: true,
+    format: (v: string | null) => (v ? d(v, 'ymdHis') : t('base.notAvailable')),
+  },
+];
 </script>

@@ -13,15 +13,13 @@
     :hint="t('plantGroups.labelIdHint')"
   />
   <CultivarSelect
-    :ref="(el: InputRef) => (refs.cultivarRef = el)"
+    :ref="(el: InputRef) => (refs.cultivar = el)"
     v-model="data.cultivar_id"
     :required="true"
-    @update:model-value="
-      () => data.name_segment && refs.nameInputsRef?.validate()
-    "
+    @update:model-value="() => data.name_segment && refs.nameInputs?.validate()"
   />
   <PlantGroupNameInputs
-    :ref="(el: InputRef) => (refs.nameInputsRef = el)"
+    :ref="(el: InputRef) => (refs.nameInputs = el)"
     v-model:name-segment="data.name_segment"
     v-model:name-override="data.name_override"
     :plant-group-id="
@@ -30,14 +28,14 @@
     :cultivar-id="data.cultivar_id || null"
   />
   <EntityToggle
-    :ref="(el: InputRef) => (refs.disabledRef = el)"
+    :ref="(el: InputRef) => (refs.disabled = el)"
     v-model="data.disabled"
     :required="true"
     :label="t('entity.commonColumns.disabled')"
     :explainer="t('plantGroups.disableExplainer')"
   />
   <EntityInput
-    :ref="(el: InputRef) => (refs.noteRef = el)"
+    :ref="(el: InputRef) => (refs.note = el)"
     v-model="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
@@ -83,10 +81,10 @@ const initialData = {
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  cultivarRef: null,
-  nameInputsRef: null,
-  disabledRef: null,
-  noteRef: null,
+  cultivar: null,
+  nameInputs: null,
+  disabled: null,
+  note: null,
 });
 
 const { isDirty, validate } = useEntityForm({

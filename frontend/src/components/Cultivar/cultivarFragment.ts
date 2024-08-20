@@ -21,6 +21,7 @@ export const cultivarFragment = graphql(
       lot @include(if: $CultivarWithLot) {
         ...lotFragment
       }
+      is_variety
     }
   `,
   [lotFragment],

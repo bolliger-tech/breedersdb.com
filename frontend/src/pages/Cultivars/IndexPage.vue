@@ -164,7 +164,7 @@ const columns = [
     name: 'lot',
     label: t('cultivars.fields.lot'),
     align: 'left' as const,
-    field: (row: Cultivar) => (row.lot_id === 1 ? '' : row.lot?.display_name),
+    field: (row: Cultivar) => (row.is_variety ? '' : row.lot?.display_name),
     sortable: true,
   },
   {

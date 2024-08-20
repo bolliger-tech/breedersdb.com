@@ -38,8 +38,6 @@ const query = graphql(
       $offset: Int!
       $orderBy: [orchards_order_by!]
       $where: orchards_bool_exp
-      $withPlantRows: Boolean = false
-      $withPlants: Boolean = false
     ) {
       orchards_aggregate {
         aggregate {

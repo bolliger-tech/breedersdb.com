@@ -41,17 +41,12 @@
       <h3 class="q-mb-md">
         {{ t('plants.title', 2) }}
       </h3>
-      <q-table
-        v-if="plantRow.plants"
-        class="q-mt-md"
-        flat
-        dense
-        :rows="plantRow.plants"
+      <EntityViewRelatedEntityTable
+        entity-key="plants"
+        :rows="plantRow.plants || []"
+        row-key="id"
         :columns="plantsColumns"
-        :rows-per-page-options="[0]"
-        hide-pagination
-        wrap-cells
-        binary-state-sort
+        default-sort-by="label_id"
       >
         <template #body-cell-label_id="cellProps">
           <q-td key="value" :props="cellProps">
@@ -73,7 +68,7 @@
             />
           </q-td>
         </template>
-      </q-table>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -113,18 +108,27 @@ import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import { plantGroupSegmentsFragment } from 'src/components/PlantGroup/plantGroupFragment';
 
 const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query PlantRow($id: Int!, $withPlants: Boolean = true) {
+    query PlantRow($id: Int!) {
       plant_rows_by_pk(id: $id) {
         ...plantRowFragment
+        plants(where: { disabled: { _eq: false } }) {
+          id
+          label_id
+          plant_group {
+            ...plantGroupSegmentsFragment
+          }
+        }
       }
     }
   `,
-  [plantRowFragment],
+  [plantRowFragment, plantGroupSegmentsFragment],
 );
 
 const { data, error, fetching } = useQuery({

@@ -43,8 +43,7 @@ const query = graphql(
   `
     query AnalyzeResultTableCellAttributionDetails(
       $id: Int!
-      $withAttributions: Boolean! = false
-      $withSegments: Boolean! = true
+      $PlantWithSegments: Boolean! = true
     ) {
       attributions_view(where: { id: { _eq: $id } }) {
         ...entityAttributionsViewFragment

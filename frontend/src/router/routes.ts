@@ -1,4 +1,5 @@
 import { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
+import { toKebabCase } from 'src/utils/stringUtils';
 
 function createAnalyzeRoutes(entity: string) {
   return {
@@ -20,6 +21,40 @@ function createAnalyzeRoutes(entity: string) {
         path: 'new',
         component: () => import(`pages/${entity}/AnalyzePage.vue`),
         props: { analyzeId: 'new', key: 'new' },
+      },
+    ],
+  };
+}
+
+function createEntityRoutes(entity: string) {
+  return {
+    // path is kebab cased EntityName minus 'Plant' prefix
+    // eg. PlantRows -> rows,
+    // eg. AttributionForms -> attribution-forms
+    path: toKebabCase(
+      entity.startsWith('Plant') ? entity.split('Plant').slice(-1)[0] : entity,
+    ),
+    children: [
+      {
+        path: '',
+        component: () => import(`pages/${entity}/IndexPage.vue`),
+        children: [
+          {
+            path: ':entityId(\\d+)',
+            component: () => import(`pages/${entity}/ViewModal.vue`),
+            props: true,
+          },
+          {
+            path: ':entityId/edit',
+            component: () => import(`pages/${entity}/EditModal.vue`),
+            props: true,
+          },
+          {
+            path: 'new',
+            component: () => import(`pages/${entity}/AddModal.vue`),
+            props: { entityId: 'new' },
+          },
+        ],
       },
     ],
   };
@@ -94,34 +129,13 @@ const routes: RouteRecordRaw[] = [
         'Rootstocks',
         'Graftings',
         'PlantRows',
+        'Cultivars',
+        'Crossings',
+        'Pollen',
+        'MotherPlants',
         'Attributes',
-      ].map((entity) => ({
-        // path is entityName minus 'Plant' prefix eg. PlantRows -> rows
-        path: entity.split('Plant').slice(-1)[0].toLowerCase(),
-        children: [
-          {
-            path: '',
-            component: () => import(`pages/${entity}/IndexPage.vue`),
-            children: [
-              {
-                path: ':entityId(\\d+)',
-                component: () => import(`pages/${entity}/ViewModal.vue`),
-                props: true,
-              },
-              {
-                path: ':entityId/edit',
-                component: () => import(`pages/${entity}/EditModal.vue`),
-                props: true,
-              },
-              {
-                path: 'new',
-                component: () => import(`pages/${entity}/AddModal.vue`),
-                props: { entityId: 'new' },
-              },
-            ],
-          },
-        ],
-      })),
+        'AttributionForms',
+      ].map(createEntityRoutes),
 
       {
         path: 'dev',

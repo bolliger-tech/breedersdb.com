@@ -3,15 +3,33 @@ import { useQueryArg } from './useQueryArg';
 import { computed, type Ref } from 'vue';
 import type { UseQueryArgs } from '@urql/vue';
 
+// { "key": "payload" } -> { "key": "payload" }
+// { "key.subkey": "payload" } -> { "key": { "subkey": "payload" } }
+type StringObj = { [key: string]: unknown };
+function nestObject(object: StringObj): StringObj {
+  return Object.entries(object).reduce((acc, [key, value]) => {
+    const [first, ...rest] = key.split('.');
+
+    if (rest.length === 0) {
+      return { ...acc, [first]: value };
+    }
+
+    return {
+      ...acc,
+      [first]: nestObject({ [rest.join('.')]: value }),
+    };
+  }, {});
+}
+
 export function useEntityIndexHooks<T>({
   foreignKeys,
   defaultSortBy = 'name',
-  searchColumn = 'name',
+  searchColumns = ['name'],
   subset,
 }: {
   foreignKeys?: string[];
   defaultSortBy?: string;
-  searchColumn?: string;
+  searchColumns?: string[];
   subset?: Ref<'active' | 'disabled' | 'all'>;
 } = {}) {
   const { queryArg: search } = useQueryArg<string>({
@@ -36,7 +54,7 @@ export function useEntityIndexHooks<T>({
       return { [column]: { name: order } };
     }
 
-    return [{ [column]: order }, { id: 'asc' }];
+    return [nestObject({ [column]: order }), { id: 'asc' }];
   });
 
   const where = computed(() => {
@@ -51,9 +69,21 @@ export function useEntityIndexHooks<T>({
     }
 
     if (search.value) {
-      where._and.push({
-        [searchColumn]: { _ilike: `%${search.value}%` },
-      });
+      if (searchColumns.length === 1) {
+        where._and.push(
+          nestObject({
+            [searchColumns[0]]: { _ilike: `%${search.value}%` },
+          }),
+        );
+      } else {
+        where._and.push({
+          _or: searchColumns.map((column) =>
+            nestObject({
+              [column]: { _ilike: `%${search.value}%` },
+            }),
+          ),
+        });
+      }
     }
 
     return where;

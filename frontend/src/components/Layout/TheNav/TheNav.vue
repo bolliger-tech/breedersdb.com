@@ -158,7 +158,7 @@ const items: NavLevel0Props['items'] = [
       },
       {
         label: t('motherPlants.title', 2),
-        to: 'mother-plants',
+        to: '/mother-plants',
         icon: 'female',
         children: [
           {
@@ -173,7 +173,7 @@ const items: NavLevel0Props['items'] = [
       },
       {
         label: t('pollen.title', 2),
-        to: 'pollen',
+        to: '/pollen',
         icon: 'male',
         children: [
           {
@@ -196,11 +196,11 @@ const items: NavLevel0Props['items'] = [
       {
         label: t('nav.more.attributionForms.main'),
         icon: 'form',
-        to: 'attribution-forms',
+        to: 'attribution',
         children: [
           {
             label: t('nav.more.attributionForms.forms'),
-            to: 'forms',
+            to: '/attribution-forms',
           },
           {
             label: t('nav.more.attributionForms.attributes'),

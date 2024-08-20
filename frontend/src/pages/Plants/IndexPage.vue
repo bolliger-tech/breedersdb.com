@@ -31,6 +31,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import { useRouter } from 'vue-router';
+import { zeroFill } from 'src/utils/labelIdUtils';
 
 const { t, d } = useI18n();
 
@@ -41,8 +42,7 @@ const query = graphql(
       $offset: Int!
       $orderBy: [plants_order_by!]
       $where: plants_bool_exp = { disabled: { _eq: false } }
-      $withAttributions: Boolean = false
-      $withSegments: Boolean = false
+      $PlantWithSegments: Boolean = false
     ) {
       plants_aggregate(where: $where) {
         aggregate {
@@ -114,14 +114,8 @@ const where = computed(() => {
       cultivar_name: { _ilike: `%${search.value.replaceAll('.', '%.%')}%` },
     });
 
-    if (search.value.match(/^\d+$/)) {
-      or._or.push({ label_id: { _eq: `${search.value.padStart(8, '0')}` } });
-    }
-
-    if (search.value.match(/^#\d+$/)) {
-      or._or.push({
-        label_id: { _eq: `#${search.value.replace('#', '').padStart(8, '0')}` },
-      });
+    if (search.value.match(/^#?\d+$/)) {
+      or._or.push({ label_id: { _eq: `${zeroFill(search.value)}` } });
     }
 
     if (search.value === '#') {

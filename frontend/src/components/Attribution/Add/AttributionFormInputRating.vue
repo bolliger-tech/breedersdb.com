@@ -1,11 +1,11 @@
 <template>
-  <div class="row items-start no-wrap">
+  <div ref="container" class="row items-start no-wrap">
     <div v-if="withZero" class="column">
       <q-btn
         color="primary"
         icon="exposure_zero"
         outline
-        :size="`calc(min((min(100svw - 64px, 592px) - ${(steps - 1) * 2}px) / ${steps + 1}, 4em) * 0.58)`"
+        :size="`calc(min((${containerWidth}px - ${(steps - 1) * 2}px) / ${steps + 1}, 4em) * 0.58)`"
         flat
         dense
         :ripple="false"
@@ -21,7 +21,7 @@
     <div class="column">
       <q-rating
         :model-value="ratingValue"
-        :size="`min((min(100svw - 64px, 592px) - ${(steps - 1) * 2}px) / ${steps + (withZero ? 1 : 0)}, 4em)`"
+        :size="`min((${containerWidth}px - ${(steps - 1) * 2}px) / ${steps + (withZero ? 1 : 0)}, 4em)`"
         :max="validation.max - ratingMin + 1"
         color="primary"
         icon="star_border"
@@ -42,7 +42,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 export interface AttributionFormInputProps {
   validation: { min: number; max: number; step: 1 };
@@ -92,6 +92,23 @@ const labels = computed(() => {
 
 const opacityZero = computed(() => {
   return modelValue.value === 0 ? 1 : 0.4;
+});
+
+// width calculation
+const container = ref<HTMLDivElement | null>(null);
+const containerWidth = ref<number | null>(null);
+const observer = new ResizeObserver(() => {
+  if (container.value) {
+    containerWidth.value = container.value.clientWidth;
+  }
+});
+onMounted(() => {
+  if (container.value) {
+    observer.observe(container.value);
+  }
+});
+onBeforeUnmount(() => {
+  observer.disconnect();
 });
 </script>
 

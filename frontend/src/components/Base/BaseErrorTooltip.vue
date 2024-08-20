@@ -17,9 +17,13 @@
     "
   >
     <div class="row no-wrap">
-      <div>
+      <div style="max-width: calc(100% - 16px)">
         <slot>
-          <BaseGraphqlError v-if="_graphqlError" :error="_graphqlError" />
+          <BaseGraphqlError
+            v-if="_graphqlError"
+            :error="_graphqlError"
+            style="margin: 0 !important"
+          />
           <BaseMessage
             v-else-if="_message"
             :message="_message"

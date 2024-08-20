@@ -19,7 +19,7 @@
   <AttributeDataTypeSelect
     :ref="(el: InputRef) => (refs.attributeDataTypeRef = el)"
     :model-value="data.data_type"
-    :required="true"
+    required
     :initial-data-type="initialData.data_type"
     :attribute-id="'id' in attribute ? attribute.id : undefined"
     @update:model-value="
@@ -58,12 +58,12 @@
   <AttributeTypeSelect
     :ref="(el: InputRef) => (refs.attributeTypeRef = el)"
     v-model="data.attribute_type"
-    :required="true"
+    required
   />
   <EntityToggle
     :ref="(el: InputRef) => (refs.disabledRef = el)"
     v-model="data.disabled"
-    :required="true"
+    required
     :label="t('entity.commonColumns.disabled')"
     :explainer="t('attributes.disableExplainer')"
   />

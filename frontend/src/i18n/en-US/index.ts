@@ -7,6 +7,7 @@ import { cultivars } from './cultivars';
 import { datetimeFormats } from './datetime-formats';
 import { attributions } from './attributions';
 import { attributes } from './attributes';
+import { attributionForms } from './attribution-forms';
 import { crossings } from './crossings';
 import { lots } from './lots';
 import { plantGroups } from './plant-groups';
@@ -28,6 +29,7 @@ const messages = {
 
   entity,
   attributes,
+  attributionForms,
   crossings,
   lots,
   plantGroups,

@@ -6,25 +6,11 @@
   />
 
   <form>
-    <ul class="attribute-form__list">
-      <li v-for="formField in attributeInputs" :key="formField.priority">
-        <AttributionFormInput
-          :ref="
-            (el: InputRef) => (attributeFormInputRefs[formField.priority] = el)
-          "
-          v-model="attributionValues[formField.priority]"
-          :attribute="formField.attribute"
-          :exceptional="formField.exceptional"
-          :has-same-again="
-            attributeInputs.some(
-              (af) =>
-                af.attribute.id === formField.attribute.id &&
-                af.priority !== formField.priority,
-            )
-          "
-        />
-      </li>
-    </ul>
+    <AttributionFormFieldList
+      v-model="attributionValues"
+      v-model:input-refs="attributeFormInputRefs"
+      :fields="attributeInputs"
+    />
 
     <AttributionFormAddInput @add="(a) => extraAttributes.push(a)" />
 
@@ -62,7 +48,6 @@ import { graphql, VariablesOf } from 'src/graphql';
 import { useMutation } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
-import AttributionFormInput from 'src/components/Attribution/Add/AttributionFormInput.vue';
 import {
   useImageUploader,
   UploadProgress,
@@ -78,6 +63,7 @@ import AttributionFormAddInput from 'src/components/Attribution/Add/AttributionF
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import AttributionAlreadyAttributed from 'src/components/Attribution/Add/AttributionAlreadyAttributed.vue';
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
+import AttributionFormFieldList from 'src/components/Attribution/Add/AttributionFormFieldList.vue';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -384,18 +370,3 @@ function showNoDataNotification() {
   });
 }
 </script>
-
-<style scoped lang="scss">
-.attribute-form__list {
-  list-style-type: none;
-  padding: 0;
-
-  li {
-    border-bottom: 1px solid $grey-4;
-
-    .body--dark & {
-      border-color: $grey-8;
-    }
-  }
-}
-</style>

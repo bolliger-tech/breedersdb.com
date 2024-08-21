@@ -11,6 +11,7 @@
       <CultivarEntityForm
         :ref="(el) => setFormRef(el)"
         :cultivar="cultivar"
+        :is-variety="isVariety"
         @change="onChange"
       />
     </template>
@@ -48,6 +49,7 @@ export type CultivarInsertInput = Omit<CultivarEditInput, 'id' | 'lot_id'> &
 
 export interface CultivarModalEditProps {
   cultivar: CultivarEditInput | CultivarInsertInput;
+  isVariety: boolean;
 }
 
 defineProps<CultivarModalEditProps>();

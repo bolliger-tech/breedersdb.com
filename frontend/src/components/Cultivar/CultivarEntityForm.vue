@@ -1,62 +1,41 @@
 <template>
-  <EntityInput
-    :ref="(el: InputRef) => (refs.nameSegment = el)"
-    v-model="data.name_segment"
-    :label="t('entity.commonColumns.nameSegment')"
-    :rules="[
-      (val: string) =>
-        !!val ||
-        t('base.validation.xIsRequired', {
-          x: t('entity.commonColumns.nameSegment'),
-        }),
-      (val: string) => {
-        const regex = new RegExp('^[-_\\w\\d]{1,25}$');
-        return (
-          regex.test(val) ||
-          t('base.validation.noSpecialCharsMaxLength', { max: 25 })
-        );
-      },
-      async (val: string) =>
-        (await isNameSegmentUnique(val)) ||
-        t('cultivars.validation.nameNotUniqueWithLot'),
-    ]"
-    type="text"
-    autocomplete="off"
-    debounce="300"
-    :loading="fetchingNameSegmentUnique"
-    required
-  />
-  <EntityInput
-    :ref="(el: InputRef) => (refs.nameOverride = el)"
-    v-model="data.name_override"
-    :label="t('entity.commonColumns.nameOverride')"
-    :rules="[
-      (val: string) =>
-        !!val ||
-        t('base.validation.xIsRequired', {
-          x: t('entity.commonColumns.nameOverride'),
-        }),
-      (val: string) => {
-        const regex = new RegExp('^[^\\n\\.]{1,51}$');
-        return (
-          regex.test(val) ||
-          t('base.validation.noNewLinesMaxLength', { max: 51 })
-        );
-      },
-      async (val: string) =>
-        (await isNameOverrideUnique(val)) || t('base.validation.nameNotUnique'),
-    ]"
-    type="text"
-    autocomplete="off"
-    debounce="300"
-    :loading="fetchingNameOverrideUnique"
-    required
-  />
+  <BaseInputLabel :label="t('cultivars.type')" class="q-mb-md">
+    <q-btn-toggle
+      v-model="type"
+      unelevated
+      rounded
+      toggle-color="primary"
+      style="border: 1px solid var(--q-primary)"
+      :options="[
+        {
+          label: t('cultivars.breedersCultivar', 1),
+          value: 'breeders_cultivar',
+        },
+        { label: t('cultivars.variety', 1), value: 'variety' },
+      ]"
+    />
+  </BaseInputLabel>
   <LotSelect
+    v-if="type === 'breeders_cultivar'"
     :ref="(el: InputRef) => (refs.lotId = el)"
     v-model="data.lot_id"
     required
-    @update:model-value="() => refs.nameSegmentRef?.validate()"
+    @update:model-value="() => refs.nameInputs?.validate()"
+  />
+  <CultivarNameInputs
+    v-if="type === 'breeders_cultivar'"
+    :ref="(el: InputRef) => (refs.nameInputs = el)"
+    v-model:name-segment="data.name_segment"
+    v-model:name-override="data.name_override"
+    :cultivar-id="('id' in props.cultivar && props.cultivar.id) || undefined"
+    :lot-id="data.lot_id || undefined"
+  />
+  <CultivarNameOverrideInput
+    v-if="type === 'variety'"
+    :ref="(el: InputRef) => (refs.nameOverride = el)"
+    v-model="data.name_override"
+    :full-name="undefined"
+    :hint="`${t('cultivars.nameOverrideHint')}. ${t('base.required')}.`"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.acronym = el)"
@@ -66,6 +45,7 @@
     autocomplete="off"
   />
   <EntityInput
+    v-if="type === 'variety'"
     :ref="(el: InputRef) => (refs.breeder = el)"
     v-model="data.breeder"
     :label="t('cultivars.fields.breeder')"
@@ -73,6 +53,7 @@
     autocomplete="off"
   />
   <EntityInput
+    v-if="type === 'variety'"
     :ref="(el: InputRef) => (refs.registration = el)"
     v-model="data.registration"
     :label="t('cultivars.fields.registration')"
@@ -91,21 +72,24 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref } from 'vue';
-import EntityInput from '../Entity/Edit/EntityInput.vue';
+import { ref } from 'vue';
+import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
-import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
+import { makeModalPersistentSymbol } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import {
   CultivarEditInput,
   CultivarInsertInput,
 } from './CultivarModalEdit.vue';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
-import { useIsUnique } from 'src/composables/useIsUnique';
-import LotSelect from '../Lot/LotSelect.vue';
+import LotSelect from 'src/components/Lot/LotSelect.vue';
+import CultivarNameInputs from './CultivarNameInputs.vue';
+import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
+import CultivarNameOverrideInput from './CultivarNameOverrideInput.vue';
 
 export interface CultivarEntityFormProps {
   cultivar: CultivarInsertInput | CultivarEditInput;
+  isVariety: boolean;
 }
 
 const props = defineProps<CultivarEntityFormProps>();
@@ -127,7 +111,7 @@ const initialData = {
 const data = ref({ ...initialData });
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameSegment: null,
+  nameInputs: null,
   nameOverride: null,
   lotId: null,
   acronym: null,
@@ -135,6 +119,10 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   registration: null,
   note: null,
 });
+
+const type = ref<'breeders_cultivar' | 'variety'>(
+  props.isVariety ? 'variety' : 'breeders_cultivar',
+);
 
 const { isDirty, validate } = useEntityForm({
   refs,
@@ -150,28 +138,4 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
-
-const additionalWhere = computed(() => {
-  if (!data.value.lot_id) {
-    return {};
-  }
-  return {
-    lot_id: { _eq: data.value.lot_id },
-  };
-});
-
-const { isUnique: isNameSegmentUnique, fetching: fetchingNameSegmentUnique } =
-  useIsUnique({
-    tableName: 'cultivars',
-    existingId: ('id' in props.cultivar && props.cultivar.id) || undefined,
-    columnName: 'name_segment',
-    additionalWhere,
-  });
-
-const { isUnique: isNameOverrideUnique, fetching: fetchingNameOverrideUnique } =
-  useIsUnique({
-    tableName: 'cultivars',
-    existingId: ('id' in props.cultivar && props.cultivar.id) || undefined,
-    columnName: 'name_override',
-  });
 </script>

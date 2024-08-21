@@ -1,5 +1,9 @@
 <template>
-  <CultivarModalEdit :cultivar="cultivar" :title="t('base.new')" />
+  <CultivarModalEdit
+    :cultivar="cultivar"
+    :title="t('base.new')"
+    :is-variety="false"
+  />
 </template>
 
 <script setup lang="ts">

@@ -6,7 +6,7 @@
     self="bottom middle"
     :offset="[0, 8]"
     no-parent-event
-    class="bg-dark shadow-3 q-pa-sm q-ma-md text-body2 entity-modal-content__error-tooltip"
+    class="bg-black shadow-3 q-pa-sm q-ma-md text-body2 entity-modal-content__error-tooltip"
     @hide="
       _graphqlError = null;
       _message = null;
@@ -37,6 +37,7 @@
         icon="close"
         flat
         round
+        color="white"
         size="xs"
         @click="
           _graphqlError = null;

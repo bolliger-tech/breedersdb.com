@@ -62,7 +62,7 @@ const { data, error, fetching, resume, pause } = useQuery({
   query: query,
   variables: variables,
   pause: !props.crossingId,
-  requestPolicy: 'cache-first',
+  requestPolicy: 'cache-and-network',
 });
 watch(
   () => props.crossingId,

@@ -1,7 +1,10 @@
 <template>
   <EntityViewTable :dense="dense">
     <template v-if="cultivar.name_override">
-      <EntityViewTableRow :label="t('entity.commonColumns.fullName')">
+      <EntityViewTableRow
+        v-if="!cultivar.is_variety"
+        :label="t('entity.commonColumns.fullName')"
+      >
         {{ cultivar.full_name }}
       </EntityViewTableRow>
       <EntityViewTableRow

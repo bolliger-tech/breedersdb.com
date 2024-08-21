@@ -43,6 +43,19 @@
     :label="t('cultivars.fields.acronym')"
     type="text"
     autocomplete="off"
+    :rules="[
+      (val: string | null | undefined) =>
+        !val || val.length <= 10 || t('base.validation.maxLen', { x: 10 }),
+      (val: string | null | undefined) =>
+        !val ||
+        /^[-_\w\d]{1,10}$/.test(val) ||
+        t('base.validation.noSpecialCharsMaxLength', { max: 10 }),
+      async (val: string | null | undefined) =>
+        !val ||
+        (await isAcronymUnique(val)) ||
+        t('base.validation.nameNotUnique'),
+    ]"
+    :loading="fetchingAcronymUnique"
   />
   <EntityInput
     v-if="type === 'variety'"
@@ -51,6 +64,10 @@
     :label="t('cultivars.fields.breeder')"
     type="text"
     autocomplete="off"
+    :rules="[
+      (val: string | null | undefined) =>
+        !val || val.length <= 255 || t('base.validation.maxLen', { x: 255 }),
+    ]"
   />
   <EntityInput
     v-if="type === 'variety'"
@@ -86,6 +103,7 @@ import LotSelect from 'src/components/Lot/LotSelect.vue';
 import CultivarNameInputs from './CultivarNameInputs.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import CultivarNameOverrideInput from './CultivarNameOverrideInput.vue';
+import { useIsUnique } from 'src/composables/useIsUnique';
 
 export interface CultivarEntityFormProps {
   cultivar: CultivarInsertInput | CultivarEditInput;
@@ -138,4 +156,11 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
+
+const { isUnique: isAcronymUnique, fetching: fetchingAcronymUnique } =
+  useIsUnique({
+    tableName: 'cultivars',
+    columnName: 'acronym',
+    existingId: ('id' in props.cultivar && props.cultivar.id) || undefined,
+  });
 </script>

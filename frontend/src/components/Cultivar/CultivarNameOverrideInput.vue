@@ -14,7 +14,7 @@
         (await isNameOverrideUnique(val)) ||
         t('base.validation.nameNotUnique'),
     ]"
-    :loading="fetchingNameOverrideUnique"
+    :loading="loading || fetchingNameOverrideUnique"
     :hint="
       hint ??
       t('entity.nameOverrideHint.onNameOverride', {
@@ -36,6 +36,7 @@ export interface CultivarNameInputProps {
   cultivarId: number | undefined;
   fullName: string | undefined;
   hint?: string;
+  loading?: boolean;
 }
 
 const props = defineProps<CultivarNameInputProps>();

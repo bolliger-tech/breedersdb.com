@@ -1,26 +1,41 @@
 <template>
   <BaseInputLabel :label="t('cultivars.type')" class="q-mb-md">
-    <q-btn-toggle
-      v-model="type"
-      unelevated
-      rounded
-      toggle-color="primary"
-      style="border: 1px solid var(--q-primary)"
-      :options="[
-        {
-          label: t('cultivars.breedersCultivar', 1),
-          value: 'breeders_cultivar',
-        },
-        { label: t('cultivars.variety', 1), value: 'variety' },
-      ]"
-    />
+    <div class="row items-center">
+      <q-btn-toggle
+        v-model="type"
+        unelevated
+        rounded
+        toggle-color="primary"
+        style="border: 1px solid var(--q-primary)"
+        :options="[
+          {
+            label: t('cultivars.breedersCultivar', 1),
+            value: 'breeders_cultivar',
+          },
+          { label: t('cultivars.variety', 1), value: 'variety' },
+        ]"
+      />
+      <q-spinner
+        v-if="varietyLotFetching && type === 'variety'"
+        size="md"
+        class="q-ml-md"
+      />
+    </div>
   </BaseInputLabel>
   <LotSelect
-    v-if="type === 'breeders_cultivar'"
+    v-if="type === 'breeders_cultivar' || varietyLots.length !== 1"
     :ref="(el: InputRef) => (refs.lotId = el)"
     v-model="data.lot_id"
     required
-    @update:model-value="() => refs.nameInputs?.validate()"
+    :options="
+      type === 'breeders_cultivar'
+        ? 'no_varieties'
+        : type === 'variety'
+          ? 'varieties'
+          : 'all'
+    "
+    :include-id="data.lot_id || undefined"
+    @update:model-value="() => data.name_segment && refs.nameInputs?.validate()"
   />
   <CultivarNameInputs
     v-if="type === 'breeders_cultivar'"
@@ -36,6 +51,8 @@
     v-model="data.name_override"
     :full-name="undefined"
     :hint="`${t('cultivars.nameOverrideHint')}. ${t('base.required')}.`"
+    :cultivar-id="('id' in props.cultivar && props.cultivar.id) || undefined"
+    :loading="varietyNameSegmentFetching"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.acronym = el)"
@@ -81,7 +98,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from 'src/components/Entity/modalProvideSymbols';
@@ -96,6 +113,8 @@ import CultivarNameInputs from './CultivarNameInputs.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import CultivarNameOverrideInput from './CultivarNameOverrideInput.vue';
 import { useIsUnique } from 'src/composables/useIsUnique';
+import { graphql } from 'src/graphql';
+import { useQuery } from '@urql/vue';
 
 export interface CultivarEntityFormProps {
   cultivar: CultivarInsertInput | CultivarEditInput;
@@ -153,4 +172,188 @@ const { isUnique: isAcronymUnique, fetching: fetchingAcronymUnique } =
     columnName: 'acronym',
     existingId: ('id' in props.cultivar && props.cultivar.id) || undefined,
   });
+
+/**
+ * set lot_id
+ *
+ * the whole block below is for varieties (and to reset it for breeders_cultivars)
+ */
+const varietyLotQuery = graphql(`
+  query VarietyLot {
+    lots(where: { is_variety: { _eq: true } }) {
+      id
+      display_name
+    }
+  }
+`);
+
+const { data: varietyLotData, fetching: varietyLotFetching } = useQuery({
+  query: varietyLotQuery,
+  requestPolicy: 'cache-and-network',
+});
+
+const varietyLots = computed(() => varietyLotData.value?.lots ?? []);
+
+let lastVarietyLotId: number | null =
+  type.value === 'variety' ? data.value.lot_id : null;
+let lastNonVarietyLotId: number | null =
+  type.value === 'breeders_cultivar' ? data.value.lot_id : null;
+
+function automagicallySetLotId({
+  oldType,
+  newType,
+  newVarietyLots,
+}: {
+  oldType: typeof type.value;
+  newType: typeof type.value;
+  newVarietyLots: typeof varietyLots.value;
+}) {
+  if (newType === 'variety' && oldType !== 'variety') {
+    lastNonVarietyLotId = data.value.lot_id;
+  } else if (newType !== 'variety' && oldType === 'variety') {
+    lastVarietyLotId = data.value.lot_id;
+  }
+
+  if (!varietyLots.value.length) {
+    // don't do anything before varietyLots are fetched (or if there aren't any)
+    return;
+  }
+
+  if (newType === 'variety') {
+    // if there is only one lot with is_variety === true, set it, no mater what
+    if (newVarietyLots.length === 1) {
+      data.value.lot_id = newVarietyLots[0].id;
+    } else {
+      // if the current lot_id is not a variety lot, set it to lastVarietyLotId
+      if (!newVarietyLots.find((lot) => lot.id === data.value.lot_id)) {
+        data.value.lot_id = lastVarietyLotId;
+      }
+    }
+  } else {
+    // if the current lot_id is a variety lot, set it to lastNonVarietyLotId
+    if (newVarietyLots.find((lot) => lot.id === data.value.lot_id)) {
+      data.value.lot_id = lastNonVarietyLotId;
+    }
+  }
+}
+
+watch([type, varietyLots], ([newType, newVarietyLots], [oldType]) =>
+  automagicallySetLotId({ oldType, newType, newVarietyLots }),
+);
+
+/**
+ * set name_segment
+ *
+ * the whole block below is for varieties (and to reset it for breeders_cultivars)
+ */
+
+const normalizedName = computed(() => {
+  return (data.value.name_override || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '-')
+    .substring(0, 20);
+});
+
+const varietyNameSegmentQuery = graphql(`
+  query VarietyNameSegment(
+    $cultivarId: Int!
+    $lotId: Int!
+    $nameSegmentTerm: String!
+  ) {
+    cultivars(
+      where: {
+        id: { _neq: $cultivarId }
+        name_segment: { _ilike: $nameSegmentTerm }
+        lot_id: { _eq: $lotId }
+      }
+    ) {
+      id
+      name_segment
+    }
+  }
+`);
+
+const varietyNameSegmentQueryVariables = computed(() => ({
+  cultivarId: ('id' in props.cultivar && props.cultivar.id) || -1,
+  lotId: data.value.lot_id || -1,
+  nameSegmentTerm: `${normalizedName.value}%`,
+}));
+
+const {
+  data: varietyNameSegmentData,
+  fetching: varietyNameSegmentFetching,
+  resume: varietyNameSegmentFetchingResume,
+  pause: varietyNameSegmentFetchingPause,
+} = useQuery({
+  query: varietyNameSegmentQuery,
+  variables: varietyNameSegmentQueryVariables,
+  pause: true,
+  requestPolicy: 'cache-and-network',
+});
+
+// using this directly in the pause option of useQuery() doesn't work
+// therefore we use the watch() below
+const varietyNameSegmentQueryPause = computed(
+  () => type.value !== 'variety' || !normalizedName.value || !data.value.lot_id,
+);
+watch(varietyNameSegmentQueryPause, (pause) => {
+  if (pause) {
+    varietyNameSegmentFetchingPause();
+  } else {
+    varietyNameSegmentFetchingResume();
+  }
+});
+
+const nextFreeVarietyNameSegment = computed(() => {
+  if (!varietyNameSegmentData.value) {
+    return normalizedName.value;
+  }
+
+  const takenSegments = varietyNameSegmentData.value.cultivars.map(
+    (cultivar) => cultivar.name_segment,
+  );
+
+  let i = 1;
+  let newSegment = normalizedName.value;
+  while (takenSegments.includes(newSegment)) {
+    newSegment = `${normalizedName.value}-${i}`;
+    i++;
+  }
+
+  return newSegment;
+});
+
+let lastNameSegment: string =
+  type.value !== 'variety' ? data.value.name_segment : '';
+
+function automagicallySetNameSegment({
+  oldType,
+  newType,
+  newNextFreeVarietyNameSegment,
+}: {
+  oldType: typeof type.value;
+  newType: typeof type.value;
+  newNextFreeVarietyNameSegment: typeof nextFreeVarietyNameSegment.value;
+}) {
+  if (newType === 'variety' && oldType !== 'variety') {
+    lastNameSegment = data.value.name_segment;
+  }
+
+  if (newType === 'variety') {
+    data.value.name_segment = newNextFreeVarietyNameSegment;
+  } else if (oldType === 'variety') {
+    data.value.name_segment = lastNameSegment;
+  }
+}
+
+watch(
+  [type, nextFreeVarietyNameSegment],
+  ([newType, newNextFreeVarietyNameSegment], [oldType]) =>
+    automagicallySetNameSegment({
+      oldType,
+      newType,
+      newNextFreeVarietyNameSegment,
+    }),
+);
 </script>

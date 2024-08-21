@@ -131,7 +131,7 @@ const cultivarsCount = computed(
 
 type Cultivar = ResultOf<typeof query>['cultivars'][0];
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'display_name',
     label: t('entity.commonColumns.displayName'),
@@ -146,27 +146,36 @@ const columns = [
     field: 'acronym',
     sortable: true,
   },
-  {
-    name: 'breeder',
-    label: t('cultivars.fields.breeder'),
-    align: 'left' as const,
-    field: 'breeder',
-    sortable: true,
-  },
-  {
-    name: 'registration',
-    label: t('cultivars.fields.registration'),
-    align: 'left' as const,
-    field: 'registration',
-    sortable: true,
-  },
-  {
-    name: 'lot',
-    label: t('cultivars.fields.lot'),
-    align: 'left' as const,
-    field: (row: Cultivar) => (row.is_variety ? '' : row.lot?.display_name),
-    sortable: true,
-  },
+  ...(subset.value === 'breeders_cultivars'
+    ? []
+    : [
+        {
+          name: 'breeder',
+          label: t('cultivars.fields.breeder'),
+          align: 'left' as const,
+          field: 'breeder',
+          sortable: true,
+        },
+        {
+          name: 'registration',
+          label: t('cultivars.fields.registration'),
+          align: 'left' as const,
+          field: 'registration',
+          sortable: true,
+        },
+      ]),
+  ...(subset.value === 'varieties'
+    ? []
+    : [
+        {
+          name: 'lot',
+          label: t('cultivars.fields.lot'),
+          align: 'left' as const,
+          field: (row: Cultivar) =>
+            row.is_variety ? '' : row.lot?.display_name,
+          sortable: true,
+        },
+      ]),
   {
     name: 'modified',
     label: t('entity.commonColumns.modified'),
@@ -181,11 +190,11 @@ const columns = [
     field: (row: Cultivar) => d(row.created, 'ymdHis'),
     sortable: true,
   },
-];
+]);
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 6),
+  defaultValue: columns.value.map((column) => column.name).slice(0, 6),
   replace: true,
 });
 

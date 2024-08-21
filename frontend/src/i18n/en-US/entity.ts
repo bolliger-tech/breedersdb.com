@@ -7,7 +7,6 @@ export const entity = {
     modified: 'Last updated',
     displayName: 'Name',
     explicitDisplayName: 'Display name',
-    nameOverride: 'Common name',
     nameSegment: 'Name segment',
     fullName: 'Breeding name',
     disabled: 'Disabled',

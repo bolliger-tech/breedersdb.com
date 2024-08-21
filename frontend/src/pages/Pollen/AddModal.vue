@@ -11,7 +11,7 @@ import PollenModalEdit, {
 const pollen: PollenInsertInput = {
   name: '',
   date_harvested: null,
-  note: '',
+  note: null,
 };
 
 const { t } = useI18n();

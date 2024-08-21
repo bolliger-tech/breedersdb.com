@@ -12,7 +12,7 @@ const crossing: CrossingInsertInput = {
   name: '',
   mother_cultivar_id: null,
   father_cultivar_id: null,
-  note: '',
+  note: null,
 };
 
 const { t } = useI18n();

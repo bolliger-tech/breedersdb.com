@@ -31,12 +31,12 @@ import { ref } from 'vue';
 import { focusInView } from 'src/utils/focusInView';
 import { InputRef } from 'src/composables/useEntityForm';
 
-export interface LotNameInputProps {
+export interface PlantGroupNameInputProps {
   plantGroupId: number | undefined;
   fullName: string | undefined;
 }
 
-const props = defineProps<LotNameInputProps>();
+const props = defineProps<PlantGroupNameInputProps>();
 const modelValue = defineModel<string | null>({ required: true });
 
 const inputRef = ref<InputRef | null>(null);

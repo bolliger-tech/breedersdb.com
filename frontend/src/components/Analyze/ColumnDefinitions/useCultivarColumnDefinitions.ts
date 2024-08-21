@@ -101,19 +101,6 @@ const columnData: FilterColumnConstructorData[] = [
   },
   {
     table: 'cultivars',
-    column: 'registration',
-    labelKey: 'cultivars.fields.registration',
-    schema: {
-      type: ColumnTypes.String,
-      allowEmpty: true,
-      validation: {
-        maxLen: 255,
-        pattern: null,
-      },
-    },
-  },
-  {
-    table: 'cultivars',
     column: 'note',
     labelKey: 'entity.commonColumns.note',
     schema: {

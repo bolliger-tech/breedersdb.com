@@ -81,10 +81,6 @@
         <th>{{ t('cultivars.fields.breeder') }}</th>
         <td>{{ data.cultivar.breeder }}</td>
       </tr>
-      <tr v-if="data.cultivar.registration">
-        <th>{{ t('cultivars.fields.registration') }}</th>
-        <td>{{ data.cultivar.registration }}</td>
-      </tr>
     </table>
     <div v-if="data.cultivar.note" class="q-mt-sm text-body2">
       <strong>{{ t('entity.commonColumns.note') }}</strong

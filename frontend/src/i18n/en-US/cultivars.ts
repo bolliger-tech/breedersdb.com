@@ -13,7 +13,6 @@ export const cultivars = {
   fields: {
     acronym: 'Acronym',
     breeder: 'Breeder',
-    registration: 'Registration',
     lot: 'Lot',
   },
 

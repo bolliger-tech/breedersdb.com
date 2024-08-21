@@ -13,7 +13,6 @@ export const cultivarFragment = graphql(
       display_name
       acronym
       breeder
-      registration
       note
       created
       modified

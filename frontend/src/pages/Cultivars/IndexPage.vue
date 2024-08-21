@@ -156,13 +156,6 @@ const columns = computed(() => [
           field: 'breeder',
           sortable: true,
         },
-        {
-          name: 'registration',
-          label: t('cultivars.fields.registration'),
-          align: 'left' as const,
-          field: 'registration',
-          sortable: true,
-        },
       ]),
   ...(subset.value === 'varieties'
     ? []

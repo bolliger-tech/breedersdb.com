@@ -20,7 +20,6 @@ const cultivar: CultivarInsertInput = {
   lot_id: undefined,
   acronym: '',
   breeder: '',
-  registration: '',
   note: '',
 };
 

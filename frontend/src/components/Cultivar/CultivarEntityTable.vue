@@ -23,9 +23,6 @@
     <EntityViewTableRow :label="t('cultivars.fields.breeder')">
       {{ cultivar.breeder }}
     </EntityViewTableRow>
-    <EntityViewTableRow :label="t('cultivars.fields.registration')">
-      {{ cultivar.registration }}
-    </EntityViewTableRow>
     <EntityViewTableRow :label="t('entity.commonColumns.created')">
       {{ d(cultivar.created, 'ymdHis') }}
     </EntityViewTableRow>

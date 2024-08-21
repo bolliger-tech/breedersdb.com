@@ -45,11 +45,11 @@
     autocomplete="off"
     :rules="[
       (val: string | null | undefined) =>
-        !val || val.length <= 10 || t('base.validation.maxLen', { x: 10 }),
+        !val || val.length <= 8 || t('base.validation.maxLen', { x: 8 }),
       (val: string | null | undefined) =>
         !val ||
-        /^[-_\w\d]{1,10}$/.test(val) ||
-        t('base.validation.noSpecialCharsMaxLength', { max: 10 }),
+        /^[-_\w\d]{1,8}$/.test(val) ||
+        t('base.validation.noSpecialCharsMaxLength', { max: 8 }),
       async (val: string | null | undefined) =>
         !val ||
         (await isAcronymUnique(val)) ||
@@ -68,14 +68,6 @@
       (val: string | null | undefined) =>
         !val || val.length <= 255 || t('base.validation.maxLen', { x: 255 }),
     ]"
-  />
-  <EntityInput
-    v-if="type === 'variety'"
-    :ref="(el: InputRef) => (refs.registration = el)"
-    v-model="data.registration"
-    :label="t('cultivars.fields.registration')"
-    type="text"
-    autocomplete="off"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"
@@ -122,7 +114,6 @@ const initialData = {
   lot_id: props.cultivar.lot_id || null,
   acronym: props.cultivar.acronym,
   breeder: props.cultivar.breeder,
-  registration: props.cultivar.registration,
   note: props.cultivar.note,
 };
 
@@ -134,7 +125,6 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   lotId: null,
   acronym: null,
   breeder: null,
-  registration: null,
   note: null,
 });
 

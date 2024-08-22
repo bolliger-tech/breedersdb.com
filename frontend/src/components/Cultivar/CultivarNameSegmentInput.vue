@@ -9,8 +9,8 @@
           x: t('entity.commonColumns.nameSegment'),
         }),
       (val: string) =>
-        (val && /^[-_\w\d]{1,25}$/.test(val)) ||
-        t('base.validation.noSpecialCharsMaxLength', { max: 25 }),
+        (val && /^[\d]{3}$/.test(val)) ||
+        t('cultivars.validation.nameSegmentFormat'),
       async (val: string) =>
         (await isNameSegmentUnique(val)) ||
         t('cultivars.validation.nameNotUniqueWithLot'),

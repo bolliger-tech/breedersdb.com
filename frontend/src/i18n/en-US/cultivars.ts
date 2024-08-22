@@ -19,6 +19,8 @@ export const cultivars = {
   validation: {
     nameNotUniqueWithLot:
       'This name is already in use in combination with the selected lot',
+    nameSegmentFormat:
+      'Invalid format. Must be a three-digit number. Example: 012',
   },
 
   breedersCultivar: 'breeders cultivar | breeders cultivars',

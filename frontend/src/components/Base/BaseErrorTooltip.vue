@@ -7,6 +7,7 @@
     :offset="[0, 8]"
     no-parent-event
     class="bg-black shadow-3 q-pa-sm q-ma-md text-body2 entity-modal-content__error-tooltip"
+    dark
     @hide="
       _graphqlError = null;
       _message = null;

@@ -11,10 +11,12 @@
     @hide="
       _graphqlError = null;
       _message = null;
+      !show && $emit('close');
     "
     @mouseleave="
       _graphqlError = null;
       _message = null;
+      !show && $emit('close');
     "
   >
     <div class="row no-wrap">
@@ -64,6 +66,10 @@ export interface BaseErrorTooltipProps {
 const props = defineProps<BaseErrorTooltipProps>();
 defineSlots<{
   default: Slot;
+}>();
+
+defineEmits<{
+  close: [];
 }>();
 
 const _graphqlError = ref(props.graphqlError);

@@ -88,19 +88,9 @@ const items: NavLevel0Props['items'] = [
         to: '',
       },
       {
-        label: t('nav.cultivars.new.main'),
+        label: t('nav.shared.new'),
         icon: 'add',
         to: 'new',
-        children: [
-          {
-            label: t('nav.cultivars.new.breedersCultivar'),
-            to: 'breeders-cultivar',
-          },
-          {
-            label: t('nav.cultivars.new.variety'),
-            to: 'variety',
-          },
-        ],
       },
       {
         label: t('nav.shared.addAttribute'),

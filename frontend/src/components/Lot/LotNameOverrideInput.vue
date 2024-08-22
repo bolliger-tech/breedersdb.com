@@ -2,6 +2,7 @@
   <EntityNameOverrideInput
     v-model="modelValue"
     :full-name="fullName"
+    :maxlength="25"
     :rules="[
       (val: string | null | undefined) =>
         !val || val.length <= 25 || t('base.validation.maxLen', { x: 25 }),

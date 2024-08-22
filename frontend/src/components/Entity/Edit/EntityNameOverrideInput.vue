@@ -10,6 +10,7 @@
     :loading="loading"
     :hint="hint"
     :placeholder="fullName"
+    :maxlength="maxlength"
     @update:model-value="updateModelValue"
   />
 </template>
@@ -26,6 +27,7 @@ export interface LotNameInputProps {
   rules?: EntityInputProps['rules'];
   loading?: boolean;
   hint?: string;
+  maxlength?: number;
 }
 
 defineProps<LotNameInputProps>();

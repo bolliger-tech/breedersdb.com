@@ -1,5 +1,6 @@
 <template>
   <EntityNameOverrideInput
+    ref="inputRef"
     v-model="modelValue"
     :full-name="fullName"
     :maxlength="51"

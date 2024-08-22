@@ -38,10 +38,12 @@ const nameOverride = defineModel<string | null>('nameOverride', {
 const nameSegmentRef = ref<InputRef | null>(null);
 const nameOverrideRef = ref<InputRef | null>(null);
 defineExpose({
-  validate: () =>
-    nameSegmentRef.value?.validate() && nameOverrideRef.value?.validate(),
-  focus: () => {
-    if (!nameOverrideRef.value?.validate()) {
+  validate: async () =>
+    ((await nameSegmentRef.value?.validate()) ?? true) &&
+    ((await nameOverrideRef.value?.validate()) ?? true),
+  focus: async () => {
+    const nameOverrideValid = (await nameOverrideRef.value?.validate()) || true;
+    if (!nameOverrideValid) {
       nameOverrideRef.value && focusInView(nameOverrideRef.value);
       return;
     }

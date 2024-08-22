@@ -356,4 +356,20 @@ watch(
       newNextFreeVarietyNameSegment,
     }),
 );
+
+/**
+ * set breeder
+ *
+ * the whole block below is for varieties (and to reset it for breeders_cultivars)
+ */
+let lastBreeder: string | null =
+  type.value === 'variety' ? data.value.breeder : null;
+watch(type, (newType) => {
+  if (newType === 'variety') {
+    data.value.breeder = lastBreeder;
+  } else {
+    lastBreeder = data.value.breeder;
+    data.value.breeder = null;
+  }
+});
 </script>

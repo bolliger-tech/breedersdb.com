@@ -48,6 +48,7 @@ import {
 } from 'src/utils/labelIdUtils';
 import { computed } from 'vue';
 import { type QInput } from 'quasar';
+import { focusInView } from 'src/utils/focusInView';
 
 export interface EntityLabelIdInputProps {
   entityType: 'plant' | 'plantGroup';
@@ -65,9 +66,7 @@ const utils = computed(() =>
 const inputRef = ref<QInput | null>(null);
 
 defineExpose({
-  focus: () => {
-    inputRef.value?.focus();
-  },
+  focus: () => inputRef.value && focusInView(inputRef.value),
 });
 
 function onInputEnd() {

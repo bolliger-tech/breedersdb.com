@@ -1,5 +1,5 @@
 <template>
-  <div class="row items-end">
+  <div class="row items-center">
     <BaseSpriteIcon
       :name="icon"
       color="grey-7"

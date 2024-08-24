@@ -6,6 +6,7 @@
   <CultivarModalEdit
     v-else-if="cultivar"
     :cultivar="cultivar"
+    :is-variety="cultivar.is_variety"
     :title="t('base.edit')"
   />
 

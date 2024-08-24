@@ -9,46 +9,40 @@
     :title="cultivar.display_name"
     @edit="edit"
   >
+    <template #title-text>
+      <EntityName
+        :cultivar="cultivar"
+        :lot="cultivar.lot"
+        :crossing="cultivar.lot?.crossing"
+        no-link
+      />
+    </template>
+
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <EntityViewTable>
-        <EntityViewTableRow :label="t('entity.commonColumns.displayName')">
-          {{ cultivar.display_name }}
-        </EntityViewTableRow>
-        <EntityViewTableRow v-if="cultivar.lot_id !== 1" :label="t('cultivars.fields.lot')">
-          <RouterLink
-            :to="`/lots/${cultivar.lot?.id}`"
-            class="undecorated-link"
-          >
-            {{ cultivar.lot?.display_name }}
-          </RouterLink>
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('cultivars.fields.acronym')">
-          {{ cultivar.acronym }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('cultivars.fields.breeder')">
-          {{ cultivar.breeder }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('cultivars.fields.registration')">
-          {{ cultivar.registration }}
-        </EntityViewTableRow>
+      <CultivarEntityTable :cultivar="cultivar" />
 
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(cultivar.created) }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            cultivar.modified
-              ? localizeDate(cultivar.modified)
-              : t('base.notAvailable')
-          }}
-        </EntityViewTableRow>
-        <EntityViewTableRow v-if="cultivar.note">
-          <strong>{{ t('entity.commonColumns.note') }}</strong>
-          <br />
-          <span style="white-space: pre-line">{{ cultivar.note }}</span>
-        </EntityViewTableRow>
-      </EntityViewTable>
+      <EntityViewAllAttributions :attributions="attributions" show-entity />
+
+      <h3 class="q-mb-md">{{ t('plantGroups.title', 2) }}</h3>
+      <EntityViewRelatedEntityTable
+        entity-key="plantGroupss"
+        :rows="cultivar.plant_groups || []"
+        row-key="id"
+        :columns="plantGroupColumns"
+        default-sort-by="display_name"
+      >
+        <template #body-cell-display_name="cellProps">
+          <q-td key="display_name" :props="cellProps">
+            <RouterLink
+              :to="`/groups/${cellProps.row.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.display_name }}
+            </RouterLink>
+          </q-td>
+        </template>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -69,20 +63,27 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import CultivarButtonDelete from 'src/components/Cultivar/CultivarButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { graphql } from 'src/graphql';
+import { graphql, ResultOf } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
-import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import { localizeDate } from 'src/utils/dateUtils';
+import CultivarEntityTable from 'src/components/Cultivar/CultivarEntityTable.vue';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityName from 'src/components/Entity/EntityName.vue';
+import {
+  entityAttributionsViewFragment,
+  type EntityAttributionsViewFragment,
+} from 'src/components/Entity/entityAttributionsViewFragment';
+import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
+import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
+import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -92,24 +93,38 @@ const query = graphql(
       $id: Int!
       $CultivarWithLot: Boolean = true
       $LotWithOrchard: Boolean = false
-      $LotWithCrossing: Boolean = false
+      $LotWithCrossing: Boolean = true
+      $PlantGroupWithCultivar: Boolean! = false
+      $AttributionsViewWithEntites: Boolean! = true
     ) {
       cultivars_by_pk(id: $id) {
         ...cultivarFragment
+        plant_groups {
+          ...plantGroupFragment
+        }
+        attributions_views {
+          ...entityAttributionsViewFragment
+        }
       }
     }
   `,
-  [cultivarFragment],
+  [cultivarFragment, plantGroupFragment, entityAttributionsViewFragment],
 );
 
-const { data, error, fetching } = useQuery({
+const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });
 
 const cultivar = computed(() => data.value?.cultivars_by_pk);
 
-const { t } = useI18n();
+const attributions = computed(
+  () =>
+    (cultivar.value?.attributions_views ||
+      []) as EntityAttributionsViewFragment[],
+);
+
+const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
@@ -119,4 +134,44 @@ function edit() {
     query: route.query,
   });
 }
+
+type PlantGroup = NonNullable<
+  NonNullable<ResultOf<typeof query>['cultivars_by_pk']>['plant_groups']
+>[0];
+
+const { localizedSortPredicate } = useLocalizedSort();
+
+const plantGroupColumns = [
+  {
+    name: 'display_name',
+    label: t('entity.commonColumns.name'),
+    align: 'left' as const,
+    field: 'display_name',
+    sortable: true,
+    sort: (a: PlantGroup['display_name'], b: PlantGroup['display_name']) =>
+      localizedSortPredicate(a, b),
+  },
+  {
+    name: 'label_id',
+    label: t('plantGroups.fields.labelId'),
+    align: 'left' as const,
+    field: 'label_id',
+    sortable: true,
+  },
+  {
+    name: 'modified',
+    label: t('entity.commonColumns.modified'),
+    align: 'left' as const,
+    field: (row: PlantGroup) =>
+      row.modified ? d(row.modified, 'ymdHis') : null,
+    sortable: true,
+  },
+  {
+    name: 'created',
+    label: t('entity.commonColumns.created'),
+    align: 'left' as const,
+    field: (row: PlantGroup) => d(row.created, 'ymdHis'),
+    sortable: true,
+  },
+];
 </script>

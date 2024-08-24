@@ -14,6 +14,7 @@
       :min="min"
       :max="max"
       :step="step"
+      :maxlength="maxlength"
       :pattern="pattern"
       :autocomplete="autocomplete"
       :placeholder="placeholder"
@@ -56,6 +57,7 @@ export type EntityInputProps = Omit<
   max?: number;
   step?: number;
   pattern?: string;
+  maxlength?: number;
   autocomplete?: string;
   explainer?: string;
   placeholder?: string;

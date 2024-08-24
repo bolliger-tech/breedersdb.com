@@ -125,13 +125,12 @@ entity "**cultivars**" #ffff0012 ##888800 {
   *""full_name"": //character varying(51)  : Set by triggers.//
   ""name_override"": //character varying(51) //
   *""display_name"": //character varying(51)  : Generated.//
-  ""acronym"": //character varying(10) //
   ""breeder"": //character varying(255) //
-  ""registration"": //character varying(255) //
   ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
   ""modified"": //timestamp with time zone //
   *""is_variety"": //boolean  : Set by triggers.//
+  ""acronym"": //character varying(8) //
 }
 
 entity "**graftings**" #0000ff12 ##000088 {

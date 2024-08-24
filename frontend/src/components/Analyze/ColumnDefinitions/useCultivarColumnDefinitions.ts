@@ -59,19 +59,20 @@ const columnData: FilterColumnConstructorData[] = [
       },
     },
   },
-  {
-    table: 'cultivars',
-    column: 'name_override',
-    labelKey: 'entity.commonColumns.nameOverride',
-    schema: {
-      type: ColumnTypes.String,
-      allowEmpty: true,
-      validation: {
-        maxLen: 58,
-        pattern: null,
-      },
-    },
-  },
+  // This field is never exposed to the user, let's hide it here as well.
+  // {
+  //   table: 'cultivars',
+  //   column: 'name_override',
+  //   labelKey: 'entity.commonColumns.nameOverride',
+  //   schema: {
+  //     type: ColumnTypes.String,
+  //     allowEmpty: true,
+  //     validation: {
+  //       maxLen: 58,
+  //       pattern: null,
+  //     },
+  //   },
+  // },
   {
     table: 'cultivars',
     column: 'acronym',
@@ -89,19 +90,6 @@ const columnData: FilterColumnConstructorData[] = [
     table: 'cultivars',
     column: 'breeder',
     labelKey: 'cultivars.fields.breeder',
-    schema: {
-      type: ColumnTypes.String,
-      allowEmpty: true,
-      validation: {
-        maxLen: 255,
-        pattern: null,
-      },
-    },
-  },
-  {
-    table: 'cultivars',
-    column: 'registration',
-    labelKey: 'cultivars.fields.registration',
     schema: {
       type: ColumnTypes.String,
       allowEmpty: true,

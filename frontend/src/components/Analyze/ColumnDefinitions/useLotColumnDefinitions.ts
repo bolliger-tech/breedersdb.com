@@ -72,19 +72,20 @@ const columnData: FilterColumnConstructorData[] = [
       },
     },
   },
-  {
-    table: 'lots',
-    column: 'name_override',
-    labelKey: 'entity.commonColumns.nameOverride',
-    schema: {
-      type: ColumnTypes.String,
-      allowEmpty: true,
-      validation: {
-        maxLen: 25,
-        pattern: null,
-      },
-    },
-  },
+  // This field is never exposed to the user, let's hide it here as well.
+  // {
+  //   table: 'lots',
+  //   column: 'name_override',
+  //   labelKey: 'entity.commonColumns.nameOverride',
+  //   schema: {
+  //     type: ColumnTypes.String,
+  //     allowEmpty: true,
+  //     validation: {
+  //       maxLen: 25,
+  //       pattern: null,
+  //     },
+  //   },
+  // },
   {
     table: 'lots',
     column: 'date_sowed',

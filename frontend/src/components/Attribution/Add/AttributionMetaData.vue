@@ -9,7 +9,7 @@
       (v: string) => v.length <= 45 || t('base.validation.maxLen', { x: 45 }),
     ]"
     type="text"
-    maxlength="45"
+    :maxlength="45"
   />
 
   <EntityInput

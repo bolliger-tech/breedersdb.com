@@ -7,7 +7,6 @@ export const entity = {
     modified: 'Last updated',
     displayName: 'Name',
     explicitDisplayName: 'Display name',
-    nameOverride: 'Common name',
     nameSegment: 'Name segment',
     fullName: 'Breeding name',
     disabled: 'Disabled',
@@ -51,7 +50,7 @@ export const entity = {
     onNameSegment:
       'If you wish the system to show a different name, fill in the display name field below.',
     onNameOverride:
-      'This is how the {entity} will be displayed. Leave it empty to use the breeding name.',
+      'This is how the {entity} will be displayed. If not overridden, it will show the breeding name.',
   },
 
   autoFillNextSegment: 'Auto-fill',

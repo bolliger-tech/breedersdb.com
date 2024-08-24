@@ -61,7 +61,6 @@ insert_permissions:
         - note
         - name_override
         - breeder
-        - registration
     comment: ""
 select_permissions:
   - role: user
@@ -79,7 +78,6 @@ select_permissions:
         - name_override
         - name_segment
         - note
-        - registration
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -93,7 +91,6 @@ update_permissions:
         - note
         - name_override
         - breeder
-        - registration
       filter: {}
       check: {}
     comment: ""

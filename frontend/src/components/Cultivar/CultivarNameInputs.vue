@@ -1,35 +1,35 @@
 <template>
-  <PlantGroupNameSegmentInput
+  <CultivarNameSegmentInput
     ref="nameSegmentRef"
     v-model="nameSegment"
-    :cultivar="cultivar"
+    :lot="lot"
     :loading="fetching"
-    :cultivar-error="!!error"
-    :plant-group-id="plantGroupId"
+    :lot-error="!!error"
+    :cultivar-id="cultivarId"
   />
-  <PlantGroupNameOverrideInput
+  <CultivarNameOverrideInput
     ref="nameOverrideRef"
     v-model="nameOverride"
-    :plant-group-id="plantGroupId"
+    :cultivar-id="cultivarId"
     :full-name="fullName"
   />
 </template>
 
 <script setup lang="ts">
-import PlantGroupNameSegmentInput from './PlantGroupNameSegmentInput.vue';
-import PlantGroupNameOverrideInput from './PlantGroupNameOverrideInput.vue';
+import CultivarNameSegmentInput from './CultivarNameSegmentInput.vue';
+import CultivarNameOverrideInput from './CultivarNameOverrideInput.vue';
 import { InputRef } from 'src/composables/useEntityForm';
 import { focusInView } from 'src/utils/focusInView';
 import { computed, ref, watch } from 'vue';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
 
-export interface PlantGroupNameInputProps {
-  plantGroupId: number | undefined;
-  cultivarId: number | null;
+export interface CultivarNameInputProps {
+  cultivarId: number | undefined;
+  lotId: number | undefined;
 }
 
-const props = defineProps<PlantGroupNameInputProps>();
+const props = defineProps<CultivarNameInputProps>();
 const nameSegment = defineModel<string>('nameSegment', { required: true });
 const nameOverride = defineModel<string | null>('nameOverride', {
   required: true,
@@ -52,22 +52,22 @@ defineExpose({
 });
 
 const query = graphql(`
-  query Cultivars($id: Int!) {
-    cultivars_by_pk(id: $id) {
+  query Lots($id: Int!) {
+    lots_by_pk(id: $id) {
       id
       display_name
     }
   }
 `);
-const variables = computed(() => ({ id: props.cultivarId }));
+const variables = computed(() => ({ id: props.lotId }));
 const { data, error, fetching, resume, pause } = useQuery({
   query: query,
   variables: variables,
-  pause: !props.cultivarId,
+  pause: !props.lotId,
   requestPolicy: 'cache-and-network',
 });
 watch(
-  () => props.cultivarId,
+  () => props.lotId,
   (newValue) => {
     if (newValue) {
       resume();
@@ -77,12 +77,12 @@ watch(
     }
   },
 );
-const cultivar = computed(() => data.value?.cultivars_by_pk || null);
+const lot = computed(() => data.value?.lots_by_pk || null);
 
 const fullName = computed(() => {
-  if (!cultivar.value || !nameSegment.value) {
+  if (!lot.value || !nameSegment.value) {
     return undefined;
   }
-  return `${cultivar.value.display_name}.${nameSegment.value}`;
+  return `${lot.value.display_name}.${nameSegment.value}`;
 });
 </script>

@@ -45,7 +45,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { resizeImageFile } from 'src/composables/imageResizer';
+import { resizeImageFile } from 'src/utils/imageResizer';
 import { watch, ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { hashFile } from 'src/composables/useImageUploader';

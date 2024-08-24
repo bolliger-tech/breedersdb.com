@@ -1,5 +1,9 @@
 <template>
-  <CultivarModalEdit :cultivar="cultivar" :title="t('base.new')" />
+  <CultivarModalEdit
+    :cultivar="cultivar"
+    :title="t('base.new')"
+    :is-variety="false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -10,14 +14,12 @@ import CultivarModalEdit, {
 
 const cultivar: CultivarInsertInput = {
   name_segment: '',
-  name_override: '',
+  name_override: null,
   full_name: '',
   display_name: '',
-  lot_id: undefined,
-  acronym: '',
-  breeder: '',
-  registration: '',
-  note: '',
+  acronym: null,
+  breeder: null,
+  note: null,
 };
 
 const { t } = useI18n();

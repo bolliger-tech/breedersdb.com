@@ -84,6 +84,7 @@
             <BaseErrorTooltip
               :graphql-error="saveError"
               :message="validationError"
+              @close="$emit('resetErrors')"
             />
           </template>
         </slot>

@@ -52,7 +52,6 @@ const queryMock: MockQuery = ({ query }) => {
           'cultivars.id',
           'cultivars.display_name',
           'cultivars.full_name',
-          'cultivars.name_override',
           'cultivars.acronym',
         ],
         created: '2024-06-06T11:43:12Z',
@@ -249,7 +248,6 @@ describe('AnalyzePage', () => {
       id
       display_name
       full_name
-      name_override
       acronym
     }
 

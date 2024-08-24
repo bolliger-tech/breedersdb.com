@@ -11,7 +11,6 @@ const insertMutation = /* GraphQL */ `
     $name_override: String
     $acronym: String
     $breeder: String
-    $registration: String
     $note: String
     $is_variety: Boolean = false
   ) {
@@ -28,7 +27,6 @@ const insertMutation = /* GraphQL */ `
                 name_override: $name_override
                 acronym: $acronym
                 breeder: $breeder
-                registration: $registration
                 note: $note
               }
             }
@@ -50,7 +48,6 @@ const insertMutation = /* GraphQL */ `
           display_name
           acronym
           breeder
-          registration
           note
           created
           modified
@@ -91,7 +88,6 @@ test('insert', async () => {
       name_segment: '001',
       acronym: 'TIAN',
       breeder: 'Poma Culta',
-      registration: '123456',
       note: 'This is a note',
     },
   });
@@ -104,7 +100,6 @@ test('insert', async () => {
   expect(cultivar.display_name).toBe('Abcd.24A.001');
   expect(cultivar.acronym).toBe('TIAN');
   expect(cultivar.breeder).toBe('Poma Culta');
-  expect(cultivar.registration).toBe('123456');
   expect(cultivar.note).toBe('This is a note');
   expect(cultivar.created).toMatch(iso8601dateRegex);
   expect(cultivar.modified).toBeNull();
@@ -529,5 +524,72 @@ test('direct inserts of is_variety are impossible', async () => {
 
   expect(inserted.errors[0].message).toEqual(
     "field 'is_variety' not found in type: 'cultivars_insert_input'",
+  );
+});
+
+test('acronym is unique', async () => {
+  await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      name_segment: '001',
+      acronym: 'Acronym',
+    },
+  });
+  const resp2 = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Cross2',
+      lot_name_segment: '24Z',
+      name_segment: '999',
+      acronym: 'Acronym',
+    },
+  });
+
+  expect(resp2.errors[0].message).toMatch(/Uniqueness violation/);
+});
+
+test('acronym constraints: no spaces', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      name_segment: '001',
+      acronym: 'A C',
+    },
+  });
+
+  expect(resp.errors[0].message).toMatch(/Check constraint violation/);
+});
+
+test('acronym constraints: no dots', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      name_segment: '001',
+      acronym: 'A.C',
+    },
+  });
+
+  expect(resp.errors[0].message).toMatch(/Check constraint violation/);
+});
+
+test('acronym constraints: max 8 chars', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      name_segment: '001',
+      acronym: '123456789',
+    },
+  });
+
+  expect(resp.errors[0].message).toEqual(
+    'value too long for type character varying(8)',
   );
 });

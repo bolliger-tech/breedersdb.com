@@ -9,13 +9,6 @@ export const nav = {
     plant: 'Plant',
     eliminate: 'Eliminate',
   },
-  cultivars: {
-    new: {
-      main: 'New',
-      breedersCultivar: 'Breeders Cultivar',
-      variety: 'Variety',
-    },
-  },
   more: {
     main: 'More',
     attributionForms: {

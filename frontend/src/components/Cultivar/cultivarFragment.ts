@@ -13,7 +13,6 @@ export const cultivarFragment = graphql(
       display_name
       acronym
       breeder
-      registration
       note
       created
       modified
@@ -21,6 +20,7 @@ export const cultivarFragment = graphql(
       lot @include(if: $CultivarWithLot) {
         ...lotFragment
       }
+      is_variety
     }
   `,
   [lotFragment],

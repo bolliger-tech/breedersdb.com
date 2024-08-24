@@ -21,26 +21,38 @@
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <PlantEntityTable :plant="plant" />
 
-      <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
-      <EntityViewAttributionImageGallery :images="images" />
+      <EntityViewAllAttributions :attributions="attributions" />
 
-      <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="OBSERVATION"
-        :rows="observations"
-      />
-
-      <h3 class="q-mb-md">{{ t('attributions.treatments') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="TREATMENT"
-        :rows="treatments"
-      />
-
-      <h3 class="q-mb-md">{{ t('attributions.samples') }}</h3>
-      <EntityViewAttributionsTable attribute-type="SAMPLE" :rows="samples" />
-
-      <h3 class="q-mb-md">{{ t('attributions.others') }}</h3>
-      <EntityViewAttributionsTable attribute-type="OTHER" :rows="other" />
+      <h3 class="q-my-md">{{ t('motherPlants.title', 2) }}</h3>
+      <EntityViewRelatedEntityTable
+        entity-key="plants"
+        :rows="plant.mother_plants || []"
+        row-key="id"
+        :columns="motherPlantColumns"
+        default-sort-by="name"
+      >
+        <template #body-cell-name="cellProps">
+          <q-td key="name" :props="cellProps">
+            <RouterLink
+              :to="`/mother-plants/${cellProps.row.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.name }}
+            </RouterLink>
+          </q-td>
+        </template>
+        <template #body-cell-pollen="cellProps">
+          <q-td key="pollen" :props="cellProps">
+            <RouterLink
+              v-if="cellProps.row.pollen"
+              :to="`/pollen/${cellProps.row.pollen.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.pollen.name }}
+            </RouterLink>
+          </q-td>
+        </template>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -49,7 +61,7 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else-if="fetching || refreshingAttributionsView">
+  <q-card v-else-if="fetching">
     <BaseSpinner size="xl" />
   </q-card>
 
@@ -59,7 +71,6 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
@@ -69,15 +80,17 @@ import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
-import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
+import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
 import { useI18n } from 'src/composables/useI18n';
-import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import { useRoute, useRouter } from 'vue-router';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
-import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
+import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import { entityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
+import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
+import { localizeDate } from 'src/utils/dateUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -87,67 +100,37 @@ const query = graphql(
       $id: Int!
       $PlantWithSegments: Boolean = true
       $AttributionsViewWithEntites: Boolean = true
+      $MotherPlantWithPlant: Boolean = false
+      $MotherPlantWithPollen: Boolean = true
+      $MotherPlantWithCrossing: Boolean = false
+      $PollenWithCultivar: Boolean = false
+      $CultivarWithLot: Boolean = false
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
     ) {
       plants_by_pk(id: $id) {
         ...plantFragment
         attributions_views {
           ...entityAttributionsViewFragment
         }
+        mother_plants {
+          ...motherPlantFragment
+        }
       }
     }
   `,
-  [plantFragment, entityAttributionsViewFragment],
+  [plantFragment, motherPlantFragment, entityAttributionsViewFragment],
 );
 
-const {
-  data,
-  error: plantError,
-  fetching,
-  resume: enablePlantQuery,
-} = useQuery({
+const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
-  pause: true,
-  requestPolicy: 'cache-and-network',
 });
-
-const {
-  executeMutation: refreshAttributionsView,
-  fetching: refreshingAttributionsView,
-  error: attributionsRefreshError,
-} = useRefreshAttributionsView();
-
-refreshAttributionsView({}).then(() => enablePlantQuery());
-
-const error = computed(
-  () => plantError.value || attributionsRefreshError.value,
-);
 
 const plant = computed(() => data.value?.plants_by_pk);
 const attributions = computed(
   () =>
     (plant.value?.attributions_views || []) as EntityAttributionsViewFragment[],
-);
-
-const images = computed(() =>
-  attributions.value.filter(
-    (row) => row.data_type === 'PHOTO' || row.photo_note,
-  ),
-);
-
-const { t } = useI18n();
-
-const observations = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'OBSERVATION'),
-);
-const treatments = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'TREATMENT'),
-);
-const samples = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'SAMPLE'),
-);
-const other = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'OTHER'),
 );
 
 const route = useRoute();
@@ -158,4 +141,79 @@ function edit() {
     query: route.query,
   });
 }
+
+const { t, n, d } = useI18n();
+
+const motherPlantColumns = [
+  {
+    name: 'name',
+    field: 'name',
+    label: t('entity.commonColumns.name'),
+    align: 'left' as const,
+    sortable: true,
+  },
+  {
+    name: 'date_impregnated',
+    field: 'date_impregnated',
+    label: t('motherPlants.fields.dateImpregnated'),
+    align: 'left' as const,
+    sortable: true,
+    format: (v: string | null) => localizeDate(v),
+  },
+  {
+    name: 'pollen',
+    field: 'pollen.name',
+    label: t('motherPlants.fields.pollen'),
+    align: 'left' as const,
+    sortable: true,
+  },
+  {
+    name: 'numb_flowers',
+    field: 'numb_flowers',
+    label: t('motherPlants.fields.numbFlowers'),
+    align: 'right' as const,
+    sortable: true,
+    format: (v: number | null) => (v ? n(v) : v),
+  },
+  {
+    name: 'numb_fruits',
+    field: 'numb_fruits',
+    label: t('motherPlants.fields.numbFruits'),
+    align: 'right' as const,
+    sortable: true,
+    format: (v: number | null) => (v ? n(v) : v),
+  },
+  {
+    name: 'date_fruits_harvested',
+    field: 'date_fruits_harvested',
+    label: t('motherPlants.fields.dateFruitsHarvested'),
+    align: 'left' as const,
+    sortable: true,
+    format: (v: string | null) => localizeDate(v),
+  },
+  {
+    name: 'numb_seeds',
+    field: 'numb_seeds',
+    label: t('motherPlants.fields.numbSeeds'),
+    align: 'right' as const,
+    sortable: true,
+    format: (v: number | null) => (v ? n(v) : v),
+  },
+  {
+    name: 'created',
+    field: 'created',
+    label: t('entity.commonColumns.created'),
+    align: 'left' as const,
+    sortable: true,
+    format: (v: string) => d(v, 'ymdHis'),
+  },
+  {
+    name: 'modified',
+    field: 'modified',
+    label: t('entity.commonColumns.modified'),
+    align: 'left' as const,
+    sortable: true,
+    format: (v: string | null) => (v ? d(v, 'ymdHis') : t('base.notAvailable')),
+  },
+];
 </script>

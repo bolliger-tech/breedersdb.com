@@ -15,7 +15,7 @@ const motherPlant: MotherPlantInsertInput = {
   numb_flowers: null,
   numb_fruits: null,
   numb_seeds: null,
-  note: '',
+  note: null,
 };
 
 const { t } = useI18n();

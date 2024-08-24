@@ -22,36 +22,7 @@
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
       <PlantGroupEntityTable :plant-group="plantGroup" />
 
-      <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
-      <EntityViewAttributionImageGallery :images="images" />
-
-      <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="OBSERVATION"
-        :rows="observations"
-        show-entity
-      />
-
-      <h3 class="q-mb-md">{{ t('attributions.treatments') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="TREATMENT"
-        :rows="treatments"
-        show-entity
-      />
-
-      <h3 class="q-mb-md">{{ t('attributions.samples') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="SAMPLE"
-        :rows="samples"
-        show-entity
-      />
-
-      <h3 class="q-mb-md">{{ t('attributions.others') }}</h3>
-      <EntityViewAttributionsTable
-        attribute-type="OTHER"
-        :rows="other"
-        show-entity
-      />
+      <EntityViewAllAttributions :attributions="attributions" show-entity />
 
       <h3 class="q-mb-md">{{ t('plants.title', 2) }}</h3>
       <EntityViewRelatedEntityTable
@@ -106,7 +77,7 @@
     </template>
   </EntityModalContent>
 
-  <q-card v-else-if="fetching || refreshingAttributionsView">
+  <q-card v-else-if="fetching">
     <BaseSpinner size="xl" />
   </q-card>
 
@@ -116,7 +87,6 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PlantGroupButtonDelete from 'src/components/PlantGroup/PlantGroupButtonDelete.vue';
 import PlantGroupEntityTable from 'src/components/PlantGroup/PlantGroupEntityTable.vue';
@@ -138,9 +108,8 @@ import {
   type EntityAttributionsViewFragment,
 } from 'src/components/Entity/entityAttributionsViewFragment';
 import { localizeDate } from 'src/utils/dateUtils';
-import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
-import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
-import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
+import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
+import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -169,51 +138,17 @@ const query = graphql(
   [plantGroupFragment, plantFragment, entityAttributionsViewFragment],
 );
 
-const {
-  data,
-  error: plantGroupError,
-  fetching,
-  resume: enablePlantGroupQuery,
-} = useQuery({
+const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
-  pause: true,
-  requestPolicy: 'cache-and-network',
 });
 
-const {
-  executeMutation: refreshAttributionsView,
-  fetching: refreshingAttributionsView,
-  error: attributionsRefreshError,
-} = useRefreshAttributionsView();
-refreshAttributionsView({}).then(() => enablePlantGroupQuery());
-
-const error = computed(
-  () => plantGroupError.value || attributionsRefreshError.value,
-);
 const plantGroup = computed(() => data.value?.plant_groups_by_pk);
 
 const attributions = computed(
   () =>
     (plantGroup.value?.attributions_views ||
       []) as EntityAttributionsViewFragment[],
-);
-const images = computed(() =>
-  attributions.value.filter(
-    (row) => row.data_type === 'PHOTO' || row.photo_note,
-  ),
-);
-const observations = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'OBSERVATION'),
-);
-const treatments = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'TREATMENT'),
-);
-const samples = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'SAMPLE'),
-);
-const other = computed(() =>
-  attributions.value.filter((row) => row.attribute_type === 'OTHER'),
 );
 
 const route = useRoute();
@@ -257,7 +192,7 @@ const plantColumns = [
     field: 'distance_plant_row_start',
     align: 'right' as const,
     sortable: true,
-    format: n,
+    format: (v: Plant['distance_plant_row_start']) => (v ? n(v) : ''),
   },
   {
     name: 'orchard',

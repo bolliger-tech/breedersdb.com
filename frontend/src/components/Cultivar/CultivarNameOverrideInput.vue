@@ -3,23 +3,24 @@
     ref="inputRef"
     v-model="modelValue"
     :full-name="fullName"
-    :maxlength="77"
+    :maxlength="51"
     :rules="[
       (val: string | null | undefined) =>
-        !val || val.length <= 77 || t('base.validation.maxLen', { x: 77 }),
+        !val || val.length <= 51 || t('base.validation.maxLen', { x: 51 }),
       (val: string | null | undefined) =>
         !val ||
-        /^[^\n\.]{1,77}$/.test(val) ||
+        /^[^\n\.]{1,51}$/.test(val) ||
         t('base.validation.noDotsOrNewLines'),
       async (val: string | null | undefined) =>
         !val ||
         (await isNameOverrideUnique(val)) ||
         t('base.validation.nameNotUnique'),
     ]"
-    :loading="fetchingNameOverrideUnique"
+    :loading="loading || fetchingNameOverrideUnique"
     :hint="
+      hint ??
       t('entity.nameOverrideHint.onNameOverride', {
-        entity: t('base.entityName.plantGroup', 1),
+        entity: t('base.entityName.cultivar', 1),
       })
     "
   />
@@ -33,12 +34,14 @@ import { ref } from 'vue';
 import { focusInView } from 'src/utils/focusInView';
 import { InputRef } from 'src/composables/useEntityForm';
 
-export interface PlantGroupNameInputProps {
-  plantGroupId: number | undefined;
+export interface CultivarNameInputProps {
+  cultivarId: number | undefined;
   fullName: string | undefined;
+  hint?: string;
+  loading?: boolean;
 }
 
-const props = defineProps<PlantGroupNameInputProps>();
+const props = defineProps<CultivarNameInputProps>();
 const modelValue = defineModel<string | null>({ required: true });
 
 const inputRef = ref<InputRef | null>(null);
@@ -49,8 +52,8 @@ defineExpose({
 
 const { isUnique: isNameOverrideUnique, fetching: fetchingNameOverrideUnique } =
   useIsUnique({
-    tableName: 'plant_groups',
-    existingId: props.plantGroupId || undefined,
+    tableName: 'cultivars',
+    existingId: props.cultivarId || undefined,
     columnName: 'name_override',
   });
 

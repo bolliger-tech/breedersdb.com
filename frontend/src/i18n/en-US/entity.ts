@@ -56,4 +56,6 @@ export const entity = {
   autoFillNextSegment: 'Auto-fill',
   nameSegmentDataError:
     'Failed to load data. Auto-fill not available, limited validation only.',
+
+  labelIdOmitZeros: 'You can omit leading zeros',
 };

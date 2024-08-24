@@ -135,6 +135,7 @@ psql -h localhost -p 35432 -U postgres [postgres / $PG_DB_NAME]
 ### Create customer database
 
 ```bash
+# $INSTANCE is the customer's instance name. E.g. POC
 export PG_DB_NAME=$INSTANCE
 
 # start cloud-sql-proxy then:
@@ -156,7 +157,7 @@ Links about collations:
 Taking a backup:
 
 ```bash
-pg_dump -h localhost -p 35432 -U postgres postgres --clean > $PG_INSTANCE_NAME-$PG_DB_NAME-$(date +"%Y.%m.%d_%H:%M:%S").sql
+pg_dump -h localhost -p 35432 -U postgres $PG_DB_NAME --clean > $PG_INSTANCE_NAME-$PG_DB_NAME-$(date +"%Y.%m.%d_%H:%M:%S").sql
 ```
 
 Restoring a backup:

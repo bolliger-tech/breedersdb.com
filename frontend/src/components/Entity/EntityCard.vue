@@ -24,6 +24,7 @@
               cultivar?.lot?.crossing ||
               lot?.crossing
             "
+            no-link
           />
         </h2>
       </slot>
@@ -37,6 +38,7 @@
           :cultivar="plantGroup.cultivar"
           :lot="plantGroup.cultivar?.lot"
           :crossing="plantGroup.cultivar?.lot?.crossing"
+          no-link
         />
       </slot>
     </div>

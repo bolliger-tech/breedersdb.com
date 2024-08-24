@@ -59,7 +59,7 @@ export const entity = {
 
   labelIdOmitZeros: 'You can omit leading zeros',
 
-  selector: {
+  picker: {
     inputMethod: 'Select {entity} by',
     scanQrCode: 'QR code',
     plantLabelId: 'Plant label ID',

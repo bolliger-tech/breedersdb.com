@@ -1,12 +1,12 @@
 <template>
-  <EntitySelector
+  <EntityPicker
     ref="inputRef"
-    entity-type="cultivar"
+    entity-type="plantGroup"
     :error="error?.message"
     @input="
       {
         input = $event;
-        loadCultivar();
+        loadPlantGroup();
       }
     "
   />
@@ -20,23 +20,31 @@ import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import { CultivarFragment, cultivarFragment } from './cultivarFragment';
+import { PlantGroupFragment, plantGroupFragment } from './plantGroupFragment';
 import { onMounted } from 'vue';
-import EntitySelector from 'src/components/Entity/EntitySelector.vue';
+import EntityPicker from 'src/components/Entity/EnEntityPicker.vue';
+
+export interface PlantGroupPickerProps {
+  rejectDisabled?: boolean;
+}
+
+const props = withDefaults(defineProps<PlantGroupPickerProps>(), {
+  rejectDisabled: false,
+});
 
 const emit = defineEmits<{
-  cultivar: [data: CultivarFragment | null];
+  plantGroup: [data: PlantGroupFragment | null];
   fetching: [data: boolean];
 }>();
-onMounted(() => emit('cultivar', null));
+onMounted(() => emit('plantGroup', null));
 
-const inputRef = ref<InstanceType<typeof EntitySelector> | null>(null);
+const inputRef = ref<InstanceType<typeof EntityPicker> | null>(null);
 
 defineExpose({
   loadEntity: async () => {
     inputRef.value?.emitInputs();
     await nextTick();
-    loadCultivar();
+    loadPlantGroup();
   },
   focus: () => {
     inputRef.value?.focus();
@@ -59,13 +67,13 @@ const { t } = useI18n();
 
 const error = computed<
   | {
-      type: 'notFound';
+      type: 'notFound' | 'disabledNotAllowed';
       message: string;
     }
   | undefined
 >(() => {
   if (
-    data.value?.cultivars.length === 0 &&
+    data.value?.plant_groups.length === 0 &&
     (input.value.plantLabelId || input.value.plantGroupLabelId)
   )
     return {
@@ -78,73 +86,56 @@ const error = computed<
             labelId: input.value.plantGroupLabelId,
           }),
     };
+
+  if (data.value?.plant_groups[0]?.disabled && props.rejectDisabled)
+    return {
+      type: 'disabledNotAllowed',
+      message: t('plantGroups.errors.disabledNotAllowed'),
+    };
+
   return undefined;
 });
 
-const queryCultivarByPlantLabelId = graphql(
+const queryPlantGroupByLabelId = graphql(
   `
-    query CultivarByPlantLabelId(
+    query PlantGroupByLabelId(
       $labelId: String!
+      $PlantGroupWithCultivar: Boolean! = true
       $CultivarWithLot: Boolean! = true
       $LotWithCrossing: Boolean! = true
       $LotWithOrchard: Boolean! = false
     ) {
-      cultivars(
-        where: { plant_groups: { plants: { label_id: { _eq: $labelId } } } }
-      ) {
-        ...cultivarFragment
+      plant_groups(where: { label_id: { _eq: $labelId } }) {
+        ...plantGroupFragment
       }
     }
   `,
-  [cultivarFragment],
+  [plantGroupFragment],
 );
-const queryCultivarByPlantGroupLabelId = graphql(
+const queryPlantGroupByPlantLabelId = graphql(
   `
-    query CultivarByPlantGroupLabelId(
+    query PlantGroupByPlantLabelId(
       $labelId: String!
+      $PlantGroupWithCultivar: Boolean! = true
       $CultivarWithLot: Boolean! = true
       $LotWithCrossing: Boolean! = true
       $LotWithOrchard: Boolean! = false
     ) {
-      cultivars(where: { plant_groups: { label_id: { _eq: $labelId } } }) {
-        ...cultivarFragment
+      plant_groups(where: { plants: { label_id: { _eq: $labelId } } }) {
+        ...plantGroupFragment
       }
     }
   `,
-  [cultivarFragment],
-);
-const queryCultivarById = graphql(
-  `
-    query CultivarById(
-      $id: Int!
-      $CultivarWithLot: Boolean! = true
-      $LotWithCrossing: Boolean! = true
-      $LotWithOrchard: Boolean! = false
-    ) {
-      cultivars(where: { id: { _eq: $id } }) {
-        ...cultivarFragment
-      }
-    }
-  `,
-  [cultivarFragment],
+  [plantGroupFragment],
 );
 const query = computed(() =>
-  input.value.cultivarId
-    ? queryCultivarById
-    : input.value.plantLabelId
-      ? queryCultivarByPlantLabelId
-      : queryCultivarByPlantGroupLabelId,
+  input.value.plantLabelId
+    ? queryPlantGroupByPlantLabelId
+    : queryPlantGroupByLabelId,
 );
-
-const labelIdForQuery = computed(() => ({
+const variables = computed(() => ({
   labelId: input.value.plantLabelId || input.value.plantGroupLabelId || '',
 }));
-const cultivarIdForQuery = computed(() => ({
-  id: input.value.cultivarId || 0,
-}));
-const variables = computed(() =>
-  input.value.cultivarId ? cultivarIdForQuery.value : labelIdForQuery.value,
-);
 
 const {
   executeQuery,
@@ -161,12 +152,12 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.cultivars.length) {
-    emit('cultivar', d.cultivars[0]);
+  if (d?.plant_groups.length && !d.plant_groups[0].disabled) {
+    emit('plantGroup', d.plant_groups[0]);
   }
 });
 
-async function loadCultivar() {
+async function loadPlantGroup() {
   await nextTick(); // ensure the useQuery({variables}) is updated
   await executeQuery();
 }

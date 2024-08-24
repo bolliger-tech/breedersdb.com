@@ -12,13 +12,13 @@
       :entity-loading="fetching"
       :entity-id="lot?.id || null"
       :entity-type="AttributableEntities.Lot"
-      :focus-entity-selector="lotSelectorRef?.focus"
+      :focus-entity-picker="lotPickerRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#lot"
-      @entity-step-completed="() => lotSelectorRef?.loadEntity()"
+      @entity-step-completed="() => lotPickerRef?.loadEntity()"
     >
-      <template #entity-selector>
-        <LotSelector
-          ref="lotSelectorRef"
+      <template #entity-picker>
+        <LotPicker
+          ref="lotPickerRef"
           @lot="(l) => (lot = l)"
           @fetching="(f) => (fetching = f)"
         />
@@ -36,7 +36,7 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
 import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
-import LotSelector from 'src/components/Lot/LotSelector.vue';
+import LotPicker from 'src/components/Lot/LotPicker.vue';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { computed, ref } from 'vue';
 import { LotFragment } from 'src/components/Lot/lotFragment';
@@ -44,7 +44,7 @@ import { AttributableEntities } from 'src/components/Attribution/attributableEnt
 
 const { t } = useI18n();
 
-const lotSelectorRef = ref<InstanceType<typeof LotSelector> | null>(null);
+const lotPickerRef = ref<InstanceType<typeof LotPicker> | null>(null);
 
 const lot = ref<LotFragment | null>(null);
 const fetching = ref(false);

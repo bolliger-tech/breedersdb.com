@@ -12,13 +12,13 @@
       :entity-loading="fetching"
       :entity-id="plantGroup?.id || null"
       :entity-type="AttributableEntities.PlantGroup"
-      :focus-entity-selector="plantGroupSelectorRef?.focus"
+      :focus-entity-picker="plantGroupPickerRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#tree-group"
-      @entity-step-completed="() => plantGroupSelectorRef?.loadEntity()"
+      @entity-step-completed="() => plantGroupPickerRef?.loadEntity()"
     >
-      <template #entity-selector>
-        <PlantGroupSelector
-          ref="plantGroupSelectorRef"
+      <template #entity-picker>
+        <PlantGroupPicker
+          ref="plantGroupPickerRef"
           reject-disabled
           @plant-group="(pg) => (plantGroup = pg)"
           @fetching="(f) => (fetching = f)"
@@ -42,7 +42,7 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
 import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
-import PlantGroupSelector from 'src/components/PlantGroup/PlantGroupSelector.vue';
+import PlantGroupPicker from 'src/components/PlantGroup/PlantGroupPicker.vue';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { computed, ref } from 'vue';
 import { PlantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
@@ -50,9 +50,9 @@ import { AttributableEntities } from 'src/components/Attribution/attributableEnt
 
 const { t } = useI18n();
 
-const plantGroupSelectorRef = ref<InstanceType<
-  typeof PlantGroupSelector
-> | null>(null);
+const plantGroupPickerRef = ref<InstanceType<typeof PlantGroupPicker> | null>(
+  null,
+);
 
 const plantGroup = ref<PlantGroupFragment | null>(null);
 const fetching = ref(false);

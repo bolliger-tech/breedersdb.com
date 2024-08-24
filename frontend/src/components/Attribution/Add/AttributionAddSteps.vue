@@ -65,7 +65,7 @@
       :disable="!step1Done || !step2Done"
       :done="step3Done"
     >
-      <slot name="entity-selector"></slot>
+      <slot name="entity-picker"></slot>
       <q-stepper-navigation class="row justify-between reverse">
         <!-- reversed for better tab order -->
         <q-btn
@@ -170,13 +170,13 @@ export interface AttributionAddStepsProps {
   entityType: AttributableEntities;
   entityLoading: boolean;
   entityIcon: string;
-  focusEntitySelector?: () => void;
+  focusEntityPicker?: () => void;
 }
 
 const props = defineProps<AttributionAddStepsProps>();
 
 defineSlots<{
-  'entity-selector': Slot;
+  'entity-picker': Slot;
   'entity-preview': Slot;
 }>();
 
@@ -364,10 +364,10 @@ function handleTransition(to: string | number, from: string | number) {
     if (platform.is.safari && from === 2) {
       // else safari is going shaky
       setTimeout(() => {
-        props.focusEntitySelector?.();
+        props.focusEntityPicker?.();
       }, 100);
     } else {
-      props.focusEntitySelector?.();
+      props.focusEntityPicker?.();
     }
   }
 }

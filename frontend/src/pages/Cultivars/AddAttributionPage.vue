@@ -12,13 +12,13 @@
       :entity-loading="fetching"
       :entity-id="cultivar?.id || null"
       :entity-type="AttributableEntities.Cultivar"
-      :focus-entity-selector="cultivarSelectorRef?.focus"
+      :focus-entity-picker="cultivarPickerRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#cultivar"
-      @entity-step-completed="() => cultivarSelectorRef?.loadEntity()"
+      @entity-step-completed="() => cultivarPickerRef?.loadEntity()"
     >
-      <template #entity-selector>
-        <CultivarSelector
-          ref="cultivarSelectorRef"
+      <template #entity-picker>
+        <CultivarPicker
+          ref="cultivarPickerRef"
           @cultivar="(c) => (cultivar = c)"
           @fetching="(f) => (fetching = f)"
         />
@@ -40,7 +40,7 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
 import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
-import CultivarSelector from 'src/components/Cultivar/CultivarSelector.vue';
+import CultivarPicker from 'src/components/Cultivar/CultivarPicker.vue';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { computed, ref } from 'vue';
 import { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
@@ -48,9 +48,7 @@ import { AttributableEntities } from 'src/components/Attribution/attributableEnt
 
 const { t } = useI18n();
 
-const cultivarSelectorRef = ref<InstanceType<typeof CultivarSelector> | null>(
-  null,
-);
+const cultivarPickerRef = ref<InstanceType<typeof CultivarPicker> | null>(null);
 
 const cultivar = ref<CultivarFragment | null>(null);
 const fetching = ref(false);

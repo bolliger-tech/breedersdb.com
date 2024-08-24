@@ -10,13 +10,13 @@
       :entity-loading="fetching"
       :entity-id="plant?.id || null"
       :entity-type="AttributableEntities.Plant"
-      :focus-entity-selector="plantSelectorRef?.focus"
+      :focus-entity-picker="plantPickerRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#tree"
-      @entity-step-completed="() => plantSelectorRef?.loadEntity()"
+      @entity-step-completed="() => plantPickerRef?.loadEntity()"
     >
-      <template #entity-selector>
-        <PlantSelector
-          ref="plantSelectorRef"
+      <template #entity-picker>
+        <PlantPicker
+          ref="plantPickerRef"
           reject-eliminated
           @plant="(p) => (plant = p)"
           @fetching="(f) => (fetching = f)"
@@ -40,7 +40,7 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
 import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
-import PlantSelector from 'src/components/Plant/PlantSelector.vue';
+import PlantPicker from 'src/components/Plant/PlantPicker.vue';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { computed, ref } from 'vue';
 import { PlantFragment } from 'src/components/Plant/plantFragment';
@@ -48,7 +48,7 @@ import { AttributableEntities } from 'src/components/Attribution/attributableEnt
 
 const { t } = useI18n();
 
-const plantSelectorRef = ref<InstanceType<typeof PlantSelector> | null>(null);
+const plantPickerRef = ref<InstanceType<typeof PlantPicker> | null>(null);
 
 const plant = ref<PlantFragment | null>(null);
 const fetching = ref(false);

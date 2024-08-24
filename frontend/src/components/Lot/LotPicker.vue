@@ -1,5 +1,5 @@
 <template>
-  <EntitySelector
+  <EntityPicker
     ref="inputRef"
     entity-type="lot"
     :error="error?.message"
@@ -22,7 +22,7 @@ import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { LotFragment, lotFragment } from './lotFragment';
 import { onMounted } from 'vue';
-import EntitySelector from 'src/components/Entity/EntitySelector.vue';
+import EntityPicker from 'src/components/Entity/EntityPicker.vue';
 
 const emit = defineEmits<{
   lot: [data: LotFragment | null];
@@ -30,7 +30,7 @@ const emit = defineEmits<{
 }>();
 onMounted(() => emit('lot', null));
 
-const inputRef = ref<InstanceType<typeof EntitySelector> | null>(null);
+const inputRef = ref<InstanceType<typeof EntityPicker> | null>(null);
 
 defineExpose({
   loadEntity: async () => {

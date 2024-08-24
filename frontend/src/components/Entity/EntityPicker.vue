@@ -1,7 +1,7 @@
 <template>
   <div>
     <BaseInputLabel
-      :label="t('entity.selector.inputMethod', { entity: entityName })"
+      :label="t('entity.picker.inputMethod', { entity: entityName })"
       class="q-mb-md"
     >
       <q-btn-toggle
@@ -24,7 +24,7 @@
 
     <BaseInputLabel
       v-else-if="inputMethod === 'plant-label-id'"
-      :label="t('entity.selector.plantLabelId')"
+      :label="t('entity.picker.plantLabelId')"
     >
       <EntityLabelIdInput
         ref="inputRef"
@@ -45,7 +45,7 @@
 
     <BaseInputLabel
       v-else-if="inputMethod === 'plant-group-label-id'"
-      :label="t('entity.selector.plantGroupLabelId')"
+      :label="t('entity.picker.plantGroupLabelId')"
     >
       <EntityLabelIdInput
         ref="inputRef"
@@ -70,7 +70,7 @@
       ref="inputRef"
       v-model="cultivarId"
       required
-      :label="t('entity.selector.cultivarName')"
+      :label="t('entity.picker.cultivarName')"
       @update:model-value="
         emit('input', {
           plantLabelId: '',
@@ -87,7 +87,7 @@
       v-model="lotId"
       options="all"
       required
-      :label="t('entity.selector.lotName')"
+      :label="t('entity.picker.lotName')"
       @update:model-value="
         emit('input', {
           plantLabelId: '',
@@ -120,12 +120,12 @@ type InputMethod =
   | 'cultivar-select'
   | 'lot-select';
 
-export interface EntitySelectorProps {
+export interface EntityPickerProps {
   entityType: 'plant' | 'plantGroup' | 'cultivar' | 'lot';
   error?: string;
 }
 
-const props = defineProps<EntitySelectorProps>();
+const props = defineProps<EntityPickerProps>();
 
 const emit = defineEmits<{
   input: [
@@ -215,12 +215,12 @@ const options = computed(() => {
   }[] = [
     {
       value: 'qr-code',
-      label: t('entity.selector.scanQrCode'),
+      label: t('entity.picker.scanQrCode'),
       icon: 'qr_code_scanner',
     },
     {
       value: 'plant-label-id',
-      label: t('entity.selector.plantLabelId'),
+      label: t('entity.picker.plantLabelId'),
       icon: 'svguse:/icons/sprite.svg#tree',
     },
   ];
@@ -229,7 +229,7 @@ const options = computed(() => {
 
   options.push({
     value: 'plant-group-label-id',
-    label: t('entity.selector.plantGroupLabelId'),
+    label: t('entity.picker.plantGroupLabelId'),
     icon: 'svguse:/icons/sprite.svg#tree-group',
   });
 
@@ -237,7 +237,7 @@ const options = computed(() => {
 
   options.push({
     value: 'cultivar-select',
-    label: t('entity.selector.cultivarName'),
+    label: t('entity.picker.cultivarName'),
     icon: 'svguse:/icons/sprite.svg#cultivar',
   });
 
@@ -245,7 +245,7 @@ const options = computed(() => {
 
   options.push({
     value: 'lot-select',
-    label: t('entity.selector.lotName'),
+    label: t('entity.picker.lotName'),
     icon: 'svguse:/icons/sprite.svg#lot',
   });
 

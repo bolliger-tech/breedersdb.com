@@ -1,5 +1,5 @@
 <template>
-  <EntitySelector
+  <EntityPicker
     ref="inputRef"
     entity-type="plant"
     :error="error?.message"
@@ -23,13 +23,13 @@ import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { PlantFragment, plantFragment } from './plantFragment';
 import { onMounted } from 'vue';
-import EntitySelector from 'src/components/Entity/EntitySelector.vue';
+import EntityPicker from 'src/components/Entity/EntityPicker.vue';
 
-export interface PlantSelectorProps {
+export interface PlantPickerProps {
   rejectEliminated?: boolean;
 }
 
-const props = withDefaults(defineProps<PlantSelectorProps>(), {
+const props = withDefaults(defineProps<PlantPickerProps>(), {
   rejectEliminated: false,
 });
 
@@ -39,7 +39,7 @@ const emit = defineEmits<{
 }>();
 onMounted(() => emit('plant', null));
 
-const inputRef = ref<InstanceType<typeof EntitySelector> | null>(null);
+const inputRef = ref<InstanceType<typeof EntityPicker> | null>(null);
 
 defineExpose({
   loadEntity: async () => {

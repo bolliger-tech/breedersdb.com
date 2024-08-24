@@ -4,41 +4,44 @@ class LabelIdUtils {
     private readonly unprefixedLabelIdLength: number,
   ) {}
 
-  public isPrefixed(labelId: string) {
-    return labelId.startsWith(this.prefix);
+  public isPrefixed(labelId: string | null | undefined) {
+    return !!(labelId && labelId.startsWith(this.prefix));
   }
 
-  public getPrefix(labelId: string) {
+  public getPrefix(labelId: string | null | undefined) {
     return this.isPrefixed(labelId) ? this.prefix : null;
   }
 
-  public removePrefix(labelId: string) {
+  public removePrefix(labelId: string | null | undefined) {
     return this.isPrefixed(labelId)
-      ? labelId.substring(this.prefix.length)
-      : labelId;
+      ? (labelId ?? '').substring(this.prefix.length)
+      : (labelId ?? '');
   }
 
-  public addPrefix(labelId: string) {
-    return this.isPrefixed(labelId) ? labelId : `${this.prefix}${labelId}`;
+  public addPrefix(labelId: string | null | undefined) {
+    return this.isPrefixed(labelId)
+      ? (labelId ?? '')
+      : `${this.prefix}${labelId ?? ''}`;
   }
 
-  public isZeroFilled(labelId: string) {
+  public isZeroFilled(labelId: string | null | undefined) {
     return (
       (!this.isPrefixed(labelId) &&
-        labelId.length === this.unprefixedLabelIdLength) ||
-      labelId.length === this.unprefixedLabelIdLength + this.prefix.length
+        (labelId ?? '').length === this.unprefixedLabelIdLength) ||
+      (labelId ?? '').length ===
+        this.unprefixedLabelIdLength + this.prefix.length
     );
   }
 
-  public getLeadingZeroes(labelId: string) {
+  public getLeadingZeroes(labelId: string | null | undefined) {
     return this.removePrefix(labelId).match(/^0*/)?.[0] || '';
   }
 
-  public getSignificantDigits(labelId: string) {
+  public getSignificantDigits(labelId: string | null | undefined) {
     return this.removePrefix(labelId).replace(/^0*/, '');
   }
 
-  public zeroFill(labelId: string) {
+  public zeroFill(labelId: string | null | undefined) {
     const zeroFilledDigits = this.getSignificantDigits(labelId).padStart(
       this.unprefixedLabelIdLength,
       '0',
@@ -46,7 +49,7 @@ class LabelIdUtils {
     return `${this.getPrefix(labelId) || ''}${zeroFilledDigits}`;
   }
 
-  public isValid(labelId: string) {
+  public isValid(labelId: string | null | undefined) {
     const unprefixed = this.removePrefix(labelId);
     const pattern = new RegExp(`^[0-9]{${this.unprefixedLabelIdLength}}$`);
     return pattern.test(unprefixed) && parseInt(unprefixed, 10) > 0;

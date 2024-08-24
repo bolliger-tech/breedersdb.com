@@ -39,8 +39,6 @@ import init, { read_qrcodes_from_image_data } from 'quircs-wasm';
 import wasmUrl from 'quircs-wasm/quircs_wasm_bg.wasm?url';
 import BaseQrScannerPermissions from 'src/components/Base/BaseQrScanner/BaseQrScannerPermissions.vue';
 
-await init(wasmUrl);
-
 const READY_TIMEOUT_MS = 15 * 1000;
 
 interface Point {
@@ -57,6 +55,18 @@ defineProps<{
   errorMessage?: string;
   error?: boolean;
 }>();
+
+const canvasElement = ref<HTMLCanvasElement | null>(null);
+
+defineExpose({
+  focus: () =>
+    canvasElement.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    }),
+});
+
+await init(wasmUrl);
 
 const $q = useQuasar();
 
@@ -88,7 +98,6 @@ const loading = ref(true);
 let videoStream: MediaStream;
 let animationFrame: number | null = null;
 
-const canvasElement = ref<HTMLCanvasElement | null>(null);
 let renderingContext: CanvasRenderingContext2D;
 
 onMounted(() => {

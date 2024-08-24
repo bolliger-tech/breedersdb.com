@@ -156,7 +156,9 @@ defineExpose({
   emitInputs: () =>
     emit('input', {
       plantLabelId: plantLabelId.value,
-      plantGroupLabelId: plantGroupLabelId.value,
+      plantGroupLabelId: plantGroupLabelIdUtils.addPrefix(
+        plantGroupLabelId.value,
+      ),
       cultivarId: cultivarId.value,
       lotId: lotId.value,
     }),

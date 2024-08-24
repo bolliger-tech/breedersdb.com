@@ -18,7 +18,7 @@ function createAttributeAndAnalyzeRoutes(entity: string) {
     children: [
       {
         path: 'attribute',
-        component: () => import(`pages/${entity}/AttributionPage.vue`),
+        component: () => import(`pages/${entity}/AddAttributionPage.vue`),
       },
       {
         path: 'analyze',

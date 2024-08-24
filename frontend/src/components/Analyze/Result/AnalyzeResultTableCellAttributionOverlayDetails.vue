@@ -38,7 +38,7 @@
 
   <template v-if="data.plant">
     <div class="row no-wrap items-center text-body2 q-pt-xs">
-      <PlantCard :plant-group="data.plant.plant_group">
+      <EntityCard :plant-group="data.plant.plant_group" entity-type="plant">
         <template #title>
           <RouterLink
             :to="`/plants/${data.plant.id}`"
@@ -58,7 +58,7 @@
             :crossing="data.plant.plant_group?.cultivar.lot.crossing"
           />
         </template>
-      </PlantCard>
+      </EntityCard>
     </div>
     <div class="q-mt-sm text-body2">
       <PlantEntityTable :plant="data.plant" dense no-hover />
@@ -146,7 +146,7 @@ import { AttributionDetails } from './AnalyzeResultTableCellAttributionOverlay.v
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import { localizeDate } from 'src/utils/dateUtils';
 import EntityName from 'src/components/Entity/EntityName.vue';
-import PlantCard from 'src/components/Plant/PlantCard.vue';
+import EntityCard from 'src/components/Entity/EntityCard.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 
 export interface AnalyzeResultTableCellAttributionOverlayDetailsProps {

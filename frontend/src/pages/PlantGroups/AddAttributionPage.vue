@@ -26,8 +26,9 @@
       </template>
 
       <template #entity-preview>
-        <PlantGroupCard
+        <EntityCard
           v-if="plantGroup"
+          entity-type="plantGroup"
           :label-id="plantGroup.label_id || undefined"
           :plant-group="plantGroup"
         />
@@ -42,7 +43,7 @@ import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
 import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
 import PlantGroupSelector from 'src/components/PlantGroup/PlantGroupSelector.vue';
-import PlantGroupCard from 'src/components/PlantGroup/PlantGroupCard.vue';
+import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { computed, ref } from 'vue';
 import { PlantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';

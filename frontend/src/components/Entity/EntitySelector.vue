@@ -9,6 +9,7 @@
         :options="options"
         size="sm"
         toggle-color="primary"
+        stack
       />
     </BaseInputLabel>
 

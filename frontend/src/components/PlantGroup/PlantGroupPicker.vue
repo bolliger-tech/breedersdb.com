@@ -22,7 +22,7 @@ import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { PlantGroupFragment, plantGroupFragment } from './plantGroupFragment';
 import { onMounted } from 'vue';
-import EntityPicker from 'src/components/Entity/EnEntityPicker.vue';
+import EntityPicker from 'src/components/Entity/EntityPicker.vue';
 
 export interface PlantGroupPickerProps {
   rejectDisabled?: boolean;

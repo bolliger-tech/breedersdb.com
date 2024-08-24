@@ -35,7 +35,7 @@ alter table attribute_values rename to attribution_values;
 
 alter sequence attribute_values_id_seq rename to attribution_values_id_seq;
 
-alter function sanitize_and_validate_attribute_value() rename to sanitize_and_validate_attribution_value;
+alter function sanitize_and_validate_attribute_value() rename to sanitize_and_validate_attribution_value_fn;
 
 --------------------
 -- attributions_view

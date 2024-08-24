@@ -16,12 +16,12 @@ import type { AttributableEntities } from 'src/components/Attribution/attributab
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
-export interface AttributionAlreadyAttributedProps {
+export interface AttributionAddAlreadyAttributedProps {
   date: Date;
   entityType: AttributableEntities;
 }
 
-const props = defineProps<AttributionAlreadyAttributedProps>();
+const props = defineProps<AttributionAddAlreadyAttributedProps>();
 
 const { t, locale } = useI18n();
 

@@ -35,4 +35,10 @@ export const plantGroups = {
       hint: 'Hint',
     },
   },
+
+  errors: {
+    labelIdinvalid: 'Invalid label ID',
+    disabledNotAllowed: "Disabled plant groups can't be used here",
+    labelIdNotFound: 'Plant group {labelId} not found',
+  },
 };

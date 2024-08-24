@@ -37,7 +37,6 @@ export const plants = {
   hints: {
     labelId:
       'Required. Number (max 8 digits). Prefixed with a # if plant was eliminated',
-    labelIdOmitZeros: 'You can omit leading zeros',
     distancePlantRowStart: 'Meters',
     dateEliminatedTrue:
       'Adding an elimination date will disable this plant and prefix the label id with a #',
@@ -48,9 +47,6 @@ export const plants = {
   eliminate: 'Eliminate',
   eliminateConfirmation:
     'Eliminating will move this plant to the list of disbled plants, it will make it impossible to add any further attributions and it will prefix the label id with a #. Are you sure you want to eliminate this plant?',
-
-  scanQrCode: 'Scan QR code',
-  enterLabelId: 'Enter label ID',
 
   plantSelect: 'Plant (label ID)',
 };

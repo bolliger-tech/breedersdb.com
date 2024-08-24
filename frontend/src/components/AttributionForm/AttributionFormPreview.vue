@@ -1,7 +1,7 @@
 <template>
   <q-card style="max-width: 636px">
     <q-card-section v-if="!disabled">
-      <AttributionFormFieldList
+      <AttributionAddFormFieldList
         v-if="formFields.length"
         v-model="attributionValues"
         :fields="formFields"
@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import AttributionFormFieldList from 'src/components/Attribution/Add/AttributionFormFieldList.vue';
-import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionForm.vue';
+import AttributionAddFormFieldList from 'src/components/Attribution/Add/AttributionAddFormFieldList.vue';
+import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
 import { ref } from 'vue';
 import { type AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useI18n } from 'src/composables/useI18n';

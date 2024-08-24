@@ -56,4 +56,15 @@ export const entity = {
   autoFillNextSegment: 'Auto-fill',
   nameSegmentDataError:
     'Failed to load data. Auto-fill not available, limited validation only.',
+
+  labelIdOmitZeros: 'You can omit leading zeros',
+
+  picker: {
+    inputMethod: 'Select {entity} by',
+    scanQrCode: 'QR code',
+    plantLabelId: 'Plant label ID',
+    plantGroupLabelId: 'Group label ID',
+    cultivarName: 'Cultivar name',
+    lotName: 'Lot name',
+  },
 };

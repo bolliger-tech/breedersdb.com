@@ -14,7 +14,10 @@
           :to="`/plants/${cellProps.row.plant.id}`"
           class="undecorated-link"
         >
-          <PlantLabelId :label-id="cellProps.row.plant.label_id" />
+          <EntityLabelId
+            entity-type="plant"
+            :label-id="cellProps.row.plant.label_id"
+          />
         </RouterLink>
         <RouterLink
           v-else-if="cellProps.row.plant_group"
@@ -80,7 +83,7 @@ import { localizeDate } from 'src/utils/dateUtils';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import EntityViewRelatedEntityTable from './EntityViewRelatedEntityTable.vue';
-import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 export interface EntityViewAttributionsTableProps {

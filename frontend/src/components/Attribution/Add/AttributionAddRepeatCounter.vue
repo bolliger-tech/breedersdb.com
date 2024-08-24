@@ -12,9 +12,9 @@
         v-model="showExplainer"
         anchor="top middle"
         self="bottom middle"
-        style="width: min(90svw, 500px)"
+        style="max-width: min(90svw, 500px)"
       >
-        <i18n-t :keypath="`attribute.counter.description`" scope="global">
+        <i18n-t keypath="attributions.add.counter.description" scope="global">
           <template #count
             ><strong>{{ count }}</strong></template
           >

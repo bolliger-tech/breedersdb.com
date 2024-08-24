@@ -92,7 +92,7 @@ import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { PlantEditInput, PlantInsertInput } from './PlantModalEdit.vue';
-import { addPrefix, removePrefix } from 'src/utils/labelIdUtils';
+import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 
 export interface PlantEntityFormProps {
@@ -128,8 +128,8 @@ watch(
   () => data.value.date_eliminated,
   (eliminated) => {
     data.value.label_id = eliminated
-      ? addPrefix(data.value.label_id)
-      : removePrefix(data.value.label_id);
+      ? plantLabelIdUtils.addPrefix(data.value.label_id)
+      : plantLabelIdUtils.removePrefix(data.value.label_id);
   },
 );
 

@@ -5,18 +5,18 @@
         t('attributions.add.attributeEntity', { entity: t('plants.title', 1) })
       }}
     </h1>
-    <AttributionSteps
+    <AttributionAddSteps
       :entity-caption="entityCaption"
       :entity-loading="fetching"
       :entity-id="plant?.id || null"
       :entity-type="AttributableEntities.Plant"
-      :focus-entity-selector="plantSelectorRef?.focus"
+      :focus-entity-picker="plantPickerRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#tree"
-      @entity-step-completed="() => plantSelectorRef?.onManualInput()"
+      @entity-step-completed="() => plantPickerRef?.loadEntity()"
     >
-      <template #entity-selector>
-        <PlantSelector
-          ref="plantSelectorRef"
+      <template #entity-picker>
+        <PlantPicker
+          ref="plantPickerRef"
           reject-eliminated
           @plant="(p) => (plant = p)"
           @fetching="(f) => (fetching = f)"
@@ -24,30 +24,31 @@
       </template>
 
       <template #entity-preview>
-        <PlantCard
+        <EntityCard
           v-if="plant"
+          entity-type="plant"
           :label-id="plant.label_id"
           :plant-group="plant.plant_group"
         />
-        <!-- if the plant is missing AttributionSteps will handle it -->
+        <!-- if the plant is missing AttributionAddSteps will handle it -->
       </template>
-    </AttributionSteps>
+    </AttributionAddSteps>
   </PageLayout>
 </template>
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
-import AttributionSteps from 'src/components/Attribution/Add/AttributionSteps.vue';
-import PlantSelector from 'src/components/Plant/PlantSelector.vue';
-import PlantCard from 'src/components/Plant/PlantCard.vue';
+import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
+import PlantPicker from 'src/components/Plant/PlantPicker.vue';
+import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { computed, ref } from 'vue';
 import { PlantFragment } from 'src/components/Plant/plantFragment';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 
 const { t } = useI18n();
 
-const plantSelectorRef = ref<InstanceType<typeof PlantSelector> | null>(null);
+const plantPickerRef = ref<InstanceType<typeof PlantPicker> | null>(null);
 
 const plant = ref<PlantFragment | null>(null);
 const fetching = ref(false);

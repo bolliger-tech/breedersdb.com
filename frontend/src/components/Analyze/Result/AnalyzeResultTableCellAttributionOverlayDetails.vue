@@ -38,13 +38,16 @@
 
   <template v-if="data.plant">
     <div class="row no-wrap items-center text-body2 q-pt-xs">
-      <PlantCard :plant-group="data.plant.plant_group">
+      <EntityCard :plant-group="data.plant.plant_group" entity-type="plant">
         <template #title>
           <RouterLink
             :to="`/plants/${data.plant.id}`"
             class="link block text-h2"
           >
-            <PlantLabelId :label-id="data.plant.label_id" />
+            <EntityLabelId
+              entity-type="plant"
+              :label-id="data.plant.label_id"
+            />
           </RouterLink>
         </template>
         <template #subtitle>
@@ -55,7 +58,7 @@
             :crossing="data.plant.plant_group?.cultivar.lot.crossing"
           />
         </template>
-      </PlantCard>
+      </EntityCard>
     </div>
     <div class="q-mt-sm text-body2">
       <PlantEntityTable :plant="data.plant" dense no-hover />
@@ -137,13 +140,13 @@
 
 <script lang="ts" setup>
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
-import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { AttributionDetails } from './AnalyzeResultTableCellAttributionOverlay.vue';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import { localizeDate } from 'src/utils/dateUtils';
 import EntityName from 'src/components/Entity/EntityName.vue';
-import PlantCard from 'src/components/Plant/PlantCard.vue';
+import EntityCard from 'src/components/Entity/EntityCard.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 
 export interface AnalyzeResultTableCellAttributionOverlayDetailsProps {

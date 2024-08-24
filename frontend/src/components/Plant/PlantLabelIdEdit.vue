@@ -45,11 +45,7 @@ import { nextTick } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { ValidationRule } from 'quasar';
-import {
-  isPrefixed,
-  zeroFill,
-  isValid as isValidLabelId,
-} from 'src/utils/labelIdUtils';
+import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { focusInView } from 'src/utils/focusInView';
 
 export interface PlantLabelIdEditProps
@@ -80,8 +76,8 @@ function paddLabelId() {
   if (!labelId.value) {
     return;
   }
-  const padded = zeroFill(labelId.value);
-  if (!isValidLabelId(padded)) {
+  const padded = plantLabelIdUtils.zeroFill(labelId.value);
+  if (!plantLabelIdUtils.isValid(padded)) {
     return;
   }
   labelId.value = padded;
@@ -95,7 +91,9 @@ const uniqueQuery = graphql(`
   }
 `);
 
-const queryVariables = ref({ label_id: zeroFill(labelId.value) });
+const queryVariables = ref({
+  label_id: plantLabelIdUtils.zeroFill(labelId.value),
+});
 const { executeQuery, fetching } = useQuery({
   query: uniqueQuery,
   variables: queryVariables,
@@ -106,7 +104,7 @@ const nextFreeLabelId = ref<string | null>(null);
 async function uniqueRule(newLabelId: string) {
   if (
     !newLabelId ||
-    isPrefixed(newLabelId) ||
+    plantLabelIdUtils.isPrefixed(newLabelId) ||
     newLabelId === props.storedLabelId
   ) {
     return true;
@@ -136,9 +134,9 @@ async function uniqueRule(newLabelId: string) {
 const labelIdIsNotUnique = computed(() => {
   return (
     !!labelId.value &&
-    !isPrefixed(labelId.value) &&
+    !plantLabelIdUtils.isPrefixed(labelId.value) &&
     !!nextFreeLabelId.value &&
-    nextFreeLabelId.value !== zeroFill(labelId.value)
+    nextFreeLabelId.value !== plantLabelIdUtils.zeroFill(labelId.value)
   );
 });
 
@@ -150,16 +148,18 @@ const rules = computed(() => {
       t('base.validation.xIsRequired', { x: t('plants.fields.labelId') }),
 
     // generally valid format
-    (val: string) => isValidLabelId(val) || t('plants.errors.labelId'),
+    (val: string) =>
+      plantLabelIdUtils.isValid(val) || t('plants.errors.labelId'),
 
     // prefix
     (val: string) =>
-      (props.eliminated ? isPrefixed(val) : !isPrefixed(val)) ||
-      t('plants.errors.labelId'),
+      (props.eliminated
+        ? plantLabelIdUtils.isPrefixed(val)
+        : !plantLabelIdUtils.isPrefixed(val)) || t('plants.errors.labelId'),
   ];
 
   // unique
-  rules.push((val: string) => uniqueRule(zeroFill(val)));
+  rules.push((val: string) => uniqueRule(plantLabelIdUtils.zeroFill(val)));
 
   return rules;
 });

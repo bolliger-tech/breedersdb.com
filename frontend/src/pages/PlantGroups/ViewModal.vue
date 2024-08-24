@@ -38,7 +38,10 @@
               :to="`/plants/${cellProps.row.id}`"
               class="undecorated-link"
             >
-              <PlantLabelId :label-id="cellProps.row.label_id" />
+              <EntityLabelId
+                entity-type="plant"
+                :label-id="cellProps.row.label_id"
+              />
             </RouterLink>
           </q-td>
         </template>
@@ -97,7 +100,7 @@ import { computed } from 'vue';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';

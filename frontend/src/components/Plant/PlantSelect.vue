@@ -46,7 +46,7 @@ import {
   FilterSelectOptionsUpdateFn,
   selectFirstOption,
 } from 'src/utils/selectOptionFilter';
-import { zeroFill } from 'src/utils/labelIdUtils';
+import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 
 export interface PlantSelectProps {
   required?: boolean;
@@ -78,7 +78,7 @@ const search = ref(modelValue.value?.toString() || '');
 
 const where = computed(() => {
   const or: UseQueryArgs<typeof query>['variables'] = [
-    { label_id: { _eq: `${zeroFill(search.value)}` } },
+    { label_id: { _eq: `${plantLabelIdUtils.zeroFill(search.value)}` } },
   ];
 
   if (props.includeId) {

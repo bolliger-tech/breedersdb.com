@@ -64,7 +64,7 @@ const variables = computed(() => {
     or.push({ is_variety: { _eq: true } });
   }
 
-  return { where: { _or: or } };
+  return { where: or.length ? { _or: or } : {} };
 });
 
 const { data, error, fetching } = useQuery({

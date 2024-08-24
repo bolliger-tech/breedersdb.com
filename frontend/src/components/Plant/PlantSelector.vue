@@ -11,21 +11,18 @@
       v-if="inputMethod === 'keyboard'"
       :label="t('plants.fields.labelId')"
     >
-      <!-- inputmode="tel": numeric keyboard with # -->
-      <q-input
+      <EntityLabelIdInput
         ref="inputRef"
-        v-model="input"
-        inputmode="tel"
-        outlined
-        dense
-        type="text"
-        :bg-color="inputBgColor"
+        :model-value="input"
         :error-message="error?.message"
-        :error="!!error"
-        :hint="t('plants.hints.labelIdOmitZeros')"
+        entity-type="plant"
+        @update:model-value="
+          {
+            input = $event ?? '';
+            data = undefined;
+          }
+        "
         @keyup.enter="onManualInput"
-        @blur="() => (input = plantLabelIdUtils.zeroFill(input))"
-        @focus="() => (input = plantLabelIdUtils.getSignificantDigits(input))"
       />
     </BaseInputLabel>
 
@@ -42,7 +39,6 @@
 </template>
 
 <script setup lang="ts">
-import { useInputBackground } from 'src/composables/useInputBackground';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
@@ -56,6 +52,7 @@ import { useQuery } from '@urql/vue';
 import { PlantFragment, plantFragment } from './plantFragment';
 import { onMounted } from 'vue';
 import { type QInput } from 'quasar';
+import EntityLabelIdInput from 'src/components/Entity/EntityLabelIdInput.vue';
 
 export interface PlantSelectorProps {
   rejectEliminated?: boolean;
@@ -181,6 +178,4 @@ async function loadPlant() {
   await nextTick(); // ensure the useQuery({variables}) is updated
   await executeQuery();
 }
-
-const { inputBgColor } = useInputBackground();
 </script>

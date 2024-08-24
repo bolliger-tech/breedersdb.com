@@ -32,7 +32,9 @@ function createEntityRoutes(entity: string) {
     // eg. PlantRows -> rows,
     // eg. AttributionForms -> attribution-forms
     path: toKebabCase(
-      entity.startsWith('Plant') ? entity.split('Plant').slice(-1)[0] : entity,
+      entity !== 'Plants' && entity.startsWith('Plant')
+        ? entity.split('Plant').slice(-1)[0]
+        : entity,
     ),
     children: [
       {
@@ -80,27 +82,6 @@ const routes: RouteRecordRaw[] = [
         path: 'plants',
         children: [
           {
-            path: '',
-            component: () => import('pages/Plants/IndexPage.vue'),
-            children: [
-              {
-                path: ':entityId(\\d+)',
-                component: () => import('pages/Plants/ViewModal.vue'),
-                props: true,
-              },
-              {
-                path: ':entityId/edit',
-                component: () => import('pages/Plants/EditModal.vue'),
-                props: true,
-              },
-              {
-                path: 'new',
-                component: () => import('pages/Plants/AddModal.vue'),
-                props: { entityId: 'new' },
-              },
-            ],
-          },
-          {
             path: 'attribute',
             component: () => import('pages/Plants/AttributionPage.vue'),
           },
@@ -137,6 +118,7 @@ const routes: RouteRecordRaw[] = [
         'AttributionForms',
         'Lots',
         'PlantGroups',
+        'Plants',
       ].map(createEntityRoutes),
 
       {

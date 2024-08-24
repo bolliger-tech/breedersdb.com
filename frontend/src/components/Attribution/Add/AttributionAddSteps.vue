@@ -45,13 +45,14 @@
         v-model:repeat="repeat"
       />
 
-      <q-stepper-navigation class="row justify-between">
-        <q-btn flat color="primary" :label="t('base.back')" @click="step = 1" />
+      <q-stepper-navigation class="row justify-between reverse">
+        <!-- reversed for better tab order -->
         <q-btn
           color="primary"
           :label="t('base.continue')"
           @click="completeStep2"
         />
+        <q-btn flat color="primary" :label="t('base.back')" @click="step = 1" />
       </q-stepper-navigation>
     </q-step>
 
@@ -65,14 +66,15 @@
       :done="step3Done"
     >
       <slot name="entity-selector"></slot>
-      <q-stepper-navigation class="row justify-between">
-        <q-btn flat color="primary" :label="t('base.back')" @click="step = 2" />
+      <q-stepper-navigation class="row justify-between reverse">
+        <!-- reversed for better tab order -->
         <q-btn
           color="primary"
           :label="t('base.continue')"
           :loading="entityLoading"
           @click="completeStep3"
         />
+        <q-btn flat color="primary" :label="t('base.back')" @click="step = 2" />
       </q-stepper-navigation>
     </q-step>
 

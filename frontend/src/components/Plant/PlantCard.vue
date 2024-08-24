@@ -9,7 +9,11 @@
     <div class="q-ml-sm">
       <slot name="title">
         <h2 class="q-ma-none">
-          <PlantLabelId v-if="labelId" :label-id="labelId" />
+          <EntityLabelId
+            v-if="labelId"
+            entity-type="plant"
+            :label-id="labelId"
+          />
         </h2>
       </slot>
       <slot name="subtitle">
@@ -26,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import EntityName, {
   PlantGroupNameProps,
 } from 'src/components/Entity/EntityName.vue';

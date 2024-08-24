@@ -5,7 +5,7 @@
 
   <EntityModalContent v-else-if="plant" sprite-icon="tree" @edit="edit">
     <template #title-text>
-      <PlantLabelId :label-id="plant.label_id" />
+      <EntityLabelId entity-type="plant" :label-id="plant.label_id" />
     </template>
     <template #subtitle-text>
       <EntityName
@@ -78,7 +78,7 @@ import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
-import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';

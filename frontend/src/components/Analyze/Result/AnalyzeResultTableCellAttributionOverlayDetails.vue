@@ -44,7 +44,10 @@
             :to="`/plants/${data.plant.id}`"
             class="link block text-h2"
           >
-            <PlantLabelId :label-id="data.plant.label_id" />
+            <EntityLabelId
+              entity-type="plant"
+              :label-id="data.plant.label_id"
+            />
           </RouterLink>
         </template>
         <template #subtitle>
@@ -137,7 +140,7 @@
 
 <script lang="ts" setup>
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
-import PlantLabelId from 'src/components/Plant/PlantLabelId.vue';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { AttributionDetails } from './AnalyzeResultTableCellAttributionOverlay.vue';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';

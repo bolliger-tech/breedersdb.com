@@ -12,7 +12,7 @@
       :entity-type="AttributableEntities.Plant"
       :focus-entity-selector="plantSelectorRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#tree"
-      @entity-step-completed="() => plantSelectorRef?.onManualInput()"
+      @entity-step-completed="() => plantSelectorRef?.loadEntity()"
     >
       <template #entity-selector>
         <PlantSelector

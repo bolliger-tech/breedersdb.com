@@ -36,13 +36,6 @@ export const plantGroups = {
     },
   },
 
-  scanQrCode: 'Scan QR code (plant or group)',
-  enterPlantLabelId: 'Enter label ID (plant)',
-  enterGroupLabelId: 'Enter label ID (group)',
-
-  plantLabelId: 'Plant label ID',
-  plantGroupLabelId: 'Group label ID',
-
   errors: {
     labelIdinvalid: 'Invalid label ID',
     disabledNotAllowed: "Disabled plant groups can't be used here",

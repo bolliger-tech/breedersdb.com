@@ -1,80 +1,28 @@
 <template>
-  <div class="q-gutter-md">
-    <q-btn-toggle
-      v-model="inputMethod"
-      :options="options"
-      size="sm"
-      toggle-color="primary"
-    />
-
-    <BaseInputLabel
-      v-if="inputMethod === 'keyboard-plant'"
-      :label="t('plantGroups.plantLabelId')"
-    >
-      <EntityLabelIdInput
-        ref="inputRef"
-        :model-value="input"
-        :error-message="error?.message"
-        entity-type="plant"
-        @update:model-value="
-          {
-            input = $event ?? '';
-            data = undefined;
-          }
-        "
-        @keyup.enter="onManualInput"
-      />
-    </BaseInputLabel>
-
-    <BaseInputLabel
-      v-else-if="inputMethod === 'keyboard-plant-group'"
-      :label="t('plantGroups.plantGroupLabelId')"
-    >
-      <EntityLabelIdInput
-        ref="inputRef"
-        :model-value="input"
-        :error-message="error?.message"
-        entity-type="plantGroup"
-        @update:model-value="
-          {
-            input = $event ?? '';
-            data = undefined;
-          }
-        "
-        @keyup.enter="onManualInput"
-      />
-    </BaseInputLabel>
-
-    <div v-else>
-      <BaseQrScanner
-        :error-message="error?.message"
-        :error="!!error"
-        @change="onQrInput"
-      />
-    </div>
-
-    <BaseGraphqlError v-if="fetchError" :error="fetchError" />
-  </div>
+  <EntitySelector
+    ref="inputRef"
+    entity-type="plantGroup"
+    :error="error?.message"
+    @input="
+      {
+        input = $event;
+        loadPlantGroup();
+      }
+    "
+  />
+  <BaseGraphqlError v-if="fetchError" :error="fetchError" />
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
-import BaseInputLabel from '../Base/BaseInputLabel.vue';
-import BaseQrScanner from '../Base/BaseQrScanner/BaseQrScanner.vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
-import EntityLabelIdInput from 'src/components/Entity/EntityLabelIdInput.vue';
-import {
-  plantGroupLabelIdUtils,
-  plantLabelIdUtils,
-} from 'src/utils/labelIdUtils';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { PlantGroupFragment, plantGroupFragment } from './plantGroupFragment';
 import { onMounted } from 'vue';
-import { type QInput } from 'quasar';
+import EntitySelector from 'src/components/Entity/EntitySelector.vue';
 
 export interface PlantGroupSelectorProps {
   rejectDisabled?: boolean;
@@ -90,77 +38,53 @@ const emit = defineEmits<{
 }>();
 onMounted(() => emit('plantGroup', null));
 
-const inputRef = ref<QInput | null>(null);
+const inputRef = ref<InstanceType<typeof EntitySelector> | null>(null);
 
 defineExpose({
-  onManualInput,
+  loadEntity: async () => {
+    inputRef.value?.emitInputs();
+    await nextTick();
+    loadPlantGroup();
+  },
   focus: () => {
     inputRef.value?.focus();
   },
 });
 
-const LOCALSTORAGE_KEY = 'breedersdb-plant-group-selector-input-method';
+const input = ref<{
+  plantLabelId: string;
+  plantGroupLabelId: string;
+  cultivarId: number | null;
+  lotId: number | null;
+}>({
+  plantLabelId: '',
+  plantGroupLabelId: '',
+  cultivarId: null,
+  lotId: null,
+});
 
 const { t } = useI18n();
-const { localStorage } = useQuasar();
-
-type InputMethod = 'camera' | 'keyboard-plant' | 'keyboard-plant-group';
-const inputMethod = ref<InputMethod>(
-  localStorage.getItem<InputMethod>(LOCALSTORAGE_KEY) ?? 'camera',
-);
-watch(inputMethod, (v) => localStorage.set(LOCALSTORAGE_KEY, v));
-
-const options = [
-  {
-    value: 'camera',
-    label: t('plantGroups.scanQrCode'),
-    icon: 'qr_code_scanner',
-  },
-  {
-    value: 'keyboard-plant',
-    label: t('plantGroups.enterPlantLabelId'),
-    icon: 'keyboard',
-  },
-  {
-    value: 'keyboard-plant-group',
-    label: t('plantGroups.enterGroupLabelId'),
-    icon: 'keyboard',
-  },
-];
-
-const input = ref<string>('');
-const labelId = ref<string>('');
-
-const labelUtils = computed(() =>
-  inputMethod.value === 'keyboard-plant'
-    ? plantLabelIdUtils
-    : plantGroupLabelIdUtils,
-);
 
 const error = computed<
   | {
-      type: 'notFound' | 'invalidFormat' | 'disabledNotAllowed';
+      type: 'notFound' | 'disabledNotAllowed';
       message: string;
     }
   | undefined
 >(() => {
-  if (labelId.value.length > 0 && !labelUtils.value.isValid(labelId.value))
-    return {
-      type: 'invalidFormat',
-      message: t('plantGroups.errors.labelIdinvalid'),
-    };
-
-  if (data.value?.plant_groups.length === 0 && labelId.value.length > 0)
+  if (
+    data.value?.plant_groups.length === 0 &&
+    (input.value.plantLabelId || input.value.plantGroupLabelId)
+  )
     return {
       type: 'notFound',
-      message:
-        inputMethod.value === 'keyboard-plant'
-          ? t('plants.errors.labelIdNotFound', {
-              labelId: labelId.value,
-            })
-          : t('plantGroups.errors.labelIdNotFound', {
-              labelId: labelId.value,
-            }),
+      message: input.value.plantLabelId
+        ? t('plants.errors.labelIdNotFound', {
+            labelId: input.value.plantLabelId,
+          })
+        : t('plantGroups.errors.labelIdNotFound', {
+            labelId: input.value.plantGroupLabelId,
+          }),
     };
 
   if (data.value?.plant_groups[0]?.disabled && props.rejectDisabled)
@@ -204,17 +128,14 @@ const queryPlantGroupByPlantLabelId = graphql(
   `,
   [plantGroupFragment],
 );
-const labelIdForQuery = computed(() => ({
-  labelId:
-    inputMethod.value === 'keyboard-plant-group'
-      ? `G${labelId.value}`
-      : labelId.value,
-}));
-const plantGroupQuery = computed(() =>
-  labelIdForQuery.value.labelId.startsWith('G')
-    ? queryPlantGroupByLabelId
-    : queryPlantGroupByPlantLabelId,
+const query = computed(() =>
+  input.value.plantLabelId
+    ? queryPlantGroupByPlantLabelId
+    : queryPlantGroupByLabelId,
 );
+const variables = computed(() => ({
+  labelId: input.value.plantLabelId || input.value.plantGroupLabelId || '',
+}));
 
 const {
   executeQuery,
@@ -222,8 +143,8 @@ const {
   data,
   error: fetchError,
 } = await useQuery({
-  query: plantGroupQuery,
-  variables: labelIdForQuery,
+  query,
+  variables,
   pause: true,
 });
 
@@ -231,27 +152,12 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.plant_groups.length) {
+  if (d?.plant_groups.length && !d.plant_groups[0].disabled) {
     emit('plantGroup', d.plant_groups[0]);
   }
 });
 
-function onManualInput() {
-  labelId.value = input.value;
-  loadPlantGroup();
-}
-
-function onQrInput(data: string) {
-  labelId.value = data;
-  loadPlantGroup();
-}
-
 async function loadPlantGroup() {
-  console.log('load plant group');
-  if (error.value && error.value.type !== 'notFound') {
-    return;
-  }
-
   await nextTick(); // ensure the useQuery({variables}) is updated
   await executeQuery();
 }

@@ -1,49 +1,21 @@
 <template>
-  <div class="q-gutter-md">
-    <q-btn-toggle
-      v-model="inputMethod"
-      :options="options"
-      size="sm"
-      toggle-color="primary"
-    />
-
-    <BaseInputLabel
-      v-if="inputMethod === 'keyboard'"
-      :label="t('plants.fields.labelId')"
-    >
-      <EntityLabelIdInput
-        ref="inputRef"
-        :model-value="input"
-        :error-message="error?.message"
-        entity-type="plant"
-        @update:model-value="
-          {
-            input = $event ?? '';
-            data = undefined;
-          }
-        "
-        @keyup.enter="onManualInput"
-      />
-    </BaseInputLabel>
-
-    <div v-else>
-      <BaseQrScanner
-        :error-message="error?.message"
-        :error="!!error"
-        @change="onQrInput"
-      />
-    </div>
-
-    <BaseGraphqlError v-if="fetchError" :error="fetchError" />
-  </div>
+  <EntitySelector
+    ref="inputRef"
+    entity-type="plant"
+    :error="error?.message"
+    @input="
+      {
+        input = $event;
+        loadPlant();
+      }
+    "
+  />
+  <BaseGraphqlError v-if="fetchError" :error="fetchError" />
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
-import BaseInputLabel from '../Base/BaseInputLabel.vue';
-import BaseQrScanner from '../Base/BaseQrScanner/BaseQrScanner.vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { computed } from 'vue';
@@ -51,8 +23,7 @@ import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { PlantFragment, plantFragment } from './plantFragment';
 import { onMounted } from 'vue';
-import { type QInput } from 'quasar';
-import EntityLabelIdInput from 'src/components/Entity/EntityLabelIdInput.vue';
+import EntitySelector from 'src/components/Entity/EntitySelector.vue';
 
 export interface PlantSelectorProps {
   rejectEliminated?: boolean;
@@ -68,56 +39,55 @@ const emit = defineEmits<{
 }>();
 onMounted(() => emit('plant', null));
 
-const inputRef = ref<QInput | null>(null);
+const inputRef = ref<InstanceType<typeof EntitySelector> | null>(null);
 
 defineExpose({
-  onManualInput,
+  loadEntity: async () => {
+    inputRef.value?.emitInputs();
+    await nextTick();
+    loadPlant();
+  },
   focus: () => {
     inputRef.value?.focus();
   },
 });
 
-const LOCALSTORAGE_KEY = 'breedersdb-plant-selector-input-method';
+const input = ref<{
+  plantLabelId: string;
+  plantGroupLabelId: string;
+  cultivarId: number | null;
+  lotId: number | null;
+}>({
+  plantLabelId: '',
+  plantGroupLabelId: '',
+  cultivarId: null,
+  lotId: null,
+});
 
 const { t } = useI18n();
-const { localStorage } = useQuasar();
-
-const inputMethod = ref<'camera' | 'keyboard'>(
-  localStorage.getItem<'camera' | 'keyboard'>(LOCALSTORAGE_KEY) ?? 'camera',
-);
-watch(inputMethod, (v) => localStorage.set(LOCALSTORAGE_KEY, v));
-
-const options = [
-  { value: 'camera', label: t('plants.scanQrCode'), icon: 'qr_code_scanner' },
-  { value: 'keyboard', label: t('plants.enterLabelId'), icon: 'keyboard' },
-];
-
-const input = ref<string>('');
-const labelId = ref<string>('');
 
 const error = computed<
   | {
-      type: 'notFound' | 'invalidFormat' | 'eliminatedNotAllowed';
+      type: 'notFound' | 'eliminatedNotAllowed';
       message: string;
     }
   | undefined
 >(() => {
-  if (labelId.value.length > 0 && !plantLabelIdUtils.isValid(labelId.value))
-    return {
-      type: 'invalidFormat',
-      message: t('plants.errors.labelIdinvalid'),
-    };
-
-  if (props.rejectEliminated && plantLabelIdUtils.isPrefixed(labelId.value))
-    return {
-      type: 'eliminatedNotAllowed',
-      message: t('plants.errors.eliminatedNotAllowed'),
-    };
-
   if (data.value?.plants.length === 0)
     return {
       type: 'notFound',
-      message: t('plants.errors.labelIdNotFound', { labelId: labelId.value }),
+      message: t('plants.errors.labelIdNotFound', {
+        labelId: input.value.plantLabelId,
+      }),
+    };
+
+  if (
+    props.rejectEliminated &&
+    plantLabelIdUtils.isPrefixed(input.value.plantLabelId)
+  )
+    return {
+      type: 'eliminatedNotAllowed',
+      message: t('plants.errors.eliminatedNotAllowed'),
     };
 
   return undefined;
@@ -137,7 +107,7 @@ const query = graphql(
   [plantFragment],
 );
 
-const variables = computed(() => ({ label_id: labelId.value }));
+const variables = computed(() => ({ label_id: input.value.plantLabelId }));
 
 const {
   executeQuery,
@@ -154,27 +124,12 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.plants.length) {
+  if (d?.plants.length && !d.plants[0].disabled) {
     emit('plant', d.plants[0]);
   }
 });
 
-function onManualInput() {
-  input.value = plantLabelIdUtils.zeroFill(input.value);
-  labelId.value = input.value;
-  loadPlant();
-}
-
-function onQrInput(data: string) {
-  labelId.value = data;
-  loadPlant();
-}
-
 async function loadPlant() {
-  if (error.value && error.value.type !== 'notFound') {
-    return;
-  }
-
   await nextTick(); // ensure the useQuery({variables}) is updated
   await executeQuery();
 }

@@ -58,4 +58,13 @@ export const entity = {
     'Failed to load data. Auto-fill not available, limited validation only.',
 
   labelIdOmitZeros: 'You can omit leading zeros',
+
+  selector: {
+    inputMethod: 'Select {entity} by',
+    scanQrCode: 'QR code',
+    plantLabelId: 'Plant label ID',
+    plantGroupLabelId: 'Group label ID',
+    cultivarName: 'Cultivar name',
+    lotName: 'Lot name',
+  },
 };

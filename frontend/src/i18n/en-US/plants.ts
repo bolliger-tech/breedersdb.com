@@ -48,8 +48,5 @@ export const plants = {
   eliminateConfirmation:
     'Eliminating will move this plant to the list of disbled plants, it will make it impossible to add any further attributions and it will prefix the label id with a #. Are you sure you want to eliminate this plant?',
 
-  scanQrCode: 'Scan QR code',
-  enterLabelId: 'Enter label ID',
-
   plantSelect: 'Plant (label ID)',
 };

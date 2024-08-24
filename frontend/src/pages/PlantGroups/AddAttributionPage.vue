@@ -14,7 +14,7 @@
       :entity-type="AttributableEntities.PlantGroup"
       :focus-entity-selector="plantGroupSelectorRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#tree-group"
-      @entity-step-completed="() => plantGroupSelectorRef?.onManualInput()"
+      @entity-step-completed="() => plantGroupSelectorRef?.loadEntity()"
     >
       <template #entity-selector>
         <PlantGroupSelector

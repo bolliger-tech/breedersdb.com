@@ -7,7 +7,7 @@
   </h5>
 
   <div class="column" :class="{ reverse: openInputsOrdered[0] === 'photo' }">
-    <AttributionFormInputText
+    <AttributionAddFormInputText
       v-if="showTextInput"
       ref="textInputRef"
       :model-value="textNote"
@@ -20,7 +20,7 @@
       @blur="showTextInput = !!textNote"
     />
 
-    <AttributionFormInputPhoto
+    <AttributionAddFormInputPhoto
       v-if="showPhotoInput"
       ref="photoInputRef"
       v-model="photoNote"
@@ -55,24 +55,24 @@
 </template>
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import AttributionFormInputPhoto from 'src/components/Attribution/Add/AttributionFormInputPhoto.vue';
-import AttributionFormInputText from 'src/components/Attribution/Add/AttributionFormInputText.vue';
+import AttributionAddFormInputPhoto from 'src/components/Attribution/Add/AttributionAddFormInputPhoto.vue';
+import AttributionAddFormInputText from 'src/components/Attribution/Add/AttributionAddFormInputText.vue';
 import { nextTick, ref, watch } from 'vue';
 import { focusInView } from 'src/utils/focusInView';
 
-export interface AttributionFormInputNoteProps {
+export interface AttributionAddFormInputNoteProps {
   allowTextNote: boolean;
   allowPhotoNote: boolean;
   disabled?: boolean;
 }
 
-defineProps<AttributionFormInputNoteProps>();
+defineProps<AttributionAddFormInputNoteProps>();
 const textNote = defineModel<string | null>('textNote', { required: true });
 const photoNote = defineModel<File | null>('photoNote', { required: true });
 
-const textInputRef = ref<InstanceType<typeof AttributionFormInputText> | null>(
-  null,
-);
+const textInputRef = ref<InstanceType<
+  typeof AttributionAddFormInputText
+> | null>(null);
 
 defineExpose({
   clear,
@@ -84,7 +84,7 @@ const showTextInput = ref(false);
 const showPhotoInput = ref(false);
 
 const photoInputRef = ref<InstanceType<
-  typeof AttributionFormInputPhoto
+  typeof AttributionAddFormInputPhoto
 > | null>(null);
 
 const { t } = useI18n();

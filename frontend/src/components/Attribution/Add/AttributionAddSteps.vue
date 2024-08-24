@@ -15,7 +15,7 @@
       title=""
       :done="step1Done"
     >
-      <AttributionFormSelector
+      <AttributionAddFormSelector
         ref="attributeFormSelectorRef"
         v-model="formId"
       />
@@ -38,7 +38,7 @@
       :done="step2Done"
       :disable="!step1Done"
     >
-      <AttributionMetaData
+      <AttributionAddMetaData
         ref="attributeMetaDataRef"
         v-model:author="author"
         v-model:date="date"
@@ -108,7 +108,7 @@
           />
         </template>
       </q-banner>
-      <AttributionNoEntityError
+      <AttributionAddNoEntityError
         v-else-if="entityId === null"
         :entity-type="entityType"
         @click="step = 3"
@@ -116,7 +116,7 @@
 
       <template v-else>
         <slot name="entity-preview"></slot>
-        <AttributionForm
+        <AttributionAddForm
           :key="attributeFormKey"
           :entity-id="entityId"
           :entity-type="entityType"
@@ -135,10 +135,10 @@
 </template>
 
 <script setup lang="ts">
-import AttributionFormSelector from 'src/components/Attribution/Add/AttributionFormSelector.vue';
-import AttributionMetaData from 'src/components/Attribution/Add/AttributionMetaData.vue';
-import AttributionForm from 'src/components/Attribution/Add/AttributionForm.vue';
-import AttributionNoEntityError from 'src/components/Attribution/Add/AttributionNoEntityError.vue';
+import AttributionAddFormSelector from 'src/components/Attribution/Add/AttributionAddFormSelector.vue';
+import AttributionAddMetaData from 'src/components/Attribution/Add/AttributionAddMetaData.vue';
+import AttributionAddForm from 'src/components/Attribution/Add/AttributionAddForm.vue';
+import AttributionAddNoEntityError from 'src/components/Attribution/Add/AttributionAddNoEntityError.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { graphql, ResultOf } from 'src/graphql';
@@ -163,7 +163,7 @@ const AUTHOR_URL_KEY = 'author';
 const DATE_URL_KEY = 'date';
 const REPEAT_URL_KEY = 'repeat';
 
-export interface AttributionStepsProps {
+export interface AttributionAddStepsProps {
   entityId: number | null;
   entityType: AttributableEntities;
   entityLoading: boolean;
@@ -171,7 +171,7 @@ export interface AttributionStepsProps {
   focusEntitySelector?: () => void;
 }
 
-const props = defineProps<AttributionStepsProps>();
+const props = defineProps<AttributionAddStepsProps>();
 
 defineSlots<{
   'entity-selector': Slot;
@@ -255,7 +255,7 @@ const form = computed(
 );
 
 const attributeFormSelectorRef = ref<InstanceType<
-  typeof AttributionFormSelector
+  typeof AttributionAddFormSelector
 > | null>(null);
 
 function completeStep1() {
@@ -292,7 +292,7 @@ watch(repeat, (r) => sessionStorage.set(REPEAT_STORAGE_KEY, r));
 const repeatInt = computed(() => parseInt(repeat.value.toString(), 10));
 
 const attributeMetaDataRef = ref<InstanceType<
-  typeof AttributionMetaData
+  typeof AttributionAddMetaData
 > | null>(null);
 
 function completeStep2() {
@@ -317,7 +317,7 @@ function completeStep4(repeatCount: number) {
     step.value = 3;
   } else {
     // stay on the same entity
-    // but reset the AttributionForm
+    // but reset the AttributionAddForm
     attributeFormKey.value += 1;
   }
 }

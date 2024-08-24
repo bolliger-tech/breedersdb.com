@@ -4,7 +4,7 @@
     :class="{ 'attribute-form-field-list--no-bottom-border': noBottomBorder }"
   >
     <li v-for="field in fields" :key="field.priority">
-      <AttributionFormInput
+      <AttributionAddFormInput
         :ref="
           (el: InputRef) => {
             if (inputRefs) return (inputRefs[field.priority] = el);
@@ -26,12 +26,12 @@
 </template>
 
 <script setup lang="ts">
-import AttributionFormInput from 'src/components/Attribution/Add/AttributionFormInput.vue';
+import AttributionAddFormInput from 'src/components/Attribution/Add/AttributionAddFormInput.vue';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { type InputRef } from 'src/composables/useEntityForm';
-import { type AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionForm.vue';
+import { type AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
 
-export interface AttributionFormFieldListProps {
+export interface AttributionAddFormFieldListProps {
   fields: {
     priority: number;
     attribute: AttributeFragment;
@@ -40,7 +40,7 @@ export interface AttributionFormFieldListProps {
   noBottomBorder?: boolean;
 }
 
-defineProps<AttributionFormFieldListProps>();
+defineProps<AttributionAddFormFieldListProps>();
 
 const inputRefs = defineModel<{ [key: number]: InputRef | null }>('inputRefs');
 const modelValue = defineModel<{ [key: number]: AttributionValueWithPhoto }>({

@@ -4,7 +4,8 @@
     :error="queryError || deleteError || disableError"
     :fetching="queryFetching || deleting || disabling"
     @delete="
-      () => (hasDependants ? disableAttributionForm() : deleteAttributionForm())
+      () =>
+        hasDependants ? disableAttributionAddForm() : deleteAttributionAddForm()
     "
     @reset-errors="resetErrors"
   >
@@ -38,10 +39,10 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed } from 'vue';
 import BaseMessage from '../Base/BaseMessage.vue';
 
-export interface AttributionFormButtonDeleteProps {
+export interface AttributionAddFormButtonDeleteProps {
   attributionFormId: number;
 }
-const props = defineProps<AttributionFormButtonDeleteProps>();
+const props = defineProps<AttributionAddFormButtonDeleteProps>();
 
 const emit = defineEmits<{
   deleted: [];
@@ -112,7 +113,7 @@ const {
   `),
 );
 
-function deleteAttributionForm() {
+function deleteAttributionAddForm() {
   executeDeleteAttributionForm({ id: props.attributionFormId }).then(
     (result) => {
       if (!result.data?.delete_attribution_forms_by_pk) {
@@ -126,7 +127,7 @@ function deleteAttributionForm() {
   );
 }
 
-function disableAttributionForm() {
+function disableAttributionAddForm() {
   executeDisableAttributionForm({ id: props.attributionFormId }).then(
     (result) => {
       if (!result.data?.update_attribution_forms_by_pk) {

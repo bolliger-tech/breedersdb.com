@@ -5,7 +5,7 @@
         t('attributions.add.attributeEntity', { entity: t('plants.title', 1) })
       }}
     </h1>
-    <AttributionSteps
+    <AttributionAddSteps
       :entity-caption="entityCaption"
       :entity-loading="fetching"
       :entity-id="plant?.id || null"
@@ -29,16 +29,16 @@
           :label-id="plant.label_id"
           :plant-group="plant.plant_group"
         />
-        <!-- if the plant is missing AttributionSteps will handle it -->
+        <!-- if the plant is missing AttributionAddSteps will handle it -->
       </template>
-    </AttributionSteps>
+    </AttributionAddSteps>
   </PageLayout>
 </template>
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
-import AttributionSteps from 'src/components/Attribution/Add/AttributionSteps.vue';
+import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
 import PlantSelector from 'src/components/Plant/PlantSelector.vue';
 import PlantCard from 'src/components/Plant/PlantCard.vue';
 import { computed, ref } from 'vue';

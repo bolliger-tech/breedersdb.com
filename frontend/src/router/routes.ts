@@ -1,26 +1,46 @@
 import { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
 import { toKebabCase } from 'src/utils/stringUtils';
 
-function createAnalyzeRoutes(entity: string) {
+function entityNameToRoutePath(entity: string) {
+  // path is kebab cased EntityName minus 'Plant' prefix
+  // eg. PlantRows -> rows,
+  // eg. AttributionForms -> attribution-forms
+  return toKebabCase(
+    entity !== 'Plants' && entity.startsWith('Plant')
+      ? entity.split('Plant').slice(-1)[0]
+      : entity,
+  );
+}
+
+function createAttributeAndAnalyzeRoutes(entity: string) {
   return {
-    path: 'analyze',
+    path: entityNameToRoutePath(entity),
     children: [
       {
-        path: '',
-        component: () => import(`pages/${entity}/AnalyzeIndexPage.vue`),
+        path: 'attribute',
+        component: () => import(`pages/${entity}/AttributionPage.vue`),
       },
       {
-        path: ':analyzeId(\\d+)',
-        component: () => import(`pages/${entity}/AnalyzePage.vue`),
-        props: (route: RouteLocationNormalized) => ({
-          analyzeId: route.params.analyzeId,
-          key: route.params.analyzeId,
-        }),
-      },
-      {
-        path: 'new',
-        component: () => import(`pages/${entity}/AnalyzePage.vue`),
-        props: { analyzeId: 'new', key: 'new' },
+        path: 'analyze',
+        children: [
+          {
+            path: '',
+            component: () => import(`pages/${entity}/AnalyzeIndexPage.vue`),
+          },
+          {
+            path: ':analyzeId(\\d+)',
+            component: () => import(`pages/${entity}/AnalyzePage.vue`),
+            props: (route: RouteLocationNormalized) => ({
+              analyzeId: route.params.analyzeId,
+              key: route.params.analyzeId,
+            }),
+          },
+          {
+            path: 'new',
+            component: () => import(`pages/${entity}/AnalyzePage.vue`),
+            props: { analyzeId: 'new', key: 'new' },
+          },
+        ],
       },
     ],
   };
@@ -28,14 +48,7 @@ function createAnalyzeRoutes(entity: string) {
 
 function createEntityRoutes(entity: string) {
   return {
-    // path is kebab cased EntityName minus 'Plant' prefix
-    // eg. PlantRows -> rows,
-    // eg. AttributionForms -> attribution-forms
-    path: toKebabCase(
-      entity !== 'Plants' && entity.startsWith('Plant')
-        ? entity.split('Plant').slice(-1)[0]
-        : entity,
-    ),
+    path: entityNameToRoutePath(entity),
     children: [
       {
         path: '',
@@ -78,32 +91,6 @@ const routes: RouteRecordRaw[] = [
       },
       { path: '', redirect: '/plants' },
 
-      {
-        path: 'plants',
-        children: [
-          {
-            path: 'attribute',
-            component: () => import('pages/Plants/AttributionPage.vue'),
-          },
-          createAnalyzeRoutes('Plants'),
-        ],
-      },
-
-      {
-        path: 'groups',
-        children: [createAnalyzeRoutes('PlantGroups')],
-      },
-
-      {
-        path: 'cultivars',
-        children: [createAnalyzeRoutes('Cultivars')],
-      },
-
-      {
-        path: 'lots',
-        children: [createAnalyzeRoutes('Lots')],
-      },
-
       ...[
         'Users',
         'Orchards',
@@ -120,6 +107,10 @@ const routes: RouteRecordRaw[] = [
         'PlantGroups',
         'Plants',
       ].map(createEntityRoutes),
+
+      ...['Plants', 'PlantGroups', 'Cultivars', 'Lots'].map(
+        createAttributeAndAnalyzeRoutes,
+      ),
 
       {
         path: 'dev',

@@ -68,7 +68,7 @@ const items: NavLevel0Props['items'] = [
       {
         label: t('nav.shared.addAttribute'),
         icon: 'star',
-        to: 'add-attribute',
+        to: 'attribute',
       },
       {
         label: t('nav.shared.analyze'),
@@ -95,7 +95,7 @@ const items: NavLevel0Props['items'] = [
       {
         label: t('nav.shared.addAttribute'),
         icon: 'star',
-        to: 'add-attribute',
+        to: 'attribute',
       },
       {
         label: t('nav.shared.analyze'),
@@ -122,7 +122,7 @@ const items: NavLevel0Props['items'] = [
       {
         label: t('nav.shared.addAttribute'),
         icon: 'star',
-        to: 'add-attribute',
+        to: 'attribute',
       },
       {
         label: t('nav.shared.analyze'),

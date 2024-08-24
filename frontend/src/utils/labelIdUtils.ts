@@ -1,47 +1,57 @@
-export const prefix = '#';
-const unprefixedLabelIdLength = 8;
+class LabelIdUtils {
+  constructor(
+    private readonly prefix: string,
+    private readonly unprefixedLabelIdLength: number,
+  ) {}
 
-export function isPrefixed(labelId: string) {
-  return labelId.startsWith(prefix);
+  public isPrefixed(labelId: string) {
+    return labelId.startsWith(this.prefix);
+  }
+
+  public getPrefix(labelId: string) {
+    return this.isPrefixed(labelId) ? this.prefix : null;
+  }
+
+  public removePrefix(labelId: string) {
+    return this.isPrefixed(labelId)
+      ? labelId.substring(this.prefix.length)
+      : labelId;
+  }
+
+  public addPrefix(labelId: string) {
+    return this.isPrefixed(labelId) ? labelId : `${this.prefix}${labelId}`;
+  }
+
+  public isZeroFilled(labelId: string) {
+    return (
+      (!this.isPrefixed(labelId) &&
+        labelId.length === this.unprefixedLabelIdLength) ||
+      labelId.length === this.unprefixedLabelIdLength + this.prefix.length
+    );
+  }
+
+  public getLeadingZeroes(labelId: string) {
+    return this.removePrefix(labelId).match(/^0*/)?.[0] || '';
+  }
+
+  public getSignificantDigits(labelId: string) {
+    return this.removePrefix(labelId).replace(/^0*/, '');
+  }
+
+  public zeroFill(labelId: string) {
+    const zeroFilledDigits = this.getSignificantDigits(labelId).padStart(
+      this.unprefixedLabelIdLength,
+      '0',
+    );
+    return `${this.getPrefix(labelId) || ''}${zeroFilledDigits}`;
+  }
+
+  public isValid(labelId: string) {
+    const unprefixed = this.removePrefix(labelId);
+    const pattern = new RegExp(`^[0-9]{${this.unprefixedLabelIdLength}}$`);
+    return pattern.test(unprefixed) && parseInt(unprefixed, 10) > 0;
+  }
 }
 
-export function getPrefix(labelId: string) {
-  return isPrefixed(labelId) ? prefix : null;
-}
-
-export function removePrefix(labelId: string) {
-  return isPrefixed(labelId) ? labelId.substring(prefix.length) : labelId;
-}
-
-export function addPrefix(labelId: string) {
-  return isPrefixed(labelId) ? labelId : `${prefix}${labelId}`;
-}
-
-export function isZeroFilled(labelId: string) {
-  return (
-    (!isPrefixed(labelId) && labelId.length === unprefixedLabelIdLength) ||
-    labelId.length === unprefixedLabelIdLength + prefix.length
-  );
-}
-
-export function getLeadingZeroes(labelId: string) {
-  return removePrefix(labelId).match(/^0*/)?.[0] || '';
-}
-
-export function getSignificantDigits(labelId: string) {
-  return removePrefix(labelId).replace(/^0*/, '');
-}
-
-export function zeroFill(labelId: string) {
-  const zeroFilledDigits = getSignificantDigits(labelId).padStart(
-    unprefixedLabelIdLength,
-    '0',
-  );
-  return `${getPrefix(labelId) || ''}${zeroFilledDigits}`;
-}
-
-export function isValid(labelId: string) {
-  const unprefixed = removePrefix(labelId);
-  const pattern = new RegExp(`^[0-9]{${unprefixedLabelIdLength}}$`);
-  return pattern.test(unprefixed) && parseInt(unprefixed, 10) > 0;
-}
+export const plantLabelIdUtils = new LabelIdUtils('#', 8);
+export const plantGroupLabelIdUtils = new LabelIdUtils('G', 8);

@@ -24,8 +24,8 @@
         :error="!!error"
         :hint="t('plants.hints.labelIdOmitZeros')"
         @keyup.enter="onManualInput"
-        @blur="() => (input = zeroFill(input))"
-        @focus="() => (input = getSignificantDigits(input))"
+        @blur="() => (input = plantLabelIdUtils.zeroFill(input))"
+        @focus="() => (input = plantLabelIdUtils.getSignificantDigits(input))"
       />
     </BaseInputLabel>
 
@@ -49,12 +49,7 @@ import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
 import BaseInputLabel from '../Base/BaseInputLabel.vue';
 import BaseQrScanner from '../Base/BaseQrScanner/BaseQrScanner.vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
-import {
-  isPrefixed,
-  isValid,
-  zeroFill,
-  getSignificantDigits,
-} from 'src/utils/labelIdUtils';
+import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
@@ -110,13 +105,13 @@ const error = computed<
     }
   | undefined
 >(() => {
-  if (labelId.value.length > 0 && !isValid(labelId.value))
+  if (labelId.value.length > 0 && !plantLabelIdUtils.isValid(labelId.value))
     return {
       type: 'invalidFormat',
       message: t('plants.errors.labelIdinvalid'),
     };
 
-  if (props.rejectEliminated && isPrefixed(labelId.value))
+  if (props.rejectEliminated && plantLabelIdUtils.isPrefixed(labelId.value))
     return {
       type: 'eliminatedNotAllowed',
       message: t('plants.errors.eliminatedNotAllowed'),
@@ -168,7 +163,7 @@ watch(data, (d) => {
 });
 
 function onManualInput() {
-  input.value = zeroFill(input.value);
+  input.value = plantLabelIdUtils.zeroFill(input.value);
   labelId.value = input.value;
   loadPlant();
 }

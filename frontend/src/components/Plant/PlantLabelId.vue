@@ -6,11 +6,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import {
-  getLeadingZeroes,
-  getPrefix,
-  getSignificantDigits,
-} from 'src/utils/labelIdUtils';
+import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 
 export interface PlantLabelIdProps {
   labelId: string;
@@ -18,9 +14,13 @@ export interface PlantLabelIdProps {
 
 const props = defineProps<PlantLabelIdProps>();
 
-const prefix = computed(() => getPrefix(props.labelId));
-const leadingZeros = computed(() => getLeadingZeroes(props.labelId));
-const rest = computed(() => getSignificantDigits(props.labelId));
+const prefix = computed(() => plantLabelIdUtils.getPrefix(props.labelId));
+const leadingZeros = computed(() =>
+  plantLabelIdUtils.getLeadingZeroes(props.labelId),
+);
+const rest = computed(() =>
+  plantLabelIdUtils.getSignificantDigits(props.labelId),
+);
 </script>
 
 <style lang="scss" scoped>

@@ -31,7 +31,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import { useRouter } from 'vue-router';
-import { zeroFill } from 'src/utils/labelIdUtils';
+import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 
 const { t, d } = useI18n();
 
@@ -115,7 +115,9 @@ const where = computed(() => {
     });
 
     if (search.value.match(/^#?\d+$/)) {
-      or._or.push({ label_id: { _eq: `${zeroFill(search.value)}` } });
+      or._or.push({
+        label_id: { _eq: `${plantLabelIdUtils.zeroFill(search.value)}` },
+      });
     }
 
     if (search.value === '#') {

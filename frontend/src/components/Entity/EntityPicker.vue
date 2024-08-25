@@ -70,6 +70,7 @@
       ref="inputRef"
       v-model="cultivarId"
       required
+      request-policy="cache-first"
       :label="t('entity.picker.cultivarName')"
       @update:model-value="
         emit('input', {
@@ -87,6 +88,7 @@
       v-model="lotId"
       options="all"
       required
+      request-policy="cache-first"
       :label="t('entity.picker.lotName')"
       @update:model-value="
         emit('input', {

@@ -38,7 +38,7 @@
     type="date"
     autocomplete="off"
   />
-  <PlantRootstockSelect
+  <RootstockSelect
     :ref="(el: InputRef) => (refs.rootstockId = el)"
     v-model="data.rootstock_id"
   />
@@ -89,7 +89,7 @@ import PlantGroupSelect from 'src/components/PlantGroup/PlantGroupSelect.vue';
 import PlantRowSelect from 'src/components/PlantRow/PlantRowSelect.vue';
 import PlantLabelIdEdit from './PlantLabelIdEdit.vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
-import PlantRootstockSelect from './PlantRootstockSelect.vue';
+import RootstockSelect from 'src/components/Rootstock/RootstockSelect.vue';
 import GraftingSelect from 'src/components/Grafting/GraftingSelect.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';

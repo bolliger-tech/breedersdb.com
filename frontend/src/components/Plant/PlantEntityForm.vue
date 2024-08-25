@@ -5,7 +5,7 @@
     :eliminated="!!data.date_eliminated"
     :stored-label-id="initialLabelId"
   />
-  <PlantPlantGroupSelect
+  <PlantGroupSelect
     :ref="(el: InputRef) => (refs.plantGroupId = el)"
     v-model="data.plant_group_id"
   />
@@ -82,7 +82,7 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
-import PlantPlantGroupSelect from './PlantPlantGroupSelect.vue';
+import PlantGroupSelect from 'src/components/PlantGroup/PlantGroupSelect.vue';
 import PlantPlantRowSelect from './PlantPlantRowSelect.vue';
 import PlantLabelIdEdit from './PlantLabelIdEdit.vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';

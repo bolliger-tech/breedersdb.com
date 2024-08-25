@@ -8,6 +8,7 @@
     option-label="name"
     :loading="fetching"
     :error="error"
+    :required="required"
   />
 </template>
 
@@ -21,6 +22,12 @@ import EntitySelect, {
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 
+export interface PlantRowSelectProps {
+  required?: boolean;
+  includeId?: number;
+}
+const props = defineProps<PlantRowSelectProps>();
+
 const plantRowRef = ref<EntitySelectInstance<{
   id: number;
   name: string;
@@ -33,9 +40,16 @@ defineExpose({
 
 const modelValue = defineModel<number | null>({ required: true });
 
+const where = computed(() => ({
+  _or: [
+    { disabled: { _eq: false } },
+    ...(props.includeId ? [{ id: { _eq: props.includeId } }] : []),
+  ],
+}));
+
 const query = graphql(`
-  query PlantRows {
-    plant_rows(where: { disabled: { _eq: false } }, order_by: { name: asc }) {
+  query PlantRows($where: plant_rows_bool_exp!) {
+    plant_rows(where: $where, order_by: { name: asc }) {
       id
       name
     }
@@ -44,6 +58,7 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
+  variables: { where },
   requestPolicy: 'cache-and-network',
 });
 

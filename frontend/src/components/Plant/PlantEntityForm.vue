@@ -14,6 +14,7 @@
   <PlantRowSelect
     :ref="(el: InputRef) => (refs.plantRowId = el)"
     v-model="data.plant_row_id"
+    :include-id="props.plant.plant_row?.id"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.distancePlantRowStart = el)"

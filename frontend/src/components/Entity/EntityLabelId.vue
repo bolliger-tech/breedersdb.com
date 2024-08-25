@@ -41,6 +41,7 @@ const significantDigits = computed(() =>
 
 .leading-zeros {
   opacity: 0.5;
+  font-weight: normal;
 }
 
 .significant-digits {

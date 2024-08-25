@@ -26,8 +26,9 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { userFragment } from 'src/components/User/userFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -85,7 +86,7 @@ const columns = [
   {
     name: 'failed_signin_attempts',
     label: t('users.fields.failedSigninAttempts'),
-    align: 'left' as const,
+    align: 'right' as const,
     field: 'failed_signin_attempts',
     sortable: true,
   },
@@ -93,24 +94,11 @@ const columns = [
     name: 'last_signin',
     label: t('users.fields.lastSignin'),
     align: 'left' as const,
-    field: (row: User) =>
-      row.last_signin ? d(row.last_signin, 'ymdHis') : null,
+    field: 'last_signin',
     sortable: true,
+    timestamp: true,
   },
-  {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
-    align: 'left' as const,
-    field: (row: User) => (row.modified ? d(row.modified, 'ymdHis') : null),
-    sortable: true,
-  },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: User) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({

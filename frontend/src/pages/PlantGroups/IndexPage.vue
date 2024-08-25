@@ -30,10 +30,10 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
-import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { useRouter } from 'vue-router';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -92,10 +92,6 @@ const plantGroupsCount = computed(
   () => data.value?.plant_groups_aggregate?.aggregate?.count || 0,
 );
 
-type PlantGroup = ResultOf<typeof query>['plant_groups'][0];
-
-const { localizedSortPredicate } = useLocalizedSort();
-
 const columns = [
   {
     name: 'display_name',
@@ -103,8 +99,6 @@ const columns = [
     align: 'left' as const,
     field: 'display_name',
     sortable: true,
-    sort: (a: PlantGroup['display_name'], b: PlantGroup['display_name']) =>
-      localizedSortPredicate(a, b),
   },
   {
     name: 'label_id',
@@ -114,25 +108,27 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
+    name: 'cultivar_name',
+    label: t('plantGroups.fields.cultivar'),
     align: 'left' as const,
-    field: (row: PlantGroup) =>
-      row.modified ? d(row.modified, 'ymdHis') : null,
+    field: 'cultivar_name',
     sortable: true,
   },
   {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
+    name: 'note',
+    label: t('entity.commonColumns.note'),
     align: 'left' as const,
-    field: (row: PlantGroup) => d(row.created, 'ymdHis'),
+    field: 'note',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
+  ...useTimestampColumns(),
 ];
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
+  defaultValue: columns.map((column) => column.name),
   replace: true,
 });
 

@@ -28,8 +28,10 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { localizeDate } from 'src/utils/dateUtils';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -69,7 +71,7 @@ const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
 ];
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
-  foreignKeys: ['orchard'],
+  foreignColumns: ['orchard'],
   subset,
 });
 
@@ -85,7 +87,7 @@ const plantRowsCount = computed(
 
 type PlantRow = ResultOf<typeof query>['plant_rows'][0];
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'name',
     label: t('entity.commonColumns.name'),
@@ -101,24 +103,40 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
+    name: 'date_created',
+    label: t('plantRows.fields.dateCreated'),
     align: 'left' as const,
-    field: (row: PlantRow) => (row.modified ? d(row.modified, 'ymdHis') : null),
+    field: 'date_created',
     sortable: true,
+    format: (v: PlantRow['date_created']) => localizeDate(v) || '',
   },
+  ...(subset.value === 'disabled'
+    ? [
+        {
+          name: 'date_eliminated',
+          label: t('plantRows.fields.dateEliminated'),
+          align: 'left' as const,
+          field: 'date_eliminated',
+          sortable: true,
+          format: (v: PlantRow['date_eliminated']) => localizeDate(v) || '',
+        },
+      ]
+    : []),
   {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
+    name: 'note',
+    label: t('entity.commonColumns.note'),
     align: 'left' as const,
-    field: (row: PlantRow) => d(row.created, 'ymdHis'),
+    field: 'note',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
-];
+  ...useTimestampColumns(),
+]);
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 3),
+  defaultValue: columns.value.map((column) => column.name),
   replace: true,
 });
 

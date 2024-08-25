@@ -21,15 +21,16 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
-import { ResultOf, graphql } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { UnwrapRef, computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { orchardFragment } from 'src/components/Orchard/orchardFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -82,8 +83,6 @@ const orchardsCount = computed(
   () => data.value?.orchards_aggregate?.aggregate?.count || 0,
 );
 
-type Orchard = ResultOf<typeof query>['orchards'][0];
-
 const columns = [
   {
     name: 'name',
@@ -92,20 +91,7 @@ const columns = [
     field: 'name',
     sortable: true,
   },
-  {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
-    align: 'left' as const,
-    field: (row: Orchard) => (row.modified ? d(row.modified, 'ymdHis') : null),
-    sortable: true,
-  },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: Orchard) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({

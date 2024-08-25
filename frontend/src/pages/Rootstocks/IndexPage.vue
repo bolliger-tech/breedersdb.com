@@ -19,15 +19,16 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
-import { ResultOf, graphql } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { rootstockFragment } from 'src/components/Rootstock/rootstockFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -67,8 +68,6 @@ const rootstocksCount = computed(
   () => data.value?.rootstocks_aggregate?.aggregate?.count || 0,
 );
 
-type Rootstock = ResultOf<typeof query>['rootstocks'][0];
-
 const columns = [
   {
     name: 'name',
@@ -77,26 +76,12 @@ const columns = [
     field: 'name',
     sortable: true,
   },
-  {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
-    align: 'left' as const,
-    field: (row: Rootstock) =>
-      row.modified ? d(row.modified, 'ymdHis') : null,
-    sortable: true,
-  },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: Rootstock) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
+  defaultValue: columns.map((column) => column.name),
   replace: true,
 });
 

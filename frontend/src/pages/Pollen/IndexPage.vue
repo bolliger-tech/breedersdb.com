@@ -28,8 +28,9 @@ import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { localizeDate } from 'src/utils/dateUtils';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -63,6 +64,7 @@ const query = graphql(
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
   searchColumns: ['name', 'cultivar.display_name'],
+  foreignColumns: ['cultivar.display_name'],
 });
 
 const { data, fetching, error } = await useQuery({
@@ -86,7 +88,7 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'cultivar.name',
+    name: 'cultivar',
     label: t('pollen.fields.cultivarName'),
     align: 'left' as const,
     field: (row: Pollen) => row.cultivar?.display_name,
@@ -100,24 +102,20 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
+    name: 'note',
+    label: t('entity.commonColumns.note'),
     align: 'left' as const,
-    field: (row: Pollen) => (row.modified ? d(row.modified, 'ymdHis') : null),
+    field: 'note',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: Pollen) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 3),
+  defaultValue: columns.map((column) => column.name),
   replace: true,
 });
 

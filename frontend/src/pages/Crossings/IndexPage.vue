@@ -27,8 +27,9 @@ import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { crossingFragment } from 'src/components/Crossing/crossingFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -65,7 +66,12 @@ const query = graphql(
   [crossingFragment, cultivarFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+  foreignColumns: [
+    'mother_cultivar.display_name',
+    'father_cultivar.display_name',
+  ],
+});
 
 const { data, fetching, error } = await useQuery({
   query,
@@ -88,38 +94,34 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'motherCultivar',
+    name: 'mother_cultivar',
     label: t('crossings.fields.motherCultivar'),
     align: 'left' as const,
     field: (row: Crossing) => row.mother_cultivar?.display_name,
     sortable: true,
   },
   {
-    name: 'fatherCultivar',
+    name: 'father_cultivar',
     label: t('crossings.fields.fatherCultivar'),
     align: 'left' as const,
     field: (row: Crossing) => row.father_cultivar?.display_name,
     sortable: true,
   },
   {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
+    name: 'note',
+    label: t('entity.commonColumns.note'),
     align: 'left' as const,
-    field: (row: Crossing) => (row.modified ? d(row.modified, 'ymdHis') : null),
+    field: 'note',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: Crossing) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
+  defaultValue: columns.map((column) => column.name),
   replace: true,
 });
 

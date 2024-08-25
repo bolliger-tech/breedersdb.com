@@ -94,6 +94,36 @@
     >
       <slot :name="`body-cell-${slotName}`" v-bind="slotProps"></slot>
     </template>
+
+    <template
+      v-for="col in allColumns
+        .filter((c) => c.maxWidth || c.timestamp)
+        .filter(
+          (col) =>
+            !bodyCellSlotNames.find((s) => s === `body-cell-${col.name}`),
+        )"
+      :key="col.name"
+      #[`body-cell-${col.name}`]="cellProps"
+    >
+      <q-td
+        :props="cellProps"
+        :style="col.maxWidth && `max-width: ${col.maxWidth}`"
+      >
+        <div
+          v-if="col.ellipsis"
+          style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+        >
+          {{ cellProps.value }}
+        </div>
+        <template v-else-if="col.timestamp && cellProps.value">
+          {{ d(cellProps.value, 'Ymd') }}<br />
+          <span class="text-muted">{{ d(cellProps.value, 'His') }}</span>
+        </template>
+        <template v-else>
+          {{ cellProps.value }}
+        </template>
+      </q-td>
+    </template>
   </q-table>
 </template>
 
@@ -120,7 +150,11 @@ export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
 interface EntityListTablePropsWithoutModel {
   rows: QTableProps['rows'];
   loading?: boolean;
-  allColumns: QTableColumn[];
+  allColumns: (Omit<QTableColumn, 'sort'> & {
+    maxWidth?: string;
+    ellipsis?: boolean;
+    timestamp?: boolean;
+  })[];
   dataIsFresh?: boolean;
   headerHeight?: string;
 }
@@ -153,7 +187,7 @@ const bodyCellSlotNames = computed(() =>
     .map((slotName) => slotName.slice(10)),
 );
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const draggedColumn = ref<string | null>(null);
 

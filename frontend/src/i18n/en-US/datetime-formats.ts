@@ -25,4 +25,9 @@ export const datetimeFormats = {
     minute: '2-digit',
     second: '2-digit',
   },
+  His: {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  },
 } as const;

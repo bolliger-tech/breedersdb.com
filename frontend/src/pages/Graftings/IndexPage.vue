@@ -19,15 +19,16 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
-import { ResultOf, graphql } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { graftingFragment } from 'src/components/Grafting/graftingFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -67,8 +68,6 @@ const graftingsCount = computed(
   () => data.value?.graftings_aggregate?.aggregate?.count || 0,
 );
 
-type Grafting = ResultOf<typeof query>['graftings'][0];
-
 const columns = [
   {
     name: 'name',
@@ -77,25 +76,12 @@ const columns = [
     field: 'name',
     sortable: true,
   },
-  {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
-    align: 'left' as const,
-    field: (row: Grafting) => (row.modified ? d(row.modified, 'ymdHis') : null),
-    sortable: true,
-  },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: Grafting) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
+  defaultValue: columns.map((column) => column.name),
   replace: true,
 });
 

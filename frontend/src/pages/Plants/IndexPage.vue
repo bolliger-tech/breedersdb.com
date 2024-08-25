@@ -32,8 +32,10 @@ import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import { useRouter } from 'vue-router';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { localizeDate } from 'src/utils/dateUtils';
 
-const { t, d } = useI18n();
+const { t, n } = useI18n();
 
 const query = graphql(
   `
@@ -148,7 +150,7 @@ const plantsCount = computed(
 
 type Plant = ResultOf<typeof query>['plants'][0];
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'label_id',
     label: t('plants.fields.labelId'),
@@ -185,6 +187,13 @@ const columns = [
     sortable: true,
   },
   {
+    name: 'orchard',
+    label: t('orchards.title', 1),
+    align: 'left' as const,
+    field: (row: Plant) => row.plant_row?.orchard?.name,
+    sortable: true,
+  },
+  {
     name: 'plant_row',
     label: t('plants.fields.plantRow'),
     align: 'left' as const,
@@ -192,17 +201,64 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: Plant) => d(row.created as string, 'ymdHis'),
+    name: 'distance_plant_row_start',
+    label: t('plants.fields.distancePlantRowStart'),
+    align: 'right' as const,
+    field: 'distance_plant_row_start',
+    format: (v: Plant['distance_plant_row_start']) => (v ? n(v) : ''),
     sortable: true,
   },
-];
+  {
+    name: 'date_grafted',
+    label: t('plants.fields.dateGrafted'),
+    align: 'left' as const,
+    field: 'date_grafted',
+    sortable: true,
+    format: (v: Plant['date_grafted']) => localizeDate(v) || '',
+  },
+  {
+    name: 'date_planted',
+    label: t('plants.fields.datePlanted'),
+    align: 'left' as const,
+    field: 'date_planted',
+    sortable: true,
+    format: (v: Plant['date_planted']) => localizeDate(v) || '',
+  },
+  {
+    name: 'date_labeled',
+    label: t('plants.fields.dateLabeled'),
+    align: 'left' as const,
+    field: 'date_labeled',
+    sortable: true,
+    format: (v: Plant['date_labeled']) => localizeDate(v) || '',
+  },
+  ...(subset.value === 'disabled'
+    ? [
+        {
+          name: 'date_eliminted',
+          label: t('plants.fields.dateEliminated'),
+          align: 'left' as const,
+          field: 'date_eliminated',
+          sortable: true,
+          format: (v: Plant['date_eliminated']) => localizeDate(v) || '',
+        },
+      ]
+    : []),
+  {
+    name: 'note',
+    label: t('entity.commonColumns.note'),
+    align: 'left' as const,
+    field: 'note',
+    sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
+  },
+  ...useTimestampColumns(),
+]);
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 5),
+  defaultValue: columns.value.map((column) => column.name),
   replace: true,
 });
 

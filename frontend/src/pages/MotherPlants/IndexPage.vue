@@ -29,8 +29,9 @@ import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { localizeDate } from 'src/utils/dateUtils';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 
-const { t, d } = useI18n();
+const { t, n } = useI18n();
 
 const query = graphql(
   `
@@ -124,6 +125,7 @@ const columns = [
     label: t('motherPlants.fields.numbFlowers'),
     align: 'left' as const,
     field: 'numb_flowers',
+    format: (value: number | null) => (value ? n(value) : ''),
     sortable: true,
   },
   {
@@ -131,6 +133,7 @@ const columns = [
     label: t('motherPlants.fields.numbFruits'),
     align: 'left' as const,
     field: 'numb_fruits',
+    format: (value: number | null) => (value ? n(value) : ''),
     sortable: true,
   },
   {
@@ -146,28 +149,24 @@ const columns = [
     label: t('motherPlants.fields.numbSeeds'),
     align: 'left' as const,
     field: 'numb_seeds',
+    format: (value: number | null) => (value ? n(value) : ''),
     sortable: true,
   },
   {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
+    name: 'note',
+    label: t('entity.commonColumns.note'),
     align: 'left' as const,
-    field: (row: MotherPlant) =>
-      row.modified ? d(row.modified, 'ymdHis') : null,
+    field: 'note',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: MotherPlant) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({
   key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 10),
+  defaultValue: columns.map((column) => column.name),
   replace: true,
 });
 

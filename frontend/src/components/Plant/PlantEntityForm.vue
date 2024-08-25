@@ -39,7 +39,7 @@
     :ref="(el: InputRef) => (refs.rootstockId = el)"
     v-model="data.rootstock_id"
   />
-  <PlantGraftingSelect
+  <GraftingSelect
     :ref="(el: InputRef) => (refs.graftingId = el)"
     v-model="data.grafting_id"
   />
@@ -87,7 +87,7 @@ import PlantPlantRowSelect from './PlantPlantRowSelect.vue';
 import PlantLabelIdEdit from './PlantLabelIdEdit.vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import PlantRootstockSelect from './PlantRootstockSelect.vue';
-import PlantGraftingSelect from './PlantGraftingSelect.vue';
+import GraftingSelect from 'src/components/Grafting/GraftingSelect.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';

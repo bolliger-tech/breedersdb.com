@@ -76,7 +76,7 @@ const modelValue = defineModel<number | null>({ required: true });
 
 const search = ref(modelValue.value?.toString() || '');
 
-const where = computed(() => {
+const variables = computed(() => {
   const or: UseQueryArgs<typeof query>['variables'] = [
     { label_id: { _eq: `${plantLabelIdUtils.zeroFill(search.value)}` } },
   ];
@@ -85,7 +85,7 @@ const where = computed(() => {
     or.push({ id: { _eq: props.includeId } });
   }
 
-  return { _or: or };
+  return { where: { _or: or } };
 });
 
 const query = graphql(`
@@ -107,7 +107,7 @@ const query = graphql(`
 
 const { data, error, fetching, executeQuery } = useQuery({
   query,
-  variables: { where },
+  variables,
   pause: !props.includeId,
   requestPolicy: 'cache-and-network',
 });

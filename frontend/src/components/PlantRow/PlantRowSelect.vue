@@ -40,11 +40,13 @@ defineExpose({
 
 const modelValue = defineModel<number | null>({ required: true });
 
-const where = computed(() => ({
-  _or: [
-    { disabled: { _eq: false } },
-    ...(props.includeId ? [{ id: { _eq: props.includeId } }] : []),
-  ],
+const variables = computed(() => ({
+  where: {
+    _or: [
+      { disabled: { _eq: false } },
+      ...(props.includeId ? [{ id: { _eq: props.includeId } }] : []),
+    ],
+  },
 }));
 
 const query = graphql(`
@@ -58,7 +60,7 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
-  variables: { where },
+  variables,
   requestPolicy: 'cache-and-network',
 });
 

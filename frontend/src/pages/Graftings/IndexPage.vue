@@ -38,7 +38,7 @@ const query = graphql(
       $orderBy: [graftings_order_by!]
       $where: graftings_bool_exp
     ) {
-      graftings_aggregate {
+      graftings_aggregate(where: $where) {
         aggregate {
           count
         }

@@ -44,7 +44,7 @@ const query = graphql(
       $LotWithOrchard: Boolean = false
       $LotWithCrossing: Boolean = false
     ) {
-      pollen_aggregate {
+      pollen_aggregate(where: $where) {
         aggregate {
           count
         }

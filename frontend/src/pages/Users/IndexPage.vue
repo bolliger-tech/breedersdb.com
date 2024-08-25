@@ -38,7 +38,7 @@ const query = graphql(
       $orderBy: [users_order_by!]
       $where: users_bool_exp
     ) {
-      users_aggregate {
+      users_aggregate(where: $where) {
         aggregate {
           count
         }

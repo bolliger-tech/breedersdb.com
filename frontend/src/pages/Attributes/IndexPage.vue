@@ -58,7 +58,7 @@ const query = graphql(
       $orderBy: [attributes_order_by!]
       $where: attributes_bool_exp
     ) {
-      attributes_aggregate {
+      attributes_aggregate(where: $where) {
         aggregate {
           count
         }

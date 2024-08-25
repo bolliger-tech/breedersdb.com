@@ -44,7 +44,7 @@ const query = graphql(
       $withMotherPlants: Boolean! = false
       $withPlantRows: Boolean! = false
     ) {
-      lots_aggregate {
+      lots_aggregate(where: $where) {
         aggregate {
           count
         }

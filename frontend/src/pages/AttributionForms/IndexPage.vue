@@ -54,7 +54,7 @@ const query = graphql(
       $orderBy: [attribution_forms_order_by!]
       $where: attribution_forms_bool_exp
     ) {
-      attribution_forms_aggregate {
+      attribution_forms_aggregate(where: $where) {
         aggregate {
           count
         }

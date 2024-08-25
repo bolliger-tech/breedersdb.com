@@ -40,7 +40,7 @@ const query = graphql(
       $orderBy: [orchards_order_by!]
       $where: orchards_bool_exp
     ) {
-      orchards_aggregate {
+      orchards_aggregate(where: $where) {
         aggregate {
           count
         }

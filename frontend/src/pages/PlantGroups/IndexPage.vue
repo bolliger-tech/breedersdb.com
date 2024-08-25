@@ -55,7 +55,7 @@ const query = graphql(
       $LotWithOrchard: Boolean! = false
       $LotWithCrossing: Boolean! = false
     ) {
-      plant_groups_aggregate {
+      plant_groups_aggregate(where: $where) {
         aggregate {
           count
         }

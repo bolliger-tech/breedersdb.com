@@ -38,7 +38,7 @@ const query = graphql(
       $orderBy: [rootstocks_order_by!]
       $where: rootstocks_bool_exp
     ) {
-      rootstocks_aggregate {
+      rootstocks_aggregate(where: $where) {
         aggregate {
           count
         }

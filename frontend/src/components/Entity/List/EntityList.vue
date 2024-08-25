@@ -22,7 +22,9 @@
             :bg-color="inputBgColor"
             dense
             debounce="300"
+            clearable
             :placeholder="searchPlaceholder || t('entity.search')"
+            @clear="search = ''"
           >
             <template #append>
               <q-icon name="search" />

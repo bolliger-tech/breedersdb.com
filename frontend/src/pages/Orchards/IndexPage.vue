@@ -29,6 +29,7 @@ import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { orchardFragment } from 'src/components/Orchard/orchardFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
 const { t } = useI18n();
 
@@ -94,10 +95,9 @@ const columns = [
   ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 2),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'orchards',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

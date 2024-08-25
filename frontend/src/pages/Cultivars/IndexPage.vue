@@ -33,6 +33,7 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useRouter } from 'vue-router';
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
 const { t } = useI18n();
 
@@ -183,10 +184,9 @@ const columns = computed(() => [
   ...useTimestampColumns(),
 ]);
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.value.map((column) => column.name),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'cultivars',
+  defaultColumns: columns.value.map((column) => column.name),
 });
 
 watch(

@@ -22,11 +22,11 @@ import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { graftingFragment } from 'src/components/Grafting/graftingFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
 const { t } = useI18n();
 
@@ -79,10 +79,9 @@ const columns = [
   ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'graftings',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

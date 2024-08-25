@@ -41,6 +41,7 @@ import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { localizeDate } from 'src/utils/dateUtils';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
 const { t, n } = useI18n();
 
@@ -246,10 +247,9 @@ const columns = computed(() => [
   ...useTimestampColumns(),
 ]);
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.value.map((column) => column.name),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'plants',
+  defaultColumns: columns.value.map((column) => column.name),
 });
 
 watch(

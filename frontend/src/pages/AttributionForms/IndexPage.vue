@@ -43,6 +43,7 @@ import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { attributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
 const { t } = useI18n();
 
@@ -124,10 +125,9 @@ const columns = [
   ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'attributionForms',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

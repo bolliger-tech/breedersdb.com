@@ -47,6 +47,7 @@ import {
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
 const { t } = useI18n();
 
@@ -157,10 +158,9 @@ const columns = [
   ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'attributes',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

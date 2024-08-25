@@ -30,13 +30,13 @@ import { useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
 import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { localizeDate } from 'src/utils/dateUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
 const { t, n } = useI18n();
 
@@ -172,10 +172,9 @@ const columns = [
   ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'motherPlants',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

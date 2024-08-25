@@ -16,7 +16,7 @@
       <div class="row">
         <div class="col">
           <q-input
-            v-model="search"
+            v-model.trim="search"
             class="full-width"
             outlined
             :bg-color="inputBgColor"

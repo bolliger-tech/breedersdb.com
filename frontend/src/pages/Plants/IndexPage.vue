@@ -16,7 +16,13 @@
       :view-entity-path-getter="(id) => `/plants/${id}`"
       :has-qr-scanner="true"
       @scanned-qr="onScannedQr"
-    />
+    >
+      <template #body-cell-label_id="cellProps">
+        <q-td :props="cellProps">
+          <EntityLabelId :label-id="cellProps.value" entity-type="plant" />
+        </q-td>
+      </template>
+    </EntityContainer>
   </PageLayout>
 </template>
 
@@ -34,6 +40,7 @@ import { useRouter } from 'vue-router';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { localizeDate } from 'src/utils/dateUtils';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 
 const { t, n } = useI18n();
 

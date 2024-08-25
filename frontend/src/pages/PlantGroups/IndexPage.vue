@@ -16,7 +16,13 @@
       :view-entity-path-getter="(id) => `/groups/${id}`"
       :has-qr-scanner="true"
       @scanned-qr="onScannedQr"
-    />
+    >
+      <template #body-cell-label_id="cellProps">
+        <q-td :props="cellProps">
+          <EntityLabelId :label-id="cellProps.value" entity-type="plantGroup" />
+        </q-td>
+      </template>
+    </EntityContainer>
   </PageLayout>
 </template>
 
@@ -32,6 +38,7 @@ import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useRouter } from 'vue-router';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 
 const { t } = useI18n();
 

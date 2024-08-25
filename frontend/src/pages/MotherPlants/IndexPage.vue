@@ -14,7 +14,13 @@
       :view-entity-path-getter="(id) => `/mother-plants/${id}`"
       :has-qr-scanner="true"
       @scanned-qr="(code) => (search = code)"
-    />
+    >
+      <template #body-cell-plant="cellProps">
+        <q-td :props="cellProps">
+          <EntityLabelId :label-id="cellProps.value" entity-type="plant" />
+        </q-td>
+      </template>
+    </EntityContainer>
   </PageLayout>
 </template>
 
@@ -30,6 +36,7 @@ import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragm
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { localizeDate } from 'src/utils/dateUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 
 const { t, n } = useI18n();
 
@@ -68,7 +75,8 @@ const query = graphql(
 );
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
-  searchColumns: ['name', 'crossing.name', 'plant.label_id'],
+  searchColumns: ['name', 'crossing', 'plant'],
+  foreignColumns: ['crossing.name', 'plant.label_id', 'pollen.name'],
 });
 
 const { data, fetching, error } = await useQuery({
@@ -92,14 +100,14 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'crossing.name',
+    name: 'crossing',
     label: t('motherPlants.fields.crossing'),
     align: 'left' as const,
     field: (row: MotherPlant) => row.crossing?.name,
     sortable: true,
   },
   {
-    name: 'plant.label_id',
+    name: 'plant',
     label: t('plants.fields.labelId'),
     align: 'left' as const,
     field: (row: MotherPlant) => row.plant?.label_id,
@@ -114,7 +122,7 @@ const columns = [
     format: (v: MotherPlant['date_impregnated']) => localizeDate(v) || '',
   },
   {
-    name: 'pollen.name',
+    name: 'pollen',
     label: t('motherPlants.fields.pollen'),
     align: 'left' as const,
     field: (row: MotherPlant) => row.pollen?.name,

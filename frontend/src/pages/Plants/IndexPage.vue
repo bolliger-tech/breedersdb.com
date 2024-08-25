@@ -32,7 +32,7 @@ import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
 import { computed, watch, UnwrapRef, ref, nextTick } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { usePagination } from 'src/components/Entity/List/usePagination';
+import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
@@ -71,12 +71,6 @@ const query = graphql(
   [plantFragment],
 );
 
-const { queryArg: search } = useQueryArg<string>({
-  key: 's',
-  defaultValue: '',
-  replace: true,
-});
-
 const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
   key: 'tab',
   defaultValue: 'active',
@@ -88,26 +82,18 @@ const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
   { value: 'all', label: t('entity.tabs.all') },
 ];
 
-const { pagination } = usePagination({
-  sortBy: 'label_id',
-  descending: false,
-  page: 1,
-  rowsPerPage: 100,
-  rowsNumber: 0,
+const {
+  search,
+  pagination,
+  variables: _variables,
+} = useEntityIndexHooks<typeof query>({
+  defaultSortBy: 'label_id',
+  searchColumns: ['cultivar_name', 'label_id'], // ! is where overridden below
+  foreignColumns: ['orchard', 'rootstock', 'grafting', 'plant_row'],
+  subset,
 });
 
-const orderBy = computed(() => {
-  const order = pagination.value.descending ? 'desc' : 'asc';
-  const column = pagination.value.sortBy;
-
-  if (['rootstock', 'grafting', 'plant_row'].includes(column)) {
-    return { [column]: { name: order } };
-  }
-
-  return { [column]: order };
-});
-
-const where = computed(() => {
+const variables = computed(() => {
   const where: UseQueryArgs<typeof query>['variables'] = { _and: [] };
 
   if (subset.value === 'active') {
@@ -135,15 +121,12 @@ const where = computed(() => {
 
     where._and.push(or);
   }
-  return where;
-});
 
-const variables = computed(() => ({
-  limit: pagination.value.rowsPerPage,
-  offset: (pagination.value.page - 1) * pagination.value.rowsPerPage,
-  orderBy: [orderBy.value, { id: 'asc' }],
-  where: where.value,
-}));
+  return {
+    ..._variables.value,
+    where,
+  };
+});
 
 const { data, fetching, error } = await useQuery({
   query,

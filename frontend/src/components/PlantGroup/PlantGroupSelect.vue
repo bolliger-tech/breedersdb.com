@@ -22,11 +22,11 @@ import EntitySelect, {
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 
-export interface OrchardSelectProps {
+export interface PlantGroupSelectProps {
   required?: boolean;
   includeId?: number;
 }
-const props = defineProps<OrchardSelectProps>();
+const props = defineProps<PlantGroupSelectProps>();
 
 const plantGroupRef = ref<EntitySelectInstance<{
   id: number;

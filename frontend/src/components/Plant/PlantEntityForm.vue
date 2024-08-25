@@ -11,7 +11,7 @@
     required
     :include-id="props.plant.plant_group?.id"
   />
-  <PlantPlantRowSelect
+  <PlantRowSelect
     :ref="(el: InputRef) => (refs.plantRowId = el)"
     v-model="data.plant_row_id"
   />
@@ -85,7 +85,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 import PlantGroupSelect from 'src/components/PlantGroup/PlantGroupSelect.vue';
-import PlantPlantRowSelect from './PlantPlantRowSelect.vue';
+import PlantRowSelect from 'src/components/PlantRow/PlantRowSelect.vue';
 import PlantLabelIdEdit from './PlantLabelIdEdit.vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import PlantRootstockSelect from './PlantRootstockSelect.vue';

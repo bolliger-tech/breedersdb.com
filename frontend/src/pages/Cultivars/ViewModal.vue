@@ -26,7 +26,7 @@
 
       <h3 class="q-mb-md">{{ t('plantGroups.title', 2) }}</h3>
       <EntityViewRelatedEntityTable
-        entity-key="plantGroupss"
+        entity-key="plantGroups"
         :rows="cultivar.plant_groups || []"
         row-key="id"
         :columns="plantGroupColumns"
@@ -156,14 +156,6 @@ const plantGroupColumns = [
     label: t('plantGroups.fields.labelId'),
     align: 'left' as const,
     field: 'label_id',
-    sortable: true,
-  },
-  {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
-    align: 'left' as const,
-    field: (row: PlantGroup) =>
-      row.modified ? d(row.modified, 'ymdHis') : null,
     sortable: true,
   },
   {

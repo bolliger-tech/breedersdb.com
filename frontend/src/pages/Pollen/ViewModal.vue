@@ -15,6 +15,17 @@
         <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ pollen.name }}
         </EntityViewTableRow>
+        <EntityViewTableRow
+          v-if="pollen.cultivar"
+          :label="t('cultivars.title', 1)"
+          render-empty
+        >
+          <EntityName
+            :cultivar="pollen.cultivar"
+            :lot="pollen.cultivar.lot"
+            :crossing="pollen.cultivar.lot?.crossing"
+          />
+        </EntityViewTableRow>
         <EntityViewTableRow :label="t('pollen.fields.dateHarvested')">
           {{ localizeDate(pollen.date_harvested) }}
         </EntityViewTableRow>
@@ -65,7 +76,10 @@
               :to="`/plants/${cellProps.row.plant?.id}`"
               class="undecorated-link"
             >
-              {{ cellProps.row.plant?.label_id }}
+              <EntityLabelId
+                :label-id="cellProps.row.plant?.label_id"
+                entity-type="plant"
+              />
             </RouterLink>
           </q-td>
         </template>
@@ -107,6 +121,8 @@ import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityName from 'src/components/Entity/EntityName.vue';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -115,9 +131,9 @@ const query = graphql(
     query Pollen(
       $id: Int!
       $PollenWithCultivar: Boolean = true
-      $CultivarWithLot: Boolean = false
+      $CultivarWithLot: Boolean = true
       $LotWithOrchard: Boolean = false
-      $LotWithCrossing: Boolean = false
+      $LotWithCrossing: Boolean = true
     ) {
       pollen_by_pk(id: $id) {
         ...pollenFragment

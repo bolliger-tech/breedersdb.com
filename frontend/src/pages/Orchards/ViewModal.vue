@@ -45,6 +45,28 @@
           </q-td>
         </template>
       </EntityViewRelatedEntityTable>
+
+      <h3 class="q-mb-md">
+        {{ t('lots.title', 2) }}
+      </h3>
+      <EntityViewRelatedEntityTable
+        entity-key="lots"
+        :rows="orchard.lots || []"
+        row-key="id"
+        :columns="lotsColumns"
+        default-sort-by="display_name"
+      >
+        <template #body-cell-display_name="cellProps">
+          <q-td key="display_name" :props="cellProps">
+            <RouterLink
+              :to="`/lots/${cellProps.row.id}`"
+              class="undecorated-link"
+            >
+              {{ cellProps.row.display_name }}
+            </RouterLink>
+          </q-td>
+        </template>
+      </EntityViewRelatedEntityTable>
     </template>
 
     <template #action-left>
@@ -69,7 +91,7 @@ import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import OrchardButtonDelete from 'src/components/Orchard/OrchardButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { graphql } from 'src/graphql';
+import { graphql, ResultOf } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { orchardFragment } from 'src/components/Orchard/orchardFragment';
@@ -83,21 +105,29 @@ import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import { lotFragment } from 'src/components/Lot/lotFragment';
 
 const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query Orchard($id: Int!) {
+    query Orchard(
+      $id: Int!
+      $LotWithOrchard: Boolean = false
+      $LotWithCrossing: Boolean = false
+    ) {
       orchards_by_pk(id: $id) {
         ...orchardFragment
         plant_rows(where: { disabled: { _eq: false } }) {
           ...plantRowFragment
         }
+        lots {
+          ...lotFragment
+        }
       }
     }
   `,
-  [orchardFragment, plantRowFragment],
+  [orchardFragment, plantRowFragment, lotFragment],
 );
 
 const { data, error, fetching } = useQuery({
@@ -107,7 +137,7 @@ const { data, error, fetching } = useQuery({
 
 const orchard = computed(() => data.value?.orchards_by_pk);
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -129,6 +159,14 @@ const plantRowsColumns = [
     sort: (a: string, b: string) => localizedSortPredicate(a, b),
   },
   {
+    name: 'date_created',
+    label: t('plantRows.fields.dateCreated'),
+    field: 'date_created',
+    align: 'left' as const,
+    sortable: true,
+    format: (val: string | Date | null) => localizeDate(val),
+  },
+  {
     name: 'date_elimitated',
     label: t('plantRows.fields.dateEliminated'),
     field: 'date_elimitated',
@@ -136,13 +174,44 @@ const plantRowsColumns = [
     sortable: true,
     format: (val: string | Date | null) => localizeDate(val),
   },
+];
+
+type Lot = NonNullable<
+  NonNullable<ResultOf<typeof query>['orchards_by_pk']>['lots']
+>[0];
+
+const lotsColumns = [
   {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    field: 'created',
+    name: 'display_name',
+    label: t('entity.commonColumns.name'),
+    field: 'display_name',
     align: 'left' as const,
     sortable: true,
-    format: (val: string | Date) => d(val, 'ymdHis'),
+    sort: (a: Lot['display_name'], b: Lot['display_name']) =>
+      localizedSortPredicate(a, b),
+  },
+  {
+    name: 'date_sowed',
+    label: t('lots.fields.dateSowed'),
+    align: 'left' as const,
+    field: 'date_sowed',
+    format: (value: string | null) => localizeDate(value) || '',
+    sortable: true,
+  },
+  {
+    name: 'date_planted',
+    label: t('lots.fields.datePlanted'),
+    align: 'left' as const,
+    field: 'date_planted',
+    format: (value: string | null) => localizeDate(value) || '',
+    sortable: true,
+  },
+  {
+    name: 'plot',
+    label: t('lots.fields.plot'),
+    align: 'left' as const,
+    field: 'plot',
+    sortable: true,
   },
 ];
 </script>

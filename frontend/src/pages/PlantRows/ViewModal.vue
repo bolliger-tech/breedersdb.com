@@ -23,6 +23,9 @@
             {{ plantRow.orchard.name }}
           </RouterLink>
         </EntityViewTableRow>
+        <EntityViewTableRow :label="t('plantRows.fields.dateCreated')">
+          {{ localizeDate(plantRow.date_created) }}
+        </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.dateDisabled')">
           {{ localizeDate(plantRow.date_eliminated) }}
         </EntityViewTableRow>
@@ -125,6 +128,9 @@ const query = graphql(
         plants(where: { disabled: { _eq: false } }) {
           id
           label_id
+          distance_plant_row_start
+          date_planted
+          date_eliminated
           plant_group {
             ...plantGroupSegmentsFragment
           }
@@ -142,7 +148,7 @@ const { data, error, fetching } = useQuery({
 
 const plantRow = computed(() => data.value?.plant_rows_by_pk);
 
-const { t } = useI18n();
+const { t, n } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -176,6 +182,30 @@ const plantsColumns = [
     sortable: true,
     sort: (a: Plant['plant_group'], b: Plant['plant_group']) =>
       localizedSortPredicate(a.display_name, b.display_name),
+  },
+  {
+    name: 'distance_plant_row_start',
+    label: t('plants.fields.distancePlantRowStart'),
+    align: 'right' as const,
+    field: 'distance_plant_row_start',
+    format: (v: Plant['distance_plant_row_start']) => (v ? n(v) : ''),
+    sortable: true,
+  },
+  {
+    name: 'date_planted',
+    label: t('plants.fields.datePlanted'),
+    align: 'left' as const,
+    field: 'date_planted',
+    sortable: true,
+    format: (v: Plant['date_planted']) => localizeDate(v) || '',
+  },
+  {
+    name: 'date_eliminted',
+    label: t('plants.fields.dateEliminated'),
+    align: 'left' as const,
+    field: 'date_eliminated',
+    sortable: true,
+    format: (v: Plant['date_eliminated']) => localizeDate(v) || '',
   },
 ];
 </script>

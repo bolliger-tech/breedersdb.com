@@ -35,6 +35,11 @@
           :created="crossing.created"
           :modified="crossing.modified"
         />
+        <EntityViewTableRow v-if="crossing.note">
+          <strong>{{ t('entity.commonColumns.note') }}</strong>
+          <br />
+          <span style="white-space: pre-line">{{ crossing.note }}</span>
+        </EntityViewTableRow>
       </EntityViewTable>
 
       <h3 class="q-mb-md">
@@ -198,6 +203,38 @@ const lotsColumns = [
     sortable: true,
     sort: (a: Lot['display_name'], b: Lot['display_name']) =>
       localizedSortPredicate(a, b),
+  },
+  {
+    name: 'date_sowed',
+    label: t('lots.fields.dateSowed'),
+    align: 'left' as const,
+    field: 'date_sowed',
+    format: (value: string | null) => localizeDate(value) || '',
+    sortable: true,
+  },
+  {
+    name: 'date_planted',
+    label: t('lots.fields.datePlanted'),
+    align: 'left' as const,
+    field: 'date_planted',
+    format: (value: string | null) => localizeDate(value) || '',
+    sortable: true,
+  },
+  {
+    name: 'plot',
+    label: t('lots.fields.plot'),
+    align: 'left' as const,
+    field: 'plot',
+    sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
+  },
+  {
+    name: 'orchard',
+    label: t('plantRows.fields.orchard'),
+    align: 'left' as const,
+    field: (row: Lot) => row.orchard?.name,
+    sortable: true,
   },
 ];
 

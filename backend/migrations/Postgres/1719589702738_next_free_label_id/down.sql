@@ -1,1 +1,0 @@
-drop function if exists plants_next_free_label_id(text);

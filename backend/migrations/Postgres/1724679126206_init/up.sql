@@ -1,5 +1,6 @@
 create extension if not exists postgis;
 create extension if not exists pg_trgm;
+create extension if not exists citext;
 
 create or replace function modified_column() returns trigger as
 $$
@@ -53,6 +54,7 @@ create table crossings
     name               varchar(8)               not null unique check ( name ~ '^[-_\w\d]{1,8}$' ),
     mother_cultivar_id int, -- constraint is added after table cultivars is created: default null references cultivars on delete set null,
     father_cultivar_id int, -- constraint is added after table cultivars is created: default null references cultivars on delete set null,
+    is_variety         boolean                  not null default false,
     note               varchar(2047),
     created            timestamp with time zone not null default now(),
     modified           timestamp with time zone
@@ -62,6 +64,9 @@ create index on crossings (name);
 create index on crossings using gin (name gin_trgm_ops);
 create index on crossings (mother_cultivar_id);
 create index on crossings (father_cultivar_id);
+-- Add partial boolean index as only a small subset of rows will have is_variety = true
+-- See https://stackoverflow.com/a/42972924 for more information
+create index on crossings (is_variety) where is_variety;
 create index on crossings (created);
 
 create trigger update_crossings_modified
@@ -105,10 +110,11 @@ create table lots
 (
     id                     integer primary key generated always as identity,
     crossing_id            int                      not null references crossings,
+    is_variety             boolean                  not null default false,
     name_segment           varchar(3)               not null check ( name_segment ~ '^(\d{2}[A-Z]|000)$' ),
     full_name              varchar(12)              not null unique,
     name_override          varchar(25) unique check ( name_override ~ '^[^\n\.]{1,25}$' ),
-    display_name           varchar(25) generated always as ( coalesce(name_override, full_name) ) stored unique,
+    display_name           varchar(25)              not null generated always as ( coalesce(name_override, full_name) ) stored unique,
     date_sowed             date,
     numb_seeds_sowed       int,
     numb_seedlings_grown   int,
@@ -122,10 +128,12 @@ create table lots
     modified               timestamp with time zone
 );
 
+comment on column lots.is_variety is 'Set by triggers.';
 comment on column lots.full_name is 'Set by triggers.';
 comment on column lots.display_name is 'Generated.';
 
 create index on lots (crossing_id);
+create index on lots (is_variety) where is_variety;
 create index on lots (full_name);
 create index on lots using gin (full_name gin_trgm_ops);
 create index on lots (name_override);
@@ -178,6 +186,36 @@ begin
 end;
 $$ language plpgsql;
 
+-- update is_variety on lots when crossing is updated
+create or replace function crossings_update_is_variety() returns trigger as
+$$
+begin
+    update lots set is_variety = new.is_variety where crossing_id = new.id;
+    return new;
+end;
+$$ language plpgsql;
+
+-- update is_variety on lots when crossing_id is updated
+create or replace function lots_set_is_variety() returns trigger as
+$$
+begin
+    new.is_variety := (select c.is_variety from crossings c where c.id = new.crossing_id);
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger set_is_variety
+    before insert or update of crossing_id, is_variety
+    on lots
+    for each row
+execute function lots_set_is_variety();
+
+create trigger update_is_variety
+    after update of is_variety
+    on crossings
+    for each row
+execute function crossings_update_is_variety();
+
 create trigger update_full_name
     after update of name
     on crossings
@@ -188,22 +226,24 @@ create table cultivars
 (
     id            integer primary key generated always as identity,
     lot_id        int                      not null references lots,
+    is_variety    boolean                  not null default false,
     name_segment  varchar(25)              not null check ( name_segment ~ '^[-_\w\d]{1,25}$' ),
     full_name     varchar(51)              not null unique,
     name_override varchar(51) unique check ( name_override ~ '^[^\n\.]{1,51}$' ),
-    display_name  varchar(51) generated always as ( coalesce(name_override, full_name) ) stored unique,
-    acronym       varchar(10),
+    display_name  varchar(51)              not null generated always as ( coalesce(name_override, full_name) ) stored unique,
+    acronym       varchar(8) unique check (acronym ~ '^[-_\w\d]{1,8}$'),
     breeder       varchar(255),
-    registration  varchar(255),
     note          varchar(2047),
     created       timestamp with time zone not null default now(),
     modified      timestamp with time zone
 );
 
+comment on column cultivars.is_variety is 'Set by triggers.';
 comment on column cultivars.full_name is 'Set by triggers.';
 comment on column cultivars.display_name is 'Generated.';
 
 create index on cultivars (lot_id);
+create index on cultivars (is_variety) where is_variety;
 create index on cultivars (full_name);
 create index on cultivars using gin (full_name gin_trgm_ops);
 create index on cultivars (name_override);
@@ -211,6 +251,7 @@ create index on cultivars using gin (name_override gin_trgm_ops);
 create index on cultivars (display_name);
 create index on cultivars using gin (display_name gin_trgm_ops);
 create index on cultivars (acronym);
+create index on cultivars using gin (acronym gin_trgm_ops);
 create unique index on cultivars (lot_id, name_segment);
 create index on cultivars (created);
 
@@ -221,10 +262,10 @@ create trigger update_cultivars_modified
 execute function modified_column();
 
 create trigger trim_cultivars
-    before insert or update of name_segment, name_override, acronym, breeder, registration, note
+    before insert or update of name_segment, name_override, acronym, breeder, note
     on cultivars
     for each row
-execute function trim_strings('name_segment', 'name_override', 'acronym', 'breeder', 'registration', 'note');
+execute function trim_strings('name_segment', 'name_override', 'acronym', 'breeder', 'note');
 
 -- set full_name for changes on cultivars table
 create or replace function cultivars_set_full_name() returns trigger as
@@ -257,6 +298,36 @@ create trigger update_cultivars_full_name
     on lots
     for each row
 execute function lots_update_full_name();
+
+-- update is_variety on cultivars when lot is updated
+create or replace function lots_update_is_variety() returns trigger as
+$$
+begin
+    update cultivars set is_variety = new.is_variety where lot_id = new.id;
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger update_is_variety
+    after update of is_variety
+    on lots
+    for each row
+execute function lots_update_is_variety();
+
+-- update is_variety on cultivars when lot_id is updated
+create or replace function cultivars_set_is_variety() returns trigger as
+$$
+begin
+    new.is_variety := (select l.is_variety from lots l where l.id = new.lot_id);
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger set_is_variety
+    before insert or update of lot_id, is_variety
+    on cultivars
+    for each row
+execute function cultivars_set_is_variety();
 
 -- add foreign key constraint to crossings table
 alter table crossings
@@ -304,7 +375,7 @@ create table plant_groups
     name_override varchar(77) unique check ( name_override ~ '^[^\n\.]{1,77}$' ),
     -- the second argument of coalesce is actually the full_name,
     -- but as it is not allowed to reference a generated column in the same table, we repeat ourselves here.
-    display_name  varchar(77) generated always as ( coalesce(name_override, cultivar_name || '.' || name_segment) ) stored unique,
+    display_name  varchar(77)              not null generated always as ( coalesce(name_override, cultivar_name || '.' || name_segment) ) stored unique,
     note          varchar(2047),
     disabled      boolean                  not null default false,
     created       timestamp with time zone not null default now(),
@@ -609,6 +680,47 @@ create trigger update_plant_group_name
     for each row
 execute function plant_groups_update_plant_group_and_cultivar_name();
 
+create or replace function plants_next_free_label_id(input_label_id text) returns setof plants as
+$$
+declare
+    plant_cursor no scroll cursor for select *
+                                      from plants
+                                      where label_id ~ '^[[:digit:]]+$'
+                                        and label_id::int >= input_label_id::int
+                                      order by label_id;
+    plant              plants%ROWTYPE;
+    new_plant          plants%ROWTYPE;
+    previous           int;
+    first              boolean := true;
+    input_label_id_int int;
+begin
+    if (input_label_id !~ '^[[:digit:]]+$') then
+        raise exception 'input_label_id must be a string of digits (was: %)', input_label_id;
+    end if;
+
+    input_label_id_int := input_label_id::int;
+    previous := input_label_id_int - 1;
+
+    open plant_cursor;
+    loop
+        fetch plant_cursor into plant;
+        -- if
+        -- -- we reached the end of the table -> return the MAX label_id + 1
+        -- -- or the first plant has a label_id greater than the input_label_id -> return the input_label_id
+        -- -- we found a gap in the label_id sequence -> return the lowest label_id in the gap
+        if not found or (first and plant.label_id::int > input_label_id_int) or
+           (plant.label_id::int - previous > 1) then
+            new_plant.label_id := to_char(previous + 1, 'FM00000000');
+            return query select * from unnest(array [new_plant]); -- yields to the result set
+            return; -- actually returns
+        end if;
+
+        previous := plant.label_id::int;
+        first := false;
+    end loop;
+end;
+$$ language plpgsql stable;
+
 
 create table pollen
 (
@@ -703,6 +815,27 @@ create trigger check_crossing_plant_cultivar
     for each row
 execute function check_crossing_plant_cultivar();
 
+create or replace function check_mother_cultivar_consistency() returns trigger as
+$$
+begin
+    if new.mother_cultivar_id is not null
+        and (select cultivar_id
+             from mother_plants
+                      join plants on mother_plants.plant_id = plants.id
+                      join plant_groups on plants.plant_group_id = plant_groups.id
+             where crossing_id = new.id) != new.mother_cultivar_id then
+        raise exception 'Failed to change mother cultivar: Mother plants for this crossing exist, but their plant has a different cultivar.';
+    end if;
+    return new;
+end ;
+$$ language plpgsql;
+
+create trigger check_mother_cultivar_consistency
+    before insert or update of mother_cultivar_id
+    on crossings
+    for each row
+execute function check_mother_cultivar_consistency();
+
 create or replace function check_crossing_pollen_cultivar() returns trigger as
 $$
 declare
@@ -725,6 +858,25 @@ create trigger check_crossing_pollen_cultivar
     for each row
 execute function check_crossing_pollen_cultivar();
 
+create or replace function check_father_cultivar_consistency() returns trigger as
+$$
+begin
+    if new.father_cultivar_id is not null
+        and (select cultivar_id
+             from mother_plants
+                      join pollen on mother_plants.pollen_id = pollen.id
+             where crossing_id = new.id) != new.father_cultivar_id then
+        raise exception 'Failed to change father cultivar: Mother plants for this crossing exist, but their pollen has a different cultivar.';
+    end if;
+    return new;
+end ;
+$$ language plpgsql;
+
+create trigger check_father_cultivar_consistency
+    before insert or update of father_cultivar_id
+    on crossings
+    for each row
+execute function check_father_cultivar_consistency();
 
 ------------------------------------------------------------------------------------------------------------------------
 -- ATTRIBUTES
@@ -753,7 +905,8 @@ values ('INTEGER'),
        ('TEXT'),
        ('BOOLEAN'),
        ('DATE'),
-       ('PHOTO');
+       ('PHOTO'),
+       ('RATING');
 
 
 create table attributes
@@ -761,8 +914,10 @@ create table attributes
     id              integer primary key generated always as identity,
     name            varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
     validation_rule jsonb,
+    default_value   jsonb,
     data_type       varchar(12)              not null references attribute_data_types,
     description     varchar(255),
+    legend          jsonb,
     attribute_type  varchar(12)              not null references attribute_types,
     disabled        boolean                           default false not null,
     created         timestamp with time zone not null default now(),
@@ -771,9 +926,12 @@ create table attributes
 
 comment on table attributes is '""- validation_rule"":\n'
     '""    JSONB: {min: int, max: int, step: int}"" for ""INTEGER"",\n'
+    '""           {min: int >= 0, max: int <= 9, step: 1}"" for ""RATING""\n'
     '""           {min: float|int, max: float|int, step: float|int}"" for ""FLOAT""\n'
     '""    NULL"" for other data types.\n'
-    '""- data_type"": Can''t be changed once ""attribute_values"" for this ""attribute"" exist.';
+    '""- data_type"": Can''t be changed once ""attribution_values"" for this ""attribute"" exist.\n'
+    '""- legend"": Only supported for data_type RATING\n'
+    '""- default_value"": Not supported for data_type PHOTO\n';
 
 create index on attributes (name);
 create index on attributes using gin (name gin_trgm_ops);
@@ -798,43 +956,53 @@ execute function trim_strings('name', 'description');
 create or replace function check_validation_rule() returns trigger as
 $$
 begin
+    if new.data_type in ('INTEGER', 'FLOAT', 'RATING') and
+       (new.validation_rule is null or
+        not new.validation_rule ? 'min' or
+        not new.validation_rule ? 'max' or
+        not new.validation_rule ? 'step') then
+        raise exception 'For INTEGER, RATING and FLOAT the validation rule must contain min, max and step keys with number values.';
+    end if;
+    if new.data_type in ('INTEGER', 'RATING') and
+       (new.validation_rule ->> 'min' !~ '^-?\d+$' or
+        new.validation_rule ->> 'max' !~ '^-?\d+$' or
+        new.validation_rule ->> 'step' !~ '^-?\d+$') then
+        raise exception 'For INTEGER and RATING the validation rule must contain min, max and step keys with integer values.';
+    end if;
     case new.data_type
-        when 'INTEGER' then -- check that the rule contains min, max and step keys and that all values are integers
-        if new.validation_rule is null or
-           not new.validation_rule ? 'min' or
-           not new.validation_rule ? 'max' or
-           not new.validation_rule ? 'step' or
-           new.validation_rule ->> 'min' !~ '^-?\d+$' or
-           new.validation_rule ->> 'max' !~ '^-?\d+$' or
-           new.validation_rule ->> 'step' !~ '^-?\d+$' then
-            raise exception 'For INTEGER the validation rule must contain min, max and step keys with integer values.';
-        end if;
-        if (new.validation_rule ->> 'min')::bigint < -2147483648 or
-           (new.validation_rule ->> 'min')::bigint > 2147483647 then
+        when 'INTEGER' then if (new.validation_rule ->> 'min')::bigint < -2147483648 or
+                               (new.validation_rule ->> 'min')::bigint > 2147483647 then
             raise exception 'The minimum value must be between -2147483648 and 2147483647.';
-        end if;
-        if (new.validation_rule ->> 'max')::bigint < -2147483648 or
-           (new.validation_rule ->> 'max')::bigint > 2147483647 then
-            raise exception 'The maximum value must be between -2147483648 and 2147483647.';
-        end if;
-        if (new.validation_rule ->> 'step')::bigint < 1 or (new.validation_rule ->> 'step')::bigint > 2147483647 then
-            raise exception 'The step value must be between 1 and 2147483647.';
-        end if;
-        when 'FLOAT' then -- check that the rule contains min, max and step keys and that all values are numbers
-        if new.validation_rule is null or
-           not new.validation_rule ? 'min' or
-           not new.validation_rule ? 'max' or
-           not new.validation_rule ? 'step' or
-           new.validation_rule ->> 'min' !~ '^-?\d+(\.\d+)?$' or
-           new.validation_rule ->> 'max' !~ '^-?\d+(\.\d+)?$' or
-           new.validation_rule ->> 'step' !~ '^-?\d+(\.\d+)?$' then
+                            end if;
+                            if (new.validation_rule ->> 'max')::bigint < -2147483648 or
+                               (new.validation_rule ->> 'max')::bigint > 2147483647 then
+                                raise exception 'The maximum value must be between -2147483648 and 2147483647.';
+                            end if;
+                            if (new.validation_rule ->> 'step')::bigint < 1 or
+                               (new.validation_rule ->> 'step')::bigint > 2147483647 then
+                                raise exception 'The step value must be between 1 and 2147483647.';
+                            end if;
+        when 'RATING' then if (new.validation_rule ->> 'min')::bigint < 0 or
+                              (new.validation_rule ->> 'min')::bigint > 9 then
+            raise exception 'The minimum value must be between 0 and 9.';
+                           end if;
+                           if (new.validation_rule ->> 'max')::bigint < 0 or
+                              (new.validation_rule ->> 'max')::bigint > 9 then
+                               raise exception 'The maximum value must be between 0 and 9.';
+                           end if;
+                           if (new.validation_rule ->> 'step')::bigint != 1 then
+                               raise exception 'The step value must be 1.';
+                           end if;
+        when 'FLOAT' then if new.validation_rule ->> 'min' !~ '^-?\d+(\.\d+)?$' or
+                             new.validation_rule ->> 'max' !~ '^-?\d+(\.\d+)?$' or
+                             new.validation_rule ->> 'step' !~ '^-?\d+(\.\d+)?$' then
             raise exception 'For FLOAT the validation rule must contain min, max and step keys with number values.';
         end if;
         else if new.validation_rule is not null then
             raise exception 'The validation rule must be NULL for TEXT, BOOLEAN, DATE and PHOTO.';
         end if;
         end case;
-    if new.data_type in ('INTEGER', 'FLOAT') and
+    if new.data_type in ('INTEGER', 'FLOAT', 'RATING') and
        (new.validation_rule ->> 'min')::float > (new.validation_rule ->> 'max')::float then
         raise exception 'The minimum value must be less than or equal to the maximum value.';
     end if;
@@ -848,11 +1016,109 @@ create trigger check_validation_rule
     for each row
 execute function check_validation_rule();
 
--- make data_type immutable as soon as attribute_values exist
+create or replace function check_legend() returns trigger as
+$$
+declare
+    rating_steps int;
+begin
+    -- the legend can always be NULL
+    if new.legend is null then
+        return new;
+    end if;
+
+    -- the legend must be NULL for data types other than RATING
+    if new.data_type != 'RATING' and new.legend is not null then
+        raise exception 'The legend must be NULL for data types other than RATING.';
+    end if;
+
+    -- the legend must be an array with the same number of items as the rating scale
+    if new.data_type = 'RATING' and new.legend is not null then
+        if not jsonb_typeof(new.legend) = 'array' then
+            raise exception 'The legend must be an array.';
+        end if;
+        select (new.validation_rule ->> 'max')::int - (new.validation_rule ->> 'min')::int + 1 into rating_steps;
+        if jsonb_array_length(new.legend) != rating_steps then
+            raise exception 'The legend must have % items.', rating_steps;
+        end if;
+        for i in 0..(jsonb_array_length(new.legend) - 1)
+            loop
+                if not jsonb_typeof(new.legend -> i) = 'string' then
+                    raise exception 'The legend must contain only strings.';
+                end if;
+            end loop;
+    end if;
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger check_legend
+    before insert or update of data_type, legend, validation_rule
+    on attributes
+    for each row
+execute function check_legend();
+
+create or replace function check_default_value() returns trigger as
+$$
+begin
+    -- the default value can always be NULL
+    if new.default_value is null then
+        return new;
+    end if;
+
+    -- the default value must be NULL for data type PHOTO
+    if new.data_type = 'PHOTO' and new.default_value is not null then
+        raise exception 'The default value must be NULL for PHOTO.';
+    end if;
+
+    -- the default value must be of the same data type as the attribute
+    if new.data_type in ('INTEGER', 'RATING') and new.default_value::text !~ '^-?\d+$' then
+        raise exception 'The default value must be an integer.';
+    end if;
+
+    if new.data_type = 'FLOAT' and new.default_value::text !~ '^-?\d+(\.\d+)?$' then
+        raise exception 'The default value must be a number.';
+    end if;
+
+    if new.data_type in ('INTEGER', 'RATING') and
+       (new.default_value::text::int < (new.validation_rule ->> 'min')::int or
+        new.default_value::text::int > (new.validation_rule ->> 'max')::int or
+        (new.default_value::text::int - (new.validation_rule ->> 'min')::int) % (new.validation_rule ->> 'step')::int <>
+        0) then
+        raise exception 'The default value does not match the validation rule.';
+    end if;
+
+    if new.data_type = ('FLOAT') and
+       (new.default_value::text::float < (new.validation_rule ->> 'min')::float or
+        new.default_value::text::float > (new.validation_rule ->> 'max')::float) then
+        -- don't check step for floats as there is no fmod in postgres
+        raise exception 'The default value does not match the validation rule.';
+    end if;
+
+    if new.data_type = 'DATE' and not isfinite(new.default_value::text::date) then
+        raise exception 'The default value must be a date.';
+    end if;
+
+    if new.data_type = 'BOOLEAN' and jsonb_typeof(new.default_value) != 'boolean' then
+        raise exception 'The default value must be a boolean.';
+    end if;
+
+    -- no special validation for TEXT
+
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger check_default_value
+    before insert or update of data_type, default_value, validation_rule
+    on attributes
+    for each row
+execute function check_default_value();
+
+-- make data_type immutable as soon as attribution_values exist
 create or replace function make_data_type_immutable() returns trigger as
 $$
 begin
-    if exists (select 1 from attribute_values where attribute_id = new.id) then
+    if new.data_type != old.data_type and exists (select 1 from attribution_values where attribute_id = new.id) then
         raise exception 'The data type of an attribution attribute cannot be changed once an attribution value has been inserted.';
     end if;
     return new;
@@ -975,7 +1241,7 @@ create trigger check_attribution_object
 execute function check_attribution_object();
 
 
-create table attribute_values
+create table attribution_values
 (
     id                      integer primary key generated always as identity,
     attribute_id            int                      not null references attributes,
@@ -985,38 +1251,39 @@ create table attribute_values
     text_value              varchar(2047) check (0 < length(text_value)),
     boolean_value           boolean,
     date_value              date,
-    note                    varchar(2047),
+    text_note               varchar(2047),
+    photo_note              varchar(69) check (photo_note ~ '^\w{64}\.(jpe?g|avif)$'),
     exceptional_attribution boolean                           default false not null,
     offline_id              uuid unique,
     created                 timestamp with time zone not null default now(),
     modified                timestamp with time zone
 );
 
-create index on attribute_values (attribute_id);
-create index on attribute_values (attribution_id);
-create index on attribute_values (integer_value);
-create index on attribute_values (float_value);
-create index on attribute_values (text_value);
-create index on attribute_values (boolean_value);
-create index on attribute_values (date_value);
-create index on attribute_values (exceptional_attribution);
-create index on attribute_values (offline_id);
-create index on attribute_values (created);
+create index on attribution_values (attribute_id);
+create index on attribution_values (attribution_id);
+create index on attribution_values (integer_value);
+create index on attribution_values (float_value);
+create index on attribution_values (text_value);
+create index on attribution_values (boolean_value);
+create index on attribution_values (date_value);
+create index on attribution_values (exceptional_attribution);
+create index on attribution_values (offline_id);
+create index on attribution_values (created);
 
-create trigger update_attribute_values_modified
+create trigger update_attribution_values_modified
     before update
-    on attribute_values
+    on attribution_values
     for each row
 execute function modified_column();
 
-create trigger trim_attribute_values
-    before insert or update of text_value, note
-    on attribute_values
+create trigger trim_attribution_values
+    before insert or update of text_value, text_note, photo_note
+    on attribution_values
     for each row
-execute function trim_strings('text_value', 'note');
+execute function trim_strings('text_value', 'text_note', 'photo_note');
 
 
-create or replace function sanitize_and_validate_attribute_value() returns trigger as
+create or replace function sanitize_and_validate_attribution_value() returns trigger as
 $$
 declare
     _data_type       text;
@@ -1041,7 +1308,7 @@ begin
     where id = new.attribute_id;
 
     -- check that the value type matches the attribute type
-    if _data_type = 'INTEGER' and new.integer_value is null or
+    if _data_type in ('INTEGER', 'RATING') and new.integer_value is null or
        _data_type = 'FLOAT' and new.float_value is null or
        _data_type = 'BOOLEAN' and new.boolean_value is null or
        _data_type = 'DATE' and new.date_value is null or
@@ -1050,7 +1317,7 @@ begin
     end if;
 
     -- validate the value
-    if _data_type = 'INTEGER' and
+    if _data_type in ('INTEGER', 'RATING') and
        (new.integer_value < (_validation_rule ->> 'min')::int or
         new.integer_value > (_validation_rule ->> 'max')::int or
         (new.integer_value - (_validation_rule ->> 'min')::int) % (_validation_rule ->> 'step')::int <> 0) then
@@ -1066,21 +1333,22 @@ begin
     end if;
 
     if _data_type = 'PHOTO' and
-       new.text_value !~ '^\w{32}\.(jpe?g|avif)$' then
-        raise exception 'The photo''s filename must match /^\w{32}\.(jpe?g|avif)$/.';
+        -- the legacy photos have a 32 character filename, the new ones have 64
+       new.text_value !~ '^(\w{32}|\w{64})\.(jpe?g|avif)$' then
+        raise exception 'The photo''s filename must match /^\w{64}\.(jpe?g|avif)$/.';
     end if;
 
     return new;
 end;
 $$ language plpgsql;
 
-create trigger sanitize_and_validate_attribute_value
+create trigger sanitize_and_validate_attribution_value
     before insert or update of integer_value, float_value, text_value, boolean_value, date_value
-    on attribute_values
+    on attribution_values
     for each row
-execute function sanitize_and_validate_attribute_value();
+execute function sanitize_and_validate_attribution_value();
 
-comment on table attribute_values is '""- text_value"" is trimmed.\n'
+comment on table attribution_values is '""- text_value"" is trimmed.\n'
     '""- integer_value"" and ""float_value"" are checked against the\n'
     '""  ""corresponding ""attribute.validation_rule"".\n'
     '""  ""The checking is performed on insert and update of the value\n'
@@ -1088,62 +1356,50 @@ comment on table attribute_values is '""- text_value"" is trimmed.\n'
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- QUERIES
+-- ANALYZE
 ------------------------------------------------------------------------------------------------------------------------
 
-create table query_groups
+create table analyze_filter_base_tables
 (
-    id       integer primary key generated always as identity,
-    name     varchar(45) unique       not null check (name ~ '^[^/\n]{1,45}$'),
-    version  varchar(10),
-    created  timestamp with time zone not null default now(),
-    modified timestamp with time zone
+    enum text primary key
 );
 
-create index on query_groups (name);
-create index on query_groups (version);
-create index on query_groups (created);
+insert into analyze_filter_base_tables (enum)
+values ('PLANTS'),
+       ('PLANT_GROUPS'),
+       ('CULTIVARS'),
+       ('LOTS'),
+       ('CROSSINGS');
 
-create trigger update_query_groups_modified
+create table analyze_filters
+(
+    id                 integer primary key generated always as identity,
+    name               varchar(45)              not null check (name ~ '^[^/\n]{1,45}$'),
+    note               varchar(2047),
+    base_table         text                     not null references analyze_filter_base_tables,
+    base_filter        jsonb,
+    attribution_filter jsonb,
+    visible_columns    text[]                   not null,
+    created            timestamp with time zone not null default now(),
+    modified           timestamp with time zone
+);
+
+create unique index on analyze_filters (name, base_table);
+create index on analyze_filters (name);
+create index on analyze_filters (base_table);
+create index on analyze_filters (created);
+
+create trigger update_analyze_filters_modified
     before update
-    on query_groups
+    on analyze_filters
     for each row
 execute function modified_column();
 
-create trigger trim_query_groups
-    before insert or update of name
-    on query_groups
-    for each row
-execute function trim_strings('name');
-
-
-create table queries
-(
-    id             integer primary key generated always as identity,
-    name           varchar(45) unique not null check (name ~ '^[^/\n]{1,45}$'),
-    my_query       jsonb              not null default '{}'::jsonb,
-    note           varchar(2047),
-    query_group_id int                not null references query_groups,
-    created        timestamp with time zone    default now(),
-    modified       timestamp with time zone
-);
-
-create index on queries (name);
-create index on queries (query_group_id);
-create index on queries (created);
-
-create trigger update_queries_modified
-    before update
-    on queries
-    for each row
-execute function modified_column();
-
-create trigger trim_query_name
+create trigger trim_analyze_filters_name
     before insert or update of name, note
-    on queries
+    on analyze_filters
     for each row
 execute function trim_strings('name', 'note');
-
 
 ------------------------------------------------------------------------------------------------------------------------
 -- VIEWS
@@ -1165,14 +1421,15 @@ drop materialized view if exists attributions_view;
 create materialized view attributions_view as
 with plant_group_group as (select id, plant_group_id from plants),
      plant_group_cultivar as (select id, cultivar_id from plant_groups)
-select attribute_values.id,
-       attribute_values.integer_value,
-       attribute_values.float_value,
-       attribute_values.text_value,
-       attribute_values.boolean_value,
-       attribute_values.date_value,
-       attribute_values.note,
-       attribute_values.exceptional_attribution,
+select attribution_values.id,
+       attribution_values.integer_value,
+       attribution_values.float_value,
+       attribution_values.text_value,
+       attribution_values.boolean_value,
+       attribution_values.date_value,
+       attribution_values.text_note,
+       attribution_values.photo_note,
+       attribution_values.exceptional_attribution,
        attributes.name                                                         as attribute_name,
        attributes.id                                                           as attribute_id,
        attributes.data_type,
@@ -1191,9 +1448,9 @@ select attribute_values.id,
        attributions.date_attributed,
        attributions.geo_location,
        attributions.geo_location_accuracy
-from attribute_values
-         inner join attributions on attributions.id = attribute_values.attribution_id
-         inner join attributes on attribute_values.attribute_id = attributes.id
+from attribution_values
+         inner join attributions on attributions.id = attribution_values.attribution_id
+         inner join attributes on attribution_values.attribute_id = attributes.id
          left join plant_group_group on attributions.plant_id = plant_group_group.id
     -- the coalesce() is actually the combined_plant_group_id, which we are not allowed to reference here.
          left join plant_group_cultivar
@@ -1230,7 +1487,7 @@ $$
 begin
     return greatest(
             (select max(coalesce(modified, created)) from attributions),
-            (select max(coalesce(modified, created)) from attribute_values),
+            (select max(coalesce(modified, created)) from attribution_values),
             (select max(coalesce(modified, created)) from attributes)
            );
 end;
@@ -1259,3 +1516,53 @@ begin
                    and last_change = last_changed;
 end;
 $$ language plpgsql volatile;
+
+------------------------------------------------------------------------------------------------------------------------
+-- USERS
+------------------------------------------------------------------------------------------------------------------------
+
+create table users
+(
+    id                          integer primary key generated always as identity,
+    email                       citext                   not null unique,
+    password_hash               varchar(128)             not null,
+    locale                      varchar(5)               not null default 'de-CH',
+    last_signin                 timestamp with time zone,
+    failed_signin_attempts      integer                  not null default 0,
+    first_failed_signin_attempt timestamp with time zone,
+    created                     timestamp with time zone not null default now(),
+    modified                    timestamp with time zone
+);
+
+comment on column users.last_signin is 'Successful signin.';
+comment on column users.failed_signin_attempts is 'Failed attempts only. Reset on successful signin.';
+
+create trigger update_users_modified
+    before update
+    on users
+    for each row
+execute function modified_column();
+
+create table user_tokens
+(
+    id          integer primary key generated always as identity,
+    user_id     integer                  not null references users,
+    token_hash  varchar(64)              not null unique,
+    type        varchar(10)              not null check (type in ('cookie', 'api')),
+    created     timestamp with time zone not null default now(),
+    last_verify timestamp with time zone
+);
+
+create or replace function user_tokens_delete_on_password_change() returns trigger as
+$$
+begin
+    delete from user_tokens where user_id = new.id;
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger user_tokens_delete_on_password_change
+    after update of password_hash
+    on users
+    for each row
+execute function user_tokens_delete_on_password_change();

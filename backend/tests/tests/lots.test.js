@@ -118,7 +118,9 @@ test('insert', async () => {
   expect(resp.data.insert_crossings_one.lots[0].created).toMatch(
     iso8601dateRegex,
   );
-  expect(resp.data.insert_crossings_one.lots[0].modified).toBeNull();
+  expect(resp.data.insert_crossings_one.lots[0].modified).toEqual(
+    resp.data.insert_crossings_one.lots[0].created,
+  );
   expect(resp.data.insert_crossings_one.lots[0].is_variety).toBe(false);
 });
 
@@ -278,7 +280,11 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_lots_by_pk.modified).toMatch(iso8601dateRegex);
+  expect(
+    new Date(updated.data.update_lots_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_crossings_one.lots[0].modified).getTime(),
+  );
 });
 
 test('updating is_variety on crossings updates it on lots', async () => {

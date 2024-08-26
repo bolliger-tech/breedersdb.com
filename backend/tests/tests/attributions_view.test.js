@@ -494,7 +494,9 @@ describe('non aggregated values are correct', async () => {
     expect(data.attributions_view[0].exceptional_attribution).toBe(true);
     expect(data.attributions_view[0].attribute_type).toBe('OBSERVATION');
     expect(data.attributions_view[0].created).toMatch(iso8601dateRegex);
-    expect(data.attributions_view[0].modified).toBeNull();
+    expect(data.attributions_view[0].modified).toEqual(
+      data.attributions_view[0].created,
+    );
   });
 
   test('attribution: lot', async () => {

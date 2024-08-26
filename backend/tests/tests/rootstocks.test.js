@@ -36,7 +36,9 @@ test('insert', async () => {
   expect(resp.data.insert_rootstocks_one.id).toBeGreaterThan(0);
   expect(resp.data.insert_rootstocks_one.name).toBe('Rootstock 1');
   expect(resp.data.insert_rootstocks_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_rootstocks_one.modified).toBeNull();
+  expect(resp.data.insert_rootstocks_one.modified).toEqual(
+    resp.data.insert_rootstocks_one.created,
+  );
 });
 
 test('name is unique', async () => {
@@ -95,7 +97,9 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_rootstocks_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_rootstocks_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_rootstocks_one.modified).getTime(),
   );
 });

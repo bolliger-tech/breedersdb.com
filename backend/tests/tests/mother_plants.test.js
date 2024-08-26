@@ -261,7 +261,9 @@ test('insert', async () => {
     pollen.data.insert_pollen_one.cultivar.id,
   );
   expect(resp.data.insert_mother_plants_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_mother_plants_one.modified).toBeNull();
+  expect(resp.data.insert_mother_plants_one.modified).toEqual(
+    resp.data.insert_mother_plants_one.created,
+  );
 });
 
 test('insert with contradicting plant cultivar', async () => {
@@ -497,7 +499,9 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_mother_plants_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_mother_plants_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_mother_plants_one.modified).getTime(),
   );
 });

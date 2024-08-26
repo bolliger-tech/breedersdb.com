@@ -174,7 +174,9 @@ test('insert', async () => {
   expect(resp.data.insert_analyze_filters_one.created).toMatch(
     iso8601dateRegex,
   );
-  expect(resp.data.insert_analyze_filters_one.modified).toBeNull();
+  expect(resp.data.insert_analyze_filters_one.modified).toEqual(
+    resp.data.insert_analyze_filters_one.created,
+  );
 });
 
 test('name is unique', async () => {
@@ -261,8 +263,10 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_analyze_filters_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_analyze_filters_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_analyze_filters_one.modified).getTime(),
   );
 });
 

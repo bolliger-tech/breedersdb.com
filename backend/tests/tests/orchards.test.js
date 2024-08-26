@@ -38,7 +38,9 @@ test('insert', async () => {
   expect(resp.data.insert_orchards_one.name).toBe('Orchard 1');
   expect(resp.data.insert_orchards_one.disabled).toBe(false);
   expect(resp.data.insert_orchards_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_orchards_one.modified).toBeNull();
+  expect(resp.data.insert_orchards_one.modified).toEqual(
+    resp.data.insert_orchards_one.created,
+  );
 });
 
 test('name is unique', async () => {
@@ -91,5 +93,7 @@ test('modified', async () => {
     variables: { id: resp.data.insert_orchards_one.id, name: 'Orchard 999' },
   });
 
-  expect(updated.data.update_orchards_by_pk.modified).toMatch(iso8601dateRegex);
+  expect(
+    new Date(updated.data.update_orchards_by_pk.modified).getTime(),
+  ).toBeGreaterThan(new Date(resp.data.insert_orchards_one.modified).getTime());
 });

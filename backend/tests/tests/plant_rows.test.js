@@ -69,7 +69,9 @@ test('insert', async () => {
   expect(resp.data.insert_plant_rows_one.date_eliminated).toBe('2021-01-02');
   expect(resp.data.insert_plant_rows_one.disabled).toBe(true);
   expect(resp.data.insert_plant_rows_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_plant_rows_one.modified).toBeNull();
+  expect(resp.data.insert_plant_rows_one.modified).toEqual(
+    resp.data.insert_plant_rows_one.created,
+  );
 });
 
 test('name is unique in orchard', async () => {
@@ -219,7 +221,9 @@ test('modified', async () => {
     variables: { id: resp.data.insert_plant_rows_one.id, name: 'Row 999' },
   });
 
-  expect(updated.data.update_plant_rows_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_plant_rows_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_plant_rows_one.modified).getTime(),
   );
 });

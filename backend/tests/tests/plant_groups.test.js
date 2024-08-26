@@ -103,7 +103,7 @@ test('insert', async () => {
     note: 'A note',
     disabled: true,
     created: expect.stringMatching(iso8601dateRegex),
-    modified: null,
+    modified: expect.stringMatching(iso8601dateRegex),
   });
 });
 
@@ -263,5 +263,7 @@ test('modified is updated', async () => {
   });
 
   expect(data2.update_plant_groups_by_pk.modified).toMatch(iso8601dateRegex);
-  expect(data1.insert_plant_groups_one.modified).toBe(null);
+  expect(
+    new Date(data1.insert_plant_groups_one.modified).getTime(),
+  ).toBeLessThan(new Date(data2.update_plant_groups_by_pk.modified).getTime());
 });

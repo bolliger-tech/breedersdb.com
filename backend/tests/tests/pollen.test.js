@@ -93,7 +93,9 @@ test('insert', async () => {
     'Cross1.24A.001',
   );
   expect(resp.data.insert_pollen_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_pollen_one.modified).toBeNull();
+  expect(resp.data.insert_pollen_one.modified).toEqual(
+    resp.data.insert_pollen_one.created,
+  );
 });
 
 test('name is unique', async () => {
@@ -165,5 +167,7 @@ test('modified', async () => {
     resp.data.insert_pollen_one.id,
   );
   expect(updated.data.update_pollen_by_pk.name).toBe('Pollen 2');
-  expect(updated.data.update_pollen_by_pk.modified).toMatch(iso8601dateRegex);
+  expect(
+    new Date(updated.data.update_pollen_by_pk.modified).getTime(),
+  ).toBeGreaterThan(new Date(resp.data.insert_pollen_one.modified).getTime());
 });

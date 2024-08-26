@@ -102,7 +102,7 @@ test('insert', async () => {
   expect(cultivar.breeder).toBe('Poma Culta');
   expect(cultivar.note).toBe('This is a note');
   expect(cultivar.created).toMatch(iso8601dateRegex);
-  expect(cultivar.modified).toBeNull();
+  expect(cultivar.modified).toEqual(cultivar.created);
   expect(cultivar.is_variety).toBe(false);
 });
 
@@ -377,8 +377,12 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_cultivars_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_cultivars_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(
+      resp.data.insert_crossings_one.lots[0].cultivars[0].modified,
+    ).getTime(),
   );
 });
 

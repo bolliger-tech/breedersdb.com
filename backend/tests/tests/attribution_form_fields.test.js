@@ -86,7 +86,9 @@ test('insert', async () => {
   expect(resp.data.insert_attribution_form_fields_one.created).toMatch(
     iso8601dateRegex,
   );
-  expect(resp.data.insert_attribution_form_fields_one.modified).toBeNull();
+  expect(resp.data.insert_attribution_form_fields_one.modified).toEqual(
+    resp.data.insert_attribution_form_fields_one.created,
+  );
 });
 
 test('priority is unique per form', async () => {
@@ -198,7 +200,11 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_attribution_form_fields_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(
+      updated.data.update_attribution_form_fields_by_pk.modified,
+    ).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_attribution_form_fields_one.modified).getTime(),
   );
 });

@@ -278,7 +278,7 @@ test('insert', async () => {
   expect(plant.plant_row.orchard.name).toBe('Orchard1');
   expect(plant.disabled).toBe(false);
   expect(plant.created).toMatch(iso8601dateRegex);
-  expect(plant.modified).toBeNull();
+  expect(plant.modified).toEqual(plant.created);
 });
 
 test('eliminating prefixes label_id and sets disabled', async () => {
@@ -718,7 +718,13 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_plants_by_pk.modified).toMatch(iso8601dateRegex);
+  expect(
+    new Date(updated.data.update_plants_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(
+      resp.data.insert_crossings_one.lots[0].cultivars[0].plant_groups[0].plants[0].modified,
+    ).getTime(),
+  );
 });
 
 test('row / serial combo is unique if not eliminated', async () => {

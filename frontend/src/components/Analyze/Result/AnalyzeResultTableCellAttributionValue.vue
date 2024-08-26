@@ -45,6 +45,8 @@ const color = computed(() => {
   let baseColor = '';
   if (props.attribution.plant_id) {
     baseColor = '#c8e6c9'; // green-2
+  } else if (props.attribution.plant_group_id) {
+    baseColor = '#e1bee7'; // purple-2
   } else if (props.attribution.cultivar_id) {
     baseColor = '#ffecb3'; // amber-2
   } else if (props.attribution.lot_id) {

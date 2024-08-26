@@ -5,13 +5,16 @@
     :eliminated="!!data.date_eliminated"
     :stored-label-id="initialLabelId"
   />
-  <PlantPlantGroupSelect
+  <PlantGroupSelect
     :ref="(el: InputRef) => (refs.plantGroupId = el)"
     v-model="data.plant_group_id"
+    required
+    :include-id="props.plant.plant_group?.id"
   />
-  <PlantPlantRowSelect
+  <PlantRowSelect
     :ref="(el: InputRef) => (refs.plantRowId = el)"
     v-model="data.plant_row_id"
+    :include-id="props.plant.plant_row?.id"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.distancePlantRowStart = el)"
@@ -35,11 +38,11 @@
     type="date"
     autocomplete="off"
   />
-  <PlantRootstockSelect
+  <RootstockSelect
     :ref="(el: InputRef) => (refs.rootstockId = el)"
     v-model="data.rootstock_id"
   />
-  <PlantGraftingSelect
+  <GraftingSelect
     :ref="(el: InputRef) => (refs.graftingId = el)"
     v-model="data.grafting_id"
   />
@@ -82,12 +85,12 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
-import PlantPlantGroupSelect from './PlantPlantGroupSelect.vue';
-import PlantPlantRowSelect from './PlantPlantRowSelect.vue';
+import PlantGroupSelect from 'src/components/PlantGroup/PlantGroupSelect.vue';
+import PlantRowSelect from 'src/components/PlantRow/PlantRowSelect.vue';
 import PlantLabelIdEdit from './PlantLabelIdEdit.vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
-import PlantRootstockSelect from './PlantRootstockSelect.vue';
-import PlantGraftingSelect from './PlantGraftingSelect.vue';
+import RootstockSelect from 'src/components/Rootstock/RootstockSelect.vue';
+import GraftingSelect from 'src/components/Grafting/GraftingSelect.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';

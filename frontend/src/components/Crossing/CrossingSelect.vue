@@ -67,16 +67,18 @@ const query = graphql(`
   }
 `);
 
-const where = computed(() => ({
-  _or: [
-    { is_variety: { _eq: false } },
-    ...(props.includeId ? [{ id: { _eq: props.includeId } }] : []),
-  ],
+const variables = computed(() => ({
+  where: {
+    _or: [
+      { is_variety: { _eq: false } },
+      ...(props.includeId ? [{ id: { _eq: props.includeId } }] : []),
+    ],
+  },
 }));
 
 const { data, error, fetching } = useQuery({
   query,
-  variables: { where },
+  variables,
   requestPolicy: 'cache-and-network',
 });
 

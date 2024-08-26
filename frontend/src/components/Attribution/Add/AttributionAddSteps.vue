@@ -15,10 +15,7 @@
       title=""
       :done="step1Done"
     >
-      <AttributionAddFormSelector
-        ref="attributeFormSelectorRef"
-        v-model="formId"
-      />
+      <AttributionFormSelect ref="attributeFormSelectRef" v-model="formId" />
 
       <q-stepper-navigation class="row justify-end">
         <q-btn
@@ -137,7 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import AttributionAddFormSelector from 'src/components/Attribution/Add/AttributionAddFormSelector.vue';
+import AttributionFormSelect from 'src/components/AttributionForm/AttributionFormSelect.vue';
 import AttributionAddMetaData from 'src/components/Attribution/Add/AttributionAddMetaData.vue';
 import AttributionAddForm from 'src/components/Attribution/Add/AttributionAddForm.vue';
 import AttributionAddNoEntityError from 'src/components/Attribution/Add/AttributionAddNoEntityError.vue';
@@ -256,12 +253,12 @@ const form = computed(
   () => (formData.value?.attribution_forms_by_pk as AttributionForm) ?? null,
 );
 
-const attributeFormSelectorRef = ref<InstanceType<
-  typeof AttributionAddFormSelector
+const attributeFormSelectRef = ref<InstanceType<
+  typeof AttributionFormSelect
 > | null>(null);
 
 function completeStep1() {
-  Promise.resolve(attributeFormSelectorRef.value?.validate()).then((valid) => {
+  Promise.resolve(attributeFormSelectRef.value?.validate()).then((valid) => {
     if (valid) {
       step.value = 2;
     }

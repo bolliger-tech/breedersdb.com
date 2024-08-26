@@ -39,7 +39,6 @@ export interface PlantGroupNameProps {
     id: number;
     name: string;
   };
-  dark?: boolean;
   noLink?: boolean;
 }
 

@@ -53,12 +53,10 @@
         {{ lot.orchard.name }}
       </RouterLink>
     </EntityViewTableRow>
-    <EntityViewTableRow :label="t('entity.commonColumns.created')">
-      {{ d(lot.created, 'ymdHis') }}
-    </EntityViewTableRow>
-    <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-      {{ lot.modified ? d(lot.modified, 'ymdHis') : t('base.notAvailable') }}
-    </EntityViewTableRow>
+    <EntityTableViewTimestampRows
+      :created="lot.created"
+      :modified="lot.modified"
+    />
     <EntityViewTableRow v-if="lot.note">
       <strong>{{ t('entity.commonColumns.note') }}</strong>
       <br />
@@ -73,6 +71,7 @@ import { localizeDate } from 'src/utils/dateUtils';
 import { type LotFragment } from './lotFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 export interface LotEntityTableProps {
   lot: LotFragment;
@@ -81,5 +80,5 @@ export interface LotEntityTableProps {
 
 defineProps<LotEntityTableProps>();
 
-const { t, n, d } = useI18n();
+const { t, n } = useI18n();
 </script>

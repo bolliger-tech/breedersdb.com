@@ -23,16 +23,10 @@
     <EntityViewTableRow :label="t('entity.commonColumns.disabled')">
       {{ plantGroup.disabled ? '✓' : '' }}
     </EntityViewTableRow>
-    <EntityViewTableRow :label="t('entity.commonColumns.created')">
-      {{ d(plantGroup.created, 'ymdHis') }}
-    </EntityViewTableRow>
-    <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-      {{
-        plantGroup.modified
-          ? d(plantGroup.modified, 'ymdHis')
-          : t('base.notAvailable')
-      }}
-    </EntityViewTableRow>
+    <EntityTableViewTimestampRows
+      :created="plantGroup.created"
+      :modified="plantGroup.modified"
+    />
     <EntityViewTableRow v-if="plantGroup.note">
       <strong>{{ t('entity.commonColumns.note') }}</strong>
       <br />
@@ -47,6 +41,7 @@ import { type PlantGroupFragment } from './plantGroupFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 export interface PlantGroupEntityTableProps {
   plantGroup: PlantGroupFragment;
@@ -55,5 +50,5 @@ export interface PlantGroupEntityTableProps {
 
 defineProps<PlantGroupEntityTableProps>();
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 </script>

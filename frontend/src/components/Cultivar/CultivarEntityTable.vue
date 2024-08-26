@@ -26,16 +26,10 @@
     <EntityViewTableRow :label="t('cultivars.fields.breeder')">
       {{ cultivar.breeder }}
     </EntityViewTableRow>
-    <EntityViewTableRow :label="t('entity.commonColumns.created')">
-      {{ d(cultivar.created, 'ymdHis') }}
-    </EntityViewTableRow>
-    <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-      {{
-        cultivar.modified
-          ? d(cultivar.modified, 'ymdHis')
-          : t('base.notAvailable')
-      }}
-    </EntityViewTableRow>
+    <EntityTableViewTimestampRows
+      :created="cultivar.created"
+      :modified="cultivar.modified"
+    />
     <EntityViewTableRow v-if="cultivar.note">
       <strong>{{ t('entity.commonColumns.note') }}</strong>
       <br />
@@ -50,6 +44,7 @@ import { type CultivarFragment } from './cultivarFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 export interface CultivarEntityTableProps {
   cultivar: CultivarFragment;
@@ -58,5 +53,5 @@ export interface CultivarEntityTableProps {
 
 defineProps<CultivarEntityTableProps>();
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 </script>

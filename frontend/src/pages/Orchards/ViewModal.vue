@@ -18,16 +18,10 @@
         <EntityViewTableRow :label="t('entity.commonColumns.disabled')">
           {{ orchard.disabled ? '✓' : '' }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(orchard.created) }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            orchard.modified
-              ? localizeDate(orchard.modified)
-              : t('base.notAvailable')
-          }}
-        </EntityViewTableRow>
+        <EntityTableViewTimestampRows
+          :created="orchard.created"
+          :modified="orchard.modified"
+        />
       </EntityViewTable>
 
       <h3 class="q-mb-md">
@@ -88,6 +82,7 @@ import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

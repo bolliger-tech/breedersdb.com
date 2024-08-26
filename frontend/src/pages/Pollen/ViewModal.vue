@@ -18,16 +18,10 @@
         <EntityViewTableRow :label="t('pollen.fields.dateHarvested')">
           {{ localizeDate(pollen.date_harvested) }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ d(pollen.created, 'ymdHis') }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            pollen.modified
-              ? d(pollen.modified, 'ymdHis')
-              : t('base.notAvailable')
-          }}
-        </EntityViewTableRow>
+        <EntityTableViewTimestampRows
+          :created="pollen.created"
+          :modified="pollen.modified"
+        />
         <EntityViewTableRow v-if="pollen.note">
           <strong>{{ t('entity.commonColumns.note') }}</strong>
           <br />
@@ -112,6 +106,7 @@ import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -153,7 +148,7 @@ const { data, error, fetching } = useQuery({
 
 const pollen = computed(() => data.value?.pollen_by_pk);
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();

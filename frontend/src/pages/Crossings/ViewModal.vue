@@ -31,16 +31,10 @@
             {{ crossing.father_cultivar?.display_name }}
           </RouterLink>
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ d(crossing.created, 'ymdHis') }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            crossing.modified
-              ? d(crossing.modified, 'ymdHis')
-              : t('base.notAvailable')
-          }}
-        </EntityViewTableRow>
+        <EntityTableViewTimestampRows
+          :created="crossing.created"
+          :modified="crossing.modified"
+        />
       </EntityViewTable>
 
       <h3 class="q-mb-md">
@@ -135,6 +129,7 @@ import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewR
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -178,7 +173,7 @@ const { data, error, fetching } = useQuery({
 
 const crossing = computed(() => data.value?.crossings_by_pk);
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();

@@ -26,15 +26,14 @@
         <EntityViewTableRow :label="t('entity.commonColumns.dateDisabled')">
           {{ localizeDate(plantRow.date_eliminated) }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(plantRow.created) }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            plantRow.modified
-              ? localizeDate(plantRow.modified)
-              : t('base.notAvailable')
-          }}
+        <EntityTableViewTimestampRows
+          :created="plantRow.created"
+          :modified="plantRow.modified"
+        />
+        <EntityViewTableRow v-if="plantRow.note">
+          <strong>{{ t('entity.commonColumns.note') }}</strong>
+          <br />
+          <span style="white-space: pre-line">{{ plantRow.note }}</span>
         </EntityViewTableRow>
       </EntityViewTable>
 
@@ -113,6 +112,7 @@ import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 import { plantGroupSegmentsFragment } from 'src/components/PlantGroup/plantGroupFragment';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -121,6 +121,7 @@ const query = graphql(
     query PlantRow($id: Int!) {
       plant_rows_by_pk(id: $id) {
         ...plantRowFragment
+        note
         plants(where: { disabled: { _eq: false } }) {
           id
           label_id

@@ -51,16 +51,10 @@
         <EntityViewTableRow :label="t('attributes.columns.attributeType')">
           {{ attributeTypeToLabel(attribute.attribute_type, t) }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(attribute.created) }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            attribute.modified
-              ? localizeDate(attribute.modified)
-              : t('base.notAvailable')
-          }}
-        </EntityViewTableRow>
+        <EntityTableViewTimestampRows
+          :created="attribute.created"
+          :modified="attribute.modified"
+        />
       </EntityViewTable>
 
       <h3 class="q-my-md">{{ t('attributes.preview') }}</h3>
@@ -104,7 +98,6 @@ import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import { localizeDate } from 'src/utils/dateUtils';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import {
   dataTypeToLabel,
@@ -114,6 +107,7 @@ import {
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import AttributePreview from 'src/components/Attribute/AttributePreview.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

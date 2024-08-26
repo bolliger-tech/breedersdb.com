@@ -58,14 +58,10 @@
     <EntityViewTableRow :label="t('plants.fields.dateEliminated')">
       {{ localizeDate(plant.date_eliminated) }}
     </EntityViewTableRow>
-    <EntityViewTableRow :label="t('entity.commonColumns.created')">
-      {{ localizeDate(plant.created) }}
-    </EntityViewTableRow>
-    <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-      {{
-        plant.modified ? localizeDate(plant.modified) : t('base.notAvailable')
-      }}
-    </EntityViewTableRow>
+    <EntityTableViewTimestampRows
+      :created="plant.created"
+      :modified="plant.modified"
+    />
     <EntityViewTableRow v-if="plant.note">
       <strong>{{ t('entity.commonColumns.note') }}</strong>
       <br />
@@ -80,6 +76,7 @@ import { localizeDate } from 'src/utils/dateUtils';
 import { type PlantFragment } from './plantFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 export interface PlantEntityTableProps {
   plant: PlantFragment;

@@ -11,14 +11,14 @@ entity "**analyze_filter_base_tables**" {
 entity "**analyze_filters**" {
   + ""id"": //integer [PK]//
   --
-  *""name"": //character varying(45) //
+  *""name"": //citext //
   ""note"": //character varying(2047) //
   *""base_table"": //text [FK]//
   ""base_filter"": //jsonb //
   ""attribution_filter"": //jsonb //
   *""visible_columns"": //text[] //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**attribute_data_types**" #00ff0012 ##008800 {
@@ -36,16 +36,16 @@ entity "**attributes**" #00ff0012 ##008800 {
   ..
   + ""id"": //integer [PK]//
   --
-  *""name"": //character varying(45) //
+  *""name"": //citext //
   ""validation_rule"": //jsonb //
-  *""data_type"": //character varying(12) [FK]//
+  ""default_value"": //jsonb //
+  *""data_type"": //text [FK]//
   ""description"": //character varying(255) //
-  *""attribute_type"": //character varying(12) [FK]//
+  ""legend"": //jsonb //
+  *""attribute_type"": //text [FK]//
   *""disabled"": //boolean //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-  ""legend"": //jsonb //
-  ""default_value"": //jsonb //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**attribution_form_fields**" #00ff0012 ##008800 {
@@ -55,17 +55,17 @@ entity "**attribution_form_fields**" #00ff0012 ##008800 {
   *""attribution_form_id"": //integer [FK]//
   *""attribute_id"": //integer [FK]//
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**attribution_forms**" #00ff0012 ##008800 {
   + ""id"": //integer [PK]//
   --
-  *""name"": //character varying(45) //
+  *""name"": //citext //
   ""description"": //character varying(255) //
   *""disabled"": //boolean //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**attribution_values**" #00ff0012 ##008800 {
@@ -77,21 +77,21 @@ entity "**attribution_values**" #00ff0012 ##008800 {
   *""attribution_id"": //integer [FK]//
   ""integer_value"": //integer //
   ""float_value"": //double precision //
-  ""text_value"": //character varying(2047) //
+  ""text_value"": //citext //
   ""boolean_value"": //boolean //
   ""date_value"": //date //
   ""text_note"": //character varying(2047) //
+  ""photo_note"": //character varying(69) //
   *""exceptional_attribution"": //boolean //
   ""offline_id"": //uuid //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-  ""photo_note"": //character varying(69) //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**attributions**" #00ff0012 ##008800 {
   + ""id"": //integer [PK]//
   --
-  *""author"": //character varying(45) //
+  *""author"": //citext //
   *""date_attributed"": //date //
   *""attribution_form_id"": //integer [FK]//
   ""plant_id"": //integer [FK]//
@@ -102,53 +102,54 @@ entity "**attributions**" #00ff0012 ##008800 {
   ""geo_location_accuracy"": //double precision  : Meters//
   ""offline_id"": //uuid //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**crossings**" #ffff0012 ##888800 {
   + ""id"": //integer [PK]//
   --
-  *""name"": //character varying(8) //
+  *""name"": //citext //
   ""mother_cultivar_id"": //integer [FK]//
   ""father_cultivar_id"": //integer [FK]//
+  *""is_variety"": //boolean //
   ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-  *""is_variety"": //boolean //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**cultivars**" #ffff0012 ##888800 {
   + ""id"": //integer [PK]//
   --
   *""lot_id"": //integer [FK]//
-  *""name_segment"": //character varying(25) //
-  *""full_name"": //character varying(51)  : Set by triggers.//
-  ""name_override"": //character varying(51) //
-  *""display_name"": //character varying(51)  : Generated.//
+  *""is_variety"": //boolean  : Set by triggers.//
+  *""name_segment"": //citext //
+  *""full_name"": //citext  : Set by triggers.//
+  ""name_override"": //citext //
+  *""display_name"": //citext  : Generated.//
+  ""acronym"": //citext //
   ""breeder"": //character varying(255) //
   ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-  *""is_variety"": //boolean  : Set by triggers.//
-  ""acronym"": //character varying(8) //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**graftings**" #0000ff12 ##000088 {
   + ""id"": //integer [PK]//
   --
-  *""name"": //character varying(45) //
+  *""name"": //citext //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**lots**" #ffff0012 ##888800 {
   + ""id"": //integer [PK]//
   --
   *""crossing_id"": //integer [FK]//
-  *""name_segment"": //character varying(3) //
-  *""full_name"": //character varying(12)  : Set by triggers.//
-  ""name_override"": //character varying(25) //
-  *""display_name"": //character varying(25)  : Generated.//
+  *""is_variety"": //boolean  : Set by triggers.//
+  *""name_segment"": //citext //
+  *""full_name"": //citext  : Set by triggers.//
+  ""name_override"": //citext //
+  *""display_name"": //citext  : Generated.//
   ""date_sowed"": //date //
   ""numb_seeds_sowed"": //integer //
   ""numb_seedlings_grown"": //integer //
@@ -159,8 +160,7 @@ entity "**lots**" #ffff0012 ##888800 {
   *""orchard_id"": //integer [FK]//
   ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
-  *""is_variety"": //boolean  : Set by triggers.//
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**materialized_view_refreshes**" {
@@ -174,7 +174,7 @@ entity "**materialized_view_refreshes**" {
 entity "**mother_plants**" #0000ff06 {
   + ""id"": //integer [PK]//
   --
-  *""name"": //character varying(45) //
+  *""name"": //citext //
   ""date_impregnated"": //date //
   ""date_fruits_harvested"": //date //
   ""numb_flowers"": //integer //
@@ -185,54 +185,54 @@ entity "**mother_plants**" #0000ff06 {
   ""pollen_id"": //integer [FK]//
   *""crossing_id"": //integer [FK]//
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**orchards**" #0000ff12 ##000088 {
   + ""id"": //integer [PK]//
   --
-  *""name"": //character varying(45) //
+  *""name"": //citext //
   *""disabled"": //boolean //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**plant_groups**" #ffff0012 ##888800 {
   + ""id"": //integer [PK]//
   --
-  ""label_id"": //character varying(9)  : Generated.//
+  ""label_id"": //citext  : Generated.//
   *""cultivar_id"": //integer [FK]//
-  *""cultivar_name"": //character varying(51)  : Set by triggers.//
-  *""name_segment"": //character varying(25) //
-  ""full_name"": //character varying(77)  : Generated.//
-  ""name_override"": //character varying(77) //
-  *""display_name"": //character varying(77)  : Generated.//
+  *""cultivar_name"": //citext  : Set by triggers.//
+  *""name_segment"": //citext //
+  ""full_name"": //citext  : Generated.//
+  ""name_override"": //citext //
+  *""display_name"": //citext  : Generated.//
   ""note"": //character varying(2047) //
   *""disabled"": //boolean //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**plant_rows**" #0000ff12 ##000088 {
   + ""id"": //integer [PK]//
   --
-  *""name"": //character varying(45) //
+  *""name"": //citext //
   *""orchard_id"": //integer [FK]//
   ""note"": //character varying(2047) //
   ""date_created"": //date //
   ""date_eliminated"": //date //
   *""disabled"": //boolean  : Derived from date_eliminated.//
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**plants**" #0000ff12 ##000088 {
   + ""id"": //integer [PK]//
   --
-  *""label_id"": //character varying(9) //
+  *""label_id"": //citext //
   *""plant_group_id"": //integer [FK]//
-  *""plant_group_name"": //character varying(77)  : Set by triggers.//
-  *""cultivar_name"": //character varying(51)  : Set by triggers.//
+  *""plant_group_name"": //citext  : Set by triggers.//
+  *""cultivar_name"": //citext  : Set by triggers.//
   ""plant_row_id"": //integer [FK]//
   ""serial_in_plant_row"": //integer //
   ""distance_plant_row_start"": //double precision  : Meters//
@@ -247,26 +247,26 @@ entity "**plants**" #0000ff12 ##000088 {
   ""grafting_id"": //integer [FK]//
   *""disabled"": //boolean  : Derived from date_eliminated.//
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**pollen**" #0000ff06 {
   + ""id"": //integer [PK]//
   --
-  *""name"": //character varying(45) //
+  *""name"": //citext //
   ""date_harvested"": //date //
   ""note"": //character varying(2047) //
   *""cultivar_id"": //integer [FK]//
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**rootstocks**" #0000ff12 ##000088 {
   + ""id"": //integer [PK]//
   --
-  *""name"": //character varying(45) //
+  *""name"": //citext //
   *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 entity "**user_tokens**" {
@@ -287,9 +287,9 @@ entity "**users**" {
   *""locale"": //character varying(5) //
   ""last_signin"": //timestamp with time zone  : Successful signin.//
   *""failed_signin_attempts"": //integer  : Failed attempts only. Reset on successful signin.//
-  *""created"": //timestamp with time zone //
-  ""modified"": //timestamp with time zone //
   ""first_failed_signin_attempt"": //timestamp with time zone //
+  *""created"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
 }
 
 "**analyze_filters**"   }--  "**analyze_filter_base_tables**"

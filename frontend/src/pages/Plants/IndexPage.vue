@@ -90,7 +90,6 @@ const {
 } = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'label_id',
   searchColumns: ['cultivar_name', 'label_id'], // ! is where overridden below
-  foreignColumns: ['orchard', 'rootstock', 'grafting', 'plant_row'],
   subset,
 });
 
@@ -164,28 +163,28 @@ const columns = computed(() => [
     sortable: true,
   },
   {
-    name: 'rootstock',
+    name: 'rootstock.name',
     label: t('plants.fields.rootstock'),
     align: 'left' as const,
     field: (row: Plant) => row.rootstock?.name,
     sortable: true,
   },
   {
-    name: 'grafting',
+    name: 'grafting.name',
     label: t('plants.fields.grafting'),
     align: 'left' as const,
     field: (row: Plant) => row.grafting?.name,
     sortable: true,
   },
   {
-    name: 'orchard',
+    name: 'plant_row.orchard.name',
     label: t('orchards.title', 1),
     align: 'left' as const,
     field: (row: Plant) => row.plant_row?.orchard?.name,
     sortable: true,
   },
   {
-    name: 'plant_row',
+    name: 'plant_row.name',
     label: t('plants.fields.plantRow'),
     align: 'left' as const,
     field: (row: Plant) => row.plant_row?.name,

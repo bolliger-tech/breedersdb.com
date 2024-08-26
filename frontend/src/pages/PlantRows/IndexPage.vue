@@ -72,7 +72,6 @@ const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
 ];
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
-  foreignColumns: ['orchard'],
   subset,
 });
 
@@ -97,7 +96,7 @@ const columns = computed(() => [
     sortable: true,
   },
   {
-    name: 'orchard',
+    name: 'orchard.name',
     label: t('plantRows.fields.orchard'),
     align: 'left' as const,
     field: (row: PlantRow) => row.orchard.name,

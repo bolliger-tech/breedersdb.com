@@ -105,7 +105,6 @@ const {
 } = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'display_name',
   searchColumns: ['display_name', 'acronym'],
-  foreignColumns: ['lot.display_name'],
 });
 
 const variables = computed(() => {
@@ -164,7 +163,7 @@ const columns = computed(() => [
     ? []
     : [
         {
-          name: 'lot',
+          name: 'lot.display_name',
           label: t('cultivars.fields.lot'),
           align: 'left' as const,
           field: (row: Cultivar) =>

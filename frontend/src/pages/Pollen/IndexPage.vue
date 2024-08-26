@@ -64,7 +64,6 @@ const query = graphql(
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
   searchColumns: ['name', 'cultivar.display_name'],
-  foreignColumns: ['cultivar.display_name'],
 });
 
 const { data, fetching, error } = await useQuery({
@@ -88,7 +87,7 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'cultivar',
+    name: 'cultivar.display_name',
     label: t('pollen.fields.cultivarName'),
     align: 'left' as const,
     field: (row: Pollen) => row.cultivar?.display_name,

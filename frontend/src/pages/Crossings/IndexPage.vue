@@ -66,12 +66,7 @@ const query = graphql(
   [crossingFragment, cultivarFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
-  foreignColumns: [
-    'mother_cultivar.display_name',
-    'father_cultivar.display_name',
-  ],
-});
+const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
 
 const { data, fetching, error } = await useQuery({
   query,
@@ -94,14 +89,14 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'mother_cultivar',
+    name: 'mother_cultivar.display_name',
     label: t('crossings.fields.motherCultivar'),
     align: 'left' as const,
     field: (row: Crossing) => row.mother_cultivar?.display_name,
     sortable: true,
   },
   {
-    name: 'father_cultivar',
+    name: 'father_cultivar.display_name',
     label: t('crossings.fields.fatherCultivar'),
     align: 'left' as const,
     field: (row: Crossing) => row.father_cultivar?.display_name,

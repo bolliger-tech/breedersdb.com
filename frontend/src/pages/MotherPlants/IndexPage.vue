@@ -15,7 +15,7 @@
       :has-qr-scanner="true"
       @scanned-qr="(code) => (search = code)"
     >
-      <template #body-cell-plant="cellProps">
+      <template #[`body-cell-plant.label_id`]="cellProps">
         <q-td :props="cellProps">
           <EntityLabelId :label-id="cellProps.value" entity-type="plant" />
         </q-td>
@@ -75,8 +75,7 @@ const query = graphql(
 );
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
-  searchColumns: ['name', 'crossing', 'plant'],
-  foreignColumns: ['crossing.name', 'plant.label_id', 'pollen.name'],
+  searchColumns: ['name', 'crossing.name', 'plant.label_id'],
 });
 
 const { data, fetching, error } = await useQuery({
@@ -100,14 +99,14 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'crossing',
+    name: 'crossing.name',
     label: t('motherPlants.fields.crossing'),
     align: 'left' as const,
     field: (row: MotherPlant) => row.crossing?.name,
     sortable: true,
   },
   {
-    name: 'plant',
+    name: 'plant.label_id',
     label: t('plants.fields.labelId'),
     align: 'left' as const,
     field: (row: MotherPlant) => row.plant?.label_id,
@@ -122,7 +121,7 @@ const columns = [
     format: (v: MotherPlant['date_impregnated']) => localizeDate(v) || '',
   },
   {
-    name: 'pollen',
+    name: 'pollen.name',
     label: t('motherPlants.fields.pollen'),
     align: 'left' as const,
     field: (row: MotherPlant) => row.pollen?.name,

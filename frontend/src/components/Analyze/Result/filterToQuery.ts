@@ -349,7 +349,8 @@ function toComparison({
     case FilterOperatorValue.Empty:
       // becuase it it easier to implement on nested tables
       // we use double negation. see ruleToCriterion()
-      return columnType === ColumnTypes.String
+      return columnType === ColumnTypes.String ||
+        columnType === ColumnTypes.Citext
         ? {
             operator: GraphQLComparisonOperator.Neq,
             variable: { name, type: 'String', value: '' },
@@ -361,7 +362,8 @@ function toComparison({
             negate: true,
           };
     case FilterOperatorValue.NotEmpty:
-      return columnType === ColumnTypes.String
+      return columnType === ColumnTypes.String ||
+        columnType === ColumnTypes.Citext
         ? {
             operator: GraphQLComparisonOperator.Neq,
             variable: { name, type: 'String', value: '' },
@@ -394,6 +396,7 @@ function toComparison({
 function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnTypes }) {
   switch (type) {
     case ColumnTypes.String:
+    case ColumnTypes.Citext:
       return term?.value || '';
     case ColumnTypes.Integer:
       return term ? parseInt(term.value) : NaN;
@@ -425,6 +428,8 @@ function columnTypeToGraphQLType(type: ColumnTypes) {
   switch (type) {
     case ColumnTypes.String:
       return 'String';
+    case ColumnTypes.Citext:
+      return 'citext';
     case ColumnTypes.Integer:
     case ColumnTypes.Rating:
       return 'Int';
@@ -465,17 +470,20 @@ function toAttributionValueCondition({
 
   switch (graphQLDataType) {
     case 'String':
+    case 'citext':
       if (rule.canBeNullOrEmpty) {
         const empty =
           (rule.operator?.value === FilterOperatorValue.Equal &&
             rule.term?.value === '') ||
           rule.operator?.value === FilterOperatorValue.Empty;
         const textVar =
-          comparison.variable.type === 'String'
+          comparison.variable.type === 'String' ||
+          comparison.variable.type === 'citext'
             ? `$${comparison.variable.name}`
             : '""';
         const nullVar =
-          comparison.variable.type === 'String'
+          comparison.variable.type === 'String' ||
+          comparison.variable.type === 'citext'
             ? empty
             : `$${comparison.variable.name}`;
         return empty

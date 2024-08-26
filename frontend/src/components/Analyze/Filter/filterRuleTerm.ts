@@ -26,6 +26,7 @@ export class FilterRuleTerm {
     if (typeof this.schema === 'undefined') return undefined;
     switch (this.schema.type) {
       case ColumnTypes.String:
+      case ColumnTypes.Citext:
       case ColumnTypes.Integer:
       case ColumnTypes.Rating:
       case ColumnTypes.Float:
@@ -49,6 +50,7 @@ export class FilterRuleTerm {
 
     switch (this.type) {
       case ColumnTypes.String:
+      case ColumnTypes.Citext:
         return this.isValidString();
       case ColumnTypes.Integer:
         return this.isValidInteger();
@@ -88,7 +90,11 @@ export class FilterRuleTerm {
   }
 
   private isValidString() {
-    if (this.schema?.type !== ColumnTypes.String) return false;
+    if (
+      this.schema?.type !== ColumnTypes.String &&
+      this.schema?.type !== ColumnTypes.Citext
+    )
+      return false;
     return validationUtils.isValidString({
       value: this.value,
       validation: this.schema.validation,

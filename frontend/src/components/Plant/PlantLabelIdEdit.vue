@@ -84,7 +84,7 @@ function paddLabelId() {
 }
 
 const uniqueQuery = graphql(`
-  query NextFreeLabelId($label_id: String!) {
+  query NextFreeLabelId($label_id: citext!) {
     plants_next_free_label_id(args: { input_label_id: $label_id }) {
       label_id
     }

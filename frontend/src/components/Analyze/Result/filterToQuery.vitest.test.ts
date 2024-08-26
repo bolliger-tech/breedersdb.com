@@ -71,7 +71,7 @@ const filterRules = {
       tableColumnLabel: 'Name',
       schema: {
         allowEmpty: false,
-        type: ColumnTypes.String,
+        type: ColumnTypes.Citext,
         validation: {
           maxLen: 255,
           pattern: null,
@@ -491,6 +491,49 @@ cultivars(where: { _or: [
                   schema: {
                     allowEmpty: false,
                     type: ColumnTypes.String,
+                    validation: {
+                      maxLen: 255,
+                      pattern: null,
+                    },
+                  },
+                }),
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Equal,
+                }),
+                term: new FilterRuleTerm({ value: 'asdf' }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(
+                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { text_value: { _eq: $v000 } } ] } } ] }',
+                ).replaceAll('$v000', '$v\\d+'),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe('asdf');
+          });
+
+          it('should value citext', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: new FilterRuleColumn({
+                  tableName: 'attributes',
+                  tableColumnName: '123',
+                  tableLabel: 'Attributions',
+                  tableColumnLabel: 'Citext',
+                  schema: {
+                    allowEmpty: false,
+                    type: ColumnTypes.Citext,
                     validation: {
                       maxLen: 255,
                       pattern: null,

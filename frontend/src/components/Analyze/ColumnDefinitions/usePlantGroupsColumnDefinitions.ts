@@ -38,7 +38,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'label_id',
     labelKey: 'plantGroups.fields.labelId',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 9,
@@ -51,7 +51,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'cultivar_name',
     labelKey: 'plantGroups.fields.cultivar',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 51,
@@ -64,7 +64,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'display_name',
     labelKey: 'entity.commonColumns.displayName',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 77,
@@ -77,7 +77,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'full_name',
     labelKey: 'entity.commonColumns.fullName',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 77,

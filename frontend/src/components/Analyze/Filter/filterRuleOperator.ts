@@ -79,6 +79,7 @@ export class FilterRuleOperator {
       case FilterOperatorValue.NotEqual:
         return [
           ColumnTypes.String,
+          ColumnTypes.Citext,
           ColumnTypes.Integer,
           ColumnTypes.Rating,
           ColumnTypes.Float,
@@ -105,10 +106,11 @@ export class FilterRuleOperator {
       case FilterOperatorValue.NotContains:
       case FilterOperatorValue.EndsWith:
       case FilterOperatorValue.NotEndsWith:
-        return [ColumnTypes.String, ColumnTypes.Enum];
+        return [ColumnTypes.String, ColumnTypes.Citext, ColumnTypes.Enum];
       case FilterOperatorValue.Empty:
         return [
           ColumnTypes.String,
+          ColumnTypes.Citext,
           ColumnTypes.Integer,
           ColumnTypes.Rating,
           ColumnTypes.Float,
@@ -120,6 +122,7 @@ export class FilterRuleOperator {
       case FilterOperatorValue.NotEmpty:
         return [
           ColumnTypes.String,
+          ColumnTypes.Citext,
           ColumnTypes.Integer,
           ColumnTypes.Rating,
           ColumnTypes.Float,

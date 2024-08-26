@@ -38,6 +38,7 @@ const operator = computed(() => {
 const term = computed(() => {
   switch (props.rule?.type) {
     case ColumnTypes.String:
+    case ColumnTypes.Citext:
     case ColumnTypes.Integer:
     case ColumnTypes.Rating:
     case ColumnTypes.Float:

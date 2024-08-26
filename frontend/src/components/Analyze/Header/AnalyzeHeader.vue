@@ -109,7 +109,7 @@ const editMutation = graphql(
   `
     mutation EditQuery(
       $id: Int!
-      $name: String!
+      $name: citext!
       $note: String
       $baseTable: analyze_filter_base_tables_enum!
       $baseFilter: jsonb
@@ -143,7 +143,7 @@ const {
 const insertMutation = graphql(
   `
     mutation InsertQuery(
-      $name: String!
+      $name: citext!
       $note: String
       $baseTable: analyze_filter_base_tables_enum!
       $baseFilter: jsonb

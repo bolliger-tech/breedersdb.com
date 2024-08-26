@@ -135,7 +135,7 @@ const maxValue = computed<number | undefined>(() => {
 
 const maxLen = computed<number | undefined>(() => {
   return validationOptions.value && 'maxLen' in validationOptions.value
-    ? validationOptions.value.maxLen ?? undefined
+    ? (validationOptions.value.maxLen ?? undefined)
     : undefined;
 });
 
@@ -184,6 +184,7 @@ const inputType = computed(() => {
     case ColumnTypes.Time:
       return 'time';
     case ColumnTypes.String:
+    case ColumnTypes.Citext:
     case ColumnTypes.Enum:
     case null:
       return 'text';

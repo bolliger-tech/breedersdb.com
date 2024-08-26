@@ -117,6 +117,76 @@ describe('FilterTerm', () => {
     });
   });
 
+  describe('Citext', () => {
+    it('should be too long', () => {
+      const value = '1234';
+      const schema = {
+        type: ColumnTypes.Citext as const,
+        allowEmpty: false,
+        validation: {
+          maxLen: 3,
+          pattern: null,
+        },
+      };
+
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
+
+      expect(filterTerm.isValid).toBe(false);
+    });
+
+    it('should fit', () => {
+      const value = '123';
+      const schema = {
+        type: ColumnTypes.Citext as const,
+        allowEmpty: false,
+        validation: {
+          maxLen: 3,
+          pattern: null,
+        },
+      };
+
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
+
+      expect(filterTerm.isValid).toBe(true);
+    });
+
+    it('should match pattern', () => {
+      const value = '123';
+      const schema = {
+        type: ColumnTypes.Citext as const,
+        allowEmpty: false,
+        validation: {
+          maxLen: 3,
+          pattern: '^[0-9]+$',
+        },
+      };
+
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
+
+      expect(filterTerm.isValid).toBe(true);
+    });
+
+    it('should not match pattern', () => {
+      const value = '123';
+      const schema = {
+        type: ColumnTypes.Citext as const,
+        allowEmpty: false,
+        validation: {
+          maxLen: 3,
+          pattern: '^[a-z]+$',
+        },
+      };
+
+      const filterTerm = new FilterRuleTerm({ value });
+      filterTerm.schema = schema;
+
+      expect(filterTerm.isValid).toBe(false);
+    });
+  });
+
   describe('Integer', () => {
     it('should not be a float', () => {
       const value = '1.1';

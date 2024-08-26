@@ -54,7 +54,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'author',
     labelKey: 'attributions.columns.author',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 45,

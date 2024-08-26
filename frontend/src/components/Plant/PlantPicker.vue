@@ -96,7 +96,7 @@ const error = computed<
 const query = graphql(
   `
     query PlantByLabelId(
-      $label_id: String!
+      $label_id: citext!
       $PlantWithSegments: Boolean = true
     ) {
       plants(where: { label_id: { _eq: $label_id } }) {

@@ -1,5 +1,6 @@
 export enum ColumnTypes {
   String = 'string',
+  Citext = 'citext',
   Integer = 'integer',
   Float = 'double',
   Boolean = 'boolean',

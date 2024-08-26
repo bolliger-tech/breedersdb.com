@@ -12,7 +12,7 @@ export type PrimitiveColumnValue =
 
 export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
   const type = {
-    TEXT: ColumnTypes.String,
+    TEXT: ColumnTypes.Citext,
     INTEGER: ColumnTypes.Integer,
     FLOAT: ColumnTypes.Float,
     BOOLEAN: ColumnTypes.Boolean,

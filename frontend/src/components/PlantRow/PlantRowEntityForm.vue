@@ -23,6 +23,13 @@
     required
   />
   <EntityInput
+    :ref="(el: InputRef) => (refs.dateCreated = el)"
+    v-model="data.date_created"
+    :label="t('plantRows.fields.dateCreated')"
+    type="date"
+    autocomplete="off"
+  />
+  <EntityInput
     :ref="(el: InputRef) => (refs.dateEliminated = el)"
     v-model="data.date_eliminated"
     :label="t('plantRows.fields.dateEliminated')"
@@ -64,6 +71,7 @@ const emits = defineEmits<{
 const initialData = {
   name: props.plantRow.name,
   orchard_id: props.plantRow.orchard_id || null,
+  date_created: props.plantRow.date_created,
   date_eliminated: props.plantRow.date_eliminated,
 };
 
@@ -73,6 +81,7 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   name: null,
   orchardId: null,
   dateEliminated: null,
+  dateCreated: null,
 });
 
 const { isDirty, validate } = useEntityForm({

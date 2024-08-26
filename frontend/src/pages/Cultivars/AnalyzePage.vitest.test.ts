@@ -266,6 +266,7 @@ describe('AnalyzePage', () => {
     boolean_value
     date_value
     plant_id
+    plant_group_id
     cultivar_id
     lot_id
     data_type

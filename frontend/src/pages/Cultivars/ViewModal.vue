@@ -157,12 +157,14 @@ const plantGroupColumns = [
     align: 'left' as const,
     field: 'label_id',
     sortable: true,
+    sort: (a: PlantGroup['label_id'], b: PlantGroup['label_id']) =>
+      localizedSortPredicate(a || '', b || ''),
   },
   {
     name: 'created',
     label: t('entity.commonColumns.created'),
     align: 'left' as const,
-    field: (row: PlantGroup) => d(row.created, 'ymdHis'),
+    field: (row: PlantGroup) => d(row.created, 'YmdHis'),
     sortable: true,
   },
 ];

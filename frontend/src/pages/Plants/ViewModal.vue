@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { graphql } from 'src/graphql';
+import { graphql, ResultOf } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
@@ -91,6 +91,7 @@ import { entityAttributionsViewFragment } from 'src/components/Entity/entityAttr
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { localizeDate } from 'src/utils/dateUtils';
+import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -144,6 +145,11 @@ function edit() {
 
 const { t, n, d } = useI18n();
 
+const { localizedSortPredicate } = useLocalizedSort();
+
+type MotherPlant = NonNullable<
+  ResultOf<typeof query>['plants_by_pk']
+>['mother_plants'][0];
 const motherPlantColumns = [
   {
     name: 'name',
@@ -151,6 +157,8 @@ const motherPlantColumns = [
     label: t('entity.commonColumns.name'),
     align: 'left' as const,
     sortable: true,
+    sort: (a: MotherPlant['name'], b: MotherPlant['name']) =>
+      localizedSortPredicate(a, b),
   },
   {
     name: 'date_impregnated',
@@ -158,7 +166,7 @@ const motherPlantColumns = [
     label: t('motherPlants.fields.dateImpregnated'),
     align: 'left' as const,
     sortable: true,
-    format: (v: string | null) => localizeDate(v),
+    format: localizeDate,
   },
   {
     name: 'pollen',
@@ -173,7 +181,7 @@ const motherPlantColumns = [
     label: t('motherPlants.fields.numbFlowers'),
     align: 'right' as const,
     sortable: true,
-    format: (v: number | null) => (v ? n(v) : v),
+    format: (v: MotherPlant['numb_flowers']) => (v ? n(v) : v),
   },
   {
     name: 'numb_fruits',
@@ -181,7 +189,7 @@ const motherPlantColumns = [
     label: t('motherPlants.fields.numbFruits'),
     align: 'right' as const,
     sortable: true,
-    format: (v: number | null) => (v ? n(v) : v),
+    format: (v: MotherPlant['numb_fruits']) => (v ? n(v) : v),
   },
   {
     name: 'date_fruits_harvested',
@@ -189,7 +197,7 @@ const motherPlantColumns = [
     label: t('motherPlants.fields.dateFruitsHarvested'),
     align: 'left' as const,
     sortable: true,
-    format: (v: string | null) => localizeDate(v),
+    format: localizeDate,
   },
   {
     name: 'numb_seeds',
@@ -197,7 +205,7 @@ const motherPlantColumns = [
     label: t('motherPlants.fields.numbSeeds'),
     align: 'right' as const,
     sortable: true,
-    format: (v: number | null) => (v ? n(v) : v),
+    format: (v: MotherPlant['numb_seeds']) => (v ? n(v) : v),
   },
   {
     name: 'created',
@@ -205,15 +213,7 @@ const motherPlantColumns = [
     label: t('entity.commonColumns.created'),
     align: 'left' as const,
     sortable: true,
-    format: (v: string) => d(v, 'ymdHis'),
-  },
-  {
-    name: 'modified',
-    field: 'modified',
-    label: t('entity.commonColumns.modified'),
-    align: 'left' as const,
-    sortable: true,
-    format: (v: string | null) => (v ? d(v, 'ymdHis') : t('base.notAvailable')),
+    format: (v: string) => d(v, 'YmdHis'),
   },
 ];
 </script>

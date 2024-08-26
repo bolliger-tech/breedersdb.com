@@ -197,7 +197,7 @@ const plantsColumns = [
     align: 'left' as const,
     field: 'date_planted',
     sortable: true,
-    format: (v: Plant['date_planted']) => localizeDate(v) || '',
+    format: localizeDate,
   },
   {
     name: 'date_eliminted',
@@ -205,7 +205,7 @@ const plantsColumns = [
     align: 'left' as const,
     field: 'date_eliminated',
     sortable: true,
-    format: (v: Plant['date_eliminated']) => localizeDate(v) || '',
+    format: localizeDate,
   },
 ];
 </script>

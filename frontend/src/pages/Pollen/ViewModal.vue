@@ -197,8 +197,8 @@ const motherPlantsColumns = [
     align: 'left' as const,
     sortable: true,
     sort: (
-      a: NonNullable<MotherPlant['crossing']>['name'],
-      b: NonNullable<MotherPlant['crossing']>['name'],
+      a: MotherPlant['crossing']['name'],
+      b: MotherPlant['crossing']['name'],
     ) => localizedSortPredicate(a, b),
   },
   {
@@ -208,8 +208,8 @@ const motherPlantsColumns = [
     align: 'left' as const,
     sortable: true,
     sort: (
-      a: NonNullable<MotherPlant['plant']>['label_id'],
-      b: NonNullable<MotherPlant['plant']>['label_id'],
+      a: MotherPlant['plant']['label_id'],
+      b: MotherPlant['plant']['label_id'],
     ) => localizedSortPredicate(a, b),
   },
   {
@@ -218,7 +218,7 @@ const motherPlantsColumns = [
     field: 'date_impregnated',
     align: 'left' as const,
     sortable: true,
-    format: (v: MotherPlant['date_impregnated']) => localizeDate(v),
+    format: localizeDate,
   },
 ];
 </script>

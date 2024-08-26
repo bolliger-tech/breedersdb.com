@@ -143,7 +143,7 @@ const cultivarsColumns = [
     field: 'created',
     align: 'left' as const,
     sortable: true,
-    format: (val: string | Date) => d(val, 'ymdHis'),
+    format: (val: string) => d(val, 'YmdHis'),
   },
 ];
 </script>

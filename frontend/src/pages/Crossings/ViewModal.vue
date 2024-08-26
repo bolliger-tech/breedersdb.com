@@ -209,7 +209,7 @@ const lotsColumns = [
     label: t('lots.fields.dateSowed'),
     align: 'left' as const,
     field: 'date_sowed',
-    format: (value: string | null) => localizeDate(value) || '',
+    format: localizeDate,
     sortable: true,
   },
   {
@@ -217,7 +217,7 @@ const lotsColumns = [
     label: t('lots.fields.datePlanted'),
     align: 'left' as const,
     field: 'date_planted',
-    format: (value: string | null) => localizeDate(value) || '',
+    format: localizeDate,
     sortable: true,
   },
   {
@@ -226,8 +226,8 @@ const lotsColumns = [
     align: 'left' as const,
     field: 'plot',
     sortable: true,
-    maxWidth: 'clamp(300px, 30svw, 600px)',
-    ellipsis: true,
+    sort: (a: Lot['plot'], b: Lot['plot']) =>
+      localizedSortPredicate(a || '', b || ''),
   },
   {
     name: 'orchard',
@@ -235,6 +235,8 @@ const lotsColumns = [
     align: 'left' as const,
     field: (row: Lot) => row.orchard?.name,
     sortable: true,
+    sort: (a: Lot['display_name'], b: Lot['display_name']) =>
+      localizedSortPredicate(a, b),
   },
 ];
 
@@ -259,9 +261,9 @@ const motherPlantsColumns = [
     align: 'left' as const,
     sortable: true,
     sort: (
-      a: NonNullable<MotherPlant['plant']>['label_id'],
-      b: NonNullable<MotherPlant['plant']>['label_id'],
-    ) => localizedSortPredicate(a, b),
+      a: NonNullable<MotherPlant['plant']>['label_id'] | undefined,
+      b: NonNullable<MotherPlant['plant']>['label_id'] | undefined,
+    ) => localizedSortPredicate(a || '', b || ''),
   },
   {
     name: 'date_impregnated',
@@ -269,7 +271,7 @@ const motherPlantsColumns = [
     field: 'date_impregnated',
     align: 'left' as const,
     sortable: true,
-    format: (v: MotherPlant['date_impregnated']) => (v ? localizeDate(v) : ''),
+    format: localizeDate,
   },
 ];
 </script>

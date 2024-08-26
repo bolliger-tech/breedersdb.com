@@ -164,7 +164,7 @@ const plantRowsColumns = [
     field: 'date_created',
     align: 'left' as const,
     sortable: true,
-    format: (val: string | Date | null) => localizeDate(val),
+    format: localizeDate,
   },
   {
     name: 'date_elimitated',
@@ -172,7 +172,7 @@ const plantRowsColumns = [
     field: 'date_elimitated',
     align: 'left' as const,
     sortable: true,
-    format: (val: string | Date | null) => localizeDate(val),
+    format: localizeDate,
   },
 ];
 
@@ -195,7 +195,7 @@ const lotsColumns = [
     label: t('lots.fields.dateSowed'),
     align: 'left' as const,
     field: 'date_sowed',
-    format: (value: string | null) => localizeDate(value) || '',
+    format: localizeDate,
     sortable: true,
   },
   {
@@ -203,7 +203,7 @@ const lotsColumns = [
     label: t('lots.fields.datePlanted'),
     align: 'left' as const,
     field: 'date_planted',
-    format: (value: string | null) => localizeDate(value) || '',
+    format: localizeDate,
     sortable: true,
   },
   {
@@ -212,6 +212,8 @@ const lotsColumns = [
     align: 'left' as const,
     field: 'plot',
     sortable: true,
+    sort: (a: Lot['plot'], b: Lot['plot']) =>
+      localizedSortPredicate(a || '', b || ''),
   },
 ];
 </script>

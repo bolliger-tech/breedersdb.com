@@ -3,7 +3,7 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertAttributionForm($name: String, $description: String) {
+  mutation InsertAttributionForm($name: citext, $description: String) {
     insert_attribution_forms_one(
       object: { name: $name, description: $description, disabled: false }
     ) {
@@ -89,7 +89,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateAttributionForm($id: Int!, $name: String) {
+      mutation UpdateAttributionForm($id: Int!, $name: citext) {
         update_attribution_forms_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }

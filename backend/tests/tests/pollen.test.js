@@ -4,13 +4,13 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertPollen(
-    $name: String!
+    $name: citext!
     $date_harvested: date
     $note: String
-    $crossing_name: String!
-    $orchard_name: String! = "Orchard 1"
-    $lot_name_segment: String!
-    $cultivar_name_segment: String!
+    $crossing_name: citext!
+    $orchard_name: citext! = "Orchard 1"
+    $lot_name_segment: citext!
+    $cultivar_name_segment: citext!
   ) {
     insert_pollen_one(
       object: {
@@ -147,7 +147,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdatePollen($id: Int!, $name: String!) {
+      mutation UpdatePollen($id: Int!, $name: citext!) {
         update_pollen_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
           id
           name

@@ -2,7 +2,7 @@ import { test, expect, afterEach } from 'bun:test';
 import { post, postOrFail } from '../fetch';
 
 const query = /* GraphQL */ `
-  query NextFreeLabelId($label_id: String!) {
+  query NextFreeLabelId($label_id: citext!) {
     plants_next_free_label_id(args: { input_label_id: $label_id }) {
       label_id
     }
@@ -11,12 +11,12 @@ const query = /* GraphQL */ `
 
 const insertMutation = /* GraphQL */ `
   mutation InsertPlant(
-    $crossing_name: String!
-    $lot_name_segment: String!
-    $orchard_name: String! = "Orchard 1"
-    $cultivar_name_segment: String!
-    $plant_group_name_segment: String! = "A"
-    $label_id: String!
+    $crossing_name: citext!
+    $lot_name_segment: citext!
+    $orchard_name: citext! = "Orchard 1"
+    $cultivar_name_segment: citext!
+    $plant_group_name_segment: citext! = "A"
+    $label_id: citext!
     $date_eliminated: date = null
   ) {
     insert_crossings_one(

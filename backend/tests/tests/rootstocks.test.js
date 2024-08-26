@@ -3,7 +3,7 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertRootstock($name: String) {
+  mutation InsertRootstock($name: citext) {
     insert_rootstocks_one(object: { name: $name }) {
       id
       name
@@ -78,7 +78,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateRootstock($id: Int!, $name: String) {
+      mutation UpdateRootstock($id: Int!, $name: citext) {
         update_rootstocks_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }

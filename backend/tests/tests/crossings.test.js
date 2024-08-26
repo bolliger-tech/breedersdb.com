@@ -3,7 +3,7 @@ import { post, postOrFail } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertCrossing($name: String, $note: String) {
+  mutation InsertCrossing($name: citext, $note: String) {
     insert_crossings_one(object: { name: $name, note: $note }) {
       id
       name
@@ -108,7 +108,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateCrossing($id: Int!, $name: String) {
+      mutation UpdateCrossing($id: Int!, $name: citext) {
         update_crossings_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
           id
           name

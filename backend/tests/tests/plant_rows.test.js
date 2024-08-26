@@ -4,8 +4,8 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertPlantRow(
-    $name: String
-    $orchard_name: String
+    $name: citext
+    $orchard_name: citext
     $note: String
     $date_created: date
     $date_eliminated: date
@@ -75,7 +75,7 @@ test('insert', async () => {
 test('name is unique in orchard', async () => {
   const orchard = await post({
     query: /* GraphQL */ `
-      mutation InsertOrchard($name: String) {
+      mutation InsertOrchard($name: citext) {
         insert_orchards_one(object: { name: $name }) {
           id
           name
@@ -86,7 +86,7 @@ test('name is unique in orchard', async () => {
   });
   const resp1 = await post({
     query: /* GraphQL */ `
-      mutation InsertPlantRow($name: String, $orchard_id: Int) {
+      mutation InsertPlantRow($name: citext, $orchard_id: Int) {
         insert_plant_rows_one(
           object: { name: $name, orchard_id: $orchard_id }
         ) {
@@ -101,7 +101,7 @@ test('name is unique in orchard', async () => {
   });
   const resp2 = await post({
     query: /* GraphQL */ `
-      mutation InsertPlantRow($name: String, $orchard_id: Int) {
+      mutation InsertPlantRow($name: citext, $orchard_id: Int) {
         insert_plant_rows_one(
           object: { name: $name, orchard_id: $orchard_id }
         ) {
@@ -205,7 +205,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdatePlantRow($id: Int!, $name: String) {
+      mutation UpdatePlantRow($id: Int!, $name: citext) {
         update_plant_rows_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }

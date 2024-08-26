@@ -19,7 +19,11 @@ declare
     _cols_to_select text;
 begin
     with _cols as (select column_name as _name,
-                          '::' || data_type || '(' || character_maximum_length || ')'
+                          case
+                              when character_maximum_length is not null then
+                                  '::' || udt_name || '(' || character_maximum_length || ')'
+                              else '::' || udt_name
+                              end
                                       as _cast
                    from information_schema.columns
                    where table_name = tg_table_name
@@ -51,7 +55,7 @@ $$ language plpgsql;
 create table crossings
 (
     id                 integer primary key generated always as identity,
-    name               varchar(8)               not null unique check ( name ~ '^[-_\w\d]{1,8}$' ),
+    name               citext                   not null unique check ( name ~ '^[-_\w\d]{1,8}$' ),
     mother_cultivar_id int, -- constraint is added after table cultivars is created: default null references cultivars on delete set null,
     father_cultivar_id int, -- constraint is added after table cultivars is created: default null references cultivars on delete set null,
     is_variety         boolean                  not null default false,
@@ -84,7 +88,7 @@ execute function trim_strings('name', 'note');
 create table orchards
 (
     id       integer primary key generated always as identity,
-    name     varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
+    name     citext                   not null unique check (name ~ '^[^\n]{1,45}$'),
     disabled boolean                           default false not null,
     created  timestamp with time zone not null default now(),
     modified timestamp with time zone
@@ -111,10 +115,10 @@ create table lots
     id                     integer primary key generated always as identity,
     crossing_id            int                      not null references crossings,
     is_variety             boolean                  not null default false,
-    name_segment           varchar(3)               not null check ( name_segment ~ '^(\d{2}[A-Z]|000)$' ),
-    full_name              varchar(12)              not null unique,
-    name_override          varchar(25) unique check ( name_override ~ '^[^\n\.]{1,25}$' ),
-    display_name           varchar(25)              not null generated always as ( coalesce(name_override, full_name) ) stored unique,
+    name_segment           citext                   not null check ( name_segment ~ '^(\d{2}[A-Z]|000)$' ),
+    full_name              citext                   not null unique check ( char_length(full_name) <= 12 ),
+    name_override          citext unique check ( name_override ~ '^[^\n\.]{1,25}$' ),
+    display_name           citext                   not null generated always as ( coalesce(name_override, full_name) ) stored unique check ( char_length(display_name) <= 25 ),
     date_sowed             date,
     numb_seeds_sowed       int,
     numb_seedlings_grown   int,
@@ -227,11 +231,11 @@ create table cultivars
     id            integer primary key generated always as identity,
     lot_id        int                      not null references lots,
     is_variety    boolean                  not null default false,
-    name_segment  varchar(25)              not null check ( name_segment ~ '^[-_\w\d]{1,25}$' ),
-    full_name     varchar(51)              not null unique,
-    name_override varchar(51) unique check ( name_override ~ '^[^\n\.]{1,51}$' ),
-    display_name  varchar(51)              not null generated always as ( coalesce(name_override, full_name) ) stored unique,
-    acronym       varchar(8) unique check (acronym ~ '^[-_\w\d]{1,8}$'),
+    name_segment  citext                   not null check ( name_segment ~ '^[-_\w\d]{1,25}$' ),
+    full_name     citext                   not null unique check ( char_length(full_name) <= 51 ),
+    name_override citext unique check ( name_override ~ '^[^\n\.]{1,51}$' ),
+    display_name  citext                   not null generated always as ( coalesce(name_override, full_name) ) stored unique check ( char_length(display_name) <= 51 ),
+    acronym       citext unique check (acronym ~ '^[-_\w\d]{1,8}$'),
     breeder       varchar(255),
     note          varchar(2047),
     created       timestamp with time zone not null default now(),
@@ -366,16 +370,16 @@ $body$
 create table plant_groups
 (
     id            integer primary key generated always as identity,
-    label_id      varchar(9) generated always as (generate_plant_label(id)) stored unique,
+    label_id      citext generated always as (generate_plant_label(id)) stored unique check ( label_id ~ '^G[[:digit:]]{8}$' ),
     cultivar_id   int                      not null references cultivars,
-    cultivar_name varchar(51)              not null,
-    name_segment  varchar(25)              not null check ( name_segment ~ '^[-_\w\d]{1,25}$' ),
+    cultivar_name citext                   not null check ( char_length(cultivar_name) <= 51 ),
+    name_segment  citext                   not null check ( name_segment ~ '^[-_\w\d]{1,25}$' ),
     -- must correspond to display_name. see comment there.
-    full_name     varchar(77) generated always as ( cultivar_name || '.' || name_segment ) stored unique,
-    name_override varchar(77) unique check ( name_override ~ '^[^\n\.]{1,77}$' ),
+    full_name     citext generated always as ( cultivar_name || '.' || name_segment ) stored unique check ( char_length(full_name) <= 77 ),
+    name_override citext unique check ( name_override ~ '^[^\n\.]{1,77}$' ),
     -- the second argument of coalesce is actually the full_name,
     -- but as it is not allowed to reference a generated column in the same table, we repeat ourselves here.
-    display_name  varchar(77)              not null generated always as ( coalesce(name_override, cultivar_name || '.' || name_segment) ) stored unique,
+    display_name  citext                   not null generated always as ( coalesce(name_override, cultivar_name || '.' || name_segment) ) stored unique check ( char_length(display_name) <= 77 ),
     note          varchar(2047),
     disabled      boolean                  not null default false,
     created       timestamp with time zone not null default now(),
@@ -449,7 +453,7 @@ execute function cultivars_update_plant_groups_cultivar_name();
 create table graftings
 (
     id       integer primary key generated always as identity,
-    name     varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
+    name     citext                   not null unique check (name ~ '^[^\n]{1,45}$'),
     created  timestamp with time zone not null default now(),
     modified timestamp with time zone
 );
@@ -471,7 +475,7 @@ execute function trim_strings('name');
 create table rootstocks
 (
     id       integer primary key generated always as identity,
-    name     varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
+    name     citext                   not null unique check (name ~ '^[^\n]{1,45}$'),
     created  timestamp with time zone not null default now(),
     modified timestamp with time zone
 );
@@ -493,7 +497,7 @@ execute function trim_strings('name');
 create table plant_rows
 (
     id              integer primary key generated always as identity,
-    name            varchar(45)              not null check (name ~ '^[^\n]{1,45}$'),
+    name            citext                   not null check (name ~ '^[^\n]{1,45}$'),
     orchard_id      int                      not null references orchards,
     note            varchar(2047),
     date_created    date,
@@ -529,10 +533,10 @@ execute function trim_strings('name', 'note');
 create table plants
 (
     id                       integer primary key generated always as identity,
-    label_id                 varchar(9)               not null check ( label_id ~ '^#?[[:digit:]]{8}$' ),
+    label_id                 citext                   not null check ( label_id ~ '^#?[[:digit:]]{8}$' ),
     plant_group_id           int                      not null references plant_groups,
-    plant_group_name         varchar(77)              not null,
-    cultivar_name            varchar(51)              not null,
+    plant_group_name         citext                   not null check (char_length(plant_group_name) <= 77),
+    cultivar_name            citext                   not null check (char_length(cultivar_name) <= 51),
     plant_row_id             int references plant_rows,
     serial_in_plant_row      int,
     distance_plant_row_start double precision,
@@ -608,7 +612,7 @@ create or replace function remove_label_id_prefix_on_revival() returns trigger a
 $$
 begin
     if new.date_eliminated is null and new.label_id like '#%' then
-        new.label_id := substring(new.label_id from 2 for length(new.label_id) - 1);
+        new.label_id := substring(new.label_id from 2 for char_length(new.label_id) - 1);
     end if;
     return new;
 end;
@@ -642,8 +646,8 @@ execute function prevent_invalid_label_id();
 create or replace function plants_set_plant_group_and_cultivar_names() returns trigger as
 $$
 declare
-    _cultivar_name    varchar(51);
-    _plant_group_name varchar(77);
+    _cultivar_name    citext;
+    _plant_group_name citext;
 begin
     select display_name, cultivar_name
     into _plant_group_name, _cultivar_name
@@ -680,7 +684,7 @@ create trigger update_plant_group_name
     for each row
 execute function plant_groups_update_plant_group_and_cultivar_name();
 
-create or replace function plants_next_free_label_id(input_label_id text) returns setof plants as
+create or replace function plants_next_free_label_id(input_label_id citext) returns setof plants as
 $$
 declare
     plant_cursor no scroll cursor for select *
@@ -725,7 +729,7 @@ $$ language plpgsql stable;
 create table pollen
 (
     id             integer primary key generated always as identity,
-    name           varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
+    name           citext                   not null unique check (name ~ '^[^\n]{1,45}$'),
     date_harvested date,
     note           varchar(2047),
     cultivar_id    int                      not null references cultivars,
@@ -755,7 +759,7 @@ execute function trim_strings('name', 'note');
 create table mother_plants
 (
     id                    integer primary key generated always as identity,
-    name                  varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
+    name                  citext                   not null unique check (name ~ '^[^\n]{1,45}$'),
     date_impregnated      date,
     date_fruits_harvested date,
     numb_flowers          int,
@@ -912,13 +916,13 @@ values ('INTEGER'),
 create table attributes
 (
     id              integer primary key generated always as identity,
-    name            varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
+    name            citext                   not null unique check (name ~ '^[^\n]{1,45}$'),
     validation_rule jsonb,
     default_value   jsonb,
-    data_type       varchar(12)              not null references attribute_data_types,
+    data_type       text                     not null references attribute_data_types,
     description     varchar(255),
     legend          jsonb,
-    attribute_type  varchar(12)              not null references attribute_types,
+    attribute_type  text                     not null references attribute_types,
     disabled        boolean                           default false not null,
     created         timestamp with time zone not null default now(),
     modified        timestamp with time zone
@@ -1135,7 +1139,7 @@ execute function make_data_type_immutable();
 create table attribution_forms
 (
     id          integer primary key generated always as identity,
-    name        varchar(45)              not null unique check (name ~ '^[^\n]{1,45}$'),
+    name        citext                   not null unique check (name ~ '^[^\n]{1,45}$'),
     description varchar(255),
     disabled    boolean                           default false not null,
     created     timestamp with time zone not null default now(),
@@ -1184,7 +1188,7 @@ execute function modified_column();
 create table attributions
 (
     id                    integer primary key generated always as identity,
-    author                varchar(45)              not null check (author ~ '^[^\n]{1,45}$'),
+    author                citext                   not null check (author ~ '^[^\n]{1,45}$'),
     date_attributed       date                     not null,
     attribution_form_id   int                      not null references attribution_forms,
     plant_id              int references plants,
@@ -1248,7 +1252,7 @@ create table attribution_values
     attribution_id          int                      not null references attributions,
     integer_value           int,
     float_value             double precision,
-    text_value              varchar(2047) check (0 < length(text_value)),
+    text_value              citext check (0 < char_length(text_value) and char_length(text_value) <= 2047),
     boolean_value           boolean,
     date_value              date,
     text_note               varchar(2047),
@@ -1374,7 +1378,7 @@ values ('PLANTS'),
 create table analyze_filters
 (
     id                 integer primary key generated always as identity,
-    name               varchar(45)              not null check (name ~ '^[^/\n]{1,45}$'),
+    name               citext                   not null check (name ~ '^[^/\n]{1,45}$'),
     note               varchar(2047),
     base_table         text                     not null references analyze_filter_base_tables,
     base_filter        jsonb,

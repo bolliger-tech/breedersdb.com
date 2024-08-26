@@ -4,7 +4,7 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertQuery(
-    $name: String!
+    $name: citext!
     $note: String
     $baseTable: analyze_filter_base_tables_enum!
     $baseFilter: jsonb
@@ -244,7 +244,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateQuery($id: Int!, $name: String) {
+      mutation UpdateQuery($id: Int!, $name: citext) {
         update_analyze_filters_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }

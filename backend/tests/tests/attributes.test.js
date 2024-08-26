@@ -4,7 +4,7 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertAttribute(
-    $name: String
+    $name: citext
     $validation_rule: jsonb
     $data_type: attribute_data_types_enum
     $description: String
@@ -540,7 +540,7 @@ test("immutability of data type doesn't block other changes", async () => {
     query: /* GraphQL */ `
       mutation UpdateAttribute(
         $id: Int!
-        $name: String!
+        $name: citext!
         $data_type: attribute_data_types_enum
       ) {
         update_attributes_by_pk(
@@ -576,7 +576,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateAttribute($id: Int!, $name: String) {
+      mutation UpdateAttribute($id: Int!, $name: citext) {
         update_attributes_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }

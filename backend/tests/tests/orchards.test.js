@@ -3,7 +3,7 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertOrchard($name: String) {
+  mutation InsertOrchard($name: citext) {
     insert_orchards_one(object: { name: $name, disabled: false }) {
       id
       name
@@ -80,7 +80,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateOrchard($id: Int!, $name: String) {
+      mutation UpdateOrchard($id: Int!, $name: citext) {
         update_orchards_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
           id
           name

@@ -4,9 +4,9 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertAttributions(
-    $author: String
+    $author: citext
     $date_attributed: date
-    $attribution_form_name: String
+    $attribution_form_name: citext
     $plant_id: Int
     $plant_group_id: Int
     $cultivar_id: Int
@@ -60,11 +60,11 @@ const insertMutation = /* GraphQL */ `
 
 const insertPlantMutation = /* GraphQL */ `
   mutation InsertPlant(
-    $label_id: String!
-    $cultivar_name_segment: String!
-    $lot_name_segment: String!
-    $crossing_name: String!
-    $orchard_name: String! = "Orchard 1"
+    $label_id: citext!
+    $cultivar_name_segment: citext!
+    $lot_name_segment: citext!
+    $crossing_name: citext!
+    $orchard_name: citext! = "Orchard 1"
   ) {
     insert_plants_one(
       object: {
@@ -386,7 +386,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateAttribution($id: Int!, $author: String) {
+      mutation UpdateAttribution($id: Int!, $author: citext) {
         update_attributions_by_pk(
           pk_columns: { id: $id }
           _set: { author: $author }

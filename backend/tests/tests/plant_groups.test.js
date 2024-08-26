@@ -4,12 +4,12 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertPlantGroup(
-    $crossing_name: String! = "Abcd"
-    $lot_name_segment: String! = "24A"
-    $orchard_name: String! = "Orchard 1"
-    $cultivar_name_segment: String! = "001"
-    $name_segment: String!
-    $name_override: String
+    $crossing_name: citext! = "Abcd"
+    $lot_name_segment: citext! = "24A"
+    $orchard_name: citext! = "Orchard 1"
+    $cultivar_name_segment: citext! = "001"
+    $name_segment: citext!
+    $name_override: citext
     $note: String
     $disabled: Boolean = false
   ) {

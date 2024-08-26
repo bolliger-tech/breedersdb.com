@@ -4,9 +4,9 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertLot(
-    $crossing_name: String
-    $name_segment: String
-    $name_override: String
+    $crossing_name: citext
+    $name_segment: citext
+    $name_override: citext
     $date_sowed: date
     $numb_seeds_sowed: Int
     $numb_seedlings_grown: Int
@@ -14,7 +14,7 @@ const insertMutation = /* GraphQL */ `
     $date_planted: date
     $numb_seedlings_planted: Int
     $plot: String
-    $orchard_name: String
+    $orchard_name: citext
     $note: String
     $is_variety: Boolean = false
   ) {
@@ -168,7 +168,7 @@ test('updated full_name crossing', async () => {
   });
 
   const updated = await postOrFail({
-    query: `mutation UpdateCrossing($id: Int!, $name: String!) {
+    query: `mutation UpdateCrossing($id: Int!, $name: citext!) {
       update_crossings_by_pk(pk_columns: {id: $id}, _set: {name: $name}) {
         id
         lots {
@@ -199,7 +199,7 @@ test('updated full_name lot', async () => {
   });
 
   const updated = await postOrFail({
-    query: `mutation UpdateLot($id: Int!, $name_segment: String!) {
+    query: `mutation UpdateLot($id: Int!, $name_segment: citext!) {
       update_lots_by_pk(pk_columns: {id: $id}, _set: {name_segment: $name_segment}) {
         id
         full_name
@@ -261,7 +261,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateLot($id: Int!, $name_segment: String) {
+      mutation UpdateLot($id: Int!, $name_segment: citext) {
         update_lots_by_pk(
           pk_columns: { id: $id }
           _set: { name_segment: $name_segment }

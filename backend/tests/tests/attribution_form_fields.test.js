@@ -5,8 +5,8 @@ import { iso8601dateRegex } from '../utils';
 const insertMutation = /* GraphQL */ `
   mutation InsertAttributionFormField(
     $priority: Int
-    $attribution_form_name: String
-    $attribute_name: String
+    $attribution_form_name: citext
+    $attribute_name: citext
     $attribute_validation_rule: jsonb
     $attribute_data_type: attribute_data_types_enum
     $attribute_type: attribute_types_enum

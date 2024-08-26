@@ -60,16 +60,16 @@ lots {
 // no #graphql tag here, because the syntax checker fails on the interpolation
 const insertMutation = `
 mutation InsertPlant(
-  $crossing_name: String!,
-  $lot_name_segment: String!,
-  $cultivar_name_segment: String!,
-  $plant_group_name_segment: String! = "A",
-  $rootstock_name: String,
-  $grafting_name: String,
-  $orchard_name: String,
-  $lot_orchard_name: String! = "Lot Orchard 1"
-  $plant_row_name: String,
-  $label_id: String!,
+  $crossing_name: citext!,
+  $lot_name_segment: citext!,
+  $cultivar_name_segment: citext!,
+  $plant_group_name_segment: citext! = "A",
+  $rootstock_name: citext,
+  $grafting_name: citext,
+  $orchard_name: citext,
+  $lot_orchard_name: citext! = "Lot Orchard 1"
+  $plant_row_name: citext,
+  $label_id: citext!,
   $serial_in_plant_row: Int,
   $distance_plant_row_start: float8,
   $geo_location: geography,
@@ -126,12 +126,12 @@ mutation InsertPlant(
 // no #graphql tag here, because the syntax checker fails on the interpolation
 const insertMutationMinimal = `
 mutation InsertPlant(
-  $crossing_name: String!,
-  $lot_name_segment: String!,
-  $lot_orchard_name: String! = "Lot Orchard 1"
-  $cultivar_name_segment: String!,
-  $plant_group_name_segment: String! = "A",
-  $label_id: String!,
+  $crossing_name: citext!,
+  $lot_name_segment: citext!,
+  $lot_orchard_name: citext! = "Lot Orchard 1"
+  $cultivar_name_segment: citext!,
+  $plant_group_name_segment: citext! = "A",
+  $label_id: citext!,
   $date_eliminated: date
   ) {
   insert_crossings_one(object: {
@@ -158,12 +158,12 @@ mutation InsertPlant(
 // no #graphql tag here, because the syntax checker fails on the interpolation
 const insertMutationPlantRow = `
 mutation InsertPlant(
-  $crossing_name: String!,
-  $lot_name_segment: String!,
-  $lot_orchard_name: String! = "Lot Orchard 1"
-  $cultivar_name_segment: String!,
-  $plant_group_name_segment: String! = "A",
-  $label_id: String!,
+  $crossing_name: citext!,
+  $lot_name_segment: citext!,
+  $lot_orchard_name: citext! = "Lot Orchard 1"
+  $cultivar_name_segment: citext!,
+  $plant_group_name_segment: citext! = "A",
+  $label_id: citext!,
   $date_eliminated: date,
   $plant_row_id: Int!,
   $serial_in_plant_row: Int!
@@ -499,7 +499,7 @@ test('updated cultivar_name on cultivar mod', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateCultivar($id: Int!, $name_segment: String!) {
+      mutation UpdateCultivar($id: Int!, $name_segment: citext!) {
         update_cultivars_by_pk(
           pk_columns: { id: $id }
           _set: { name_segment: $name_segment }
@@ -538,7 +538,7 @@ test('updated cultivar_name on plant_group cultivar_id change', async () => {
 
   const newCultivar = await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertCultivar($lot_id: Int!, $name_segment: String!) {
+      mutation InsertCultivar($lot_id: Int!, $name_segment: citext!) {
         insert_cultivars_one(
           object: { lot_id: $lot_id, name_segment: $name_segment }
         ) {
@@ -593,7 +593,7 @@ test('updated plant_group_name on plant_group mod', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdatePlantGroup($id: Int!, $name_segment: String!) {
+      mutation UpdatePlantGroup($id: Int!, $name_segment: citext!) {
         update_plant_groups_by_pk(
           pk_columns: { id: $id }
           _set: { name_segment: $name_segment }
@@ -632,7 +632,7 @@ test('updated plant_group_name and cultivar_name on plant_group_id change', asyn
 
   const newCultivar = await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertCultivar($lot_id: Int!, $name_segment: String!) {
+      mutation InsertCultivar($lot_id: Int!, $name_segment: citext!) {
         insert_cultivars_one(
           object: { lot_id: $lot_id, name_segment: $name_segment }
         ) {
@@ -648,7 +648,7 @@ test('updated plant_group_name and cultivar_name on plant_group_id change', asyn
 
   const newPlantGroup = await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertPlantGroup($cultivar_id: Int!, $name_segment: String!) {
+      mutation InsertPlantGroup($cultivar_id: Int!, $name_segment: citext!) {
         insert_plant_groups_one(
           object: { cultivar_id: $cultivar_id, name_segment: $name_segment }
         ) {
@@ -701,7 +701,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdatePlant($id: Int!, $label_id: String!) {
+      mutation UpdatePlant($id: Int!, $label_id: citext!) {
         update_plants_by_pk(
           pk_columns: { id: $id }
           _set: { label_id: $label_id }
@@ -724,7 +724,7 @@ test('modified', async () => {
 test('row / serial combo is unique if not eliminated', async () => {
   const plantRow = await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertPlantRow($name: String!, $orchard_name: String!) {
+      mutation InsertPlantRow($name: citext!, $orchard_name: citext!) {
         insert_plant_rows_one(
           object: { name: $name, orchard: { data: { name: $orchard_name } } }
         ) {
@@ -771,7 +771,7 @@ test('row / serial combo is unique if not eliminated', async () => {
 test('row / serial combo not unique if is eliminated', async () => {
   const plantRow = await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertPlantRow($name: String!, $orchard_name: String!) {
+      mutation InsertPlantRow($name: citext!, $orchard_name: citext!) {
         insert_plant_rows_one(
           object: { name: $name, orchard: { data: { name: $orchard_name } } }
         ) {

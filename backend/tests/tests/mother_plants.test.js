@@ -4,7 +4,7 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertMotherPlant(
-    $name: String!
+    $name: citext!
     $date_impregnated: date
     $date_fruits_harvested: date
     $numb_flowers: Int
@@ -13,7 +13,7 @@ const insertMutation = /* GraphQL */ `
     $note: String
     $plant_id: Int!
     $pollen_id: Int
-    $crossing_name: String!
+    $crossing_name: citext!
     $crossing_mother_cultivar_id: Int
     $crossing_father_cultivar_id: Int
   ) {
@@ -77,11 +77,11 @@ const insertMutation = /* GraphQL */ `
 
 const insertPlantMutation = /* GraphQL */ `
   mutation InsertPlant(
-    $crossing_name: String!
-    $lot_name_segment: String!
-    $cultivar_name_segment: String!
-    $label_id: String!
-    $orchard_name: String! = "Orchard 1"
+    $crossing_name: citext!
+    $lot_name_segment: citext!
+    $cultivar_name_segment: citext!
+    $label_id: citext!
+    $orchard_name: citext! = "Orchard 1"
   ) {
     insert_plants_one(
       object: {
@@ -127,11 +127,11 @@ const insertPlantMutation = /* GraphQL */ `
 
 const insertPollenMutation = /* GraphQL */ `
   mutation InsertPollen(
-    $name: String!
-    $crossing_name: String!
-    $lot_name_segment: String!
-    $cultivar_name_segment: String!
-    $orchard_name: String! = "Orchard 1"
+    $name: citext!
+    $crossing_name: citext!
+    $lot_name_segment: citext!
+    $cultivar_name_segment: citext!
+    $orchard_name: citext! = "Orchard 1"
   ) {
     insert_pollen_one(
       object: {
@@ -267,7 +267,7 @@ test('insert', async () => {
 test('insert with contradicting plant cultivar', async () => {
   const cultivar = await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertCultivar($name_segment: String!) {
+      mutation InsertCultivar($name_segment: citext!) {
         insert_cultivars_one(
           object: {
             name_segment: $name_segment
@@ -325,7 +325,7 @@ test('insert with contradicting plant cultivar', async () => {
 test('insert with contradicting pollen cultivar', async () => {
   const cultivar = await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertCultivar($name_segment: String!) {
+      mutation InsertCultivar($name_segment: citext!) {
         insert_cultivars_one(
           object: {
             name_segment: $name_segment
@@ -480,7 +480,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateMotherPlant($id: Int!, $name: String) {
+      mutation UpdateMotherPlant($id: Int!, $name: citext) {
         update_mother_plants_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }

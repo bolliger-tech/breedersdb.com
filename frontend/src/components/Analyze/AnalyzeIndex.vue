@@ -18,11 +18,12 @@
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQuery } from '@urql/vue';
-import { ResultOf, graphql } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { analyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { computed, watch } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 
 const props = defineProps<{
   entityLabel: string;
@@ -30,7 +31,7 @@ const props = defineProps<{
   baseTable: string;
 }>();
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -77,8 +78,6 @@ const analyzeFiltersCount = computed(
   () => data.value?.analyze_filters_aggregate?.aggregate?.count || 0,
 );
 
-type AnalyzeFilter = ResultOf<typeof query>['analyze_filters'][0];
-
 const columns = [
   {
     name: 'name',
@@ -87,21 +86,7 @@ const columns = [
     field: 'name',
     sortable: true,
   },
-  {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
-    align: 'left' as const,
-    field: (row: AnalyzeFilter) =>
-      row.modified ? d(row.modified, 'ymdHis') : null,
-    sortable: true,
-  },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: AnalyzeFilter) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
 const { queryArg: visibleColumns } = useQueryArg<string[]>({

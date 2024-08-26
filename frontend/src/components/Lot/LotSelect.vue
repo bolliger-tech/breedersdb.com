@@ -26,6 +26,7 @@ export interface LotSelectProps {
   required?: boolean;
   includeId?: number;
   options: 'no_varieties' | 'varieties' | 'all';
+  requestPolicy?: Parameters<typeof useQuery>[0]['requestPolicy'];
 }
 
 const props = defineProps<LotSelectProps>();
@@ -69,7 +70,7 @@ const variables = computed(() => {
 
 const { data, error, fetching } = useQuery({
   query,
-  requestPolicy: 'cache-and-network',
+  requestPolicy: props.requestPolicy ?? 'cache-and-network',
   variables,
 });
 

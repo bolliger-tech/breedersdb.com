@@ -37,8 +37,9 @@ export interface CultivarSelectProps {
   disable?: EntitySelectProps<unknown>['disable'];
   hint?: EntitySelectProps<unknown>['hint'];
   loading?: boolean;
+  requestPolicy?: Parameters<typeof useQuery>[0]['requestPolicy'];
 }
-defineProps<CultivarSelectProps>();
+const props = defineProps<CultivarSelectProps>();
 
 const cultivarRef = ref<EntitySelectInstance<{
   id: number;
@@ -63,7 +64,7 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
-  requestPolicy: 'cache-and-network',
+  requestPolicy: props.requestPolicy ?? 'cache-and-network',
 });
 
 const cultivarOptions = computed(() => data.value?.cultivars ?? []);

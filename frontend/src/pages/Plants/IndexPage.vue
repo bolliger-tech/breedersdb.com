@@ -16,7 +16,13 @@
       :view-entity-path-getter="(id) => `/plants/${id}`"
       :has-qr-scanner="true"
       @scanned-qr="onScannedQr"
-    />
+    >
+      <template #body-cell-label_id="cellProps">
+        <q-td :props="cellProps">
+          <EntityLabelId :label-id="cellProps.value" entity-type="plant" />
+        </q-td>
+      </template>
+    </EntityContainer>
   </PageLayout>
 </template>
 
@@ -26,14 +32,18 @@ import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
 import { computed, watch, UnwrapRef, ref, nextTick } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { usePagination } from 'src/components/Entity/List/usePagination';
+import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import { useRouter } from 'vue-router';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { localizeDate } from 'src/utils/dateUtils';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, d } = useI18n();
+const { t, n } = useI18n();
 
 const query = graphql(
   `
@@ -62,12 +72,6 @@ const query = graphql(
   [plantFragment],
 );
 
-const { queryArg: search } = useQueryArg<string>({
-  key: 's',
-  defaultValue: '',
-  replace: true,
-});
-
 const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
   key: 'tab',
   defaultValue: 'active',
@@ -79,26 +83,17 @@ const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
   { value: 'all', label: t('entity.tabs.all') },
 ];
 
-const { pagination } = usePagination({
-  sortBy: 'label_id',
-  descending: false,
-  page: 1,
-  rowsPerPage: 100,
-  rowsNumber: 0,
+const {
+  search,
+  pagination,
+  variables: _variables,
+} = useEntityIndexHooks<typeof query>({
+  defaultSortBy: 'label_id',
+  searchColumns: ['cultivar_name', 'label_id'], // ! is where overridden below
+  subset,
 });
 
-const orderBy = computed(() => {
-  const order = pagination.value.descending ? 'desc' : 'asc';
-  const column = pagination.value.sortBy;
-
-  if (['rootstock', 'grafting', 'plant_row'].includes(column)) {
-    return { [column]: { name: order } };
-  }
-
-  return { [column]: order };
-});
-
-const where = computed(() => {
+const variables = computed(() => {
   const where: UseQueryArgs<typeof query>['variables'] = { _and: [] };
 
   if (subset.value === 'active') {
@@ -126,15 +121,12 @@ const where = computed(() => {
 
     where._and.push(or);
   }
-  return where;
-});
 
-const variables = computed(() => ({
-  limit: pagination.value.rowsPerPage,
-  offset: (pagination.value.page - 1) * pagination.value.rowsPerPage,
-  orderBy: [orderBy.value, { id: 'asc' }],
-  where: where.value,
-}));
+  return {
+    ..._variables.value,
+    where,
+  };
+});
 
 const { data, fetching, error } = await useQuery({
   query,
@@ -148,7 +140,7 @@ const plantsCount = computed(
 
 type Plant = ResultOf<typeof query>['plants'][0];
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'label_id',
     label: t('plants.fields.labelId'),
@@ -171,39 +163,92 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'rootstock',
+    name: 'rootstock.name',
     label: t('plants.fields.rootstock'),
     align: 'left' as const,
     field: (row: Plant) => row.rootstock?.name,
     sortable: true,
   },
   {
-    name: 'grafting',
+    name: 'grafting.name',
     label: t('plants.fields.grafting'),
     align: 'left' as const,
     field: (row: Plant) => row.grafting?.name,
     sortable: true,
   },
   {
-    name: 'plant_row',
+    name: 'plant_row.orchard.name',
+    label: t('orchards.title', 1),
+    align: 'left' as const,
+    field: (row: Plant) => row.plant_row?.orchard?.name,
+    sortable: true,
+  },
+  {
+    name: 'plant_row.name',
     label: t('plants.fields.plantRow'),
     align: 'left' as const,
     field: (row: Plant) => row.plant_row?.name,
     sortable: true,
   },
   {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: Plant) => d(row.created as string, 'ymdHis'),
+    name: 'distance_plant_row_start',
+    label: t('plants.fields.distancePlantRowStart'),
+    align: 'right' as const,
+    field: 'distance_plant_row_start',
+    format: (v: Plant['distance_plant_row_start']) => (v ? n(v) : ''),
     sortable: true,
   },
-];
+  {
+    name: 'date_grafted',
+    label: t('plants.fields.dateGrafted'),
+    align: 'left' as const,
+    field: 'date_grafted',
+    sortable: true,
+    format: (v: Plant['date_grafted']) => localizeDate(v) || '',
+  },
+  {
+    name: 'date_planted',
+    label: t('plants.fields.datePlanted'),
+    align: 'left' as const,
+    field: 'date_planted',
+    sortable: true,
+    format: (v: Plant['date_planted']) => localizeDate(v) || '',
+  },
+  {
+    name: 'date_labeled',
+    label: t('plants.fields.dateLabeled'),
+    align: 'left' as const,
+    field: 'date_labeled',
+    sortable: true,
+    format: (v: Plant['date_labeled']) => localizeDate(v) || '',
+  },
+  ...(subset.value === 'disabled'
+    ? [
+        {
+          name: 'date_eliminted',
+          label: t('plants.fields.dateEliminated'),
+          align: 'left' as const,
+          field: 'date_eliminated',
+          sortable: true,
+          format: (v: Plant['date_eliminated']) => localizeDate(v) || '',
+        },
+      ]
+    : []),
+  {
+    name: 'note',
+    label: t('entity.commonColumns.note'),
+    align: 'left' as const,
+    field: 'note',
+    sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
+  },
+  ...useTimestampColumns(),
+]);
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 5),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'plants',
+  defaultColumns: columns.value.map((column) => column.name),
 });
 
 watch(

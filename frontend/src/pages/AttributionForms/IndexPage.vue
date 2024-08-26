@@ -15,19 +15,6 @@
       add-entity-path="/attribution-forms/new"
       :view-entity-path-getter="(id) => `/attribution-forms/${id}`"
     >
-      <template #body-cell-description="cellProps">
-        <q-td
-          :props="cellProps"
-          style="
-            max-width: clamp(300px, 30svw, 600px);
-            overflow: hidden;
-            text-overflow: ellipsis;
-          "
-        >
-          {{ cellProps.value }}
-        </q-td>
-      </template>
-
       <template #body-cell-fields="cellProps">
         <q-td :props="cellProps" style="max-width: clamp(300px, 30svw, 600px)">
           <q-chip
@@ -53,13 +40,12 @@ import { computed, UnwrapRef, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
-import {
-  AttributionFormFragment,
-  attributionFormFragment,
-} from 'src/components/AttributionForm/attributionFormFragment';
+import { attributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -69,7 +55,7 @@ const query = graphql(
       $orderBy: [attribution_forms_order_by!]
       $where: attribution_forms_bool_exp
     ) {
-      attribution_forms_aggregate {
+      attribution_forms_aggregate(where: $where) {
         aggregate {
           count
         }
@@ -126,6 +112,8 @@ const columns = [
     align: 'left' as const,
     field: 'description',
     sortable: true,
+    maxWidth: 'clamp(300px, 40svw, 600px)',
+    ellipsis: true,
   },
   {
     name: 'fields',
@@ -134,27 +122,12 @@ const columns = [
     field: 'attribution_form_fields',
     sortable: false,
   },
-  {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
-    align: 'left' as const,
-    field: (row: AttributionFormFragment) =>
-      row.modified ? d(row.modified, 'ymdHis') : null,
-    sortable: true,
-  },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: AttributionFormFragment) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'attributionForms',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

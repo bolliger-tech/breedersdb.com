@@ -3,6 +3,7 @@ export const plantRows = {
 
   fields: {
     orchard: 'Orchard',
+    dateCreated: 'Date created',
     dateEliminated: 'Date disabled',
   },
 

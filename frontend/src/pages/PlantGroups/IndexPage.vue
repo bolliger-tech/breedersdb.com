@@ -16,13 +16,19 @@
       :view-entity-path-getter="(id) => `/groups/${id}`"
       :has-qr-scanner="true"
       @scanned-qr="onScannedQr"
-    />
+    >
+      <template #body-cell-label_id="cellProps">
+        <q-td :props="cellProps">
+          <EntityLabelId :label-id="cellProps.value" entity-type="plantGroup" />
+        </q-td>
+      </template>
+    </EntityContainer>
   </PageLayout>
 </template>
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
-import { useQuery } from '@urql/vue';
+import { useQuery, UseQueryArgs } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
 import { UnwrapRef, computed, nextTick, ref, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -30,10 +36,13 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
-import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { useRouter } from 'vue-router';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
+import { plantGroupLabelIdUtils } from 'src/utils/labelIdUtils';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -47,7 +56,7 @@ const query = graphql(
       $LotWithOrchard: Boolean! = false
       $LotWithCrossing: Boolean! = false
     ) {
-      plant_groups_aggregate {
+      plant_groups_aggregate(where: $where) {
         aggregate {
           count
         }
@@ -76,10 +85,52 @@ const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
   { value: 'all', label: t('entity.tabs.all') },
 ];
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
+const {
+  search,
+  pagination,
+  variables: _variables,
+} = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'display_name',
-  searchColumns: ['display_name', 'label_id'],
+  searchColumns: ['display_name', 'label_id'], // ! is where overridden below
   subset,
+});
+
+const variables = computed(() => {
+  const where: UseQueryArgs<typeof query>['variables'] = { _and: [] };
+
+  if (subset) {
+    if (subset.value === 'active') {
+      where._and.push({ disabled: { _eq: false } });
+    } else if (subset.value === 'disabled') {
+      where._and.push({ disabled: { _eq: true } });
+    }
+  }
+
+  if (search.value) {
+    const or: UseQueryArgs<typeof query>['variables'] = { _or: [] };
+
+    or._or.push({
+      display_name: { _ilike: `%${search.value.replaceAll('.', '%.%')}%` },
+    });
+
+    if (search.value.match(/^G?\d+$/i)) {
+      const labelId = plantGroupLabelIdUtils.addPrefix(
+        plantGroupLabelIdUtils.zeroFill(search.value.toLocaleUpperCase()),
+      );
+      or._or.push({
+        label_id: {
+          _eq: labelId,
+        },
+      });
+    }
+
+    where._and.push(or);
+  }
+
+  return {
+    ..._variables.value,
+    where,
+  };
 });
 
 const { data, fetching, error } = await useQuery({
@@ -92,10 +143,6 @@ const plantGroupsCount = computed(
   () => data.value?.plant_groups_aggregate?.aggregate?.count || 0,
 );
 
-type PlantGroup = ResultOf<typeof query>['plant_groups'][0];
-
-const { localizedSortPredicate } = useLocalizedSort();
-
 const columns = [
   {
     name: 'display_name',
@@ -103,8 +150,6 @@ const columns = [
     align: 'left' as const,
     field: 'display_name',
     sortable: true,
-    sort: (a: PlantGroup['display_name'], b: PlantGroup['display_name']) =>
-      localizedSortPredicate(a, b),
   },
   {
     name: 'label_id',
@@ -114,26 +159,27 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
+    name: 'cultivar_name',
+    label: t('plantGroups.fields.cultivar'),
     align: 'left' as const,
-    field: (row: PlantGroup) =>
-      row.modified ? d(row.modified, 'ymdHis') : null,
+    field: 'cultivar_name',
     sortable: true,
   },
   {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
+    name: 'note',
+    label: t('entity.commonColumns.note'),
     align: 'left' as const,
-    field: (row: PlantGroup) => d(row.created, 'ymdHis'),
+    field: 'note',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
+  ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'plantGroups',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

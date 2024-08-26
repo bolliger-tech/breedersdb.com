@@ -22,12 +22,13 @@ import { useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
 import { computed, watch } from 'vue';
 import { useI18n, Locale } from 'src/composables/useI18n';
-import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { userFragment } from 'src/components/User/userFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -37,7 +38,7 @@ const query = graphql(
       $orderBy: [users_order_by!]
       $where: users_bool_exp
     ) {
-      users_aggregate {
+      users_aggregate(where: $where) {
         aggregate {
           count
         }
@@ -85,7 +86,7 @@ const columns = [
   {
     name: 'failed_signin_attempts',
     label: t('users.fields.failedSigninAttempts'),
-    align: 'left' as const,
+    align: 'right' as const,
     field: 'failed_signin_attempts',
     sortable: true,
   },
@@ -93,30 +94,16 @@ const columns = [
     name: 'last_signin',
     label: t('users.fields.lastSignin'),
     align: 'left' as const,
-    field: (row: User) =>
-      row.last_signin ? d(row.last_signin, 'ymdHis') : null,
+    field: 'last_signin',
     sortable: true,
+    timestamp: true,
   },
-  {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
-    align: 'left' as const,
-    field: (row: User) => (row.modified ? d(row.modified, 'ymdHis') : null),
-    sortable: true,
-  },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: User) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'users',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

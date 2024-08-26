@@ -22,13 +22,14 @@ import { useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
 import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { localizeDate } from 'src/utils/dateUtils';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, d, n } = useI18n();
+const { t, n } = useI18n();
 
 const query = graphql(
   `
@@ -43,7 +44,7 @@ const query = graphql(
       $withMotherPlants: Boolean! = false
       $withPlantRows: Boolean! = false
     ) {
-      lots_aggregate {
+      lots_aggregate(where: $where) {
         aggregate {
           count
         }
@@ -94,7 +95,8 @@ const columns = [
     name: 'date_sowed',
     label: t('lots.fields.dateSowed'),
     align: 'left' as const,
-    field: (row: Lot) => localizeDate(row.date_sowed),
+    field: 'date_sowed',
+    format: (value: string | null) => localizeDate(value) || '',
     sortable: true,
   },
   {
@@ -119,12 +121,15 @@ const columns = [
     align: 'left' as const,
     field: 'seed_tray',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
   {
     name: 'date_planted',
     label: t('lots.fields.datePlanted'),
     align: 'left' as const,
-    field: (row: Lot) => localizeDate(row.date_planted),
+    field: 'date_planted',
+    format: (value: string | null) => localizeDate(value) || '',
     sortable: true,
   },
   {
@@ -141,6 +146,8 @@ const columns = [
     align: 'left' as const,
     field: 'plot',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
   {
     name: 'orchard',
@@ -150,25 +157,20 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
+    name: 'note',
+    label: t('entity.commonColumns.note'),
     align: 'left' as const,
-    field: (row: Lot) => (row.modified ? d(row.modified, 'ymdHis') : null),
+    field: 'note',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: Lot) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'lots',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

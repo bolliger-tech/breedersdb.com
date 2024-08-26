@@ -22,12 +22,10 @@ function nestObject(object: StringObj): StringObj {
 }
 
 export function useEntityIndexHooks<T>({
-  foreignKeys,
   defaultSortBy = 'name',
-  searchColumns = ['name'],
+  searchColumns = ['name'], // use 'nested.entity.column' for nested columns
   subset,
 }: {
-  foreignKeys?: string[];
   defaultSortBy?: string;
   searchColumns?: string[];
   subset?: Ref<'active' | 'disabled' | 'all'>;
@@ -49,10 +47,6 @@ export function useEntityIndexHooks<T>({
   const orderBy = computed(() => {
     const order = pagination.value.descending ? 'desc' : 'asc';
     const column = pagination.value.sortBy;
-
-    if (foreignKeys?.includes(column)) {
-      return { [column]: { name: order } };
-    }
 
     return [nestObject({ [column]: order }), { id: 'asc' }];
   });

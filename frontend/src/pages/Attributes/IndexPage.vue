@@ -22,19 +22,6 @@
           </q-chip>
         </q-td>
       </template>
-
-      <template #body-cell-description="cellProps">
-        <q-td
-          :props="cellProps"
-          style="
-            max-width: clamp(300px, 30svw, 600px);
-            overflow: hidden;
-            text-overflow: ellipsis;
-          "
-        >
-          {{ cellProps.value }}
-        </q-td>
-      </template>
     </EntityContainer>
   </PageLayout>
 </template>
@@ -59,8 +46,10 @@ import {
   formatResultColumnValue,
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -70,7 +59,7 @@ const query = graphql(
       $orderBy: [attributes_order_by!]
       $where: attributes_bool_exp
     ) {
-      attributes_aggregate {
+      attributes_aggregate(where: $where) {
         aggregate {
           count
         }
@@ -155,6 +144,8 @@ const columns = [
     align: 'left' as const,
     field: 'description',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
   {
     name: 'attribute_type',
@@ -164,28 +155,12 @@ const columns = [
       attributeTypeToLabel(row.attribute_type, t),
     sortable: true,
   },
-
-  {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
-    align: 'left' as const,
-    field: (row: AttributeFragment) =>
-      row.modified ? d(row.modified, 'ymdHis') : null,
-    sortable: true,
-  },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: AttributeFragment) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'attributes',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

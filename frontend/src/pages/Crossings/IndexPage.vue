@@ -22,13 +22,14 @@ import { useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
 import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { crossingFragment } from 'src/components/Crossing/crossingFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -41,7 +42,7 @@ const query = graphql(
       $LotWithOrchard: Boolean = false
       $LotWithCrossing: Boolean = false
     ) {
-      crossings_aggregate {
+      crossings_aggregate(where: $where) {
         aggregate {
           count
         }
@@ -88,39 +89,34 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'motherCultivar',
+    name: 'mother_cultivar.display_name',
     label: t('crossings.fields.motherCultivar'),
     align: 'left' as const,
     field: (row: Crossing) => row.mother_cultivar?.display_name,
     sortable: true,
   },
   {
-    name: 'fatherCultivar',
+    name: 'father_cultivar.display_name',
     label: t('crossings.fields.fatherCultivar'),
     align: 'left' as const,
     field: (row: Crossing) => row.father_cultivar?.display_name,
     sortable: true,
   },
   {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
+    name: 'note',
+    label: t('entity.commonColumns.note'),
     align: 'left' as const,
-    field: (row: Crossing) => (row.modified ? d(row.modified, 'ymdHis') : null),
+    field: 'note',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: Crossing) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ];
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.map((column) => column.name).slice(0, 4),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'crossings',
+  defaultColumns: columns.map((column) => column.name),
 });
 
 watch(

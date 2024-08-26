@@ -32,8 +32,10 @@ import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useRouter } from 'vue-router';
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
+import { useTimestampColumns } from 'src/composables/useTimestampColumns';
+import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const query = graphql(
   `
@@ -46,7 +48,7 @@ const query = graphql(
       $LotWithOrchard: Boolean = false
       $LotWithCrossing: Boolean = false
     ) {
-      cultivars_aggregate {
+      cultivars_aggregate(where: $where) {
         aggregate {
           count
         }
@@ -161,7 +163,7 @@ const columns = computed(() => [
     ? []
     : [
         {
-          name: 'lot',
+          name: 'lot.display_name',
           label: t('cultivars.fields.lot'),
           align: 'left' as const,
           field: (row: Cultivar) =>
@@ -170,25 +172,20 @@ const columns = computed(() => [
         },
       ]),
   {
-    name: 'modified',
-    label: t('entity.commonColumns.modified'),
+    name: 'note',
+    label: t('entity.commonColumns.note'),
     align: 'left' as const,
-    field: (row: Cultivar) => (row.modified ? d(row.modified, 'ymdHis') : null),
+    field: 'note',
     sortable: true,
+    maxWidth: 'clamp(300px, 30svw, 600px)',
+    ellipsis: true,
   },
-  {
-    name: 'created',
-    label: t('entity.commonColumns.created'),
-    align: 'left' as const,
-    field: (row: Cultivar) => d(row.created, 'ymdHis'),
-    sortable: true,
-  },
+  ...useTimestampColumns(),
 ]);
 
-const { queryArg: visibleColumns } = useQueryArg<string[]>({
-  key: 'col',
-  defaultValue: columns.value.map((column) => column.name).slice(0, 6),
-  replace: true,
+const { visibleColumns } = useEntityTableColumns({
+  entityType: 'cultivars',
+  defaultColumns: columns.value.map((column) => column.name),
 });
 
 watch(

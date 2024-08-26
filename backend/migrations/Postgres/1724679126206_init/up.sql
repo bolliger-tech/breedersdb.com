@@ -61,7 +61,7 @@ create table crossings
     is_variety         boolean                  not null default false,
     note               varchar(2047),
     created            timestamp with time zone not null default now(),
-    modified           timestamp with time zone
+    modified           timestamp with time zone not null default now()
 );
 
 create index on crossings (name);
@@ -91,7 +91,7 @@ create table orchards
     name     citext                   not null unique check (name ~ '^[^\n]{1,45}$'),
     disabled boolean                           default false not null,
     created  timestamp with time zone not null default now(),
-    modified timestamp with time zone
+    modified timestamp with time zone not null default now()
 );
 
 create index on orchards (name);
@@ -129,7 +129,7 @@ create table lots
     orchard_id             int                      not null references orchards,
     note                   varchar(2047),
     created                timestamp with time zone not null default now(),
-    modified               timestamp with time zone
+    modified               timestamp with time zone not null default now()
 );
 
 comment on column lots.is_variety is 'Set by triggers.';
@@ -239,7 +239,7 @@ create table cultivars
     breeder       varchar(255),
     note          varchar(2047),
     created       timestamp with time zone not null default now(),
-    modified      timestamp with time zone
+    modified      timestamp with time zone not null default now()
 );
 
 comment on column cultivars.is_variety is 'Set by triggers.';
@@ -383,7 +383,7 @@ create table plant_groups
     note          varchar(2047),
     disabled      boolean                  not null default false,
     created       timestamp with time zone not null default now(),
-    modified      timestamp with time zone
+    modified      timestamp with time zone not null default now()
 );
 
 comment on column plant_groups.label_id is 'Generated.';
@@ -455,7 +455,7 @@ create table graftings
     id       integer primary key generated always as identity,
     name     citext                   not null unique check (name ~ '^[^\n]{1,45}$'),
     created  timestamp with time zone not null default now(),
-    modified timestamp with time zone
+    modified timestamp with time zone not null default now()
 );
 
 create index on graftings (name);
@@ -477,7 +477,7 @@ create table rootstocks
     id       integer primary key generated always as identity,
     name     citext                   not null unique check (name ~ '^[^\n]{1,45}$'),
     created  timestamp with time zone not null default now(),
-    modified timestamp with time zone
+    modified timestamp with time zone not null default now()
 );
 
 create index on rootstocks (name);
@@ -504,7 +504,7 @@ create table plant_rows
     date_eliminated date,
     disabled        boolean                  not null generated always as (date_eliminated is not null) stored,
     created         timestamp with time zone not null default now(),
-    modified        timestamp with time zone
+    modified        timestamp with time zone not null default now()
 );
 
 comment on column plant_rows.disabled is 'Derived from date_eliminated.';
@@ -551,7 +551,7 @@ create table plants
     grafting_id              int references graftings,
     disabled                 boolean                  not null generated always as (date_eliminated is not null) stored,
     created                  timestamp with time zone not null default now(),
-    modified                 timestamp with time zone
+    modified                 timestamp with time zone not null default now()
 );
 
 comment on column plants.plant_group_name is 'Set by triggers.';
@@ -734,7 +734,7 @@ create table pollen
     note           varchar(2047),
     cultivar_id    int                      not null references cultivars,
     created        timestamp with time zone not null default now(),
-    modified       timestamp with time zone
+    modified       timestamp with time zone not null default now()
 );
 
 create index on pollen (name);
@@ -770,7 +770,7 @@ create table mother_plants
     pollen_id             int references pollen,
     crossing_id           int                      not null references crossings,
     created               timestamp with time zone not null default now(),
-    modified              timestamp with time zone
+    modified              timestamp with time zone not null default now()
 );
 
 create index on mother_plants (name);
@@ -925,7 +925,7 @@ create table attributes
     attribute_type  text                     not null references attribute_types,
     disabled        boolean                           default false not null,
     created         timestamp with time zone not null default now(),
-    modified        timestamp with time zone
+    modified        timestamp with time zone not null default now()
 );
 
 comment on table attributes is '""- validation_rule"":\n'
@@ -1143,7 +1143,7 @@ create table attribution_forms
     description varchar(255),
     disabled    boolean                           default false not null,
     created     timestamp with time zone not null default now(),
-    modified    timestamp with time zone
+    modified    timestamp with time zone not null default now()
 );
 
 create index on attribution_forms (name);
@@ -1170,7 +1170,7 @@ create table attribution_form_fields
     attribution_form_id int                      not null references attribution_forms,
     attribute_id        int                      not null references attributes,
     created             timestamp with time zone not null default now(),
-    modified            timestamp with time zone
+    modified            timestamp with time zone not null default now()
 );
 
 create unique index on attribution_form_fields (priority, attribution_form_id);
@@ -1199,7 +1199,7 @@ create table attributions
     geo_location_accuracy double precision check (geo_location is null or geo_location_accuracy is not null),
     offline_id            uuid unique,
     created               timestamp with time zone not null default now(),
-    modified              timestamp with time zone
+    modified              timestamp with time zone not null default now()
 );
 
 comment on column attributions.geo_location_accuracy is 'Meters';
@@ -1260,7 +1260,7 @@ create table attribution_values
     exceptional_attribution boolean                           default false not null,
     offline_id              uuid unique,
     created                 timestamp with time zone not null default now(),
-    modified                timestamp with time zone
+    modified                timestamp with time zone not null default now()
 );
 
 create index on attribution_values (attribute_id);
@@ -1385,7 +1385,7 @@ create table analyze_filters
     attribution_filter jsonb,
     visible_columns    text[]                   not null,
     created            timestamp with time zone not null default now(),
-    modified           timestamp with time zone
+    modified           timestamp with time zone not null default now()
 );
 
 create unique index on analyze_filters (name, base_table);
@@ -1535,7 +1535,7 @@ create table users
     failed_signin_attempts      integer                  not null default 0,
     first_failed_signin_attempt timestamp with time zone,
     created                     timestamp with time zone not null default now(),
-    modified                    timestamp with time zone
+    modified                    timestamp with time zone not null default now()
 );
 
 comment on column users.last_signin is 'Successful signin.';

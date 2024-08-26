@@ -15,6 +15,7 @@
       dark
       no-parent-event
       self="top middle"
+      max-width="450px"
       @hide="autocloseOverlay = true"
     >
       <slot name="overlay"></slot>
@@ -79,7 +80,7 @@ function blurAnyFocusedElement() {
 }
 
 :global(.result-table-cell-attribution__overlay) {
-  width: 300px;
+  width: 90svw;
 }
 
 :global(.body--dark .result-table-cell-attribution__overlay) {

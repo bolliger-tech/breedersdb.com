@@ -24,18 +24,14 @@
         <EntityViewTableRow :label="t('users.fields.lastSignin')">
           {{
             user.last_signin
-              ? localizeDate(user.last_signin)
+              ? d(user.last_signin, 'YmdHis')
               : t('base.notAvailable')
           }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(user.created) }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            user.modified ? localizeDate(user.modified) : t('base.notAvailable')
-          }}
-        </EntityViewTableRow>
+        <EntityTableViewTimestampRows
+          :created="user.created"
+          :modified="user.modified"
+        />
       </EntityViewTable>
     </template>
 
@@ -69,8 +65,8 @@ import { useI18n, Locale } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import { localizeDate } from 'src/utils/dateUtils';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -92,7 +88,7 @@ const { data, error, fetching } = useQuery({
 
 const user = computed(() => data.value?.users_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

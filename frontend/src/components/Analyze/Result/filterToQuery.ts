@@ -583,6 +583,7 @@ fragment AttributionFragment on attributions_view {
   boolean_value
   date_value
   plant_id
+  plant_group_id
   cultivar_id
   lot_id
   data_type
@@ -597,6 +598,7 @@ export type AnalyzeAttributionsViewFields = {
   boolean_value: boolean | null;
   date_value: string | null;
   plant_id: number | null;
+  plant_group_id: number | null;
   cultivar_id: number | null;
   lot_id: number | null;
   data_type: AttributeDataTypes;

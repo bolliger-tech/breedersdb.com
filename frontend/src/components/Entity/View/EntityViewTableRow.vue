@@ -85,6 +85,7 @@ $border: 1px solid $grey-4;
   & :is(td, th) {
     @media screen and (max-width: $breakpoint-xs-max) {
       display: block;
+      padding: 4px 16px;
     }
   }
   &--dense :is(td, th) {

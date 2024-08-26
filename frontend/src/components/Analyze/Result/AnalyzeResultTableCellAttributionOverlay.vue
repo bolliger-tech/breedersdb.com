@@ -42,9 +42,15 @@ export type AttributionDetails = EntityAttributionsViewFragment & {
   plant: Omit<PlantFragment, 'plant_group'> & {
     plant_group: Required<PlantFragment['plant_group']>;
   };
-  plant_group: Omit<PlantGroupFragment, 'cultivar'>;
-  cultivar: Omit<CultivarFragment, 'lot'>;
-  lot: Omit<LotFragment, 'orchard' | 'crossing'>;
+  plant_group: Omit<PlantGroupFragment, 'cultivar'> & {
+    cultivar: Required<PlantGroupFragment['cultivar']>;
+  };
+  cultivar: Omit<CultivarFragment, 'lot'> & {
+    lot: Required<CultivarFragment['lot']>;
+  };
+  lot: Omit<LotFragment, 'orchard' | 'crossing'> & {
+    crossing: Required<LotFragment['crossing']>;
+  };
 };
 
 const props = defineProps<AnalyzeResultTableCellAttributionOverlayProps>();
@@ -54,11 +60,11 @@ const query = graphql(
     query AnalyzeResultTableCellAttributionDetails(
       $id: Int!
       $PlantWithSegments: Boolean! = true
-      $PlantGroupWithCultivar: Boolean! = false
-      $CultivarWithLot: Boolean! = false
+      $PlantGroupWithCultivar: Boolean! = true
+      $CultivarWithLot: Boolean! = true
       $AttributionsViewWithEntites: Boolean! = false
       $LotWithOrchard: Boolean! = false
-      $LotWithCrossing: Boolean! = false
+      $LotWithCrossing: Boolean! = true
     ) {
       attributions_view(where: { id: { _eq: $id } }) {
         ...entityAttributionsViewFragment

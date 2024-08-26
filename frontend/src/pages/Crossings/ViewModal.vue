@@ -31,15 +31,14 @@
             {{ crossing.father_cultivar?.display_name }}
           </RouterLink>
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ d(crossing.created, 'ymdHis') }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            crossing.modified
-              ? d(crossing.modified, 'ymdHis')
-              : t('base.notAvailable')
-          }}
+        <EntityTableViewTimestampRows
+          :created="crossing.created"
+          :modified="crossing.modified"
+        />
+        <EntityViewTableRow v-if="crossing.note">
+          <strong>{{ t('entity.commonColumns.note') }}</strong>
+          <br />
+          <span style="white-space: pre-line">{{ crossing.note }}</span>
         </EntityViewTableRow>
       </EntityViewTable>
 
@@ -135,6 +134,7 @@ import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewR
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -178,7 +178,7 @@ const { data, error, fetching } = useQuery({
 
 const crossing = computed(() => data.value?.crossings_by_pk);
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -200,6 +200,40 @@ const lotsColumns = [
     label: t('entity.commonColumns.name'),
     field: 'display_name',
     align: 'left' as const,
+    sortable: true,
+    sort: (a: Lot['display_name'], b: Lot['display_name']) =>
+      localizedSortPredicate(a, b),
+  },
+  {
+    name: 'date_sowed',
+    label: t('lots.fields.dateSowed'),
+    align: 'left' as const,
+    field: 'date_sowed',
+    format: localizeDate,
+    sortable: true,
+  },
+  {
+    name: 'date_planted',
+    label: t('lots.fields.datePlanted'),
+    align: 'left' as const,
+    field: 'date_planted',
+    format: localizeDate,
+    sortable: true,
+  },
+  {
+    name: 'plot',
+    label: t('lots.fields.plot'),
+    align: 'left' as const,
+    field: 'plot',
+    sortable: true,
+    sort: (a: Lot['plot'], b: Lot['plot']) =>
+      localizedSortPredicate(a || '', b || ''),
+  },
+  {
+    name: 'orchard',
+    label: t('plantRows.fields.orchard'),
+    align: 'left' as const,
+    field: (row: Lot) => row.orchard?.name,
     sortable: true,
     sort: (a: Lot['display_name'], b: Lot['display_name']) =>
       localizedSortPredicate(a, b),
@@ -227,9 +261,9 @@ const motherPlantsColumns = [
     align: 'left' as const,
     sortable: true,
     sort: (
-      a: NonNullable<MotherPlant['plant']>['label_id'],
-      b: NonNullable<MotherPlant['plant']>['label_id'],
-    ) => localizedSortPredicate(a, b),
+      a: NonNullable<MotherPlant['plant']>['label_id'] | undefined,
+      b: NonNullable<MotherPlant['plant']>['label_id'] | undefined,
+    ) => localizedSortPredicate(a || '', b || ''),
   },
   {
     name: 'date_impregnated',
@@ -237,7 +271,7 @@ const motherPlantsColumns = [
     field: 'date_impregnated',
     align: 'left' as const,
     sortable: true,
-    format: (v: MotherPlant['date_impregnated']) => (v ? localizeDate(v) : ''),
+    format: localizeDate,
   },
 ];
 </script>

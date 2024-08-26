@@ -15,19 +15,24 @@
         <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ pollen.name }}
         </EntityViewTableRow>
+        <EntityViewTableRow
+          v-if="pollen.cultivar"
+          :label="t('cultivars.title', 1)"
+          render-empty
+        >
+          <EntityName
+            :cultivar="pollen.cultivar"
+            :lot="pollen.cultivar.lot"
+            :crossing="pollen.cultivar.lot?.crossing"
+          />
+        </EntityViewTableRow>
         <EntityViewTableRow :label="t('pollen.fields.dateHarvested')">
           {{ localizeDate(pollen.date_harvested) }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ d(pollen.created, 'ymdHis') }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            pollen.modified
-              ? d(pollen.modified, 'ymdHis')
-              : t('base.notAvailable')
-          }}
-        </EntityViewTableRow>
+        <EntityTableViewTimestampRows
+          :created="pollen.created"
+          :modified="pollen.modified"
+        />
         <EntityViewTableRow v-if="pollen.note">
           <strong>{{ t('entity.commonColumns.note') }}</strong>
           <br />
@@ -71,7 +76,10 @@
               :to="`/plants/${cellProps.row.plant?.id}`"
               class="undecorated-link"
             >
-              {{ cellProps.row.plant?.label_id }}
+              <EntityLabelId
+                :label-id="cellProps.row.plant?.label_id"
+                entity-type="plant"
+              />
             </RouterLink>
           </q-td>
         </template>
@@ -112,6 +120,9 @@ import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityName from 'src/components/Entity/EntityName.vue';
+import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -120,9 +131,9 @@ const query = graphql(
     query Pollen(
       $id: Int!
       $PollenWithCultivar: Boolean = true
-      $CultivarWithLot: Boolean = false
+      $CultivarWithLot: Boolean = true
       $LotWithOrchard: Boolean = false
-      $LotWithCrossing: Boolean = false
+      $LotWithCrossing: Boolean = true
     ) {
       pollen_by_pk(id: $id) {
         ...pollenFragment
@@ -153,7 +164,7 @@ const { data, error, fetching } = useQuery({
 
 const pollen = computed(() => data.value?.pollen_by_pk);
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -186,8 +197,8 @@ const motherPlantsColumns = [
     align: 'left' as const,
     sortable: true,
     sort: (
-      a: NonNullable<MotherPlant['crossing']>['name'],
-      b: NonNullable<MotherPlant['crossing']>['name'],
+      a: MotherPlant['crossing']['name'],
+      b: MotherPlant['crossing']['name'],
     ) => localizedSortPredicate(a, b),
   },
   {
@@ -197,8 +208,8 @@ const motherPlantsColumns = [
     align: 'left' as const,
     sortable: true,
     sort: (
-      a: NonNullable<MotherPlant['plant']>['label_id'],
-      b: NonNullable<MotherPlant['plant']>['label_id'],
+      a: MotherPlant['plant']['label_id'],
+      b: MotherPlant['plant']['label_id'],
     ) => localizedSortPredicate(a, b),
   },
   {
@@ -207,7 +218,7 @@ const motherPlantsColumns = [
     field: 'date_impregnated',
     align: 'left' as const,
     sortable: true,
-    format: (v: MotherPlant['date_impregnated']) => localizeDate(v),
+    format: localizeDate,
   },
 ];
 </script>

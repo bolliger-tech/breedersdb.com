@@ -23,16 +23,10 @@
             attributionForm.description
           }}</span>
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ localizeDate(attributionForm.created) }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            attributionForm.modified
-              ? localizeDate(attributionForm.modified)
-              : t('base.notAvailable')
-          }}
-        </EntityViewTableRow>
+        <EntityTableViewTimestampRows
+          :created="attributionForm.created"
+          :modified="attributionForm.modified"
+        />
       </EntityViewTable>
 
       <h3 class="q-my-md">{{ t('attributionForms.columns.fields') }}</h3>
@@ -79,9 +73,9 @@ import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import { localizeDate } from 'src/utils/dateUtils';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import AttributionFormPreview from 'src/components/AttributionForm/AttributionFormPreview.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

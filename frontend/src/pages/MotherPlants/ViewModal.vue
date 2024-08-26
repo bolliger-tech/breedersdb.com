@@ -58,16 +58,10 @@
         <EntityViewTableRow :label="t('motherPlants.fields.numbSeeds')">
           {{ motherPlant.numb_seeds }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.created')">
-          {{ d(motherPlant.created, 'ymdHis') }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-          {{
-            motherPlant.modified
-              ? d(motherPlant.modified, 'ymdHis')
-              : t('base.notAvailable')
-          }}
-        </EntityViewTableRow>
+        <EntityTableViewTimestampRows
+          :created="motherPlant.created"
+          :modified="motherPlant.modified"
+        />
         <EntityViewTableRow v-if="motherPlant.note">
           <strong>{{ t('entity.commonColumns.note') }}</strong>
           <br />
@@ -114,6 +108,7 @@ import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import { localizeDate } from 'src/utils/dateUtils';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -145,7 +140,7 @@ const { data, error, fetching } = useQuery({
 
 const motherPlant = computed(() => data.value?.mother_plants_by_pk);
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

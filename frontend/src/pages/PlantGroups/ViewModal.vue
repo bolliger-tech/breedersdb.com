@@ -170,6 +170,8 @@ type Plant = NonNullable<
   NonNullable<ResultOf<typeof query>['plant_groups_by_pk']>['plants']
 >[0];
 
+type PlantRow = NonNullable<Plant['plant_row']>;
+
 const plantColumns = [
   {
     name: 'label_id',
@@ -186,8 +188,8 @@ const plantColumns = [
     align: 'left' as const,
     field: (row: Plant) => row.plant_row?.name,
     sortable: true,
-    sort: (a: Plant, b: Plant) =>
-      localizedSortPredicate(a.plant_row?.name || '', b.plant_row?.name || ''),
+    sort: (a: PlantRow['name'], b: PlantRow['name']) =>
+      localizedSortPredicate(a, b),
   },
   {
     name: 'distance_plant_row_start',
@@ -203,11 +205,8 @@ const plantColumns = [
     align: 'left' as const,
     field: (row: Plant) => row.plant_row?.orchard?.name,
     sortable: true,
-    sort: (a: Plant, b: Plant) =>
-      localizedSortPredicate(
-        a.plant_row?.orchard?.name || '',
-        b.plant_row?.orchard?.name || '',
-      ),
+    sort: (a: PlantRow['orchard']['name'], b: PlantRow['orchard']['name']) =>
+      localizedSortPredicate(a, b),
   },
   {
     name: 'date_planted',

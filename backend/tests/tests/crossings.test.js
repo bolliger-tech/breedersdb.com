@@ -79,7 +79,7 @@ test('name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'Abcd',
+      name: 'abcd',
     },
   });
 

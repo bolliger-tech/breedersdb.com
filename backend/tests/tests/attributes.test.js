@@ -109,7 +109,7 @@ test('name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'Attribution Attribute 1',
+      name: 'attribution attribute 1',
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',

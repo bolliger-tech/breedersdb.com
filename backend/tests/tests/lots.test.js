@@ -134,7 +134,7 @@ test('crossing_name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      crossing_name: 'Abcd',
+      crossing_name: 'abcd',
       name_segment: '24A',
       orchard_name: 'Orchard 2',
     },

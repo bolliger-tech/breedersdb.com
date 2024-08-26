@@ -543,7 +543,7 @@ test('acronym is unique', async () => {
       crossing_name: 'Cross2',
       lot_name_segment: '24Z',
       name_segment: '999',
-      acronym: 'Acronym',
+      acronym: 'acronym',
     },
   });
 

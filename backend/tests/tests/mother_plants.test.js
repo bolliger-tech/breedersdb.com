@@ -419,7 +419,7 @@ test('insert name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'Mother plant 1',
+      name: 'mother plant 1',
       plant_id: plant.data.insert_plants_one.id,
       crossing_name: 'C2',
       crossing_mother_cultivar_id:

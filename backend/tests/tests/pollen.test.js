@@ -109,7 +109,7 @@ test('name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'Pollen 1',
+      name: 'pollen 1',
       crossing_name: 'Cross2',
       lot_name_segment: '24A',
       cultivar_name_segment: '001',

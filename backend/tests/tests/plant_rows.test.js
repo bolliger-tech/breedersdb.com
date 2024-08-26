@@ -110,7 +110,7 @@ test('name is unique in orchard', async () => {
       }
     `,
     variables: {
-      name: 'Row 1',
+      name: 'row 1',
       orchard_id: orchard.data.insert_orchards_one.id,
     },
   });

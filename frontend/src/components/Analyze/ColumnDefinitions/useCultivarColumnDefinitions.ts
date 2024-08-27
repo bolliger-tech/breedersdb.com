@@ -121,4 +121,13 @@ const columnData: FilterColumnConstructorData[] = [
       allowEmpty: false,
     },
   },
+  {
+    table: 'cultivars',
+    column: 'modified',
+    labelKey: 'entity.commonColumns.modified',
+    schema: {
+      type: ColumnTypes.DateTime,
+      allowEmpty: false,
+    },
+  },
 ];

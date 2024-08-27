@@ -19,6 +19,8 @@ declare
     _cols_to_select text;
 begin
     with _cols as (select column_name as _name,
+                          -- `_cast` differs from original function described in the link above
+                          -- modified version also supports casting to `citext`
                           case
                               when character_maximum_length is not null then
                                   '::' || udt_name || '(' || character_maximum_length || ')'
@@ -881,6 +883,22 @@ create trigger check_father_cultivar_consistency
     on crossings
     for each row
 execute function check_father_cultivar_consistency();
+
+create or replace function check_pollen_cultivar_consistency() returns trigger as
+$$
+begin
+    if new.cultivar_id != old.cultivar_id and exists (select 1 from mother_plants where pollen_id = new.id) then
+        raise exception 'The cultivar of pollen cannot be changed once the pollen has been linked to a mother plant.';
+    end if;
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger check_pollen_cultivar_consistency
+    before insert or update of cultivar_id
+    on pollen
+    for each row
+execute function check_pollen_cultivar_consistency();
 
 ------------------------------------------------------------------------------------------------------------------------
 -- ATTRIBUTES

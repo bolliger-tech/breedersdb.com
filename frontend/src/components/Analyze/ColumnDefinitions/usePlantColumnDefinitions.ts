@@ -212,7 +212,7 @@ const columnData: FilterColumnConstructorData[] = [
     labelKey: 'entity.commonColumns.modified',
     schema: {
       type: ColumnTypes.DateTime,
-      allowEmpty: true,
+      allowEmpty: false,
     },
   },
 ];

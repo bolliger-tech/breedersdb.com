@@ -598,6 +598,31 @@ describe('FilterRule', () => {
     expect(filterRule.requiresTerm).toBe(true);
   });
 
+  it('should return true for requiresTerm: Citext with equal operator', () => {
+    const column = new FilterRuleColumn({
+      tableName: 'tableName',
+      tableColumnName: 'tableColumnName',
+      tableLabel: 'tableLabel',
+      tableColumnLabel: 'tableColumnLabel',
+      schema: {
+        allowEmpty: true,
+        type: ColumnTypes.Citext,
+        validation: {
+          maxLen: null,
+          pattern: null,
+        },
+      },
+    });
+
+    const operator = new FilterRuleOperator({
+      value: FilterOperatorValue.Equal,
+    });
+
+    const filterRule = new FilterRule({ column, operator });
+
+    expect(filterRule.requiresTerm).toBe(true);
+  });
+
   it('should return false for requiresTerm: String with empty operator', () => {
     const column = new FilterRuleColumn({
       tableName: 'tableName',
@@ -623,6 +648,31 @@ describe('FilterRule', () => {
     expect(filterRule.requiresTerm).toBe(false);
   });
 
+  it('should return false for requiresTerm: Citext with empty operator', () => {
+    const column = new FilterRuleColumn({
+      tableName: 'tableName',
+      tableColumnName: 'tableColumnName',
+      tableLabel: 'tableLabel',
+      tableColumnLabel: 'tableColumnLabel',
+      schema: {
+        allowEmpty: true,
+        type: ColumnTypes.Citext,
+        validation: {
+          maxLen: null,
+          pattern: null,
+        },
+      },
+    });
+
+    const operator = new FilterRuleOperator({
+      value: FilterOperatorValue.Empty,
+    });
+
+    const filterRule = new FilterRule({ column, operator });
+
+    expect(filterRule.requiresTerm).toBe(false);
+  });
+
   it('should return false for requiresTerm: String with not empty operator', () => {
     const column = new FilterRuleColumn({
       tableName: 'tableName',
@@ -632,6 +682,31 @@ describe('FilterRule', () => {
       schema: {
         allowEmpty: true,
         type: ColumnTypes.String,
+        validation: {
+          maxLen: null,
+          pattern: null,
+        },
+      },
+    });
+
+    const operator = new FilterRuleOperator({
+      value: FilterOperatorValue.NotEmpty,
+    });
+
+    const filterRule = new FilterRule({ column, operator });
+
+    expect(filterRule.requiresTerm).toBe(false);
+  });
+
+  it('should return false for requiresTerm: Citext with not empty operator', () => {
+    const column = new FilterRuleColumn({
+      tableName: 'tableName',
+      tableColumnName: 'tableColumnName',
+      tableLabel: 'tableLabel',
+      tableColumnLabel: 'tableColumnLabel',
+      schema: {
+        allowEmpty: true,
+        type: ColumnTypes.Citext,
         validation: {
           maxLen: null,
           pattern: null,

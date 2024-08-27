@@ -79,7 +79,7 @@ const variables = computed(() => ({
 
 const query = graphql(`
   query AnalyzeFilterNameIsUnique(
-    $name: String!
+    $name: citext!
     $baseTable: analyze_filter_base_tables_enum!
   ) {
     analyze_filters(

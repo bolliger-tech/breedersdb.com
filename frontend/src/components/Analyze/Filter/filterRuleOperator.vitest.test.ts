@@ -145,6 +145,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
+        ColumnTypes.Citext,
         ColumnTypes.Integer,
         ColumnTypes.Rating,
         ColumnTypes.Float,
@@ -162,6 +163,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
+        ColumnTypes.Citext,
         ColumnTypes.Integer,
         ColumnTypes.Rating,
         ColumnTypes.Float,
@@ -239,6 +241,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
+        ColumnTypes.Citext,
         ColumnTypes.Enum,
       ]);
     });
@@ -250,6 +253,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
+        ColumnTypes.Citext,
         ColumnTypes.Enum,
       ]);
     });
@@ -261,6 +265,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
+        ColumnTypes.Citext,
         ColumnTypes.Enum,
       ]);
     });
@@ -272,6 +277,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
+        ColumnTypes.Citext,
         ColumnTypes.Enum,
       ]);
     });
@@ -283,6 +289,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
+        ColumnTypes.Citext,
         ColumnTypes.Enum,
       ]);
     });
@@ -294,6 +301,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
+        ColumnTypes.Citext,
         ColumnTypes.Enum,
       ]);
     });
@@ -305,6 +313,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
+        ColumnTypes.Citext,
         ColumnTypes.Integer,
         ColumnTypes.Rating,
         ColumnTypes.Float,
@@ -322,6 +331,7 @@ describe('FilterRuleOperator', () => {
 
       expect(operator.suitableRuleTypes).toEqual([
         ColumnTypes.String,
+        ColumnTypes.Citext,
         ColumnTypes.Integer,
         ColumnTypes.Rating,
         ColumnTypes.Float,

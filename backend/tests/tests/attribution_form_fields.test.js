@@ -5,8 +5,8 @@ import { iso8601dateRegex } from '../utils';
 const insertMutation = /* GraphQL */ `
   mutation InsertAttributionFormField(
     $priority: Int
-    $attribution_form_name: String
-    $attribute_name: String
+    $attribution_form_name: citext
+    $attribute_name: citext
     $attribute_validation_rule: jsonb
     $attribute_data_type: attribute_data_types_enum
     $attribute_type: attribute_types_enum
@@ -86,7 +86,9 @@ test('insert', async () => {
   expect(resp.data.insert_attribution_form_fields_one.created).toMatch(
     iso8601dateRegex,
   );
-  expect(resp.data.insert_attribution_form_fields_one.modified).toBeNull();
+  expect(resp.data.insert_attribution_form_fields_one.modified).toEqual(
+    resp.data.insert_attribution_form_fields_one.created,
+  );
 });
 
 test('priority is unique per form', async () => {
@@ -198,7 +200,11 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_attribution_form_fields_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(
+      updated.data.update_attribution_form_fields_by_pk.modified,
+    ).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_attribution_form_fields_one.modified).getTime(),
   );
 });

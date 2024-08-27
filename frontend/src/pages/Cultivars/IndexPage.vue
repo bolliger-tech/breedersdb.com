@@ -209,7 +209,7 @@ watch(
 const router = useRouter();
 
 const queryCultivarIdByPlantGroupLabelId = graphql(`
-  query CultivarIdByPlantGroupLabelId($labelId: String!) {
+  query CultivarIdByPlantGroupLabelId($labelId: citext!) {
     plant_groups(where: { label_id: { _eq: $labelId } }) {
       id
       cultivar_id
@@ -217,7 +217,7 @@ const queryCultivarIdByPlantGroupLabelId = graphql(`
   }
 `);
 const queryCultivarIdByPlantLabelId = graphql(`
-  query CultivarIdByPlantLabelId($labelId: String!) {
+  query CultivarIdByPlantLabelId($labelId: citext!) {
     plants(where: { label_id: { _eq: $labelId } }) {
       id
       plant_group {

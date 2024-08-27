@@ -9,6 +9,7 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 
 export type FilterRuleSchema =
   | StringSchema
+  | CitextSchema
   | IntegerSchema
   | RatingSchema
   | FloatSchema
@@ -145,6 +146,7 @@ export class FilterRule {
       case ColumnTypes.Float:
       case ColumnTypes.Enum:
       case ColumnTypes.String:
+      case ColumnTypes.Citext:
         return (
           this.operator?.value !== FilterOperatorValue.Empty &&
           this.operator?.value !== FilterOperatorValue.NotEmpty
@@ -213,6 +215,15 @@ export class FilterRule {
 interface StringSchema {
   allowEmpty: boolean;
   type: ColumnTypes.String;
+  validation: {
+    maxLen: number | null;
+    pattern: string | null;
+  };
+}
+
+interface CitextSchema {
+  allowEmpty: boolean;
+  type: ColumnTypes.Citext;
   validation: {
     maxLen: number | null;
     pattern: string | null;

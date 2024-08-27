@@ -4,14 +4,14 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertAttributeValue(
-    $attribute_name: String
+    $attribute_name: citext
     $attribute_validation_rule: jsonb
     $attribute_data_type: attribute_data_types_enum
     $attribute_type: attribute_types_enum
     $attribution_id: Int
     $integer_value: Int
     $float_value: float8
-    $text_value: String
+    $text_value: citext
     $boolean_value: Boolean
     $date_value: date
     $text_note: String
@@ -65,12 +65,12 @@ const insertMutation = /* GraphQL */ `
 
 const insertAttributionMutation = /* GraphQL */ `
   mutation InsertAttributions(
-    $author: String
+    $author: citext
     $date_attributed: date
-    $attribution_form_name: String
-    $lot_name_segment: String
-    $orchard_name: String! = "Orchard 1"
-    $crossing_name: String
+    $attribution_form_name: citext
+    $lot_name_segment: citext
+    $orchard_name: citext! = "Orchard 1"
+    $crossing_name: citext
   ) {
     insert_attributions_one(
       object: {
@@ -174,7 +174,9 @@ test('insert', async () => {
   expect(resp.data.insert_attribution_values_one.created).toMatch(
     iso8601dateRegex,
   );
-  expect(resp.data.insert_attribution_values_one.modified).toBeNull();
+  expect(resp.data.insert_attribution_values_one.modified).toEqual(
+    resp.data.insert_attribution_values_one.created,
+  );
 });
 
 test('insert with offline data', async () => {
@@ -192,11 +194,11 @@ test('insert with offline data', async () => {
   const resp = await postOrFail({
     query: /* GraphQL */ `
       mutation InsertAttributeValue(
-        $attribute_name: String
+        $attribute_name: citext
         $attribute_data_type: attribute_data_types_enum
         $attribute_type: attribute_types_enum
         $attribution_id: Int
-        $text_value: String
+        $text_value: citext
         $offline_id: uuid
         $created: timestamptz
       ) {
@@ -682,9 +684,7 @@ test('insert TEXT too long', async () => {
     },
   });
 
-  expect(resp.errors[0].message).toBe(
-    'value too long for type character varying(2047)',
-  );
+  expect(resp.errors[0].message).toContain('Check constraint violation.');
 });
 
 test('insert TEXT empty', async () => {
@@ -1260,7 +1260,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateAttribute($id: Int!, $text_value: String) {
+      mutation UpdateAttribute($id: Int!, $text_value: citext) {
         update_attribution_values_by_pk(
           pk_columns: { id: $id }
           _set: { text_value: $text_value }
@@ -1277,8 +1277,10 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_attribution_values_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_attribution_values_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_attribution_values_one.modified).getTime(),
   );
 });
 

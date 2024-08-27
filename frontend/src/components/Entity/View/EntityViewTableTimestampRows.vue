@@ -3,7 +3,7 @@
     {{ d(created, 'YmdHis') }}
   </EntityViewTableRow>
   <EntityViewTableRow :label="t('entity.commonColumns.modified')">
-    {{ modified ? d(modified, 'YmdHis') : t('base.notAvailable') }}
+    {{ d(modified, 'YmdHis') }}
   </EntityViewTableRow>
 </template>
 
@@ -13,7 +13,7 @@ import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vu
 
 export interface EntityViewTableTimestampRowsProps {
   created: string;
-  modified: string | null;
+  modified: string;
 }
 
 defineProps<EntityViewTableTimestampRowsProps>();

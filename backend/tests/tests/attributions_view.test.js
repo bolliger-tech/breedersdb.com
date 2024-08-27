@@ -118,9 +118,9 @@ const queryByAttributeIdAndPlantId = /* GraphQL */ `
 
 const insertLot = /* GraphQL */ `
   mutation InsertLot(
-    $crossing_name: String!
-    $lot_name_segment: String!
-    $orchard_name: String! = "Orchard 1"
+    $crossing_name: citext!
+    $lot_name_segment: citext!
+    $orchard_name: citext! = "Orchard 1"
   ) {
     insert_lots_one(
       object: {
@@ -135,7 +135,7 @@ const insertLot = /* GraphQL */ `
 `;
 
 const insertCultivar = /* GraphQL */ `
-  mutation InsertCultivar($name_segment: String!, $lot_id: Int!) {
+  mutation InsertCultivar($name_segment: citext!, $lot_id: Int!) {
     insert_cultivars_one(
       object: { name_segment: $name_segment, lot_id: $lot_id }
     ) {
@@ -145,7 +145,7 @@ const insertCultivar = /* GraphQL */ `
 `;
 
 const insertPlantGroup = /* GraphQL */ `
-  mutation InsertPlantGroup($name_segment: String!, $cultivar_id: Int!) {
+  mutation InsertPlantGroup($name_segment: citext!, $cultivar_id: Int!) {
     insert_plant_groups_one(
       object: { name_segment: $name_segment, cultivar_id: $cultivar_id }
     ) {
@@ -155,7 +155,7 @@ const insertPlantGroup = /* GraphQL */ `
 `;
 
 const insertPlant = /* GraphQL */ `
-  mutation InsertPlant($label_id: String!, $plant_group_id: Int!) {
+  mutation InsertPlant($label_id: citext!, $plant_group_id: Int!) {
     insert_plants_one(
       object: { label_id: $label_id, plant_group_id: $plant_group_id }
     ) {
@@ -166,7 +166,7 @@ const insertPlant = /* GraphQL */ `
 
 const insertAttribute = /* GraphQL */ `
   mutation InsertAttribute(
-    $name: String!
+    $name: citext!
     $validation_rule: jsonb
     $data_type: attribute_data_types_enum!
     $attribute_type: attribute_types_enum!
@@ -185,7 +185,7 @@ const insertAttribute = /* GraphQL */ `
 `;
 
 const insertAttributionForm = /* GraphQL */ `
-  mutation InsertAttributionForm($name: String!) {
+  mutation InsertAttributionForm($name: citext!) {
     insert_attribution_forms_one(object: { name: $name }) {
       id
     }
@@ -194,7 +194,7 @@ const insertAttributionForm = /* GraphQL */ `
 
 const insertAttribution = /* GraphQL */ `
   mutation InsertAttribution(
-    $author: String!
+    $author: citext!
     $date_attributed: date!
     $attribution_form_id: Int!
     $lot_id: Int
@@ -228,7 +228,7 @@ const insertAttributeValue = /* GraphQL */ `
     $attribute_id: Int!
     $integer_value: Int
     $float_value: float8
-    $text_value: String
+    $text_value: citext
     $boolean_value: Boolean
     $date_value: date
     $text_note: String
@@ -494,7 +494,9 @@ describe('non aggregated values are correct', async () => {
     expect(data.attributions_view[0].exceptional_attribution).toBe(true);
     expect(data.attributions_view[0].attribute_type).toBe('OBSERVATION');
     expect(data.attributions_view[0].created).toMatch(iso8601dateRegex);
-    expect(data.attributions_view[0].modified).toBeNull();
+    expect(data.attributions_view[0].modified).toEqual(
+      data.attributions_view[0].created,
+    );
   });
 
   test('attribution: lot', async () => {

@@ -144,7 +144,7 @@ const hasValues = computed(() =>
 const mutation = graphql(`
   mutation InsertAttributions(
     $formId: Int!
-    $author: String!
+    $author: citext!
     $dateAttributed: date!
     $lotId: Int
     $cultivarId: Int

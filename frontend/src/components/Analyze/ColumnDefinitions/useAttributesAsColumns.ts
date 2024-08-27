@@ -84,6 +84,7 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
 
   switch (type) {
     case ColumnTypes.String:
+    case ColumnTypes.Citext:
       return {
         type,
         allowEmpty: false,

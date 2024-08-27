@@ -4,7 +4,7 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertAttribute(
-    $name: String
+    $name: citext
     $validation_rule: jsonb
     $data_type: attribute_data_types_enum
     $description: String
@@ -93,7 +93,9 @@ test('insert', async () => {
   expect(resp.data.insert_attributes_one.attribute_type).toBe('OBSERVATION');
   expect(resp.data.insert_attributes_one.disabled).toBe(false);
   expect(resp.data.insert_attributes_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_attributes_one.modified).toBeNull();
+  expect(resp.data.insert_attributes_one.modified).toEqual(
+    resp.data.insert_attributes_one.created,
+  );
 });
 
 test('name is unique', async () => {
@@ -109,7 +111,7 @@ test('name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'Attribution Attribute 1',
+      name: 'attribution attribute 1',
       validation_rule: { max: '9', min: '1', step: '1' },
       data_type: 'INTEGER',
       attribute_type: 'OBSERVATION',
@@ -540,7 +542,7 @@ test("immutability of data type doesn't block other changes", async () => {
     query: /* GraphQL */ `
       mutation UpdateAttribute(
         $id: Int!
-        $name: String!
+        $name: citext!
         $data_type: attribute_data_types_enum
       ) {
         update_attributes_by_pk(
@@ -576,7 +578,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateAttribute($id: Int!, $name: String) {
+      mutation UpdateAttribute($id: Int!, $name: citext) {
         update_attributes_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }
@@ -593,8 +595,10 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_attributes_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_attributes_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_attributes_one.modified).getTime(),
   );
 });
 

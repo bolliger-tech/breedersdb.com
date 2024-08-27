@@ -3,7 +3,7 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertAttributionForm($name: String, $description: String) {
+  mutation InsertAttributionForm($name: citext, $description: String) {
     insert_attribution_forms_one(
       object: { name: $name, description: $description, disabled: false }
     ) {
@@ -47,7 +47,9 @@ test('insert', async () => {
   expect(resp.data.insert_attribution_forms_one.created).toMatch(
     iso8601dateRegex,
   );
-  expect(resp.data.insert_attribution_forms_one.modified).toBeNull();
+  expect(resp.data.insert_attribution_forms_one.modified).toEqual(
+    resp.data.insert_attribution_forms_one.created,
+  );
 });
 
 test('name is unique', async () => {
@@ -60,7 +62,7 @@ test('name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'AttributionForm 1',
+      name: 'attributionform 1',
     },
   });
 
@@ -89,7 +91,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateAttributionForm($id: Int!, $name: String) {
+      mutation UpdateAttributionForm($id: Int!, $name: citext) {
         update_attribution_forms_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }
@@ -106,7 +108,9 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_attribution_forms_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_attribution_forms_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_attribution_forms_one.modified).getTime(),
   );
 });

@@ -38,7 +38,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'display_name',
     labelKey: 'entity.commonColumns.displayName',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 58,
@@ -51,7 +51,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'full_name',
     labelKey: 'entity.commonColumns.fullName',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 58,
@@ -78,7 +78,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'acronym',
     labelKey: 'cultivars.fields.acronym',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: true,
       validation: {
         maxLen: 10,
@@ -116,6 +116,15 @@ const columnData: FilterColumnConstructorData[] = [
     table: 'cultivars',
     column: 'created',
     labelKey: 'entity.commonColumns.created',
+    schema: {
+      type: ColumnTypes.DateTime,
+      allowEmpty: false,
+    },
+  },
+  {
+    table: 'cultivars',
+    column: 'modified',
+    labelKey: 'entity.commonColumns.modified',
     schema: {
       type: ColumnTypes.DateTime,
       allowEmpty: false,

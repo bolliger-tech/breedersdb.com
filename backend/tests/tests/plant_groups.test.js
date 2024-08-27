@@ -4,12 +4,12 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertPlantGroup(
-    $crossing_name: String! = "Abcd"
-    $lot_name_segment: String! = "24A"
-    $orchard_name: String! = "Orchard 1"
-    $cultivar_name_segment: String! = "001"
-    $name_segment: String!
-    $name_override: String
+    $crossing_name: citext! = "Abcd"
+    $lot_name_segment: citext! = "24A"
+    $orchard_name: citext! = "Orchard 1"
+    $cultivar_name_segment: citext! = "001"
+    $name_segment: citext!
+    $name_override: citext
     $note: String
     $disabled: Boolean = false
   ) {
@@ -103,7 +103,7 @@ test('insert', async () => {
     note: 'A note',
     disabled: true,
     created: expect.stringMatching(iso8601dateRegex),
-    modified: null,
+    modified: expect.stringMatching(iso8601dateRegex),
   });
 });
 
@@ -263,5 +263,7 @@ test('modified is updated', async () => {
   });
 
   expect(data2.update_plant_groups_by_pk.modified).toMatch(iso8601dateRegex);
-  expect(data1.insert_plant_groups_one.modified).toBe(null);
+  expect(
+    new Date(data1.insert_plant_groups_one.modified).getTime(),
+  ).toBeLessThan(new Date(data2.update_plant_groups_by_pk.modified).getTime());
 });

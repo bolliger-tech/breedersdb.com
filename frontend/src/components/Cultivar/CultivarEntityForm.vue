@@ -259,7 +259,7 @@ const varietyNameSegmentQuery = graphql(`
   query VarietyNameSegment(
     $cultivarId: Int!
     $lotId: Int!
-    $nameSegmentTerm: String!
+    $nameSegmentTerm: citext!
   ) {
     cultivars(
       where: {

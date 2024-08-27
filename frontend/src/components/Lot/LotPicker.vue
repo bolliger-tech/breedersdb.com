@@ -84,7 +84,7 @@ const error = computed<
 const queryLotByPlantLabelId = graphql(
   `
     query LotByPlantLabelId(
-      $labelId: String!
+      $labelId: citext!
       $LotWithCrossing: Boolean! = true
       $LotWithOrchard: Boolean! = false
     ) {
@@ -104,7 +104,7 @@ const queryLotByPlantLabelId = graphql(
 const queryLotByPlantGroupLabelId = graphql(
   `
     query LotByPlantGroupLabelId(
-      $labelId: String!
+      $labelId: citext!
       $LotWithCrossing: Boolean! = true
       $LotWithOrchard: Boolean! = false
     ) {

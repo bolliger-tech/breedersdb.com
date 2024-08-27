@@ -4,7 +4,7 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertQuery(
-    $name: String!
+    $name: citext!
     $note: String
     $baseTable: analyze_filter_base_tables_enum!
     $baseFilter: jsonb
@@ -174,7 +174,9 @@ test('insert', async () => {
   expect(resp.data.insert_analyze_filters_one.created).toMatch(
     iso8601dateRegex,
   );
-  expect(resp.data.insert_analyze_filters_one.modified).toBeNull();
+  expect(resp.data.insert_analyze_filters_one.modified).toEqual(
+    resp.data.insert_analyze_filters_one.created,
+  );
 });
 
 test('name is unique', async () => {
@@ -190,7 +192,7 @@ test('name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'Query 1',
+      name: 'query 1',
       baseTable,
       baseFilter,
       visibleColumns,
@@ -244,7 +246,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateQuery($id: Int!, $name: String) {
+      mutation UpdateQuery($id: Int!, $name: citext) {
         update_analyze_filters_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }
@@ -261,8 +263,10 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_analyze_filters_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_analyze_filters_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_analyze_filters_one.modified).getTime(),
   );
 });
 

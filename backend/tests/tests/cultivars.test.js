@@ -4,12 +4,12 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertCultivar(
-    $crossing_name: String!
-    $lot_name_segment: String!
-    $orchard_name: String! = "Orchard 1"
-    $name_segment: String!
-    $name_override: String
-    $acronym: String
+    $crossing_name: citext!
+    $lot_name_segment: citext!
+    $orchard_name: citext! = "Orchard 1"
+    $name_segment: citext!
+    $name_override: citext
+    $acronym: citext
     $breeder: String
     $note: String
     $is_variety: Boolean = false
@@ -102,14 +102,14 @@ test('insert', async () => {
   expect(cultivar.breeder).toBe('Poma Culta');
   expect(cultivar.note).toBe('This is a note');
   expect(cultivar.created).toMatch(iso8601dateRegex);
-  expect(cultivar.modified).toBeNull();
+  expect(cultivar.modified).toEqual(cultivar.created);
   expect(cultivar.is_variety).toBe(false);
 });
 
 test('name is unique', async () => {
   const lot = await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertLot($lot_name_segment: String!, $crossing_name: String!) {
+      mutation InsertLot($lot_name_segment: citext!, $crossing_name: citext!) {
         insert_lots_one(
           object: {
             name_segment: $lot_name_segment
@@ -128,7 +128,7 @@ test('name is unique', async () => {
   });
   const resp1 = await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertCultivar($lot_id: Int!, $name_segment: String!) {
+      mutation InsertCultivar($lot_id: Int!, $name_segment: citext!) {
         insert_cultivars_one(
           object: { name_segment: $name_segment, lot_id: $lot_id }
         ) {
@@ -143,7 +143,7 @@ test('name is unique', async () => {
   });
   const resp2 = await post({
     query: /* GraphQL */ `
-      mutation InsertCultivar($lot_id: Int!, $name_segment: String!) {
+      mutation InsertCultivar($lot_id: Int!, $name_segment: citext!) {
         insert_cultivars_one(
           object: { name_segment: $name_segment, lot_id: $lot_id }
         ) {
@@ -186,7 +186,7 @@ test('updated full_name crossing', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateCrossing($id: Int!, $name: String!) {
+      mutation UpdateCrossing($id: Int!, $name: citext!) {
         update_crossings_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
           id
           lots {
@@ -222,7 +222,7 @@ test('updated full_name lot', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateLot($id: Int!, $name_segment: String!) {
+      mutation UpdateLot($id: Int!, $name_segment: citext!) {
         update_lots_by_pk(
           pk_columns: { id: $id }
           _set: { name_segment: $name_segment }
@@ -258,7 +258,7 @@ test('updated full_name cultivar', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateCultivar($id: Int!, $name_segment: String!) {
+      mutation UpdateCultivar($id: Int!, $name_segment: citext!) {
         update_cultivars_by_pk(
           pk_columns: { id: $id }
           _set: { name_segment: $name_segment }
@@ -324,7 +324,7 @@ test('display_name is updated when lot display_name is updated', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateLot($id: Int!, $name_segment: String!) {
+      mutation UpdateLot($id: Int!, $name_segment: citext!) {
         update_lots_by_pk(
           pk_columns: { id: $id }
           _set: { name_segment: $name_segment }
@@ -360,7 +360,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateCultivar($id: Int!, $name_segment: String) {
+      mutation UpdateCultivar($id: Int!, $name_segment: citext) {
         update_cultivars_by_pk(
           pk_columns: { id: $id }
           _set: { name_segment: $name_segment }
@@ -377,8 +377,12 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_cultivars_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_cultivars_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(
+      resp.data.insert_crossings_one.lots[0].cultivars[0].modified,
+    ).getTime(),
   );
 });
 
@@ -543,7 +547,7 @@ test('acronym is unique', async () => {
       crossing_name: 'Cross2',
       lot_name_segment: '24Z',
       name_segment: '999',
-      acronym: 'Acronym',
+      acronym: 'acronym',
     },
   });
 
@@ -561,7 +565,7 @@ test('acronym constraints: no spaces', async () => {
     },
   });
 
-  expect(resp.errors[0].message).toMatch(/Check constraint violation/);
+  expect(resp.errors[0].message).toContain('Check constraint violation.');
 });
 
 test('acronym constraints: no dots', async () => {
@@ -575,7 +579,7 @@ test('acronym constraints: no dots', async () => {
     },
   });
 
-  expect(resp.errors[0].message).toMatch(/Check constraint violation/);
+  expect(resp.errors[0].message).toContain('Check constraint violation.');
 });
 
 test('acronym constraints: max 8 chars', async () => {
@@ -589,7 +593,5 @@ test('acronym constraints: max 8 chars', async () => {
     },
   });
 
-  expect(resp.errors[0].message).toEqual(
-    'value too long for type character varying(8)',
-  );
+  expect(resp.errors[0].message).toContain('Check constraint violation.');
 });

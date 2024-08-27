@@ -203,14 +203,14 @@ watch(
 const router = useRouter();
 
 const queryPlantGroupIdByLabelId = graphql(`
-  query PlantGroupIdByLabelId($labelId: String!) {
+  query PlantGroupIdByLabelId($labelId: citext!) {
     plant_groups(where: { label_id: { _eq: $labelId } }) {
       id
     }
   }
 `);
 const queryPlantGroupIdByPlantLabelId = graphql(`
-  query PlantGroupIdByPlantLabelId($labelId: String!) {
+  query PlantGroupIdByPlantLabelId($labelId: citext!) {
     plants(where: { label_id: { _eq: $labelId } }) {
       id
       plant_group_id

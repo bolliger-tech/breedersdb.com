@@ -6,4 +6,9 @@ export const pollen = {
     cultivarName: 'Cultivar',
     dateHarvested: 'Date harvested',
   },
+
+  validation: {
+    immutableCultivar:
+      'Cultivar cannot be changed, once the pollen is used in a mother plant.',
+  },
 };

@@ -3,7 +3,7 @@ import { post } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertRootstock($name: String) {
+  mutation InsertRootstock($name: citext) {
     insert_rootstocks_one(object: { name: $name }) {
       id
       name
@@ -36,7 +36,9 @@ test('insert', async () => {
   expect(resp.data.insert_rootstocks_one.id).toBeGreaterThan(0);
   expect(resp.data.insert_rootstocks_one.name).toBe('Rootstock 1');
   expect(resp.data.insert_rootstocks_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_rootstocks_one.modified).toBeNull();
+  expect(resp.data.insert_rootstocks_one.modified).toEqual(
+    resp.data.insert_rootstocks_one.created,
+  );
 });
 
 test('name is unique', async () => {
@@ -49,7 +51,7 @@ test('name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'Rootstock 1',
+      name: 'rootstock 1',
     },
   });
 
@@ -78,7 +80,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateRootstock($id: Int!, $name: String) {
+      mutation UpdateRootstock($id: Int!, $name: citext) {
         update_rootstocks_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }
@@ -95,7 +97,9 @@ test('modified', async () => {
     },
   });
 
-  expect(updated.data.update_rootstocks_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_rootstocks_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_rootstocks_one.modified).getTime(),
   );
 });

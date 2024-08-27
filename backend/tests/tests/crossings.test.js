@@ -3,7 +3,7 @@ import { post, postOrFail } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertCrossing($name: String, $note: String) {
+  mutation InsertCrossing($name: citext, $note: String) {
     insert_crossings_one(object: { name: $name, note: $note }) {
       id
       name
@@ -65,7 +65,9 @@ test('insert', async () => {
   expect(resp.data.insert_crossings_one.father_cultivar_id).toBeNull();
   expect(resp.data.insert_crossings_one.note).toBe('Some note');
   expect(resp.data.insert_crossings_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_crossings_one.modified).toBeNull();
+  expect(resp.data.insert_crossings_one.modified).toEqual(
+    resp.data.insert_crossings_one.created,
+  );
   expect(resp.data.insert_crossings_one.is_variety).toBe(false);
 });
 
@@ -79,7 +81,7 @@ test('name is unique', async () => {
   const resp2 = await post({
     query: insertMutation,
     variables: {
-      name: 'Abcd',
+      name: 'abcd',
     },
   });
 
@@ -108,7 +110,7 @@ test('modified', async () => {
 
   const updated = await postOrFail({
     query: /* GraphQL */ `
-      mutation UpdateCrossing($id: Int!, $name: String) {
+      mutation UpdateCrossing($id: Int!, $name: citext) {
         update_crossings_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
           id
           name
@@ -119,8 +121,10 @@ test('modified', async () => {
     variables: { id: resp.data.insert_crossings_one.id, name: 'EFGH' },
   });
 
-  expect(updated.data.update_crossings_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_crossings_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_crossings_one.modified).getTime(),
   );
 });
 

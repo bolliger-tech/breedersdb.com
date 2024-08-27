@@ -38,7 +38,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'label_id',
     labelKey: 'plants.fields.labelId',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 9,
@@ -51,7 +51,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'cultivar_name',
     labelKey: 'plants.fields.cultivarName',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 51,
@@ -64,7 +64,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'plant_group_name',
     labelKey: 'plants.fields.groupName',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 77,
@@ -77,7 +77,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'name',
     labelKey: 'plants.fields.plantRow',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: true,
       validation: {
         maxLen: 45,
@@ -154,7 +154,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'name',
     labelKey: 'plants.fields.rootstock',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: true,
       validation: {
         maxLen: 45,
@@ -167,7 +167,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'name',
     labelKey: 'plants.fields.grafting',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: true,
       validation: {
         maxLen: 45,
@@ -212,7 +212,7 @@ const columnData: FilterColumnConstructorData[] = [
     labelKey: 'entity.commonColumns.modified',
     schema: {
       type: ColumnTypes.DateTime,
-      allowEmpty: true,
+      allowEmpty: false,
     },
   },
 ];

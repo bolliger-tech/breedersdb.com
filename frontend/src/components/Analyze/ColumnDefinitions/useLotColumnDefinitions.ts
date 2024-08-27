@@ -38,7 +38,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'name',
     labelKey: 'lots.fields.crossing',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 8,
@@ -51,7 +51,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'display_name',
     labelKey: 'entity.commonColumns.displayName',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 25,
@@ -64,7 +64,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'full_name',
     labelKey: 'entity.commonColumns.fullName',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 12,
@@ -177,7 +177,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'name',
     labelKey: 'lots.fields.orchard',
     schema: {
-      type: ColumnTypes.String,
+      type: ColumnTypes.Citext,
       allowEmpty: false,
       validation: {
         maxLen: 45,
@@ -213,7 +213,7 @@ const columnData: FilterColumnConstructorData[] = [
     labelKey: 'entity.commonColumns.modified',
     schema: {
       type: ColumnTypes.DateTime,
-      allowEmpty: true,
+      allowEmpty: false,
     },
   },
 ];

@@ -281,7 +281,7 @@ const router = useRouter();
 const variablesPlantByLabelId = ref({ labelId: '' });
 const queryPlantByLabelId = graphql(
   `
-    query PlantIdByLabelId($labelId: String!) {
+    query PlantIdByLabelId($labelId: citext!) {
       plants(where: { label_id: { _eq: $labelId } }) {
         id
       }

@@ -27,6 +27,13 @@
     :ref="(el: InputRef) => (refs.cultivarId = el)"
     v-model="data.cultivar_id"
     required
+    :loading="fetchingMotherPlantsCount"
+    :rules="[
+      (val: CultivarSelectCultivar | null | undefined) =>
+        val?.id === pollen.cultivar_id ||
+        !motherPlantsCount ||
+        t('pollen.validation.immutableCultivar'),
+    ]"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateHarvested = el)"
@@ -47,7 +54,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
@@ -55,7 +62,11 @@ import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { PollenEditInput, PollenInsertInput } from './PollenModalEdit.vue';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
-import CultivarSelect from '../Cultivar/CultivarSelect.vue';
+import CultivarSelect, {
+  CultivarSelectCultivar,
+} from '../Cultivar/CultivarSelect.vue';
+import { useQuery } from '@urql/vue';
+import { graphql } from 'src/graphql';
 
 export interface PollenEntityFormProps {
   pollen: PollenInsertInput | PollenEditInput;
@@ -101,5 +112,25 @@ const { t } = useI18n();
 const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
   tableName: 'pollen',
   existingId: ('id' in props.pollen && props.pollen.id) || undefined,
+});
+
+const { data: motherPlantsCountData, fetching: fetchingMotherPlantsCount } =
+  useQuery({
+    query: graphql(`
+      query MotherPlantsWithPollenCount($pollen_id: Int!) {
+        mother_plants_aggregate(where: { pollen_id: { _eq: $pollen_id } }) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `),
+    variables: { pollen_id: 'id' in props.pollen ? props.pollen.id : -1 },
+    pause: !('id' in props.pollen),
+    requestPolicy: 'cache-and-network',
+  });
+
+const motherPlantsCount = computed(() => {
+  return motherPlantsCountData.value?.mother_plants_aggregate?.aggregate?.count;
 });
 </script>

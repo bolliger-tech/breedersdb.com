@@ -4,8 +4,8 @@ import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
   mutation InsertPlantRow(
-    $name: String
-    $orchard_name: String
+    $name: citext
+    $orchard_name: citext
     $note: String
     $date_created: date
     $date_eliminated: date
@@ -69,13 +69,15 @@ test('insert', async () => {
   expect(resp.data.insert_plant_rows_one.date_eliminated).toBe('2021-01-02');
   expect(resp.data.insert_plant_rows_one.disabled).toBe(true);
   expect(resp.data.insert_plant_rows_one.created).toMatch(iso8601dateRegex);
-  expect(resp.data.insert_plant_rows_one.modified).toBeNull();
+  expect(resp.data.insert_plant_rows_one.modified).toEqual(
+    resp.data.insert_plant_rows_one.created,
+  );
 });
 
 test('name is unique in orchard', async () => {
   const orchard = await post({
     query: /* GraphQL */ `
-      mutation InsertOrchard($name: String) {
+      mutation InsertOrchard($name: citext) {
         insert_orchards_one(object: { name: $name }) {
           id
           name
@@ -86,7 +88,7 @@ test('name is unique in orchard', async () => {
   });
   const resp1 = await post({
     query: /* GraphQL */ `
-      mutation InsertPlantRow($name: String, $orchard_id: Int) {
+      mutation InsertPlantRow($name: citext, $orchard_id: Int) {
         insert_plant_rows_one(
           object: { name: $name, orchard_id: $orchard_id }
         ) {
@@ -101,7 +103,7 @@ test('name is unique in orchard', async () => {
   });
   const resp2 = await post({
     query: /* GraphQL */ `
-      mutation InsertPlantRow($name: String, $orchard_id: Int) {
+      mutation InsertPlantRow($name: citext, $orchard_id: Int) {
         insert_plant_rows_one(
           object: { name: $name, orchard_id: $orchard_id }
         ) {
@@ -110,7 +112,7 @@ test('name is unique in orchard', async () => {
       }
     `,
     variables: {
-      name: 'Row 1',
+      name: 'row 1',
       orchard_id: orchard.data.insert_orchards_one.id,
     },
   });
@@ -205,7 +207,7 @@ test('modified', async () => {
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdatePlantRow($id: Int!, $name: String) {
+      mutation UpdatePlantRow($id: Int!, $name: citext) {
         update_plant_rows_by_pk(
           pk_columns: { id: $id }
           _set: { name: $name }
@@ -219,7 +221,9 @@ test('modified', async () => {
     variables: { id: resp.data.insert_plant_rows_one.id, name: 'Row 999' },
   });
 
-  expect(updated.data.update_plant_rows_by_pk.modified).toMatch(
-    iso8601dateRegex,
+  expect(
+    new Date(updated.data.update_plant_rows_by_pk.modified).getTime(),
+  ).toBeGreaterThan(
+    new Date(resp.data.insert_plant_rows_one.modified).getTime(),
   );
 });

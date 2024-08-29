@@ -34,7 +34,7 @@
         @update:model-value="plantLabelId = $event ?? ''"
         @keyup.enter="
           emit('input', {
-            plantLabelId: plantLabelId,
+            plantLabelId: plantLabelIdUtils.zeroFill(plantLabelId),
             plantGroupLabelId: '',
             cultivarId: null,
             lotId: null,
@@ -56,8 +56,9 @@
         @keyup.enter="
           emit('input', {
             plantLabelId: '',
-            plantGroupLabelId:
-              plantGroupLabelIdUtils.addPrefix(plantGroupLabelId),
+            plantGroupLabelId: plantGroupLabelIdUtils.addPrefix(
+              plantGroupLabelIdUtils.zeroFill(plantGroupLabelId),
+            ),
             cultivarId: null,
             lotId: null,
           })
@@ -113,7 +114,10 @@ import BaseQrScanner from 'src/components/Base/BaseQrScanner/BaseQrScanner.vue';
 import EntityLabelIdInput from 'src/components/Entity/EntityLabelIdInput.vue';
 import CultivarSelect from 'src/components/Cultivar/CultivarSelect.vue';
 import LotSelect from 'src/components/Lot/LotSelect.vue';
-import { plantGroupLabelIdUtils } from 'src/utils/labelIdUtils';
+import {
+  plantGroupLabelIdUtils,
+  plantLabelIdUtils,
+} from 'src/utils/labelIdUtils';
 
 type InputMethod =
   | 'qr-code'
@@ -157,9 +161,9 @@ defineExpose({
   focus: () => inputRef.value?.focus(),
   emitInputs: () =>
     emit('input', {
-      plantLabelId: plantLabelId.value,
+      plantLabelId: plantLabelIdUtils.zeroFill(plantLabelId.value),
       plantGroupLabelId: plantGroupLabelIdUtils.addPrefix(
-        plantGroupLabelId.value,
+        plantGroupLabelIdUtils.zeroFill(plantGroupLabelId.value),
       ),
       cultivarId: cultivarId.value,
       lotId: lotId.value,
@@ -278,8 +282,10 @@ function onQrInput(value: string) {
   lotId.value = null;
 
   emit('input', {
-    plantLabelId: _plantLabelId,
-    plantGroupLabelId: _plantGroupLabelId,
+    plantLabelId: plantLabelIdUtils.zeroFill(_plantLabelId),
+    plantGroupLabelId: plantGroupLabelIdUtils.addPrefix(
+      plantGroupLabelIdUtils.zeroFill(_plantGroupLabelId),
+    ),
     cultivarId: null,
     lotId: null,
   });

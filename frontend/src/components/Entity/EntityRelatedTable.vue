@@ -10,6 +10,7 @@
     dense
     :rows="rows"
     :columns="columns"
+    :visible-columns="visibleColumns"
     :row-key="rowKey"
     :rows-per-page-options="[0]"
     hide-pagination
@@ -38,6 +39,7 @@ export interface EntityRelatedTableProps {
   columns: QTable['columns'];
   defaultSortBy?: string;
   defaultDescending?: boolean;
+  visibleColumns?: QTable['visibleColumns'];
 }
 
 const props = defineProps<EntityRelatedTableProps>();

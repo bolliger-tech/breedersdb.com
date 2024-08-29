@@ -9,8 +9,12 @@
     :title="t('base.edit')"
   />
 
-  <q-card v-else>
+  <q-card v-else-if="fetching">
     <BaseSpinner size="xl" />
+  </q-card>
+
+  <q-card v-else>
+    <BaseNotFound />
   </q-card>
 </template>
 
@@ -23,6 +27,7 @@ import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { useI18n } from 'src/composables/useI18n';
 import CrossingModalEdit from 'src/components/Crossing/CrossingModalEdit.vue';
+import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -37,7 +42,7 @@ const query = graphql(
   [crossingFragment],
 );
 
-const { data, error } = useQuery({
+const { data, error, fetching } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });

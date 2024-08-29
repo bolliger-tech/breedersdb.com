@@ -32,14 +32,14 @@
 </template>
 
 <script setup lang="ts">
-import { type EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
+import { type AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
 import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 
 export interface EntityViewAllAttributionsProps {
-  attributions: EntityAttributionsViewFragment[];
+  attributions: AttributionsViewFragment[];
   showEntity?: boolean;
 }
 

@@ -81,13 +81,13 @@ import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
-import { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
+import { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
-import { entityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
+import { attributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { localizeDate } from 'src/utils/dateUtils';
@@ -112,7 +112,7 @@ const query = graphql(
       plants_by_pk(id: $id) {
         ...plantFragment
         attributions_views {
-          ...entityAttributionsViewFragment
+          ...attributionsViewFragment
         }
         mother_plants {
           ...motherPlantFragment
@@ -120,7 +120,7 @@ const query = graphql(
       }
     }
   `,
-  [plantFragment, motherPlantFragment, entityAttributionsViewFragment],
+  [plantFragment, motherPlantFragment, attributionsViewFragment],
 );
 
 const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
@@ -130,8 +130,7 @@ const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
 
 const plant = computed(() => data.value?.plants_by_pk);
 const attributions = computed(
-  () =>
-    (plant.value?.attributions_views || []) as EntityAttributionsViewFragment[],
+  () => (plant.value?.attributions_views || []) as AttributionsViewFragment[],
 );
 
 const route = useRoute();

@@ -72,9 +72,9 @@ import EntityName from 'src/components/Entity/EntityName.vue';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import {
-  entityAttributionsViewFragment,
-  type EntityAttributionsViewFragment,
-} from 'src/components/Entity/entityAttributionsViewFragment';
+  attributionsViewFragment,
+  type AttributionsViewFragment,
+} from 'src/components/Attribution/attributionsViewFragment';
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import PlantList from 'src/components/Plant/PlantList.vue';
@@ -98,12 +98,12 @@ const query = graphql(
           ...plantFragment
         }
         attributions_views {
-          ...entityAttributionsViewFragment
+          ...attributionsViewFragment
         }
       }
     }
   `,
-  [plantGroupFragment, plantFragment, entityAttributionsViewFragment],
+  [plantGroupFragment, plantFragment, attributionsViewFragment],
 );
 
 const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
@@ -115,8 +115,7 @@ const plantGroup = computed(() => data.value?.plant_groups_by_pk);
 
 const attributions = computed(
   () =>
-    (plantGroup.value?.attributions_views ||
-      []) as EntityAttributionsViewFragment[],
+    (plantGroup.value?.attributions_views || []) as AttributionsViewFragment[],
 );
 
 const route = useRoute();

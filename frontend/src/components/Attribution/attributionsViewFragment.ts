@@ -7,8 +7,8 @@ import {
 
 // because this comes from a postgres view, non nullable fields are not enforced
 // so we need to manually do it here
-export type EntityAttributionsViewFragment = Omit<
-  FragmentOf<typeof entityAttributionsViewFragment>,
+export type AttributionsViewFragment = Omit<
+  FragmentOf<typeof attributionsViewFragment>,
   | 'data_type'
   | 'attribute_type'
   | 'id'
@@ -28,8 +28,8 @@ export type EntityAttributionsViewFragment = Omit<
   attribution_id: number;
 };
 
-export const entityAttributionsViewFragment = graphql(`
-  fragment entityAttributionsViewFragment on attributions_view @_unmask {
+export const attributionsViewFragment = graphql(`
+  fragment attributionsViewFragment on attributions_view @_unmask {
     id
     data_type
     integer_value

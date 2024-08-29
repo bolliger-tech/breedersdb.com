@@ -64,9 +64,9 @@ import { useRoute, useRouter } from 'vue-router';
 import LotEntityTable from 'src/components/Lot/LotEntityTable.vue';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import {
-  entityAttributionsViewFragment,
-  type EntityAttributionsViewFragment,
-} from 'src/components/Entity/entityAttributionsViewFragment';
+  attributionsViewFragment,
+  type AttributionsViewFragment,
+} from 'src/components/Attribution/attributionsViewFragment';
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
@@ -91,12 +91,12 @@ const query = graphql(
           created
         }
         attributions_views {
-          ...entityAttributionsViewFragment
+          ...attributionsViewFragment
         }
       }
     }
   `,
-  [lotFragment, entityAttributionsViewFragment],
+  [lotFragment, attributionsViewFragment],
 );
 
 const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
@@ -107,8 +107,7 @@ const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
 const lot = computed(() => data.value?.lots_by_pk);
 
 const attributions = computed(
-  () =>
-    (lot.value?.attributions_views || []) as EntityAttributionsViewFragment[],
+  () => (lot.value?.attributions_views || []) as AttributionsViewFragment[],
 );
 
 const route = useRoute();

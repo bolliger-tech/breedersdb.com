@@ -71,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import type { EntityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
+import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { AttributeDataTypes, AttributeTypes } from 'src/graphql';
 import {
@@ -87,7 +87,7 @@ import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 export interface EntityViewAttributionsTableProps {
-  rows: EntityAttributionsViewFragment[];
+  rows: AttributionsViewFragment[];
   attributeType?: AttributeTypes;
   showEntity?: boolean;
 }
@@ -103,13 +103,10 @@ const columns = [
         {
           name: 'entity',
           label: t('attributions.columns.entity'),
-          field: (row: EntityAttributionsViewFragment) => row,
+          field: (row: AttributionsViewFragment) => row,
           align: 'left' as const,
           sortable: true,
-          sort: (
-            a: EntityAttributionsViewFragment,
-            b: EntityAttributionsViewFragment,
-          ) => {
+          sort: (a: AttributionsViewFragment, b: AttributionsViewFragment) => {
             // sort grouped by plant, plant_group, cultivar, lot
             if (a.plant && b.plant) {
               return localizedSortPredicate(a.plant.label_id, b.plant.label_id);
@@ -192,7 +189,7 @@ const columns = [
   {
     name: 'value',
     label: t('attributions.columns.value'),
-    field: (row: EntityAttributionsViewFragment) => getValue(row),
+    field: (row: AttributionsViewFragment) => getValue(row),
     align: 'left' as const,
     sortable: true,
     style: 'max-width: clamp(100px, 30vw, 300px);',
@@ -237,7 +234,7 @@ const columns = [
   },
 ];
 
-function getValue(row: EntityAttributionsViewFragment) {
+function getValue(row: AttributionsViewFragment) {
   const type = dataTypeToColumnTypes(row.data_type as AttributeDataTypes);
   const value = getAttributionValue(row);
 

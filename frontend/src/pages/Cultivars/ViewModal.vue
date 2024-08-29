@@ -90,9 +90,9 @@ import CultivarEntityTable from 'src/components/Cultivar/CultivarEntityTable.vue
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import {
-  entityAttributionsViewFragment,
-  type EntityAttributionsViewFragment,
-} from 'src/components/Entity/entityAttributionsViewFragment';
+  attributionsViewFragment,
+  type AttributionsViewFragment,
+} from 'src/components/Attribution/attributionsViewFragment';
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
@@ -123,7 +123,7 @@ const query = graphql(
           }
         }
         attributions_views {
-          ...entityAttributionsViewFragment
+          ...attributionsViewFragment
         }
       }
     }
@@ -131,7 +131,7 @@ const query = graphql(
   [
     cultivarFragment,
     plantGroupFragment,
-    entityAttributionsViewFragment,
+    attributionsViewFragment,
     plantFragment,
   ],
 );
@@ -145,8 +145,7 @@ const cultivar = computed(() => data.value?.cultivars_by_pk);
 
 const attributions = computed(
   () =>
-    (cultivar.value?.attributions_views ||
-      []) as EntityAttributionsViewFragment[],
+    (cultivar.value?.attributions_views || []) as AttributionsViewFragment[],
 );
 
 const plants = computed(

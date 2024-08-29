@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { EntityAttributionsViewFragment } from '../entityAttributionsViewFragment';
+import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import EntityViewAttributionImage, {
   EntityViewAttributionImageProps,
 } from './EntityViewAttributionImage.vue';
@@ -48,7 +48,7 @@ import { onBeforeUnmount } from 'vue';
 const TRANSITION_DURATION = 300;
 
 export interface EntityViewAttributionsImageGalleryProps {
-  images: EntityAttributionsViewFragment[];
+  images: AttributionsViewFragment[];
 }
 
 defineProps<EntityViewAttributionsImageGalleryProps>();

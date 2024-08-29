@@ -43,6 +43,20 @@
           </q-td>
         </template>
       </EntityRelatedTable>
+
+      <h3 class="q-mb-md">{{ t('plants.title', 2) }}</h3>
+      <PlantList
+        :rows="plants"
+        :visible-columns="[
+          'label_id',
+          'plant_group_name',
+          'plant_row',
+          'distance_plant_row_start',
+          'orchard',
+          'date_planted',
+          'date_eliminated',
+        ]"
+      />
     </template>
 
     <template #action-left>
@@ -85,6 +99,7 @@ import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
+import PlantList from 'src/components/Plant/PlantList.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -103,9 +118,9 @@ const query = graphql(
         ...cultivarFragment
         plant_groups {
           ...plantGroupFragment
-        }
-        plants {
-          ...plantFragment
+          plants {
+            ...plantFragment
+          }
         }
         attributions_views {
           ...entityAttributionsViewFragment
@@ -132,6 +147,10 @@ const attributions = computed(
   () =>
     (cultivar.value?.attributions_views ||
       []) as EntityAttributionsViewFragment[],
+);
+
+const plants = computed(
+  () => cultivar.value?.plant_groups.flatMap((pg) => pg.plants) || [],
 );
 
 const { t, d } = useI18n();

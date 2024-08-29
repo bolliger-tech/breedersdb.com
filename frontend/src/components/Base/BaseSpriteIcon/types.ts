@@ -13,6 +13,7 @@ export type SpriteIcons =
   | 'male'
   | 'more'
   | 'orchard'
+  | 'planting'
   | 'rootstock'
   | 'rows'
   | 'search'

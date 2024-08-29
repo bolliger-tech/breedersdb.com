@@ -1,5 +1,5 @@
 <template>
-  <q-card><BaseWip /></q-card>
+  <BaseWip />
 </template>
 
 <script setup lang="ts">

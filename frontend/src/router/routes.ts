@@ -130,6 +130,20 @@ const routes: RouteRecordRaw[] = [
       ),
 
       {
+        path: 'plants',
+        children: [
+          {
+            path: 'plant',
+            component: () => import('pages/Plants/PlantingPage.vue'),
+          },
+          {
+            path: 'eliminate',
+            component: () => import('pages/Plants/EliminatingPage.vue'),
+          },
+        ],
+      },
+
+      {
         path: 'dev',
         children: [
           { path: '', component: () => import('pages/Dev/IndexPage.vue') },

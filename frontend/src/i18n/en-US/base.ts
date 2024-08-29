@@ -92,4 +92,9 @@ export const base = {
     title: 'Network error',
     message: 'Are you connected to the internet?',
   },
+
+  wip: {
+    title: 'Just planted, still growing…',
+    message: 'This feature will soon be available.',
+  },
 };

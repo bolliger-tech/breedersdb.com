@@ -24,7 +24,7 @@
       <EntityViewAllAttributions :attributions="attributions" />
 
       <h3 class="q-my-md">{{ t('motherPlants.title', 2) }}</h3>
-      <EntityViewRelatedEntityTable
+      <EntityRelatedTable
         entity-key="plants"
         :rows="plant.mother_plants || []"
         row-key="id"
@@ -52,7 +52,7 @@
             </RouterLink>
           </q-td>
         </template>
-      </EntityViewRelatedEntityTable>
+      </EntityRelatedTable>
     </template>
 
     <template #action-left>
@@ -88,7 +88,7 @@ import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue'
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import { entityAttributionsViewFragment } from 'src/components/Entity/entityAttributionsViewFragment';
-import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';

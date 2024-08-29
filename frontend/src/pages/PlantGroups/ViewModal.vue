@@ -25,49 +25,17 @@
       <EntityViewAllAttributions :attributions="attributions" show-entity />
 
       <h3 class="q-mb-md">{{ t('plants.title', 2) }}</h3>
-      <EntityViewRelatedEntityTable
-        entity-key="plants"
-        :rows="plantGroup.plants || []"
-        row-key="id"
-        :columns="plantColumns"
-        default-sort-by="label_id"
-      >
-        <template #body-cell-label_id="cellProps">
-          <q-td key="label_id" :props="cellProps">
-            <RouterLink
-              :to="`/plants/${cellProps.row.id}`"
-              class="undecorated-link"
-            >
-              <EntityLabelId
-                entity-type="plant"
-                :label-id="cellProps.row.label_id"
-              />
-            </RouterLink>
-          </q-td>
-        </template>
-        <template #body-cell-plant_row="cellProps">
-          <q-td key="plant_row" :props="cellProps">
-            <RouterLink
-              v-if="cellProps.row.plant_row"
-              :to="`/rows/${cellProps.row.plant_row.id}`"
-              class="undecorated-link"
-            >
-              {{ cellProps.row.plant_row.name }}
-            </RouterLink>
-          </q-td>
-        </template>
-        <template #body-cell-orchard="cellProps">
-          <q-td key="orchard" :props="cellProps">
-            <RouterLink
-              v-if="cellProps.row.plant_row?.orchard"
-              :to="`/orchards/${cellProps.row.plant_row.orchard.id}`"
-              class="undecorated-link"
-            >
-              {{ cellProps.row.plant_row.orchard.name }}
-            </RouterLink>
-          </q-td>
-        </template>
-      </EntityViewRelatedEntityTable>
+      <PlantList
+        :rows="plantGroup.plants"
+        :visible-columns="[
+          'label_id',
+          'plant_row',
+          'distance_plant_row_start',
+          'orchard',
+          'date_planted',
+          'date_eliminated',
+        ]"
+      />
     </template>
 
     <template #action-left>
@@ -94,25 +62,22 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PlantGroupButtonDelete from 'src/components/PlantGroup/PlantGroupButtonDelete.vue';
 import PlantGroupEntityTable from 'src/components/PlantGroup/PlantGroupEntityTable.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { ResultOf, graphql } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
-import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
-import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import {
   entityAttributionsViewFragment,
   type EntityAttributionsViewFragment,
 } from 'src/components/Entity/entityAttributionsViewFragment';
-import { localizeDate } from 'src/utils/dateUtils';
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
+import PlantList from 'src/components/Plant/PlantList.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -124,7 +89,7 @@ const query = graphql(
       $CultivarWithLot: Boolean! = true
       $LotWithOrchard: Boolean! = false
       $LotWithCrossing: Boolean! = true
-      $PlantWithSegments: Boolean! = false
+      $PlantWithSegments: Boolean! = true
       $AttributionsViewWithEntites: Boolean! = true
     ) {
       plant_groups_by_pk(id: $id) {
@@ -163,66 +128,5 @@ function edit() {
   });
 }
 
-const { t, n } = useI18n();
-const { localizedSortPredicate } = useLocalizedSort();
-
-type Plant = NonNullable<
-  NonNullable<ResultOf<typeof query>['plant_groups_by_pk']>['plants']
->[0];
-
-type PlantRow = NonNullable<Plant['plant_row']>;
-
-const plantColumns = [
-  {
-    name: 'label_id',
-    label: t('plants.fields.labelId'),
-    field: 'label_id',
-    align: 'left' as const,
-    sortable: true,
-    sort: (a: Plant['label_id'], b: Plant['label_id']) =>
-      localizedSortPredicate(a, b),
-  },
-  {
-    name: 'plant_row',
-    label: t('plantRows.title', 1),
-    align: 'left' as const,
-    field: (row: Plant) => row.plant_row?.name,
-    sortable: true,
-    sort: (a: PlantRow['name'], b: PlantRow['name']) =>
-      localizedSortPredicate(a, b),
-  },
-  {
-    name: 'distance_plant_row_start',
-    label: t('plants.fields.distancePlantRowStart'),
-    field: 'distance_plant_row_start',
-    align: 'right' as const,
-    sortable: true,
-    format: (v: Plant['distance_plant_row_start']) => (v ? n(v) : ''),
-  },
-  {
-    name: 'orchard',
-    label: t('orchards.title', 1),
-    align: 'left' as const,
-    field: (row: Plant) => row.plant_row?.orchard?.name,
-    sortable: true,
-    sort: (a: PlantRow['orchard']['name'], b: PlantRow['orchard']['name']) =>
-      localizedSortPredicate(a, b),
-  },
-  {
-    name: 'date_planted',
-    label: t('plants.fields.datePlanted'),
-    align: 'left' as const,
-    field: 'date_planted',
-    format: localizeDate,
-    sortable: true,
-  },
-  {
-    name: 'date_eliminated',
-    label: t('plants.fields.dateEliminated'),
-    align: 'left' as const,
-    field: 'date_eliminated',
-    format: localizeDate,
-    sortable: true,
-  },
-];
+const { t } = useI18n();
 </script>

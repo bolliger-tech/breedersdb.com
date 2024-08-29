@@ -43,37 +43,16 @@
       <h3 class="q-mb-md">
         {{ t('plants.title', 2) }}
       </h3>
-      <EntityViewRelatedEntityTable
-        entity-key="plants"
-        :rows="plantRow.plants || []"
-        row-key="id"
-        :columns="plantsColumns"
-        default-sort-by="label_id"
-      >
-        <template #body-cell-label_id="cellProps">
-          <q-td key="value" :props="cellProps">
-            <RouterLink
-              :to="`/plants/${cellProps.row.id}`"
-              class="undecorated-link"
-            >
-              <EntityLabelId
-                entity-type="plant"
-                :label-id="cellProps.row.label_id"
-              />
-            </RouterLink>
-          </q-td>
-        </template>
-        <template #body-cell-plant_group="cellProps">
-          <q-td key="value" :props="cellProps">
-            <EntityName
-              :plant-group="cellProps.row.plant_group"
-              :cultivar="cellProps.row.plant_group?.cultivar"
-              :lot="cellProps.row.plant_group?.cultivar.lot"
-              :crossing="cellProps.row.plant_group?.cultivar.lot.crossing"
-            />
-          </q-td>
-        </template>
-      </EntityViewRelatedEntityTable>
+      <PlantList
+        :rows="plantRow.plants"
+        :visible-columns="[
+          'label_id',
+          'plant_group_name',
+          'distance_plant_row_start',
+          'date_planted',
+          'date_eliminated',
+        ]"
+      />
     </template>
 
     <template #action-left>
@@ -100,7 +79,7 @@ import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PlantRowButtonDelete from 'src/components/PlantRow/PlantRowButtonDelete.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { ResultOf, graphql } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
@@ -109,36 +88,26 @@ import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import { localizeDate } from 'src/utils/dateUtils';
-import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
-import EntityName from 'src/components/Entity/EntityName.vue';
-import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
-import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
-import { plantGroupSegmentsFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import { plantFragment } from 'src/components/Plant/plantFragment';
+import PlantList from 'src/components/Plant/PlantList.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query PlantRow($id: Int!) {
+    query PlantRow($id: Int!, $PlantWithSegments: Boolean! = true) {
       plant_rows_by_pk(id: $id) {
         ...plantRowFragment
         note
         plants(where: { disabled: { _eq: false } }) {
-          id
-          label_id
-          distance_plant_row_start
-          date_planted
-          date_eliminated
-          plant_group {
-            ...plantGroupSegmentsFragment
-          }
+          ...plantFragment
         }
       }
     }
   `,
-  [plantRowFragment, plantGroupSegmentsFragment],
+  [plantRowFragment, plantFragment],
 );
 
 const { data, error, fetching } = useQuery({
@@ -148,8 +117,7 @@ const { data, error, fetching } = useQuery({
 
 const plantRow = computed(() => data.value?.plant_rows_by_pk);
 
-const { t, n } = useI18n();
-const { localizedSortPredicate } = useLocalizedSort();
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
@@ -159,53 +127,4 @@ function edit() {
     query: route.query,
   });
 }
-
-type Plant = NonNullable<
-  NonNullable<ResultOf<typeof query>['plant_rows_by_pk']>['plants']
->[0];
-
-const plantsColumns = [
-  {
-    name: 'label_id',
-    label: t('plants.fields.labelId'),
-    field: 'label_id',
-    align: 'left' as const,
-    sortable: true,
-    sort: (a: Plant['label_id'], b: Plant['label_id']) =>
-      localizedSortPredicate(a, b),
-  },
-  {
-    name: 'plant_group',
-    label: t('plants.fields.plantGroup'),
-    field: 'plant_group',
-    align: 'left' as const,
-    sortable: true,
-    sort: (a: Plant['plant_group'], b: Plant['plant_group']) =>
-      localizedSortPredicate(a.display_name, b.display_name),
-  },
-  {
-    name: 'distance_plant_row_start',
-    label: t('plants.fields.distancePlantRowStart'),
-    align: 'right' as const,
-    field: 'distance_plant_row_start',
-    format: (v: Plant['distance_plant_row_start']) => (v ? n(v) : ''),
-    sortable: true,
-  },
-  {
-    name: 'date_planted',
-    label: t('plants.fields.datePlanted'),
-    align: 'left' as const,
-    field: 'date_planted',
-    sortable: true,
-    format: localizeDate,
-  },
-  {
-    name: 'date_eliminted',
-    label: t('plants.fields.dateEliminated'),
-    align: 'left' as const,
-    field: 'date_eliminated',
-    sortable: true,
-    format: localizeDate,
-  },
-];
 </script>

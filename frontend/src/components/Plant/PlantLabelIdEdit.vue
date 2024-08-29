@@ -149,7 +149,8 @@ const rules = computed(() => {
 
     // generally valid format
     (val: string) =>
-      plantLabelIdUtils.isValid(val) || t('plants.errors.labelId'),
+      plantLabelIdUtils.isValid(plantLabelIdUtils.zeroFill(val)) ||
+      t('plants.errors.labelId'),
 
     // prefix
     (val: string) =>

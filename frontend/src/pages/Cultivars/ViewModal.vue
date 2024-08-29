@@ -25,7 +25,7 @@
       <EntityViewAllAttributions :attributions="attributions" show-entity />
 
       <h3 class="q-mb-md">{{ t('plantGroups.title', 2) }}</h3>
-      <EntityViewRelatedEntityTable
+      <EntityRelatedTable
         entity-key="plantGroups"
         :rows="cultivar.plant_groups || []"
         row-key="id"
@@ -42,7 +42,21 @@
             </RouterLink>
           </q-td>
         </template>
-      </EntityViewRelatedEntityTable>
+      </EntityRelatedTable>
+
+      <h3 class="q-mb-md">{{ t('plants.title', 2) }}</h3>
+      <PlantList
+        :rows="plants"
+        :visible-columns="[
+          'label_id',
+          'plant_group_name',
+          'plant_row',
+          'distance_plant_row_start',
+          'orchard',
+          'date_planted',
+          'date_eliminated',
+        ]"
+      />
     </template>
 
     <template #action-left>
@@ -83,7 +97,9 @@ import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllA
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
-import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
+import { plantFragment } from 'src/components/Plant/plantFragment';
+import PlantList from 'src/components/Plant/PlantList.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -95,12 +111,16 @@ const query = graphql(
       $LotWithOrchard: Boolean = false
       $LotWithCrossing: Boolean = true
       $PlantGroupWithCultivar: Boolean! = false
+      $PlantWithSegments: Boolean! = true
       $AttributionsViewWithEntites: Boolean! = true
     ) {
       cultivars_by_pk(id: $id) {
         ...cultivarFragment
         plant_groups {
           ...plantGroupFragment
+          plants {
+            ...plantFragment
+          }
         }
         attributions_views {
           ...entityAttributionsViewFragment
@@ -108,7 +128,12 @@ const query = graphql(
       }
     }
   `,
-  [cultivarFragment, plantGroupFragment, entityAttributionsViewFragment],
+  [
+    cultivarFragment,
+    plantGroupFragment,
+    entityAttributionsViewFragment,
+    plantFragment,
+  ],
 );
 
 const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
@@ -122,6 +147,10 @@ const attributions = computed(
   () =>
     (cultivar.value?.attributions_views ||
       []) as EntityAttributionsViewFragment[],
+);
+
+const plants = computed(
+  () => cultivar.value?.plant_groups.flatMap((pg) => pg.plants) || [],
 );
 
 const { t, d } = useI18n();

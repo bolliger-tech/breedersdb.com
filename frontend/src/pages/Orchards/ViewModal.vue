@@ -27,7 +27,7 @@
       <h3 class="q-mb-md">
         {{ t('plantRows.title', 2) }}
       </h3>
-      <EntityViewRelatedEntityTable
+      <EntityRelatedTable
         entity-key="plant_rows"
         :rows="orchard.plant_rows || []"
         row-key="id"
@@ -44,12 +44,12 @@
             </RouterLink>
           </q-td>
         </template>
-      </EntityViewRelatedEntityTable>
+      </EntityRelatedTable>
 
       <h3 class="q-mb-md">
         {{ t('lots.title', 2) }}
       </h3>
-      <EntityViewRelatedEntityTable
+      <EntityRelatedTable
         entity-key="lots"
         :rows="orchard.lots || []"
         row-key="id"
@@ -66,7 +66,7 @@
             </RouterLink>
           </q-td>
         </template>
-      </EntityViewRelatedEntityTable>
+      </EntityRelatedTable>
     </template>
 
     <template #action-left>
@@ -103,7 +103,7 @@ import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vu
 import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
-import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 

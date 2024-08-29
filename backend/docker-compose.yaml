@@ -12,6 +12,7 @@ services:
       - breedersdb_net
 
   hasura:
+    # update breedersdb.com-deploy/ansible/playbook.yaml when changing this image
     image: hasura/graphql-engine:v2.40.2
     ports:
       - '8080:8080'

@@ -45,7 +45,7 @@
       <h3 class="q-mb-md">
         {{ t('lots.title', 2) }}
       </h3>
-      <EntityViewRelatedEntityTable
+      <EntityRelatedTable
         entity-key="lots"
         :rows="crossing.lots || []"
         row-key="id"
@@ -62,12 +62,12 @@
             </RouterLink>
           </q-td>
         </template>
-      </EntityViewRelatedEntityTable>
+      </EntityRelatedTable>
 
       <h3 class="q-mb-md">
         {{ t('motherPlants.title', 2) }}
       </h3>
-      <EntityViewRelatedEntityTable
+      <EntityRelatedTable
         entity-key="mother_plants"
         :rows="crossing.mother_plants || []"
         row-key="id"
@@ -94,7 +94,7 @@
             </RouterLink>
           </q-td>
         </template>
-      </EntityViewRelatedEntityTable>
+      </EntityRelatedTable>
     </template>
 
     <template #action-left>
@@ -130,7 +130,7 @@ import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vu
 import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
-import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';

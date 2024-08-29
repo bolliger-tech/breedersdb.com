@@ -108,6 +108,23 @@ const routes: RouteRecordRaw[] = [
         'Plants',
       ].map(createEntityRoutes),
 
+      {
+        path: 'attributions',
+        children: [
+          {
+            path: '',
+            component: () => import('pages/Attributions/IndexPage.vue'),
+            children: [
+              {
+                path: ':entityId(\\d+)',
+                component: () => import('pages/Attributions/ViewModal.vue'),
+                props: true,
+              },
+            ],
+          },
+        ],
+      },
+
       ...['Plants', 'PlantGroups', 'Cultivars', 'Lots'].map(
         createAttributeAndAnalyzeRoutes,
       ),

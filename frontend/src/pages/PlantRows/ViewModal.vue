@@ -43,7 +43,7 @@
       <h3 class="q-mb-md">
         {{ t('plants.title', 2) }}
       </h3>
-      <EntityViewRelatedEntityTable
+      <EntityRelatedTable
         entity-key="plants"
         :rows="plantRow.plants || []"
         row-key="id"
@@ -73,7 +73,7 @@
             />
           </q-td>
         </template>
-      </EntityViewRelatedEntityTable>
+      </EntityRelatedTable>
     </template>
 
     <template #action-left>
@@ -113,7 +113,7 @@ import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
-import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { plantGroupSegmentsFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 

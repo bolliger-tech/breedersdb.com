@@ -5,7 +5,7 @@
   <q-table
     v-else
     v-model:pagination="pagination"
-    class="q-mt-md entity-view-related-entity-table"
+    class="q-mt-md entity-related-table"
     flat
     dense
     :rows="rows"
@@ -31,7 +31,7 @@ import { type QTable, QTableSlots, useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ref, watch } from 'vue';
 
-export interface EntityViewRelatedEntityTableProps {
+export interface EntityRelatedTableProps {
   entityKey: string;
   rows: QTable['rows'];
   rowKey: QTable['rowKey'];
@@ -40,10 +40,10 @@ export interface EntityViewRelatedEntityTableProps {
   defaultDescending?: boolean;
 }
 
-const props = defineProps<EntityViewRelatedEntityTableProps>();
+const props = defineProps<EntityRelatedTableProps>();
 const slots = defineSlots<QTableSlots>();
 
-const paginationKey = `breedersdb-related-entity-table-pagination__${props.entityKey}`;
+const paginationKey = `breedersdb-entity-related-table-pagination__${props.entityKey}`;
 const defaultPagination = {
   sortBy: props.defaultSortBy || props.columns?.[0]?.name,
   descending: props.defaultDescending,
@@ -61,7 +61,7 @@ const { t } = useI18n();
 </script>
 
 <style scoped>
-:global(.entity-view-related-entity-table th) {
+:global(.entity-related-table th) {
   text-wrap: nowrap;
 }
 </style>

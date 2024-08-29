@@ -1,5 +1,5 @@
 <template>
-  <EntityViewRelatedEntityTable
+  <EntityRelatedTable
     :entity-key="`attributions-table-${props.attributeType}`"
     :rows="rows"
     row-key="id"
@@ -67,7 +67,7 @@
         />
       </q-td>
     </template>
-  </EntityViewRelatedEntityTable>
+  </EntityRelatedTable>
 </template>
 
 <script setup lang="ts">
@@ -82,7 +82,7 @@ import {
 import { localizeDate } from 'src/utils/dateUtils';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
-import EntityViewRelatedEntityTable from './EntityViewRelatedEntityTable.vue';
+import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 

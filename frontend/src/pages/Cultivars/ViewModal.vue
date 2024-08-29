@@ -25,7 +25,7 @@
       <EntityViewAllAttributions :attributions="attributions" show-entity />
 
       <h3 class="q-mb-md">{{ t('plantGroups.title', 2) }}</h3>
-      <EntityViewRelatedEntityTable
+      <EntityRelatedTable
         entity-key="plantGroups"
         :rows="cultivar.plant_groups || []"
         row-key="id"
@@ -42,7 +42,7 @@
             </RouterLink>
           </q-td>
         </template>
-      </EntityViewRelatedEntityTable>
+      </EntityRelatedTable>
     </template>
 
     <template #action-left>
@@ -83,7 +83,8 @@ import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllA
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
-import EntityViewRelatedEntityTable from 'src/components/Entity/View/EntityViewRelatedEntityTable.vue';
+import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
+import { plantFragment } from 'src/components/Plant/plantFragment';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -95,6 +96,7 @@ const query = graphql(
       $LotWithOrchard: Boolean = false
       $LotWithCrossing: Boolean = true
       $PlantGroupWithCultivar: Boolean! = false
+      $PlantWithSegments: Boolean! = true
       $AttributionsViewWithEntites: Boolean! = true
     ) {
       cultivars_by_pk(id: $id) {
@@ -102,13 +104,21 @@ const query = graphql(
         plant_groups {
           ...plantGroupFragment
         }
+        plants {
+          ...plantFragment
+        }
         attributions_views {
           ...entityAttributionsViewFragment
         }
       }
     }
   `,
-  [cultivarFragment, plantGroupFragment, entityAttributionsViewFragment],
+  [
+    cultivarFragment,
+    plantGroupFragment,
+    entityAttributionsViewFragment,
+    plantFragment,
+  ],
 );
 
 const { data, error, fetching } = useRefreshAttributionsViewThenQuery({

@@ -9,37 +9,7 @@
   >
     <template #body-cell-entity="cellProps">
       <q-td key="entity" :props="cellProps">
-        <RouterLink
-          v-if="cellProps.row.plant"
-          :to="`/plants/${cellProps.row.plant.id}`"
-          class="undecorated-link"
-        >
-          <EntityLabelId
-            entity-type="plant"
-            :label-id="cellProps.row.plant.label_id"
-          />
-        </RouterLink>
-        <RouterLink
-          v-else-if="cellProps.row.plant_group"
-          :to="`/groups/${cellProps.row.plant_group.id}`"
-          class="undecorated-link"
-        >
-          {{ cellProps.row.plant_group.display_name }}
-        </RouterLink>
-        <RouterLink
-          v-else-if="cellProps.row.cultivar"
-          :to="`/cultivars/${cellProps.row.cultivar.id}`"
-          class="undecorated-link"
-        >
-          {{ cellProps.row.cultivar.display_name }}
-        </RouterLink>
-        <RouterLink
-          v-else-if="cellProps.row.lot"
-          :to="`/lots/${cellProps.row.lot.id}`"
-          class="undecorated-link"
-        >
-          {{ cellProps.row.lot.display_name }}
-        </RouterLink>
+        <EntityLink :entity="cellProps.row" />
       </q-td>
     </template>
 
@@ -83,7 +53,7 @@ import { localizeDate } from 'src/utils/dateUtils';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
-import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
+import EntityLink from 'src/components/Entity/EntityLink.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 export interface EntityViewAttributionsTableProps {

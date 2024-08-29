@@ -1,6 +1,14 @@
 export const attributions = {
   title: 'Attribution | Attributions',
 
+  searchPlaceholder: {
+    all: 'Search by attribute',
+    plants: 'Search by attribute, label ID or group name',
+    plantGroups: 'Search by attribute or group name',
+    cultivars: 'Search by attribute or cultivar name',
+    lots: 'Search by attribute or lot name',
+  },
+
   columns: {
     exceptionalAttribution: 'Exceptional attribution',
     author: 'Author',

@@ -47,6 +47,8 @@ export const attributionsViewFragment = graphql(`
     attribution_id
     geo_location
     geo_location_accuracy
+    created
+    modified
     plant @include(if: $AttributionsViewWithEntites) {
       id
       label_id

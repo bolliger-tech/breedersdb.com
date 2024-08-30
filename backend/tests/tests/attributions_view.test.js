@@ -36,6 +36,10 @@ const attributionsViewFields = /* GraphQL */ `
       label_id
       cultivar_name
     }
+    attribution_form {
+      id
+      name
+    }
     geo_location
     geo_location_accuracy
     exceptional_attribution
@@ -453,6 +457,18 @@ test('view contains new value after update', async () => {
 
   expect(data.attributions_view).toHaveLength(1);
   expect(data.attributions_view[0].id).toBe(value_id);
+});
+
+test('view contains attribution_form', async () => {
+  const { form_id } = await insertAttributeValueWithAssociatedData({
+    is_lot: true,
+  });
+
+  await refreshattributionsView();
+
+  const { data } = await postOrFail({ query: queryAll });
+
+  expect(data.attributions_view[0].attribution_form.id).toEqual(form_id);
 });
 
 describe('non aggregated values are correct', async () => {

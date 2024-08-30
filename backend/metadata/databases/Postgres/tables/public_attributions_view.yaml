@@ -11,6 +11,15 @@ object_relationships:
         remote_table:
           name: attributes
           schema: public
+  - name: attribution_form
+    using:
+      manual_configuration:
+        column_mapping:
+          attribution_form_id: id
+        insertion_order: null
+        remote_table:
+          name: attribution_forms
+          schema: public
   - name: cultivar
     using:
       manual_configuration:
@@ -54,6 +63,7 @@ select_permissions:
         - attribute_id
         - attribute_name
         - attribute_type
+        - attribution_form_id
         - attribution_id
         - author
         - boolean_value
@@ -72,10 +82,10 @@ select_permissions:
         - integer_value
         - lot_id
         - modified
-        - text_note
         - photo_note
         - plant_group_id
         - plant_id
+        - text_note
         - text_value
       filter: {}
       allow_aggregations: true

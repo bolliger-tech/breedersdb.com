@@ -42,6 +42,7 @@ export const attributionsViewFragment = graphql(`
     photo_note
     exceptional_attribution
     attribute_name
+    attribute_id
     author
     attribute_type
     attribution_id

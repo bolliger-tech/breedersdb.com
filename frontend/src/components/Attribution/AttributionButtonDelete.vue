@@ -1,0 +1,145 @@
+<template>
+  <EntityButtonDelete
+    :message="
+      t('base.deleteConfirmation', { entity: t('base.entityName.attribution') })
+    "
+    :error="error"
+    :fetching="deleting"
+    @delete="deleteAttribution"
+    @reset-errors="resetErrors"
+  />
+</template>
+
+<script setup lang="ts">
+import { useMutation, useQuery } from '@urql/vue';
+import EntityButtonDelete from 'src/components/Entity/EntityButtonDelete.vue';
+import { graphql } from 'src/graphql';
+import { useI18n } from 'src/composables/useI18n';
+import { computed } from 'vue';
+
+export interface AttributionButtonDeleteProps {
+  attributionId: number;
+  attributionValueId: number;
+}
+const props = defineProps<AttributionButtonDeleteProps>();
+
+const emit = defineEmits<{
+  deleted: [];
+}>();
+
+const {
+  error: attributionValueCountError,
+  executeQuery: fetchAttributionValueCount,
+  fetching: fetchingAttributionValueCount,
+} = useQuery({
+  query: graphql(`
+    query AttributionValueCount($attributionId: Int!) {
+      attribution_values_aggregate(
+        where: { attribution_id: { _eq: $attributionId } }
+      ) {
+        aggregate {
+          count
+        }
+      }
+    }
+  `),
+  variables: { attributionId: props.attributionId },
+  requestPolicy: 'network-only',
+});
+
+const {
+  error: deleteAttributionValueError,
+  executeMutation: executeDeleteAttributionValue,
+  fetching: deletingAttributionValue,
+} = useMutation(
+  graphql(`
+    mutation DeleteAttributionValue($attributionValueId: Int!) {
+      delete_attribution_values_by_pk(id: $attributionValueId) {
+        id
+      }
+      refresh_attributions_view(
+        where: { view_name: { _eq: "attributions_view" } }
+        limit: 1
+      ) {
+        id
+      }
+    }
+  `),
+);
+
+const {
+  error: deleteAttributionValueAndAttributionError,
+  executeMutation: executeDeleteAttributionValueAndAttribution,
+  fetching: deletingAttributionValueAndAttribution,
+} = useMutation(
+  graphql(`
+    mutation DeleteAttributionValueAndAttribution(
+      $attributionValueId: Int!
+      $attributionId: Int!
+    ) {
+      delete_attribution_values_by_pk(id: $attributionValueId) {
+        id
+      }
+      delete_attributions_by_pk(id: $attributionId) {
+        id
+      }
+      refresh_attributions_view(
+        where: { view_name: { _eq: "attributions_view" } }
+        limit: 1
+      ) {
+        id
+      }
+    }
+  `),
+);
+
+function resetErrors() {
+  attributionValueCountError.value = undefined;
+  deleteAttributionValueError.value = undefined;
+  deleteAttributionValueAndAttributionError.value = undefined;
+}
+
+const error = computed(
+  () =>
+    attributionValueCountError.value ||
+    deleteAttributionValueError.value ||
+    deleteAttributionValueAndAttributionError.value,
+);
+
+const deleting = computed(
+  () =>
+    fetchingAttributionValueCount.value ||
+    deletingAttributionValue.value ||
+    deletingAttributionValueAndAttribution.value,
+);
+
+async function deleteAttribution() {
+  const { data: countData } = await fetchAttributionValueCount();
+
+  const executeDelete =
+    (countData.value?.attribution_values_aggregate.aggregate?.count || 0) > 1
+      ? executeDeleteAttributionValue(
+          {
+            attributionValueId: props.attributionValueId,
+          },
+          { additionalTypenames: ['attributions_view'] },
+        )
+      : executeDeleteAttributionValueAndAttribution(
+          {
+            attributionValueId: props.attributionValueId,
+            attributionId: props.attributionId,
+          },
+          { additionalTypenames: ['attributions_view'] },
+        );
+
+  executeDelete.then((result) => {
+    if (!result.data?.delete_attribution_values_by_pk) {
+      console.error(`Failed to delete attribution ${props.attributionId}`);
+    } else {
+      emit('deleted');
+    }
+  });
+}
+
+const { t } = useI18n();
+</script>

@@ -34,22 +34,34 @@ import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 
 export interface EntityLinkProps {
   entity: {
-    plant: {
-      id: number;
-      label_id: string;
-    };
-    plant_group: {
-      id: number;
-      display_name: string;
-    };
-    cultivar: {
-      id: number;
-      display_name: string;
-    };
-    lot: {
-      id: number;
-      display_name: string;
-    };
+    plant?:
+      | {
+          id: number;
+          label_id: string;
+        }
+      | null
+      | undefined;
+    plant_group?:
+      | {
+          id: number;
+          display_name: string;
+        }
+      | null
+      | undefined;
+    cultivar?:
+      | {
+          id: number;
+          display_name: string;
+        }
+      | null
+      | undefined;
+    lot?:
+      | {
+          id: number;
+          display_name: string;
+        }
+      | null
+      | undefined;
   };
 }
 

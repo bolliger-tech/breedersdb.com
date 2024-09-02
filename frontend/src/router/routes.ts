@@ -60,7 +60,7 @@ function createEntityRoutes(entity: string) {
             props: true,
           },
           {
-            path: ':entityId/edit',
+            path: ':entityId(\\d+)/edit',
             component: () => import(`pages/${entity}/EditModal.vue`),
             props: true,
           },

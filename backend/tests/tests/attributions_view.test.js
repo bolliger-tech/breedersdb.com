@@ -265,8 +265,8 @@ async function refreshattributionsView() {
       mutation RefreshattributionsView {
         refresh_attributions_view {
           id
-          last_check
-          last_change
+          needs_refresh
+          last_refresh
         }
       }`,
   });
@@ -457,6 +457,36 @@ test('view contains new value after update', async () => {
 
   expect(data.attributions_view).toHaveLength(1);
   expect(data.attributions_view[0].id).toBe(value_id);
+});
+
+test('view lacks value after delete', async () => {
+  const { value_id } = await insertAttributeValueWithAssociatedData({
+    is_lot: true,
+  });
+
+  // precondition check
+  await refreshattributionsView();
+  const { data: precondition } = await postOrFail({ query: queryAll });
+  expect(precondition.attributions_view).toHaveLength(1);
+  expect(precondition.attributions_view[0].id).toBe(value_id);
+
+  // act
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation DeleteValue($value_id: Int!) {
+        delete_attribution_values_by_pk(id: $value_id) {
+          id
+        }
+      }
+    `,
+    variables: { value_id },
+  });
+
+  await refreshattributionsView();
+
+  // test
+  const { data } = await postOrFail({ query: queryAll });
+  expect(data.attributions_view).toHaveLength(0);
 });
 
 test('view contains attribution_form', async () => {
@@ -708,4 +738,81 @@ test('plants do not contain cultivar attributions', async () => {
   });
 
   expect(data.attributions_view).toHaveLength(0);
+});
+
+test('view reflects attribute.name, .attribute_type change', async () => {
+  const { attribute_id } = await insertAttributeValueWithAssociatedData({
+    is_lot: true,
+    attribute_name: 'Attribute 1',
+    attribute_data_type: 'INTEGER',
+    attribute_type: 'OBSERVATION',
+  });
+
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdateAttribute(
+        $attribute_id: Int!
+        $name: citext!
+        $attribute_type: attribute_types_enum!
+      ) {
+        update_attributes_by_pk(
+          pk_columns: { id: $attribute_id }
+          _set: { name: $name, attribute_type: $attribute_type }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: {
+      attribute_id,
+      name: 'Attribute 2',
+      attribute_type: 'OTHER',
+    },
+  });
+
+  await refreshattributionsView();
+
+  const { data } = await postOrFail({ query: queryAll });
+
+  expect(data.attributions_view).toHaveLength(1);
+  expect(data.attributions_view[0].attribute_name).toBe('Attribute 2');
+  expect(data.attributions_view[0].attribute_type).toBe('OTHER');
+});
+
+test('view reflects attribution.date, .author change', async () => {
+  const { attribution_id } = await insertAttributeValueWithAssociatedData({
+    is_lot: true,
+    attribution_author: 'Hugo',
+    attribution_date_attributed: '2021-01-01',
+  });
+
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdateAttribution(
+        $attribution_id: Int!
+        $author: citext!
+        $date_attributed: date!
+      ) {
+        update_attributions_by_pk(
+          pk_columns: { id: $attribution_id }
+          _set: { author: $author, date_attributed: $date_attributed }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: {
+      attribution_id,
+      author: 'Petra',
+      date_attributed: '2024-01-01',
+    },
+  });
+
+  await refreshattributionsView();
+
+  const { data } = await postOrFail({ query: queryAll });
+
+  expect(data.attributions_view).toHaveLength(1);
+  expect(data.attributions_view[0].author).toBe('Petra');
+  expect(data.attributions_view[0].date_attributed).toBe('2024-01-01');
 });

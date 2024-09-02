@@ -1,3 +1,4 @@
+-- add attributions_form
 drop materialized view if exists attributions_view;
 create materialized view attributions_view as
 with plant_group_group as (select id, plant_group_id from plants),
@@ -63,3 +64,65 @@ create index on attributions_view (created);
 create index on attributions_view (author);
 create index on attributions_view using gin (author gin_trgm_ops);
 create index on attributions_view (date_attributed);
+
+-- fix: attribution_view not updated by refresh_attributions_view()
+-- on deletion of attribution_values, change of attribute.names, etc. attributions.author etc.
+drop table materialized_view_refreshes cascade;
+create table materialized_view_refreshes
+(
+    id            integer primary key generated always as identity,
+    view_name     text unique not null,
+    last_refresh  timestamp with time zone,
+    needs_refresh boolean     not null default false
+);
+
+create index on materialized_view_refreshes (view_name);
+
+create or replace function refresh_attributions_view() returns setof materialized_view_refreshes as
+$$
+declare
+    refresh_start timestamp with time zone := now();
+begin
+    if (exists(select 1
+               from materialized_view_refreshes
+               where view_name = 'attributions_view' and needs_refresh = true)) then
+        refresh materialized view attributions_view;
+        update materialized_view_refreshes
+        set needs_refresh = false,
+            last_refresh  = refresh_start
+        where view_name = 'attributions_view';
+    end if;
+
+    return query select *
+                 from materialized_view_refreshes
+                 where view_name = 'attributions_view';
+end;
+$$ language plpgsql volatile;
+
+create or replace function mark_attributions_view_for_refresh() returns trigger as
+$$
+begin
+    insert into materialized_view_refreshes (view_name, needs_refresh)
+    values ('attributions_view', true)
+    on conflict (view_name) do update set needs_refresh = true;
+    return null;
+end;
+$$ language plpgsql;
+
+create or replace trigger mark_attributions_view_for_refresh
+    after insert or update or delete
+    on attribution_values
+    for each statement
+execute function mark_attributions_view_for_refresh();
+
+create or replace trigger mark_attributions_view_for_refresh
+    after update
+    on attributes
+    for each statement
+execute function mark_attributions_view_for_refresh();
+
+create or replace trigger mark_attributions_view_for_refresh
+    after update
+    on attributions
+    for each statement
+execute function mark_attributions_view_for_refresh();

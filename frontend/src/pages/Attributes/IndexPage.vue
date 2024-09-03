@@ -17,7 +17,11 @@
     >
       <template #body-cell-default_value="cellProps">
         <q-td :props="cellProps" style="max-width: clamp(300px, 30svw, 600px)">
-          <q-chip v-if="cellProps.value !== ''" color="grey-7" size="sm">
+          <q-chip
+            v-if="cellProps.value !== ''"
+            :color="$q.dark.isActive ? 'grey-7' : 'grey-4'"
+            size="sm"
+          >
             <div class="ellipsis">{{ cellProps.value }}</div>
           </q-chip>
         </q-td>

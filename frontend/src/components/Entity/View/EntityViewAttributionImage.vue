@@ -18,6 +18,7 @@
     padding="none"
     :round="false"
     size="sm"
+    color="primary"
     :label="t('base.show')"
     @click="open = true"
   />

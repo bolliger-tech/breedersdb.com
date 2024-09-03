@@ -20,7 +20,7 @@
     size="sm"
     color="primary"
     :label="t('base.show')"
-    @click="open = true"
+    @click.stop="open = true"
   />
 
   <q-dialog

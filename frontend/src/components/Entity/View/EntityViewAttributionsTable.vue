@@ -6,6 +6,7 @@
     :columns="columns"
     default-sort-by="date_attributed"
     :default-descending="true"
+    @row-click="(_, row) => $router.push(`/attributions/${row.id}`)"
   >
     <template #body-cell-entity="cellProps">
       <q-td key="entity" :props="cellProps">

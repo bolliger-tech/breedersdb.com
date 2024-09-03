@@ -29,7 +29,11 @@
       </template>
 
       <template #body-cell-value="cellProps">
-        <q-td key="value" :props="cellProps">
+        <q-td
+          key="value"
+          :props="cellProps"
+          style="max-width: clamp(300px, 30svw, 600px)"
+        >
           <template v-if="cellProps.row.data_type === 'PHOTO'">
             <EntityViewAttributionImage
               :file-name="cellProps.row.text_value"
@@ -37,9 +41,16 @@
             />
           </template>
 
-          <template v-else>
+          <div
+            v-else
+            style="
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            "
+          >
             {{ cellProps.value }}
-          </template>
+          </div>
         </q-td>
       </template>
 
@@ -269,8 +280,6 @@ const columns = computed(() => [
     field: (row: AttributionsViewFragment) => getValue(row),
     align: 'center' as const,
     sortable: false,
-    maxWidth: 'clamp(300px, 30svw, 600px)',
-    ellipsis: true,
   },
   {
     name: 'text_note',

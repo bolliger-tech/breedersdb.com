@@ -16,15 +16,15 @@
       :view-entity-path-getter="(id) => `/attribution-forms/${id}`"
     >
       <template #body-cell-fields="cellProps">
-        <q-td :props="cellProps" style="max-width: clamp(300px, 30svw, 600px)">
-          <q-chip
+        <q-td :props="cellProps">
+          <AttributionValueChip
             v-for="field in cellProps.value"
             :key="field.priority"
-            :color="$q.dark.isActive ? 'grey-9' : 'grey-3'"
-            size="sm"
+            default
+            max-width="clamp(300px, 30svw, 600px)"
           >
-            <div class="ellipsis">{{ field.attribute.name }}</div>
-          </q-chip>
+            {{ field.attribute.name }}
+          </AttributionValueChip>
         </q-td>
       </template>
     </EntityContainer>
@@ -44,6 +44,7 @@ import { attributionFormFragment } from 'src/components/AttributionForm/attribut
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
 const { t } = useI18n();
 

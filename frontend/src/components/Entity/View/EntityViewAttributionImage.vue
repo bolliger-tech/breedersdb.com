@@ -17,7 +17,7 @@
     icon="photo"
     padding="none"
     :round="false"
-    size="sm"
+    :size="buttonSize || 'sm'"
     color="primary"
     :label="t('base.show')"
     @click.stop="open = true"
@@ -106,7 +106,7 @@ import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { localizeDate } from 'src/utils/dateUtils';
-import { QDialogProps } from 'quasar';
+import { QBtnProps, QDialogProps } from 'quasar';
 import {
   dataTypeToColumnTypes,
   formatResultColumnValue,
@@ -126,6 +126,7 @@ export interface EntityViewAttributionImageProps {
   previewHeight?: number;
   transition?: QDialogProps['transitionShow'];
   transitionDuration?: number;
+  buttonSize?: QBtnProps['size'];
 }
 
 const props = defineProps<EntityViewAttributionImageProps>();

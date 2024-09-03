@@ -29,28 +29,23 @@
       </template>
 
       <template #body-cell-value="cellProps">
-        <q-td
-          key="value"
-          :props="cellProps"
-          style="max-width: clamp(300px, 30svw, 600px)"
-        >
-          <template v-if="cellProps.row.data_type === 'PHOTO'">
-            <EntityViewAttributionImage
-              :file-name="cellProps.row.text_value"
-              :attribution="cellProps.row"
-            />
-          </template>
-
-          <div
-            v-else
-            style="
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            "
+        <q-td key="value" :props="cellProps">
+          <AttributionValueChip
+            :plant="!!cellProps.row.plant?.id"
+            :plant-group="!!cellProps.row.plant_group?.id"
+            :cultivar="!!cellProps.row.cultivar?.id"
+            :lot="!!cellProps.row.lot?.id"
+            max-width="clamp(300px, 30svw, 600px)"
           >
-            {{ cellProps.value }}
-          </div>
+            <template v-if="cellProps.row.data_type === 'PHOTO'">
+              <EntityViewAttributionImage
+                :file-name="cellProps.row.text_value"
+                :attribution="cellProps.row"
+                button-size="xs"
+              />
+            </template>
+            <template v-else>{{ cellProps.value }}</template>
+          </AttributionValueChip>
         </q-td>
       </template>
 
@@ -93,6 +88,7 @@ import EntityLink from 'src/components/Entity/EntityLink.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
+import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
 const { t } = useI18n();
 

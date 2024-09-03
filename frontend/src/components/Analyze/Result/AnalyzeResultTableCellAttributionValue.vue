@@ -1,5 +1,11 @@
 <template>
-  <AnalyzeResultTableCellAttribution :color="color">
+  <AnalyzeResultTableCellAttribution
+    :plant="!!attribution.plant_id"
+    :plant-group="!!attribution.plant_group_id"
+    :cultivar="!!attribution.cultivar_id"
+    :lot="!!attribution.lot_id"
+    :dark="dark"
+  >
     <template #label>
       {{ label }}
     </template>
@@ -20,11 +26,11 @@ import {
 import { ColumnTypes } from 'src/utils/columnTypes';
 import AnalyzeResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
 import AnalyzeResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
-import { useQuasar } from 'quasar';
 import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 
 export interface AnalyzeResultTableCellAttributionValueProps {
   attribution: AnalyzeAttributionsViewFields;
+  dark?: boolean;
 }
 
 const props = defineProps<AnalyzeResultTableCellAttributionValueProps>();
@@ -38,23 +44,5 @@ const label = computed(() => {
 
   const value = getAttributionValue(props.attribution);
   return formatResultColumnValue({ value, type });
-});
-
-const $q = useQuasar();
-const color = computed(() => {
-  let baseColor = '';
-  if (props.attribution.plant_id) {
-    baseColor = '#c8e6c9'; // green-2
-  } else if (props.attribution.plant_group_id) {
-    baseColor = '#e1bee7'; // purple-2
-  } else if (props.attribution.cultivar_id) {
-    baseColor = '#ffecb3'; // amber-2
-  } else if (props.attribution.lot_id) {
-    baseColor = '#bbdefb'; // blue-2
-  }
-
-  return $q.dark.isActive
-    ? `color-mix(in srgb, ${baseColor} 33%, transparent)`
-    : baseColor;
 });
 </script>

@@ -1,20 +1,19 @@
 <template>
-  <AnalyzeResultTableCellAttribution
-    v-if="attributions.length > 0"
-    :color="color"
-  >
+  <AnalyzeResultTableCellAttribution v-if="attributions.length > 0" aggregated>
     <template #label>
       {{ label }}
     </template>
     <template #overlay>
       <i18n-t
-        keypath="result.aggTitle"
+        keypath="analyze.result.aggTitle"
         tag="h4"
-        class="text-body2 text-weight-bold title"
+        class="row align-center text-body2 text-weight-bold title"
         scope="global"
       >
         <template #value>
-          <span class="chip">{{ label }}</span
+          <AttributionValueChip aggregated dark max-width="80px">{{
+            label
+          }}</AttributionValueChip
           >&nbsp;
         </template>
         <template #theAggregation>
@@ -25,6 +24,7 @@
         v-for="attribution of attributions"
         :key="attribution.id"
         :attribution="attribution"
+        dark
       />
     </template>
   </AnalyzeResultTableCellAttribution>
@@ -38,9 +38,9 @@ import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import AnalyzeResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
 import AnalyzeResultTableCellAttributionValue from './AnalyzeResultTableCellAttributionValue.vue';
-import { useQuasar } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
 import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
+import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
 export interface AnalyzeResultTableCellAttributionValueAggregatedProps {
   attributions: AnalyzeAttributionsViewFields[];
@@ -226,14 +226,6 @@ function round(value: number, decimals: number) {
   return Math.round(value * 10 ** decimals) / 10 ** decimals;
 }
 
-const $q = useQuasar();
-const color = computed(() => {
-  const baseColor = '#e1bee7'; // purple-2
-  return $q.dark.isActive
-    ? `color-mix(in srgb, ${baseColor} 33%, transparent)`
-    : baseColor;
-});
-
 const aggregationName = computed(() => {
   return {
     [AttributionAggregation.Count]: t('analyze.result.aggregations.theCount'),
@@ -246,28 +238,9 @@ const aggregationName = computed(() => {
 });
 </script>
 
-<style scoped lang="scss">
-.chip {
-  max-width: 80px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  font-size: 0.625rem;
-  padding: 0.5em 0.9em;
-  border-radius: 2em;
-  line-height: 1;
-  display: inline-block;
-  background-color: $purple-2;
-  transform: translateY(0.5em);
-}
-.body--dark {
-  .chip {
-    background-color: color-mix(in srgb, $purple-2 33%, transparent);
-  }
-}
-
+<style scoped>
 .title {
   text-wrap: balance;
-  margin: 0 4px 0.75em;
+  margin: 0 0 0.75em 0;
 }
 </style>

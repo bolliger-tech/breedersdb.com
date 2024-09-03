@@ -399,20 +399,20 @@ function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnTypes }) {
     case ColumnTypes.Citext:
       return term?.value || '';
     case ColumnTypes.Integer:
-      return term ? parseInt(term.value) : NaN;
+      return term?.value ? parseInt(term.value) : NaN;
     case ColumnTypes.Rating:
-      return term ? parseInt(term.value) : NaN;
+      return term?.value ? parseInt(term.value) : NaN;
     case ColumnTypes.Float:
-      return term ? parseFloat(term.value) : NaN;
+      return term?.value ? parseFloat(term.value) : NaN;
     case ColumnTypes.Boolean:
       return String(term?.value).toLowerCase() === 'true';
     case ColumnTypes.Enum:
       return term?.value || '';
     case ColumnTypes.Date:
-      if (!term) return undefined;
+      if (!term?.value) return undefined;
       return new Date(term.value).toISOString().split('T')[0];
     case ColumnTypes.DateTime:
-      if (!term) return undefined;
+      if (!term?.value) return undefined;
       return new Date(term.value).toISOString();
     case ColumnTypes.Time:
       // TODO: handle time

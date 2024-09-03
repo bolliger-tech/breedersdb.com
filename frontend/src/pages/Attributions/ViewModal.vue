@@ -11,17 +11,17 @@
   >
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <EntityViewTable>
-        <EntityViewTableRow
+      <div class="row bg-black rounded-borders justify-center">
+        <EntityViewAttributionImage
           v-if="attribution.data_type === 'PHOTO' && attribution.text_value"
-          :label="t('attributions.columns.value')"
-        >
-          <EntityViewAttributionImage
-            :file-name="attribution.text_value"
-            :attribution="attribution"
-          />
-        </EntityViewTableRow>
-        <EntityViewTableRow v-else-if="attribution.data_type === 'TEXT'">
+          :file-name="attribution.text_value"
+          :attribution="attribution"
+          preview
+          :preview-height="400"
+        />
+      </div>
+      <EntityViewTable>
+        <EntityViewTableRow v-if="attribution.data_type === 'TEXT'">
           <strong>{{ t('attributions.columns.value') }}</strong>
           <br />
           <span style="white-space: pre-line">{{ getValue(attribution) }}</span>
@@ -47,6 +47,7 @@
         <EntityViewTableRow
           v-if="attribution.photo_note"
           :label="t('attributions.columns.photoNote')"
+          render-empty
         >
           <EntityViewAttributionImage
             :file-name="attribution.photo_note"
@@ -168,9 +169,11 @@ const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
 
 const attribution = computed(
   () =>
-    data.value?.attributions_view[0] as AttributionsViewFragment & {
-      attribution_form: AttributionFormFragment;
-    },
+    data.value?.attributions_view[0] as
+      | (AttributionsViewFragment & {
+          attribution_form: AttributionFormFragment;
+        })
+      | undefined,
 );
 
 const { t } = useI18n();

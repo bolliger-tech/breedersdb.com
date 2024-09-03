@@ -80,8 +80,8 @@ defineExpose({
   focus: () => textInputRef.value && focusInView(textInputRef.value),
 });
 
-const showTextInput = ref(false);
-const showPhotoInput = ref(false);
+const showTextInput = ref(textNote.value !== null);
+const showPhotoInput = ref(photoNote.value !== null);
 
 const photoInputRef = ref<InstanceType<
   typeof AttributionAddFormInputPhoto

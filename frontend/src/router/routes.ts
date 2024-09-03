@@ -149,6 +149,11 @@ const routes: RouteRecordRaw[] = [
       },
 
       {
+        path: 'settings',
+        component: () => import('pages/Settings/IndexPage.vue'),
+      },
+
+      {
         path: 'dev',
         children: [
           { path: '', component: () => import('pages/Dev/IndexPage.vue') },

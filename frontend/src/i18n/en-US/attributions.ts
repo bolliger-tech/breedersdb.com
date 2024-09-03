@@ -91,4 +91,6 @@ export const attributions = {
 
     addAttribute: 'Add attribute',
   },
+
+  noValueOnEdit: 'Please enter a value or delete the attribution.',
 };

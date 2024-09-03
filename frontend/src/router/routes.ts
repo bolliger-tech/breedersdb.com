@@ -120,6 +120,11 @@ const routes: RouteRecordRaw[] = [
                 component: () => import('pages/Attributions/ViewModal.vue'),
                 props: true,
               },
+              {
+                path: ':entityId(\\d+)/edit',
+                component: () => import('pages/Attributions/EditModal.vue'),
+                props: true,
+              },
             ],
           },
         ],

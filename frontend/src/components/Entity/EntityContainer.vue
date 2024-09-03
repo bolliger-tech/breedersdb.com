@@ -7,8 +7,15 @@
     :search-placeholder="searchPlaceholder"
     :has-qr-scanner="hasQrScanner"
     @scanned-qr="$emit('scanned-qr', $event)"
-    @add-new="addNew"
   >
+    <template #add-button>
+      <slot name="add-button">
+        <q-btn primary unelevated no-caps color="primary" @click="addNew">{{
+          t('entity.add')
+        }}</q-btn>
+      </slot>
+    </template>
+
     <template #default>
       <EntityListTable
         v-model:visible-columns="visibleColumns"
@@ -45,6 +52,7 @@ import EntityModal from './EntityModal.vue';
 import { MatcherLocationAsPath, useRoute, useRouter } from 'vue-router';
 import { nextTick, type Slot, computed } from 'vue';
 import { QTableSlots } from 'quasar';
+import { useI18n } from 'src/composables/useI18n';
 
 export interface EntityContainerProps
   extends EntityContainerPropsWithoutModels {
@@ -62,7 +70,7 @@ interface EntityContainerPropsWithoutModels {
   loading?: EntityListTableProps['loading'];
   allColumns: EntityListTableProps['allColumns'];
   listEntitiesPath: string | MatcherLocationAsPath;
-  addEntityPath: string | MatcherLocationAsPath;
+  addEntityPath?: string | MatcherLocationAsPath;
   viewEntityPathGetter: (id: number | string) => string | MatcherLocationAsPath;
   hasQrScanner?: boolean;
 }
@@ -80,6 +88,7 @@ const visibleColumns = defineModel<EntityListTableProps['visibleColumns']>(
 
 const slots = defineSlots<{
   default: Slot;
+  'add-button': Slot;
   [key: `body-cell-${string}`]: QTableSlots[`body-cell-${string}`];
 }>();
 defineEmits<{
@@ -104,6 +113,7 @@ function restoreScrollPos() {
 const route = useRoute();
 const router = useRouter();
 function addNew() {
+  if (typeof props.addEntityPath === 'undefined') return;
   saveScrollPos();
   const path =
     typeof props.addEntityPath === 'string'
@@ -127,4 +137,6 @@ function closeModal() {
     nextTick(() => nextTick(() => restoreScrollPos()));
   });
 }
+
+const { t } = useI18n();
 </script>

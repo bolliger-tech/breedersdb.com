@@ -60,7 +60,7 @@ function createEntityRoutes(entity: string) {
             props: true,
           },
           {
-            path: ':entityId/edit',
+            path: ':entityId(\\d+)/edit',
             component: () => import(`pages/${entity}/EditModal.vue`),
             props: true,
           },
@@ -108,9 +108,45 @@ const routes: RouteRecordRaw[] = [
         'Plants',
       ].map(createEntityRoutes),
 
+      {
+        path: 'attributions',
+        children: [
+          {
+            path: '',
+            component: () => import('pages/Attributions/IndexPage.vue'),
+            children: [
+              {
+                path: ':entityId(\\d+)',
+                component: () => import('pages/Attributions/ViewModal.vue'),
+                props: true,
+              },
+              {
+                path: ':entityId(\\d+)/edit',
+                component: () => import('pages/Attributions/EditModal.vue'),
+                props: true,
+              },
+            ],
+          },
+        ],
+      },
+
       ...['Plants', 'PlantGroups', 'Cultivars', 'Lots'].map(
         createAttributeAndAnalyzeRoutes,
       ),
+
+      {
+        path: 'plants',
+        children: [
+          {
+            path: 'plant',
+            component: () => import('pages/Plants/PlantingPage.vue'),
+          },
+          {
+            path: 'eliminate',
+            component: () => import('pages/Plants/EliminatingPage.vue'),
+          },
+        ],
+      },
 
       {
         path: 'dev',

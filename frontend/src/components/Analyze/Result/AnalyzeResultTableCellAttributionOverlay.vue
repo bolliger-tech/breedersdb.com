@@ -21,9 +21,9 @@ import {
 } from 'src/components/Plant/plantFragment';
 import { lotFragment, type LotFragment } from 'src/components/Lot/lotFragment';
 import {
-  entityAttributionsViewFragment,
-  type EntityAttributionsViewFragment,
-} from 'src/components/Entity/entityAttributionsViewFragment';
+  attributionsViewFragment,
+  type AttributionsViewFragment,
+} from 'src/components/Attribution/attributionsViewFragment';
 import {
   plantGroupFragment,
   type PlantGroupFragment,
@@ -38,7 +38,7 @@ export interface AnalyzeResultTableCellAttributionOverlayProps {
   id: number;
 }
 
-export type AttributionDetails = EntityAttributionsViewFragment & {
+export type AttributionDetails = AttributionsViewFragment & {
   plant: Omit<PlantFragment, 'plant_group'> & {
     plant_group: Required<PlantFragment['plant_group']>;
   };
@@ -67,7 +67,7 @@ const query = graphql(
       $LotWithCrossing: Boolean! = true
     ) {
       attributions_view(where: { id: { _eq: $id } }) {
-        ...entityAttributionsViewFragment
+        ...attributionsViewFragment
         plant {
           ...plantFragment
         }
@@ -84,7 +84,7 @@ const query = graphql(
     }
   `,
   [
-    entityAttributionsViewFragment,
+    attributionsViewFragment,
     plantFragment,
     plantGroupFragment,
     cultivarFragment,

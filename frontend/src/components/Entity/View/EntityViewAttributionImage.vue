@@ -18,8 +18,9 @@
     padding="none"
     :round="false"
     size="sm"
+    color="primary"
     :label="t('base.show')"
-    @click="open = true"
+    @click.stop="open = true"
   />
 
   <q-dialog
@@ -103,7 +104,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { EntityAttributionsViewFragment } from '../entityAttributionsViewFragment';
+import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { localizeDate } from 'src/utils/dateUtils';
 import { QDialogProps } from 'quasar';
 import {
@@ -119,7 +120,7 @@ const DEFAULT_PREVIEW_HEIGHT = 200;
 
 export interface EntityViewAttributionImageProps {
   fileName: string;
-  attribution: EntityAttributionsViewFragment;
+  attribution: AttributionsViewFragment;
   preview?: boolean;
   previewWidth?: number;
   previewHeight?: number;
@@ -147,7 +148,7 @@ const entityName = computed(() => {
   if (!name) {
     // report but don't fail
     const error = new Error(
-      'No entity name found for attribution. Consider using the `entityAttributionsViewFragment` with `$AttributionsViewWithEntites = true`.',
+      'No entity name found for attribution. Consider using the `attributionsViewFragment` with `$AttributionsViewWithEntites = true`.',
     );
     console.error(error.message, error.stack);
     captureException(error);

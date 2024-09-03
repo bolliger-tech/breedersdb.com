@@ -97,9 +97,9 @@ const mutationMock: MockMutation = (params) => {
       refresh_attributions_view: [
         {
           id: 1,
-          view_name: 'AttributionsView',
-          last_change: '2024-06-06T11:43:12Z',
-          last_check: '2024-06-06T11:43:12Z',
+          view_name: 'attributions_view',
+          last_refresh: '2024-06-06T11:43:12Z',
+          needs_refresh: false,
         },
       ],
     })();

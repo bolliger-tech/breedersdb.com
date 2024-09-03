@@ -133,7 +133,7 @@ function loadPreview() {
   preview.value.src = URL.createObjectURL(modelValue.value);
 }
 
-watch(modelValue, loadPreview, { immediate: true });
+watch([modelValue, preview], loadPreview, { immediate: true });
 </script>
 
 <style scoped lang="scss">

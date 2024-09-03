@@ -1,14 +1,7 @@
 <template>
   <div class="row items-center">
     <h1 class="q-mr-lg">{{ title }}</h1>
-    <q-btn
-      primary
-      unelevated
-      no-caps
-      color="primary"
-      @click="$emit('add-new')"
-      >{{ t('entity.add') }}</q-btn
-    >
+    <slot name="add-button"></slot>
   </div>
 
   <q-card v-if="search !== undefined" class="bg-shade q-my-md" flat>
@@ -86,9 +79,9 @@ const tab = defineModel<string>('tab');
 const search = defineModel<string>('search');
 defineSlots<{
   default: Slot;
+  'add-button': Slot;
 }>();
 defineEmits<{
-  'add-new': [];
   'scanned-qr': [data: string];
 }>();
 

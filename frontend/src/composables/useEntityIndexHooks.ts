@@ -1,6 +1,6 @@
 import { usePagination } from 'src/components/Entity/List/usePagination';
 import { useQueryArg } from './useQueryArg';
-import { computed, type Ref } from 'vue';
+import { computed, toValue, type MaybeRef, type Ref } from 'vue';
 import type { UseQueryArgs } from '@urql/vue';
 
 // { "key": "payload" } -> { "key": "payload" }
@@ -23,11 +23,13 @@ function nestObject(object: StringObj): StringObj {
 
 export function useEntityIndexHooks<T>({
   defaultSortBy = 'name',
+  defaultSortOrderDesc = false,
   searchColumns = ['name'], // use 'nested.entity.column' for nested columns
   subset,
 }: {
   defaultSortBy?: string;
-  searchColumns?: string[];
+  defaultSortOrderDesc?: boolean;
+  searchColumns?: MaybeRef<string[]>;
   subset?: Ref<'active' | 'disabled' | 'all'>;
 } = {}) {
   const { queryArg: search } = useQueryArg<string>({
@@ -38,7 +40,7 @@ export function useEntityIndexHooks<T>({
 
   const { pagination } = usePagination({
     sortBy: defaultSortBy,
-    descending: false,
+    descending: defaultSortOrderDesc,
     page: 1,
     rowsPerPage: 100,
     rowsNumber: 0,
@@ -62,16 +64,18 @@ export function useEntityIndexHooks<T>({
       }
     }
 
+    const searchColumnsValue = toValue(searchColumns);
+
     if (search.value) {
-      if (searchColumns.length === 1) {
+      if (searchColumnsValue.length === 1) {
         where._and.push(
           nestObject({
-            [searchColumns[0]]: { _ilike: `%${search.value}%` },
+            [searchColumnsValue[0]]: { _ilike: `%${search.value}%` },
           }),
         );
       } else {
         where._and.push({
-          _or: searchColumns.map((column) =>
+          _or: searchColumnsValue.map((column) =>
             nestObject({
               [column]: { _ilike: `%${search.value}%` },
             }),

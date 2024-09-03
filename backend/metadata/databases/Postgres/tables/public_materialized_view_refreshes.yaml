@@ -7,8 +7,8 @@ select_permissions:
       columns:
         - id
         - view_name
-        - last_change
-        - last_check
+        - last_refresh
+        - needs_refresh
       filter: {}
       allow_aggregations: true
     comment: ""

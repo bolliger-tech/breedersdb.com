@@ -166,9 +166,9 @@ entity "**lots**" #ffff0012 ##888800 {
 entity "**materialized_view_refreshes**" {
   + ""id"": //integer [PK]//
   --
-  *""view_name"": //character varying(63) //
-  ""last_change"": //timestamp with time zone //
-  ""last_check"": //timestamp with time zone //
+  *""view_name"": //text //
+  ""last_refresh"": //timestamp with time zone //
+  *""needs_refresh"": //boolean //
 }
 
 entity "**mother_plants**" #0000ff06 {

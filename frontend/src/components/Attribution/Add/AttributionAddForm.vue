@@ -64,6 +64,7 @@ import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import AttributionAddAlreadyAttributed from 'src/components/Attribution/Add/AttributionAddAlreadyAttributed.vue';
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 import AttributionAddFormFieldList from 'src/components/Attribution/Add/AttributionAddFormFieldList.vue';
+import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -130,14 +131,8 @@ const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
 });
 
 const hasValues = computed(() =>
-  Object.values(attributionValues.value).some(
-    (av) =>
-      av.integer_value !== null ||
-      av.float_value !== null ||
-      av.text_value !== null ||
-      av.boolean_value !== null ||
-      av.date_value !== null ||
-      av.photo_value !== null,
+  Object.values(attributionValues.value).some((av) =>
+    attributionValueHasValue(av),
   ),
 );
 
@@ -198,15 +193,7 @@ async function save() {
 
   const { photos, attributions } = Object.values(attributionValues.value)
     // filter out attribution_values without a value
-    .filter(
-      (av) =>
-        av.integer_value !== null ||
-        av.float_value !== null ||
-        av.text_value !== null ||
-        av.boolean_value !== null ||
-        av.date_value !== null ||
-        av.photo_value !== null,
-    )
+    .filter((av) => attributionValueHasValue(av))
     // transform AttributionValueWithPhoto[] into AttributionValue[] and File[]
     .map((av) => {
       const { photo_value, photo_note, ...rest } = av;
@@ -370,3 +357,4 @@ function showNoDataNotification() {
   });
 }
 </script>
+src/components/Attribution/attributionValueHasValue

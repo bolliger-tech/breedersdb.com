@@ -11,7 +11,7 @@
   >
     <template #default>
       <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <div class="row bg-black rounded-borders justify-center">
+      <div class="row bg-black rounded-borders justify-center q-mb-md">
         <EntityViewAttributionImage
           v-if="attribution.data_type === 'PHOTO' && attribution.text_value"
           :file-name="attribution.text_value"

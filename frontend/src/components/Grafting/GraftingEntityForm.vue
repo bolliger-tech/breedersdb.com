@@ -4,9 +4,16 @@
     v-model="data.name"
     :label="t('entity.commonColumns.name')"
     :rules="[
-      (val: string) =>
+      (val: string | null | undefined) =>
         !!val ||
         t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
+      (val: string) => {
+        const regex = new RegExp('^[^\\n]{1,45}$');
+        return (
+          regex.test(val) ||
+          t('base.validation.noNewLinesMaxLength', { maxLength: 45 })
+        );
+      },
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"

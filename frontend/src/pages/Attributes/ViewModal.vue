@@ -28,7 +28,10 @@
           {{ attribute.validation_rule?.step }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('attributes.columns.defaultValue')">
-          {{ defaultValue || t('base.notAvailable') }}
+          <template v-if="defaultValue !== ''">{{ defaultValue }}</template>
+          <span v-else class="text-body2 text-italic">{{
+            t('base.notAvailable')
+          }}</span>
         </EntityViewTableRow>
         <template v-if="attribute.data_type === 'RATING' && attribute.legend">
           <EntityViewTableRow

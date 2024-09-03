@@ -42,7 +42,9 @@
           >
             {{ motherPlant.pollen?.name }}
           </RouterLink>
-          <template v-else>{{ t('base.notAvailable') }}</template>
+          <span v-else class="text-body2 text-italic">{{
+            t('base.notAvailable')
+          }}</span>
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.numbFlowers')">
           {{ motherPlant.numb_flowers }}

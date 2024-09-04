@@ -21,7 +21,7 @@ export function useRefreshAttributionsView() {
   return useMutation(mutation);
 }
 
-export function useRefreshAttributionsViewThenQuery<T>(
+export async function useRefreshAttributionsViewThenQuery<T>(
   queryArgs: Omit<UseQueryArgs<T>, 'pause'>,
 ) {
   const query = useQuery<T>({
@@ -37,7 +37,7 @@ export function useRefreshAttributionsViewThenQuery<T>(
     error: attributionsRefreshError,
   } = useRefreshAttributionsView();
 
-  refreshAttributionsView({}).then(() => query.resume());
+  await refreshAttributionsView({}).then(() => query.resume());
 
   const fetching = computed(
     () => query.fetching.value || refreshingAttributionsView.value,
@@ -47,8 +47,10 @@ export function useRefreshAttributionsViewThenQuery<T>(
     () => query.error.value || attributionsRefreshError.value,
   );
 
+  const queryData = await query;
+
   return {
-    ...query,
+    ...queryData,
     fetching,
     error,
   };

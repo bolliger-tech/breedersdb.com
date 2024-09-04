@@ -42,6 +42,7 @@
     :data-type="data.data_type"
   />
   <AttributeLegendInput
+    :ref="(el: InputRef) => (refs.legend = el)"
     v-model="data.legend"
     :data-type="data.data_type"
     :validation-rule="data.validation_rule"
@@ -123,7 +124,7 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   minRef: null,
   maxRef: null,
   defaultValueRef: null,
-  // legend: there is no need to validate, so no ref here
+  legend: null,
   // description: there is no need to validate, so no ref here
   attributeTypeRef: null,
   disabledRef: null,

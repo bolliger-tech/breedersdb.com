@@ -167,6 +167,7 @@ const {
   variables: _variables,
 } = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'created',
+  defaultSortOrderDesc: true,
   searchColumns: searchColumns,
 });
 

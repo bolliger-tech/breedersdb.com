@@ -1,15 +1,29 @@
 <template>
-  <img
-    v-if="preview"
-    v-ripple
-    :src="`/api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['1x']}`"
-    :srcset="`
+  <div v-if="preview" class="relative-position" style="line-height: 0">
+    <img
+      ref="previewRef"
+      v-ripple
+      :src="`/api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['1x']}`"
+      :srcset="`
       /api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['1x']},
       /api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['2x']} 2x
     `"
-    class="cursor-pointer"
-    @click="open = true"
-  />
+      class="cursor-pointer"
+      :class="{ invisible: !previewIsReady }"
+      loading="lazy"
+      @click="open = true"
+      @load="previewIsReady = true"
+      @onerror="previewIsReady = true"
+    />
+    <div
+      v-if="!previewIsReady"
+      :style="`height: ${previewHeight || DEFAULT_PREVIEW_HEIGHT}px; width: ${previewWidth || DEFAULT_PREVIEW_HEIGHT}px;`"
+    >
+      <div class="absolute-center">
+        <q-spinner size="3em" color="primary" />
+      </div>
+    </div>
+  </div>
   <q-btn
     v-else
     flat
@@ -102,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { localizeDate } from 'src/utils/dateUtils';
@@ -226,4 +240,6 @@ const previewDimensions = computed(() => {
     '2x': dims2x.join('&'),
   };
 });
+
+const previewIsReady = ref(false);
 </script>

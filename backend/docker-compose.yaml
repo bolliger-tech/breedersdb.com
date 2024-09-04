@@ -4,6 +4,7 @@ services:
     environment:
       POSTGRESQL_PASSWORD: postgres
       POSTGRESQL_DATABASE: '${POSTGRESQL_DATABASE:-postgres}'
+      POSTGRESQL_INITDB_ARGS: '--locale-provider=icu --icu-locale=en_US-u-kn-true'
     volumes:
       - db_data:/bitnami/postgresql
     ports:

@@ -22,6 +22,7 @@
       show-if-above
       :width="100"
       class="bg-primary"
+      :model-value="true"
     >
       <MainNav />
     </q-drawer>

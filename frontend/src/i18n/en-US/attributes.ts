@@ -50,4 +50,7 @@ export const attributes = {
 
   dataTypeChangeNotAllowed:
     'Because this attribute was already used for some attributions, changing the data type is not allowed. Either delete the attributions first or create a new attribute with the desired data type.',
+
+  invalidRatingConfig:
+    'Invalid rating configuration. Please check the attributes minimum and maximum value.',
 };

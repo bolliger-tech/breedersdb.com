@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="row items-start no-wrap">
+  <div v-if="steps < 10" ref="container" class="row items-start no-wrap">
     <div v-if="withZero" class="column">
       <q-btn
         color="primary"
@@ -40,9 +40,14 @@
       </div>
     </div>
   </div>
+  <BaseMessage v-else type="error" icon-size="lg">
+    {{ t('attributes.invalidRatingConfig') }}
+  </BaseMessage>
 </template>
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
+import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributionAddFormInputProps {
   validation: { min: number; max: number; step: 1 };
@@ -110,6 +115,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   observer.disconnect();
 });
+
+const { t } = useI18n();
 </script>
 
 <style scoped lang="scss">

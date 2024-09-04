@@ -72,6 +72,7 @@
     <div
       v-if="attribute.description"
       style="word-wrap: break-word; white-space: pre-line"
+      class="q-mt-sm"
     >
       {{ attribute.description }}
     </div>

@@ -77,7 +77,6 @@ import {
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
-import { localizeDate } from 'src/utils/dateUtils';
 import {
   formatResultColumnValue,
   dataTypeToColumnTypes,
@@ -91,7 +90,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const query = graphql(
   `
@@ -300,8 +299,7 @@ const columns = computed(() => [
     field: 'date_attributed',
     align: 'left' as const,
     sortable: true,
-    format: (v: AttributionsViewFragment['date_attributed']) =>
-      localizeDate(v) || '',
+    format: (v: AttributionsViewFragment['date_attributed']) => d(v, 'Ymd'),
   },
   {
     name: 'author',

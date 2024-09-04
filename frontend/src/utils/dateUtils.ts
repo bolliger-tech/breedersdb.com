@@ -1,17 +1,5 @@
 import type { Locale } from 'src/composables/useI18n';
 
-export function localizeDate(date: Date | string | null | undefined) {
-  if (!date) {
-    return null;
-  }
-
-  if (typeof date === 'string') {
-    date = new Date(date);
-  }
-
-  return date.toLocaleDateString();
-}
-
 // get a relative time string
 // examples:
 // now

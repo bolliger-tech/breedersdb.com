@@ -119,7 +119,6 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
-import { localizeDate } from 'src/utils/dateUtils';
 import { QBtnProps, QDialogProps } from 'quasar';
 import {
   dataTypeToColumnTypes,
@@ -151,7 +150,7 @@ defineEmits<{
 
 const open = defineModel<boolean>({ required: false, default: false });
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const entityName = computed(() => {
   const name =
@@ -197,7 +196,7 @@ const metadata = computed(() => {
     props.attribution.data_type === 'PHOTO'
       ? `${props.attribution.attribute_name}, `
       : '';
-  return `${attribute}${localizeDate(props.attribution.date_attributed)} ${props.attribution.author}, ${entityTypeName.value} ${entityName.value}`;
+  return `${attribute}${d(props.attribution.date_attributed, 'Ymd')} ${props.attribution.author}, ${entityTypeName.value} ${entityName.value}`;
 });
 
 const description = computed(() => {

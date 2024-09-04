@@ -27,7 +27,7 @@
           />
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('pollen.fields.dateHarvested')">
-          {{ localizeDate(pollen.date_harvested) }}
+          {{ pollen.date_harvested ? d(pollen.date_harvested, 'Ymd') : '' }}
         </EntityViewTableRow>
         <EntityTableViewTimestampRows
           :created="pollen.created"
@@ -116,7 +116,6 @@ import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
@@ -164,7 +163,7 @@ const { data, error, fetching } = await useQuery({
 
 const pollen = computed(() => data.value?.pollen_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
@@ -218,7 +217,7 @@ const motherPlantsColumns = [
     field: 'date_impregnated',
     align: 'left' as const,
     sortable: true,
-    format: localizeDate,
+    format: (v: MotherPlant['date_impregnated']) => (v ? d(v, 'Ymd') : ''),
   },
 ];
 </script>

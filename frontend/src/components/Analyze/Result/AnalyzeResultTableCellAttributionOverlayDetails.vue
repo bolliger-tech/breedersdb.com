@@ -31,7 +31,7 @@
       </div>
       <div>
         <q-icon name="today" class="text-grey-7" />&nbsp;{{
-          localizeDate(data.date_attributed)
+          d(data.date_attributed, 'Ymd')
         }}
       </div>
     </div>
@@ -133,16 +133,18 @@ import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import PlantGroupEntityTable from 'src/components/PlantGroup/PlantGroupEntityTable.vue';
 import CultivarEntityTable from 'src/components/Cultivar/CultivarEntityTable.vue';
 import LotEntityTable from 'src/components/Lot/LotEntityTable.vue';
-import { localizeDate } from 'src/utils/dateUtils';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
+import { useI18n } from 'src/composables/useI18n';
 
 export interface AnalyzeResultTableCellAttributionOverlayDetailsProps {
   data: AttributionDetails;
 }
 
 defineProps<AnalyzeResultTableCellAttributionOverlayDetailsProps>();
+
+const { d } = useI18n();
 </script>
 
 <style lang="scss" scoped>

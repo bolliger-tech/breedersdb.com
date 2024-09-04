@@ -68,7 +68,7 @@
         </EntityViewTableRow>
 
         <EntityViewTableRow :label="t('attributions.columns.dateAttributed')">
-          {{ localizeDate(attribution.date_attributed) }}
+          {{ d(attribution.date_attributed, 'Ymd') }}
         </EntityViewTableRow>
 
         <EntityViewTableRow :label="t('attributions.columns.author')">
@@ -148,7 +148,6 @@ import {
 import { ColumnTypes } from 'src/utils/columnTypes';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
-import { localizeDate } from 'src/utils/dateUtils';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
@@ -184,7 +183,7 @@ const attribution = computed(
       | undefined,
 );
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

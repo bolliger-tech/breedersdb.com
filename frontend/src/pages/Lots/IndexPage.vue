@@ -25,11 +25,10 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
-import { localizeDate } from 'src/utils/dateUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, n } = useI18n();
+const { t, n, d } = useI18n();
 
 const query = graphql(
   `
@@ -96,7 +95,7 @@ const columns = [
     label: t('lots.fields.dateSowed'),
     align: 'left' as const,
     field: 'date_sowed',
-    format: (value: string | null) => localizeDate(value) || '',
+    format: (v: Lot['date_sowed']) => (v ? d(v, 'Ymd') : ''),
     sortable: true,
   },
   {
@@ -104,7 +103,7 @@ const columns = [
     label: t('lots.fields.numbSeedsSowed'),
     align: 'right' as const,
     field: 'numb_seeds_sowed',
-    format: (value: number | null) => (value ? n(value) : ''),
+    format: (v: Lot['numb_seeds_sowed']) => (v ? n(v) : ''),
     sortable: true,
   },
   {
@@ -112,7 +111,7 @@ const columns = [
     label: t('lots.fields.numbSeedlingsGrown'),
     align: 'right' as const,
     field: 'numb_seedlings_grown',
-    format: (value: number | null) => (value ? n(value) : ''),
+    format: (v: Lot['numb_seedlings_grown']) => (v ? n(v) : ''),
     sortable: true,
   },
   {
@@ -129,7 +128,7 @@ const columns = [
     label: t('lots.fields.datePlanted'),
     align: 'left' as const,
     field: 'date_planted',
-    format: (value: string | null) => localizeDate(value) || '',
+    format: (v: Lot['date_planted']) => (v ? d(v, 'Ymd') : ''),
     sortable: true,
   },
   {
@@ -137,7 +136,7 @@ const columns = [
     label: t('lots.fields.numbSeedlingsPlanted'),
     align: 'right' as const,
     field: 'numb_seedlings_planted',
-    format: (value: number | null) => (value ? n(value) : ''),
+    format: (v: Lot['numb_seedlings_planted']) => (v ? n(v) : ''),
     sortable: true,
   },
   {

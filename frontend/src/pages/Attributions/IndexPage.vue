@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
-import { useQuery } from '@urql/vue';
+import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import { graphql } from 'src/graphql';
 import { computed, UnwrapRef, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -188,7 +188,7 @@ const variables = computed(() => {
   };
 });
 
-const { data, fetching, error } = await useQuery({
+const { data, fetching, error } = await useRefreshAttributionsViewThenQuery({
   query,
   variables,
   context: { additionalTypenames: ['attributions_view'] },

@@ -14,6 +14,7 @@
       @update:model-value="
         (val) => setValue(step - 1, val ? val.toString() : '')
       "
+      @blur="modelValue = modelValue?.map((v) => v.trim()) || null"
     />
   </template>
 </template>
@@ -119,9 +120,8 @@ function setValue(step: number, value: string) {
   const data = modelValue.value
     ? [...modelValue.value]
     : Array(steps.value).fill('');
-  const newVal = value.trim();
 
-  data[step] = newVal;
+  data[step] = value;
 
   modelValue.value = data.some((v) => v) ? data : null;
 }

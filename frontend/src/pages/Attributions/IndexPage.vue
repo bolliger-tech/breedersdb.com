@@ -36,6 +36,7 @@
             :cultivar="!!cellProps.row.cultivar?.id"
             :lot="!!cellProps.row.lot?.id"
             max-width="clamp(300px, 30svw, 600px)"
+            class="vertical-middle"
           >
             <template v-if="cellProps.row.data_type === 'PHOTO'">
               <EntityViewAttributionImage

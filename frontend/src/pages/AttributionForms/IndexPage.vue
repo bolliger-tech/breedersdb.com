@@ -22,6 +22,7 @@
             :key="field.priority"
             default
             max-width="clamp(300px, 30svw, 600px)"
+            class="vertical-middle"
           >
             {{ field.attribute.name }}
           </AttributionValueChip>

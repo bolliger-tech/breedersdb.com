@@ -21,6 +21,7 @@
             v-if="cellProps.value !== ''"
             default
             max-width="clamp(300px, 30svw, 600px)"
+            class="vertical-middle"
           >
             {{ cellProps.value }}
           </AttributionValueChip>

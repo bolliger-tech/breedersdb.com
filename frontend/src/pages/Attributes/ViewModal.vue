@@ -27,8 +27,25 @@
         <EntityViewTableRow :label="t('attributes.step')">
           {{ attribute.validation_rule?.step }}
         </EntityViewTableRow>
-        <EntityViewTableRow :label="t('attributes.columns.defaultValue')">
-          {{ defaultValue || t('base.notAvailable') }}
+        <EntityViewTableRow
+          v-if="attribute.data_type === 'TEXT' && defaultValue !== ''"
+        >
+          <template v-if="attribute.data_type === 'TEXT'">
+            <strong>{{ t('attributes.columns.defaultValue') }}</strong>
+            <br />
+            <span style="white-space: pre-line">{{ defaultValue }}</span>
+          </template>
+        </EntityViewTableRow>
+        <EntityViewTableRow
+          v-else
+          :label="t('attributes.columns.defaultValue')"
+        >
+          <template v-if="defaultValue !== ''">
+            {{ defaultValue }}
+          </template>
+          <span v-else class="text-body2 text-italic">{{
+            t('base.notAvailable')
+          }}</span>
         </EntityViewTableRow>
         <template v-if="attribute.data_type === 'RATING' && attribute.legend">
           <EntityViewTableRow
@@ -122,7 +139,7 @@ const query = graphql(
   [attributeFragment],
 );
 
-const { data, error, fetching } = useQuery({
+const { data, error, fetching } = await useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });

@@ -26,11 +26,10 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
-import { localizeDate } from 'src/utils/dateUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const query = graphql(
   `
@@ -97,7 +96,8 @@ const columns = [
     name: 'date_harvested',
     label: t('pollen.fields.dateHarvested'),
     align: 'left' as const,
-    field: (row: Pollen) => localizeDate(row.date_harvested),
+    field: 'date_harvested',
+    format: (v: Pollen['date_harvested']) => (v ? d(v, 'Ymd') : ''),
     sortable: true,
   },
   {

@@ -24,10 +24,12 @@
           </RouterLink>
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('plantRows.fields.dateCreated')">
-          {{ localizeDate(plantRow.date_created) }}
+          {{ plantRow.date_created ? d(plantRow.date_created, 'Ymd') : '' }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('entity.commonColumns.dateDisabled')">
-          {{ localizeDate(plantRow.date_eliminated) }}
+          {{
+            plantRow.date_eliminated ? d(plantRow.date_eliminated, 'Ymd') : ''
+          }}
         </EntityViewTableRow>
         <EntityTableViewTimestampRows
           :created="plantRow.created"
@@ -87,7 +89,6 @@ import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import { localizeDate } from 'src/utils/dateUtils';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
@@ -110,14 +111,14 @@ const query = graphql(
   [plantRowFragment, plantFragment],
 );
 
-const { data, error, fetching } = useQuery({
+const { data, error, fetching } = await useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });
 
 const plantRow = computed(() => data.value?.plant_rows_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

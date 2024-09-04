@@ -25,7 +25,7 @@
       </EntityViewTableRow>
     </template>
     <EntityViewTableRow :label="t('plants.fields.dateGrafted')">
-      {{ localizeDate(plant.date_grafted) }}
+      {{ plant.date_grafted ? d(plant.date_grafted, 'Ymd') : '' }}
     </EntityViewTableRow>
     <EntityViewTableRow
       v-if="plant.rootstock"
@@ -50,13 +50,13 @@
       </RouterLink>
     </EntityViewTableRow>
     <EntityViewTableRow :label="t('plants.fields.dateLabeled')">
-      {{ localizeDate(plant.date_labeled) }}
+      {{ plant.date_labeled ? d(plant.date_labeled, 'Ymd') : '' }}
     </EntityViewTableRow>
     <EntityViewTableRow :label="t('plants.fields.datePlanted')">
-      {{ localizeDate(plant.date_planted) }}
+      {{ plant.date_planted ? d(plant.date_planted, 'Ymd') : '' }}
     </EntityViewTableRow>
     <EntityViewTableRow :label="t('plants.fields.dateEliminated')">
-      {{ localizeDate(plant.date_eliminated) }}
+      {{ plant.date_eliminated ? d(plant.date_eliminated, 'Ymd') : '' }}
     </EntityViewTableRow>
     <EntityTableViewTimestampRows
       :created="plant.created"
@@ -72,7 +72,6 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { localizeDate } from 'src/utils/dateUtils';
 import { type PlantFragment } from './plantFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
@@ -85,5 +84,5 @@ export interface PlantEntityTableProps {
 
 defineProps<PlantEntityTableProps>();
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 </script>

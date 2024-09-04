@@ -8,7 +8,7 @@
 
     <AttributionAddFormInputRating
       v-if="attribute.data_type === 'RATING'"
-      :model-value="modelValue?.integer_value ?? attribute.default_value"
+      :model-value="modelValue?.integer_value ?? null"
       :validation="attribute.validation_rule"
       :legend="attribute.legend"
       @update:model-value="
@@ -18,7 +18,7 @@
     <AttributionAddFormInputNumber
       v-else-if="attribute.data_type === 'INTEGER'"
       ref="integerInputRef"
-      :model-value="modelValue?.integer_value ?? attribute.default_value"
+      :model-value="modelValue?.integer_value ?? null"
       :validation="attribute.validation_rule"
       @update:model-value="
         (val: number | null) => updateModelValue({ integer_value: val })
@@ -27,7 +27,7 @@
     <AttributionAddFormInputNumber
       v-else-if="attribute.data_type === 'FLOAT'"
       ref="floatInputRef"
-      :model-value="modelValue?.float_value ?? attribute.default_value"
+      :model-value="modelValue?.float_value ?? null"
       :validation="attribute.validation_rule"
       @update:model-value="
         (val: number | null) => updateModelValue({ float_value: val })
@@ -36,7 +36,7 @@
     <AttributionAddFormInputText
       v-else-if="attribute.data_type === 'TEXT'"
       ref="textInputRef"
-      :model-value="modelValue?.text_value ?? attribute.default_value"
+      :model-value="modelValue?.text_value ?? null"
       :validation="{ maxLen: 2047, pattern: null }"
       @update:model-value="
         (val: string | null) => updateModelValue({ text_value: val })
@@ -44,19 +44,14 @@
     />
     <AttributionAddFormInputDate
       v-else-if="attribute.data_type === 'DATE'"
-      :model-value="modelValue?.date_value ?? attribute.default_value"
+      :model-value="modelValue?.date_value ?? null"
       @update:model-value="
         (val: string | null) => updateModelValue({ date_value: val })
       "
     />
     <AttributionAddFormInputBoolean
       v-else-if="attribute.data_type === 'BOOLEAN'"
-      :model-value="
-        typeof modelValue === 'undefined' ||
-        typeof modelValue.boolean_value === 'undefined'
-          ? attribute.default_value
-          : modelValue.boolean_value
-      "
+      :model-value="modelValue?.boolean_value ?? null"
       @update:model-value="
         (val: boolean | null) => updateModelValue({ boolean_value: val })
       "
@@ -72,6 +67,7 @@
     <div
       v-if="attribute.description"
       style="word-wrap: break-word; white-space: pre-line"
+      class="q-mt-sm"
     >
       {{ attribute.description }}
     </div>

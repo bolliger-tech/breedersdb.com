@@ -32,7 +32,11 @@
           </RouterLink>
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.dateImpregnated')">
-          {{ localizeDate(motherPlant.date_impregnated) }}
+          {{
+            motherPlant.date_impregnated
+              ? d(motherPlant.date_impregnated, 'Ymd')
+              : ''
+          }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.pollen')">
           <RouterLink
@@ -42,7 +46,9 @@
           >
             {{ motherPlant.pollen?.name }}
           </RouterLink>
-          <template v-else>{{ t('base.notAvailable') }}</template>
+          <span v-else class="text-body2 text-italic">{{
+            t('base.notAvailable')
+          }}</span>
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.numbFlowers')">
           {{ motherPlant.numb_flowers }}
@@ -53,7 +59,11 @@
         <EntityViewTableRow
           :label="t('motherPlants.fields.dateFruitsHarvested')"
         >
-          {{ localizeDate(motherPlant.date_fruits_harvested) }}
+          {{
+            motherPlant.date_fruits_harvested
+              ? d(motherPlant.date_fruits_harvested, 'Ymd')
+              : ''
+          }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('motherPlants.fields.numbSeeds')">
           {{ motherPlant.numb_seeds }}
@@ -106,7 +116,6 @@ import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import { localizeDate } from 'src/utils/dateUtils';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
@@ -133,14 +142,14 @@ const query = graphql(
   [motherPlantFragment],
 );
 
-const { data, error, fetching } = useQuery({
+const { data, error, fetching } = await useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });
 
 const motherPlant = computed(() => data.value?.mother_plants_by_pk);
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

@@ -2,14 +2,19 @@
   <template v-if="dataType === 'RATING'">
     <EntityInput
       v-for="step in steps"
+      :ref="(el: InputRef) => (refs[step] = el)"
       :key="step"
       :model-value="modelValue ? modelValue[step - 1] : ''"
       :label="t('attributes.columns.legend') + ` ${step + (min || 0) - 1}`"
+      :rules="[
+        (v) => !v || v.length <= 80 || t('base.validation.maxLen', { x: 80 }),
+      ]"
       type="text"
       autocomplete="off"
       @update:model-value="
         (val) => setValue(step - 1, val ? val.toString() : '')
       "
+      @blur="modelValue = modelValue?.map((v) => v.trim()) || null"
     />
   </template>
 </template>
@@ -20,6 +25,7 @@ import { type AttributeDataTypes } from 'src/graphql';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { computed, onMounted, watch, ref } from 'vue';
+import { InputRef } from 'src/composables/useEntityForm';
 
 export interface AttributeLegendInputProps {
   dataType: AttributeDataTypes;
@@ -32,6 +38,31 @@ const props = defineProps<AttributeLegendInputProps>();
 const modelValue = defineModel<AttributeFragment['legend']>({
   required: true,
 });
+
+const refs = ref<{ [key: number]: InputRef | null }>({});
+defineExpose({
+  validate: async () => (await validate()).every((input) => input.valid),
+  focus: () => focusFirstInvalidOrFirst(),
+});
+
+async function validate() {
+  return await Promise.all(
+    Object.values(refs.value).map(async (ref) => ({
+      ref,
+      valid: (await ref?.validate?.()) ?? true,
+    })),
+  );
+}
+
+async function focusFirstInvalidOrFirst() {
+  const validated = await validate();
+  const firstInvalid = validated.find((input) => !input.valid);
+  if (firstInvalid) {
+    firstInvalid.ref?.focus?.();
+  } else {
+    refs.value[0]?.focus?.();
+  }
+}
 
 // limit min & max, so the form doesn't explode in case of invalid validation rules
 const min = computed(() => Math.max(props.validationRule?.min || 0, 0));
@@ -89,9 +120,8 @@ function setValue(step: number, value: string) {
   const data = modelValue.value
     ? [...modelValue.value]
     : Array(steps.value).fill('');
-  const newVal = value.trim();
 
-  data[step] = newVal;
+  data[step] = value;
 
   modelValue.value = data.some((v) => v) ? data : null;
 }

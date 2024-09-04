@@ -231,7 +231,7 @@ const items: NavLevel0Props['items'] = [
       {
         label: t('nav.more.settings'),
         icon: 'settings',
-        to: 'settings',
+        to: '/settings',
       },
       {
         label: t('nav.more.darkMode.main'),

@@ -59,8 +59,16 @@
           <EntityLink :entity="attribution" />
         </EntityViewTableRow>
 
+        <EntityViewTableRow
+          v-if="attribution.plant && attribution.plant_group"
+          :label="t('plantGroups.title', 1)"
+          render-empty
+        >
+          <EntityLink :entity="{ plant_group: attribution.plant_group }" />
+        </EntityViewTableRow>
+
         <EntityViewTableRow :label="t('attributions.columns.dateAttributed')">
-          {{ localizeDate(attribution.date_attributed) }}
+          {{ d(attribution.date_attributed, 'Ymd') }}
         </EntityViewTableRow>
 
         <EntityViewTableRow :label="t('attributions.columns.author')">
@@ -140,7 +148,6 @@ import {
 import { ColumnTypes } from 'src/utils/columnTypes';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
-import { localizeDate } from 'src/utils/dateUtils';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 
 const props = defineProps<{ entityId: number | string }>();
@@ -162,7 +169,7 @@ const query = graphql(
   [attributionsViewFragment, attributionFormFragment],
 );
 
-const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
+const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });
@@ -176,7 +183,7 @@ const attribution = computed(
       | undefined,
 );
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

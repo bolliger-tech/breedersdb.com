@@ -22,11 +22,12 @@
           {{ user.failed_signin_attempts }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('users.fields.lastSignin')">
-          {{
-            user.last_signin
-              ? d(user.last_signin, 'YmdHis')
-              : t('base.notAvailable')
-          }}
+          <template v-if="user.last_signin">{{
+            d(user.last_signin, 'YmdHis')
+          }}</template>
+          <span v-else class="text-body2 text-italic">{{
+            t('base.notAvailable')
+          }}</span>
         </EntityViewTableRow>
         <EntityTableViewTimestampRows
           :created="user.created"
@@ -81,7 +82,7 @@ const query = graphql(
   [userFragment],
 );
 
-const { data, error, fetching } = useQuery({
+const { data, error, fetching } = await useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });

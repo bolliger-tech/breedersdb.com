@@ -1,15 +1,29 @@
 <template>
-  <img
-    v-if="preview"
-    v-ripple
-    :src="`/api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['1x']}`"
-    :srcset="`
+  <div v-if="preview" class="relative-position" style="line-height: 0">
+    <img
+      ref="previewRef"
+      v-ripple
+      :src="`/api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['1x']}`"
+      :srcset="`
       /api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['1x']},
       /api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['2x']} 2x
     `"
-    class="cursor-pointer"
-    @click="open = true"
-  />
+      class="cursor-pointer"
+      :class="{ invisible: !previewIsReady }"
+      loading="lazy"
+      @click="open = true"
+      @load="previewIsReady = true"
+      @onerror="previewIsReady = true"
+    />
+    <div
+      v-if="!previewIsReady"
+      :style="`height: ${previewHeight || DEFAULT_PREVIEW_HEIGHT}px; width: ${previewWidth || DEFAULT_PREVIEW_HEIGHT}px;`"
+    >
+      <div class="absolute-center">
+        <q-spinner size="3em" color="primary" />
+      </div>
+    </div>
+  </div>
   <q-btn
     v-else
     flat
@@ -17,7 +31,7 @@
     icon="photo"
     padding="none"
     :round="false"
-    size="sm"
+    :size="buttonSize || 'sm'"
     color="primary"
     :label="t('base.show')"
     @click.stop="open = true"
@@ -102,11 +116,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
-import { localizeDate } from 'src/utils/dateUtils';
-import { QDialogProps } from 'quasar';
+import { QBtnProps, QDialogProps } from 'quasar';
 import {
   dataTypeToColumnTypes,
   formatResultColumnValue,
@@ -126,6 +139,7 @@ export interface EntityViewAttributionImageProps {
   previewHeight?: number;
   transition?: QDialogProps['transitionShow'];
   transitionDuration?: number;
+  buttonSize?: QBtnProps['size'];
 }
 
 const props = defineProps<EntityViewAttributionImageProps>();
@@ -136,7 +150,7 @@ defineEmits<{
 
 const open = defineModel<boolean>({ required: false, default: false });
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const entityName = computed(() => {
   const name =
@@ -182,7 +196,7 @@ const metadata = computed(() => {
     props.attribution.data_type === 'PHOTO'
       ? `${props.attribution.attribute_name}, `
       : '';
-  return `${attribute}${localizeDate(props.attribution.date_attributed)} ${props.attribution.author}, ${entityTypeName.value} ${entityName.value}`;
+  return `${attribute}${d(props.attribution.date_attributed, 'Ymd')} ${props.attribution.author}, ${entityTypeName.value} ${entityName.value}`;
 });
 
 const description = computed(() => {
@@ -225,4 +239,6 @@ const previewDimensions = computed(() => {
     '2x': dims2x.join('&'),
   };
 });
+
+const previewIsReady = ref(false);
 </script>

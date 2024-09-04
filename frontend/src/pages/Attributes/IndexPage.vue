@@ -16,10 +16,15 @@
       :view-entity-path-getter="(id) => `/attributes/${id}`"
     >
       <template #body-cell-default_value="cellProps">
-        <q-td :props="cellProps" style="max-width: clamp(300px, 30svw, 600px)">
-          <q-chip v-if="cellProps.value !== ''" color="grey-7" size="sm">
-            <div class="ellipsis">{{ cellProps.value }}</div>
-          </q-chip>
+        <q-td :props="cellProps">
+          <AttributionValueChip
+            v-if="cellProps.value !== ''"
+            default
+            max-width="clamp(300px, 30svw, 600px)"
+            class="vertical-middle"
+          >
+            {{ cellProps.value }}
+          </AttributionValueChip>
         </q-td>
       </template>
     </EntityContainer>
@@ -48,6 +53,7 @@ import {
 import { ColumnTypes } from 'src/utils/columnTypes';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
 const { t } = useI18n();
 

@@ -39,8 +39,10 @@ const {
 );
 
 const onSubmit = () => {
-  signOut({}).then(() => {
-    router.push({ path: '/' });
+  signOut({}).then(({ error }) => {
+    if (!error) {
+      router.push({ path: '/' });
+    }
   });
 };
 </script>

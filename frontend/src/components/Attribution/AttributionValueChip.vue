@@ -58,5 +58,6 @@ const color = computed(() => {
   margin: 4px;
   display: inline-block;
   background-color: v-bind(color);
+  color: #000000;
 }
 </style>

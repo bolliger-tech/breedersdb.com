@@ -59,6 +59,14 @@
           <EntityLink :entity="attribution" />
         </EntityViewTableRow>
 
+        <EntityViewTableRow
+          v-if="attribution.plant && attribution.plant_group"
+          :label="t('plantGroups.title', 1)"
+          render-empty
+        >
+          <EntityLink :entity="{ plant_group: attribution.plant_group }" />
+        </EntityViewTableRow>
+
         <EntityViewTableRow :label="t('attributions.columns.dateAttributed')">
           {{ localizeDate(attribution.date_attributed) }}
         </EntityViewTableRow>

@@ -136,7 +136,7 @@ const query = graphql(
   ],
 );
 
-const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
+const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });

@@ -110,7 +110,7 @@ const query = graphql(
   [plantRowFragment, plantFragment],
 );
 
-const { data, error, fetching } = useQuery({
+const { data, error, fetching } = await useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });

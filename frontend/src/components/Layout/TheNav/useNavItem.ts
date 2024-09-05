@@ -1,6 +1,6 @@
 import { computed, type Component } from 'vue';
 import { useRoute } from 'vue-router';
-import { BaseSpriteIconProps } from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
+import { type BaseSpriteIconProps } from 'components/Base/BaseSpriteIcon/baseSpriteIconProps';
 
 export type NavItem = {
   to: string;

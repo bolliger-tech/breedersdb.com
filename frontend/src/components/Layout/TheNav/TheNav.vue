@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import DarkModeSetter from 'src/components/Layout/TheNav/DarkMode/DarkModeSetter.vue';
-import LanguageSetter from 'src/components/Layout/TheNav/LanguageSetter.vue';
+import DarkModeSetter from 'src/components/Layout/DarkMode/DarkModeSetter.vue';
+import LanguageSetter from 'src/components/Layout/LanguageSetter.vue';
 import NavLevel0 from './NavLevel0.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { type NavItem } from 'src/components/Layout/TheNav/useNavItem';

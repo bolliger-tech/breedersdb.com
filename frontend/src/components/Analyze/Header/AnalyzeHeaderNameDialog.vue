@@ -13,15 +13,15 @@
       <q-card-section>
         <EntityInput
           ref="inputRef"
-          v-model="name"
+          v-model.trim="name"
           :rules="[
-            (v: string) =>
+            (v: string | null | undefined) =>
               !!v ||
               t('base.validation.xIsRequired', {
                 x: t('entity.commonColumns.name'),
               }),
-            async () =>
-              (await isUnique()) || t('base.validation.nameNotUnique'),
+            async (val: string) =>
+              (await isUnique(val)) || t('base.validation.nameNotUnique'),
           ]"
           required
           :loading="isUniqueFetching"
@@ -54,10 +54,9 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityInput, {
   EntityInputInstance,
 } from 'src/components/Entity/Edit/EntityInput.vue';
-import { ref, nextTick, computed } from 'vue';
-import { useQuery } from '@urql/vue';
-import { graphql } from 'src/graphql';
+import { ref, computed } from 'vue';
 import { AnalyzeFilterBaseTables } from 'src/graphql';
+import { useIsUnique } from 'src/composables/useIsUnique';
 
 export interface AnalyzeHeaderNameDialogProps {
   analyzeId: 'new' | number;
@@ -72,44 +71,17 @@ const emit = defineEmits<{ save: [] }>();
 const inputRef = ref<EntityInputInstance | null>(null);
 const oldName = ref(name.value);
 
-const variables = computed(() => ({
-  name: name.value,
-  baseTable: props.baseTable,
+const additionalWhere = computed(() => ({
+  base_table: { _eq: props.baseTable },
 }));
 
-const query = graphql(`
-  query AnalyzeFilterNameIsUnique(
-    $name: citext!
-    $baseTable: analyze_filter_base_tables_enum!
-  ) {
-    analyze_filters(
-      where: { name: { _eq: $name }, base_table: { _eq: $baseTable } }
-      limit: 1
-    ) {
-      id
-    }
-  }
-`);
+console.log('props.analyzeId', props.analyzeId, typeof props.analyzeId);
 
-const { executeQuery, fetching: isUniqueFetching } = useQuery({
-  query,
-  variables,
-  pause: true,
+const { isUnique, fetching: isUniqueFetching } = useIsUnique({
+  tableName: 'analyze_filters',
+  existingId: typeof props.analyzeId === 'number' ? props.analyzeId : undefined,
+  additionalWhere,
 });
-
-async function isUnique() {
-  await nextTick(); // wait for the variables to be updated
-  const result = await executeQuery();
-  if (result.error.value) {
-    console.error(result.error);
-    return true;
-  }
-  const data = result.data?.value;
-  return (
-    data?.analyze_filters.length === 0 ||
-    data?.analyze_filters[0]?.id === props.analyzeId
-  );
-}
 
 function validateNameAndSave() {
   Promise.resolve(inputRef.value?.validate()).then((valid) => {

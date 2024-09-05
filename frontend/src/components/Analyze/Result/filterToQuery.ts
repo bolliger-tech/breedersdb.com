@@ -261,6 +261,13 @@ function toComparison({
   const value = cast({ term, type: columnType });
   const type = columnTypeToGraphQLType(columnType);
 
+  const textType =
+    columnType === ColumnTypes.String
+      ? 'String'
+      : columnType === ColumnTypes.Citext
+        ? 'citext'
+        : undefined;
+
   switch (operator.value) {
     case FilterOperatorValue.Equal:
       if (value === undefined) return;
@@ -367,11 +374,10 @@ function toComparison({
     case FilterOperatorValue.Empty:
       // becuase it it easier to implement on nested tables
       // we use double negation. see ruleToCriterion()
-      return columnType === ColumnTypes.String ||
-        columnType === ColumnTypes.Citext
+      return textType
         ? {
             operator: GraphQLComparisonOperator.Neq,
-            variable: { name, type: 'String', value: '' },
+            variable: { name, type: textType, value: '' },
             negate: true,
           }
         : {
@@ -380,11 +386,10 @@ function toComparison({
             negate: true,
           };
     case FilterOperatorValue.NotEmpty:
-      return columnType === ColumnTypes.String ||
-        columnType === ColumnTypes.Citext
+      return textType
         ? {
             operator: GraphQLComparisonOperator.Neq,
-            variable: { name, type: 'String', value: '' },
+            variable: { name, type: textType, value: '' },
             negate: false,
           }
         : {

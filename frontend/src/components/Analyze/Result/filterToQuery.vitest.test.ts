@@ -138,6 +138,26 @@ const filterRules = {
     }),
   }),
 
+  nestedCitextAllowEmpty: new FilterRule({
+    column: new FilterRuleColumn({
+      tableName: 'cultivars.lots',
+      tableColumnName: 'citext_allow_empty',
+      tableLabel: 'Cultivars',
+      tableColumnLabel: 'Citext Allow Empty',
+      schema: {
+        allowEmpty: true,
+        type: ColumnTypes.Citext,
+        validation: {
+          maxLen: 255,
+          pattern: null,
+        },
+      },
+    }),
+    operator: new FilterRuleOperator({
+      value: FilterOperatorValue.Empty,
+    }),
+  }),
+
   nestedIntegerAllowEmpty: new FilterRule({
     column: new FilterRuleColumn({
       tableName: 'cultivars.lots',
@@ -2039,6 +2059,35 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(Object.values(variables).length).toBe(0);
           });
 
+          it('should return: Citext === "" nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedCitextAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Equal,
+                }),
+                term: new FilterRuleTerm({ value: '' }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+  cultivars(where: { _and: [ { lot: { _or: [ { citext_allow_empty: { _is_null: true } }, { citext_allow_empty: { _eq: "" } } ] } } ] }`),
+              ),
+            );
+            expect(Object.values(variables).length).toBe(0);
+          });
+
           it('should return: String Empty nullable', () => {
             const filter = FilterNode.FilterRoot(filterRootArgs);
             FilterNode.FilterLeaf({
@@ -2062,6 +2111,34 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
               new RegExp(
                 prepareForRegex(`
   cultivars(where: { _and: [ { _not: { lot: { _and: [ { string_allow_empty: { _is_null: false } }, { string_allow_empty: { _neq: "" } } ] } } } ] }`),
+              ),
+            );
+            expect(Object.values(variables).length).toBe(0);
+          });
+
+          it('should return: Citext Empty nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedCitextAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Empty,
+                }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+  cultivars(where: { _and: [ { _not: { lot: { _and: [ { citext_allow_empty: { _is_null: false } }, { citext_allow_empty: { _neq: "" } } ] } } } ] }`),
               ),
             );
             expect(Object.values(variables).length).toBe(0);
@@ -2247,6 +2324,35 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
               new RegExp(
                 prepareForRegex(`
     cultivars(where: { _and: [ { _not: { lot: { _or: [ { string_allow_empty: { _is_null: true } }, { string_allow_empty: { _eq: "" } } ] } } } ] }`),
+              ),
+            );
+            expect(Object.values(variables).length).toBe(0);
+          });
+
+          it('should return: Citext !== "" nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedCitextAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.NotEqual,
+                }),
+                term: new FilterRuleTerm({ value: '' }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+    cultivars(where: { _and: [ { _not: { lot: { _or: [ { citext_allow_empty: { _is_null: true } }, { citext_allow_empty: { _eq: "" } } ] } } } ] }`),
               ),
             );
             expect(Object.values(variables).length).toBe(0);

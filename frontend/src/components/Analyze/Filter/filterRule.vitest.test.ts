@@ -355,6 +355,31 @@ describe('FilterRule', () => {
     expect(filterRule.canBeNullOrEmpty).toBe(true);
   });
 
+  it('should return true for canBeNullOrEmpty: Citext', () => {
+    const column = new FilterRuleColumn({
+      tableName: 'tableName',
+      tableColumnName: 'tableColumnName',
+      tableLabel: 'tableLabel',
+      tableColumnLabel: 'tableColumnLabel',
+      schema: {
+        allowEmpty: true,
+        type: ColumnTypes.Citext,
+        validation: {
+          maxLen: null,
+          pattern: null,
+        },
+      },
+    });
+
+    const operator = new FilterRuleOperator({
+      value: FilterOperatorValue.Equal,
+    });
+
+    const filterRule = new FilterRule({ column, operator });
+
+    expect(filterRule.canBeNullOrEmpty).toBe(true);
+  });
+
   it('should return false for canBeNullOrEmpty: allowEmpty = false', () => {
     const column = new FilterRuleColumn({
       tableName: 'tableName',

@@ -1,7 +1,7 @@
 <template>
   <EntityInput
     ref="authorRef"
-    v-model="author"
+    v-model.trim="author"
     :label="t('attributions.add.setAuthor')"
     required
     :rules="[

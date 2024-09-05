@@ -91,7 +91,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'date_sowed',
     labelKey: 'lots.fields.dateSowed',
     schema: {
-      type: ColumnTypes.DateTime,
+      type: ColumnTypes.Date,
       allowEmpty: true,
     },
   },
@@ -141,7 +141,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'date_planted',
     labelKey: 'lots.fields.datePlanted',
     schema: {
-      type: ColumnTypes.DateTime,
+      type: ColumnTypes.Date,
       allowEmpty: true,
     },
   },

@@ -112,7 +112,7 @@ export class FilterRule {
   get canBeNullOrEmpty() {
     return (
       this.allowEmptyTerm &&
-      this.type === ColumnTypes.String &&
+      (this.type === ColumnTypes.String || this.type === ColumnTypes.Citext) &&
       this.operator?.value &&
       [
         FilterOperatorValue.Equal,

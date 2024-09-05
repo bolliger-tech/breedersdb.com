@@ -185,11 +185,11 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
   if (rule.isAttribute) {
     const attributeId = parseInt(field);
     const attributeIdCondition = `{ attribute_id: { _eq: ${attributeId} } }`;
-    comparison.negate = false; // negation is handled in toAttributionValueCondition
     const attributionValueCondition = toAttributionValueCondition({
       comparison,
       rule,
     });
+    comparison.negate = false; // negation was handled in toAttributionValueCondition
     const attributionCondition = `{ attributions_views: { _and: [ ${attributeIdCondition}, ${attributionValueCondition} ] } }`;
     if (rule.includeEntitiesWithoutAttributions) {
       const noAttributionsCondition = `{ attributions_views_aggregate: { count: { predicate: { _eq: 0 }, filter: ${attributeIdCondition} } } }`;
@@ -261,18 +261,39 @@ function toComparison({
   const value = cast({ term, type: columnType });
   const type = columnTypeToGraphQLType(columnType);
 
-  if (undefined === value) {
-    return;
-  }
+  const textType =
+    columnType === ColumnTypes.String
+      ? 'String'
+      : columnType === ColumnTypes.Citext
+        ? 'citext'
+        : undefined;
 
   switch (operator.value) {
     case FilterOperatorValue.Equal:
+      if (value === undefined) return;
+      if (typeof value === 'number' && isNaN(value))
+        // Integer, Rating, Float, Date, DateTime field with value ''
+        return {
+          // becuase it it easier to implement on nested tables
+          // we use double negation. see ruleToCriterion()
+          operator: GraphQLComparisonOperator.IsNull,
+          variable: { name, type: 'Boolean', value: false },
+          negate: true,
+        };
       return {
         operator: GraphQLComparisonOperator.Eq,
         variable: { name, type, value },
         negate: false,
       };
     case FilterOperatorValue.NotEqual:
+      if (value === undefined) return;
+      if (typeof value === 'number' && isNaN(value))
+        // Integer, Rating, Float, Date, DateTime field with value ''
+        return {
+          operator: GraphQLComparisonOperator.IsNull,
+          variable: { name, type: 'Boolean', value: false },
+          negate: false,
+        };
       // becuase it it easier to implement on nested tables
       // we use double negation. see ruleToCriterion()
       return {
@@ -281,24 +302,28 @@ function toComparison({
         negate: true,
       };
     case FilterOperatorValue.Less:
+      if (value === undefined) return;
       return {
         operator: GraphQLComparisonOperator.Lt,
         variable: { name, type, value },
         negate: false,
       };
     case FilterOperatorValue.LessOrEqual:
+      if (value === undefined) return;
       return {
         operator: GraphQLComparisonOperator.Lte,
         variable: { name, type, value },
         negate: false,
       };
     case FilterOperatorValue.Greater:
+      if (value === undefined) return;
       return {
         operator: GraphQLComparisonOperator.Gt,
         variable: { name, type, value },
         negate: false,
       };
     case FilterOperatorValue.GreaterOrEqual:
+      if (value === undefined) return;
       return {
         operator: GraphQLComparisonOperator.Gte,
         variable: { name, type, value },
@@ -349,11 +374,10 @@ function toComparison({
     case FilterOperatorValue.Empty:
       // becuase it it easier to implement on nested tables
       // we use double negation. see ruleToCriterion()
-      return columnType === ColumnTypes.String ||
-        columnType === ColumnTypes.Citext
+      return textType
         ? {
             operator: GraphQLComparisonOperator.Neq,
-            variable: { name, type: 'String', value: '' },
+            variable: { name, type: textType, value: '' },
             negate: true,
           }
         : {
@@ -362,11 +386,10 @@ function toComparison({
             negate: true,
           };
     case FilterOperatorValue.NotEmpty:
-      return columnType === ColumnTypes.String ||
-        columnType === ColumnTypes.Citext
+      return textType
         ? {
             operator: GraphQLComparisonOperator.Neq,
-            variable: { name, type: 'String', value: '' },
+            variable: { name, type: textType, value: '' },
             negate: false,
           }
         : {
@@ -410,10 +433,12 @@ function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnTypes }) {
       return term?.value || '';
     case ColumnTypes.Date:
       if (!term) return undefined;
-      return new Date(term.value).toISOString().split('T')[0];
+      const date = new Date(term.value);
+      return isNaN(date.getTime()) ? NaN : date.toISOString().split('T')[0];
     case ColumnTypes.DateTime:
       if (!term) return undefined;
-      return new Date(term.value).toISOString();
+      const datetime = new Date(term.value);
+      return isNaN(datetime.getTime()) ? NaN : datetime.toISOString();
     case ColumnTypes.Time:
       // TODO: handle time
       throw new Error('Not implemented');
@@ -465,8 +490,7 @@ function toAttributionValueCondition({
       ? columnTypeToGraphQLType(attributeDataType)
       : comparison.variable.type;
 
-  if (comparison.negate)
-    throw new Error('Negation not supported for attributes');
+  let condition = '';
 
   switch (graphQLDataType) {
     case 'String':
@@ -484,26 +508,38 @@ function toAttributionValueCondition({
         const nullVar =
           comparison.variable.type === 'String' ||
           comparison.variable.type === 'citext'
-            ? empty
+            ? empty != comparison.negate
             : `$${comparison.variable.name}`;
-        return empty
-          ? `{ _or: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _eq: ${textVar} } } ] }`
-          : `{ _and: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _neq: ${textVar} } } ] }`;
+        const emptyCondition = `{ _or: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _eq: ${textVar} } } ] }`;
+        const notEmptyCondition = `{ _and: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _neq: ${textVar} } } ] }`;
+        condition =
+          empty != comparison.negate ? emptyCondition : notEmptyCondition;
       } else {
         // comparison is neither empty string nor null
-        return `{ text_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+        condition = `{ text_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
       }
+      break;
     case 'Int':
-      return `{ integer_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      condition = `{ integer_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      break;
     case 'float8':
-      return `{ float_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      condition = `{ float_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      break;
     case 'Boolean':
-      return `{ boolean_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      condition = `{ boolean_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      break;
     case 'date':
-      return `{ date_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      condition = `{ date_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      break;
     default:
       throw new Error(`Unknown type: ${comparison.variable.type}`);
   }
+
+  if (comparison.negate) {
+    condition = `{ _not: ${condition} }`;
+  }
+
+  return condition;
 }
 
 function columnsToFields({

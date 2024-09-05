@@ -19,7 +19,7 @@ import NavLevel0Item from './NavLevel0Item.vue';
 import { computed, onBeforeUnmount, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { onMounted } from 'vue';
-import { type NavItem } from './TheNav.vue';
+import { type NavItem } from 'src/components/Layout/TheNav/useNavItem';
 
 export interface NavLevel0Props {
   items: NavItem[];

@@ -40,11 +40,10 @@
 </template>
 
 <script setup lang="ts">
-import { useNavItem } from './useNavItem';
+import { NavItem, useNavItem } from './useNavItem';
 import NavLevel2 from './NavLevel2.vue';
 import { ref, onBeforeUnmount, onMounted } from 'vue';
 import NavLevel1ItemIcon from './NavLevel1ItemIcon.vue';
-import { type NavItem } from './TheNav.vue';
 
 export interface NavLevel1ItemProps extends NavItem {}
 

@@ -5,26 +5,13 @@
 </template>
 
 <script setup lang="ts">
-import { Component } from 'vue';
-import DarkModeSetter from '../DarkMode/DarkModeSetter.vue';
-import LanguageSetter from '../LanguageSetter.vue';
+import DarkModeSetter from 'src/components/Layout/TheNav/DarkMode/DarkModeSetter.vue';
+import LanguageSetter from 'src/components/Layout/TheNav/LanguageSetter.vue';
 import NavLevel0 from './NavLevel0.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { BaseSpriteIconProps } from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
+import { type NavItem } from 'src/components/Layout/TheNav/useNavItem';
 
 const { t } = useI18n();
-
-export type NavItem = {
-  to: string;
-  path: string;
-  navPath: string[];
-  isOpen?: boolean;
-  children?: NavItem[];
-  component?: { component: Component; props?: Record<string, unknown> };
-  label?: string;
-  icon?: BaseSpriteIconProps['name'];
-  isCurrentRoute?: boolean;
-} & Omit<BaseSpriteIconProps, 'name'>;
 
 type NavDefinitionItem = Pick<
   NavItem,

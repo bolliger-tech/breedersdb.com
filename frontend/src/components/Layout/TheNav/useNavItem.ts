@@ -1,6 +1,18 @@
-import { computed } from 'vue';
+import { computed, type Component } from 'vue';
 import { useRoute } from 'vue-router';
-import type { NavItem } from './TheNav.vue';
+import { BaseSpriteIconProps } from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
+
+export type NavItem = {
+  to: string;
+  path: string;
+  navPath: string[];
+  isOpen?: boolean;
+  children?: NavItem[];
+  component?: { component: Component; props?: Record<string, unknown> };
+  label?: string;
+  icon?: BaseSpriteIconProps['name'];
+  isCurrentRoute?: boolean;
+} & Omit<BaseSpriteIconProps, 'name'>;
 
 export function useNavItem(item: NavItem) {
   const route = useRoute();

@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import NavLevel2Item from './NavLevel2Item.vue';
-import { type NavItem } from './TheNav.vue';
+import { type NavItem } from 'src/components/Layout/TheNav/useNavItem';
 
 export interface NavLevel2Props {
   children: NavItem[];

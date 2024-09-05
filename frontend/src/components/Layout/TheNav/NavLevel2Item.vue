@@ -19,8 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNavItem } from './useNavItem';
-import { type NavItem } from './TheNav.vue';
+import { useNavItem, type NavItem } from './useNavItem';
 
 export interface NavLevel2ItemProps extends NavItem {}
 

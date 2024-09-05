@@ -118,7 +118,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'date_grafted',
     labelKey: 'plants.fields.dateGrafted',
     schema: {
-      type: ColumnTypes.DateTime,
+      type: ColumnTypes.Date,
       allowEmpty: true,
     },
   },
@@ -127,7 +127,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'date_planted',
     labelKey: 'plants.fields.datePlanted',
     schema: {
-      type: ColumnTypes.DateTime,
+      type: ColumnTypes.Date,
       allowEmpty: true,
     },
   },
@@ -136,7 +136,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'date_eliminated',
     labelKey: 'plants.fields.dateEliminated',
     schema: {
-      type: ColumnTypes.DateTime,
+      type: ColumnTypes.Date,
       allowEmpty: true,
     },
   },
@@ -145,7 +145,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'date_labeled',
     labelKey: 'plants.fields.dateLabeled',
     schema: {
-      type: ColumnTypes.DateTime,
+      type: ColumnTypes.Date,
       allowEmpty: true,
     },
   },

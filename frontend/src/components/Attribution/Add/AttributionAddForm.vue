@@ -282,7 +282,7 @@ async function save() {
 
   await nextTick();
 
-  if (!insertError.value) {
+  if (!insertError.value && insertedAttribution.value) {
     $q.notify({
       type: 'positive',
       message: t('attributions.add.saved'),

@@ -1,42 +1,48 @@
-import { computed } from 'vue';
+import { computed, type Component } from 'vue';
 import { useRoute } from 'vue-router';
+import { type BaseSpriteIconProps } from 'components/Base/BaseSpriteIcon/baseSpriteIconProps';
 
-export function useNavItem<T extends { to: string }>({
-  children,
-  to,
-}: {
-  children?: T[];
+export type NavItem = {
   to: string;
-}) {
-  const hasChildren = computed(() => children && children.length > 0);
+  path: string;
+  navPath: string[];
+  isOpen?: boolean;
+  children?: NavItem[];
+  component?: { component: Component; props?: Record<string, unknown> };
+  label?: string;
+  icon?: BaseSpriteIconProps['name'];
+  isCurrentRoute?: boolean;
+} & Omit<BaseSpriteIconProps, 'name'>;
 
-  const getChildren = computed(() => {
-    return (
-      children?.map((child) => ({
-        ...child,
-        to: child.to
-          ? child.to.startsWith('/')
-            ? child.to
-            : `${to}/${child.to}`
-          : `${to}`,
-      })) || []
-    );
-  });
-
+export function useNavItem(item: NavItem) {
   const route = useRoute();
-  const currentRouteRegex = computed(() => {
-    if (hasChildren.value) {
-      return new RegExp(`^${to}(/|$)`);
+
+  function itemChildrenToFlatList(item: NavItem): NavItem[] {
+    return item.children
+      ? item.children.reduce((acc, item) => {
+          return [...acc, item, ...itemChildrenToFlatList(item)];
+        }, [] as NavItem[])
+      : [];
+  }
+
+  const isActiveRoute = computed(() => {
+    if (
+      item.path === route.path ||
+      (route.meta.navPaths as string[] | undefined)?.includes(item.path)
+    ) {
+      return true;
     }
-    return new RegExp(`^${to}/?$`);
+
+    const activeItem = itemChildrenToFlatList(item).find(
+      (item) =>
+        item.path === route.path ||
+        (route.meta.navPaths as string[] | undefined)?.includes(item.path),
+    );
+
+    return activeItem?.navPath.includes(item.path) || false;
   });
-  const isCurrentRoute = computed(() =>
-    currentRouteRegex.value.test(route.path),
-  );
 
   return {
-    hasChildren,
-    getChildren,
-    isCurrentRoute,
+    isCurrentRoute: isActiveRoute,
   };
 }

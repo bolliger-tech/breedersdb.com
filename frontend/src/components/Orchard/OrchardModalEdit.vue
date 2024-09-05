@@ -17,7 +17,7 @@
 
     <template #action-left>
       <OrchardButtonDelete
-        v-if="'id' in orchard"
+        v-if="'id' in orchard && !orchard.disabled"
         :orchard-id="orchard.id"
         @deleted="() => $router.push({ path: '/orchard', query: $route.query })"
       />

@@ -71,9 +71,11 @@
 
     <template #action-left>
       <OrchardButtonDelete
+        v-if="!orchard.disabled"
         :orchard-id="orchard.id"
         @deleted="() => router.push({ path: '/orchards', query: route.query })"
       />
+      <div v-else></div>
     </template>
   </EntityModalContent>
 

@@ -460,7 +460,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _or: [ { text_value: { _is_null: true } }, { text_value: { _eq: $v000 } } ] } ] } } ] }',
+                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { _and: [ { text_value: { _is_null: false } }, { text_value: { _neq: $v000 } } ] } } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -803,6 +803,469 @@ cultivars(where: { _or: [
               ),
             );
             expect(Object.values(variables)[0]).toBe('2024-06-07');
+          });
+
+          it('should value has photo', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: new FilterRuleColumn({
+                  tableName: 'attributes',
+                  tableColumnName: '123',
+                  tableLabel: 'Attributions',
+                  tableColumnLabel: 'Photo',
+                  schema: {
+                    allowEmpty: true,
+                    type: ColumnTypes.Photo,
+                  },
+                }),
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.NotEmpty,
+                }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(
+                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { text_value: { _is_null: $v000 } } ] } } ] }',
+                ).replaceAll('$v000', '$v\\d+'),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
+          describe('should handle negations', () => {
+            it('empty string allow empty: isEmpty', () => {
+              const filter = FilterNode.FilterRoot(filterRootArgs);
+              FilterNode.FilterLeaf({
+                parent: filter,
+                filterRule: new FilterRule({
+                  column: new FilterRuleColumn({
+                    tableName: 'attributes',
+                    tableColumnName: '123',
+                    tableLabel: 'Attributions',
+                    tableColumnLabel: 'String',
+                    schema: {
+                      allowEmpty: true,
+                      type: ColumnTypes.String,
+                      validation: {
+                        maxLen: null,
+                        pattern: null,
+                      },
+                    },
+                  }),
+                  operator: new FilterRuleOperator({
+                    value: FilterOperatorValue.Empty,
+                  }),
+                }),
+              });
+
+              const { query, variables } = filterToQuery({
+                baseFilter: filter,
+                attributionFilter: emptyAttributionFilter,
+                columns: [],
+                pagination: basicPagination,
+              });
+
+              expect(query).toMatch(
+                new RegExp(
+                  prepareForRegex(
+                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { _and: [ { text_value: { _is_null: false } }, { text_value: { _neq: $v000 } } ] } } ] } } ] }',
+                  ).replaceAll('$v000', '$v\\d+'),
+                ),
+              );
+              expect(Object.values(variables)[0]).toBe('');
+            });
+
+            it('empty string allow empty: === ""', () => {
+              const filter = FilterNode.FilterRoot(filterRootArgs);
+              FilterNode.FilterLeaf({
+                parent: filter,
+                filterRule: new FilterRule({
+                  column: new FilterRuleColumn({
+                    tableName: 'attributes',
+                    tableColumnName: '123',
+                    tableLabel: 'Attributions',
+                    tableColumnLabel: 'String',
+                    schema: {
+                      allowEmpty: true,
+                      type: ColumnTypes.String,
+                      validation: {
+                        maxLen: null,
+                        pattern: null,
+                      },
+                    },
+                  }),
+                  operator: new FilterRuleOperator({
+                    value: FilterOperatorValue.Equal,
+                  }),
+                  term: new FilterRuleTerm({ value: '' }),
+                }),
+              });
+
+              const { query, variables } = filterToQuery({
+                baseFilter: filter,
+                attributionFilter: emptyAttributionFilter,
+                columns: [],
+                pagination: basicPagination,
+              });
+
+              expect(query).toMatch(
+                new RegExp(
+                  prepareForRegex(
+                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _or: [ { text_value: { _is_null: true } }, { text_value: { _eq: $v000 } } ] } ] } } ] }',
+                  ).replaceAll('$v000', '$v\\d+'),
+                ),
+              );
+              expect(Object.values(variables)[0]).toBe('');
+            });
+
+            it('neq integer', () => {
+              const filter = FilterNode.FilterRoot(filterRootArgs);
+              FilterNode.FilterLeaf({
+                parent: filter,
+                filterRule: new FilterRule({
+                  column: new FilterRuleColumn({
+                    tableName: 'attributes',
+                    tableColumnName: '123',
+                    tableLabel: 'Attributions',
+                    tableColumnLabel: 'Integer',
+                    schema: {
+                      allowEmpty: false,
+                      type: ColumnTypes.Integer,
+                      validation: {
+                        min: 1,
+                        max: 9,
+                        step: 1,
+                      },
+                    },
+                  }),
+                  operator: new FilterRuleOperator({
+                    value: FilterOperatorValue.NotEqual,
+                  }),
+                  term: new FilterRuleTerm({ value: '9' }),
+                }),
+              });
+
+              const { query, variables } = filterToQuery({
+                baseFilter: filter,
+                attributionFilter: emptyAttributionFilter,
+                columns: [],
+                pagination: basicPagination,
+              });
+
+              expect(query).toMatch(
+                new RegExp(
+                  prepareForRegex(
+                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { integer_value: { _eq: $v000 } } } ] } } ] }',
+                  ).replaceAll('$v000', '$v\\d+'),
+                ),
+              );
+              expect(Object.values(variables)[0]).toBe(9);
+            });
+
+            it('neq rating', () => {
+              const filter = FilterNode.FilterRoot(filterRootArgs);
+              FilterNode.FilterLeaf({
+                parent: filter,
+                filterRule: new FilterRule({
+                  column: new FilterRuleColumn({
+                    tableName: 'attributes',
+                    tableColumnName: '123',
+                    tableLabel: 'Attributions',
+                    tableColumnLabel: 'Rating',
+                    schema: {
+                      allowEmpty: false,
+                      type: ColumnTypes.Rating,
+                      validation: {
+                        min: 1,
+                        max: 9,
+                        step: 1,
+                      },
+                    },
+                  }),
+                  operator: new FilterRuleOperator({
+                    value: FilterOperatorValue.NotEqual,
+                  }),
+                  term: new FilterRuleTerm({ value: '9' }),
+                }),
+              });
+
+              const { query, variables } = filterToQuery({
+                baseFilter: filter,
+                attributionFilter: emptyAttributionFilter,
+                columns: [],
+                pagination: basicPagination,
+              });
+
+              expect(query).toMatch(
+                new RegExp(
+                  prepareForRegex(
+                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { integer_value: { _eq: $v000 } } } ] } } ] }',
+                  ).replaceAll('$v000', '$v\\d+'),
+                ),
+              );
+              expect(Object.values(variables)[0]).toBe(9);
+            });
+
+            it('neq float', () => {
+              const filter = FilterNode.FilterRoot(filterRootArgs);
+              FilterNode.FilterLeaf({
+                parent: filter,
+                filterRule: new FilterRule({
+                  column: new FilterRuleColumn({
+                    tableName: 'attributes',
+                    tableColumnName: '123',
+                    tableLabel: 'Attributions',
+                    tableColumnLabel: 'Float',
+                    schema: {
+                      allowEmpty: false,
+                      type: ColumnTypes.Float,
+                      validation: {
+                        min: 1,
+                        max: 9,
+                        step: 1,
+                      },
+                    },
+                  }),
+                  operator: new FilterRuleOperator({
+                    value: FilterOperatorValue.NotEqual,
+                  }),
+                  term: new FilterRuleTerm({ value: '9.0' }),
+                }),
+              });
+
+              const { query, variables } = filterToQuery({
+                baseFilter: filter,
+                attributionFilter: emptyAttributionFilter,
+                columns: [],
+                pagination: basicPagination,
+              });
+
+              expect(query).toMatch(
+                new RegExp(
+                  prepareForRegex(
+                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { float_value: { _eq: $v000 } } } ] } } ] }',
+                  ).replaceAll('$v000', '$v\\d+'),
+                ),
+              );
+              expect(Object.values(variables)[0]).toBe(9);
+            });
+
+            it('neq date', () => {
+              const filter = FilterNode.FilterRoot(filterRootArgs);
+              FilterNode.FilterLeaf({
+                parent: filter,
+                filterRule: new FilterRule({
+                  column: new FilterRuleColumn({
+                    tableName: 'attributes',
+                    tableColumnName: '123',
+                    tableLabel: 'Attributions',
+                    tableColumnLabel: 'Date',
+                    schema: {
+                      allowEmpty: false,
+                      type: ColumnTypes.Date,
+                    },
+                  }),
+                  operator: new FilterRuleOperator({
+                    value: FilterOperatorValue.NotEqual,
+                  }),
+                  term: new FilterRuleTerm({ value: '2021-01-01' }),
+                }),
+              });
+
+              const { query, variables } = filterToQuery({
+                baseFilter: filter,
+                attributionFilter: emptyAttributionFilter,
+                columns: [],
+                pagination: basicPagination,
+              });
+
+              expect(query).toMatch(
+                new RegExp(
+                  prepareForRegex(
+                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { date_value: { _eq: $v000 } } } ] } } ] }',
+                  ).replaceAll('$v000', '$v\\d+'),
+                ),
+              );
+              expect(Object.values(variables)[0]).toBe('2021-01-01');
+            });
+
+            it('starts not with', () => {
+              const filter = FilterNode.FilterRoot(filterRootArgs);
+              FilterNode.FilterLeaf({
+                parent: filter,
+                filterRule: new FilterRule({
+                  column: new FilterRuleColumn({
+                    tableName: 'attributes',
+                    tableColumnName: '123',
+                    tableLabel: 'Attributions',
+                    tableColumnLabel: 'citext',
+                    schema: {
+                      allowEmpty: false,
+                      type: ColumnTypes.Citext,
+                      validation: {
+                        maxLen: 255,
+                        pattern: null,
+                      },
+                    },
+                  }),
+                  operator: new FilterRuleOperator({
+                    value: FilterOperatorValue.StartsNotWith,
+                  }),
+                  term: new FilterRuleTerm({ value: 'abc' }),
+                }),
+              });
+
+              const { query, variables } = filterToQuery({
+                baseFilter: filter,
+                attributionFilter: emptyAttributionFilter,
+                columns: [],
+                pagination: basicPagination,
+              });
+
+              expect(query).toMatch(
+                new RegExp(
+                  prepareForRegex(
+                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { text_value: { _ilike: $v000 } } } ] } } ] }',
+                  ).replaceAll('$v000', '$v\\d+'),
+                ),
+              );
+              expect(Object.values(variables)[0]).toBe('abc%');
+            });
+
+            it('not contains', () => {
+              const filter = FilterNode.FilterRoot(filterRootArgs);
+              FilterNode.FilterLeaf({
+                parent: filter,
+                filterRule: new FilterRule({
+                  column: new FilterRuleColumn({
+                    tableName: 'attributes',
+                    tableColumnName: '123',
+                    tableLabel: 'Attributions',
+                    tableColumnLabel: 'citext',
+                    schema: {
+                      allowEmpty: false,
+                      type: ColumnTypes.Citext,
+                      validation: {
+                        maxLen: 255,
+                        pattern: null,
+                      },
+                    },
+                  }),
+                  operator: new FilterRuleOperator({
+                    value: FilterOperatorValue.NotContains,
+                  }),
+                  term: new FilterRuleTerm({ value: 'abc' }),
+                }),
+              });
+
+              const { query, variables } = filterToQuery({
+                baseFilter: filter,
+                attributionFilter: emptyAttributionFilter,
+                columns: [],
+                pagination: basicPagination,
+              });
+
+              expect(query).toMatch(
+                new RegExp(
+                  prepareForRegex(
+                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { text_value: { _ilike: $v000 } } } ] } } ] }',
+                  ).replaceAll('$v000', '$v\\d+'),
+                ),
+              );
+              expect(Object.values(variables)[0]).toBe('%abc%');
+            });
+
+            it('not ends with', () => {
+              const filter = FilterNode.FilterRoot(filterRootArgs);
+              FilterNode.FilterLeaf({
+                parent: filter,
+                filterRule: new FilterRule({
+                  column: new FilterRuleColumn({
+                    tableName: 'attributes',
+                    tableColumnName: '123',
+                    tableLabel: 'Attributions',
+                    tableColumnLabel: 'citext',
+                    schema: {
+                      allowEmpty: false,
+                      type: ColumnTypes.Citext,
+                      validation: {
+                        maxLen: 255,
+                        pattern: null,
+                      },
+                    },
+                  }),
+                  operator: new FilterRuleOperator({
+                    value: FilterOperatorValue.NotEndsWith,
+                  }),
+                  term: new FilterRuleTerm({ value: 'abc' }),
+                }),
+              });
+
+              const { query, variables } = filterToQuery({
+                baseFilter: filter,
+                attributionFilter: emptyAttributionFilter,
+                columns: [],
+                pagination: basicPagination,
+              });
+
+              expect(query).toMatch(
+                new RegExp(
+                  prepareForRegex(
+                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { text_value: { _ilike: $v000 } } } ] } } ] }',
+                  ).replaceAll('$v000', '$v\\d+'),
+                ),
+              );
+              expect(Object.values(variables)[0]).toBe('%abc');
+            });
+
+            it('boolean false', () => {
+              const filter = FilterNode.FilterRoot(filterRootArgs);
+              FilterNode.FilterLeaf({
+                parent: filter,
+                filterRule: new FilterRule({
+                  column: new FilterRuleColumn({
+                    tableName: 'attributes',
+                    tableColumnName: '123',
+                    tableLabel: 'Attributions',
+                    tableColumnLabel: 'Boolean',
+                    schema: {
+                      allowEmpty: false,
+                      type: ColumnTypes.Boolean,
+                    },
+                  }),
+                  operator: new FilterRuleOperator({
+                    value: FilterOperatorValue.False,
+                  }),
+                }),
+              });
+
+              const { query, variables } = filterToQuery({
+                baseFilter: filter,
+                attributionFilter: emptyAttributionFilter,
+                columns: [],
+                pagination: basicPagination,
+              });
+
+              expect(query).toMatch(
+                new RegExp(
+                  prepareForRegex(
+                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { boolean_value: { _eq: $v000 } } } ] } } ] }',
+                  ).replaceAll('$v000', '$v\\d+'),
+                ),
+              );
+              expect(Object.values(variables)[0]).toBe(true);
+            });
           });
         });
 

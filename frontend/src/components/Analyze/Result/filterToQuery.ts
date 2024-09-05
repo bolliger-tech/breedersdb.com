@@ -185,11 +185,11 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
   if (rule.isAttribute) {
     const attributeId = parseInt(field);
     const attributeIdCondition = `{ attribute_id: { _eq: ${attributeId} } }`;
-    comparison.negate = false; // negation is handled in toAttributionValueCondition
     const attributionValueCondition = toAttributionValueCondition({
       comparison,
       rule,
     });
+    comparison.negate = false; // negation was handled in toAttributionValueCondition
     const attributionCondition = `{ attributions_views: { _and: [ ${attributeIdCondition}, ${attributionValueCondition} ] } }`;
     if (rule.includeEntitiesWithoutAttributions) {
       const noAttributionsCondition = `{ attributions_views_aggregate: { count: { predicate: { _eq: 0 }, filter: ${attributeIdCondition} } } }`;
@@ -471,8 +471,7 @@ function toAttributionValueCondition({
       ? columnTypeToGraphQLType(attributeDataType)
       : comparison.variable.type;
 
-  if (comparison.negate)
-    throw new Error('Negation not supported for attributes');
+  let condition = '';
 
   switch (graphQLDataType) {
     case 'String':
@@ -490,26 +489,38 @@ function toAttributionValueCondition({
         const nullVar =
           comparison.variable.type === 'String' ||
           comparison.variable.type === 'citext'
-            ? empty
+            ? empty != comparison.negate
             : `$${comparison.variable.name}`;
-        return empty
-          ? `{ _or: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _eq: ${textVar} } } ] }`
-          : `{ _and: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _neq: ${textVar} } } ] }`;
+        const emptyCondition = `{ _or: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _eq: ${textVar} } } ] }`;
+        const notEmptyCondition = `{ _and: [ { text_value: { _is_null: ${nullVar} } }, { text_value: { _neq: ${textVar} } } ] }`;
+        condition =
+          empty != comparison.negate ? emptyCondition : notEmptyCondition;
       } else {
         // comparison is neither empty string nor null
-        return `{ text_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+        condition = `{ text_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
       }
+      break;
     case 'Int':
-      return `{ integer_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      condition = `{ integer_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      break;
     case 'float8':
-      return `{ float_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      condition = `{ float_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      break;
     case 'Boolean':
-      return `{ boolean_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      condition = `{ boolean_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      break;
     case 'date':
-      return `{ date_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      condition = `{ date_value: { ${comparison.operator}: $${comparison.variable.name} } }`;
+      break;
     default:
       throw new Error(`Unknown type: ${comparison.variable.type}`);
   }
+
+  if (comparison.negate) {
+    condition = `{ _not: ${condition} }`;
+  }
+
+  return condition;
 }
 
 function columnsToFields({

@@ -28,11 +28,10 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
-import { localizeDate } from 'src/utils/dateUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const query = graphql(
   `
@@ -108,7 +107,7 @@ const columns = computed(() => [
     align: 'left' as const,
     field: 'date_created',
     sortable: true,
-    format: (v: PlantRow['date_created']) => localizeDate(v) || '',
+    format: (v: PlantRow['date_created']) => (v ? d(v, 'Ymd') : ''),
   },
   ...(subset.value === 'disabled'
     ? [
@@ -118,7 +117,7 @@ const columns = computed(() => [
           align: 'left' as const,
           field: 'date_eliminated',
           sortable: true,
-          format: (v: PlantRow['date_eliminated']) => localizeDate(v) || '',
+          format: (v: PlantRow['date_eliminated']) => (v ? d(v, 'Ymd') : ''),
         },
       ]
     : []),

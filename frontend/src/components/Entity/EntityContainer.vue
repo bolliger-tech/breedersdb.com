@@ -39,7 +39,20 @@
     :model-value="!!$route.params.entityId || !!$route.path.match(/\/new\/?$/)"
     @update:model-value="closeModal"
   >
-    <router-view />
+    <BaseSuspense>
+      <template #default>
+        <router-view />
+      </template>
+      <template #fallback>
+        <div class="fixed-center">
+          <q-card>
+            <q-card-section>
+              <BaseSpinner size="xl" />
+            </q-card-section>
+          </q-card>
+        </div>
+      </template>
+    </BaseSuspense>
   </EntityModal>
 </template>
 
@@ -53,6 +66,8 @@ import { MatcherLocationAsPath, useRoute, useRouter } from 'vue-router';
 import { nextTick, type Slot, computed } from 'vue';
 import { QTableSlots } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
+import BaseSuspense from 'components/Base/BaseSuspense/BaseSuspense.vue';
+import BaseSpinner from 'components/Base/BaseSpinner.vue';
 
 export interface EntityContainerProps
   extends EntityContainerPropsWithoutModels {

@@ -1,7 +1,12 @@
 <template>
-  <div
+  <AttributionValueChip
     class="result-table-cell-attribution__chip"
     :class="{ open: showOverlay }"
+    :plant="plant"
+    :plant-group="plantGroup"
+    :cultivar="cultivar"
+    :lot="lot"
+    max-width="80px"
     @click.stop="toggleOverlay"
     @mouseenter="displayOverlay"
     @mouseleave="maybeCloseOverlay"
@@ -20,14 +25,18 @@
     >
       <slot name="overlay"></slot>
     </q-menu>
-  </div>
+  </AttributionValueChip>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
 export interface AnalyzeResultTableCellAttributionProps {
-  color?: string;
+  plant?: boolean;
+  plantGroup?: boolean;
+  cultivar?: boolean;
+  lot?: boolean;
 }
 
 defineProps<AnalyzeResultTableCellAttributionProps>();
@@ -60,18 +69,7 @@ function blurAnyFocusedElement() {
 
 <style scoped lang="scss">
 .result-table-cell-attribution__chip {
-  max-width: 80px;
   cursor: pointer;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  font-size: 0.625rem;
-  padding: 0.5em 0.9em;
-  border-radius: 2em;
-  line-height: 1;
-  margin: 4px;
-  display: inline-block;
-  background-color: v-bind(color);
 }
 
 .result-table-cell-attribution__chip.open {

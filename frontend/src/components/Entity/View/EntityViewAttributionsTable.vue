@@ -50,7 +50,6 @@ import {
   dataTypeToColumnTypes,
   getAttributionValue,
 } from 'src/utils/attributeUtils';
-import { localizeDate } from 'src/utils/dateUtils';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
@@ -65,7 +64,7 @@ export interface EntityViewAttributionsTableProps {
 
 const props = defineProps<EntityViewAttributionsTableProps>();
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const columns = [
@@ -186,7 +185,7 @@ const columns = [
     field: 'date_attributed',
     align: 'left' as const,
     sortable: true,
-    format: (val: string | Date) => localizeDate(val),
+    format: (val: AttributionsViewFragment['date_attributed']) => d(val, 'Ymd'),
   },
   {
     name: 'author',
@@ -201,7 +200,8 @@ const columns = [
     field: 'exceptional_attribution',
     align: 'left' as const,
     sortable: true,
-    format: (val: boolean) => (val ? '✓' : ''),
+    format: (val: AttributionsViewFragment['exceptional_attribution']) =>
+      val ? '✓' : '',
   },
 ];
 

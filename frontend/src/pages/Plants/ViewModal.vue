@@ -90,7 +90,6 @@ import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import { attributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
-import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 const props = defineProps<{ entityId: number | string }>();
@@ -123,7 +122,7 @@ const query = graphql(
   [plantFragment, motherPlantFragment, attributionsViewFragment],
 );
 
-const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
+const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });
@@ -165,7 +164,7 @@ const motherPlantColumns = [
     label: t('motherPlants.fields.dateImpregnated'),
     align: 'left' as const,
     sortable: true,
-    format: localizeDate,
+    format: (v: MotherPlant['date_impregnated']) => (v ? d(v, 'Ymd') : ''),
   },
   {
     name: 'pollen',
@@ -196,7 +195,7 @@ const motherPlantColumns = [
     label: t('motherPlants.fields.dateFruitsHarvested'),
     align: 'left' as const,
     sortable: true,
-    format: localizeDate,
+    format: (v: MotherPlant['date_fruits_harvested']) => (v ? d(v, 'Ymd') : ''),
   },
   {
     name: 'numb_seeds',

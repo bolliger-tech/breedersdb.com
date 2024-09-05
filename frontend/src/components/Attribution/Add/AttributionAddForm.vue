@@ -47,7 +47,7 @@ import type { AttributionForm } from 'src/components/Attribution/Add/Attribution
 import { graphql, VariablesOf } from 'src/graphql';
 import { useMutation } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed, nextTick, watch } from 'vue';
 import {
   useImageUploader,
   UploadProgress,
@@ -123,6 +123,33 @@ const attributeInputs = computed<
 // (to allow multiple inserts of the same attribute)
 const attributionValues = ref<{ [key: number]: AttributionValueWithPhoto }>({});
 const attributeFormInputRefs = ref<{ [key: number]: InputRef | null }>({});
+
+function setDefaultValues() {
+  for (const { attribute, priority, exceptional } of attributeInputs.value) {
+    if (attributionValues.value[priority] === undefined) {
+      const { data_type, default_value } = attribute;
+      attributionValues.value[priority] = {
+        attribute_id: attribute.id,
+        exceptional_attribution: exceptional,
+        boolean_value: data_type === 'BOOLEAN' ? default_value : null,
+        date_value: data_type === 'DATE' ? default_value : null,
+        float_value: data_type === 'FLOAT' ? default_value : null,
+        integer_value:
+          data_type === 'INTEGER' || data_type === 'RATING'
+            ? default_value
+            : null,
+        text_value: data_type === 'TEXT' ? default_value : null,
+        photo_value: null, // default_value is not supported for photos
+        text_note: null,
+        photo_note: null,
+      };
+    }
+  }
+}
+watch(attributeInputs, setDefaultValues, {
+  immediate: true,
+  deep: true,
+});
 
 const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
   formId: props.form.id,
@@ -255,7 +282,7 @@ async function save() {
 
   await nextTick();
 
-  if (!insertError.value) {
+  if (!insertError.value && insertedAttribution.value) {
     $q.notify({
       type: 'positive',
       message: t('attributions.add.saved'),

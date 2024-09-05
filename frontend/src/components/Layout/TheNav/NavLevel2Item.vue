@@ -5,7 +5,7 @@
       v-if="component"
       v-bind="component.props"
     />
-    <q-item v-else clickable tag="a" :to="to" class="column justify-center">
+    <q-item v-else clickable tag="a" :to="path" class="column justify-center">
       <span
         class="label"
         :class="{
@@ -19,26 +19,13 @@
 </template>
 
 <script setup lang="ts">
-import { type Component } from 'vue';
-import { useNavItem } from './useNavItem';
+import { useNavItem, type NavItem } from './useNavItem';
 
-type NavLevel2ItemRegular = {
-  label: string;
-  component?: never;
-};
+export interface NavLevel2ItemProps extends NavItem {}
 
-type NavLevel2ItemComponent = {
-  label?: never;
-  component: { component: Component; props?: Record<string, unknown> };
-};
+const props = defineProps<NavLevel2ItemProps>();
 
-export type NavLevel2ItemProps = {
-  to: string;
-} & (NavLevel2ItemRegular | NavLevel2ItemComponent);
-
-const { to, label, component } = defineProps<NavLevel2ItemProps>();
-
-const { isCurrentRoute } = useNavItem({ to });
+const { isCurrentRoute } = useNavItem(props);
 </script>
 
 <style scoped lang="scss">

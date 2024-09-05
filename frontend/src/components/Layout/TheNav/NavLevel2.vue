@@ -1,17 +1,18 @@
 <template>
   <ul class="q-pa-none list">
-    <NavLevel2Item v-for="child in children" :key="child.to" v-bind="child" />
+    <NavLevel2Item v-for="child in children" :key="child.path" v-bind="child" />
   </ul>
 </template>
 
 <script setup lang="ts">
-import NavLevel2Item, { NavLevel2ItemProps } from './NavLevel2Item.vue';
+import NavLevel2Item from './NavLevel2Item.vue';
+import { type NavItem } from 'src/components/Layout/TheNav/useNavItem';
 
 export interface NavLevel2Props {
-  children: NavLevel2ItemProps[];
+  children: NavItem[];
 }
 
-const { children } = defineProps<NavLevel2Props>();
+defineProps<NavLevel2Props>();
 </script>
 
 <style scoped lang="scss">

@@ -2,7 +2,7 @@
   <li class="col column justify-center align-center list-item">
     <div class="relative-position full-width column align-stretch">
       <q-item
-        v-bind="{ ...(!hasChildren && { tag: 'a', to }) }"
+        v-bind="{ ...(!children?.length && { tag: 'a', to: path }) }"
         ref="item"
         clickable
         class="item q-px-none"
@@ -15,7 +15,7 @@
         @blur="hasFocus = false"
       >
         <q-scroll-observer
-          v-if="isOpen && hasChildren"
+          v-if="isOpen && children?.length"
           @scroll="setBoundingClientRect"
         />
         <NavLevel0ItemIcon
@@ -28,8 +28,8 @@
         />
       </q-item>
       <NavLevel1
-        v-if="isOpen && hasChildren"
-        :children="getChildren"
+        v-if="isOpen && children?.length"
+        :children="children"
         :style="navLevel1Styles"
       />
     </div>
@@ -38,28 +38,19 @@
 
 <script setup lang="ts">
 import { QItem, useQuasar } from 'quasar';
-import NavLevel0ItemIcon, {
-  NavLevel0ItemIconProps,
-} from './NavLevel0ItemIcon.vue';
-import NavLevel1, { NavLevel1Props } from './NavLevel1.vue';
-import { useNavItem } from './useNavItem';
+import NavLevel0ItemIcon from './NavLevel0ItemIcon.vue';
+import NavLevel1 from './NavLevel1.vue';
+import { NavItem, useNavItem } from './useNavItem';
 import { ref } from 'vue';
 import { computed } from 'vue';
 
-export interface NavLevel0ItemProps extends NavLevel0ItemIconProps {
-  isOpen: boolean;
-  children?: NavLevel1Props['children'];
-  to: string;
-}
+export interface NavLevel0ItemProps extends NavItem {}
 
 const emit = defineEmits<{ open: [] }>();
 
-const { label, icon, children, isOpen, to } = defineProps<NavLevel0ItemProps>();
+const props = defineProps<NavLevel0ItemProps>();
 
-const { isCurrentRoute, hasChildren, getChildren } = useNavItem({
-  children,
-  to,
-});
+const { isCurrentRoute } = useNavItem(props);
 
 const isHovered = ref(false);
 const hasFocus = ref(false);

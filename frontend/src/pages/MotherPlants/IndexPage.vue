@@ -33,12 +33,11 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
-import { localizeDate } from 'src/utils/dateUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, n } = useI18n();
+const { t, n, d } = useI18n();
 
 const query = graphql(
   `
@@ -118,7 +117,7 @@ const columns = [
     align: 'left' as const,
     field: 'date_impregnated',
     sortable: true,
-    format: (v: MotherPlant['date_impregnated']) => localizeDate(v) || '',
+    format: (v: MotherPlant['date_impregnated']) => (v ? d(v, 'Ymd') : ''),
   },
   {
     name: 'pollen.name',
@@ -132,7 +131,7 @@ const columns = [
     label: t('motherPlants.fields.numbFlowers'),
     align: 'left' as const,
     field: 'numb_flowers',
-    format: (value: number | null) => (value ? n(value) : ''),
+    format: (v: MotherPlant['numb_flowers']) => (v ? n(v) : ''),
     sortable: true,
   },
   {
@@ -140,7 +139,7 @@ const columns = [
     label: t('motherPlants.fields.numbFruits'),
     align: 'left' as const,
     field: 'numb_fruits',
-    format: (value: number | null) => (value ? n(value) : ''),
+    format: (v: MotherPlant['numb_fruits']) => (v ? n(v) : ''),
     sortable: true,
   },
   {
@@ -149,14 +148,14 @@ const columns = [
     align: 'left' as const,
     field: 'date_fruits_harvested',
     sortable: true,
-    format: (v: MotherPlant['date_fruits_harvested']) => localizeDate(v) || '',
+    format: (v: MotherPlant['date_fruits_harvested']) => (v ? d(v, 'Ymd') : ''),
   },
   {
     name: 'numb_seeds',
     label: t('motherPlants.fields.numbSeeds'),
     align: 'left' as const,
     field: 'numb_seeds',
-    format: (value: number | null) => (value ? n(value) : ''),
+    format: (v: MotherPlant['numb_seeds']) => (v ? n(v) : ''),
     sortable: true,
   },
   {

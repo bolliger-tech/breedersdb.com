@@ -13,8 +13,10 @@ function entityNameToRoutePath(entity: string) {
 }
 
 function createAttributeAndAnalyzeRoutes(entity: string) {
+  const basePath = '/' + entityNameToRoutePath(entity);
   return {
-    path: entityNameToRoutePath(entity),
+    path: basePath,
+    meta: { navPaths: [basePath] },
     children: [
       {
         path: 'attribute',
@@ -47,8 +49,10 @@ function createAttributeAndAnalyzeRoutes(entity: string) {
 }
 
 function createEntityRoutes(entity: string) {
+  const basePath = '/' + entityNameToRoutePath(entity);
   return {
-    path: entityNameToRoutePath(entity),
+    path: basePath,
+    meta: { navPaths: [basePath] },
     children: [
       {
         path: '',
@@ -109,23 +113,19 @@ const routes: RouteRecordRaw[] = [
       ].map(createEntityRoutes),
 
       {
-        path: 'attributions',
+        path: '/attributions',
+        meta: { navPaths: ['/attributions'] },
+        component: () => import('pages/Attributions/IndexPage.vue'),
         children: [
           {
-            path: '',
-            component: () => import('pages/Attributions/IndexPage.vue'),
-            children: [
-              {
-                path: ':entityId(\\d+)',
-                component: () => import('pages/Attributions/ViewModal.vue'),
-                props: true,
-              },
-              {
-                path: ':entityId(\\d+)/edit',
-                component: () => import('pages/Attributions/EditModal.vue'),
-                props: true,
-              },
-            ],
+            path: ':entityId(\\d+)',
+            component: () => import('pages/Attributions/ViewModal.vue'),
+            props: true,
+          },
+          {
+            path: ':entityId(\\d+)/edit',
+            component: () => import('pages/Attributions/EditModal.vue'),
+            props: true,
           },
         ],
       },
@@ -135,7 +135,7 @@ const routes: RouteRecordRaw[] = [
       ),
 
       {
-        path: 'plants',
+        path: '/plants',
         children: [
           {
             path: 'plant',
@@ -146,6 +146,11 @@ const routes: RouteRecordRaw[] = [
             component: () => import('pages/Plants/EliminatingPage.vue'),
           },
         ],
+      },
+
+      {
+        path: '/settings',
+        component: () => import('pages/Settings/IndexPage.vue'),
       },
 
       {

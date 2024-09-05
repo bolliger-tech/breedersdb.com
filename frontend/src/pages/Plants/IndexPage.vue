@@ -39,11 +39,10 @@ import { plantFragment } from 'src/components/Plant/plantFragment';
 import { useRouter } from 'vue-router';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
-import { localizeDate } from 'src/utils/dateUtils';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 
-const { t, n } = useI18n();
+const { t, n, d } = useI18n();
 
 const query = graphql(
   `
@@ -204,7 +203,7 @@ const columns = computed(() => [
     align: 'left' as const,
     field: 'date_grafted',
     sortable: true,
-    format: (v: Plant['date_grafted']) => localizeDate(v) || '',
+    format: (v: Plant['date_grafted']) => (v ? d(v, 'Ymd') : ''),
   },
   {
     name: 'date_planted',
@@ -212,7 +211,7 @@ const columns = computed(() => [
     align: 'left' as const,
     field: 'date_planted',
     sortable: true,
-    format: (v: Plant['date_planted']) => localizeDate(v) || '',
+    format: (v: Plant['date_planted']) => (v ? d(v, 'Ymd') : ''),
   },
   {
     name: 'date_labeled',
@@ -220,7 +219,7 @@ const columns = computed(() => [
     align: 'left' as const,
     field: 'date_labeled',
     sortable: true,
-    format: (v: Plant['date_labeled']) => localizeDate(v) || '',
+    format: (v: Plant['date_labeled']) => (v ? d(v, 'Ymd') : ''),
   },
   ...(subset.value === 'disabled'
     ? [
@@ -230,7 +229,7 @@ const columns = computed(() => [
           align: 'left' as const,
           field: 'date_eliminated',
           sortable: true,
-          format: (v: Plant['date_eliminated']) => localizeDate(v) || '',
+          format: (v: Plant['date_eliminated']) => (v ? d(v, 'Ymd') : ''),
         },
       ]
     : []),

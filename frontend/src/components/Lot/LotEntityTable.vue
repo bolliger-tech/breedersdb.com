@@ -19,7 +19,7 @@
       </RouterLink>
     </EntityViewTableRow>
     <EntityViewTableRow :label="t('lots.fields.dateSowed')">
-      {{ localizeDate(lot.date_sowed) }}
+      {{ lot.date_sowed ? d(lot.date_sowed, 'Ymd') : '' }}
     </EntityViewTableRow>
     <EntityViewTableRow
       v-if="lot.numb_seeds_sowed !== null"
@@ -37,7 +37,7 @@
       {{ lot.seed_tray }}
     </EntityViewTableRow>
     <EntityViewTableRow :label="t('lots.fields.datePlanted')">
-      {{ localizeDate(lot.date_planted) }}
+      {{ lot.date_planted ? d(lot.date_planted, 'Ymd') : '' }}
     </EntityViewTableRow>
     <EntityViewTableRow
       v-if="lot.numb_seedlings_planted !== null"
@@ -67,7 +67,6 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { localizeDate } from 'src/utils/dateUtils';
 import { type LotFragment } from './lotFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
@@ -80,5 +79,5 @@ export interface LotEntityTableProps {
 
 defineProps<LotEntityTableProps>();
 
-const { t, n } = useI18n();
+const { t, n, d } = useI18n();
 </script>

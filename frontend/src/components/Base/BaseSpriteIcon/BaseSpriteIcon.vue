@@ -3,12 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { QIconProps } from 'quasar';
-import { SpriteIcons } from './types';
-
-export interface BaseSpriteIconProps extends QIconProps {
-  name: SpriteIcons;
-}
+import { type BaseSpriteIconProps } from 'components/Base/BaseSpriteIcon/baseSpriteIconProps';
 
 const props = defineProps<BaseSpriteIconProps>();
 const { name, ...rest } = props;

@@ -99,7 +99,7 @@ const query = graphql(
   [lotFragment, attributionsViewFragment],
 );
 
-const { data, error, fetching } = useRefreshAttributionsViewThenQuery({
+const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });

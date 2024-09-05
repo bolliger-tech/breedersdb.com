@@ -1,12 +1,15 @@
 <template>
   <EntityInput
-    :ref="(el: InputRef) => (refs.nameRef = el)"
+    :ref="(el: InputRef) => (refs.name = el)"
     v-model="data.name"
     :label="t('entity.commonColumns.name')"
     :rules="[
       (val: string) =>
         !!val ||
         t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
+      (val: string) =>
+        /^[^\n]{1,45}$/.test(val) ||
+        t('base.validation.noNewLinesMaxLength', { max: 45 }),
       async (val: string) =>
         (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
     ]"
@@ -17,7 +20,7 @@
     :loading="fetchingNameUnique"
   />
   <AttributeDataTypeSelect
-    :ref="(el: InputRef) => (refs.attributeDataTypeRef = el)"
+    :ref="(el: InputRef) => (refs.attributeDataType = el)"
     :model-value="data.data_type"
     required
     :initial-data-type="initialData.data_type"
@@ -33,12 +36,13 @@
   />
   <AttributeValidationRuleInput
     v-model="data.validation_rule"
-    v-model:step-ref="refs.stepRef"
-    v-model:min-ref="refs.minRef"
-    v-model:max-ref="refs.maxRef"
+    v-model:step-ref="refs.step"
+    v-model:min-ref="refs.min"
+    v-model:max-ref="refs.max"
     :data-type="data.data_type"
   />
   <AttributeLegendInput
+    :ref="(el: InputRef) => (refs.legend = el)"
     v-model="data.legend"
     :data-type="data.data_type"
     :validation-rule="data.validation_rule"
@@ -46,22 +50,27 @@
   />
   <AttributeDefaultValueInput
     v-model="data.default_value"
-    v-model:inputRef="refs.defaultValueRef"
+    v-model:inputRef="refs.defaultValue"
     :data-type="data.data_type"
     :validation-rule="data.validation_rule"
   />
   <EntityInput
+    :ref="(el: InputRef) => (refs.description = el)"
     v-model.trim="data.description"
     :label="t('attributes.columns.description')"
     type="textarea"
+    :rules="[
+      (val: string | null | undefined) =>
+        !val || val.length <= 255 || t('base.validation.maxLen', { x: 255 }),
+    ]"
   />
   <AttributeTypeSelect
-    :ref="(el: InputRef) => (refs.attributeTypeRef = el)"
+    :ref="(el: InputRef) => (refs.attributeType = el)"
     v-model="data.attribute_type"
     required
   />
   <EntityToggle
-    :ref="(el: InputRef) => (refs.disabledRef = el)"
+    :ref="(el: InputRef) => (refs.disabled = el)"
     v-model="data.disabled"
     required
     :label="t('entity.commonColumns.disabled')"
@@ -114,16 +123,16 @@ const initialData = {
 const data = ref<AttributeInsertInput>(extend(true, {}, initialData));
 
 const refs = ref<{ [key: string]: InputRef | null }>({
-  nameRef: null,
-  attributeDataTypeRef: null,
-  stepRef: null,
-  minRef: null,
-  maxRef: null,
-  defaultValueRef: null,
-  // legend: there is no need to validate, so no ref here
-  // description: there is no need to validate, so no ref here
-  attributeTypeRef: null,
-  disabledRef: null,
+  name: null,
+  attributeDataType: null,
+  step: null,
+  min: null,
+  max: null,
+  defaultValue: null,
+  legend: null,
+  description: null,
+  attributeType: null,
+  disabled: null,
 });
 
 const { isDirty, validate } = useEntityForm({

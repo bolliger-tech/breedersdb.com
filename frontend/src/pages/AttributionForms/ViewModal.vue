@@ -15,10 +15,9 @@
         <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ attributionForm.name }}
         </EntityViewTableRow>
-        <EntityViewTableRow
-          v-if="attributionForm.description"
-          :label="t('attributionForms.columns.description')"
-        >
+        <EntityViewTableRow v-if="attributionForm.description">
+          <strong>{{ t('attributionForms.columns.description') }}</strong>
+          <br />
           <span style="white-space: pre-line">{{
             attributionForm.description
           }}</span>
@@ -90,7 +89,7 @@ const query = graphql(
   [attributionFormFragment],
 );
 
-const { data, error, fetching } = useQuery({
+const { data, error, fetching } = await useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
 });

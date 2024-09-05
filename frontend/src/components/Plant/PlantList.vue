@@ -46,7 +46,6 @@
 </template>
 
 <script setup lang="ts">
-import { localizeDate } from 'src/utils/dateUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -62,7 +61,7 @@ export interface PlantListProps {
 
 defineProps<PlantListProps>();
 
-const { t, n } = useI18n();
+const { t, n, d } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 type Plant = PlantFragment;
@@ -118,7 +117,7 @@ const columns = [
     label: t('plants.fields.datePlanted'),
     align: 'left' as const,
     field: 'date_planted',
-    format: localizeDate,
+    format: (val: Plant['date_planted']) => (val ? d(val, 'Ymd') : ''),
     sortable: true,
   },
   {
@@ -126,7 +125,7 @@ const columns = [
     label: t('plants.fields.dateEliminated'),
     align: 'left' as const,
     field: 'date_eliminated',
-    format: localizeDate,
+    format: (val: Plant['date_eliminated']) => (val ? d(val, 'Ymd') : ''),
     sortable: true,
   },
 ];

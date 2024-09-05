@@ -5,6 +5,7 @@
     header-nav
     contracted
     class="attribute-steps"
+    :transition-duration="TRANSITION_DURATION"
     @transition="handleTransition"
   >
     <q-step
@@ -151,6 +152,8 @@ import {
   attributeFragment,
   type AttributeFragment,
 } from 'src/components/Attribute/attributeFragment';
+
+const TRANSITION_DURATION = 300;
 
 const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';
 const AUTHOR_STORAGE_KEY = 'breedersdb-attribution-author';
@@ -349,7 +352,7 @@ function handleTransition(to: string | number) {
     // else some browsers are going shaky
     setTimeout(() => {
       props.focusEntityPicker?.();
-    }, 201);
+    }, TRANSITION_DURATION + 10);
   }
 }
 </script>

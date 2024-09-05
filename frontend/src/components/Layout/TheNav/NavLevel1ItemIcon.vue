@@ -6,8 +6,8 @@
       'text-secondary-100': isCurrentRoute,
     }"
   >
-    <BaseSpriteIcon :name="icon" size="sm" />
-    <figcaption class="q-ml-md">{{ label }}</figcaption>
+    <BaseSpriteIcon v-if="icon" :name="icon" size="sm" />
+    <figcaption v-if="label" class="q-ml-md">{{ label }}</figcaption>
   </figure>
 </template>
 
@@ -18,10 +18,10 @@ import BaseSpriteIcon, {
 
 export interface NavLevel1ItemIconProps
   extends Omit<BaseSpriteIconProps, 'name'> {
-  label: string;
-  icon: BaseSpriteIconProps['name'];
+  label?: string;
+  icon?: BaseSpriteIconProps['name'];
   isCurrentRoute: boolean;
 }
 
-const { icon, label, isCurrentRoute } = defineProps<NavLevel1ItemIconProps>();
+defineProps<NavLevel1ItemIconProps>();
 </script>

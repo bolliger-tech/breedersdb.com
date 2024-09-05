@@ -8,10 +8,12 @@
 
     <template v-if="icon && label">
       <q-expansion-item
-        v-if="hasChildren"
+        v-if="children?.length"
         :class="{ 'q-pb-none': isOpen, 'children-bg': isOpen }"
         :model-value="isOpen"
         @click.stop="isOpen = !isOpen"
+        @show="startScrollIntoView"
+        @after-show="stopScrollIntoView"
       >
         <template #header>
           <NavLevel1ItemIcon
@@ -22,11 +24,11 @@
           />
         </template>
         <template #default>
-          <NavLevel2 :children="getChildren" />
+          <NavLevel2 ref="navLevel2" :children="children" />
         </template>
       </q-expansion-item>
 
-      <q-item v-else clickable tag="a" :to="to">
+      <q-item v-else clickable tag="a" :to="path">
         <NavLevel1ItemIcon
           :icon="icon"
           :label="label"
@@ -39,38 +41,66 @@
 
 <script setup lang="ts">
 import { useNavItem } from './useNavItem';
-import NavLevel2, { NavLevel2Props } from './NavLevel2.vue';
-import { ref } from 'vue';
-import NavLevel1ItemIcon, {
-  NavLevel1ItemIconProps,
-} from './NavLevel1ItemIcon.vue';
-import { type Component } from 'vue';
+import NavLevel2 from './NavLevel2.vue';
+import { ref, onBeforeUnmount, onMounted } from 'vue';
+import NavLevel1ItemIcon from './NavLevel1ItemIcon.vue';
+import { type NavItem } from './TheNav.vue';
 
-type NavLevel1ItemRegular = {
-  children?: NavLevel2Props['children'];
-  component?: never;
-} & Omit<NavLevel1ItemIconProps, 'isCurrentRoute'>;
+export interface NavLevel1ItemProps extends NavItem {}
 
-type NavLevel1ItemComponent = {
-  component: { component: Component; props?: Record<string, unknown> };
-  children?: never;
-  label?: never;
-  icon?: never;
-};
+const props = defineProps<NavLevel1ItemProps>();
 
-export type NavLevel1ItemProps = {
-  to: string;
-} & (NavLevel1ItemRegular | NavLevel1ItemComponent);
-
-const { to, label, icon, children, component } =
-  defineProps<NavLevel1ItemProps>();
-
-const { isCurrentRoute, hasChildren, getChildren } = useNavItem({
-  children,
-  to,
-});
+const { isCurrentRoute } = useNavItem(props);
 
 const isOpen = ref(isCurrentRoute.value);
+
+const navLevel2 = ref<InstanceType<typeof NavLevel2> | null>(null);
+let animationFrameId: number | null = null;
+
+function scrollIntoView() {
+  navLevel2.value?.$el.scrollIntoView({
+    behavior: 'instant',
+    block: 'nearest',
+  });
+}
+
+function scrollIntoViewAnimated() {
+  scrollIntoView();
+
+  if (animationFrameId) {
+    animationFrameId = window.requestAnimationFrame(() =>
+      scrollIntoViewAnimated(),
+    );
+  }
+}
+
+function startScrollIntoView() {
+  if (animationFrameId) {
+    window.cancelAnimationFrame(animationFrameId);
+  }
+
+  animationFrameId = window.requestAnimationFrame(() =>
+    scrollIntoViewAnimated(),
+  );
+}
+
+function stopScrollIntoView() {
+  if (animationFrameId) {
+    window.cancelAnimationFrame(animationFrameId);
+  }
+}
+
+onBeforeUnmount(() => {
+  if (animationFrameId) {
+    window.cancelAnimationFrame(animationFrameId);
+  }
+});
+
+onMounted(() => {
+  if (isOpen.value) {
+    scrollIntoViewAnimated();
+  }
+});
 </script>
 
 <style scoped>

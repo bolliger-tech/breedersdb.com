@@ -1,17 +1,18 @@
 <template>
   <ul class="list">
-    <NavLevel1Item v-for="child in children" :key="child.to" v-bind="child" />
+    <NavLevel1Item v-for="child in children" :key="child.path" v-bind="child" />
   </ul>
 </template>
 
 <script setup lang="ts">
-import NavLevel1Item, { NavLevel1ItemProps } from './NavLevel1Item.vue';
+import NavLevel1Item from './NavLevel1Item.vue';
+import { type NavItem } from './TheNav.vue';
 
 export interface NavLevel1Props {
-  children: NavLevel1ItemProps[];
+  children: NavItem[];
 }
 
-const { children } = defineProps<NavLevel1Props>();
+defineProps<NavLevel1Props>();
 </script>
 
 <style scoped lang="scss">

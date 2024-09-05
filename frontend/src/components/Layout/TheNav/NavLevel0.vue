@@ -2,29 +2,30 @@
   <ul :class="classes">
     <NavLevel0Item
       v-for="(item, index) in items"
-      :key="item.to"
+      :key="item.path"
       v-bind="item"
-      :is-open="openItem === item.to"
+      :is-open="openItem === item.path"
       :style="
         index === items.length - 1 &&
         !isMobile && { flex: 'auto 1 0', 'justify-content': 'flex-end' }
       "
-      @open="openItem = openItem === item.to ? null : item.to"
+      @open="openItem = openItem === item.path ? null : item.path"
     />
   </ul>
 </template>
 
 <script setup lang="ts">
-import NavLevel0Item, { NavLevel0ItemProps } from './NavLevel0Item.vue';
+import NavLevel0Item from './NavLevel0Item.vue';
 import { computed, onBeforeUnmount, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { onMounted } from 'vue';
+import { type NavItem } from './TheNav.vue';
 
 export interface NavLevel0Props {
-  items: Omit<NavLevel0ItemProps, 'isOpen'>[];
+  items: NavItem[];
 }
 
-const { items } = defineProps<NavLevel0Props>();
+defineProps<NavLevel0Props>();
 
 const $q = useQuasar();
 

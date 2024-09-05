@@ -1,18 +1,39 @@
 <template>
   <nav class="full-height">
-    <NavLevel0 :items="items" />
+    <NavLevel0 :items="navItems" />
   </nav>
 </template>
 
 <script setup lang="ts">
+import { Component } from 'vue';
 import DarkModeSetter from '../DarkMode/DarkModeSetter.vue';
 import LanguageSetter from '../LanguageSetter.vue';
-import NavLevel0, { NavLevel0Props } from './NavLevel0.vue';
+import NavLevel0 from './NavLevel0.vue';
 import { useI18n } from 'src/composables/useI18n';
+import { BaseSpriteIconProps } from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 
 const { t } = useI18n();
 
-const items: NavLevel0Props['items'] = [
+export type NavItem = {
+  to: string;
+  path: string;
+  navPath: string[];
+  isOpen?: boolean;
+  children?: NavItem[];
+  component?: { component: Component; props?: Record<string, unknown> };
+  label?: string;
+  icon?: BaseSpriteIconProps['name'];
+  isCurrentRoute?: boolean;
+} & Omit<BaseSpriteIconProps, 'name'>;
+
+type NavDefinitionItem = Pick<
+  NavItem,
+  'to' | 'label' | 'icon' | 'component'
+> & {
+  children?: NavDefinitionItem[];
+};
+
+const navDefinition: NavDefinitionItem[] = [
   {
     label: t('plants.title', 2),
     to: '/plants',
@@ -295,4 +316,26 @@ const items: NavLevel0Props['items'] = [
     ],
   },
 ];
+
+function setPaths(
+  items: NavDefinitionItem[],
+  parentPath: string,
+  navPath: string[],
+) {
+  return items.map((item) => {
+    const newItem = { ...item } as NavItem;
+    newItem.path = item.to
+      ? item.to.startsWith('/')
+        ? item.to
+        : `${parentPath}/${item.to}`
+      : `${parentPath}`;
+    newItem.navPath = navPath;
+    newItem.children = item.children
+      ? setPaths(item.children, newItem.path, [...navPath, newItem.path])
+      : [];
+    return newItem;
+  });
+}
+
+const navItems = setPaths(navDefinition, '', []);
 </script>

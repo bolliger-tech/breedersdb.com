@@ -1,42 +1,36 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
+import type { NavItem } from './TheNav.vue';
 
-export function useNavItem<T extends { to: string }>({
-  children,
-  to,
-}: {
-  children?: T[];
-  to: string;
-}) {
-  const hasChildren = computed(() => children && children.length > 0);
-
-  const getChildren = computed(() => {
-    return (
-      children?.map((child) => ({
-        ...child,
-        to: child.to
-          ? child.to.startsWith('/')
-            ? child.to
-            : `${to}/${child.to}`
-          : `${to}`,
-      })) || []
-    );
-  });
-
+export function useNavItem(item: NavItem) {
   const route = useRoute();
-  const currentRouteRegex = computed(() => {
-    if (hasChildren.value) {
-      return new RegExp(`^${to}(/|$)`);
+
+  function itemChildrenToFlatList(item: NavItem): NavItem[] {
+    return item.children
+      ? item.children.reduce((acc, item) => {
+          return [...acc, item, ...itemChildrenToFlatList(item)];
+        }, [] as NavItem[])
+      : [];
+  }
+
+  const isActiveRoute = computed(() => {
+    if (
+      item.path === route.path ||
+      (route.meta.navPaths as string[] | undefined)?.includes(item.path)
+    ) {
+      return true;
     }
-    return new RegExp(`^${to}/?$`);
+
+    const activeItem = itemChildrenToFlatList(item).find(
+      (item) =>
+        item.path === route.path ||
+        (route.meta.navPaths as string[] | undefined)?.includes(item.path),
+    );
+
+    return activeItem?.navPath.includes(item.path) || false;
   });
-  const isCurrentRoute = computed(() =>
-    currentRouteRegex.value.test(route.path),
-  );
 
   return {
-    hasChildren,
-    getChildren,
-    isCurrentRoute,
+    isCurrentRoute: isActiveRoute,
   };
 }

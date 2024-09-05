@@ -1,7 +1,7 @@
 <template>
   <figure class="column items-center q-ma-none">
-    <BaseSpriteIcon :name="icon" size="xl" />
-    <figcaption class="text-caption">{{ label }}</figcaption>
+    <BaseSpriteIcon v-if="icon" :name="icon" size="xl" />
+    <figcaption v-if="label" class="text-caption">{{ label }}</figcaption>
   </figure>
 </template>
 
@@ -12,9 +12,9 @@ import BaseSpriteIcon, {
 
 export interface NavLevel0ItemIconProps
   extends Omit<BaseSpriteIconProps, 'name'> {
-  label: string;
-  icon: BaseSpriteIconProps['name'];
+  label?: string;
+  icon?: BaseSpriteIconProps['name'];
 }
 
-const { icon, label } = defineProps<NavLevel0ItemIconProps>();
+defineProps<NavLevel0ItemIconProps>();
 </script>

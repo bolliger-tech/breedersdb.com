@@ -151,7 +151,6 @@ import {
   attributeFragment,
   type AttributeFragment,
 } from 'src/components/Attribute/attributeFragment';
-import { useRoute } from 'vue-router';
 
 const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';
 const AUTHOR_STORAGE_KEY = 'breedersdb-attribution-author';
@@ -321,8 +320,6 @@ function completeStep4(repeatCount: number) {
   }
 }
 
-const route = useRoute();
-
 watch(
   () => props.entityId,
   () => {
@@ -332,19 +329,10 @@ watch(
   },
 );
 
-const step1Done = computed(
-  () =>
-    // look at url instead of formId so it can also be used to detect the initial step
-    !!route.query[FORM_ID_URL_KEY] &&
-    parseInt(route.query[FORM_ID_URL_KEY].toString()) > 0,
-);
+const step1Done = computed(() => formId.value > -1);
 
 const step2Done = computed(
-  () =>
-    // look at url instead of author, date and repeat so it can also be used to detect the initial step
-    !!route.query[AUTHOR_URL_KEY] &&
-    !!route.query[DATE_URL_KEY] &&
-    typeof route.query[REPEAT_URL_KEY] !== 'undefined',
+  () => author.value.length > 0 && date.value.length > 0 && repeat.value >= 0,
 );
 
 const step3Done = computed(() => props.entityId !== null);

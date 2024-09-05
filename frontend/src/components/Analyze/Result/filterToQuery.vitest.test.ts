@@ -159,6 +159,38 @@ const filterRules = {
     }),
   }),
 
+  nestedDateAllowEmpty: new FilterRule({
+    column: new FilterRuleColumn({
+      tableName: 'cultivars.lots',
+      tableColumnName: 'date_allow_empty',
+      tableLabel: 'Lots',
+      tableColumnLabel: 'Date Allow Empty',
+      schema: {
+        allowEmpty: true,
+        type: ColumnTypes.Date,
+      },
+    }),
+    operator: new FilterRuleOperator({
+      value: FilterOperatorValue.Empty,
+    }),
+  }),
+
+  nestedDateTimeAllowEmpty: new FilterRule({
+    column: new FilterRuleColumn({
+      tableName: 'cultivars.lots',
+      tableColumnName: 'date_time_allow_empty',
+      tableLabel: 'Lots',
+      tableColumnLabel: 'DateTime Allow Empty',
+      schema: {
+        allowEmpty: true,
+        type: ColumnTypes.DateTime,
+      },
+    }),
+    operator: new FilterRuleOperator({
+      value: FilterOperatorValue.Empty,
+    }),
+  }),
+
   nestedRatingAllowEmpty: new FilterRule({
     column: new FilterRuleColumn({
       tableName: 'cultivars.lots',
@@ -1325,6 +1357,68 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(Object.values(variables)[0]).toBe(false);
           });
 
+          it('should return: Date Empty nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedDateAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Empty,
+                }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+  cultivars(where: { _and: [ { _not: { lot: { date_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
+          it('should return: DateTime Empty nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedDateTimeAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Empty,
+                }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+  cultivars(where: { _and: [ { _not: { lot: { date_time_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
           it('should return: String === "" nullable', () => {
             const filter = FilterNode.FilterRoot(filterRootArgs);
             FilterNode.FilterLeaf({
@@ -1436,6 +1530,68 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
               new RegExp(
                 prepareForRegex(`
     cultivars(where: { _and: [ { lot: { rating_allow_empty: { _is_null: $v000 } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
+          it('should return: Date NotEmpty nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedDateAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.NotEmpty,
+                }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+    cultivars(where: { _and: [ { lot: { date_allow_empty: { _is_null: $v000 } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
+          it('should return: DateTime NotEmpty nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedDateTimeAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.NotEmpty,
+                }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+    cultivars(where: { _and: [ { lot: { date_time_allow_empty: { _is_null: $v000 } } } ] }`).replaceAll(
                   '$v000',
                   '$v\\d+',
                 ),

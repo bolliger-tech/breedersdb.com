@@ -261,18 +261,16 @@ function toComparison({
   const value = cast({ term, type: columnType });
   const type = columnTypeToGraphQLType(columnType);
 
-  if (undefined === value) {
-    return;
-  }
-
   switch (operator.value) {
     case FilterOperatorValue.Equal:
+      if (value === undefined) return;
       return {
         operator: GraphQLComparisonOperator.Eq,
         variable: { name, type, value },
         negate: false,
       };
     case FilterOperatorValue.NotEqual:
+      if (value === undefined) return;
       // becuase it it easier to implement on nested tables
       // we use double negation. see ruleToCriterion()
       return {
@@ -281,24 +279,28 @@ function toComparison({
         negate: true,
       };
     case FilterOperatorValue.Less:
+      if (value === undefined) return;
       return {
         operator: GraphQLComparisonOperator.Lt,
         variable: { name, type, value },
         negate: false,
       };
     case FilterOperatorValue.LessOrEqual:
+      if (value === undefined) return;
       return {
         operator: GraphQLComparisonOperator.Lte,
         variable: { name, type, value },
         negate: false,
       };
     case FilterOperatorValue.Greater:
+      if (value === undefined) return;
       return {
         operator: GraphQLComparisonOperator.Gt,
         variable: { name, type, value },
         negate: false,
       };
     case FilterOperatorValue.GreaterOrEqual:
+      if (value === undefined) return;
       return {
         operator: GraphQLComparisonOperator.Gte,
         variable: { name, type, value },

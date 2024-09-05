@@ -22,7 +22,7 @@
       }}
     </div>
 
-    <div style="display: none">
+    <div style="display: block">
       <!-- leave for testing and debugging -->
       <pre data-test="query">{{ query }}</pre>
       <pre data-test="variables">{{ variables }}</pre>

@@ -214,7 +214,7 @@ export type AttributionForm = Form & {
 };
 
 const { t } = useI18n();
-const { localStorage, sessionStorage, platform } = useQuasar();
+const { localStorage, sessionStorage } = useQuasar();
 
 // step 1
 const { queryArg: formId } = useQueryArg<number>({
@@ -356,16 +356,12 @@ function getInitialStep() {
 
 const step = ref(getInitialStep());
 
-function handleTransition(to: string | number, from: string | number) {
+function handleTransition(to: string | number) {
   if (to === 3) {
-    if (platform.is.safari && from === 2) {
-      // else safari is going shaky
-      setTimeout(() => {
-        props.focusEntityPicker?.();
-      }, 100);
-    } else {
+    // else some browsers are going shaky
+    setTimeout(() => {
       props.focusEntityPicker?.();
-    }
+    }, 201);
   }
 }
 </script>

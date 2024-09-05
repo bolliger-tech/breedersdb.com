@@ -264,6 +264,15 @@ function toComparison({
   switch (operator.value) {
     case FilterOperatorValue.Equal:
       if (value === undefined) return;
+      if (typeof value === 'number' && isNaN(value))
+        // Integer, Rating, Float, Date, DateTime field with value ''
+        return {
+          // becuase it it easier to implement on nested tables
+          // we use double negation. see ruleToCriterion()
+          operator: GraphQLComparisonOperator.IsNull,
+          variable: { name, type: 'Boolean', value: false },
+          negate: true,
+        };
       return {
         operator: GraphQLComparisonOperator.Eq,
         variable: { name, type, value },
@@ -271,6 +280,13 @@ function toComparison({
       };
     case FilterOperatorValue.NotEqual:
       if (value === undefined) return;
+      if (typeof value === 'number' && isNaN(value))
+        // Integer, Rating, Float, Date, DateTime field with value ''
+        return {
+          operator: GraphQLComparisonOperator.IsNull,
+          variable: { name, type: 'Boolean', value: false },
+          negate: false,
+        };
       // becuase it it easier to implement on nested tables
       // we use double negation. see ruleToCriterion()
       return {
@@ -413,13 +429,11 @@ function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnTypes }) {
     case ColumnTypes.Date:
       if (!term) return undefined;
       const date = new Date(term.value);
-      return isNaN(date.getTime())
-        ? undefined
-        : date.toISOString().split('T')[0];
+      return isNaN(date.getTime()) ? NaN : date.toISOString().split('T')[0];
     case ColumnTypes.DateTime:
       if (!term) return undefined;
       const datetime = new Date(term.value);
-      return isNaN(datetime.getTime()) ? undefined : datetime.toISOString();
+      return isNaN(datetime.getTime()) ? NaN : datetime.toISOString();
     case ColumnTypes.Time:
       // TODO: handle time
       throw new Error('Not implemented');

@@ -1789,6 +1789,38 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(Object.values(variables)[0]).toBe(false);
           });
 
+          it('should return: Integer "" nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedIntegerAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Equal,
+                }),
+                term: new FilterRuleTerm({ value: '' }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+  cultivars(where: { _and: [ { _not: { lot: { integer_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
           it('should return: Rating Empty nullable', () => {
             const filter = FilterNode.FilterRoot(filterRootArgs);
             FilterNode.FilterLeaf({
@@ -1798,6 +1830,38 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 operator: new FilterRuleOperator({
                   value: FilterOperatorValue.Empty,
                 }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+  cultivars(where: { _and: [ { _not: { lot: { rating_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
+          it('should return: Rating "" nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedRatingAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Equal,
+                }),
+                term: new FilterRuleTerm({ value: '' }),
               }),
             });
 
@@ -1851,6 +1915,38 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
             expect(Object.values(variables)[0]).toBe(false);
           });
 
+          it('should return: Date "" nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedDateAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Equal,
+                }),
+                term: new FilterRuleTerm({ value: '' }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+  cultivars(where: { _and: [ { _not: { lot: { date_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
           it('should return: DateTime Empty nullable', () => {
             const filter = FilterNode.FilterRoot(filterRootArgs);
             FilterNode.FilterLeaf({
@@ -1860,6 +1956,38 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 operator: new FilterRuleOperator({
                   value: FilterOperatorValue.Empty,
                 }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+  cultivars(where: { _and: [ { _not: { lot: { date_time_allow_empty: { _is_null: $v000 } } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
+          it('should return: DateTime "" nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedDateTimeAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.Equal,
+                }),
+                term: new FilterRuleTerm({ value: '' }),
               }),
             });
 
@@ -1948,6 +2076,38 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
                 operator: new FilterRuleOperator({
                   value: FilterOperatorValue.NotEmpty,
                 }),
+              }),
+            });
+
+            const { query, variables } = filterToQuery({
+              baseFilter: filter,
+              attributionFilter: emptyAttributionFilter,
+              columns: [],
+              pagination: basicPagination,
+            });
+
+            expect(query).toMatch(
+              new RegExp(
+                prepareForRegex(`
+    cultivars(where: { _and: [ { lot: { integer_allow_empty: { _is_null: $v000 } } } ] }`).replaceAll(
+                  '$v000',
+                  '$v\\d+',
+                ),
+              ),
+            );
+            expect(Object.values(variables)[0]).toBe(false);
+          });
+
+          it('should return: Integer NotEquals "" nullable', () => {
+            const filter = FilterNode.FilterRoot(filterRootArgs);
+            FilterNode.FilterLeaf({
+              parent: filter,
+              filterRule: new FilterRule({
+                column: filterRules.nestedIntegerAllowEmpty.column,
+                operator: new FilterRuleOperator({
+                  value: FilterOperatorValue.NotEqual,
+                }),
+                term: new FilterRuleTerm({ value: '' }),
               }),
             });
 

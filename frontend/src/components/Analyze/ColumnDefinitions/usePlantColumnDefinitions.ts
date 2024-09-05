@@ -150,7 +150,7 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'rootstocks',
+    table: 'plants.rootstocks',
     column: 'name',
     labelKey: 'plants.fields.rootstock',
     schema: {
@@ -163,7 +163,7 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'graftings',
+    table: 'plants.graftings',
     column: 'name',
     labelKey: 'plants.fields.grafting',
     schema: {

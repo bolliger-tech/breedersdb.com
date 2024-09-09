@@ -91,7 +91,6 @@ const {
   variables: _variables,
 } = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'display_name',
-  searchColumns: ['display_name', 'label_id'], // ! is where overridden below
   subset,
 });
 

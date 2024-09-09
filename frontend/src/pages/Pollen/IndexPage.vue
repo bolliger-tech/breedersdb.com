@@ -61,9 +61,25 @@ const query = graphql(
   [pollenFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
-  searchColumns: ['name', 'cultivar.display_name'],
-});
+const {
+  search,
+  pagination,
+  variables: _variables,
+} = useEntityIndexHooks<typeof query>();
+
+const variables = computed(() => ({
+  ..._variables.value,
+  where: {
+    _or: [
+      { name: { _ilike: `%${search.value}%` } },
+      {
+        cultivar: {
+          display_name: { _ilike: `%${search.value.replaceAll('.', '%.%')}%` },
+        },
+      },
+    ],
+  },
+}));
 
 const { data, fetching, error } = await useQuery({
   query,

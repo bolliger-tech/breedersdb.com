@@ -115,6 +115,7 @@ export interface EntitySelectPropsWithoutModel<T> {
   readonly?: QSelectProps['readonly'];
   disable?: QSelectProps['disable'];
   hint?: string;
+  filterWithWildcardsAroundDots?: boolean;
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
@@ -131,6 +132,7 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   readonly: false,
   disable: false,
   hint: undefined,
+  filterWithWildcardsAroundDots: false,
 });
 
 const selectRef = ref<QSelect | null>(null);
@@ -171,6 +173,7 @@ function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
         allOptions: Object.freeze([...options.value]),
         filteredOptions,
         valueExtractorFn: (item) => item[props.optionLabel],
+        withWildcardsAroundDots: props.filterWithWildcardsAroundDots,
       });
 }
 

@@ -13,6 +13,7 @@
     :hint="hint"
     :disable="disable"
     :readonly="readonly"
+    filter-with-wildcards-around-dots
   />
 </template>
 
@@ -38,6 +39,7 @@ export interface CultivarSelectProps {
   hint?: EntitySelectProps<unknown>['hint'];
   loading?: boolean;
   requestPolicy?: Parameters<typeof useQuery>[0]['requestPolicy'];
+  autocreate?: boolean;
 }
 const props = defineProps<CultivarSelectProps>();
 

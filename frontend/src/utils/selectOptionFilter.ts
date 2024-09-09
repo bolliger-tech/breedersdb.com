@@ -1,5 +1,6 @@
 import { QSelect } from 'quasar';
 import { Ref } from 'vue';
+import { escapeRegExp } from './stringUtils';
 
 export type FilterSelectOptionsUpdateFn = (
   filterFn: () => void,
@@ -12,16 +13,24 @@ export function filterSelectOptions<T>({
   allOptions,
   filteredOptions,
   valueExtractorFn,
+  withWildcardsAroundDots = false,
 }: {
   value: string;
   update: FilterSelectOptionsUpdateFn;
   allOptions: T[] | readonly T[];
   filteredOptions: Ref<T[] | readonly T[]>;
   valueExtractorFn: (item: T) => string;
+  withWildcardsAroundDots?: boolean;
 }) {
   update(
     () =>
-      setFilteredOptions(value, allOptions, filteredOptions, valueExtractorFn),
+      setFilteredOptions(
+        value,
+        allOptions,
+        filteredOptions,
+        valueExtractorFn,
+        withWildcardsAroundDots,
+      ),
     (ref) => selectFirstOption(ref, value),
   );
 }
@@ -31,16 +40,36 @@ function setFilteredOptions<T>(
   allOptions: T[] | readonly T[],
   filteredOptions: Ref<T[] | readonly T[]>,
   valueExtractorFn: (item: T) => string,
+  withWildcardsAroundDots: boolean,
 ) {
   if (value === '') {
     filteredOptions.value = allOptions;
-  } else {
+    return;
+  }
+
+  if (!withWildcardsAroundDots) {
     const needle = value.toLocaleLowerCase();
 
     filteredOptions.value = allOptions.filter(
       (v) => valueExtractorFn(v).toLocaleLowerCase().indexOf(needle) > -1,
     );
+
+    return;
   }
+
+  const term = new RegExp(
+    // add wildcard (except dot) before and after each dot
+    // e.g. 'foo.bar' -> 'foo.[^.]\.[^.]*bar'
+    value
+      .toLocaleLowerCase()
+      .split('.')
+      .map(escapeRegExp)
+      .join('[^.]*\\.[^.]*'),
+  );
+
+  filteredOptions.value = allOptions.filter((v) =>
+    term.test(valueExtractorFn(v).toLocaleLowerCase()),
+  );
 }
 
 export function selectFirstOption(ref: QSelect, value: string) {

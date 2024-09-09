@@ -37,10 +37,10 @@
         <strong>{{ t('plantGroups.explainer.examples') }}</strong>
         <ul>
           <li>
-            <code>AxB.{{ currentYear }}A.001.A</code>
+            <code>AxB.{{ currentYear }}A.001.S</code>
           </li>
           <li>
-            <code>AxB.{{ currentYear }}A.001.B1</code>
+            <code>AxB.{{ currentYear }}A.001.A-1</code>
           </li>
         </ul>
       </li>
@@ -135,10 +135,14 @@ const nextFreeNameSegment = computed(() => {
   const takenSegments = plantGroupsData.value.plant_groups
     .filter((g) => g.id !== props.plantGroupId) // Exclude current plant group
     .map((g) => g.name_segment);
-  for (const letter of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
-    const segment = letter;
-    if (!takenSegments.includes(segment)) {
-      return segment;
+  if (takenSegments.length === 0) {
+    return 'S';
+  } else {
+    for (let i = 1; i <= 999999; i++) {
+      const segment = `A-${i}`;
+      if (!takenSegments.includes(segment)) {
+        return segment;
+      }
     }
   }
   return null;

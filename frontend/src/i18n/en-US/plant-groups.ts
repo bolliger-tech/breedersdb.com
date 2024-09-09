@@ -31,7 +31,7 @@ export const plantGroups = {
       pattern: 'pattern',
     },
     2: {
-      base: '{hint}: Use a name that identifies also the selection stage.',
+      base: '{hint}: Use a name that identifies the stage and, in case of multiple groups per cultivar, the location.',
       hint: 'Hint',
     },
   },

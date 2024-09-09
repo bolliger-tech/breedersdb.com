@@ -31,12 +31,14 @@
       @popup-hide="() => (inlineLabel = undefined)"
       @filter="filterOptions"
     >
-      <template #no-option>
-        <q-item>
-          <q-item-section class="text-grey">
-            {{ noOptionText || t('base.noResults') }}
-          </q-item-section>
-        </q-item>
+      <template #no-option="noOptionProps">
+        <slot name="no-option" v-bind="noOptionProps">
+          <q-item>
+            <q-item-section class="text-grey">
+              {{ noOptionText || t('base.noResults') }}
+            </q-item-section>
+          </q-item>
+        </slot>
       </template>
 
       <template v-if="$slots.option" #option="option">
@@ -146,6 +148,7 @@ defineSlots<{
   explainer: Slot;
   hint: Slot;
   'after-options': QSelectSlots['after-options'];
+  'no-option': QSelectSlots['no-option'];
 }>();
 
 const modelValue = defineModel<T | null | undefined>();
@@ -164,11 +167,14 @@ const options = computed(() => {
 });
 
 const filteredOptions = shallowRef([...options.value]);
-function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
+function filterOptions(
+  searchValue: string,
+  update: FilterSelectOptionsUpdateFn,
+) {
   props.filterFn
-    ? props.filterFn(value, update, filteredOptions)
+    ? props.filterFn(searchValue, update, filteredOptions)
     : filterSelectOptions({
-        value,
+        searchValue,
         update,
         allOptions: Object.freeze([...options.value]),
         filteredOptions,

@@ -8,14 +8,14 @@ export type FilterSelectOptionsUpdateFn = (
 ) => void;
 
 export function filterSelectOptions<T>({
-  value,
+  searchValue,
   update,
   allOptions,
   filteredOptions,
   valueExtractorFn,
   withWildcardsAroundDots = false,
 }: {
-  value: string;
+  searchValue: string;
   update: FilterSelectOptionsUpdateFn;
   allOptions: T[] | readonly T[];
   filteredOptions: Ref<T[] | readonly T[]>;
@@ -24,50 +24,50 @@ export function filterSelectOptions<T>({
 }) {
   update(
     () =>
-      setFilteredOptions(
-        value,
+      (filteredOptions.value = filterOptions({
+        searchValue,
         allOptions,
-        filteredOptions,
         valueExtractorFn,
         withWildcardsAroundDots,
-      ),
-    (ref) => selectFirstOption(ref, value),
+      })),
+    (ref) => selectFirstOption(ref, searchValue),
   );
 }
 
-function setFilteredOptions<T>(
-  value: string,
-  allOptions: T[] | readonly T[],
-  filteredOptions: Ref<T[] | readonly T[]>,
-  valueExtractorFn: (item: T) => string,
-  withWildcardsAroundDots: boolean,
-) {
-  if (value === '') {
-    filteredOptions.value = allOptions;
-    return;
+export function filterOptions<T>({
+  searchValue,
+  allOptions,
+  valueExtractorFn,
+  withWildcardsAroundDots,
+}: {
+  searchValue: string;
+  allOptions: T[] | readonly T[];
+  valueExtractorFn: (item: T) => string;
+  withWildcardsAroundDots: boolean;
+}) {
+  if (searchValue === '') {
+    return allOptions;
   }
 
   if (!withWildcardsAroundDots) {
-    const needle = value.toLocaleLowerCase();
+    const needle = searchValue.toLocaleLowerCase();
 
-    filteredOptions.value = allOptions.filter(
+    return allOptions.filter(
       (v) => valueExtractorFn(v).toLocaleLowerCase().indexOf(needle) > -1,
     );
-
-    return;
   }
 
   const term = new RegExp(
     // add wildcard (except dot) before and after each dot
     // e.g. 'foo.bar' -> 'foo.[^.]\.[^.]*bar'
-    value
+    searchValue
       .toLocaleLowerCase()
       .split('.')
       .map(escapeRegExp)
       .join('[^.]*\\.[^.]*'),
   );
 
-  filteredOptions.value = allOptions.filter((v) =>
+  return allOptions.filter((v) =>
     term.test(valueExtractorFn(v).toLocaleLowerCase()),
   );
 }

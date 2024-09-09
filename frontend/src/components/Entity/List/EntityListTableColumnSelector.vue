@@ -71,9 +71,12 @@ const possibleOptions = computed(() => {
 
 const filteredOptions = ref(possibleOptions.value);
 
-function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
+function filterOptions(
+  searchValue: string,
+  update: FilterSelectOptionsUpdateFn,
+) {
   filterSelectOptions({
-    value,
+    searchValue,
     update,
     allOptions: possibleOptions.value,
     filteredOptions,

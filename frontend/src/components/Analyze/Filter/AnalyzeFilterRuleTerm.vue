@@ -193,9 +193,12 @@ const inputType = computed(() => {
   }
 });
 
-function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
+function filterOptions(
+  searchValue: string,
+  update: FilterSelectOptionsUpdateFn,
+) {
   filterSelectOptions({
-    value,
+    searchValue,
     update,
     allOptions: options.value,
     filteredOptions,

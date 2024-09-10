@@ -45,6 +45,8 @@ export function filterOptions<T>({
   valueExtractorFn: (item: T) => string;
   withWildcardsAroundDots: boolean;
 }) {
+  searchValue = searchValue.trim();
+
   if (searchValue === '') {
     return allOptions;
   }

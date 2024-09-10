@@ -67,6 +67,7 @@ import {
   ref,
   type Slot,
   type ShallowRef,
+  ShallowUnwrapRef,
 } from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import {
@@ -86,6 +87,7 @@ import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 export type EntitySelectInstance<T> = {
   validate: () => ReturnType<QSelect['validate']> | undefined;
   focus: () => ReturnType<QSelect['focus']> | undefined;
+  filteredOptions: ShallowUnwrapRef<T[]>;
 } & ComponentPublicInstance<EntitySelectProps<T>> &
   VNodeRef;
 
@@ -137,12 +139,6 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   filterWithWildcardsAroundDots: false,
 });
 
-const selectRef = ref<QSelect | null>(null);
-defineExpose({
-  validate: () => selectRef.value?.validate(),
-  focus: () => selectRef.value && focusInView(selectRef.value),
-});
-
 defineSlots<{
   option: QSelectSlots['option'];
   explainer: Slot;
@@ -152,6 +148,8 @@ defineSlots<{
 }>();
 
 const modelValue = defineModel<T | null | undefined>();
+
+// see below for exposed methods
 
 const { t } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
@@ -182,6 +180,13 @@ function filterOptions(
         withWildcardsAroundDots: props.filterWithWildcardsAroundDots,
       });
 }
+
+const selectRef = ref<QSelect | null>(null);
+defineExpose({
+  validate: () => selectRef.value?.validate(),
+  focus: () => selectRef.value && focusInView(selectRef.value),
+  filteredOptions,
+});
 
 const { inputBgColor } = useInputBackground();
 

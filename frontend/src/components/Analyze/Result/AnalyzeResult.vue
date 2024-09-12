@@ -12,6 +12,9 @@
       :all-columns="availableColumns"
       :data-is-fresh="isValid"
       :base-table="props.baseTable"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
     <!-- TODO: <ResultDownload :enabled="!fetching && !!result" /> -->
     <div v-if="lastRefreshDate" class="text-caption">
@@ -88,7 +91,7 @@ const visibleColumns = computed({
   get: () =>
     selectedColumns.value.length > 0
       ? selectedColumns.value
-      : (validInitialVisibleColumns.value ?? defaultColumns.value),
+      : validInitialVisibleColumns.value ?? defaultColumns.value,
   set: (cols: string[]) => {
     selectedColumns.value = cols;
   },
@@ -243,4 +246,126 @@ watch(
   },
   { immediate: true },
 );
+
+import { UnnestArgs, UnnestResult, useExport } from 'src/composables/useExport';
+import { EntityListTableColum } from 'src/components/Entity/List/types';
+
+function unnestAttributes<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends Record<string, any>,
+  C extends EntityListTableColum,
+>({ data, visibleColumns, columns }: UnnestArgs<T, C>): UnnestResult {
+  // keys in data that point to arrays of attributes
+  const attributeColumnNames = visibleColumns.filter((col) =>
+    col.startsWith('attributes.'),
+  ) as string[];
+
+  const attributeColumns = [
+    'id',
+    'attribution_form_id',
+    'attribute_name',
+    'date_attributed',
+    'created',
+    'author',
+    'exceptional_attribution',
+    'text_note',
+    'photo_note',
+  ];
+
+  const dataUnnested = [];
+  for (const _row of data) {
+    // replace double underscores (which were added for graphql)
+    const row = Object.fromEntries(
+      Object.entries(_row).map(([key, value]) => [
+        key !== '__typename' ? key.replaceAll('__', '.') : key,
+        value,
+      ]),
+    );
+
+    // copy of row without attributes
+    const rowWithoutAttributes = Object.fromEntries(
+      Object.entries(row).filter(
+        ([key]) => !attributeColumnNames.includes(key),
+      ),
+    );
+
+    // unnest all attributes
+    let attributeFound = false;
+    for (const attributeColumnName of attributeColumnNames) {
+      const attributes = row[attributeColumnName];
+      if (Array.isArray(attributes)) {
+        for (const attribute of attributes) {
+          attributeFound = true;
+
+          // parse value
+          const valueKey = [
+            'text_value',
+            'integer_value',
+            'float_value',
+            'boolean_value',
+            'date_value',
+          ].find((key) => attribute[key] !== null);
+          const value = !valueKey
+            ? null
+            : valueKey === 'date_value'
+              ? new Date(attribute[valueKey])
+              : attribute[valueKey];
+
+          // prefix all keys with attribute__
+          const attributeWithPrefixedKeys = {
+            ...Object.fromEntries(
+              Object.entries(attribute)
+                .filter(([key]) => attributeColumns.includes(key))
+                .map(([key, value]) => [`attribute__${key}`, value]),
+            ),
+            ...{ attribute__value: value },
+          };
+          dataUnnested.push({
+            ...rowWithoutAttributes,
+            ...attributeWithPrefixedKeys,
+          });
+        }
+      }
+    }
+    if (!attributeFound) {
+      dataUnnested.push(rowWithoutAttributes);
+    }
+  }
+  return {
+    data: dataUnnested,
+    visibleColumns: [
+      ...visibleColumns.filter((c) => !attributeColumnNames.includes(c)),
+      'attribute__author',
+      'attribute__value',
+    ],
+    columns: [
+      ...columns,
+      {
+        name: 'attribute__author',
+        label: 'attribute > author',
+        field: 'attribute__author',
+      },
+      {
+        name: 'attribute__value',
+        label: 'attribute > value',
+        field: 'attribute__value',
+      },
+    ],
+  };
+}
+
+const { exportDataAndWriteNewXLSX, isExporting, exportProgress } = useExport({
+  entityName: props.baseTable,
+  query,
+  variables,
+  visibleColumns,
+  columns: computed(() => props.availableColumns),
+  title: t('analyze.result.title', 2),
+  unnestFn: unnestAttributes,
+});
+
+async function onExport() {
+  const result = await exportDataAndWriteNewXLSX();
+  console.log('Exported', result);
+}
 </script>

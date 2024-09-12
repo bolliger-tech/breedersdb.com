@@ -22,7 +22,7 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
   query,
   variables,
 }: FetchAllPagesArgs<Q, V>) {
-  const limit = 100;
+  const limit = 200;
   let offset = 0;
   return {
     async *[Symbol.asyncIterator]() {
@@ -87,6 +87,18 @@ export function transformWithColumns<T, C extends EntityListTableColum>({
     );
 }
 
+export type UnnestArgs<T, C extends EntityListTableColum> = {
+  data: T[];
+  visibleColumns: string[];
+  columns: C[];
+};
+
+export type UnnestResult = {
+  data: Record<string, unknown>[];
+  visibleColumns: string[];
+  columns: EntityListTableColum[];
+};
+
 type ExportDataArgs<
   Q extends DocumentInput,
   V extends AnyVariables,
@@ -96,6 +108,7 @@ type ExportDataArgs<
     title: string;
     subsetLabel?: string;
     sheetName?: string;
+    unnestFn?: (args: UnnestArgs<ResultOf<Q>, C>) => UnnestResult | undefined;
   };
 
 export function exportData<Q extends DocumentInput, V extends AnyVariables>({
@@ -107,10 +120,12 @@ export function exportData<Q extends DocumentInput, V extends AnyVariables>({
   columns,
   title,
   subsetLabel = 'All',
+  unnestFn,
 }: ExportDataArgs<Q, V>) {
   return {
     async *[Symbol.asyncIterator]() {
-      const entityData = [];
+      // fetch
+      const fetchedData = [];
       let totalItems = 0;
       for await (const data of fetchAllData({
         client,
@@ -118,28 +133,42 @@ export function exportData<Q extends DocumentInput, V extends AnyVariables>({
         query,
         variables: variables,
       })) {
-        entityData.push(...data[entityName]);
+        fetchedData.push(...data[entityName]);
         totalItems = data[`${entityName}_aggregate`].aggregate.count;
-        const progress = entityData.length / totalItems;
+        const progress = fetchedData.length / totalItems;
         yield {
-          fetchedData: entityData,
+          fetchedData,
           totalItems,
           progress: progress * 0.88,
           done: false,
         };
       }
 
-      const formattedData = entityData.map((result) =>
+      // unnest
+      const unnestedData =
+        unnestFn && unnestFn({ data: fetchedData, visibleColumns, columns });
+
+      yield {
+        fetchedData,
+        unnestedData,
+        progress: 0.9,
+        done: false,
+      };
+
+      // transform
+      const formattedData = (unnestedData?.data || fetchedData).map((result) =>
         transformWithColumns({
           result,
-          columns,
-          visibleColumns,
+          columns: unnestedData?.columns || columns,
+          visibleColumns: unnestedData?.visibleColumns || visibleColumns,
         }),
       );
+
       yield {
-        fetchedData: entityData,
+        fetchedData,
+        unnestedData,
         formattedData,
-        progress: 0.9,
+        progress: 0.95,
         done: false,
       };
 
@@ -155,7 +184,8 @@ export function exportData<Q extends DocumentInput, V extends AnyVariables>({
       });
 
       yield {
-        fetchedData: entityData,
+        fetchedData,
+        unnestedData,
         formattedData,
         fileName,
         worksheet,
@@ -168,8 +198,9 @@ export function exportData<Q extends DocumentInput, V extends AnyVariables>({
 export function useExport<Q extends DocumentInput, V extends AnyVariables>(
   args: Omit<
     ExportDataArgs<Q, V>,
-    'client' | 'variables' | 'columns' | 'visibleColumns'
+    'client' | 'query' | 'variables' | 'columns' | 'visibleColumns'
   > & {
+    query: Ref<Q>;
     variables: Ref<V>;
     columns: Ref<ExportDataArgs<Q, V>['columns']>;
     visibleColumns: Ref<ExportDataArgs<Q, V>['visibleColumns']>;
@@ -183,6 +214,7 @@ export function useExport<Q extends DocumentInput, V extends AnyVariables>(
     exportData({
       ...args,
       client,
+      query: args.query.value,
       variables: args.variables.value,
       columns: args.columns.value,
       visibleColumns: args.visibleColumns.value,

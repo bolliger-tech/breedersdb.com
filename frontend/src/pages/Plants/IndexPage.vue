@@ -315,7 +315,7 @@ const {
   exportProgress,
 } = useExport({
   entityName: 'plants',
-  query,
+  query: ref(query),
   variables,
   visibleColumns,
   columns,

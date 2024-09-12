@@ -7,7 +7,10 @@
     :all-columns="allColumns"
     :data-is-fresh="dataIsFresh"
     header-height="72px"
+    :is-exporting="isExporting"
+    :export-progress="exportProgress"
     @row-click="onRowClick"
+    @export="onExport"
   >
     <template #column-selector-option="{ opt, itemProps }">
       <q-item v-bind="itemProps">
@@ -43,6 +46,7 @@ import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
 import AnalyzeResultTableColumnLabel from 'components/Analyze/Result/AnalyzeResultTableColumnLabel.vue';
 import { BaseTable } from '../Filter/filterNode';
 import { useRouter } from 'vue-router';
+import type { EntityExportButtonProps } from 'src/components/Entity/EntityExportButton.vue';
 
 export interface AnalyzeResultTableProps
   extends AnalyzeResultTablePropsWithoutModel {
@@ -50,7 +54,7 @@ export interface AnalyzeResultTableProps
   pagination: NonNullable<QTableProps['pagination']>;
 }
 
-interface AnalyzeResultTablePropsWithoutModel {
+type AnalyzeResultTablePropsWithoutModel = {
   rows: {
     id: number;
     [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[];
@@ -60,7 +64,7 @@ interface AnalyzeResultTablePropsWithoutModel {
   allColumns: QTableColumn[];
   dataIsFresh: boolean;
   baseTable: BaseTable;
-}
+} & EntityExportButtonProps;
 
 export type AnalyzeResultTableRequestDataParams = Parameters<
   NonNullable<QTableProps['onRequest']>

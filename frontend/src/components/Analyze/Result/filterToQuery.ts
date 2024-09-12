@@ -69,6 +69,18 @@ export function filterToQuery({
   const inputVars = hasAttributionColumns
     ? [...where.variables, ...attributionWhere.variables] // only add attribution variables if there are attribution columns, else we get an unexpected variables error
     : where.variables;
+  inputVars.push({
+    name: 'limit',
+    type: 'Int',
+    value: pagination.rowsPerPage || DEFAULT_PAGE_SIZE,
+  });
+  inputVars.push({
+    name: 'offset',
+    type: 'Int',
+    value: pagination.page
+      ? (pagination.page - 1) * (pagination.rowsPerPage || DEFAULT_PAGE_SIZE)
+      : 0,
+  });
   const inputVarDefs =
     inputVars.length > 0
       ? `( ${inputVars.map((v) => `$${v.name}: ${v.type}!`).join(', ')} )`
@@ -108,10 +120,6 @@ function toPaginationString({
     throw new Error('Pagination not supported for attributions');
   }
 
-  const limit = pagination.rowsPerPage || DEFAULT_PAGE_SIZE;
-  const page = pagination.page || 1; // 1 indexed
-  const offset = (page - 1) * limit;
-
   const order = pagination.descending ? 'desc' : 'asc';
   const orderByPath = pagination.sortBy || columns[0] || 'id';
   const orderByColumn = orderByPath.split('.').pop();
@@ -126,11 +134,11 @@ function toPaginationString({
     );
   // append `{ id: asc }` as additional criteria to ensure stable ordering
   const orderBy =
-    orderByUnstable === '{ id: asc }'
+    orderByUnstable === '{ id: asc }' || orderByUnstable === '{ id: desc }'
       ? orderByUnstable
       : `[ ${orderByUnstable}, { id: asc } ]`;
 
-  return `limit: ${limit}, offset: ${offset}, order_by: ${orderBy}`;
+  return `limit: $limit, offset: $offset, order_by: ${orderBy}`;
 }
 
 function filterToWhere(filter: FilterNode): GraphQLWhereArgs {
@@ -631,6 +639,16 @@ fragment AttributionFragment on attributions_view {
   cultivar_id
   lot_id
   data_type
+  # only needed for export:
+  attribution_form_id
+  attribute_id
+  attribute_name
+  date_attributed
+  created
+  author
+  exceptional_attribution
+  text_note
+  photo_note
 }
 `;
 
@@ -646,6 +664,16 @@ export type AnalyzeAttributionsViewFields = {
   cultivar_id: number | null;
   lot_id: number | null;
   data_type: AttributeDataTypes;
+  // only needed for export:
+  attribution_form_id: number;
+  attribute_id: number;
+  attribute_name: string;
+  date_attributed: string;
+  created: string;
+  author: string;
+  exceptional_attribution: boolean;
+  text_note: string;
+  photo_note: string;
 };
 
 type QueryVariable = {

@@ -11,5 +11,8 @@
   },
   "lint-staged": {
     "**/*.{js,ts,vue,scss,html,md,json,yaml,yml}": "prettier --write --ignore-unknown"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
   }
 }

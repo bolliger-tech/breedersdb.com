@@ -15,7 +15,10 @@
       add-entity-path="/plants/new"
       :view-entity-path-getter="(id) => `/plants/${id}`"
       :has-qr-scanner="true"
+      :has-export="true"
+      :is-exporting="isExporting"
       @scanned-qr="onScannedQr"
+      @on-export="onExport"
     >
       <template #body-cell-label_id="cellProps">
         <q-td :props="cellProps">
@@ -305,4 +308,115 @@ async function onScannedQr(code: string) {
     search.value = code;
   }
 }
+
+import { useExport } from 'src/composables/useExport';
+
+// Define the export logic
+const { exportDataAndWriteNewXLSX: onExport, isExporting } = useExport({
+  entityName: 'plants',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('plants.title', 2),
+  subsetLabel: tabs.find((t) => t.value === subset.value)?.label,
+});
+
+/*
+const isExporting2 = ref(false);
+const { client } = useClientHandle();
+import * as XLSX from 'xlsx';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function onExportAsdf() {
+  if (isExporting2.value) {
+    return;
+  }
+  isExporting2.value = true;
+  console.log('Export to xlsx!!');
+
+  const entityName = t('plants.title', 2);
+  const org = import.meta.env.VITE_ORG_ABBREVIATION;
+  const subsetLabel =
+    tabs.find((t) => t.value === subset.value)?.label || 'all';
+  const fileName = `${org}-${entityName}-${subsetLabel}-${new Date().toISOString()}.xlsx`;
+
+  type ResultType = Plant;
+  const allResults: ResultType[] = [];
+  const limit = 100;
+  let offset = 0;
+
+  while (true) {
+    const result = await client
+      .query(
+        query,
+        { ...variables.value, limit, offset },
+        { requestPolicy: 'network-only' },
+      )
+      .toPromise();
+    if (!result.data) {
+      break;
+    }
+    allResults.push(...result.data.plants);
+    if (result.data.plants.length < limit) {
+      break;
+    }
+    offset += limit;
+  }
+
+  if (
+    allResults.length <
+    (data.value?.plants_aggregate?.aggregate?.count || Infinity)
+  ) {
+    throw new Error('Export failed: not all data could be fetched');
+  }
+
+  console.log(allResults);
+
+  const preparedResults: Record<string, unknown>[] = allResults.map(
+    (result) => {
+      const row: Record<string, unknown> = {};
+      for (const columnName of visibleColumns.value) {
+        const column = columns.value.find((c) => c.name === columnName);
+        if (!column) {
+          continue;
+        }
+        const value =
+          typeof column.field === 'function'
+            ? column.field(result)
+            : result[column.field as keyof ResultType];
+
+        const formattedValue =
+          value === null || value === undefined || value === ''
+            ? null
+            : columnName.startsWith('date_') ||
+                ['modified', 'created'].includes(columnName)
+              ? new Date(value as string)
+              : 'format' in column && column.format
+                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  column.format(value as any)
+                : value;
+
+        row[column.label] = formattedValue;
+      }
+      return row;
+    },
+  );
+
+  const workbook = XLSX.utils.book_new();
+  workbook.Props = {
+    Title: entityName,
+    Author: `${org} - breedersdb.com`,
+  };
+  const worksheet = XLSX.utils.json_to_sheet(preparedResults, {
+    cellDates: true,
+    dateNF: 'dd.mm.yyyy hh:mm:ss',
+  });
+  XLSX.utils.book_append_sheet(workbook, worksheet);
+
+  XLSX.writeFile(workbook, fileName);
+
+  isExporting2.value = false;
+}
+  */
 </script>

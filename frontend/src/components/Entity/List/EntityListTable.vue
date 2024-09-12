@@ -46,6 +46,22 @@
       </EntityListTableColumnSelector>
 
       <q-btn
+        v-if="hasExport"
+        class="q-ml-md"
+        dense
+        flat
+        no-caps
+        @click="() => $emit('on-export')"
+      >
+        <div class="column items-center">
+          <q-spinner v-if="isExporting" size="sm" />
+          <q-icon v-else name="file_download" />
+          <div class="text-caption">
+            {{ t('base.export') }}
+          </div>
+        </div>
+      </q-btn>
+      <q-btn
         class="q-ml-md"
         dense
         flat
@@ -147,16 +163,20 @@ export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
   visibleColumns: string[];
 }
 
+export type EntityListTableColum = Omit<QTableColumn, 'sort'> & {
+  maxWidth?: string;
+  ellipsis?: boolean;
+  timestamp?: boolean;
+};
+
 interface EntityListTablePropsWithoutModel {
   rows: QTableProps['rows'];
   loading?: boolean;
-  allColumns: (Omit<QTableColumn, 'sort'> & {
-    maxWidth?: string;
-    ellipsis?: boolean;
-    timestamp?: boolean;
-  })[];
+  allColumns: EntityListTableColum[];
   dataIsFresh?: boolean;
   headerHeight?: string;
+  hasExport?: boolean;
+  isExporting?: boolean;
 }
 
 const props = withDefaults(defineProps<EntityListTablePropsWithoutModel>(), {
@@ -164,6 +184,8 @@ const props = withDefaults(defineProps<EntityListTablePropsWithoutModel>(), {
   dataIsFresh: true,
   headerHeight: undefined,
   rowClick: undefined,
+  hasExport: false,
+  isExporting: false,
 });
 const visibleColumns = defineModel<string[]>('visibleColumns', {
   required: true,
@@ -172,6 +194,7 @@ const pagination = defineModel<QTableProps['pagination']>('pagination');
 
 defineEmits<{
   'row-click': [row: QTableProps['rows'][0]];
+  'on-export': [];
 }>();
 
 const slots = defineSlots<{

@@ -17,8 +17,8 @@
       :has-qr-scanner="true"
       :is-exporting="isExporting"
       :export-progress="exportProgress"
-      @scanned-qr="onScannedQr"
       @export="onExport"
+      @scanned-qr="onScannedQr"
     >
       <template #body-cell-label_id="cellProps">
         <q-td :props="cellProps">

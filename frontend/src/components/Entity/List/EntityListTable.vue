@@ -45,40 +45,11 @@
         </template>
       </EntityListTableColumnSelector>
 
-      <q-btn
-        v-if="onExport"
-        class="q-ml-md"
-        dense
-        flat
-        no-caps
-        @click="() => $emit('export')"
-      >
-        <div class="column items-center">
-          <q-circular-progress
-            v-if="isExporting"
-            show-value
-            font-size="8px"
-            :value="exportProgress"
-            :min="0"
-            :max="1"
-            instant-feedback
-            size="sm"
-            color="teal"
-            track-color="grey-3"
-          >
-            <template v-if="exportProgress < 1">
-              {{ (exportProgress * 100).toFixed() }}%
-            </template>
-            <template v-else>
-              <q-icon name="check" />
-            </template>
-          </q-circular-progress>
-          <q-icon v-else name="file_download" />
-          <div class="text-caption">
-            {{ t('base.export') }}
-          </div>
-        </div>
-      </q-btn>
+      <EntityExportButton
+        :is-exporting="isExporting"
+        :export-progress="exportProgress"
+        @export="onExport"
+      />
       <q-btn
         class="q-ml-md"
         dense
@@ -175,6 +146,8 @@ import EntityListTableHeaderCell from './EntityListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
+import EntityExportButton from 'src/components/Entity/EntityExportButton.vue';
+import type { EntityExportButtonProps } from 'src/components/Entity/EntityExportButton.vue';
 
 export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
   pagination?: QTableProps['pagination'];
@@ -187,16 +160,13 @@ export type EntityListTableColum = Omit<QTableColumn, 'sort'> & {
   timestamp?: boolean;
 };
 
-interface EntityListTablePropsWithoutModel {
+type EntityListTablePropsWithoutModel = {
   rows: QTableProps['rows'];
   loading?: boolean;
   allColumns: EntityListTableColum[];
   dataIsFresh?: boolean;
   headerHeight?: string;
-  isExporting?: boolean;
-  exportProgress?: number;
-  onExport?: () => void;
-}
+} & EntityExportButtonProps;
 
 const props = withDefaults(defineProps<EntityListTablePropsWithoutModel>(), {
   loading: false,

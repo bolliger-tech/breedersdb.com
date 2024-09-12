@@ -71,6 +71,7 @@ import { QTableSlots } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import BaseSuspense from 'components/Base/BaseSuspense/BaseSuspense.vue';
 import BaseSpinner from 'components/Base/BaseSpinner.vue';
+import type { EntityExportButtonProps } from './EntityExportButton.vue';
 
 export interface EntityContainerProps
   extends EntityContainerPropsWithoutModels {
@@ -80,7 +81,7 @@ export interface EntityContainerProps
   visibleColumns: EntityListTableProps['visibleColumns'];
 }
 
-interface EntityContainerPropsWithoutModels {
+type EntityContainerPropsWithoutModels = {
   title: EntityListProps['title'];
   tabs?: EntityListProps['tabs'];
   searchPlaceholder?: EntityListProps['searchPlaceholder'];
@@ -91,10 +92,7 @@ interface EntityContainerPropsWithoutModels {
   addEntityPath?: string | MatcherLocationAsPath;
   viewEntityPathGetter: (id: number | string) => string | MatcherLocationAsPath;
   hasQrScanner?: boolean;
-  onExport?: () => void;
-  isExporting?: boolean;
-  exportProgress?: number;
-}
+} & EntityExportButtonProps;
 
 const props = defineProps<EntityContainerPropsWithoutModels>();
 

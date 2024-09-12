@@ -15,10 +15,10 @@
       add-entity-path="/plants/new"
       :view-entity-path-getter="(id) => `/plants/${id}`"
       :has-qr-scanner="true"
-      :has-export="true"
       :is-exporting="isExporting"
+      :export-progress="exportProgress"
       @scanned-qr="onScannedQr"
-      @on-export="onExport"
+      @export="onExport"
     >
       <template #body-cell-label_id="cellProps">
         <q-td :props="cellProps">
@@ -310,7 +310,11 @@ async function onScannedQr(code: string) {
   }
 }
 
-const { exportDataAndWriteNewXLSX: onExport, isExporting } = useExport({
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
   entityName: 'plants',
   query,
   variables,

@@ -16,34 +16,35 @@ type FetchAllPagesArgs<Q extends DocumentInput, V extends AnyVariables> = {
   variables: V;
 };
 
-export async function fetchAllPages<
-  Q extends DocumentInput,
-  V extends AnyVariables,
->({ client, entityName, query, variables }: FetchAllPagesArgs<Q, V>) {
-  const allResults: ResultOf<Q>[] = [];
+export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
+  client,
+  entityName,
+  query,
+  variables,
+}: FetchAllPagesArgs<Q, V>) {
   const limit = 100;
   let offset = 0;
-
-  // Fetch data in chunks
-  while (true) {
-    const result = await client
-      .query(
-        query,
-        { ...variables, limit, offset },
-        { requestPolicy: 'network-only' },
-      )
-      .toPromise();
-    if (!result.data) {
-      break;
-    }
-    allResults.push(...result.data[entityName]);
-    if (result.data[entityName].length < limit) {
-      break;
-    }
-    offset += limit;
-  }
-
-  return allResults;
+  return {
+    async *[Symbol.asyncIterator]() {
+      while (true) {
+        const result = await client
+          .query(
+            query,
+            { ...variables, limit, offset },
+            { requestPolicy: 'network-only' },
+          )
+          .toPromise();
+        if (!result.data) {
+          break;
+        }
+        yield result.data as ResultOf<Q>;
+        if (result.data[entityName].length < limit) {
+          break;
+        }
+        offset += limit;
+      }
+    },
+  };
 }
 
 type TransformToColumnArgs<T, C extends EntityListTableColum> = {
@@ -97,10 +98,7 @@ type ExportDataArgs<
     sheetName?: string;
   };
 
-export async function exportData<
-  Q extends DocumentInput,
-  V extends AnyVariables,
->({
+export function exportData<Q extends DocumentInput, V extends AnyVariables>({
   client,
   entityName,
   query,
@@ -110,35 +108,63 @@ export async function exportData<
   title,
   subsetLabel = 'All',
 }: ExportDataArgs<Q, V>) {
-  const fetchedData = await fetchAllPages({
-    client,
-    entityName,
-    query,
-    variables: variables,
-  });
+  return {
+    async *[Symbol.asyncIterator]() {
+      const entityData = [];
+      let totalItems = 0;
+      for await (const data of fetchAllData({
+        client,
+        entityName,
+        query,
+        variables: variables,
+      })) {
+        entityData.push(...data[entityName]);
+        totalItems = data[`${entityName}_aggregate`].aggregate.count;
+        const progress = entityData.length / totalItems;
+        yield {
+          fetchedData: entityData,
+          totalItems,
+          progress: progress * 0.88,
+          done: false,
+        };
+      }
 
-  const formattedData = fetchedData.map((result) =>
-    transformWithColumns({
-      result,
-      columns,
-      visibleColumns,
-    }),
-  );
+      const formattedData = entityData.map((result) =>
+        transformWithColumns({
+          result,
+          columns,
+          visibleColumns,
+        }),
+      );
+      yield {
+        fetchedData: entityData,
+        formattedData,
+        progress: 0.9,
+        done: false,
+      };
 
-  const org = import.meta.env.VITE_ORG_ABBREVIATION;
-  const fileName =
-    ['bdb', org, title, subsetLabel, new Date().toISOString()]
-      .filter(Boolean)
-      .join('-') + '.xlsx';
+      const org = import.meta.env.VITE_ORG_ABBREVIATION;
+      const fileName =
+        ['bdb', org, title, subsetLabel, new Date().toISOString()]
+          .filter(Boolean)
+          .join('-') + '.xlsx';
 
-  const worksheet = XLSX.utils.json_to_sheet(formattedData, {
-    cellDates: true,
-    dateNF: 'dd.mm.yyyy hh:mm:ss',
-  });
+      const worksheet = XLSX.utils.json_to_sheet(formattedData, {
+        cellDates: true,
+        dateNF: 'dd.mm.yyyy hh:mm:ss',
+      });
 
-  return { fetchedData, formattedData, fileName, worksheet };
+      yield {
+        fetchedData: entityData,
+        formattedData,
+        fileName,
+        worksheet,
+        progress: 1,
+        done: true,
+      };
+    },
+  };
 }
-
 export function useExport<Q extends DocumentInput, V extends AnyVariables>(
   args: Omit<
     ExportDataArgs<Q, V>,
@@ -150,9 +176,10 @@ export function useExport<Q extends DocumentInput, V extends AnyVariables>(
   },
 ) {
   const isExporting = ref(false);
+  const progress = ref(0);
   const { client } = useClientHandle();
 
-  const _exportData = async () =>
+  const _exportData = () =>
     exportData({
       ...args,
       client,
@@ -163,24 +190,51 @@ export function useExport<Q extends DocumentInput, V extends AnyVariables>(
 
   return {
     isExporting,
+    exportProgress: progress,
     exportData: async () => {
+      if (isExporting.value) {
+        return;
+      }
+      progress.value = 0;
       isExporting.value = true;
-      return _exportData().finally(() => {
-        isExporting.value = false;
-      });
+      let lastData;
+      for await (const d of _exportData()) {
+        progress.value = d.progress;
+        lastData = d;
+      }
+      isExporting.value = false;
+      return lastData;
     },
     exportDataAndWriteNewXLSX: async () => {
+      if (isExporting.value) {
+        return;
+      }
+      progress.value = 0;
       isExporting.value = true;
       const workbook = XLSX.utils.book_new();
-      return _exportData()
-        .then(async (args) => {
-          XLSX.utils.book_append_sheet(workbook, args.worksheet);
-          await XLSX.writeFile(workbook, args.fileName);
-          return args;
-        })
-        .finally(() => {
-          isExporting.value = false;
-        });
+      let data;
+      for await (const d of _exportData()) {
+        progress.value = Math.min(d.progress, 0.99);
+        if (d.worksheet) {
+          data = d;
+        }
+      }
+
+      if (!data) {
+        isExporting.value = false;
+        throw new Error('No data to export');
+      }
+
+      XLSX.utils.book_append_sheet(workbook, data.worksheet);
+      await XLSX.writeFile(workbook, data.fileName);
+
+      progress.value = 1;
+
+      setTimeout(() => {
+        isExporting.value = false;
+      }, 800);
+
+      return data;
     },
   };
 }

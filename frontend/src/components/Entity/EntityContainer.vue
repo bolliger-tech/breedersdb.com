@@ -23,9 +23,9 @@
         :rows="rows"
         :loading="loading"
         :all-columns="allColumns"
-        :has-export="hasExport"
         :is-exporting="isExporting"
-        @on-export="$emit('on-export')"
+        :export-progress="exportProgress"
+        @export="onExport"
         @row-click="(row) => view(row.id)"
       >
         <template
@@ -91,8 +91,9 @@ interface EntityContainerPropsWithoutModels {
   addEntityPath?: string | MatcherLocationAsPath;
   viewEntityPathGetter: (id: number | string) => string | MatcherLocationAsPath;
   hasQrScanner?: boolean;
-  hasExport?: boolean;
+  onExport?: () => void;
   isExporting?: boolean;
+  exportProgress?: number;
 }
 
 const props = defineProps<EntityContainerPropsWithoutModels>();
@@ -113,7 +114,7 @@ const slots = defineSlots<{
 }>();
 defineEmits<{
   'scanned-qr': [data: string];
-  'on-export': [];
+  export: [];
 }>();
 
 const bodyCellSlotNames = computed(() =>

@@ -5,8 +5,7 @@
     :tabs="tabs"
     :title="title"
     :search-placeholder="searchPlaceholder"
-    :has-qr-scanner="hasQrScanner"
-    @scanned-qr="$emit('scanned-qr', $event)"
+    @scanned-qr="onScannedQr"
   >
     <template #add-button>
       <slot name="add-button">
@@ -91,7 +90,7 @@ type EntityContainerPropsWithoutModels = {
   listEntitiesPath: string | MatcherLocationAsPath;
   addEntityPath?: string | MatcherLocationAsPath;
   viewEntityPathGetter: (id: number | string) => string | MatcherLocationAsPath;
-  hasQrScanner?: boolean;
+  onScannedQr?: (data: string) => void;
 } & EntityExportButtonProps;
 
 const props = defineProps<EntityContainerPropsWithoutModels>();

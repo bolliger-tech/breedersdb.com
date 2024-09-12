@@ -31,7 +31,8 @@
     "quircs-wasm": "^0.1.1",
     "vue": "^3.4.18",
     "vue-i18n": "^9.2.2",
-    "vue-router": "^4.0.12"
+    "vue-router": "^4.0.12",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.12.10",

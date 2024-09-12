@@ -6,7 +6,7 @@ import {
   type DocumentInput,
   type Client,
 } from '@urql/vue';
-import type { EntityListTableColum } from 'src/components/Entity/List/EntityListTable.vue';
+import type { EntityListTableColum } from 'src/components/Entity/List/types';
 import type { ResultOf } from 'src/graphql';
 
 type FetchAllPagesArgs<Q extends DocumentInput, V extends AnyVariables> = {

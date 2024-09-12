@@ -134,13 +134,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import {
-  QSelectSlots,
-  QTable,
-  QTableColumn,
-  QTableProps,
-  QTableSlots,
-} from 'quasar';
+import type { QSelectSlots, QTable, QTableProps, QTableSlots } from 'quasar';
 import EntityListTableColumnSelector from './EntityListTableColumnSelector.vue';
 import EntityListTableHeaderCell from './EntityListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -148,17 +142,12 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import EntityExportButton from 'src/components/Entity/EntityExportButton.vue';
 import type { EntityExportButtonProps } from 'src/components/Entity/EntityExportButton.vue';
+import { EntityListTableColum } from './types';
 
 export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
   pagination?: QTableProps['pagination'];
   visibleColumns: string[];
 }
-
-export type EntityListTableColum = Omit<QTableColumn, 'sort'> & {
-  maxWidth?: string;
-  ellipsis?: boolean;
-  timestamp?: boolean;
-};
 
 type EntityListTablePropsWithoutModel = {
   rows: QTableProps['rows'];

@@ -220,23 +220,26 @@ const {
   variables,
 });
 
+const fixDataRowKeys = (row: AnalyzeResultEntityRow) => {
+  // replace double underscores (which were added for graphql
+  // compatibility) with dots so the columns have the same name as in
+  // `prop.availableColumns`
+  // e.g. `plants__plant_rows__name` -> `plants.plant_rows.name`
+  const entries = Object.entries(row);
+  const renamed = entries.map(([key, value]) => [
+    key.replaceAll('__', '.'),
+    value,
+  ]);
+  return Object.fromEntries(renamed);
+};
+
 const rows = computed(() => {
   if (!data?.value) {
     return [];
   }
-
-  return data.value[props.baseTable].map((row) => {
-    // replace double underscores (which were added for graphql
-    // compatibility) with dots so the columns have the same name as in
-    // `prop.availableColumns`
-    // e.g. `plants__plant_rows__name` -> `plants.plant_rows.name`
-    const entries = Object.entries(row);
-    const renamed = entries.map(([key, value]) => [
-      key.replaceAll('__', '.'),
-      value,
-    ]);
-    return Object.fromEntries(renamed) as AnalyzeResultTableProps['rows'][0];
-  });
+  return data.value[props.baseTable].map(
+    fixDataRowKeys,
+  ) as AnalyzeResultTableProps['rows'][0][];
 });
 
 const error = computed(() => refreshError || queryError.value);
@@ -255,56 +258,42 @@ watch(
 
 import { UnnestArgs, useExport } from 'src/composables/useExport';
 
-function unnestAttributes({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
-  // keys in data that point to arrays of attributes
-  const attributeColumnNames = visibleColumns.value.filter((col) =>
+function unnestAttributions({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
+  // keys in data that point to arrays of attributions
+  const attributionsColumnNames = visibleColumns.value.filter((col) =>
     col.startsWith('attributes.'),
   );
-
-  const attributeColumns = [
-    'id',
-    'attribution_form_id',
-    'attribute_name',
-    'date_attributed',
-    'created',
-    'author',
-    'exceptional_attribution',
-    'text_note',
-    'photo_note',
-  ];
 
   const dataUnnested: ({
     [key: string]: string | number | boolean | Date | null;
   } & {
-    [key: `attribute__${string}`]: string | number | boolean | Date | null;
+    [key: `attribution__${string}`]: string | number | boolean | Date | null;
   })[] = [];
   for (const _row of data) {
     // replace double underscores (which were added for graphql)
-    const row = Object.fromEntries(
-      Object.entries(_row).map(([key, value]) => [
-        key !== '__typename' ? key.replaceAll('__', '.') : key,
-        value,
-      ]),
-    ) as { [key: `${string}`]: AnalyzeResultEntityField } & {
+    const row = fixDataRowKeys(_row) as {
+      [key: `${string}`]: AnalyzeResultEntityField;
+    } & {
       [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[];
     };
 
-    // copy of row without attributes
-    const rowWithoutAttributes = Object.fromEntries(
+    // copy of row without attributions
+    const rowWithoutAttributions = Object.fromEntries(
       Object.entries(row).filter(
-        ([key]) => !attributeColumnNames.includes(key),
+        ([key]) => !attributionsColumnNames.includes(key),
       ),
     ) as { [key: string]: AnalyzeResultEntityField };
 
-    // unnest all attributes
-    let attributeFound = false;
-    for (const attributeColumnName of attributeColumnNames) {
-      const attributes = row[attributeColumnName as `attributes.${number}`];
-      if (Array.isArray(attributes)) {
-        for (const attribute of attributes) {
-          attributeFound = true;
+    // unnest all attributions
+    let attributionFound = false;
+    for (const attributionColumnName of attributionsColumnNames) {
+      const attributions = row[attributionColumnName as `attributes.${number}`];
+      if (Array.isArray(attributions)) {
+        for (const attribution of attributions) {
+          attributionFound = true;
 
           // parse value
+          // must be done here because column format can only return string
           const valueKey = (
             [
               'text_value',
@@ -313,42 +302,121 @@ function unnestAttributes({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
               'boolean_value',
               'date_value',
             ] as (keyof AnalyzeAttributionsViewFields)[]
-          ).find((key) => attribute[key] !== null);
-          const value = !valueKey
-            ? null
-            : valueKey === 'date_value' && attribute[valueKey] !== null
-              ? new Date(attribute[valueKey] as string)
-              : attribute[valueKey];
+          ).find((key) => attribution[key] !== null);
+          const value =
+            !valueKey || !(valueKey in attribution) || !attribution[valueKey]
+              ? null
+              : valueKey === 'date_value'
+                ? new Date(attribution[valueKey] as string)
+                : valueKey === 'boolean_value'
+                  ? !!attribution[valueKey]
+                  : attribution[valueKey];
 
-          // prefix all keys with attribute__
-          const attributeWithPrefixedKeys = {
+          // filter and prefix keys with attribution__
+          const attributionWithPrefixedKeys = {
             ...Object.fromEntries(
-              Object.entries(attribute)
-                .filter(([key]) => attributeColumns.includes(key))
-                .map(([key, value]) => [`attribute__${key}`, value]),
+              Object.entries(attribution)
+                .filter(([key]) =>
+                  [
+                    'id',
+                    'attribution_form_id',
+                    'attribute_id',
+                    'attribute_name',
+                    'date_attributed',
+                    'created',
+                    'author',
+                    'exceptional_attribution',
+                    'text_note',
+                    'photo_note',
+                    'data_type',
+                  ].includes(key),
+                )
+                .map(([key, value]) => [`attribution__${key}`, value]),
             ),
-            ...{ attribute__value: value },
+            ...{ attribution__value: value },
           };
           dataUnnested.push({
-            ...rowWithoutAttributes,
-            ...attributeWithPrefixedKeys,
+            ...rowWithoutAttributions,
+            ...attributionWithPrefixedKeys,
           });
         }
       }
     }
-    if (!attributeFound) {
-      dataUnnested.push(rowWithoutAttributes);
+    if (!attributionFound) {
+      dataUnnested.push(rowWithoutAttributions);
     }
   }
   return {
     data: dataUnnested,
     visibleColumns: [
-      ...visibleColumns.value.filter((c) => !attributeColumnNames.includes(c)),
-      'attribute__author',
-      'attribute__value',
+      ...visibleColumns.value.filter(
+        (c) => !attributionsColumnNames.includes(c),
+      ),
+      ...attributionsExportColums.map((c) => c.name),
     ],
   };
 }
+
+const attributionsExportColums = [
+  {
+    name: 'attribution__id',
+    field: 'attribution__id',
+    label: t('attributions.columns.id'),
+  },
+  {
+    name: 'attribution__attribution_form_id',
+    field: 'attribution__attribution_form_id',
+    label: t('attributions.columns.attributionFormId'),
+  },
+  {
+    name: 'attribution__attribute_id',
+    field: 'attribution__attribute_id',
+    label: t('attributions.columns.attributeId'),
+  },
+  {
+    name: 'attribution__attribute_name',
+    field: 'attribution__attribute_name',
+    label: t('attributions.columns.attributeName'),
+  },
+  {
+    name: 'attribution__date_attributed',
+    field: 'attribution__date_attributed',
+    label: t('attributions.columns.dateAttributed'),
+  },
+  {
+    name: 'attribution__date_created',
+    field: 'attribution__date_created',
+    label: t('attributions.columns.dateCreated'),
+  },
+  {
+    name: 'attribution__author',
+    field: 'attribution__author',
+    label: t('attributions.columns.author'),
+  },
+  {
+    name: 'attribution__exceptional_attribution',
+    field: 'attribution__exceptional_attribution',
+    label: t('attributions.columns.exceptionalAttribution'),
+  },
+  {
+    name: 'attribution__value',
+    field: 'attribution__value',
+    label: t('attributions.columns.value'),
+  },
+  {
+    name: 'attribution__text_note',
+    field: 'attribution__text_note',
+    label: t('attributions.columns.textNote'),
+  },
+  {
+    name: 'attribution__photo_note',
+    field: 'attribution__photo_note',
+    label: t('attributions.columns.photoNote'),
+  },
+].map((c) => ({
+  ...c,
+  label: `${t('attributions.exportPrefix')} > ${c.label}`,
+}));
 
 const { exportDataAndWriteNewXLSX, isExporting, exportProgress } = useExport<
   AnalyzeResultEntityRow,
@@ -361,23 +429,14 @@ const { exportDataAndWriteNewXLSX, isExporting, exportProgress } = useExport<
   visibleColumns,
   columns: computed(() => [
     ...props.availableColumns,
-    {
-      name: 'attribute__author',
-      label: 'attribute > author',
-      field: 'attribute__author',
-    },
-    {
-      name: 'attribute__value',
-      label: 'attribute > value',
-      field: 'attribute__value',
-    },
+    ...attributionsExportColums,
   ]),
   title: t('analyze.result.title', 2),
-  unnestFn: ({ data }) => unnestAttributes({ data }),
+  unnestFn: ({ data }) => unnestAttributions({ data }),
 });
 
 async function onExport() {
   const result = await exportDataAndWriteNewXLSX();
-  console.log('Exported', result);
+  console.log('Exported:', result);
 }
 </script>

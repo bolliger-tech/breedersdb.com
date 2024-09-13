@@ -258,7 +258,7 @@ watch(
 
 import {
   ExportDataValue,
-  UnnestArgs,
+  TransformDataArgs,
   useExport,
 } from 'src/composables/useExport';
 import { CellObject } from 'xlsx';
@@ -275,7 +275,7 @@ const getPublicImageUrl = (fileName: string) =>
 function unnestAttributions({
   data,
   visibleColumns,
-}: UnnestArgs<AnalyzeResultEntityRow>) {
+}: TransformDataArgs<AnalyzeResultEntityRow>) {
   // keys in data that point to arrays of attributions
   const attributionsColumnNames = visibleColumns.filter((col) =>
     col.startsWith('attributes.'),
@@ -472,7 +472,7 @@ const { exportDataAndWriteNewXLSX, isExporting, exportProgress } = useExport<
     ...attributionsExportColums,
   ]),
   title: t('analyze.result.title', 2),
-  unnestFn: (args) => unnestAttributions(args),
+  transformDataFn: unnestAttributions,
 });
 
 async function onExport() {

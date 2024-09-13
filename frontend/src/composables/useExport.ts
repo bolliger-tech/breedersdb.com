@@ -55,27 +55,27 @@ export type ExportDataValue =
   | XLSX.CellObject
   | null;
 
-export type UnnestArgs<T> = {
+export type TransformDataArgs<T> = {
   data: Array<T>;
   visibleColumns: string[];
 };
 
-export type UnnestResult = {
+export type TransformDataResult = {
   data: Record<string, ExportDataValue>[];
   visibleColumns: string[];
 };
 
-type TransformArgs<T, C extends EntityListTableColum> = {
+type FormatXlsxRowsWithColumns<T, C extends EntityListTableColum> = {
   result: T;
   columns: C[];
   visibleColumns: string[];
 };
 
-export function transformWithColumns<T, C extends EntityListTableColum>({
+export function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
   result,
   columns,
   visibleColumns,
-}: TransformArgs<T, C>) {
+}: FormatXlsxRowsWithColumns<T, C>) {
   return columns
     .filter((column) => visibleColumns.includes(column.name))
     .reduce(
@@ -90,8 +90,9 @@ export function transformWithColumns<T, C extends EntityListTableColum>({
             ? null
             : typeof value === 'object' && 't' in value && 'v' in value // is a cell object
               ? value
-              : column.name.startsWith('date_') ||
-                  ['modified', 'created'].includes(column.name)
+              : (column.name.startsWith('date_') ||
+                    ['modified', 'created'].includes(column.name)) &&
+                  typeof value === 'string'
                 ? new Date(value as string | Date)
                 : 'format' in column && column.format
                   ? column.format(value as T[keyof T], result)
@@ -103,7 +104,7 @@ export function transformWithColumns<T, C extends EntityListTableColum>({
         };
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      {} as Record<EntityListTableColum['label'], any>,
+      {} as Record<'string', ExportDataValue>,
     );
 }
 
@@ -113,11 +114,13 @@ type ExportDataArgs<
   V extends AnyVariables,
   C extends EntityListTableColum = EntityListTableColum,
 > = FetchAllPagesArgs<Q, V> &
-  Omit<TransformArgs<ResultOf<Q>, C>, 'result'> & {
+  Omit<FormatXlsxRowsWithColumns<ResultOf<Q>, C>, 'result'> & {
     title: string;
     subsetLabel?: string;
     sheetName?: string;
-    unnestFn?: (args: UnnestArgs<T>) => UnnestResult | undefined;
+    transformDataFn?: (
+      args: TransformDataArgs<T>,
+    ) => TransformDataResult | undefined;
   };
 
 export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
@@ -129,7 +132,7 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
   columns,
   title,
   subsetLabel = 'All',
-  unnestFn,
+  transformDataFn,
 }: ExportDataArgs<T, Q, V>) {
   return {
     async *[Symbol.asyncIterator]() {
@@ -153,29 +156,31 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
         };
       }
 
-      // unnest
-      const unnestResult =
-        unnestFn && unnestFn({ data: fetchedData, visibleColumns });
+      // transform (eg. unnest)
+      const transformResult =
+        transformDataFn &&
+        transformDataFn({ data: fetchedData, visibleColumns });
 
       yield {
         fetchedData,
-        unnestResult,
+        transformResult,
         progress: 0.9,
         done: false,
       };
 
       // transform
-      const formattedData = (unnestResult?.data || fetchedData).map((result) =>
-        transformWithColumns({
-          result,
-          columns,
-          visibleColumns: unnestResult?.visibleColumns || visibleColumns,
-        }),
+      const formattedData = (transformResult?.data || fetchedData).map(
+        (result) =>
+          formatXlsxRowsWithColumns({
+            result,
+            columns,
+            visibleColumns: transformResult?.visibleColumns || visibleColumns,
+          }),
       );
 
       yield {
         fetchedData,
-        unnestResult,
+        transformResult,
         formattedData,
         progress: 0.95,
         done: false,
@@ -194,7 +199,7 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
 
       yield {
         fetchedData,
-        unnestResult,
+        transformResult,
         formattedData,
         fileName,
         worksheet,

@@ -51,8 +51,16 @@ export type UnnestArgs<T> = {
   data: Array<T>;
 };
 
+export type ExportDataValue =
+  | string
+  | number
+  | boolean
+  | Date
+  | XLSX.CellObject
+  | null;
+
 export type UnnestResult = {
-  data: Record<string, unknown>[];
+  data: Record<string, ExportDataValue>[];
   visibleColumns: string[];
 };
 
@@ -79,12 +87,14 @@ export function transformWithColumns<T, C extends EntityListTableColum>({
         const formattedValue =
           value === null || value === undefined || value === ''
             ? null
-            : column.name.startsWith('date_') ||
-                ['modified', 'created'].includes(column.name)
-              ? new Date(value as string)
-              : 'format' in column && column.format
-                ? column.format(value as T[keyof T], result)
-                : value; // can be anything
+            : typeof value === 'object' && 't' in value && 'v' in value // is a cell object
+              ? value
+              : column.name.startsWith('date_') ||
+                  ['modified', 'created'].includes(column.name)
+                ? new Date(value as string | Date)
+                : 'format' in column && column.format
+                  ? column.format(value as T[keyof T], result)
+                  : value; // should be: string | boolean | number | Date
 
         return {
           ...row,

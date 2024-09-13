@@ -227,7 +227,7 @@ const fixDataRowKeys = (row: AnalyzeResultEntityRow) => {
   // e.g. `plants__plant_rows__name` -> `plants.plant_rows.name`
   const entries = Object.entries(row);
   const renamed = entries.map(([key, value]) => [
-    key.replaceAll('__', '.'),
+    key === '__typename' ? key : key.replaceAll('__', '.'),
     value,
   ]);
   return Object.fromEntries(renamed);
@@ -256,8 +256,22 @@ watch(
   { immediate: true },
 );
 
-import { UnnestArgs, useExport } from 'src/composables/useExport';
+import {
+  ExportDataValue,
+  UnnestArgs,
+  useExport,
+} from 'src/composables/useExport';
+import { CellObject } from 'xlsx';
 
+const getPublicImageUrl = (fileName: string) =>
+  `${window.location.origin}/api/assets/images/${fileName}?file=${fileName}`;
+
+// unnests attributions and parse for export
+// eg. { id: 1, label_id: "123", attributes: [{ id: 1, text_value: "a" }, { id: 2, boolean_value: true }] }
+// -> [
+//     { id: 1, label_id: "123", attribution__id: 1, attribution__value: "a" },
+//     { id: 1, label_id: "123", attribution__id: 2, attribution__value: true }
+// ]
 function unnestAttributions({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
   // keys in data that point to arrays of attributions
   const attributionsColumnNames = visibleColumns.value.filter((col) =>
@@ -265,9 +279,9 @@ function unnestAttributions({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
   );
 
   const dataUnnested: ({
-    [key: string]: string | number | boolean | Date | null;
+    [key: string]: ExportDataValue;
   } & {
-    [key: `attribution__${string}`]: string | number | boolean | Date | null;
+    [key: `attribution__${string}`]: ExportDataValue;
   })[] = [];
   for (const _row of data) {
     // replace double underscores (which were added for graphql)
@@ -292,8 +306,11 @@ function unnestAttributions({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
         for (const attribution of attributions) {
           attributionFound = true;
 
-          // parse value
-          // must be done here because column format can only return string
+          // serialize value
+          // must be done here because (column.format can only return string)
+          // either value is a sheetjs cell ({ t:"s", v:"a string" }) or
+          // string | number | boolean | Date | null which is then parsed by
+          // sheetjs.json_to_sheet
           const valueKey = (
             [
               'text_value',
@@ -311,32 +328,43 @@ function unnestAttributions({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
                 : valueKey === 'boolean_value'
                   ? !!attribution[valueKey]
                   : attribution.data_type === 'PHOTO'
-                    ? getPublicImageUrl(attribution[valueKey] as string)
+                    ? ({
+                        t: 's',
+                        v: attribution[valueKey] as string, // TODO image name?
+                        l: {
+                          Target: getPublicImageUrl(
+                            attribution[valueKey] as string,
+                          ),
+                        },
+                      } as CellObject)
                     : attribution[valueKey];
 
-          // filter and prefix keys with attribution__
+          // prefix keys with attribution__
+          // serialize column values
+          // add attribution__value
           const attributionWithPrefixedKeys = {
             ...Object.fromEntries(
-              Object.entries(attribution)
-                .filter(([key]) =>
-                  [
-                    'id',
-                    'attribution_form_id',
-                    'attribute_id',
-                    'attribute_name',
-                    'date_attributed',
-                    'created',
-                    'author',
-                    'exceptional_attribution',
-                    'text_note',
-                    'photo_note',
-                    'data_type',
-                  ].includes(key),
-                )
-                .map(([key, value]) => [`attribution__${key}`, value]),
+              Object.entries(attribution).map(([k, v]) => [
+                `attribution__${k}`,
+                !v
+                  ? v
+                  : k === 'photo_note'
+                    ? {
+                        t: 's',
+                        v: v as string, // TODO image name?
+                        l: {
+                          Target: getPublicImageUrl(value as string),
+                        },
+                      }
+                    : k === 'date_attributed' || k === 'created'
+                      ? new Date(v as string)
+                      : v,
+              ]),
             ),
             ...{ attribution__value: value },
           };
+
+          // add row with unnested attribution
           dataUnnested.push({
             ...rowWithoutAttributions,
             ...attributionWithPrefixedKeys,
@@ -358,9 +386,6 @@ function unnestAttributions({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
     ],
   };
 }
-
-const getPublicImageUrl = (fileName: string) =>
-  `${import.meta.env.VITE_PUBLIC_URL}/api/assets/images/${fileName}?file=${fileName}`;
 
 const attributionsExportColums = [
   {
@@ -389,8 +414,8 @@ const attributionsExportColums = [
     label: t('attributions.columns.dateAttributed'),
   },
   {
-    name: 'attribution__date_created',
-    field: 'attribution__date_created',
+    name: 'attribution__created',
+    field: 'attribution__created',
     label: t('attributions.columns.dateCreated'),
   },
   {
@@ -417,7 +442,6 @@ const attributionsExportColums = [
     name: 'attribution__photo_note',
     field: 'attribution__photo_note',
     label: t('attributions.columns.photoNote'),
-    format: (value: string) => getPublicImageUrl(value),
   },
 ].map((c) => ({
   ...c,

@@ -235,7 +235,9 @@ describe('AnalyzePage', () => {
 
       await vi.waitUntil(
         // because we set the value with watch in the component
-        () => wrapper.get('[data-test="variables"]').text().length > 2,
+        () =>
+          Object.keys(JSON.parse(wrapper.get('[data-test="variables"]').text()))
+            .length > 2,
       );
 
       const queryIs = wrapper.get('[data-test="query"]').text();
@@ -243,8 +245,8 @@ describe('AnalyzePage', () => {
 
       const queryShouldBe = new RegExp(
         prepareForRegex(
-          `query CultivarsFilterResults( $v000: Int! ) {
-    cultivars(where: { _and: [ { id: { _gt: $v000 } } ] }, limit: 100, offset: 0, order_by: { id: asc }) {
+          `query CultivarsFilterResults( $v000: Int!, $limit: Int!, $offset: Int! ) {
+    cultivars(where: { _and: [ { id: { _gt: $v000 } } ] }, limit: $limit, offset: $offset, order_by: { id: asc }) {
       id
       display_name
       full_name
@@ -270,11 +272,24 @@ describe('AnalyzePage', () => {
     cultivar_id
     lot_id
     data_type
+    # only needed for export:
+    attribution_form_id
+    attribute_id
+    attribute_name
+    date_attributed
+    created
+    author
+    exceptional_attribution
+    text_note
+    photo_note
   }`,
         ).replaceAll('$v000', '$v\\d+'),
       );
       const variablesShouldBe = new RegExp(
-        prepareForRegex('{ "v000": 1 }').replace('v000', 'v\\d+'),
+        prepareForRegex('{ "v000": 1, "limit": 100, "offset": 0 }').replace(
+          'v000',
+          'v\\d+',
+        ),
       );
 
       expect(queryIs).toMatch(queryShouldBe);

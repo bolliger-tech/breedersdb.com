@@ -1,4 +1,9 @@
 {
+  "private": true,
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json,yaml,yml}\"",
+    "prepare": "husky"
+  },
   "devDependencies": {
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
@@ -6,10 +11,5 @@
   },
   "lint-staged": {
     "**/*.{js,ts,vue,scss,html,md,json,yaml,yml}": "prettier --write --ignore-unknown"
-  },
-  "private": true,
-  "scripts": {
-    "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json,yaml,yml}\"",
-    "prepare": "husky"
   }
 }

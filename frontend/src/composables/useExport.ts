@@ -161,6 +161,7 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
         transformDataFn &&
         transformDataFn({ data: fetchedData, visibleColumns });
 
+      // intermidiate data (fetchedData, etc.) could be removed to save memory
       yield {
         fetchedData,
         transformResult,

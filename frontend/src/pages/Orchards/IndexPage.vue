@@ -25,7 +25,7 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
-import { UnwrapRef, computed, ref, watch } from 'vue';
+import { UnwrapRef, computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
@@ -140,7 +140,7 @@ const {
   exportProgress,
 } = useExport({
   entityName: 'orchards',
-  query: ref(query),
+  query: computed(() => query),
   variables,
   visibleColumns,
   columns,

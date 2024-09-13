@@ -310,7 +310,9 @@ function unnestAttributions({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
                 ? new Date(attribution[valueKey] as string)
                 : valueKey === 'boolean_value'
                   ? !!attribution[valueKey]
-                  : attribution[valueKey];
+                  : attribution.data_type === 'PHOTO'
+                    ? getPublicImageUrl(attribution[valueKey] as string)
+                    : attribution[valueKey];
 
           // filter and prefix keys with attribution__
           const attributionWithPrefixedKeys = {
@@ -356,6 +358,9 @@ function unnestAttributions({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
     ],
   };
 }
+
+const getPublicImageUrl = (fileName: string) =>
+  `${import.meta.env.VITE_PUBLIC_URL}/api/assets/images/${fileName}?file=${fileName}`;
 
 const attributionsExportColums = [
   {
@@ -412,6 +417,7 @@ const attributionsExportColums = [
     name: 'attribution__photo_note',
     field: 'attribution__photo_note',
     label: t('attributions.columns.photoNote'),
+    format: (value: string) => getPublicImageUrl(value),
   },
 ].map((c) => ({
   ...c,

@@ -14,6 +14,9 @@
       list-entities-path="/orchards"
       add-entity-path="/orchards/new"
       :view-entity-path-getter="(id) => `/orchards/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -22,7 +25,7 @@
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
-import { UnwrapRef, computed, watch } from 'vue';
+import { UnwrapRef, computed, ref, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
@@ -30,6 +33,7 @@ import { orchardFragment } from 'src/components/Orchard/orchardFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -117,4 +121,25 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'orchards',
+  query: ref(query),
+  variables,
+  visibleColumns: computed(() => [...visibleColumns.value, 'disabled']),
+  columns: computed(() => [
+    ...columns,
+    {
+      name: 'disabled',
+      label: t('entity.commonColumns.disabled'),
+      field: 'disabled',
+    },
+  ]),
+  title: t('orchards.title', 2),
+  subsetLabel: tabs.find((t) => t.value === subset.value)?.label,
+});
 </script>

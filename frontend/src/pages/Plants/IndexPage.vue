@@ -324,6 +324,8 @@ const {
   visibleColumns,
   columns,
   title: t('plants.title', 2),
-  subsetLabel: tabs.find((t) => t.value === subset.value)?.label,
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
 });
 </script>

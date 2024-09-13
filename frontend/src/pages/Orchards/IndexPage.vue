@@ -88,7 +88,7 @@ const orchardsCount = computed(
   () => data.value?.orchards_aggregate?.aggregate?.count || 0,
 );
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'name',
     label: t('entity.commonColumns.name'),
@@ -96,12 +96,24 @@ const columns = [
     field: 'name',
     sortable: true,
   },
+  ...(subset.value === 'all'
+    ? [
+        {
+          name: 'disabled',
+          label: t('entity.commonColumns.disabled'),
+          field: 'disabled',
+          sortable: true,
+        },
+      ]
+    : []),
   ...useTimestampColumns(),
-];
+]);
 
 const { visibleColumns } = useEntityTableColumns({
   entityType: 'orchards',
-  defaultColumns: columns.map((column) => column.name),
+  defaultColumns: columns.value
+    .map((column) => column.name)
+    .filter((name) => subset.value === 'all' || name !== 'disabled'),
 });
 
 watch(
@@ -130,16 +142,11 @@ const {
   entityName: 'orchards',
   query: ref(query),
   variables,
-  visibleColumns: computed(() => [...visibleColumns.value, 'disabled']),
-  columns: computed(() => [
-    ...columns,
-    {
-      name: 'disabled',
-      label: t('entity.commonColumns.disabled'),
-      field: 'disabled',
-    },
-  ]),
+  visibleColumns,
+  columns,
   title: t('orchards.title', 2),
-  subsetLabel: tabs.find((t) => t.value === subset.value)?.label,
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
 });
 </script>

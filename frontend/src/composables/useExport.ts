@@ -212,12 +212,18 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
 export function useExport<T, Q extends DocumentInput, V extends AnyVariables>(
   args: Omit<
     ExportDataArgs<T, Q, V>,
-    'client' | 'query' | 'variables' | 'columns' | 'visibleColumns'
+    | 'client'
+    | 'query'
+    | 'variables'
+    | 'columns'
+    | 'visibleColumns'
+    | 'subsetLabel'
   > & {
     query: Ref<Q>;
     variables: Ref<V>;
     columns: Ref<ExportDataArgs<T, Q, V>['columns']>;
     visibleColumns: Ref<ExportDataArgs<T, Q, V>['visibleColumns']>;
+    subsetLabel?: Ref<string | undefined>;
   },
 ) {
   const isExporting = ref(false);
@@ -235,6 +241,7 @@ export function useExport<T, Q extends DocumentInput, V extends AnyVariables>(
       variables: args.variables.value,
       columns: args.columns.value,
       visibleColumns: args.visibleColumns.value,
+      subsetLabel: args.subsetLabel?.value,
     })) {
       progress.value = Math.min(d.progress, 0.99);
       if (d.worksheet) {

@@ -313,7 +313,11 @@ const {
   exportDataAndWriteNewXLSX: onExport,
   isExporting,
   exportProgress,
-} = useExport({
+} = useExport<
+  ResultOf<typeof query>['plants'][0],
+  typeof query,
+  typeof variables.value
+>({
   entityName: 'plants',
   query: ref(query),
   variables,

@@ -10,11 +10,14 @@ import { toPascalCase, toSnakeCase } from 'src/utils/stringUtils';
 import type { AttributeDataTypes } from 'src/graphql';
 import { singularize } from 'src/utils/stringUtils';
 
+export type AnalyzeResultEntityField = null | number | string;
+
+export type AnalyzeResultEntityRow = {
+  [key: string]: AnalyzeResultEntityField;
+} & { [key: `attributes__${number}`]: AnalyzeAttributionsViewFields[] };
+
 export type AnalyzeResult = {
-  [K in BaseTable]: (
-    | { [key: string]: null | number | string }
-    | { [key: `attributes__${number}`]: AnalyzeAttributionsViewFields[] }
-  )[];
+  [K in BaseTable]: AnalyzeResultEntityRow[];
 } & { [K in `${BaseTable}_aggregate`]: { aggregate: { count: number } } };
 
 export type AnalyzeResultPagination = {

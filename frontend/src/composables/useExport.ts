@@ -47,7 +47,16 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
   };
 }
 
-type TransformToColumnArgs<T, C extends EntityListTableColum> = {
+export type UnnestArgs<T> = {
+  data: Array<T>;
+};
+
+export type UnnestResult = {
+  data: Record<string, unknown>[];
+  visibleColumns: string[];
+};
+
+type TransformArgs<T, C extends EntityListTableColum> = {
   result: T;
   columns: C[];
   visibleColumns: string[];
@@ -57,7 +66,7 @@ export function transformWithColumns<T, C extends EntityListTableColum>({
   result,
   columns,
   visibleColumns,
-}: TransformToColumnArgs<T, C>) {
+}: TransformArgs<T, C>) {
   return columns
     .filter((column) => visibleColumns.includes(column.name))
     .reduce(
@@ -87,31 +96,20 @@ export function transformWithColumns<T, C extends EntityListTableColum>({
     );
 }
 
-export type UnnestArgs<T, C extends EntityListTableColum> = {
-  data: T[];
-  visibleColumns: string[];
-  columns: C[];
-};
-
-export type UnnestResult = {
-  data: Record<string, unknown>[];
-  visibleColumns: string[];
-  columns: EntityListTableColum[];
-};
-
 type ExportDataArgs<
+  T,
   Q extends DocumentInput,
   V extends AnyVariables,
   C extends EntityListTableColum = EntityListTableColum,
 > = FetchAllPagesArgs<Q, V> &
-  Omit<TransformToColumnArgs<ResultOf<Q>, C>, 'result'> & {
+  Omit<TransformArgs<ResultOf<Q>, C>, 'result'> & {
     title: string;
     subsetLabel?: string;
     sheetName?: string;
-    unnestFn?: (args: UnnestArgs<ResultOf<Q>, C>) => UnnestResult | undefined;
+    unnestFn?: (args: UnnestArgs<T>) => UnnestResult | undefined;
   };
 
-export function exportData<Q extends DocumentInput, V extends AnyVariables>({
+export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
   client,
   entityName,
   query,
@@ -121,11 +119,11 @@ export function exportData<Q extends DocumentInput, V extends AnyVariables>({
   title,
   subsetLabel = 'All',
   unnestFn,
-}: ExportDataArgs<Q, V>) {
+}: ExportDataArgs<T, Q, V>) {
   return {
     async *[Symbol.asyncIterator]() {
       // fetch
-      const fetchedData = [];
+      const fetchedData: T[] = [];
       let totalItems = 0;
       for await (const data of fetchAllData({
         client,
@@ -145,28 +143,27 @@ export function exportData<Q extends DocumentInput, V extends AnyVariables>({
       }
 
       // unnest
-      const unnestedData =
-        unnestFn && unnestFn({ data: fetchedData, visibleColumns, columns });
+      const unnestResult = unnestFn && unnestFn({ data: fetchedData });
 
       yield {
         fetchedData,
-        unnestedData,
+        unnestResult,
         progress: 0.9,
         done: false,
       };
 
       // transform
-      const formattedData = (unnestedData?.data || fetchedData).map((result) =>
+      const formattedData = (unnestResult?.data || fetchedData).map((result) =>
         transformWithColumns({
           result,
-          columns: unnestedData?.columns || columns,
-          visibleColumns: unnestedData?.visibleColumns || visibleColumns,
+          columns,
+          visibleColumns: unnestResult?.visibleColumns || visibleColumns,
         }),
       );
 
       yield {
         fetchedData,
-        unnestedData,
+        unnestResult,
         formattedData,
         progress: 0.95,
         done: false,
@@ -185,7 +182,7 @@ export function exportData<Q extends DocumentInput, V extends AnyVariables>({
 
       yield {
         fetchedData,
-        unnestedData,
+        unnestResult,
         formattedData,
         fileName,
         worksheet,
@@ -195,30 +192,40 @@ export function exportData<Q extends DocumentInput, V extends AnyVariables>({
     },
   };
 }
-export function useExport<Q extends DocumentInput, V extends AnyVariables>(
+export function useExport<T, Q extends DocumentInput, V extends AnyVariables>(
   args: Omit<
-    ExportDataArgs<Q, V>,
+    ExportDataArgs<T, Q, V>,
     'client' | 'query' | 'variables' | 'columns' | 'visibleColumns'
   > & {
     query: Ref<Q>;
     variables: Ref<V>;
-    columns: Ref<ExportDataArgs<Q, V>['columns']>;
-    visibleColumns: Ref<ExportDataArgs<Q, V>['visibleColumns']>;
+    columns: Ref<ExportDataArgs<T, Q, V>['columns']>;
+    visibleColumns: Ref<ExportDataArgs<T, Q, V>['visibleColumns']>;
   },
 ) {
   const isExporting = ref(false);
   const progress = ref(0);
   const { client } = useClientHandle();
 
-  const _exportData = () =>
-    exportData({
+  const _exportData = async () => {
+    progress.value = 0;
+    isExporting.value = true;
+    let lastData;
+    for await (const d of exportData({
       ...args,
       client,
       query: args.query.value,
       variables: args.variables.value,
       columns: args.columns.value,
       visibleColumns: args.visibleColumns.value,
-    });
+    })) {
+      progress.value = Math.min(d.progress, 0.99);
+      if (d.worksheet) {
+        lastData = d;
+      }
+    }
+    return lastData;
+  };
 
   return {
     isExporting,
@@ -227,41 +234,26 @@ export function useExport<Q extends DocumentInput, V extends AnyVariables>(
       if (isExporting.value) {
         return;
       }
-      progress.value = 0;
-      isExporting.value = true;
-      let lastData;
-      for await (const d of _exportData()) {
-        progress.value = d.progress;
-        lastData = d;
-      }
+      const data = await _exportData();
+      progress.value = 1;
       isExporting.value = false;
-      return lastData;
+      return data;
     },
     exportDataAndWriteNewXLSX: async () => {
       if (isExporting.value) {
         return;
       }
-      progress.value = 0;
-      isExporting.value = true;
-      const workbook = XLSX.utils.book_new();
-      let data;
-      for await (const d of _exportData()) {
-        progress.value = Math.min(d.progress, 0.99);
-        if (d.worksheet) {
-          data = d;
-        }
-      }
-
+      const data = await _exportData();
       if (!data) {
         isExporting.value = false;
         throw new Error('No data to export');
       }
 
+      const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, data.worksheet);
       await XLSX.writeFile(workbook, data.fileName);
 
       progress.value = 1;
-
       setTimeout(() => {
         isExporting.value = false;
       }, 800);

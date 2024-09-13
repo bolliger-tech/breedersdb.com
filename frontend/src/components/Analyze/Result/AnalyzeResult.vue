@@ -39,7 +39,13 @@ import AnalyzeResultTable, {
   AnalyzeResultTableProps,
 } from 'components/Analyze/Result/AnalyzeResultTable.vue';
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
-import { AnalyzeResult, filterToQuery } from './filterToQuery';
+import {
+  AnalyzeAttributionsViewFields,
+  AnalyzeResult,
+  AnalyzeResultEntityField,
+  AnalyzeResultEntityRow,
+  filterToQuery,
+} from './filterToQuery';
 import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { type QTableColumn, useQuasar } from 'quasar';
@@ -247,18 +253,13 @@ watch(
   { immediate: true },
 );
 
-import { UnnestArgs, UnnestResult, useExport } from 'src/composables/useExport';
-import { EntityListTableColum } from 'src/components/Entity/List/types';
+import { UnnestArgs, useExport } from 'src/composables/useExport';
 
-function unnestAttributes<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends Record<string, any>,
-  C extends EntityListTableColum,
->({ data, visibleColumns, columns }: UnnestArgs<T, C>): UnnestResult {
+function unnestAttributes({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
   // keys in data that point to arrays of attributes
-  const attributeColumnNames = visibleColumns.filter((col) =>
+  const attributeColumnNames = visibleColumns.value.filter((col) =>
     col.startsWith('attributes.'),
-  ) as string[];
+  );
 
   const attributeColumns = [
     'id',
@@ -272,7 +273,11 @@ function unnestAttributes<
     'photo_note',
   ];
 
-  const dataUnnested = [];
+  const dataUnnested: ({
+    [key: string]: string | number | boolean | Date | null;
+  } & {
+    [key: `attribute__${string}`]: string | number | boolean | Date | null;
+  })[] = [];
   for (const _row of data) {
     // replace double underscores (which were added for graphql)
     const row = Object.fromEntries(
@@ -280,35 +285,39 @@ function unnestAttributes<
         key !== '__typename' ? key.replaceAll('__', '.') : key,
         value,
       ]),
-    );
+    ) as { [key: `${string}`]: AnalyzeResultEntityField } & {
+      [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[];
+    };
 
     // copy of row without attributes
     const rowWithoutAttributes = Object.fromEntries(
       Object.entries(row).filter(
         ([key]) => !attributeColumnNames.includes(key),
       ),
-    );
+    ) as { [key: string]: AnalyzeResultEntityField };
 
     // unnest all attributes
     let attributeFound = false;
     for (const attributeColumnName of attributeColumnNames) {
-      const attributes = row[attributeColumnName];
+      const attributes = row[attributeColumnName as `attributes.${number}`];
       if (Array.isArray(attributes)) {
         for (const attribute of attributes) {
           attributeFound = true;
 
           // parse value
-          const valueKey = [
-            'text_value',
-            'integer_value',
-            'float_value',
-            'boolean_value',
-            'date_value',
-          ].find((key) => attribute[key] !== null);
+          const valueKey = (
+            [
+              'text_value',
+              'integer_value',
+              'float_value',
+              'boolean_value',
+              'date_value',
+            ] as (keyof AnalyzeAttributionsViewFields)[]
+          ).find((key) => attribute[key] !== null);
           const value = !valueKey
             ? null
-            : valueKey === 'date_value'
-              ? new Date(attribute[valueKey])
+            : valueKey === 'date_value' && attribute[valueKey] !== null
+              ? new Date(attribute[valueKey] as string)
               : attribute[valueKey];
 
           // prefix all keys with attribute__
@@ -334,34 +343,37 @@ function unnestAttributes<
   return {
     data: dataUnnested,
     visibleColumns: [
-      ...visibleColumns.filter((c) => !attributeColumnNames.includes(c)),
+      ...visibleColumns.value.filter((c) => !attributeColumnNames.includes(c)),
       'attribute__author',
       'attribute__value',
-    ],
-    columns: [
-      ...columns,
-      {
-        name: 'attribute__author',
-        label: 'attribute > author',
-        field: 'attribute__author',
-      },
-      {
-        name: 'attribute__value',
-        label: 'attribute > value',
-        field: 'attribute__value',
-      },
     ],
   };
 }
 
-const { exportDataAndWriteNewXLSX, isExporting, exportProgress } = useExport({
+const { exportDataAndWriteNewXLSX, isExporting, exportProgress } = useExport<
+  AnalyzeResultEntityRow,
+  typeof query.value,
+  typeof variables.value
+>({
   entityName: props.baseTable,
   query,
   variables,
   visibleColumns,
-  columns: computed(() => props.availableColumns),
+  columns: computed(() => [
+    ...props.availableColumns,
+    {
+      name: 'attribute__author',
+      label: 'attribute > author',
+      field: 'attribute__author',
+    },
+    {
+      name: 'attribute__value',
+      label: 'attribute > value',
+      field: 'attribute__value',
+    },
+  ]),
   title: t('analyze.result.title', 2),
-  unnestFn: unnestAttributes,
+  unnestFn: ({ data }) => unnestAttributes({ data }),
 });
 
 async function onExport() {

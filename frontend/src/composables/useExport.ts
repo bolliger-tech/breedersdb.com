@@ -47,10 +47,6 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
   };
 }
 
-export type UnnestArgs<T> = {
-  data: Array<T>;
-};
-
 export type ExportDataValue =
   | string
   | number
@@ -58,6 +54,11 @@ export type ExportDataValue =
   | Date
   | XLSX.CellObject
   | null;
+
+export type UnnestArgs<T> = {
+  data: Array<T>;
+  visibleColumns: string[];
+};
 
 export type UnnestResult = {
   data: Record<string, ExportDataValue>[];
@@ -153,7 +154,8 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
       }
 
       // unnest
-      const unnestResult = unnestFn && unnestFn({ data: fetchedData });
+      const unnestResult =
+        unnestFn && unnestFn({ data: fetchedData, visibleColumns });
 
       yield {
         fetchedData,

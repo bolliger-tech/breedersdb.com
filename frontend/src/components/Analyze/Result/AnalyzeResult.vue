@@ -272,9 +272,12 @@ const getPublicImageUrl = (fileName: string) =>
 //     { id: 1, label_id: "123", attribution__id: 1, attribution__value: "a" },
 //     { id: 1, label_id: "123", attribution__id: 2, attribution__value: true }
 // ]
-function unnestAttributions({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
+function unnestAttributions({
+  data,
+  visibleColumns,
+}: UnnestArgs<AnalyzeResultEntityRow>) {
   // keys in data that point to arrays of attributions
-  const attributionsColumnNames = visibleColumns.value.filter((col) =>
+  const attributionsColumnNames = visibleColumns.filter((col) =>
     col.startsWith('attributes.'),
   );
 
@@ -379,9 +382,7 @@ function unnestAttributions({ data }: UnnestArgs<AnalyzeResultEntityRow>) {
   return {
     data: dataUnnested,
     visibleColumns: [
-      ...visibleColumns.value.filter(
-        (c) => !attributionsColumnNames.includes(c),
-      ),
+      ...visibleColumns.filter((c) => !attributionsColumnNames.includes(c)),
       ...attributionsExportColums.map((c) => c.name),
     ],
   };
@@ -456,13 +457,22 @@ const { exportDataAndWriteNewXLSX, isExporting, exportProgress } = useExport<
   entityName: props.baseTable,
   query,
   variables,
-  visibleColumns,
+  visibleColumns: computed(() =>
+    // aggregation columns are included as their non-aggregated version
+    //    ["plants.id", "attributes.246", "attributes.244.count"]
+    // -> ["plants.id", "attributes.246", "attributes.244"]
+    Array.from(
+      new Set(
+        visibleColumns.value.map((key) => key.split('.').slice(0, 2).join('.')),
+      ),
+    ),
+  ),
   columns: computed(() => [
     ...props.availableColumns,
     ...attributionsExportColums,
   ]),
   title: t('analyze.result.title', 2),
-  unnestFn: ({ data }) => unnestAttributions({ data }),
+  unnestFn: (args) => unnestAttributions(args),
 });
 
 async function onExport() {

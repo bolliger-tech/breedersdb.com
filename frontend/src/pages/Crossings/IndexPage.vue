@@ -12,6 +12,9 @@
       list-entities-path="/crossings"
       add-entity-path="/crossings/new"
       :view-entity-path-getter="(id) => `/crossings/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -28,6 +31,7 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -136,4 +140,17 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'crossings',
+  query: computed(() => query),
+  variables,
+  visibleColumns,
+  columns: computed(() => columns),
+  title: t('crossings.title', 2),
+});
 </script>

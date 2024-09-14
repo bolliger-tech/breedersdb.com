@@ -12,6 +12,9 @@
       list-entities-path="/pollen"
       add-entity-path="/pollen/new"
       :view-entity-path-getter="(id) => `/pollen/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
   <router-view name="modal" />
@@ -28,6 +31,7 @@ import { pollenFragment } from 'src/components/Pollen/pollenFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t, d } = useI18n();
 
@@ -134,4 +138,17 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'pollen',
+  query: computed(() => query),
+  variables,
+  visibleColumns,
+  columns: computed(() => columns),
+  title: t('pollen.title', 2),
+});
 </script>

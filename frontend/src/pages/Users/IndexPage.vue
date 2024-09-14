@@ -12,6 +12,9 @@
       list-entities-path="/users"
       add-entity-path="/users/new"
       :view-entity-path-getter="(id) => `/users/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -27,6 +30,7 @@ import { userFragment } from 'src/components/User/userFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -123,4 +127,17 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'users',
+  query: computed(() => query),
+  variables,
+  visibleColumns,
+  columns: computed(() => columns),
+  title: t('users.title', 2),
+});
 </script>

@@ -12,6 +12,9 @@
       list-entities-path="/graftings"
       add-entity-path="/graftings/new"
       :view-entity-path-getter="(id) => `/graftings/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -27,6 +30,7 @@ import { graftingFragment } from 'src/components/Grafting/graftingFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -101,4 +105,17 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'graftings',
+  query: computed(() => query),
+  variables,
+  visibleColumns,
+  columns: computed(() => columns),
+  title: t('graftings.title', 2),
+});
 </script>

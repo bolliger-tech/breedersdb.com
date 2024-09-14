@@ -14,6 +14,9 @@
       list-entities-path="/rows"
       add-entity-path="/rows/new"
       :view-entity-path-getter="(id) => `/rows/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -30,6 +33,7 @@ import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t, d } = useI18n();
 
@@ -155,4 +159,20 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'plant_rows',
+  query: computed(() => query),
+  variables,
+  visibleColumns,
+  columns: computed(() => columns),
+  title: t('plantRows.title', 2),
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
+});
 </script>

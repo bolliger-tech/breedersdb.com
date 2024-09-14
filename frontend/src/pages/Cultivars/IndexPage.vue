@@ -15,6 +15,9 @@
       add-entity-path="/cultivars/new"
       :view-entity-path-getter="(id) => `/cultivars/${id}`"
       @scanned-qr="onScannedQr"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -33,6 +36,7 @@ import { useRouter } from 'vue-router';
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -254,4 +258,17 @@ async function onScannedQr(code: string) {
     search.value = code;
   }
 }
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'cultivars',
+  query: computed(() => query),
+  variables,
+  visibleColumns,
+  columns,
+  title: t('cultivars.title', 2),
+});
 </script>

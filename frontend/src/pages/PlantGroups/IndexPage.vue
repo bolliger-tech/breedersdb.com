@@ -15,6 +15,9 @@
       add-entity-path="/groups/new"
       :view-entity-path-getter="(id) => `/groups/${id}`"
       @scanned-qr="onScannedQr"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     >
       <template #body-cell-label_id="cellProps">
         <q-td :props="cellProps">
@@ -40,6 +43,7 @@ import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { plantGroupLabelIdUtils } from 'src/utils/labelIdUtils';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -244,4 +248,20 @@ async function onScannedQr(code: string) {
     search.value = code;
   }
 }
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'plant_groups',
+  query: computed(() => query),
+  variables,
+  visibleColumns,
+  columns: computed(() => columns),
+  title: t('plantGroups.title', 2),
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
+});
 </script>

@@ -13,6 +13,9 @@
       :all-columns="columns"
       list-entities-path="/attributions"
       :view-entity-path-getter="(id) => `/attributions/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     >
       <template #add-button><div></div></template>
 
@@ -89,6 +92,7 @@ import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAtt
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
+import { useExport } from 'src/composables/useExport';
 
 const { t, d } = useI18n();
 
@@ -368,5 +372,18 @@ const searchPlaceholder = computed(() => {
     return t('attributions.searchPlaceholder.lots');
   }
   throw new Error('Invalid subset');
+});
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'attributions',
+  query: computed(() => query),
+  variables,
+  visibleColumns,
+  columns,
+  title: t('attributions.title', 2),
 });
 </script>

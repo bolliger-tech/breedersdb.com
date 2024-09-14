@@ -14,6 +14,9 @@
       list-entities-path="/attributes"
       add-entity-path="/attributes/new"
       :view-entity-path-getter="(id) => `/attributes/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     >
       <template #body-cell-default_value="cellProps">
         <q-td :props="cellProps">
@@ -54,6 +57,7 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -186,4 +190,17 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'attributes',
+  query: computed(() => query),
+  variables,
+  visibleColumns,
+  columns: computed(() => columns),
+  title: t('attributes.title', 2),
+});
 </script>

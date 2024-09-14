@@ -169,7 +169,7 @@ const {
   query: computed(() => query),
   variables,
   visibleColumns,
-  columns: computed(() => columns),
+  columns: computed(() => columns.value),
   title: t('plantRows.title', 2),
   subsetLabel: computed(
     () => tabs.find((t) => t.value === subset.value)?.label,

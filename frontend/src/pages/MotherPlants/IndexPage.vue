@@ -12,9 +12,9 @@
       list-entities-path="/mother-plants"
       add-entity-path="/mother-plants/new"
       :view-entity-path-getter="(id) => `/mother-plants/${id}`"
-      @scanned-qr="(code) => (search = code)"
       :is-exporting="isExporting"
       :export-progress="exportProgress"
+      @scanned-qr="(code) => (search = code)"
       @export="onExport"
     >
       <template #[`body-cell-plant.label_id`]="cellProps">

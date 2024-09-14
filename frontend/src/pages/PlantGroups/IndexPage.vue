@@ -8,15 +8,12 @@
       :title="t('plantGroups.title', 2)"
       :tabs="tabs"
       :search-placeholder="t('plantGroups.searchPlaceholderName')"
-      :rows="data?.plant_groups || []"
+      :rows="data?.plant_groups || []
       :loading="fetching"
       :all-columns="columns"
-      list-entities-path="/groups"
-      add-entity-path="/groups/new"
-      :view-entity-path-getter="(id) => `/groups/${id}`"
-      @scanned-qr="onScannedQr"
       :is-exporting="isExporting"
       :export-progress="exportProgress"
+      @scanned-qr="onScannedQr"
       @export="onExport"
     >
       <template #body-cell-label_id="cellProps">

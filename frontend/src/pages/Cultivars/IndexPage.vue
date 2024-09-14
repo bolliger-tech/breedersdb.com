@@ -14,9 +14,9 @@
       list-entities-path="/cultivars"
       add-entity-path="/cultivars/new"
       :view-entity-path-getter="(id) => `/cultivars/${id}`"
-      @scanned-qr="onScannedQr"
       :is-exporting="isExporting"
       :export-progress="exportProgress"
+      @scanned-qr="onScannedQr"
       @export="onExport"
     />
   </PageLayout>

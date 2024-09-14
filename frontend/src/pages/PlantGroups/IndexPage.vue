@@ -8,7 +8,7 @@
       :title="t('plantGroups.title', 2)"
       :tabs="tabs"
       :search-placeholder="t('plantGroups.searchPlaceholderName')"
-      :rows="data?.plant_groups || []
+      :rows="data?.plant_groups || []"
       :loading="fetching"
       :all-columns="columns"
       :is-exporting="isExporting"

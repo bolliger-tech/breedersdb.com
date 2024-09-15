@@ -3,10 +3,8 @@
     <img
       ref="previewRef"
       v-ripple
-      :src="`/api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['1x']}`"
-      :srcset="`
-      /api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['1x']},
-      /api/assets/images/${desiredFileName}?file=${fileName}&${previewDimensions['2x']} 2x
+      :src="imgUrls['1x']"
+      :srcset="`${imgUrls['1x']}, ${imgUrls['2x']} 2x
     `"
       class="cursor-pointer"
       :class="{ invisible: !previewIsReady }"
@@ -55,14 +53,8 @@
       </q-card-section>
       <q-card-section>
         <q-img
-          :src="`/api/assets/images/${desiredFileName}?file=${fileName}&width=1024`"
-          :srcset="`
-            /api/assets/images/${desiredFileName}?file=${fileName}&width=320 320w,
-            /api/assets/images/${desiredFileName}?file=${fileName}&width=768 768w,
-            /api/assets/images/${desiredFileName}?file=${fileName}&width=1024 1024w,
-            /api/assets/images/${desiredFileName}?file=${fileName}&width=2560 2560w,
-            /api/assets/images/${desiredFileName}?file=${fileName}&width=3840 3840w,
-          `"
+          :src="imgUrls['1024w']"
+          :srcset="`${imgUrls['320w']} 320w, ${imgUrls['768w']} 768w, ${imgUrls['1024w']} 1024w, ${imgUrls['2560w']} 2560w, ${imgUrls['3840w']} 3840w`"
           spinner-color="primary"
           fit="contain"
           style="
@@ -98,10 +90,7 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <a
-          :href="`/api/assets/images/${desiredFileName}?file=${fileName}`"
-          download
-        >
+        <a :href="imgUrls.full" download>
           <q-btn flat :label="t('base.download')" color="primary" />
         </a>
         <q-btn
@@ -128,6 +117,7 @@ import {
 import { ColumnTypes } from 'src/utils/columnTypes';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { captureException } from '@sentry/browser';
+import { getImageFileName, getImageUrlRelative } from 'src/utils/imageUtils';
 
 const DEFAULT_PREVIEW_HEIGHT = 200;
 
@@ -183,14 +173,6 @@ const entityTypeName = computed(() => {
           : 'unknown';
 });
 
-const desiredFileName = computed(() => {
-  const org = import.meta.env.VITE_ORG_ABBREVIATION;
-
-  return encodeURIComponent(
-    `${org}-${entityName.value}-${props.attribution.attribute_name}-${props.attribution.date_attributed}-${props.attribution.id}.jpg`,
-  );
-});
-
 const metadata = computed(() => {
   const attribute =
     props.attribution.data_type === 'PHOTO'
@@ -218,25 +200,58 @@ const description = computed(() => {
   };
 });
 
-const previewDimensions = computed(() => {
-  const dims1x = [];
-  const dims2x = [];
+const desiredFileName = computed(() =>
+  getImageFileName({
+    entityName: entityName.value,
+    attributeName: props.attribution.attribute_name,
+    dateAttributed: props.attribution.date_attributed,
+    attributionId: props.attribution.id,
+  }),
+);
 
-  if (props.previewWidth) {
-    dims1x.push(`width=${props.previewWidth}`);
-    dims2x.push(`width=${2 * props.previewWidth}`);
-  }
-
-  if (props.previewHeight || DEFAULT_PREVIEW_HEIGHT) {
-    dims1x.push(`height=${props.previewHeight || DEFAULT_PREVIEW_HEIGHT}`);
-    dims2x.push(
-      `height=${2 * (props.previewHeight || DEFAULT_PREVIEW_HEIGHT)}`,
-    );
-  }
-
+const imgUrls = computed(() => {
   return {
-    '1x': dims1x.join('&'),
-    '2x': dims2x.join('&'),
+    '1x': getImageUrlRelative({
+      serverFileName: props.fileName,
+      desiredFileName: desiredFileName.value,
+      maxWidth: props.previewWidth,
+      maxHeight: props.previewHeight || DEFAULT_PREVIEW_HEIGHT,
+    }),
+    '2x': getImageUrlRelative({
+      serverFileName: props.fileName,
+      desiredFileName: desiredFileName.value,
+      maxWidth: props.previewWidth ? 2 * props.previewWidth : undefined,
+      maxHeight: 2 * (props.previewHeight || DEFAULT_PREVIEW_HEIGHT),
+    }),
+    '320w': getImageUrlRelative({
+      serverFileName: props.fileName,
+      desiredFileName: desiredFileName.value,
+      maxWidth: 320,
+    }),
+    '768w': getImageUrlRelative({
+      serverFileName: props.fileName,
+      desiredFileName: desiredFileName.value,
+      maxWidth: 768,
+    }),
+    '1024w': getImageUrlRelative({
+      serverFileName: props.fileName,
+      desiredFileName: desiredFileName.value,
+      maxWidth: 1024,
+    }),
+    '2560w': getImageUrlRelative({
+      serverFileName: props.fileName,
+      desiredFileName: desiredFileName.value,
+      maxWidth: 2560,
+    }),
+    '3840w': getImageUrlRelative({
+      serverFileName: props.fileName,
+      desiredFileName: desiredFileName.value,
+      maxWidth: 3840,
+    }),
+    full: getImageUrlRelative({
+      serverFileName: props.fileName,
+      desiredFileName: desiredFileName.value,
+    }),
   };
 });
 

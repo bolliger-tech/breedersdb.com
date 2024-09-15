@@ -18,7 +18,9 @@
         value === null ||
         isValidString({ value, validation }) ||
         t('base.validation.maxLen', { x: validation.maxLen }),
+      ...(props.additionalRules ?? []),
     ]"
+    @blur="modelValue === '' && (modelValue = null)"
   />
 </template>
 <script setup lang="ts">
@@ -31,6 +33,7 @@ import { focusInView } from 'src/utils/focusInView';
 
 export interface AttributionAddFormInputProps {
   validation: { maxLen: number | null; pattern: string | null };
+  additionalRules?: QInput['rules'];
 }
 
 const props = defineProps<AttributionAddFormInputProps>();

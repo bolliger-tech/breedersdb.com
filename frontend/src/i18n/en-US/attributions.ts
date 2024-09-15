@@ -81,6 +81,8 @@ export const attributions = {
 
     clearAttribute:
       'Clearing this value will remove the comments for this attribute as well. Do you want to delete the comments?',
+    notesMustHaveValue:
+      'Add a value or remove the note / photo for this attribute.',
 
     saved: 'Attribute saved.',
     uploading: 'Saving… {percentage}%',

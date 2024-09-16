@@ -16,7 +16,6 @@
       :export-progress="exportProgress"
       @export="onExport"
     />
-    <!-- TODO: <ResultDownload :enabled="!fetching && !!result" /> -->
     <div v-if="lastRefreshDate" class="text-caption">
       {{
         t('analyze.result.lastRefresh', {

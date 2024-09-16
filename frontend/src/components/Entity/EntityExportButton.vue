@@ -10,7 +10,7 @@
         :max="1"
         instant-feedback
         size="sm"
-        color="teal"
+        color="primary"
         track-color="grey-3"
       >
         <template v-if="exportProgress < 1">

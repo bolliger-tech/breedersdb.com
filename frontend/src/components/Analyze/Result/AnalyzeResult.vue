@@ -303,74 +303,72 @@ function unnestAttributions({
     let attributionFound = false;
     for (const attributionColumnName of attributionsColumnNames) {
       const attributions = row[attributionColumnName as `attributes.${number}`];
-      if (Array.isArray(attributions)) {
-        for (const attribution of attributions) {
-          attributionFound = true;
+      for (const attribution of attributions) {
+        attributionFound = true;
 
-          // serialize value
-          // must be done here because (column.format can only return string)
-          // either value is a sheetjs cell ({ t:"s", v:"a string" }) or
-          // string | number | boolean | Date | null which is then parsed by
-          // sheetjs.json_to_sheet
-          const valueKey = (
-            [
-              'text_value',
-              'integer_value',
-              'float_value',
-              'boolean_value',
-              'date_value',
-            ] as (keyof AnalyzeAttributionsViewFields)[]
-          ).find((key) => attribution[key] !== null);
-          const value =
-            !valueKey || !(valueKey in attribution) || !attribution[valueKey]
-              ? null
-              : valueKey === 'date_value'
-                ? new Date(attribution[valueKey] as string)
-                : valueKey === 'boolean_value'
-                  ? !!attribution[valueKey]
-                  : attribution.data_type === 'PHOTO'
-                    ? ({
-                        t: 's',
-                        v: attribution[valueKey] as string, // TODO image name?
-                        l: {
-                          Target: getPublicImageUrl(
-                            attribution[valueKey] as string,
-                          ),
-                        },
-                      } as CellObject)
-                    : attribution[valueKey];
+        // serialize value
+        // must be done here because (column.format can only return string)
+        // either value is a sheetjs cell ({ t:"s", v:"a string" }) or
+        // string | number | boolean | Date | null which is then parsed by
+        // sheetjs.json_to_sheet
+        const valueKey = (
+          [
+            'text_value',
+            'integer_value',
+            'float_value',
+            'boolean_value',
+            'date_value',
+          ] as (keyof AnalyzeAttributionsViewFields)[]
+        ).find((key) => attribution[key] !== null);
+        const value =
+          !valueKey || !(valueKey in attribution) || !attribution[valueKey]
+            ? null
+            : valueKey === 'date_value'
+              ? new Date(attribution[valueKey] as string)
+              : valueKey === 'boolean_value'
+                ? !!attribution[valueKey]
+                : attribution.data_type === 'PHOTO'
+                  ? ({
+                      t: 's',
+                      v: attribution[valueKey] as string, // TODO image name?
+                      l: {
+                        Target: getPublicImageUrl(
+                          attribution[valueKey] as string,
+                        ),
+                      },
+                    } as CellObject)
+                  : attribution[valueKey];
 
-          // prefix keys with attribution__
-          // serialize column values
-          // add attribution__value
-          const attributionWithPrefixedKeys = {
-            ...Object.fromEntries(
-              Object.entries(attribution).map(([k, v]) => [
-                `attribution__${k}`,
-                !v
-                  ? v
-                  : k === 'photo_note'
-                    ? {
-                        t: 's',
-                        v: v as string, // TODO image name?
-                        l: {
-                          Target: getPublicImageUrl(value as string),
-                        },
-                      }
-                    : k === 'date_attributed' || k === 'created'
-                      ? new Date(v as string)
-                      : v,
-              ]),
-            ),
-            ...{ attribution__value: value },
-          };
+        // prefix keys with attribution__
+        // serialize column values
+        // add attribution__value
+        const attributionWithPrefixedKeys = {
+          ...Object.fromEntries(
+            Object.entries(attribution).map(([k, v]) => [
+              `attribution__${k}`,
+              !v
+                ? v
+                : k === 'photo_note'
+                  ? {
+                      t: 's',
+                      v: v as string, // TODO image name?
+                      l: {
+                        Target: getPublicImageUrl(value as string),
+                      },
+                    }
+                  : k === 'date_attributed' || k === 'created'
+                    ? new Date(v as string)
+                    : v,
+            ]),
+          ),
+          ...{ attribution__value: value },
+        };
 
-          // add row with unnested attribution
-          dataUnnested.push({
-            ...rowWithoutAttributions,
-            ...attributionWithPrefixedKeys,
-          });
-        }
+        // add row with unnested attribution
+        dataUnnested.push({
+          ...rowWithoutAttributions,
+          ...attributionWithPrefixedKeys,
+        });
       }
     }
     if (!attributionFound) {

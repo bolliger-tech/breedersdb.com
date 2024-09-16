@@ -32,42 +32,37 @@
     </template>
 
     <template #top-right>
-      <EntityListTableColumnSelector
-        v-model="visibleColumns"
-        :all-columns="allColumns"
-        class="q-ml-lg"
-      >
-        <template #option="columnSelectorOptionProps">
-          <slot
-            name="column-selector-option"
-            v-bind="columnSelectorOptionProps"
-          ></slot>
-        </template>
-      </EntityListTableColumnSelector>
+      <div class="row align-center no-wrap" style="gap: clamp(8px, 3vw, 16px)">
+        <EntityListTableColumnSelector
+          v-model="visibleColumns"
+          :all-columns="allColumns"
+        >
+          <template #option="columnSelectorOptionProps">
+            <slot
+              name="column-selector-option"
+              v-bind="columnSelectorOptionProps"
+            ></slot>
+          </template>
+        </EntityListTableColumnSelector>
 
-      <EntityExportButton
-        :is-exporting="isExporting"
-        :export-progress="exportProgress"
-        @export="onExport"
-      />
-      <q-btn
-        class="q-ml-md"
-        dense
-        flat
-        no-caps
-        @click="fullscreen = !fullscreen"
-      >
-        <div class="column items-center">
-          <q-icon :name="fullscreen ? 'fullscreen_exit' : 'fullscreen'" />
-          <div class="text-caption">
-            {{
-              fullscreen
-                ? t('entity.list.exitFullscreen')
-                : t('entity.list.fullscreen')
-            }}
+        <EntityExportButton
+          :is-exporting="isExporting"
+          :export-progress="exportProgress"
+          @export="onExport"
+        />
+        <q-btn dense flat no-caps @click="fullscreen = !fullscreen">
+          <div class="column items-center">
+            <q-icon :name="fullscreen ? 'fullscreen_exit' : 'fullscreen'" />
+            <div class="text-caption">
+              {{
+                fullscreen
+                  ? t('entity.list.exitFullscreen')
+                  : t('entity.list.fullscreen')
+              }}
+            </div>
           </div>
-        </div>
-      </q-btn>
+        </q-btn>
+      </div>
     </template>
 
     <template #header-cell="cellProps">

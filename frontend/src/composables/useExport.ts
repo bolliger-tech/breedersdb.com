@@ -9,6 +9,11 @@ import {
 import type { EntityListTableColum } from 'src/components/Entity/List/types';
 import type { ResultOf } from 'src/graphql';
 
+export const XLSX_FORMATS = {
+  dateTime: 'dd.mm.yyyy hh:mm:ss',
+  date: 'dd.mm.yyyy',
+};
+
 type FetchAllPagesArgs<Q extends DocumentInput, V extends AnyVariables> = {
   client: Client;
   entityName: string;
@@ -90,20 +95,24 @@ export function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
             ? null
             : typeof value === 'object' && 't' in value && 'v' in value // is a cell object
               ? value
-              : (column.name.startsWith('date_') ||
-                    ['modified', 'created'].includes(column.name)) &&
-                  typeof value === 'string'
-                ? new Date(value as string | Date)
-                : 'format' in column && column.format
-                  ? column.format(value as T[keyof T], result)
-                  : value; // should be: string | boolean | number | Date
+              : column.name.startsWith('date_')
+                ? ({
+                    t: 'd',
+                    v: new Date(value as string | Date),
+                    z: XLSX_FORMATS.date,
+                  } as XLSX.CellObject)
+                : ['modified', 'created'].includes(column.name) &&
+                    typeof value === 'string'
+                  ? new Date(value as string | Date)
+                  : 'format' in column && column.format
+                    ? column.format(value as T[keyof T], result)
+                    : value; // should be: string | boolean | number | Date
 
         return {
           ...row,
           [column.label]: formattedValue,
         };
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {} as Record<'string', ExportDataValue>,
     );
 }
@@ -195,7 +204,7 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
 
       const worksheet = XLSX.utils.json_to_sheet(formattedData, {
         cellDates: true,
-        dateNF: 'dd.mm.yyyy hh:mm:ss',
+        dateNF: XLSX_FORMATS.dateTime,
       });
 
       yield {

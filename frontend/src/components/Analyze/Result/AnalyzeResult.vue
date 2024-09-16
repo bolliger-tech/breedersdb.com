@@ -55,6 +55,7 @@ import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributio
 import {
   ExportDataValue,
   TransformDataArgs,
+  XLSX_FORMATS,
   useExport,
 } from 'src/composables/useExport';
 import type { CellObject } from 'xlsx';
@@ -324,7 +325,11 @@ function unnestAttributions({
           !valueKey || !(valueKey in attribution) || !attribution[valueKey]
             ? null
             : valueKey === 'date_value'
-              ? new Date(attribution[valueKey] as string)
+              ? ({
+                  t: 'd',
+                  v: new Date(attribution[valueKey] as string),
+                  z: XLSX_FORMATS.date,
+                } as CellObject)
               : valueKey === 'boolean_value'
                 ? !!attribution[valueKey]
                 : attribution.data_type === 'PHOTO'
@@ -356,7 +361,7 @@ function unnestAttributions({
                         Target: getPublicImageUrl(value as string),
                       },
                     }
-                  : k === 'date_attributed' || k === 'created'
+                  : k === 'created'
                     ? new Date(v as string)
                     : v,
             ]),

@@ -52,6 +52,12 @@ import { useI18n } from 'src/composables/useI18n';
 import { debounce } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
 import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
+import {
+  ExportDataValue,
+  TransformDataArgs,
+  useExport,
+} from 'src/composables/useExport';
+import type { CellObject } from 'xlsx';
 
 export interface AnalyzeResultProps {
   baseTable: BaseTable;
@@ -254,13 +260,6 @@ watch(
   },
   { immediate: true },
 );
-
-import {
-  ExportDataValue,
-  TransformDataArgs,
-  useExport,
-} from 'src/composables/useExport';
-import { CellObject } from 'xlsx';
 
 const getPublicImageUrl = (fileName: string) =>
   `${window.location.origin}/api/assets/images/${fileName}?file=${fileName}`;

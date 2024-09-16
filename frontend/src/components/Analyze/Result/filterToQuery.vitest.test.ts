@@ -276,7 +276,7 @@ const filterRules = {
   }),
 };
 
-const DEFAULT_NUM_FILTERS = 2; // limit and offset
+const NUM_DEFAULT_QUERY_VARS = 2; // limit and offset
 
 describe('filterToQuery', () => {
   describe('where', () => {
@@ -2058,7 +2058,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
   cultivars(where: { _and: [ { lot: { _or: [ { string_allow_empty: { _is_null: true } }, { string_allow_empty: { _eq: "" } } ] } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(DEFAULT_NUM_FILTERS);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: Citext === "" nullable', () => {
@@ -2087,7 +2089,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
   cultivars(where: { _and: [ { lot: { _or: [ { citext_allow_empty: { _is_null: true } }, { citext_allow_empty: { _eq: "" } } ] } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(DEFAULT_NUM_FILTERS);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: String Empty nullable', () => {
@@ -2115,7 +2119,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
   cultivars(where: { _and: [ { _not: { lot: { _and: [ { string_allow_empty: { _is_null: false } }, { string_allow_empty: { _neq: "" } } ] } } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(DEFAULT_NUM_FILTERS);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: Citext Empty nullable', () => {
@@ -2143,7 +2149,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
   cultivars(where: { _and: [ { _not: { lot: { _and: [ { citext_allow_empty: { _is_null: false } }, { citext_allow_empty: { _neq: "" } } ] } } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(DEFAULT_NUM_FILTERS);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: Integer NotEmpty nullable', () => {
@@ -2328,7 +2336,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
     cultivars(where: { _and: [ { _not: { lot: { _or: [ { string_allow_empty: { _is_null: true } }, { string_allow_empty: { _eq: "" } } ] } } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(DEFAULT_NUM_FILTERS);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: Citext !== "" nullable', () => {
@@ -2357,7 +2367,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
     cultivars(where: { _and: [ { _not: { lot: { _or: [ { citext_allow_empty: { _is_null: true } }, { citext_allow_empty: { _eq: "" } } ] } } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(DEFAULT_NUM_FILTERS);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: String NotEmpty nullable', () => {
@@ -2385,7 +2397,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
     cultivars(where: { _and: [ { lot: { _and: [ { string_allow_empty: { _is_null: false } }, { string_allow_empty: { _neq: "" } } ] } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(DEFAULT_NUM_FILTERS);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: True', () => {
@@ -2891,7 +2905,7 @@ fragment AttributionFragment on attributions_view {
       pagination: basicPagination,
     });
 
-    expect(Object.keys(variables).length).toBe(DEFAULT_NUM_FILTERS);
+    expect(Object.keys(variables).length).toBe(NUM_DEFAULT_QUERY_VARS);
   });
 
   it('should contain attribution variables if there are attribution columns', () => {

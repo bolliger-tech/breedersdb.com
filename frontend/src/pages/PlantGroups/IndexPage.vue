@@ -146,7 +146,7 @@ const plantGroupsCount = computed(
   () => data.value?.plant_groups_aggregate?.aggregate?.count || 0,
 );
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'display_name',
     label: t('entity.commonColumns.name'),
@@ -177,12 +177,24 @@ const columns = [
     maxWidth: 'clamp(300px, 30svw, 600px)',
     ellipsis: true,
   },
+  ...(subset.value === 'all'
+    ? [
+        {
+          name: 'disabled',
+          label: t('entity.commonColumns.disabled'),
+          field: 'disabled',
+          sortable: true,
+        },
+      ]
+    : []),
   ...useTimestampColumns(),
-];
+]);
 
 const { visibleColumns } = useEntityTableColumns({
   entityType: 'plantGroups',
-  defaultColumns: columns.map((column) => column.name),
+  defaultColumns: columns.value
+    .map((column) => column.name)
+    .filter((name) => subset.value === 'all' || name !== 'disabled'),
 });
 
 watch(

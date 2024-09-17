@@ -134,12 +134,24 @@ const columns = computed(() => [
     maxWidth: 'clamp(300px, 30svw, 600px)',
     ellipsis: true,
   },
+  ...(subset.value === 'all'
+    ? [
+        {
+          name: 'disabled',
+          label: t('entity.commonColumns.disabled'),
+          field: 'disabled',
+          sortable: true,
+        },
+      ]
+    : []),
   ...useTimestampColumns(),
 ]);
 
 const { visibleColumns } = useEntityTableColumns({
   entityType: 'plantRows',
-  defaultColumns: columns.value.map((column) => column.name),
+  defaultColumns: columns.value
+    .map((column) => column.name)
+    .filter((name) => subset.value === 'all' || name !== 'disabled'),
 });
 
 watch(

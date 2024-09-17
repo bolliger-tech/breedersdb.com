@@ -104,7 +104,7 @@ const attributionFormsCount = computed(
   () => data.value?.attribution_forms_aggregate?.aggregate?.count || 0,
 );
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'name',
     label: t('entity.commonColumns.name'),
@@ -128,12 +128,24 @@ const columns = [
     field: 'attribution_form_fields',
     sortable: false,
   },
+  ...(subset.value === 'all'
+    ? [
+        {
+          name: 'disabled',
+          label: t('entity.commonColumns.disabled'),
+          field: 'disabled',
+          sortable: true,
+        },
+      ]
+    : []),
   ...useTimestampColumns(),
-];
+]);
 
 const { visibleColumns } = useEntityTableColumns({
   entityType: 'attributionForms',
-  defaultColumns: columns.map((column) => column.name),
+  defaultColumns: columns.value
+    .map((column) => column.name)
+    .filter((name) => subset.value === 'all' || name !== 'disabled'),
 });
 
 watch(

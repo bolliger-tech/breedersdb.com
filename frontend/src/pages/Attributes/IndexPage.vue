@@ -116,7 +116,7 @@ const attributes = computed(
   () => (data.value?.attributes || []) as AttributeFragment[],
 );
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'name',
     label: t('entity.commonColumns.name'),
@@ -165,12 +165,24 @@ const columns = [
       attributeTypeToLabel(row.attribute_type, t),
     sortable: true,
   },
+  ...(subset.value === 'all'
+    ? [
+        {
+          name: 'disabled',
+          label: t('entity.commonColumns.disabled'),
+          field: 'disabled',
+          sortable: true,
+        },
+      ]
+    : []),
   ...useTimestampColumns(),
-];
+]);
 
 const { visibleColumns } = useEntityTableColumns({
   entityType: 'attributes',
-  defaultColumns: columns.map((column) => column.name),
+  defaultColumns: columns.value
+    .map((column) => column.name)
+    .filter((name) => subset.value === 'all' || name !== 'disabled'),
 });
 
 watch(

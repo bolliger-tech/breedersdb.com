@@ -66,7 +66,7 @@ export type TransformDataArgs<T> = {
 };
 
 export type TransformDataResult = {
-  data: Record<string, ExportDataValue>[];
+  data: Record<string, ExportDataValue | unknown>[];
   visibleColumns: string[];
 };
 

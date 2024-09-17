@@ -69,7 +69,7 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
-import { graphql } from 'src/graphql';
+import { graphql, ResultOf } from 'src/graphql';
 import { computed, UnwrapRef, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
@@ -92,7 +92,12 @@ import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAtt
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
-import { useExport } from 'src/composables/useExport';
+import { TransformDataArgs, useExport } from 'src/composables/useExport';
+import {
+  attributionToXlsx,
+  getAttributionObjectName,
+  getAttributionObjectType,
+} from 'src/components/Analyze/Result/filterToQuery';
 
 const { t, d } = useI18n();
 
@@ -209,7 +214,7 @@ const columns = computed(() => [
         {
           name: 'entity',
           label: t('attributions.columns.entity'),
-          field: (row: AttributionsViewFragment) => row,
+          field: 'entity',
           align: 'left' as const,
           sortable: false,
         },
@@ -278,9 +283,10 @@ const columns = computed(() => [
   {
     name: 'value',
     label: t('attributions.columns.value'),
-    field: (row: AttributionsViewFragment) => getValue(row),
+    field: 'value',
     align: 'center' as const,
     sortable: false,
+    format: (val: unknown, row: AttributionsViewFragment) => getValue(row),
   },
   {
     name: 'text_note',
@@ -374,19 +380,76 @@ const searchPlaceholder = computed(() => {
   throw new Error('Invalid subset');
 });
 
+type NonNullableFields<T> = {
+  [P in keyof T]: NonNullable<T[P]>;
+};
+function transformData({
+  data,
+  visibleColumns,
+}: TransformDataArgs<
+  // ts hack to make query result compatible with AnalyzeAttributionsViewFields
+  Omit<
+    NonNullableFields<ResultOf<typeof query>['attributions_view'][0]>,
+    'plant' | 'plant_group' | 'cultivar' | 'lot' | 'data_type'
+  > & {
+    plant: { id: number; label_id: string } | null;
+    plant_group: { id: number; display_name: string } | null;
+    cultivar: { id: number; display_name: string } | null;
+    lot: { id: number; display_name: string } | null;
+    data_type: AttributeDataTypes;
+  }
+>) {
+  return {
+    visibleColumns,
+    data: data.map((attribution) => {
+      return {
+        // allow colums to access all data
+        ...attribution,
+        // special column
+        entity: getAttributionObjectName(attribution),
+        entity_type: getAttributionObjectType(attribution),
+        // the serialized attribution
+        ...attributionToXlsx(attribution),
+      };
+    }),
+  };
+}
+
 const {
   exportDataAndWriteNewXLSX: onExport,
   isExporting,
   exportProgress,
 } = useExport({
-  entityName: 'attributions',
+  entityName: 'attributions_view',
   query,
   variables,
-  visibleColumns,
-  columns,
+  visibleColumns: computed(() => {
+    if (visibleColumns.value.includes('entity')) {
+      return ['entityType', ...visibleColumns.value];
+    }
+    return visibleColumns.value;
+  }),
+  columns: computed(() => {
+    const entityColumnIndex = columns.value.findIndex(
+      (column) => column.name === 'entity',
+    );
+    if (entityColumnIndex === -1) {
+      return columns.value;
+    }
+    return [
+      ...columns.value.slice(0, entityColumnIndex + 1),
+      {
+        name: 'entityType',
+        label: t('attributions.columns.entityType'),
+        field: 'entity_type',
+      },
+      ...columns.value.slice(entityColumnIndex + 1),
+    ];
+  }),
   title: t('attributions.title', 2),
   subsetLabel: computed(
     () => tabs.find((t) => t.value === subset.value)?.label,
   ),
+  transformDataFn: transformData,
 });
 </script>

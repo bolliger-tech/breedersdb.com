@@ -40,11 +40,11 @@ import AnalyzeResultTable, {
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
 import {
   AnalyzeAttributionsViewFields,
-  AnalyzeAttributionsViewValueFields,
   AnalyzeResult,
   AnalyzeResultEntityField,
   AnalyzeResultEntityRow,
   filterToQuery,
+  attributionToXlsx,
 } from './filterToQuery';
 import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -56,11 +56,8 @@ import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributio
 import {
   ExportDataValue,
   TransformDataArgs,
-  XLSX_FORMATS,
   useExport,
 } from 'src/composables/useExport';
-import type { CellObject } from 'xlsx';
-import { getImageFileName, getImageUrlRelative } from 'src/utils/imageUtils';
 
 export interface AnalyzeResultProps {
   baseTable: BaseTable;
@@ -264,37 +261,6 @@ watch(
   { immediate: true },
 );
 
-function getImageCell({
-  serverFileName,
-  entityName,
-  attributeName,
-  dateAttributed,
-  attributionId,
-}: {
-  serverFileName: string;
-  entityName: string;
-  attributeName: string;
-  dateAttributed: string;
-  attributionId: number;
-}): CellObject {
-  const fileName = getImageFileName({
-    entityName,
-    attributeName,
-    dateAttributed,
-    attributionId,
-  });
-  return {
-    t: 's',
-    v: fileName,
-    l: {
-      Target: `${window.location.origin}${getImageUrlRelative({
-        serverFileName,
-        desiredFileName: fileName,
-      })}`,
-    },
-  };
-}
-
 // unnests attributions and parse for export
 // eg. { id: 1, label_id: "123", attributes: [{ id: 1, text_value: "a" }, { id: 2, boolean_value: true }] }
 // -> [
@@ -337,85 +303,16 @@ function unnestAttributions({
       for (const attribution of attributions) {
         attributionFound = true;
 
-        const entityName =
-          attribution.plant?.label_id ??
-          attribution.plant_group?.display_name ??
-          attribution.cultivar?.display_name ??
-          attribution.lot?.display_name ??
-          'unknown';
-
-        const entityType = attribution.plant?.label_id
-          ? 'plant'
-          : attribution.plant_group?.display_name
-            ? 'plant_group'
-            : attribution.cultivar?.display_name
-              ? 'cultivar'
-              : attribution.lot?.display_name
-                ? 'lot'
-                : 'unknown';
-
-        // serialize value
-        // must be done here because (column.format can only return string)
-        // either value is a sheetjs cell ({ t:"s", v:"a string" }) or
-        // string | number | boolean | Date | null which is then parsed by
-        // sheetjs.json_to_sheet
-        const valueKey = (
-          [
-            'text_value',
-            'integer_value',
-            'float_value',
-            'boolean_value',
-            'date_value',
-          ] as (keyof AnalyzeAttributionsViewValueFields)[]
-        ).find((key) => attribution[key] !== null);
-        const value =
-          !valueKey || !(valueKey in attribution) || !attribution[valueKey]
-            ? null
-            : valueKey === 'date_value'
-              ? ({
-                  t: 'd',
-                  v: new Date(attribution[valueKey] as string),
-                  z: XLSX_FORMATS.date,
-                } as CellObject)
-              : valueKey === 'boolean_value'
-                ? !!attribution[valueKey]
-                : attribution.data_type === 'PHOTO'
-                  ? getImageCell({
-                      serverFileName: attribution[valueKey] as string,
-                      entityName,
-                      attributeName: attribution.attribute_name,
-                      dateAttributed: attribution.date_attributed,
-                      attributionId: attribution.id,
-                    })
-                  : attribution[valueKey];
+        const exportedAttribution = attributionToXlsx(attribution);
 
         // prefix keys with attribution__
-        // serialize column values
-        // add attribution__value, __attributed_object_type, __attributed_object_name
         const attributionWithPrefixedKeys = {
           ...Object.fromEntries(
-            Object.entries(attribution).map(([k, v]) => [
+            Object.entries(exportedAttribution).map(([k, v]) => [
               `attribution__${k}`,
-              !v
-                ? v
-                : k === 'photo_note'
-                  ? getImageCell({
-                      serverFileName: value as string,
-                      entityName,
-                      attributeName: attribution.attribute_name,
-                      dateAttributed: attribution.date_attributed,
-                      attributionId: attribution.id,
-                    })
-                  : k === 'created'
-                    ? new Date(v as string)
-                    : v,
+              v,
             ]),
           ),
-          ...{
-            attribution__value: value,
-            attribution__attributed_object_type: entityType,
-            attribution__attributed_object_name: entityName,
-          },
         };
 
         // add row with unnested attribution

@@ -509,7 +509,11 @@ const attributionsExportColums = [
   label: `${t('attributions.exportPrefix')} > ${c.label}`,
 }));
 
-const { exportDataAndWriteNewXLSX, isExporting, exportProgress } = useExport<
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport<
   AnalyzeResultEntityRow,
   typeof query.value,
   typeof variables.value
@@ -534,9 +538,4 @@ const { exportDataAndWriteNewXLSX, isExporting, exportProgress } = useExport<
   title: t('analyze.result.title', 2),
   transformDataFn: unnestAttributions,
 });
-
-async function onExport() {
-  const result = await exportDataAndWriteNewXLSX();
-  console.log('Exported:', result);
-}
 </script>

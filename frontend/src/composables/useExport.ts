@@ -86,7 +86,6 @@ export function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
   columns,
   visibleColumns,
 }: FormatXlsxRowsWithColumns<T, C>) {
-  console.log('visibleColumns', visibleColumns);
   // visibleColumns defines the order
   return visibleColumns.reduce(
     (row, visibleColumn) => {
@@ -215,14 +214,6 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
       const worksheet = XLSX.utils.json_to_sheet(formattedData, {
         cellDates: true,
         dateNF: XLSX_FORMATS.dateTime,
-      });
-
-      console.log('exportData', {
-        fetchedData,
-        transformResult,
-        formattedData,
-        fileName,
-        worksheet,
       });
 
       yield {

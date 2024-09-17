@@ -65,5 +65,8 @@
     "@sentry/cli",
     "esbuild",
     "vue-demi"
-  ]
+  ],
+  "patchedDependencies": {
+    "xlsx@0.18.5": "patches/xlsx@0.18.5.patch"
+  }
 }

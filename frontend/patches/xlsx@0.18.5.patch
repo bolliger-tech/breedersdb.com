@@ -1,0 +1,22 @@
+diff --git a/xlsx.js b/xlsx.js
+index e61c7cc2986299d6f40248f3a5c08c459b492da5..ee2d4802c56ad0a9d632d686939dfd1d5d04cfe3 100644
+--- a/xlsx.js
++++ b/xlsx.js
+@@ -10435,11 +10435,14 @@ function parse_cellXfs(t, styles, opts) {
+ 	});
+ }
+ 
+-function write_cellXfs(cellXfs) {
+-	var o = [];
++// patch
++// source: https://gist.github.com/or9/89786be76de424c4d66573b8717aa98f#file-xlsx-mjs
++function write_cellXfs(cellXfs = [])/*:string*/ {
++	var o/*:Array<string>*/ = [];
+ 	o[o.length] = (writextag('cellXfs',null));
+ 	cellXfs.forEach(function(c) {
+-		o[o.length] = (writextag('xf', null, c));
++		const alignmentEl = writextag('alignment', null, {wrapText: true});
++		o[o.length] = writextag('xf', null, c).replace(`/>`, `>${alignmentEl}</xf>`);
+ 	});
+ 	o[o.length] = ("</cellXfs>");
+ 	if(o.length === 2) return "";

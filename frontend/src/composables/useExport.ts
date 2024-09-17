@@ -28,9 +28,8 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
   query,
   variables,
 }: FetchAllPagesArgs<Q, V>) {
-  const limit = 200;
+  const limit = 500;
   let offset = 0;
-  let asdf = 0;
   return {
     async *[Symbol.asyncIterator]() {
       while (true) {
@@ -46,9 +45,6 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
         }
         yield result.data as ResultOf<Q>;
         if (result.data[entityName].length < limit) {
-          break;
-        }
-        if (asdf++ > 3) {
           break;
         }
         offset += limit;

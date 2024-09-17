@@ -46,6 +46,7 @@
         </EntityListTableColumnSelector>
 
         <EntityExportButton
+          v-if="onExport"
           :is-exporting="isExporting"
           :export-progress="exportProgress"
           @export="onExport"

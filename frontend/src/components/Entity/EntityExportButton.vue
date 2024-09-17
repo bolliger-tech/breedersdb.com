@@ -1,5 +1,5 @@
 <template>
-  <q-btn v-if="onExport" dense flat no-caps @click="() => $emit('export')">
+  <q-btn dense flat no-caps @click="() => $emit('export')">
     <div class="column items-center">
       <q-circular-progress
         v-if="isExporting"

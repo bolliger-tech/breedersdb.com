@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
-import { graphql } from 'src/graphql';
+import { graphql, ResultOf } from 'src/graphql';
 import { computed, UnwrapRef, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
@@ -49,7 +49,7 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
-import { useExport } from 'src/composables/useExport';
+import { TransformDataArgs, useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -154,6 +154,25 @@ watch(
   { immediate: true },
 );
 
+function transformData({
+  data,
+  visibleColumns,
+}: TransformDataArgs<ResultOf<typeof query>['attribution_forms'][0]>) {
+  return {
+    visibleColumns,
+    data: data.map((row) => {
+      return {
+        ...row,
+        attribution_form_fields: row.attribution_form_fields
+          .map((field) => {
+            return field.attribute.name;
+          })
+          .join(', '),
+      };
+    }),
+  };
+}
+
 const {
   exportDataAndWriteNewXLSX: onExport,
   isExporting,
@@ -168,5 +187,6 @@ const {
   subsetLabel: computed(
     () => tabs.find((t) => t.value === subset.value)?.label,
   ),
+  transformDataFn: transformData,
 });
 </script>

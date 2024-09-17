@@ -113,7 +113,7 @@
           v-if="col.ellipsis"
           style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
         >
-          {{ cellProps.value }}
+          {{ n2semicolon(cellProps.value) }}
         </div>
         <template v-else-if="col.timestamp && cellProps.value">
           {{ d(cellProps.value, 'Ymd') }}<br />
@@ -141,6 +141,7 @@ import EntityListTableHeaderCell from './EntityListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
+import { n2semicolon } from 'src/utils/stringUtils';
 
 export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
   pagination?: QTableProps['pagination'];

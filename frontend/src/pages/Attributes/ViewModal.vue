@@ -148,6 +148,8 @@ const attribute = computed(
   () => (data.value?.attributes_by_pk || null) as AttributeFragment | null,
 );
 
+const { t, d, n } = useI18n();
+
 const defaultValue = computed(() => {
   const type =
     attribute.value && dataTypeToColumnTypes(attribute.value?.data_type);
@@ -158,10 +160,10 @@ const defaultValue = computed(() => {
   return formatResultColumnValue({
     value: attribute.value?.default_value,
     type,
+    d,
+    n,
   });
 });
-
-const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

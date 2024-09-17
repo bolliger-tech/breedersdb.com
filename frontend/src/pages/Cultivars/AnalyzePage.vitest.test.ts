@@ -282,6 +282,22 @@ describe('AnalyzePage', () => {
     exceptional_attribution
     text_note
     photo_note
+      plant {
+      id
+      label_id
+    }
+    plant_group {
+      id
+      display_name
+    }
+    cultivar {
+      id
+      display_name
+    }
+    lot {
+      id
+      display_name
+    }
   }`,
         ).replaceAll('$v000', '$v\\d+'),
       );

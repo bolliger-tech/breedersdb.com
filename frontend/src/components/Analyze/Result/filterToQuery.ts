@@ -652,6 +652,22 @@ fragment AttributionFragment on attributions_view {
   exceptional_attribution
   text_note
   photo_note
+   plant {
+    id
+    label_id
+  }
+  plant_group {
+    id
+    display_name
+  }
+  cultivar {
+    id
+    display_name
+  }
+  lot {
+    id
+    display_name
+  }
 }
 `;
 
@@ -677,7 +693,20 @@ export type AnalyzeAttributionsViewFields = {
   exceptional_attribution: boolean;
   text_note: string;
   photo_note: string;
+  plant: { id: number; label_id: string } | null;
+  plant_group: { id: number; display_name: string } | null;
+  cultivar: { id: number; display_name: string } | null;
+  lot: { id: number; display_name: string } | null;
 };
+
+export type AnalyzeAttributionsViewValueFields = Pick<
+  AnalyzeAttributionsViewFields,
+  | 'integer_value'
+  | 'float_value'
+  | 'text_value'
+  | 'boolean_value'
+  | 'date_value'
+>;
 
 type QueryVariable = {
   name: string;

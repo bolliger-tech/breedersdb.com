@@ -40,6 +40,7 @@ import AnalyzeResultTable, {
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
 import {
   AnalyzeAttributionsViewFields,
+  AnalyzeAttributionsViewValueFields,
   AnalyzeResult,
   AnalyzeResultEntityField,
   AnalyzeResultEntityRow,
@@ -59,6 +60,7 @@ import {
   useExport,
 } from 'src/composables/useExport';
 import type { CellObject } from 'xlsx';
+import { getImageFileName, getImageUrlRelative } from 'src/utils/imageUtils';
 
 export interface AnalyzeResultProps {
   baseTable: BaseTable;
@@ -262,8 +264,36 @@ watch(
   { immediate: true },
 );
 
-const getPublicImageUrl = (fileName: string) =>
-  `${window.location.origin}/api/assets/images/${fileName}?file=${fileName}`;
+function getImageCell({
+  serverFileName,
+  entityName,
+  attributeName,
+  dateAttributed,
+  attributionId,
+}: {
+  serverFileName: string;
+  entityName: string;
+  attributeName: string;
+  dateAttributed: string;
+  attributionId: number;
+}): CellObject {
+  const fileName = getImageFileName({
+    entityName,
+    attributeName,
+    dateAttributed,
+    attributionId,
+  });
+  return {
+    t: 's',
+    v: fileName,
+    l: {
+      Target: `${window.location.origin}${getImageUrlRelative({
+        serverFileName,
+        desiredFileName: fileName,
+      })}`,
+    },
+  };
+}
 
 // unnests attributions and parse for export
 // eg. { id: 1, label_id: "123", attributes: [{ id: 1, text_value: "a" }, { id: 2, boolean_value: true }] }
@@ -307,6 +337,13 @@ function unnestAttributions({
       for (const attribution of attributions) {
         attributionFound = true;
 
+        const entityName =
+          attribution.plant?.label_id ??
+          attribution.plant_group?.display_name ??
+          attribution.cultivar?.display_name ??
+          attribution.lot?.display_name ??
+          'unknown';
+
         // serialize value
         // must be done here because (column.format can only return string)
         // either value is a sheetjs cell ({ t:"s", v:"a string" }) or
@@ -319,7 +356,7 @@ function unnestAttributions({
             'float_value',
             'boolean_value',
             'date_value',
-          ] as (keyof AnalyzeAttributionsViewFields)[]
+          ] as (keyof AnalyzeAttributionsViewValueFields)[]
         ).find((key) => attribution[key] !== null);
         const value =
           !valueKey || !(valueKey in attribution) || !attribution[valueKey]
@@ -333,15 +370,13 @@ function unnestAttributions({
               : valueKey === 'boolean_value'
                 ? !!attribution[valueKey]
                 : attribution.data_type === 'PHOTO'
-                  ? ({
-                      t: 's',
-                      v: attribution[valueKey] as string, // TODO image name?
-                      l: {
-                        Target: getPublicImageUrl(
-                          attribution[valueKey] as string,
-                        ),
-                      },
-                    } as CellObject)
+                  ? getImageCell({
+                      serverFileName: attribution[valueKey] as string,
+                      entityName,
+                      attributeName: attribution.attribute_name,
+                      dateAttributed: attribution.date_attributed,
+                      attributionId: attribution.id,
+                    })
                   : attribution[valueKey];
 
         // prefix keys with attribution__
@@ -354,13 +389,13 @@ function unnestAttributions({
               !v
                 ? v
                 : k === 'photo_note'
-                  ? {
-                      t: 's',
-                      v: v as string, // TODO image name?
-                      l: {
-                        Target: getPublicImageUrl(value as string),
-                      },
-                    }
+                  ? getImageCell({
+                      serverFileName: value as string,
+                      entityName,
+                      attributeName: attribution.attribute_name,
+                      dateAttributed: attribution.date_attributed,
+                      attributionId: attribution.id,
+                    })
                   : k === 'created'
                     ? new Date(v as string)
                     : v,

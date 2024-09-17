@@ -10,7 +10,11 @@ export function getImageFileName({
   attributionId: number;
 }) {
   const org = import.meta.env.VITE_ORG_ABBREVIATION;
-  return `bdb-${org ? `${org}-` : ''}${entityName}-${attributeName}-${dateAttributed}-${attributionId}.jpg`;
+  return (
+    ['bdb', org, entityName, attributeName, dateAttributed, attributionId]
+      .filter(Boolean)
+      .join('-') + '.jpg'
+  );
 }
 
 export function getImageUrlRelative({

@@ -104,9 +104,7 @@ export function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
                 : ['modified', 'created'].includes(column.name) &&
                     typeof value === 'string'
                   ? new Date(value as string | Date)
-                  : 'format' in column && column.format
-                    ? column.format(value as T[keyof T], result)
-                    : value; // should be: string | boolean | number | Date
+                  : value; // should be: string | boolean | number | Date
 
         return {
           ...row,

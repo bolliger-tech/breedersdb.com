@@ -344,6 +344,16 @@ function unnestAttributions({
           attribution.lot?.display_name ??
           'unknown';
 
+        const entityType = attribution.plant?.label_id
+          ? 'plant'
+          : attribution.plant_group?.display_name
+            ? 'plant_group'
+            : attribution.cultivar?.display_name
+              ? 'cultivar'
+              : attribution.lot?.display_name
+                ? 'lot'
+                : 'unknown';
+
         // serialize value
         // must be done here because (column.format can only return string)
         // either value is a sheetjs cell ({ t:"s", v:"a string" }) or
@@ -381,7 +391,7 @@ function unnestAttributions({
 
         // prefix keys with attribution__
         // serialize column values
-        // add attribution__value
+        // add attribution__value, __attributed_object_type, __attributed_object_name
         const attributionWithPrefixedKeys = {
           ...Object.fromEntries(
             Object.entries(attribution).map(([k, v]) => [
@@ -401,7 +411,11 @@ function unnestAttributions({
                     : v,
             ]),
           ),
-          ...{ attribution__value: value },
+          ...{
+            attribution__value: value,
+            attribution__attributed_object_type: entityType,
+            attribution__attributed_object_name: entityName,
+          },
         };
 
         // add row with unnested attribution
@@ -441,9 +455,24 @@ const attributionsExportColums = [
     label: t('attributions.columns.attributeId'),
   },
   {
+    name: 'attribution__attributed_object_type',
+    field: 'attribution__attributed_object_type',
+    label: t('attributions.columns.attributedObjectType'),
+  },
+  {
+    name: 'attribution__attributed_object_name',
+    field: 'attribution__attributed_object_name',
+    label: t('attributions.columns.attributedObjectName'),
+  },
+  {
     name: 'attribution__attribute_name',
     field: 'attribution__attribute_name',
     label: t('attributions.columns.attributeName'),
+  },
+  {
+    name: 'attribution__value',
+    field: 'attribution__value',
+    label: t('attributions.columns.value'),
   },
   {
     name: 'attribution__date_attributed',
@@ -451,9 +480,14 @@ const attributionsExportColums = [
     label: t('attributions.columns.dateAttributed'),
   },
   {
-    name: 'attribution__created',
-    field: 'attribution__created',
-    label: t('attributions.columns.dateCreated'),
+    name: 'attribution__text_note',
+    field: 'attribution__text_note',
+    label: t('attributions.columns.textNote'),
+  },
+  {
+    name: 'attribution__photo_note',
+    field: 'attribution__photo_note',
+    label: t('attributions.columns.photoNote'),
   },
   {
     name: 'attribution__author',
@@ -466,19 +500,9 @@ const attributionsExportColums = [
     label: t('attributions.columns.exceptionalAttribution'),
   },
   {
-    name: 'attribution__value',
-    field: 'attribution__value',
-    label: t('attributions.columns.value'),
-  },
-  {
-    name: 'attribution__text_note',
-    field: 'attribution__text_note',
-    label: t('attributions.columns.textNote'),
-  },
-  {
-    name: 'attribution__photo_note',
-    field: 'attribution__photo_note',
-    label: t('attributions.columns.photoNote'),
+    name: 'attribution__created',
+    field: 'attribution__created',
+    label: t('attributions.columns.dateCreated'),
   },
 ].map((c) => ({
   ...c,

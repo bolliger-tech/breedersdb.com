@@ -95,14 +95,15 @@ export function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
             ? null
             : typeof value === 'object' && 't' in value && 'v' in value // is a cell object
               ? value
-              : column.name.startsWith('date_')
+              : column.name.split('.').pop()?.startsWith('date_')
                 ? ({
                     t: 'd',
                     v: new Date(value as string | Date),
                     z: XLSX_FORMATS.date,
                   } as XLSX.CellObject)
-                : ['modified', 'created'].includes(column.name) &&
-                    typeof value === 'string'
+                : ['modified', 'created'].includes(
+                      column.name.split('.').pop() || '',
+                    ) && typeof value === 'string'
                   ? new Date(value as string | Date)
                   : value; // should be: string | boolean | number | Date
 

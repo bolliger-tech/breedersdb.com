@@ -424,26 +424,26 @@ const {
   query,
   variables,
   visibleColumns: computed(() => {
-    if (visibleColumns.value.includes('entity')) {
-      return ['entityType', ...visibleColumns.value];
-    }
-    return visibleColumns.value;
-  }),
-  columns: computed(() => {
-    const entityColumnIndex = columns.value.findIndex(
-      (column) => column.name === 'entity',
+    const entityColumnIndex = visibleColumns.value.findIndex(
+      (column) => column === 'entity',
     );
     if (entityColumnIndex === -1) {
-      return columns.value;
+      return visibleColumns.value;
     }
     return [
-      ...columns.value.slice(0, entityColumnIndex + 1),
+      ...visibleColumns.value.slice(0, entityColumnIndex + 1),
+      'entityType',
+      ...visibleColumns.value.slice(entityColumnIndex + 1),
+    ];
+  }),
+  columns: computed(() => {
+    return [
+      ...columns.value,
       {
         name: 'entityType',
         label: t('attributions.columns.entityType'),
         field: 'entity_type',
       },
-      ...columns.value.slice(entityColumnIndex + 1),
     ];
   }),
   title: t('attributions.title', 2),

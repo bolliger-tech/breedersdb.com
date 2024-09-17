@@ -29,6 +29,7 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
 }: FetchAllPagesArgs<Q, V>) {
   const limit = 200;
   let offset = 0;
+  let asdf = 0;
   return {
     async *[Symbol.asyncIterator]() {
       while (true) {
@@ -44,6 +45,9 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
         }
         yield result.data as ResultOf<Q>;
         if (result.data[entityName].length < limit) {
+          break;
+        }
+        if (asdf++ > 3) {
           break;
         }
         offset += limit;
@@ -81,38 +85,42 @@ export function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
   columns,
   visibleColumns,
 }: FormatXlsxRowsWithColumns<T, C>) {
-  return columns
-    .filter((column) => visibleColumns.includes(column.name))
-    .reduce(
-      (row, column) => {
-        const value =
-          typeof column.field === 'function'
-            ? column.field(result)
-            : result[column.field as keyof T];
+  console.log('visibleColumns', visibleColumns);
+  // visibleColumns defines the order
+  return visibleColumns.reduce(
+    (row, visibleColumn) => {
+      const column = columns.find((c) => c.name === visibleColumn);
+      if (!column) {
+        return row;
+      }
+      const value =
+        typeof column.field === 'function'
+          ? column.field(result)
+          : result[column.field as keyof T];
 
-        const formattedValue =
-          value === null || value === undefined || value === ''
-            ? null
-            : typeof value === 'object' && 't' in value && 'v' in value // is a cell object
-              ? value
-              : column.name.startsWith('date_')
-                ? ({
-                    t: 'd',
-                    v: new Date(value as string | Date),
-                    z: XLSX_FORMATS.date,
-                  } as XLSX.CellObject)
-                : ['modified', 'created'].includes(column.name) &&
-                    typeof value === 'string'
-                  ? new Date(value as string | Date)
-                  : value; // should be: string | boolean | number | Date
+      const formattedValue =
+        value === null || value === undefined || value === ''
+          ? null
+          : typeof value === 'object' && 't' in value && 'v' in value // is a cell object
+            ? value
+            : column.name.startsWith('date_')
+              ? ({
+                  t: 'd',
+                  v: new Date(value as string | Date),
+                  z: XLSX_FORMATS.date,
+                } as XLSX.CellObject)
+              : ['modified', 'created'].includes(column.name) &&
+                  typeof value === 'string'
+                ? new Date(value as string | Date)
+                : value; // should be: string | boolean | number | Date
 
-        return {
-          ...row,
-          [column.label]: formattedValue,
-        };
-      },
-      {} as Record<'string', ExportDataValue>,
-    );
+      return {
+        ...row,
+        [column.label]: formattedValue,
+      };
+    },
+    {} as Record<'string', ExportDataValue>,
+  );
 }
 
 type ExportDataArgs<
@@ -203,6 +211,14 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
       const worksheet = XLSX.utils.json_to_sheet(formattedData, {
         cellDates: true,
         dateNF: XLSX_FORMATS.dateTime,
+      });
+
+      console.log('exportData', {
+        fetchedData,
+        transformResult,
+        formattedData,
+        fileName,
+        worksheet,
       });
 
       yield {

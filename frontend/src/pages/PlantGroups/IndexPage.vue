@@ -14,9 +14,9 @@
       list-entities-path="/groups"
       add-entity-path="/groups/new"
       :view-entity-path-getter="(id) => `/groups/${id}`"
-      @scanned-qr="onScannedQr"
       :is-exporting="isExporting"
       :export-progress="exportProgress"
+      @scanned-qr="onScannedQr"
       @export="onExport"
     >
       <template #body-cell-label_id="cellProps">

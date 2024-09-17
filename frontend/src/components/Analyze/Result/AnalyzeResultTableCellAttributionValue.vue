@@ -35,7 +35,7 @@ export interface AnalyzeResultTableCellAttributionValueProps {
 
 const props = defineProps<AnalyzeResultTableCellAttributionValueProps>();
 
-const { t } = useI18n();
+const { t, d, n } = useI18n();
 
 const label = computed(() => {
   const type = dataTypeToColumnTypes(props.attribution.data_type);
@@ -43,6 +43,6 @@ const label = computed(() => {
   if (type === ColumnTypes.Photo) return t('analyze.result.photo');
 
   const value = getAttributionValue(props.attribution);
-  return formatResultColumnValue({ value, type });
+  return formatResultColumnValue({ value, type, d, n });
 });
 </script>

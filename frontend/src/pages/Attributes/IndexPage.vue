@@ -55,7 +55,7 @@ import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
-const { t } = useI18n();
+const { t, d, n } = useI18n();
 
 const query = graphql(
   `
@@ -140,7 +140,7 @@ const columns = [
       }
 
       const value = row.default_value;
-      return formatResultColumnValue({ value, type });
+      return formatResultColumnValue({ value, type, d, n });
     },
     sortable: true,
   },

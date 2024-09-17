@@ -183,7 +183,7 @@ const attribution = computed(
       | undefined,
 );
 
-const { t, d } = useI18n();
+const { t, d, n } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
@@ -203,7 +203,7 @@ function getValue(row: NonNullable<typeof attribution.value>) {
     return '';
   }
 
-  return formatResultColumnValue({ value, type });
+  return formatResultColumnValue({ value, type, d, n });
 }
 
 const entityName = computed(() => {

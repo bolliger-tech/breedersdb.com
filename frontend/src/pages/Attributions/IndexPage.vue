@@ -90,7 +90,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
-const { t, d } = useI18n();
+const { t, d, n } = useI18n();
 
 const query = graphql(
   `
@@ -352,7 +352,7 @@ function getValue(row: AttributionsViewFragment) {
     return '';
   }
 
-  return formatResultColumnValue({ value, type });
+  return formatResultColumnValue({ value, type, d, n });
 }
 
 const searchPlaceholder = computed(() => {

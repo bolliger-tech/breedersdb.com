@@ -319,7 +319,7 @@ const {
   typeof variables.value
 >({
   entityName: 'plants',
-  query: ref(query),
+  query,
   variables,
   visibleColumns,
   columns,

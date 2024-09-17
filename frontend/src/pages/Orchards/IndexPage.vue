@@ -140,7 +140,7 @@ const {
   exportProgress,
 } = useExport({
   entityName: 'orchards',
-  query: computed(() => query),
+  query,
   variables,
   visibleColumns,
   columns,

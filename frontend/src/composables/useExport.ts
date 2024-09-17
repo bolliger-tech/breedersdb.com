@@ -1,4 +1,4 @@
-import { ref, type Ref } from 'vue';
+import { ref, type MaybeRef, toValue } from 'vue';
 import * as XLSX from 'xlsx';
 import {
   useClientHandle,
@@ -227,11 +227,11 @@ export function useExport<T, Q extends DocumentInput, V extends AnyVariables>(
     | 'visibleColumns'
     | 'subsetLabel'
   > & {
-    query: Ref<Q>;
-    variables: Ref<V>;
-    columns: Ref<ExportDataArgs<T, Q, V>['columns']>;
-    visibleColumns: Ref<ExportDataArgs<T, Q, V>['visibleColumns']>;
-    subsetLabel?: Ref<string | undefined>;
+    query: MaybeRef<Q>;
+    variables: MaybeRef<V>;
+    columns: MaybeRef<ExportDataArgs<T, Q, V>['columns']>;
+    visibleColumns: MaybeRef<ExportDataArgs<T, Q, V>['visibleColumns']>;
+    subsetLabel?: MaybeRef<string | undefined>;
   },
 ) {
   const isExporting = ref(false);
@@ -245,11 +245,11 @@ export function useExport<T, Q extends DocumentInput, V extends AnyVariables>(
     for await (const d of exportData({
       ...args,
       client,
-      query: args.query.value,
-      variables: args.variables.value,
-      columns: args.columns.value,
-      visibleColumns: args.visibleColumns.value,
-      subsetLabel: args.subsetLabel?.value,
+      query: toValue(args.query),
+      variables: toValue(args.variables),
+      columns: toValue(args.columns),
+      visibleColumns: toValue(args.visibleColumns),
+      subsetLabel: toValue(args.subsetLabel),
     })) {
       progress.value = Math.min(d.progress, 0.99);
       if (d.worksheet) {

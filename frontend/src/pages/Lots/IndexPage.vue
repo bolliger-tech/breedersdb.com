@@ -197,10 +197,10 @@ const {
   exportProgress,
 } = useExport({
   entityName: 'lots',
-  query: computed(() => query),
+  query,
   variables,
   visibleColumns,
-  columns: computed(() => columns),
+  columns,
   title: t('lots.title', 2),
 });
 </script>

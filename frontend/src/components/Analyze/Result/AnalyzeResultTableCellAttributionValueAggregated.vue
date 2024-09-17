@@ -50,7 +50,7 @@ export interface AnalyzeResultTableCellAttributionValueAggregatedProps {
 const props =
   defineProps<AnalyzeResultTableCellAttributionValueAggregatedProps>();
 
-const { t } = useI18n();
+const { t, d, n } = useI18n();
 
 const label = computed(() => {
   if (!props.attributions.length) {
@@ -69,16 +69,22 @@ const label = computed(() => {
       return formatResultColumnValue({
         value: props.attributions.length,
         type,
+        d,
+        n,
       });
     case AttributionAggregation.Min:
       return formatResultColumnValue({
         value: getMin(props.attributions, type),
         type,
+        d,
+        n,
       });
     case AttributionAggregation.Max:
       return formatResultColumnValue({
         value: getMax(props.attributions, type),
         type,
+        d,
+        n,
       });
     case AttributionAggregation.Mean:
       return formatResultColumnValue({
@@ -87,6 +93,8 @@ const label = computed(() => {
           type === ColumnTypes.Integer || type === ColumnTypes.Rating
             ? ColumnTypes.Float
             : type,
+        d,
+        n,
       });
     case AttributionAggregation.Median:
       return formatResultColumnValue({
@@ -95,6 +103,8 @@ const label = computed(() => {
           type === ColumnTypes.Integer || type === ColumnTypes.Rating
             ? ColumnTypes.Float
             : type,
+        d,
+        n,
       });
     case AttributionAggregation.StdDev:
       if (type === ColumnTypes.Date) {
@@ -107,6 +117,8 @@ const label = computed(() => {
           type === ColumnTypes.Integer || type === ColumnTypes.Rating
             ? ColumnTypes.Float
             : type,
+        d,
+        n,
       });
     default:
       throw new Error(`Unsupported aggregation: ${props.aggregation}`);

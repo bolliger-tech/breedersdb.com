@@ -139,7 +139,7 @@ defineEmits<{
 
 const open = defineModel<boolean>({ required: false, default: false });
 
-const { t, d } = useI18n();
+const { t, d, n } = useI18n();
 
 const entityName = computed(() => {
   const name =
@@ -191,7 +191,7 @@ const description = computed(() => {
   }
 
   const value = getAttributionValue(props.attribution);
-  const formattedValue = formatResultColumnValue({ value, type });
+  const formattedValue = formatResultColumnValue({ value, type, d, n });
 
   return {
     primary: `${props.attribution.attribute_name}: ${formattedValue}`,

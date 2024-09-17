@@ -32,3 +32,9 @@ export function singularize(word: string) {
   }
   return word;
 }
+
+export function n2semicolon<T>(value: T) {
+  return typeof value === 'string'
+    ? (value.replace(/(?:\r\n|\r|\n)/g, '; ') as T)
+    : value;
+}

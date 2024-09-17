@@ -282,7 +282,7 @@ describe('AnalyzePage', () => {
     exceptional_attribution
     text_note
     photo_note
-      plant {
+    plant {
       id
       label_id
     }

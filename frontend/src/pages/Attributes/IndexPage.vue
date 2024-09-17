@@ -26,7 +26,7 @@
             max-width="clamp(300px, 30svw, 600px)"
             class="vertical-middle"
           >
-            {{ cellProps.value }}
+            {{ n2semicolon(cellProps.value) }}
           </AttributionValueChip>
         </q-td>
       </template>
@@ -58,8 +58,9 @@ import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 import { useExport } from 'src/composables/useExport';
+import { n2semicolon } from 'src/utils/stringUtils';
 
-const { t } = useI18n();
+const { t, d, n } = useI18n();
 
 const query = graphql(
   `
@@ -144,7 +145,7 @@ const columns = computed(() => [
       }
 
       const value = row.default_value;
-      return formatResultColumnValue({ value, type });
+      return formatResultColumnValue({ value, type, d, n });
     },
     sortable: true,
   },

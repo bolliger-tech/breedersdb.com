@@ -655,7 +655,7 @@ fragment AttributionFragment on attributions_view {
   exceptional_attribution
   text_note
   photo_note
-   plant {
+  plant {
     id
     label_id
   }

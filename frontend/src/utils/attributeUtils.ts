@@ -1,6 +1,6 @@
 import type { AttributeDataTypes, AttributeTypes } from 'src/graphql';
 import { ColumnTypes } from './columnTypes';
-import type { TFunc } from 'src/composables/useI18n';
+import type { DFunc, NFunc, TFunc } from 'src/composables/useI18n';
 
 export type PrimitiveColumnValue =
   | string
@@ -64,27 +64,38 @@ export function attributeTypeToLabel(attributeType: AttributeTypes, t: TFunc) {
 export function formatResultColumnValue({
   value,
   type,
+  d,
+  n,
 }: {
   value: string | number | Date | null | boolean | undefined;
   type: Exclude<ColumnTypes, ColumnTypes.Photo>;
+  d: DFunc;
+  n: NFunc;
 }) {
   if (null === value || undefined === value) {
     return '';
-  } else if (value instanceof Date) {
-    return value.toLocaleDateString();
-  } else if (typeof value === 'number') {
-    return value.toLocaleString();
-  } else if (typeof value === 'boolean') {
-    return value ? '✓' : '✕';
-  } else if (type === ColumnTypes.Integer || type === ColumnTypes.Rating) {
-    return parseInt(value).toLocaleString();
-  } else if (type === ColumnTypes.Float) {
-    return parseFloat(value).toLocaleString();
-  } else if (type === ColumnTypes.Date) {
-    return new Date(value).toLocaleDateString();
   }
 
-  return value;
+  if (typeof value === 'boolean') {
+    return value ? '✓' : '✕';
+  }
+
+  if (typeof value === 'number') {
+    if (type === ColumnTypes.Integer || type === ColumnTypes.Rating) {
+      return n(parseInt(value.toString()));
+    } else if (type === ColumnTypes.Float) {
+      return n(parseFloat(value.toString()));
+    }
+    return value.toString();
+  }
+
+  if (type === ColumnTypes.Date) {
+    return d(value, 'Ymd');
+  } else if (type === ColumnTypes.DateTime) {
+    return d(value, 'YmdHis');
+  }
+
+  return value.toString();
 }
 
 export function getAttributionValue({

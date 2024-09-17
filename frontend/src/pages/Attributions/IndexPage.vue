@@ -48,7 +48,7 @@
                 button-size="xs"
               />
             </template>
-            <template v-else>{{ cellProps.value }}</template>
+            <template v-else>{{ n2semicolon(cellProps.value) }}</template>
           </AttributionValueChip>
         </q-td>
       </template>
@@ -98,8 +98,9 @@ import {
   getAttributionObjectName,
   getAttributionObjectType,
 } from 'src/components/Analyze/Result/filterToQuery';
+import { n2semicolon } from 'src/utils/stringUtils';
 
-const { t, d } = useI18n();
+const { t, d, n } = useI18n();
 
 const query = graphql(
   `
@@ -362,7 +363,7 @@ function getValue(row: AttributionsViewFragment) {
     return '';
   }
 
-  return formatResultColumnValue({ value, type });
+  return formatResultColumnValue({ value, type, d, n });
 }
 
 const searchPlaceholder = computed(() => {

@@ -7,7 +7,7 @@
     :dark="dark"
   >
     <template #label>
-      {{ label }}
+      {{ n2semicolon(label) }}
     </template>
     <template #overlay>
       <AnalyzeResultTableCellAttributionOverlay :id="attribution.id" />
@@ -27,6 +27,7 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import AnalyzeResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
 import AnalyzeResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
 import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
+import { n2semicolon } from 'src/utils/stringUtils';
 
 export interface AnalyzeResultTableCellAttributionValueProps {
   attribution: AnalyzeAttributionsViewFields;
@@ -35,7 +36,7 @@ export interface AnalyzeResultTableCellAttributionValueProps {
 
 const props = defineProps<AnalyzeResultTableCellAttributionValueProps>();
 
-const { t } = useI18n();
+const { t, d, n } = useI18n();
 
 const label = computed(() => {
   const type = dataTypeToColumnTypes(props.attribution.data_type);
@@ -43,6 +44,6 @@ const label = computed(() => {
   if (type === ColumnTypes.Photo) return t('analyze.result.photo');
 
   const value = getAttributionValue(props.attribution);
-  return formatResultColumnValue({ value, type });
+  return formatResultColumnValue({ value, type, d, n });
 });
 </script>

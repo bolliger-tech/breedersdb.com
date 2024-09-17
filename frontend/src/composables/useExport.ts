@@ -8,6 +8,7 @@ import {
 } from '@urql/vue';
 import type { EntityListTableColum } from 'src/components/Entity/List/types';
 import type { ResultOf } from 'src/graphql';
+import { n2semicolon } from 'src/utils/stringUtils';
 
 export const XLSX_FORMATS = {
   dateTime: 'dd.mm.yyyy hh:mm:ss',
@@ -103,15 +104,18 @@ export function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
           ? null
           : typeof value === 'object' && 't' in value && 'v' in value // is a cell object
             ? value
-            : column.name.startsWith('date_')
+            : column.name.split('.').pop()?.startsWith('date_')
               ? ({
                   t: 'd',
                   v: new Date(value as string | Date),
                   z: XLSX_FORMATS.date,
                 } as XLSX.CellObject)
-              : ['modified', 'created'].includes(column.name) &&
-                  typeof value === 'string'
-                ? new Date(value as string | Date)
+              : typeof value === 'string'
+                ? ['modified', 'created'].includes(
+                    column.name.split('.').pop() || '',
+                  )
+                  ? new Date(value as string | Date)
+                  : n2semicolon(value)
                 : value; // should be: string | boolean | number | Date
 
       return {

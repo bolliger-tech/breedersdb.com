@@ -75,8 +75,6 @@ const additionalWhere = computed(() => ({
   base_table: { _eq: props.baseTable },
 }));
 
-console.log('props.analyzeId', props.analyzeId, typeof props.analyzeId);
-
 const { isUnique, fetching: isUniqueFetching } = useIsUnique({
   tableName: 'analyze_filters',
   existingId: typeof props.analyzeId === 'number' ? props.analyzeId : undefined,

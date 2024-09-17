@@ -45,7 +45,7 @@
                 button-size="xs"
               />
             </template>
-            <template v-else>{{ cellProps.value }}</template>
+            <template v-else>{{ n2semicolon(cellProps.value) }}</template>
           </AttributionValueChip>
         </q-td>
       </template>
@@ -89,6 +89,7 @@ import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAtt
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
+import { n2semicolon } from 'src/utils/stringUtils';
 
 const { t, d, n } = useI18n();
 

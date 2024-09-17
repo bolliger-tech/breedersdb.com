@@ -15,7 +15,7 @@
     </template>
 
     <template v-else>
-      {{ cellValue }}
+      {{ n2semicolon(cellValue) }}
     </template>
   </q-td>
 </template>
@@ -27,6 +27,7 @@ import AnalyzeResultTableCellAttributionValue from './AnalyzeResultTableCellAttr
 import AnalyzeResultTableCellAttributionValueAggregated from './AnalyzeResultTableCellAttributionValueAggregated.vue';
 import { AnalyzeAttributionsViewFields } from './filterToQuery';
 import { AttributionAggregation } from './attributionAggregationTypes';
+import { n2semicolon } from 'src/utils/stringUtils';
 
 type BodyCellParameters = Parameters<QTableSlots['body-cell']>[0];
 

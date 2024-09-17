@@ -7,7 +7,7 @@
     :dark="dark"
   >
     <template #label>
-      {{ label }}
+      {{ n2semicolon(label) }}
     </template>
     <template #overlay>
       <AnalyzeResultTableCellAttributionOverlay :id="attribution.id" />
@@ -27,6 +27,7 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import AnalyzeResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
 import AnalyzeResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
 import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
+import { n2semicolon } from 'src/utils/stringUtils';
 
 export interface AnalyzeResultTableCellAttributionValueProps {
   attribution: AnalyzeAttributionsViewFields;

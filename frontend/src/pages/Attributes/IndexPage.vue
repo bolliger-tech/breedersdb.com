@@ -23,7 +23,7 @@
             max-width="clamp(300px, 30svw, 600px)"
             class="vertical-middle"
           >
-            {{ cellProps.value }}
+            {{ n2semicolon(cellProps.value) }}
           </AttributionValueChip>
         </q-td>
       </template>
@@ -54,6 +54,7 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
+import { n2semicolon } from 'src/utils/stringUtils';
 
 const { t, d, n } = useI18n();
 

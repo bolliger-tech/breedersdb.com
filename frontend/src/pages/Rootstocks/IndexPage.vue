@@ -12,6 +12,9 @@
       list-entities-path="/rootstocks"
       add-entity-path="/rootstocks/new"
       :view-entity-path-getter="(id) => `/rootstocks/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -27,6 +30,7 @@ import { rootstockFragment } from 'src/components/Rootstock/rootstockFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -101,4 +105,17 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'rootstocks',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('rootstocks.title', 2),
+});
 </script>

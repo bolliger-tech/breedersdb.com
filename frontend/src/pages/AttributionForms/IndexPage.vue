@@ -14,6 +14,9 @@
       list-entities-path="/attribution-forms"
       add-entity-path="/attribution-forms/new"
       :view-entity-path-getter="(id) => `/attribution-forms/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     >
       <template #body-cell-fields="cellProps">
         <q-td :props="cellProps">
@@ -46,6 +49,7 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -149,4 +153,20 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'attribution_forms',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('attributionForms.title', 2),
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
+});
 </script>

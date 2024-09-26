@@ -30,6 +30,7 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
 }: FetchAllPagesArgs<Q, V>) {
   const limit = 500;
   let offset = 0;
+  const firstPage = true;
   return {
     async *[Symbol.asyncIterator]() {
       while (true) {
@@ -39,11 +40,18 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
             { ...variables, limit, offset },
             { requestPolicy: 'network-only' },
           )
-          .toPromise();
+          .toPromise()
+          .catch((error) => {
+            console.error(error);
+            return { data: null };
+          });
         if (!result.data) {
           break;
         }
         yield result.data as ResultOf<Q>;
+        if (firstPage) {
+          break;
+        }
         if (result.data[entityName].length < limit) {
           break;
         }
@@ -109,9 +117,9 @@ export function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
                 ? ['modified', 'created'].includes(
                     column.name.split('.').pop() || '',
                   )
-                  ? new Date(value as string | Date)
+                  ? new Date(value as string)
                   : n2semicolon(value)
-                : value; // should be: string | boolean | number | Date
+                : value; // should be: boolean | number | Date
 
       return {
         ...row,

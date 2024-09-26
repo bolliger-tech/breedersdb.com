@@ -14,7 +14,6 @@
       list-entities-path="/groups"
       add-entity-path="/groups/new"
       :view-entity-path-getter="(id) => `/groups/${id}`"
-      :has-qr-scanner="true"
       @scanned-qr="onScannedQr"
     >
       <template #body-cell-label_id="cellProps">

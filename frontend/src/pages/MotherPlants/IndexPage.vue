@@ -12,7 +12,6 @@
       list-entities-path="/mother-plants"
       add-entity-path="/mother-plants/new"
       :view-entity-path-getter="(id) => `/mother-plants/${id}`"
-      :has-qr-scanner="true"
       @scanned-qr="(code) => (search = code)"
     >
       <template #[`body-cell-plant.label_id`]="cellProps">

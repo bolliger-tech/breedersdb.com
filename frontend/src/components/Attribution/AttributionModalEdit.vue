@@ -69,6 +69,7 @@ import {
   UploadProgress,
   useImageUploader,
 } from 'src/composables/useImageUploader';
+import { getImageUrlRelative } from 'src/utils/imageUtils';
 
 export type AttributionEditInput = Pick<
   AttributionsViewFragment,
@@ -120,7 +121,12 @@ async function addPhotosToModel() {
 }
 
 async function loadPhoto(fileName: string) {
-  return await fetch(`/api/assets/images/${fileName}?file=${fileName}`)
+  return await fetch(
+    getImageUrlRelative({
+      serverFileName: fileName,
+      desiredFileName: fileName,
+    }),
+  )
     .then(async (res) => {
       if (!res.ok) {
         throw new Error(

@@ -12,6 +12,9 @@
       list-entities-path="/lots"
       add-entity-path="/lots/new"
       :view-entity-path-getter="(id) => `/lots/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -27,6 +30,7 @@ import { lotFragment } from 'src/components/Lot/lotFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t, n, d } = useI18n();
 
@@ -39,9 +43,6 @@ const query = graphql(
       $where: lots_bool_exp!
       $LotWithOrchard: Boolean! = true
       $LotWithCrossing: Boolean! = false
-      $withParentCultivar: Boolean! = false
-      $withMotherPlants: Boolean! = false
-      $withPlantRows: Boolean! = false
     ) {
       lots_aggregate(where: $where) {
         aggregate {
@@ -189,4 +190,17 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'lots',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('lots.title', 2),
+});
 </script>

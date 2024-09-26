@@ -14,7 +14,6 @@
       list-entities-path="/cultivars"
       add-entity-path="/cultivars/new"
       :view-entity-path-getter="(id) => `/cultivars/${id}`"
-      :has-qr-scanner="true"
       @scanned-qr="onScannedQr"
     />
   </PageLayout>

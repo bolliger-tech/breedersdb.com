@@ -9,6 +9,7 @@ export const attributions = {
     lots: 'Search by attribute or lot name',
   },
 
+  exportPrefix: 'Attribution',
   columns: {
     exceptionalAttribution: 'Exceptional attribution',
     author: 'Author',
@@ -16,10 +17,16 @@ export const attributions = {
     value: 'Value',
     textNote: 'Note',
     textNoteLong: 'Note on value',
-    photoNote: 'Photo on value',
-    photoNoteLong: 'Photo',
+    photoNote: 'Photo',
+    photoNoteLong: 'Photo on value',
     attributeName: 'Attribute',
     entity: 'Entity',
+    id: 'ID',
+    attributedObjectType: 'Attributed object',
+    attributedObjectName: 'Attributed object name',
+    attributionFormId: 'Form ID',
+    attributeId: 'Attribute ID',
+    dateCreated: 'Created',
   },
 
   observations: 'Observations',

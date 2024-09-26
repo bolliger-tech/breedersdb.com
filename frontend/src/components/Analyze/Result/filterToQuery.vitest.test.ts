@@ -276,6 +276,8 @@ const filterRules = {
   }),
 };
 
+const NUM_DEFAULT_QUERY_VARS = 2; // limit and offset
+
 describe('filterToQuery', () => {
   describe('where', () => {
     describe('conjunction', () => {
@@ -2056,7 +2058,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
   cultivars(where: { _and: [ { lot: { _or: [ { string_allow_empty: { _is_null: true } }, { string_allow_empty: { _eq: "" } } ] } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(0);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: Citext === "" nullable', () => {
@@ -2085,7 +2089,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
   cultivars(where: { _and: [ { lot: { _or: [ { citext_allow_empty: { _is_null: true } }, { citext_allow_empty: { _eq: "" } } ] } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(0);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: String Empty nullable', () => {
@@ -2113,7 +2119,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
   cultivars(where: { _and: [ { _not: { lot: { _and: [ { string_allow_empty: { _is_null: false } }, { string_allow_empty: { _neq: "" } } ] } } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(0);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: Citext Empty nullable', () => {
@@ -2141,7 +2149,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
   cultivars(where: { _and: [ { _not: { lot: { _and: [ { citext_allow_empty: { _is_null: false } }, { citext_allow_empty: { _neq: "" } } ] } } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(0);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: Integer NotEmpty nullable', () => {
@@ -2326,7 +2336,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
     cultivars(where: { _and: [ { _not: { lot: { _or: [ { string_allow_empty: { _is_null: true } }, { string_allow_empty: { _eq: "" } } ] } } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(0);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: Citext !== "" nullable', () => {
@@ -2355,7 +2367,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
     cultivars(where: { _and: [ { _not: { lot: { _or: [ { citext_allow_empty: { _is_null: true } }, { citext_allow_empty: { _eq: "" } } ] } } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(0);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: String NotEmpty nullable', () => {
@@ -2383,7 +2397,9 @@ cultivars(where: { _and: [ { id: { _eq: $v000 } } ] }`).replaceAll(
     cultivars(where: { _and: [ { lot: { _and: [ { string_allow_empty: { _is_null: false } }, { string_allow_empty: { _neq: "" } } ] } } ] }`),
               ),
             );
-            expect(Object.values(variables).length).toBe(0);
+            expect(Object.values(variables).length).toBe(
+              NUM_DEFAULT_QUERY_VARS,
+            );
           });
 
           it('should return: True', () => {
@@ -2497,15 +2513,17 @@ cultivars(where: { _and: [
     it('should apply defaults: limit & offset', () => {
       const filter = FilterNode.FilterRoot(filterRootArgs);
 
-      const { query } = filterToQuery({
+      const { query, variables } = filterToQuery({
         baseFilter: filter,
         attributionFilter: emptyAttributionFilter,
         columns: [],
         pagination: {},
       });
 
-      expect(query).toMatch(new RegExp(prepareForRegex('limit: 100')));
-      expect(query).toMatch(new RegExp(prepareForRegex('offset: 0')));
+      expect(query).toMatch(new RegExp(prepareForRegex('limit: $limit')));
+      expect(query).toMatch(new RegExp(prepareForRegex('offset: $offset')));
+      expect(variables.limit).toBe(100);
+      expect(variables.offset).toBe(0);
     });
 
     it('should apply default column: id', () => {
@@ -2545,14 +2563,15 @@ cultivars(where: { _and: [
         page: 10,
       });
 
-      const { query } = filterToQuery({
+      const { query, variables } = filterToQuery({
         baseFilter: filter,
         attributionFilter: emptyAttributionFilter,
         columns: [],
         pagination,
       });
 
-      expect(query).toMatch(new RegExp(prepareForRegex('offset: 90')));
+      expect(query).toMatch(new RegExp(prepareForRegex('offset: $offset')));
+      expect(variables.offset).toBe(90);
     });
 
     it('should return offset', () => {
@@ -2561,14 +2580,15 @@ cultivars(where: { _and: [
         rowsPerPage: 10,
       });
 
-      const { query } = filterToQuery({
+      const { query, variables } = filterToQuery({
         baseFilter: filter,
         attributionFilter: emptyAttributionFilter,
         columns: [],
         pagination,
       });
 
-      expect(query).toMatch(new RegExp(prepareForRegex('limit: 10')));
+      expect(query).toMatch(new RegExp(prepareForRegex('limit: $limit')));
+      expect(variables.limit).toBe(10);
     });
 
     it('should return orderBy asc', () => {
@@ -2833,6 +2853,32 @@ fragment AttributionFragment on attributions_view {
   cultivar_id
   lot_id
   data_type
+  # only needed for export:
+  attribution_form_id
+  attribute_id
+  attribute_name
+  date_attributed
+  created
+  author
+  exceptional_attribution
+  text_note
+  photo_note
+  plant {
+    id
+    label_id
+  }
+  plant_group {
+    id
+    display_name
+  }
+  cultivar {
+    id
+    display_name
+  }
+  lot {
+    id
+    display_name
+  }
 }`),
       ),
     );
@@ -2875,7 +2921,7 @@ fragment AttributionFragment on attributions_view {
       pagination: basicPagination,
     });
 
-    expect(Object.keys(variables).length).toBe(0);
+    expect(Object.keys(variables).length).toBe(NUM_DEFAULT_QUERY_VARS);
   });
 
   it('should contain attribution variables if there are attribution columns', () => {

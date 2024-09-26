@@ -24,7 +24,7 @@
             </template>
           </q-input>
         </div>
-        <div v-if="hasQrScanner" class="col-auto q-ml-md">
+        <div v-if="onScannedQr" class="col-auto q-ml-md">
           <BaseQrScannerModal @change="$emit('scanned-qr', $event)" />
         </div>
       </div>
@@ -71,7 +71,7 @@ interface EntityListPropsWithoutModels {
   tabs?: { value: string; label: string }[];
   searchPlaceholder?: string;
   hasAddButton?: boolean;
-  hasQrScanner?: boolean;
+  onScannedQr?: (data: string) => void;
 }
 
 defineProps<EntityListPropsWithoutModels>();

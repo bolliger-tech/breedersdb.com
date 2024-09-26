@@ -41,10 +41,14 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
             { requestPolicy: 'network-only' },
           )
           .toPromise();
+        if (result.error) {
+          throw result.error;
+        }
         if (!result.data) {
           break;
         }
         yield result.data as ResultOf<Q>;
+        // we received less than the limit, so we are done
         if (result.data[entityName].length < limit) {
           break;
         }

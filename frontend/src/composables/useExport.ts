@@ -30,7 +30,6 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
 }: FetchAllPagesArgs<Q, V>) {
   const limit = 500;
   let offset = 0;
-  const firstPage = true;
   return {
     async *[Symbol.asyncIterator]() {
       while (true) {
@@ -40,18 +39,11 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
             { ...variables, limit, offset },
             { requestPolicy: 'network-only' },
           )
-          .toPromise()
-          .catch((error) => {
-            console.error(error);
-            return { data: null };
-          });
+          .toPromise();
         if (!result.data) {
           break;
         }
         yield result.data as ResultOf<Q>;
-        if (firstPage) {
-          break;
-        }
         if (result.data[entityName].length < limit) {
           break;
         }

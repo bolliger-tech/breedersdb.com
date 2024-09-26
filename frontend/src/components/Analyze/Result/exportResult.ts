@@ -99,7 +99,7 @@ export function attributionToXlsx(attribution: AnalyzeAttributionsViewFields) {
                   attributionId: attribution.id,
                 })
               : k === 'created'
-                ? new Date(value as string)
+                ? new Date(v as string)
                 : v,
         ]),
     ) as { [x: string]: string | number | boolean | Date | CellObject }),

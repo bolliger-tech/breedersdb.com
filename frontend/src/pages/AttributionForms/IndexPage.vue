@@ -179,7 +179,7 @@ function transformData({
           .map((field) => {
             return field.attribute.name;
           })
-          .join(', '),
+          .join('; '),
       };
     }),
   };

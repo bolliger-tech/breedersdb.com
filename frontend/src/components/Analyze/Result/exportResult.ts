@@ -2,7 +2,10 @@ import { XLSX_FORMATS } from 'src/composables/useExport';
 import type { CellObject } from 'xlsx';
 import { getImageCell } from 'src/utils/imageUtils';
 
-import type { AnalyzeAttributionsViewFields } from './filterToQuery';
+import {
+  type AnalyzeAttributionsViewFields,
+  attributionValueKeys,
+} from './filterToQuery';
 
 export type AnalyzeAttributionsViewValueFields = Pick<
   AnalyzeAttributionsViewFields,
@@ -12,9 +15,6 @@ export type AnalyzeAttributionsViewValueFields = Pick<
   | 'boolean_value'
   | 'date_value'
 >;
-
-export const attributionValueKeys: (keyof AnalyzeAttributionsViewValueFields)[] =
-  ['integer_value', 'float_value', 'text_value', 'boolean_value', 'date_value'];
 
 export type AnalyzeAttributionsViewObjectFields = Pick<
   AnalyzeAttributionsViewFields,

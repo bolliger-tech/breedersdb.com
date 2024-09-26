@@ -30,7 +30,7 @@ import { userFragment } from 'src/components/User/userFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
-import { useExport } from 'src/composables/useExport';
+import { TransformDataArgs, useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -128,6 +128,21 @@ watch(
   { immediate: true },
 );
 
+function transformData({
+  data,
+  visibleColumns,
+}: TransformDataArgs<ResultOf<typeof query>['users'][0]>) {
+  return {
+    visibleColumns,
+    data: data.map((row) => {
+      return {
+        ...row,
+        last_signin: row.last_signin ? new Date(row.last_signin) : null,
+      };
+    }),
+  };
+}
+
 const {
   exportDataAndWriteNewXLSX: onExport,
   isExporting,
@@ -139,5 +154,6 @@ const {
   visibleColumns,
   columns,
   title: t('users.title', 2),
+  transformDataFn: transformData,
 });
 </script>

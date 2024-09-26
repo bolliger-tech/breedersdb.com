@@ -9,6 +9,7 @@ import {
 import type { EntityListTableColum } from 'src/components/Entity/List/types';
 import type { ResultOf } from 'src/graphql';
 import { n2semicolon } from 'src/utils/stringUtils';
+import { getFileNameDateTime } from 'src/utils/dateUtils';
 
 export const XLSX_FORMATS = {
   dateTime: 'dd.mm.yyyy hh:mm:ss',
@@ -77,7 +78,7 @@ type FormatXlsxRowsWithColumns<T, C extends EntityListTableColum> = {
   visibleColumns: string[];
 };
 
-export function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
+function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
   result,
   columns,
   visibleColumns,
@@ -203,7 +204,7 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
 
       const org = import.meta.env.VITE_ORG_ABBREVIATION;
       const fileName =
-        ['bdb', org, title, subsetLabel, new Date().toISOString()]
+        ['bdb', org, title, subsetLabel, getFileNameDateTime()]
           .filter(Boolean)
           .join('-') + '.xlsx';
 

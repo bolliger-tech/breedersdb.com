@@ -52,3 +52,12 @@ export function toLocaleRelativeTimeString(
   }
   return rtf.format(-diffYears, 'year');
 }
+
+// 2024-09-26T19_07_05.532Z -> 2024-09-26T21:07:05
+export function getFileNameDateTime(input?: Date | string | undefined) {
+  // toISOString is always UTC, create a date that has local time but utc timezone
+  // then convert to iso string and shorten
+  const date = input ? new Date(input) : new Date();
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString().split('.')[0];
+}

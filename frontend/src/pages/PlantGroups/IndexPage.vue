@@ -14,7 +14,10 @@
       list-entities-path="/groups"
       add-entity-path="/groups/new"
       :view-entity-path-getter="(id) => `/groups/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
       @scanned-qr="onScannedQr"
+      @export="onExport"
     >
       <template #body-cell-label_id="cellProps">
         <q-td :props="cellProps">
@@ -40,6 +43,7 @@ import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { plantGroupLabelIdUtils } from 'src/utils/labelIdUtils';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -142,7 +146,7 @@ const plantGroupsCount = computed(
   () => data.value?.plant_groups_aggregate?.aggregate?.count || 0,
 );
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'display_name',
     label: t('entity.commonColumns.name'),
@@ -173,12 +177,24 @@ const columns = [
     maxWidth: 'clamp(300px, 30svw, 600px)',
     ellipsis: true,
   },
+  ...(subset.value === 'all'
+    ? [
+        {
+          name: 'disabled',
+          label: t('entity.commonColumns.disabled'),
+          field: 'disabled',
+          sortable: true,
+        },
+      ]
+    : []),
   ...useTimestampColumns(),
-];
+]);
 
 const { visibleColumns } = useEntityTableColumns({
   entityType: 'plantGroups',
-  defaultColumns: columns.map((column) => column.name),
+  defaultColumns: columns.value
+    .map((column) => column.name)
+    .filter((name) => subset.value === 'all' || name !== 'disabled'),
 });
 
 watch(
@@ -244,4 +260,20 @@ async function onScannedQr(code: string) {
     search.value = code;
   }
 }
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'plant_groups',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('plantGroups.title', 2),
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
+});
 </script>

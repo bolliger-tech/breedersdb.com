@@ -21,6 +21,7 @@ export const attributions = {
     photoNoteLong: 'Photo on value',
     attributeName: 'Attribute',
     entity: 'Entity',
+    entityType: 'Entity type',
     id: 'ID',
     attributedObjectType: 'Attributed object',
     attributedObjectName: 'Attributed object name',

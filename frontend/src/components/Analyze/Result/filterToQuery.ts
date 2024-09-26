@@ -708,6 +708,9 @@ export type AnalyzeAttributionsViewValueFields = Pick<
   | 'date_value'
 >;
 
+export const attributionValueKeys: (keyof AnalyzeAttributionsViewValueFields)[] =
+  ['integer_value', 'float_value', 'text_value', 'boolean_value', 'date_value'];
+
 type QueryVariable = {
   name: string;
   type: ReturnType<typeof columnTypeToGraphQLType>; // GraphQL type

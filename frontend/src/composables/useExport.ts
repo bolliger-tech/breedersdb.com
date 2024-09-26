@@ -9,6 +9,7 @@ import {
 import type { EntityListTableColum } from 'src/components/Entity/List/types';
 import type { ResultOf } from 'src/graphql';
 import { n2semicolon } from 'src/utils/stringUtils';
+import { getFileNameDateTime } from 'src/utils/dateUtils';
 
 export const XLSX_FORMATS = {
   dateTime: 'dd.mm.yyyy hh:mm:ss',
@@ -28,7 +29,7 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
   query,
   variables,
 }: FetchAllPagesArgs<Q, V>) {
-  const limit = 200;
+  const limit = 500;
   let offset = 0;
   return {
     async *[Symbol.asyncIterator]() {
@@ -40,10 +41,14 @@ export function fetchAllData<Q extends DocumentInput, V extends AnyVariables>({
             { requestPolicy: 'network-only' },
           )
           .toPromise();
+        if (result.error) {
+          throw result.error;
+        }
         if (!result.data) {
           break;
         }
         yield result.data as ResultOf<Q>;
+        // we received less than the limit, so we are done
         if (result.data[entityName].length < limit) {
           break;
         }
@@ -67,7 +72,7 @@ export type TransformDataArgs<T> = {
 };
 
 export type TransformDataResult = {
-  data: Record<string, ExportDataValue>[];
+  data: Record<string, ExportDataValue | unknown>[];
   visibleColumns: string[];
 };
 
@@ -77,46 +82,49 @@ type FormatXlsxRowsWithColumns<T, C extends EntityListTableColum> = {
   visibleColumns: string[];
 };
 
-export function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
+function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
   result,
   columns,
   visibleColumns,
 }: FormatXlsxRowsWithColumns<T, C>) {
-  return columns
-    .filter((column) => visibleColumns.includes(column.name))
-    .reduce(
-      (row, column) => {
-        const value =
-          typeof column.field === 'function'
-            ? column.field(result)
-            : result[column.field as keyof T];
+  // visibleColumns defines the order
+  return visibleColumns.reduce(
+    (row, visibleColumn) => {
+      const column = columns.find((c) => c.name === visibleColumn);
+      if (!column) {
+        return row;
+      }
+      const value =
+        typeof column.field === 'function'
+          ? column.field(result)
+          : result[column.field as keyof T];
 
-        const formattedValue =
-          value === null || value === undefined || value === ''
-            ? null
-            : typeof value === 'object' && 't' in value && 'v' in value // is a cell object
-              ? value
-              : column.name.split('.').pop()?.startsWith('date_')
-                ? ({
-                    t: 'd',
-                    v: new Date(value as string | Date),
-                    z: XLSX_FORMATS.date,
-                  } as XLSX.CellObject)
-                : typeof value === 'string'
-                  ? ['modified', 'created'].includes(
-                      column.name.split('.').pop() || '',
-                    )
-                    ? new Date(value as string | Date)
-                    : n2semicolon(value)
-                  : value; // should be: string | boolean | number | Date
+      const formattedValue =
+        value === null || value === undefined || value === ''
+          ? null
+          : typeof value === 'object' && 't' in value && 'v' in value // is a cell object
+            ? value
+            : column.name.split('.').pop()?.startsWith('date_')
+              ? ({
+                  t: 'd',
+                  v: new Date(value as string | Date),
+                  z: XLSX_FORMATS.date,
+                } as XLSX.CellObject)
+              : typeof value === 'string'
+                ? ['modified', 'created'].includes(
+                    column.name.split('.').pop() || '',
+                  )
+                  ? new Date(value as string)
+                  : n2semicolon(value)
+                : value; // should be: boolean | number | Date
 
-        return {
-          ...row,
-          [column.label]: formattedValue,
-        };
-      },
-      {} as Record<'string', ExportDataValue>,
-    );
+      return {
+        ...row,
+        [column.label]: formattedValue,
+      };
+    },
+    {} as Record<'string', ExportDataValue>,
+  );
 }
 
 type ExportDataArgs<
@@ -200,7 +208,7 @@ export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({
 
       const org = import.meta.env.VITE_ORG_ABBREVIATION;
       const fileName =
-        ['bdb', org, title, subsetLabel, new Date().toISOString()]
+        ['bdb', org, title, subsetLabel, getFileNameDateTime()]
           .filter(Boolean)
           .join('-') + '.xlsx';
 

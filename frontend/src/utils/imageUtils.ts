@@ -1,3 +1,5 @@
+import type { CellObject } from 'xlsx';
+
 export function getImageFileName({
   entityName,
   attributeName,
@@ -34,4 +36,35 @@ export function getImageUrlRelative({
     (maxWidth ? `&width=${maxWidth}` : '') +
     (maxHeight ? `&height=${maxHeight}` : '')
   );
+}
+
+export function getImageCell({
+  serverFileName,
+  entityName,
+  attributeName,
+  dateAttributed,
+  attributionId,
+}: {
+  serverFileName: string;
+  entityName: string;
+  attributeName: string;
+  dateAttributed: string;
+  attributionId: number;
+}): CellObject {
+  const fileName = getImageFileName({
+    entityName,
+    attributeName,
+    dateAttributed,
+    attributionId,
+  });
+  return {
+    t: 's',
+    v: fileName,
+    l: {
+      Target: `${window.location.origin}${getImageUrlRelative({
+        serverFileName,
+        desiredFileName: fileName,
+      })}`,
+    },
+  };
 }

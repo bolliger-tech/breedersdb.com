@@ -97,7 +97,7 @@ import {
   attributionToXlsx,
   getAttributionObjectName,
   getAttributionObjectType,
-} from 'src/components/Analyze/Result/filterToQuery';
+} from 'src/components/Analyze/Result/exportResult';
 import { n2semicolon } from 'src/utils/stringUtils';
 
 const { t, d, n } = useI18n();

@@ -44,8 +44,8 @@ import {
   AnalyzeResultEntityField,
   AnalyzeResultEntityRow,
   filterToQuery,
-  attributionToXlsx,
 } from './filterToQuery';
+import { attributionToXlsx } from './exportResult';
 import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { type QTableColumn, useQuasar } from 'quasar';

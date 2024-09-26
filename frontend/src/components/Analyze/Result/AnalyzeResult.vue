@@ -235,7 +235,11 @@ const fixDataRowKeys = (row: AnalyzeResultEntityRow) => {
     key === '__typename' ? key : key.replaceAll('__', '.'),
     value,
   ]);
-  return Object.fromEntries(renamed);
+  return Object.fromEntries(renamed) as {
+    [key: `${string}`]: AnalyzeResultEntityField;
+  } & {
+    [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[];
+  };
 };
 
 const rows = computed(() => {
@@ -283,11 +287,7 @@ function unnestAttributions({
   })[] = [];
   for (const _row of data) {
     // replace double underscores (which were added for graphql)
-    const row = fixDataRowKeys(_row) as {
-      [key: `${string}`]: AnalyzeResultEntityField;
-    } & {
-      [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[];
-    };
+    const row = fixDataRowKeys(_row);
 
     // copy of row without attributions
     const rowWithoutAttributions = Object.fromEntries(

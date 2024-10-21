@@ -50,7 +50,7 @@
   />
   <AttributeDefaultValueInput
     v-model="data.default_value"
-    v-model:inputRef="refs.defaultValue"
+    v-model:input-ref="refs.defaultValue"
     :data-type="data.data_type"
     :validation-rule="data.validation_rule"
   />

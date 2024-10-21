@@ -10,11 +10,14 @@ import { toPascalCase, toSnakeCase } from 'src/utils/stringUtils';
 import type { AttributeDataTypes } from 'src/graphql';
 import { singularize } from 'src/utils/stringUtils';
 
+export type AnalyzeResultEntityField = null | number | string;
+
+export type AnalyzeResultEntityRow = {
+  [key: string]: AnalyzeResultEntityField;
+} & { [key: `attributes__${number}`]: AnalyzeAttributionsViewFields[] };
+
 export type AnalyzeResult = {
-  [K in BaseTable]: (
-    | { [key: string]: null | number | string }
-    | { [key: `attributes__${number}`]: AnalyzeAttributionsViewFields[] }
-  )[];
+  [K in BaseTable]: AnalyzeResultEntityRow[];
 } & { [K in `${BaseTable}_aggregate`]: { aggregate: { count: number } } };
 
 export type AnalyzeResultPagination = {
@@ -69,6 +72,18 @@ export function filterToQuery({
   const inputVars = hasAttributionColumns
     ? [...where.variables, ...attributionWhere.variables] // only add attribution variables if there are attribution columns, else we get an unexpected variables error
     : where.variables;
+  inputVars.push({
+    name: 'limit',
+    type: 'Int',
+    value: pagination.rowsPerPage || DEFAULT_PAGE_SIZE,
+  });
+  inputVars.push({
+    name: 'offset',
+    type: 'Int',
+    value: pagination.page
+      ? (pagination.page - 1) * (pagination.rowsPerPage || DEFAULT_PAGE_SIZE)
+      : 0,
+  });
   const inputVarDefs =
     inputVars.length > 0
       ? `( ${inputVars.map((v) => `$${v.name}: ${v.type}!`).join(', ')} )`
@@ -108,10 +123,6 @@ function toPaginationString({
     throw new Error('Pagination not supported for attributions');
   }
 
-  const limit = pagination.rowsPerPage || DEFAULT_PAGE_SIZE;
-  const page = pagination.page || 1; // 1 indexed
-  const offset = (page - 1) * limit;
-
   const order = pagination.descending ? 'desc' : 'asc';
   const orderByPath = pagination.sortBy || columns[0] || 'id';
   const orderByColumn = orderByPath.split('.').pop();
@@ -126,11 +137,11 @@ function toPaginationString({
     );
   // append `{ id: asc }` as additional criteria to ensure stable ordering
   const orderBy =
-    orderByUnstable === '{ id: asc }'
+    orderByUnstable === '{ id: asc }' || orderByUnstable === '{ id: desc }'
       ? orderByUnstable
       : `[ ${orderByUnstable}, { id: asc } ]`;
 
-  return `limit: ${limit}, offset: ${offset}, order_by: ${orderBy}`;
+  return `limit: $limit, offset: $offset, order_by: ${orderBy}`;
 }
 
 function filterToWhere(filter: FilterNode): GraphQLWhereArgs {
@@ -631,6 +642,32 @@ fragment AttributionFragment on attributions_view {
   cultivar_id
   lot_id
   data_type
+  # only needed for export:
+  attribution_form_id
+  attribute_id
+  attribute_name
+  date_attributed
+  created
+  author
+  exceptional_attribution
+  text_note
+  photo_note
+  plant {
+    id
+    label_id
+  }
+  plant_group {
+    id
+    display_name
+  }
+  cultivar {
+    id
+    display_name
+  }
+  lot {
+    id
+    display_name
+  }
 }
 `;
 
@@ -646,7 +683,33 @@ export type AnalyzeAttributionsViewFields = {
   cultivar_id: number | null;
   lot_id: number | null;
   data_type: AttributeDataTypes;
+  // only needed for export:
+  attribution_form_id: number;
+  attribute_id: number;
+  attribute_name: string;
+  date_attributed: string;
+  created: string;
+  author: string;
+  exceptional_attribution: boolean;
+  text_note: string;
+  photo_note: string;
+  plant: { id: number; label_id: string } | null;
+  plant_group: { id: number; display_name: string } | null;
+  cultivar: { id: number; display_name: string } | null;
+  lot: { id: number; display_name: string } | null;
 };
+
+export type AnalyzeAttributionsViewValueFields = Pick<
+  AnalyzeAttributionsViewFields,
+  | 'integer_value'
+  | 'float_value'
+  | 'text_value'
+  | 'boolean_value'
+  | 'date_value'
+>;
+
+export const attributionValueKeys: (keyof AnalyzeAttributionsViewValueFields)[] =
+  ['integer_value', 'float_value', 'text_value', 'boolean_value', 'date_value'];
 
 type QueryVariable = {
   name: string;

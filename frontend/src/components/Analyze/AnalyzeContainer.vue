@@ -76,7 +76,7 @@ const emit = defineEmits<{
   visibleColumnsChanged: [columns: string[] | undefined];
 }>();
 
-const { t } = useI18n();
+const { t, d, n } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const {
@@ -213,6 +213,8 @@ const resultColumns = computed<QTableColumn[]>(() => {
         return formatResultColumnValue({
           value: unnestedValue,
           type: column.type ?? ColumnTypes.String,
+          d,
+          n,
         });
       },
     };

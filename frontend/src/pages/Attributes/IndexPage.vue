@@ -14,6 +14,9 @@
       list-entities-path="/attributes"
       add-entity-path="/attributes/new"
       :view-entity-path-getter="(id) => `/attributes/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     >
       <template #body-cell-default_value="cellProps">
         <q-td :props="cellProps">
@@ -23,7 +26,7 @@
             max-width="clamp(300px, 30svw, 600px)"
             class="vertical-middle"
           >
-            {{ cellProps.value }}
+            {{ n2semicolon(cellProps.value) }}
           </AttributionValueChip>
         </q-td>
       </template>
@@ -54,8 +57,10 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
+import { useExport } from 'src/composables/useExport';
+import { n2semicolon } from 'src/utils/stringUtils';
 
-const { t } = useI18n();
+const { t, d, n } = useI18n();
 
 const query = graphql(
   `
@@ -112,7 +117,7 @@ const attributes = computed(
   () => (data.value?.attributes || []) as AttributeFragment[],
 );
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'name',
     label: t('entity.commonColumns.name'),
@@ -140,7 +145,7 @@ const columns = [
       }
 
       const value = row.default_value;
-      return formatResultColumnValue({ value, type });
+      return formatResultColumnValue({ value, type, d, n });
     },
     sortable: true,
   },
@@ -161,12 +166,24 @@ const columns = [
       attributeTypeToLabel(row.attribute_type, t),
     sortable: true,
   },
+  ...(subset.value === 'all'
+    ? [
+        {
+          name: 'disabled',
+          label: t('entity.commonColumns.disabled'),
+          field: 'disabled',
+          sortable: true,
+        },
+      ]
+    : []),
   ...useTimestampColumns(),
-];
+]);
 
 const { visibleColumns } = useEntityTableColumns({
   entityType: 'attributes',
-  defaultColumns: columns.map((column) => column.name),
+  defaultColumns: columns.value
+    .map((column) => column.name)
+    .filter((name) => subset.value === 'all' || name !== 'disabled'),
 });
 
 watch(
@@ -186,4 +203,20 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'attributes',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('attributes.title', 2),
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
+});
 </script>

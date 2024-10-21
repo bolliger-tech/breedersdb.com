@@ -9,6 +9,7 @@ export const attributions = {
     lots: 'Search by attribute or lot name',
   },
 
+  exportPrefix: 'Attribution',
   columns: {
     exceptionalAttribution: 'Exceptional attribution',
     author: 'Author',
@@ -16,10 +17,17 @@ export const attributions = {
     value: 'Value',
     textNote: 'Note',
     textNoteLong: 'Note on value',
-    photoNote: 'Photo on value',
-    photoNoteLong: 'Photo',
+    photoNote: 'Photo',
+    photoNoteLong: 'Photo on value',
     attributeName: 'Attribute',
     entity: 'Entity',
+    entityType: 'Entity type',
+    id: 'ID',
+    attributedObjectType: 'Attributed object',
+    attributedObjectName: 'Attributed object name',
+    attributionFormId: 'Form ID',
+    attributeId: 'Attribute ID',
+    dateCreated: 'Created',
   },
 
   observations: 'Observations',
@@ -81,6 +89,8 @@ export const attributions = {
 
     clearAttribute:
       'Clearing this value will remove the comments for this attribute as well. Do you want to delete the comments?',
+    notesMustHaveValue:
+      'Add a value or remove the note / photo for this attribute.',
 
     saved: 'Attribute saved.',
     uploading: 'Saving… {percentage}%',

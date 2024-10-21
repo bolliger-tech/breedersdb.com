@@ -64,7 +64,7 @@ export interface EntityViewAttributionsTableProps {
 
 const props = defineProps<EntityViewAttributionsTableProps>();
 
-const { t, d } = useI18n();
+const { t, d, n } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
 
 const columns = [
@@ -214,6 +214,6 @@ function getValue(row: AttributionsViewFragment) {
     return '';
   }
 
-  return formatResultColumnValue({ value, type });
+  return formatResultColumnValue({ value, type, d, n });
 }
 </script>

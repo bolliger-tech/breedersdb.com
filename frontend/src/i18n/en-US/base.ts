@@ -40,6 +40,7 @@ export const base = {
   continue: 'Continue',
   back: 'Back',
   rename: 'Rename',
+  export: 'Export',
 
   error: 'Error',
   required: 'Required',

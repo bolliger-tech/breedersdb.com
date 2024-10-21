@@ -12,8 +12,10 @@
       list-entities-path="/mother-plants"
       add-entity-path="/mother-plants/new"
       :view-entity-path-getter="(id) => `/mother-plants/${id}`"
-      :has-qr-scanner="true"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
       @scanned-qr="(code) => (search = code)"
+      @export="onExport"
     >
       <template #[`body-cell-plant.label_id`]="cellProps">
         <q-td :props="cellProps">
@@ -36,6 +38,7 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t, n, d } = useI18n();
 
@@ -192,4 +195,17 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'mother_plants',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('motherPlants.title', 2),
+});
 </script>

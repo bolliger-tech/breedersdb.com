@@ -14,6 +14,9 @@
       list-entities-path="/orchards"
       add-entity-path="/orchards/new"
       :view-entity-path-getter="(id) => `/orchards/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -30,6 +33,7 @@ import { orchardFragment } from 'src/components/Orchard/orchardFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -84,7 +88,7 @@ const orchardsCount = computed(
   () => data.value?.orchards_aggregate?.aggregate?.count || 0,
 );
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'name',
     label: t('entity.commonColumns.name'),
@@ -92,12 +96,24 @@ const columns = [
     field: 'name',
     sortable: true,
   },
+  ...(subset.value === 'all'
+    ? [
+        {
+          name: 'disabled',
+          label: t('entity.commonColumns.disabled'),
+          field: 'disabled',
+          sortable: true,
+        },
+      ]
+    : []),
   ...useTimestampColumns(),
-];
+]);
 
 const { visibleColumns } = useEntityTableColumns({
   entityType: 'orchards',
-  defaultColumns: columns.map((column) => column.name),
+  defaultColumns: columns.value
+    .map((column) => column.name)
+    .filter((name) => subset.value === 'all' || name !== 'disabled'),
 });
 
 watch(
@@ -117,4 +133,20 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'orchards',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('orchards.title', 2),
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
+});
 </script>

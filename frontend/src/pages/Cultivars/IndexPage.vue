@@ -14,8 +14,10 @@
       list-entities-path="/cultivars"
       add-entity-path="/cultivars/new"
       :view-entity-path-getter="(id) => `/cultivars/${id}`"
-      :has-qr-scanner="true"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
       @scanned-qr="onScannedQr"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -34,6 +36,7 @@ import { useRouter } from 'vue-router';
 import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -266,4 +269,20 @@ async function onScannedQr(code: string) {
     search.value = code;
   }
 }
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'cultivars',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('cultivars.title', 2),
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
+});
 </script>

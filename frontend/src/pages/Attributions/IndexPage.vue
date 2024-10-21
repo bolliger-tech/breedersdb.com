@@ -13,6 +13,9 @@
       :all-columns="columns"
       list-entities-path="/attributions"
       :view-entity-path-getter="(id) => `/attributions/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     >
       <template #add-button><div></div></template>
 
@@ -45,7 +48,7 @@
                 button-size="xs"
               />
             </template>
-            <template v-else>{{ cellProps.value }}</template>
+            <template v-else>{{ n2semicolon(cellProps.value) }}</template>
           </AttributionValueChip>
         </q-td>
       </template>
@@ -66,7 +69,7 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
-import { graphql } from 'src/graphql';
+import { graphql, ResultOf } from 'src/graphql';
 import { computed, UnwrapRef, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
@@ -90,8 +93,15 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 import { UseQueryArgs } from '@urql/vue';
+import { TransformDataArgs, useExport } from 'src/composables/useExport';
+import {
+  attributionToXlsx,
+  getAttributionObjectName,
+  getAttributionObjectType,
+} from 'src/components/Analyze/Result/exportResult';
+import { n2semicolon } from 'src/utils/stringUtils';
 
-const { t, d } = useI18n();
+const { t, d, n } = useI18n();
 
 const query = graphql(
   `
@@ -233,7 +243,7 @@ const columns = computed(() => [
         {
           name: 'entity',
           label: t('attributions.columns.entity'),
-          field: (row: AttributionsViewFragment) => row,
+          field: 'entity',
           align: 'left' as const,
           sortable: false,
         },
@@ -302,9 +312,10 @@ const columns = computed(() => [
   {
     name: 'value',
     label: t('attributions.columns.value'),
-    field: (row: AttributionsViewFragment) => getValue(row),
+    field: 'value',
     align: 'center' as const,
     sortable: false,
+    format: (val: unknown, row: AttributionsViewFragment) => getValue(row),
   },
   {
     name: 'text_note',
@@ -380,7 +391,7 @@ function getValue(row: AttributionsViewFragment) {
     return '';
   }
 
-  return formatResultColumnValue({ value, type });
+  return formatResultColumnValue({ value, type, d, n });
 }
 
 const searchPlaceholder = computed(() => {
@@ -396,5 +407,78 @@ const searchPlaceholder = computed(() => {
     return t('attributions.searchPlaceholder.lots');
   }
   throw new Error('Invalid subset');
+});
+
+type NonNullableFields<T> = {
+  [P in keyof T]: NonNullable<T[P]>;
+};
+function transformData({
+  data,
+  visibleColumns,
+}: TransformDataArgs<
+  // ts hack to make query result compatible with AnalyzeAttributionsViewFields
+  Omit<
+    NonNullableFields<ResultOf<typeof query>['attributions_view'][0]>,
+    'plant' | 'plant_group' | 'cultivar' | 'lot' | 'data_type'
+  > & {
+    plant: { id: number; label_id: string } | null;
+    plant_group: { id: number; display_name: string } | null;
+    cultivar: { id: number; display_name: string } | null;
+    lot: { id: number; display_name: string } | null;
+    data_type: AttributeDataTypes;
+  }
+>) {
+  return {
+    visibleColumns,
+    data: data.map((attribution) => {
+      return {
+        // allow colums to access all data
+        ...attribution,
+        // special column
+        entity: getAttributionObjectName(attribution),
+        entity_type: getAttributionObjectType(attribution),
+        // the serialized attribution
+        ...attributionToXlsx(attribution),
+      };
+    }),
+  };
+}
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'attributions_view',
+  query,
+  variables,
+  visibleColumns: computed(() => {
+    const entityColumnIndex = visibleColumns.value.findIndex(
+      (column) => column === 'entity',
+    );
+    if (entityColumnIndex === -1) {
+      return visibleColumns.value;
+    }
+    return [
+      ...visibleColumns.value.slice(0, entityColumnIndex + 1),
+      'entityType',
+      ...visibleColumns.value.slice(entityColumnIndex + 1),
+    ];
+  }),
+  columns: computed(() => {
+    return [
+      ...columns.value,
+      {
+        name: 'entityType',
+        label: t('attributions.columns.entityType'),
+        field: 'entity_type',
+      },
+    ];
+  }),
+  title: t('attributions.title', 2),
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
+  transformDataFn: transformData,
 });
 </script>

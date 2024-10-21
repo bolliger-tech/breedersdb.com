@@ -5,8 +5,7 @@
     :tabs="tabs"
     :title="title"
     :search-placeholder="searchPlaceholder"
-    :has-qr-scanner="hasQrScanner"
-    @scanned-qr="$emit('scanned-qr', $event)"
+    @scanned-qr="onScannedQr"
   >
     <template #add-button>
       <slot name="add-button">
@@ -23,6 +22,9 @@
         :rows="rows"
         :loading="loading"
         :all-columns="allColumns"
+        :is-exporting="isExporting"
+        :export-progress="exportProgress"
+        @export="onExport"
         @row-click="(row) => view(row.id)"
       >
         <template
@@ -68,6 +70,7 @@ import { QTableSlots } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import BaseSuspense from 'components/Base/BaseSuspense/BaseSuspense.vue';
 import BaseSpinner from 'components/Base/BaseSpinner.vue';
+import type { EntityExportButtonProps } from './EntityExportButton.vue';
 
 export interface EntityContainerProps
   extends EntityContainerPropsWithoutModels {
@@ -77,7 +80,7 @@ export interface EntityContainerProps
   visibleColumns: EntityListTableProps['visibleColumns'];
 }
 
-interface EntityContainerPropsWithoutModels {
+type EntityContainerPropsWithoutModels = {
   title: EntityListProps['title'];
   tabs?: EntityListProps['tabs'];
   searchPlaceholder?: EntityListProps['searchPlaceholder'];
@@ -87,8 +90,8 @@ interface EntityContainerPropsWithoutModels {
   listEntitiesPath: string | MatcherLocationAsPath;
   addEntityPath?: string | MatcherLocationAsPath;
   viewEntityPathGetter: (id: number | string) => string | MatcherLocationAsPath;
-  hasQrScanner?: boolean;
-}
+  onScannedQr?: (data: string) => void;
+} & EntityExportButtonProps;
 
 const props = defineProps<EntityContainerPropsWithoutModels>();
 
@@ -108,6 +111,7 @@ const slots = defineSlots<{
 }>();
 defineEmits<{
   'scanned-qr': [data: string];
+  export: [];
 }>();
 
 const bodyCellSlotNames = computed(() =>

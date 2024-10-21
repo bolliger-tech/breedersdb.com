@@ -38,6 +38,12 @@
       ref="textInputRef"
       :model-value="modelValue?.text_value ?? null"
       :validation="{ maxLen: 2047, pattern: null }"
+      :additional-rules="[
+        (value: string | null) =>
+          (!textNote && !photoNote) ||
+          (value !== '' && value !== null) ||
+          t('attributions.add.notesMustHaveValue'),
+      ]"
       @update:model-value="
         (val: string | null) => updateModelValue({ text_value: val })
       "

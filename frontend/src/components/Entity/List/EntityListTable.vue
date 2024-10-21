@@ -32,37 +32,38 @@
     </template>
 
     <template #top-right>
-      <EntityListTableColumnSelector
-        v-model="visibleColumns"
-        :all-columns="allColumns"
-        class="q-ml-lg"
-      >
-        <template #option="columnSelectorOptionProps">
-          <slot
-            name="column-selector-option"
-            v-bind="columnSelectorOptionProps"
-          ></slot>
-        </template>
-      </EntityListTableColumnSelector>
+      <div class="row align-center no-wrap" style="gap: clamp(8px, 3vw, 16px)">
+        <EntityListTableColumnSelector
+          v-model="visibleColumns"
+          :all-columns="allColumns"
+        >
+          <template #option="columnSelectorOptionProps">
+            <slot
+              name="column-selector-option"
+              v-bind="columnSelectorOptionProps"
+            ></slot>
+          </template>
+        </EntityListTableColumnSelector>
 
-      <q-btn
-        class="q-ml-md"
-        dense
-        flat
-        no-caps
-        @click="fullscreen = !fullscreen"
-      >
-        <div class="column items-center">
-          <q-icon :name="fullscreen ? 'fullscreen_exit' : 'fullscreen'" />
-          <div class="text-caption">
-            {{
-              fullscreen
-                ? t('entity.list.exitFullscreen')
-                : t('entity.list.fullscreen')
-            }}
+        <EntityExportButton
+          v-if="onExport"
+          :is-exporting="isExporting"
+          :export-progress="exportProgress"
+          @export="onExport"
+        />
+        <q-btn dense flat no-caps @click="fullscreen = !fullscreen">
+          <div class="column items-center">
+            <q-icon :name="fullscreen ? 'fullscreen_exit' : 'fullscreen'" />
+            <div class="text-caption">
+              {{
+                fullscreen
+                  ? t('entity.list.exitFullscreen')
+                  : t('entity.list.fullscreen')
+              }}
+            </div>
           </div>
-        </div>
-      </q-btn>
+        </q-btn>
+      </div>
     </template>
 
     <template #header-cell="cellProps">
@@ -113,7 +114,7 @@
           v-if="col.ellipsis"
           style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
         >
-          {{ cellProps.value }}
+          {{ n2semicolon(cellProps.value) }}
         </div>
         <template v-else-if="col.timestamp && cellProps.value">
           {{ d(cellProps.value, 'Ymd') }}<br />
@@ -129,41 +130,38 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import {
-  QSelectSlots,
-  QTable,
-  QTableColumn,
-  QTableProps,
-  QTableSlots,
-} from 'quasar';
+import type { QSelectSlots, QTable, QTableProps, QTableSlots } from 'quasar';
 import EntityListTableColumnSelector from './EntityListTableColumnSelector.vue';
 import EntityListTableHeaderCell from './EntityListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
+import EntityExportButton from 'src/components/Entity/EntityExportButton.vue';
+import type { EntityExportButtonProps } from 'src/components/Entity/EntityExportButton.vue';
+import { EntityListTableColum } from './types';
+import { n2semicolon } from 'src/utils/stringUtils';
 
 export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
   pagination?: QTableProps['pagination'];
   visibleColumns: string[];
 }
 
-interface EntityListTablePropsWithoutModel {
+type EntityListTablePropsWithoutModel = {
   rows: QTableProps['rows'];
   loading?: boolean;
-  allColumns: (Omit<QTableColumn, 'sort'> & {
-    maxWidth?: string;
-    ellipsis?: boolean;
-    timestamp?: boolean;
-  })[];
+  allColumns: EntityListTableColum[];
   dataIsFresh?: boolean;
   headerHeight?: string;
-}
+} & EntityExportButtonProps;
 
 const props = withDefaults(defineProps<EntityListTablePropsWithoutModel>(), {
   loading: false,
   dataIsFresh: true,
   headerHeight: undefined,
   rowClick: undefined,
+  isExporting: false,
+  exportProgress: 0,
+  onExport: undefined,
 });
 const visibleColumns = defineModel<string[]>('visibleColumns', {
   required: true,
@@ -172,6 +170,7 @@ const pagination = defineModel<QTableProps['pagination']>('pagination');
 
 defineEmits<{
   'row-click': [row: QTableProps['rows'][0]];
+  export: [];
 }>();
 
 const slots = defineSlots<{

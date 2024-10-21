@@ -14,6 +14,9 @@
       list-entities-path="/attribution-forms"
       add-entity-path="/attribution-forms/new"
       :view-entity-path-getter="(id) => `/attribution-forms/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     >
       <template #body-cell-fields="cellProps">
         <q-td :props="cellProps">
@@ -36,7 +39,7 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
-import { graphql } from 'src/graphql';
+import { graphql, ResultOf } from 'src/graphql';
 import { computed, UnwrapRef, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
@@ -46,6 +49,7 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
+import { TransformDataArgs, useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 
@@ -100,7 +104,7 @@ const attributionFormsCount = computed(
   () => data.value?.attribution_forms_aggregate?.aggregate?.count || 0,
 );
 
-const columns = [
+const columns = computed(() => [
   {
     name: 'name',
     label: t('entity.commonColumns.name'),
@@ -124,12 +128,24 @@ const columns = [
     field: 'attribution_form_fields',
     sortable: false,
   },
+  ...(subset.value === 'all'
+    ? [
+        {
+          name: 'disabled',
+          label: t('entity.commonColumns.disabled'),
+          field: 'disabled',
+          sortable: true,
+        },
+      ]
+    : []),
   ...useTimestampColumns(),
-];
+]);
 
 const { visibleColumns } = useEntityTableColumns({
   entityType: 'attributionForms',
-  defaultColumns: columns.map((column) => column.name),
+  defaultColumns: columns.value
+    .map((column) => column.name)
+    .filter((name) => subset.value === 'all' || name !== 'disabled'),
 });
 
 watch(
@@ -149,4 +165,40 @@ watch(
   },
   { immediate: true },
 );
+
+function transformData({
+  data,
+  visibleColumns,
+}: TransformDataArgs<ResultOf<typeof query>['attribution_forms'][0]>) {
+  return {
+    visibleColumns,
+    data: data.map((row) => {
+      return {
+        ...row,
+        attribution_form_fields: row.attribution_form_fields
+          .map((field) => {
+            return field.attribute.name;
+          })
+          .join('; '),
+      };
+    }),
+  };
+}
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'attribution_forms',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('attributionForms.title', 2),
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
+  transformDataFn: transformData,
+});
 </script>

@@ -203,6 +203,7 @@ const inputMethodIsValid = computed(() => {
         inputMethod.value === 'lot-select'
       );
   }
+  // @ts-expect-error don't move into switch so ts complains if we add a new entity type
   throw new Error(`Unknown entity type: ${props.entityType}`);
 });
 watch(
@@ -269,6 +270,7 @@ const entityName = computed(() => {
     case 'lot':
       return t('base.entityName.lot', 1);
   }
+  // @ts-expect-error don't move into switch so ts complains if we add a new entity type
   throw new Error(`Unknown entity type: ${props.entityType}`);
 });
 

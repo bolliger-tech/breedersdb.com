@@ -53,6 +53,8 @@ export function useI18n(options?: Parameters<typeof useVueI18n>[0]) {
 
 export type LocaleMessageKeys = Paths<MessageSchema>;
 export type TFunc = ReturnType<typeof useI18n>['t'];
+export type DFunc = ReturnType<typeof useI18n>['d'];
+export type NFunc = ReturnType<typeof useI18n>['n'];
 
 type Join<K, P> = K extends string | number
   ? P extends string | number

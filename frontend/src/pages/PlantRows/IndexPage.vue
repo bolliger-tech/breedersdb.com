@@ -14,6 +14,9 @@
       list-entities-path="/rows"
       add-entity-path="/rows/new"
       :view-entity-path-getter="(id) => `/rows/${id}`"
+      :is-exporting="isExporting"
+      :export-progress="exportProgress"
+      @export="onExport"
     />
   </PageLayout>
 </template>
@@ -30,6 +33,7 @@ import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
+import { useExport } from 'src/composables/useExport';
 
 const { t, d } = useI18n();
 
@@ -130,12 +134,24 @@ const columns = computed(() => [
     maxWidth: 'clamp(300px, 30svw, 600px)',
     ellipsis: true,
   },
+  ...(subset.value === 'all'
+    ? [
+        {
+          name: 'disabled',
+          label: t('entity.commonColumns.disabled'),
+          field: 'disabled',
+          sortable: true,
+        },
+      ]
+    : []),
   ...useTimestampColumns(),
 ]);
 
 const { visibleColumns } = useEntityTableColumns({
   entityType: 'plantRows',
-  defaultColumns: columns.value.map((column) => column.name),
+  defaultColumns: columns.value
+    .map((column) => column.name)
+    .filter((name) => subset.value === 'all' || name !== 'disabled'),
 });
 
 watch(
@@ -155,4 +171,20 @@ watch(
   },
   { immediate: true },
 );
+
+const {
+  exportDataAndWriteNewXLSX: onExport,
+  isExporting,
+  exportProgress,
+} = useExport({
+  entityName: 'plant_rows',
+  query,
+  variables,
+  visibleColumns,
+  columns,
+  title: t('plantRows.title', 2),
+  subsetLabel: computed(
+    () => tabs.find((t) => t.value === subset.value)?.label,
+  ),
+});
 </script>

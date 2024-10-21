@@ -18,7 +18,7 @@
     binary-state-sort
   >
     <template
-      v-for="(slot, slotName) in slots"
+      v-for="(_, slotName) in slots"
       :key="slotName"
       #[slotName]="slotProps"
     >

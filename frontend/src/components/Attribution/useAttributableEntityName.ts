@@ -19,6 +19,7 @@ export function useAttributableEntityName({
       case AttributableEntities.Lot:
         return t('lots.title', 1);
     }
+    // @ts-expect-error don't move into switch so ts complains if we add a new entity type
     throw new Error('Unknown entity type');
   });
   return { entity };

@@ -96,7 +96,7 @@ const baseTable = computed<AnalyzeFilterBaseTables>(() => {
     case BaseTable.Plants:
       return 'PLANTS';
   }
-  // keep ts happy
+  // @ts-expect-error don't move into switch so ts complains if we add a new base table
   throw new Error('Invalid base table');
 });
 

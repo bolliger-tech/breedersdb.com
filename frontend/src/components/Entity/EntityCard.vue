@@ -108,6 +108,7 @@ const icon = computed(() => {
     case 'lot':
       return 'lot';
   }
+  // @ts-expect-error don't move into switch so ts complains if we add a new entity type
   throw new Error('Invalid entity type');
 });
 </script>

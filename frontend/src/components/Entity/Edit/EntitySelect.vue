@@ -30,6 +30,8 @@
       @popup-show="() => (inlineLabel = label)"
       @popup-hide="() => (inlineLabel = undefined)"
       @filter="filterOptions"
+      @input-value="($event) => $emit('input-value', $event)"
+      @keydown="$emit('keydown', $event)"
     >
       <template #no-option="noOptionProps">
         <slot name="no-option" v-bind="noOptionProps">
@@ -149,6 +151,11 @@ defineSlots<{
 
 const modelValue = defineModel<T | null | undefined>();
 
+defineEmits<{
+  'input-value': [value: string];
+  keydown: [event: KeyboardEvent];
+}>();
+
 // see below for exposed methods
 
 const { t } = useI18n();
@@ -186,6 +193,10 @@ defineExpose({
   validate: () => selectRef.value?.validate(),
   focus: () => selectRef.value && focusInView(selectRef.value),
   filteredOptions,
+  updateInputValue: (value: string, noFilter?: boolean | undefined) =>
+    selectRef.value?.updateInputValue(value, noFilter),
+  hidePopup: () => selectRef.value?.hidePopup(),
+  blur: () => selectRef.value?.blur(),
 });
 
 const { inputBgColor } = useInputBackground();

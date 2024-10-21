@@ -41,4 +41,13 @@ export const plantGroups = {
     disabledNotAllowed: "Disabled plant groups can't be used here",
     labelIdNotFound: 'Plant group {labelId} not found',
   },
+
+  autocreate: {
+    fetchFailed: 'Failed to load plant groups',
+    nothingFound:
+      "No lot matched the search criteria. If you haven't created the lot yet, do it first.",
+    noDot: 'Please be more specific. Keep typing…',
+    create: 'Create',
+    nextFree: '{num} is the next free number',
+  },
 };

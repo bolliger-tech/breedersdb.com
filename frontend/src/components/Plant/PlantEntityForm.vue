@@ -10,6 +10,7 @@
     v-model="data.plant_group_id"
     required
     :include-id="props.plant.plant_group?.id"
+    autocreate
   />
   <PlantRowSelect
     :ref="(el: InputRef) => (refs.plantRowId = el)"

@@ -25,6 +25,7 @@
             class="q-mr-sm text-uppercase text-bold"
             size="sm"
             color="primary"
+            dark
             :riple="false"
             :clickable="false"
             dense

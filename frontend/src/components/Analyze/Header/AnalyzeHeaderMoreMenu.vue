@@ -53,7 +53,7 @@
       <q-card-section class="row items-center">
         <q-icon name="warning" color="warning" size="50px" />
         <span class="q-ml-sm">{{
-          t('base.deleteConfirmation', { entity: t('analyze.header.filter') })
+          t('base.deleteConfirmation', { entity: t('analyze.header.analysis') })
         }}</span>
       </q-card-section>
 

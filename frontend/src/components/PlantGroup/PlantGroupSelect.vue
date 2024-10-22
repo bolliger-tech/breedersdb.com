@@ -1,37 +1,54 @@
 <template>
   <EntitySelect
     ref="plantGroupRef"
+    :key="renderKey"
     v-model="plantGroup"
     :label="t('plants.fields.plantGroup')"
     :options="plantGroupOptions"
     option-value="id"
     option-label="display_name"
-    :loading="fetching"
-    :error="error"
+    :loading="fetching || savingAutocreate"
+    :error="error || saveAutocreateError"
     :required="required"
-  />
+    filter-with-wildcards-around-dots
+    @input-value="($event) => (searchValue = $event)"
+    @keydown.down="() => autocreateRef?.focusNext()"
+    @keydown.enter="() => autocreateRef?.selectFirst()"
+  >
+    <template v-if="autocreate" #[`no-option`]>
+      <PlantGroupSelectAutocreate
+        ref="autocreateRef"
+        :search-value="searchValue"
+        @saving="savingAutocreate = $event"
+        @save-error="saveAutocreateError = $event"
+        @select="onAutocreateSelect"
+      />
+    </template>
+  </EntitySelect>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref } from 'vue';
+import { Ref, computed, nextTick, ref } from 'vue';
 import { graphql } from 'src/graphql';
-import { useQuery } from '@urql/vue';
+import { CombinedError, useQuery } from '@urql/vue';
 import EntitySelect, {
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
+import PlantGroupSelectAutocreate from './PlantGroupSelectAutocreate.vue';
 
 export interface PlantGroupSelectProps {
   required?: boolean;
   includeId?: number;
+  autocreate?: boolean;
 }
 const props = defineProps<PlantGroupSelectProps>();
 
-const plantGroupRef = ref<EntitySelectInstance<{
+const plantGroupRef: Ref<EntitySelectInstance<{
   id: number;
   display_name: string;
-}> | null>(null);
+}> | null> = ref(null);
 
 defineExpose({
   validate: () => plantGroupRef.value?.validate(),
@@ -72,4 +89,20 @@ const plantGroup = computed<{ id: number; display_name: string } | undefined>({
 });
 
 const { t } = useI18n();
+
+const searchValue = ref('');
+const renderKey = ref(0);
+const savingAutocreate = ref(false);
+const saveAutocreateError = ref<CombinedError | undefined>(undefined);
+const autocreateRef = ref<InstanceType<
+  typeof PlantGroupSelectAutocreate
+> | null>(null);
+
+async function onAutocreateSelect(plantGroupId: number) {
+  modelValue.value = plantGroupId;
+  // wait for value propagation before rerendering
+  await nextTick();
+  // so many states to reset: better to rerender the whole component
+  renderKey.value += 1;
+}
 </script>

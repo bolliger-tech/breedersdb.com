@@ -31,7 +31,7 @@ export const plantGroups = {
       pattern: 'pattern',
     },
     2: {
-      base: '{hint}: Use a name that identifies also the selection stage.',
+      base: '{hint}: Use a name that identifies the stage and, in case of multiple groups per cultivar, the location.',
       hint: 'Hint',
     },
   },
@@ -40,5 +40,14 @@ export const plantGroups = {
     labelIdinvalid: 'Invalid label ID',
     disabledNotAllowed: "Disabled plant groups can't be used here",
     labelIdNotFound: 'Plant group {labelId} not found',
+  },
+
+  autocreate: {
+    fetchFailed: 'Failed to load plant groups',
+    nothingFound:
+      "No lot matched the search criteria. If you haven't created the lot yet, do it first.",
+    noDot: 'Please be more specific. Keep typing…',
+    create: 'Create',
+    nextFree: '{num} is the next free number',
   },
 };

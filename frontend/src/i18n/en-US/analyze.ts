@@ -7,7 +7,7 @@ export const analyze = {
     duplicate: 'Duplicate',
     showExplanation: 'Explain filters',
     hideExplanation: 'Hide explanations',
-    filter: 'filter',
+    analysis: 'analysis',
     addName: 'Save as …',
     leaveConfirmation: 'You have unsaved changes! Do you really want to leave?',
   },

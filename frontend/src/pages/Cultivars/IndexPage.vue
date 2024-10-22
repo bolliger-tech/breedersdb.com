@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
-import { useQuery } from '@urql/vue';
+import { UseQueryArgs, useQuery } from '@urql/vue';
 import { ResultOf, graphql } from 'src/graphql';
 import { computed, watch, ref, nextTick, UnwrapRef } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -107,15 +107,26 @@ const {
   variables: _variables,
 } = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'display_name',
-  searchColumns: ['display_name', 'acronym'],
 });
 
 const variables = computed(() => {
-  const where = { _and: [_variables.value.where] };
+  const where: UseQueryArgs<typeof query>['variables'] = { _and: [] };
+
   if (subset.value === 'breeders_cultivars') {
     where._and.push({ is_variety: { _eq: false } });
   } else if (subset.value === 'varieties') {
     where._and.push({ is_variety: { _eq: true } });
+  }
+
+  if (search.value) {
+    const or: UseQueryArgs<typeof query>['variables'] = { _or: [] };
+
+    or._or.push(
+      { display_name: { _ilike: `%${search.value.replaceAll('.', '%.%')}%` } },
+      { acronym: { _ilike: `%${search.value}%` } },
+    );
+
+    where._and.push(or);
   }
 
   return {

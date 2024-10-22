@@ -30,13 +30,17 @@
       @popup-show="() => (inlineLabel = label)"
       @popup-hide="() => (inlineLabel = undefined)"
       @filter="filterOptions"
+      @input-value="($event) => $emit('input-value', $event)"
+      @keydown="$emit('keydown', $event)"
     >
-      <template #no-option>
-        <q-item>
-          <q-item-section class="text-grey">
-            {{ noOptionText || t('base.noResults') }}
-          </q-item-section>
-        </q-item>
+      <template #no-option="noOptionProps">
+        <slot name="no-option" v-bind="noOptionProps">
+          <q-item>
+            <q-item-section class="text-grey">
+              {{ noOptionText || t('base.noResults') }}
+            </q-item-section>
+          </q-item>
+        </slot>
       </template>
 
       <template v-if="$slots.option" #option="option">
@@ -65,6 +69,7 @@ import {
   ref,
   type Slot,
   type ShallowRef,
+  ShallowUnwrapRef,
 } from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import {
@@ -84,6 +89,7 @@ import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 export type EntitySelectInstance<T> = {
   validate: () => ReturnType<QSelect['validate']> | undefined;
   focus: () => ReturnType<QSelect['focus']> | undefined;
+  filteredOptions: ShallowUnwrapRef<T[]>;
 } & ComponentPublicInstance<EntitySelectProps<T>> &
   VNodeRef;
 
@@ -115,6 +121,7 @@ export interface EntitySelectPropsWithoutModel<T> {
   readonly?: QSelectProps['readonly'];
   disable?: QSelectProps['disable'];
   hint?: string;
+  filterWithWildcardsAroundDots?: boolean;
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
@@ -131,12 +138,7 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   readonly: false,
   disable: false,
   hint: undefined,
-});
-
-const selectRef = ref<QSelect | null>(null);
-defineExpose({
-  validate: () => selectRef.value?.validate(),
-  focus: () => selectRef.value && focusInView(selectRef.value),
+  filterWithWildcardsAroundDots: false,
 });
 
 defineSlots<{
@@ -144,9 +146,17 @@ defineSlots<{
   explainer: Slot;
   hint: Slot;
   'after-options': QSelectSlots['after-options'];
+  'no-option': QSelectSlots['no-option'];
 }>();
 
 const modelValue = defineModel<T | null | undefined>();
+
+defineEmits<{
+  'input-value': [value: string];
+  keydown: [event: KeyboardEvent];
+}>();
+
+// see below for exposed methods
 
 const { t } = useI18n();
 const { localizedSortPredicate } = useLocalizedSort();
@@ -162,17 +172,32 @@ const options = computed(() => {
 });
 
 const filteredOptions = shallowRef([...options.value]);
-function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
+function filterOptions(
+  searchValue: string,
+  update: FilterSelectOptionsUpdateFn,
+) {
   props.filterFn
-    ? props.filterFn(value, update, filteredOptions)
+    ? props.filterFn(searchValue, update, filteredOptions)
     : filterSelectOptions({
-        value,
+        searchValue,
         update,
         allOptions: Object.freeze([...options.value]),
         filteredOptions,
         valueExtractorFn: (item) => item[props.optionLabel],
+        withWildcardsAroundDots: props.filterWithWildcardsAroundDots,
       });
 }
+
+const selectRef = ref<QSelect | null>(null);
+defineExpose({
+  validate: () => selectRef.value?.validate(),
+  focus: () => selectRef.value && focusInView(selectRef.value),
+  filteredOptions,
+  updateInputValue: (value: string, noFilter?: boolean | undefined) =>
+    selectRef.value?.updateInputValue(value, noFilter),
+  hidePopup: () => selectRef.value?.hidePopup(),
+  blur: () => selectRef.value?.blur(),
+});
 
 const { inputBgColor } = useInputBackground();
 

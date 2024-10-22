@@ -33,6 +33,11 @@ export function singularize(word: string) {
   return word;
 }
 
+// @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions#escaping
+export function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
 export function n2semicolon<T>(value: T) {
   return typeof value === 'string'
     ? (value.replace(/(?:\r\n|\r|\n)/g, '; ') as T)

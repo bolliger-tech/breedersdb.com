@@ -92,6 +92,7 @@ import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAtt
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
+import { UseQueryArgs } from '@urql/vue';
 import { TransformDataArgs, useExport } from 'src/composables/useExport';
 import {
   attributionToXlsx,
@@ -156,21 +157,6 @@ const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
   },
 ];
 
-const searchColumns = computed(() => {
-  if (subset.value === 'all') {
-    return ['attribute_name'];
-  } else if (subset.value === 'plants') {
-    return ['attribute_name', 'plant.label_id', 'plant_group.display_name'];
-  } else if (subset.value === 'plantGroups') {
-    return ['attribute_name', 'plant_group.display_name'];
-  } else if (subset.value === 'cultivars') {
-    return ['attribute_name', 'cultivar.display_name'];
-  } else if (subset.value === 'lots') {
-    return ['attribute_name', 'lot.display_name'];
-  }
-  throw new Error('Invalid subset');
-});
-
 const {
   search,
   pagination,
@@ -178,11 +164,53 @@ const {
 } = useEntityIndexHooks<typeof query>({
   defaultSortBy: 'created',
   defaultSortOrderDesc: true,
-  searchColumns: searchColumns,
 });
 
 const variables = computed(() => {
-  const where = { _and: [_variables.value.where] };
+  const where: UseQueryArgs<typeof query>['variables'] = { _and: [] };
+
+  if (search.value) {
+    where._and.push({
+      _or: [{ attribute_name: { _ilike: `%${search.value}%` } }],
+    });
+    if (subset.value === 'plants') {
+      where._and[0]._or.push(
+        { plant: { label_id: { _ilike: `%${search.value}%` } } },
+        {
+          plant_group: {
+            display_name: {
+              _ilike: `%${search.value.replaceAll('.', '%.%')}%`,
+            },
+          },
+        },
+      );
+    } else if (subset.value === 'plantGroups') {
+      where._and[0]._or.push({
+        plant_group: {
+          display_name: {
+            _ilike: `%${search.value.replaceAll('.', '%.%')}%`,
+          },
+        },
+      });
+    } else if (subset.value === 'cultivars') {
+      where._and[0]._or.push({
+        cultivar: {
+          display_name: {
+            _ilike: `%${search.value.replaceAll('.', '%.%')}%`,
+          },
+        },
+      });
+    } else if (subset.value === 'lots') {
+      where._and[0]._or.push({
+        lot: {
+          display_name: {
+            _ilike: `%${search.value.replaceAll('.', '%.%')}%`,
+          },
+        },
+      });
+    }
+  }
+
   if (subset.value === 'plants') {
     where._and.push({ plant_id: { _is_null: false } });
   } else if (subset.value === 'plantGroups') {

@@ -64,9 +64,12 @@ const props = defineProps<AnalyzeFilterRuleColumnProps>();
 
 const filteredOptions = ref(props.options);
 
-function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
+function filterOptions(
+  searchValue: string,
+  update: FilterSelectOptionsUpdateFn,
+) {
   filterSelectOptions<FilterRuleColumn>({
-    value,
+    searchValue,
     update,
     allOptions: props.options,
     filteredOptions,

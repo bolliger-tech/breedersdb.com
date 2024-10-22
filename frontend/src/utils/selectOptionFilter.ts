@@ -1,5 +1,6 @@
 import { QSelect } from 'quasar';
 import { Ref } from 'vue';
+import { escapeRegExp } from './stringUtils';
 
 export type FilterSelectOptionsUpdateFn = (
   filterFn: () => void,
@@ -7,40 +8,70 @@ export type FilterSelectOptionsUpdateFn = (
 ) => void;
 
 export function filterSelectOptions<T>({
-  value,
+  searchValue,
   update,
   allOptions,
   filteredOptions,
   valueExtractorFn,
+  withWildcardsAroundDots = false,
 }: {
-  value: string;
+  searchValue: string;
   update: FilterSelectOptionsUpdateFn;
   allOptions: T[] | readonly T[];
   filteredOptions: Ref<T[] | readonly T[]>;
   valueExtractorFn: (item: T) => string;
+  withWildcardsAroundDots?: boolean;
 }) {
   update(
     () =>
-      setFilteredOptions(value, allOptions, filteredOptions, valueExtractorFn),
-    (ref) => selectFirstOption(ref, value),
+      (filteredOptions.value = filterOptions({
+        searchValue,
+        allOptions,
+        valueExtractorFn,
+        withWildcardsAroundDots,
+      })),
+    (ref) => selectFirstOption(ref, searchValue),
   );
 }
 
-function setFilteredOptions<T>(
-  value: string,
-  allOptions: T[] | readonly T[],
-  filteredOptions: Ref<T[] | readonly T[]>,
-  valueExtractorFn: (item: T) => string,
-) {
-  if (value === '') {
-    filteredOptions.value = allOptions;
-  } else {
-    const needle = value.toLocaleLowerCase();
+export function filterOptions<T>({
+  searchValue,
+  allOptions,
+  valueExtractorFn,
+  withWildcardsAroundDots,
+}: {
+  searchValue: string;
+  allOptions: T[] | readonly T[];
+  valueExtractorFn: (item: T) => string;
+  withWildcardsAroundDots: boolean;
+}) {
+  searchValue = searchValue.trim();
 
-    filteredOptions.value = allOptions.filter(
+  if (searchValue === '') {
+    return allOptions;
+  }
+
+  if (!withWildcardsAroundDots) {
+    const needle = searchValue.toLocaleLowerCase();
+
+    return allOptions.filter(
       (v) => valueExtractorFn(v).toLocaleLowerCase().indexOf(needle) > -1,
     );
   }
+
+  const term = new RegExp(
+    // add wildcard (except dot) before and after each dot
+    // e.g. 'foo.bar' -> 'foo.[^.]\.[^.]*bar'
+    searchValue
+      .toLocaleLowerCase()
+      .split('.')
+      .map(escapeRegExp)
+      .join('[^.]*\\.[^.]*'),
+  );
+
+  return allOptions.filter((v) =>
+    term.test(valueExtractorFn(v).toLocaleLowerCase()),
+  );
 }
 
 export function selectFirstOption(ref: QSelect, value: string) {

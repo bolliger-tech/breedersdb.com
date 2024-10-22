@@ -9,6 +9,7 @@
     :loading="fetching"
     :error="error"
     :required="required"
+    filter-with-wildcards-around-dots
   />
 </template>
 

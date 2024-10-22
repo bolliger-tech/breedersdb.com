@@ -102,7 +102,7 @@ const visibleColumns = computed({
   get: () =>
     selectedColumns.value.length > 0
       ? selectedColumns.value
-      : validInitialVisibleColumns.value ?? defaultColumns.value,
+      : (validInitialVisibleColumns.value ?? defaultColumns.value),
   set: (cols: string[]) => {
     selectedColumns.value = cols;
   },

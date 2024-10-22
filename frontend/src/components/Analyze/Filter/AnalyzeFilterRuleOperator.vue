@@ -64,9 +64,12 @@ const applicableOptions = computed(() => {
 });
 
 const filteredOptions = ref(applicableOptions.value);
-function filterOptions(value: string, update: FilterSelectOptionsUpdateFn) {
+function filterOptions(
+  searchValue: string,
+  update: FilterSelectOptionsUpdateFn,
+) {
   filterSelectOptions({
-    value,
+    searchValue,
     update,
     allOptions: applicableOptions.value,
     filteredOptions,

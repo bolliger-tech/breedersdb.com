@@ -13,6 +13,7 @@
     filter-with-wildcards-around-dots
     @input-value="($event) => (searchValue = $event)"
     @keydown.down="onDownKey"
+    @keydown.enter="onEnterKey"
   >
     <template v-if="autocreate" #[`no-option`]>
       <q-item v-if="fetchingProposeCreate">
@@ -33,7 +34,7 @@
           clickable
           @keydown.down="onDownKey"
           @click="onSelectProposition(proposition)"
-          @enter="onSelectProposition(proposition)"
+          @keydown.enter="onSelectProposition(proposition)"
         >
           <q-item-section>
             <div class="row align-center">
@@ -422,5 +423,22 @@ async function onSelectProposition(
 
   // too much happend here: force rerender the component
   renderKey.value += 1;
+}
+
+function onEnterKey() {
+  if (
+    plantGroupRef.value?.filteredOptions.length ||
+    !proposeCreateEntity.value
+  ) {
+    return;
+  }
+
+  const proposition =
+    selectedProposeCreateItem.value !== null &&
+    proposeCreateEntity.value[selectedProposeCreateItem.value]
+      ? proposeCreateEntity.value[selectedProposeCreateItem.value]
+      : proposeCreateEntity.value[0];
+
+  onSelectProposition(proposition);
 }
 </script>

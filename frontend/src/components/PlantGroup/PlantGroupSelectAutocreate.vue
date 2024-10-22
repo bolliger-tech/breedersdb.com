@@ -98,6 +98,7 @@ const query = graphql(`
         plant_groups_aggregate: { count: { predicate: { _eq: 0 } } }
       }
       order_by: { display_name: asc }
+      limit: 100
     ) {
       id
       display_name
@@ -105,6 +106,7 @@ const query = graphql(`
     cultivars_prefix_match: cultivars(
       where: { display_name: { _ilike: $prefix } }
       order_by: { display_name: asc }
+      limit: 100
     ) {
       id
       display_name
@@ -115,6 +117,7 @@ const query = graphql(`
         cultivars_aggregate: { count: { predicate: { _eq: 0 } } }
       }
       order_by: { display_name: asc }
+      limit: 100
     ) {
       id
       display_name
@@ -122,6 +125,7 @@ const query = graphql(`
     lots_prefix_match: lots(
       where: { display_name: { _ilike: $prefix } }
       order_by: { display_name: asc }
+      limit: 100
     ) {
       id
       display_name

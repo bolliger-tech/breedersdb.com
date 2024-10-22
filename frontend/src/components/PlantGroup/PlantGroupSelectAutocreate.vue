@@ -71,7 +71,6 @@ import { CombinedError, useMutation, useQuery } from '@urql/vue';
 
 export interface PlantGroupSelectAutocreateProps {
   searchValue: string;
-  hasResults: boolean;
 }
 
 const props = defineProps<PlantGroupSelectAutocreateProps>();
@@ -154,7 +153,7 @@ const {
 });
 
 watch(
-  [() => props.searchValue, () => props.hasResults],
+  () => props.searchValue,
   () => proposeCreate(),
   {
     immediate: true,
@@ -162,12 +161,7 @@ watch(
 );
 
 async function proposeCreate() {
-  if (
-    props.hasResults ||
-    !props.searchValue ||
-    !props.searchValue.includes('.')
-  )
-    return;
+  if (!props.searchValue || !props.searchValue.includes('.')) return;
 
   const segments = props.searchValue.split('.');
 
@@ -271,7 +265,7 @@ const propositions = computed(() => {
 const selectedItem = ref<number | null>(null);
 
 function focusNext() {
-  if (props.hasResults || !propositions.value) {
+  if (!propositions.value) {
     selectedItem.value = null;
     return;
   }
@@ -379,7 +373,7 @@ async function onSelect(
 }
 
 function selectFirst() {
-  if (props.hasResults || !propositions.value) {
+  if (!propositions.value) {
     return;
   }
 

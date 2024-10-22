@@ -19,7 +19,6 @@
       <PlantGroupSelectAutocreate
         ref="autocreateRef"
         :search-value="searchValue"
-        :has-results="!!plantGroupRef?.filteredOptions.length"
         @saving="savingAutocreate = $event"
         @save-error="saveAutocreateError = $event"
         @select="onAutocreateSelect"

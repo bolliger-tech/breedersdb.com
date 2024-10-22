@@ -16,8 +16,8 @@
       :key="`${proposition.label.existing}${proposition.label.new}`"
       clickable
       @keydown.down="focusNext"
-      @click="onSelect(proposition)"
-      @keydown.enter="onSelect(proposition)"
+      @click="select(proposition)"
+      @keydown.enter="select(proposition)"
     >
       <q-item-section>
         <div class="row align-center">
@@ -155,13 +155,13 @@ const {
 
 watch(
   () => props.searchValue,
-  () => proposeCreate(),
+  () => fetchPropositions(),
   {
     immediate: true,
   },
 );
 
-async function proposeCreate() {
+async function fetchPropositions() {
   if (!props.searchValue || !props.searchValue.includes('.')) return;
 
   const segments = props.searchValue.split('.');
@@ -335,9 +335,7 @@ watch([savingCultivar, savingPlantGropup], () => {
   emit('saving', savingCultivar.value || savingPlantGropup.value);
 });
 
-async function onSelect(
-  proposition: NonNullable<typeof propositions.value>[0],
-) {
+async function select(proposition: NonNullable<typeof propositions.value>[0]) {
   const resp =
     'cultivar' in proposition.entity
       ? await executeCultivarMutation({
@@ -383,7 +381,7 @@ function selectFirst() {
       ? propositions.value[selectedItem.value]
       : propositions.value[0];
 
-  onSelect(proposition);
+  select(proposition);
 }
 
 onBeforeUnmount(() => {

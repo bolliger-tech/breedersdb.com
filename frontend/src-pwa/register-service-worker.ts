@@ -15,8 +15,8 @@ register(process.env.SERVICE_WORKER_FILE, {
     // console.log('Service worker is active.')
   },
 
-  registered(/* registration */) {
-    // console.log('Service worker has been registered.')
+  registered(registration) {
+    setInterval(() => registration.update(), 1000 * 60 * 60); // hourly update check
   },
 
   cached(/* registration */) {

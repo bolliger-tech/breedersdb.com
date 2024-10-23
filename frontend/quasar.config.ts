@@ -173,6 +173,11 @@ export default configure((ctx) => {
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
       workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
+      workboxOptions: {
+        // autoreload: https://quasar.dev/quasar-cli-webpack/developing-pwa/configuring-pwa#reload-and-update-automatically
+        skipWaiting: true,
+        clientsClaim: true,
+      },
       // swFilename: 'sw.js',
       // manifestFilename: 'manifest.json'
       extendManifestJson(json) {

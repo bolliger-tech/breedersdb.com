@@ -78,7 +78,12 @@ const cameraPermission = await navigator.permissions
   .catch(() => null);
 
 const waitWithPermissionRequest = ref(
-  !!(cameraPermission === 'prompt' && $q.platform.is.ios),
+  !!(
+    cameraPermission === 'prompt' &&
+    $q.platform.is.ios &&
+    // not needed on iOS standalone mode (PWA)
+    (!('standalone' in navigator) || !navigator.standalone)
+  ),
 );
 watch(waitWithPermissionRequest, (v) => {
   if (!v) {

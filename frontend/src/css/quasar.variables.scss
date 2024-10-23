@@ -9,7 +9,8 @@
 // ones will be available out of the box in your .vue/.scss/.sass files
 
 // It's highly recommended to change the default colors
-// to match your app's branding.
+// to match your app's branding. See .env.example.
+
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 :root {
   // By default, the folowing colors are used:
@@ -24,8 +25,11 @@
   // --bdb-primary-color-hue, --bdb-primary-color-saturation, --bdb-primary-color-lightness
   // --bdb-secondary-color-hue, --bdb-secondary-color-saturation, --bdb-secondary-color-lightness
   // --bdb-accent-color-hue, --bdb-accent-color-saturation, --bdb-accent-color-lightness
+  //
+  // CUSTOMIZE THE COLORS via .env
 
-  --bdb-primary-color-hue: 189; // Is overwritten by index.html
+  // Overridden in frontend/index.html with values from frontend/.env
+  --bdb-primary-color-hue: 189;
   --bdb-secondary-color-hue: calc(var(--bdb-primary-color-hue) + 180 + 19);
   --bdb-accent-color-hue: calc(var(--bdb-primary-color-hue) - 180 - 19);
 

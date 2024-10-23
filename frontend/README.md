@@ -1,7 +1,7 @@
 # BreedersDB - Frontend
 
-Web frontend for the BreedersDB, built with [quasar](https://quasar.dev/) using
-the Quasar CLI with Vite and TypeScript.
+Web frontend for the BreedersDB, built with [quasar](https://quasar.dev/) in PWA
+mode using the Quasar CLI with Vite and TypeScript.
 
 ## Getting Started
 
@@ -33,6 +33,10 @@ the Quasar CLI with Vite and TypeScript.
    # or
    yarn dev
    ```
+
+### HRM quirk
+
+See https://quasar.dev/quasar-cli-vite/developing-pwa/hmr-for-dev
 
 ### Lint the files
 

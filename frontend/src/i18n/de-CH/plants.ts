@@ -1,39 +1,39 @@
 export const plants = {
-  title: 'Plant | Plants',
-  searchPlaceholder: 'Search by label ID or cultivar name',
-  selectSearchNoOption: 'Type to search by label ID',
+  title: 'Pflanze | Pflanzen',
+  searchPlaceholder: 'Suche nach Etiketten-ID oder Cultivar',
+  selectSearchNoOption: 'Tippe um nach Etiketten-ID zu suchen',
   fields: {
-    labelId: 'Label ID',
+    labelId: 'Etiketten-ID',
     cultivarName: 'Cultivar',
-    groupName: 'Group',
-    serialInPlantRow: 'Number in row',
-    distancePlantRowStart: 'Distance to row start',
-    dateGrafted: 'Date grafted',
-    datePlanted: 'Date planted',
-    dateEliminated: 'Date eliminated',
-    dateLabeled: 'Date labeled',
-    plantGroup: 'Group',
-    plantRow: 'Row',
-    grafting: 'Grafting',
-    rootstock: 'Rootstock'
+    groupName: 'Gruppe',
+    serialInPlantRow: 'Nummer in Zeile',
+    distancePlantRowStart: 'Entfernung zu Zeilenbeginn',
+    dateGrafted: 'Veredelungsdatum',
+    datePlanted: 'Pflanzdatum',
+    dateEliminated: 'Eliminierungsdatum',
+    dateLabeled: 'Ettiketierungsdatum',
+    plantGroup: 'Gruppe',
+    plantRow: 'Zeile',
+    grafting: 'Veredelung',
+    rootstock: 'Unterlage'
   },
   errors: {
-    labelId: 'Label ID can only be numbers (max 8 digits). If the plant was eliminated, the label ID must be prefixed with a #',
-    distancePlantRowStart: 'Distance to row start must be a positive number',
-    labelIdQueryError: 'Failed to check if label ID is unique',
-    labelIdNextFree: 'Label ID is already in use. Next free label ID is {labelId}',
-    labelIdNotUnique: 'Label ID is already in use. Next free label ID is unknown.',
-    labelIdinvalid: 'Invalid label ID',
-    eliminatedNotAllowed: "Eliminated plants can't be used here",
-    labelIdNotFound: 'Plant {labelId} not found'
+    labelId: '\nEtiketten-ID darf nur aus Zahlen bestehen (max. 8 Ziffern). Wenn die Pflanze eliminiert wurde, muss der Etiketten-ID ein # vorangestellt werden',
+    distancePlantRowStart: 'Entfernung zum Zeilenanfang muss eine positive Zahl sein',
+    labelIdQueryError: 'Es konnte nicht überprüft werden, ob die Etiketten-ID einmalig ist',
+    labelIdNextFree: 'Etiketten-ID wird bereits verwendet. Die nächste freie Etiketten-ID ist {labelId}',
+    labelIdNotUnique: 'Etiketten-ID wird bereits verwendet. Die nächste freie Etiketten-ID ist unbekannt.',
+    labelIdinvalid: 'Ungültige Etiketten-ID',
+    eliminatedNotAllowed: 'Eliminierte Pflanzen können hier nicht verwendet werden',
+    labelIdNotFound: 'Die Pflanze {labelId} wurde nicht gefunden'
   },
   hints: {
-    labelId: 'Required. Number (max 8 digits). Prefixed with a # if plant was eliminated',
-    distancePlantRowStart: 'Meters',
-    dateEliminatedTrue: 'Adding an elimination date will disable this plant and prefix the label id with a #',
-    dateEliminatedFalse: 'Removing the elimination date will enable this plant and remove the # prefix from the label id'
+    labelId: 'Erforderlich. Nummer (max. 8 Ziffern). Mit # vorangestellt, wenn die Pflanze eliminiert wurde',
+    distancePlantRowStart: 'Meter',
+    dateEliminatedTrue: 'Das Hinzufügen eines Eliminierungsdatums wird diese Pflanze deaktivieren und die der Etiketten-ID eine # voranstellen',
+    dateEliminatedFalse: 'Das Entfernen des Eliminierungsdatums wird diese Pflanze aktivieren und die vorangestellte # der Etiketten-ID entfernen'
   },
-  eliminate: 'Eliminate',
-  eliminateConfirmation: 'Eliminating will move this plant to the list of disbled plants, it will make it impossible to add any further attributions and it will prefix the label id with a #. Are you sure you want to eliminate this plant?',
-  plantSelect: 'Plant (label ID)'
+  eliminate: 'Eliminieren',
+  eliminateConfirmation: 'Die Eliminierung zügelt diese Pflanze auf die Liste der deaktivierten Pflanzen, der Etiketten-ID wird eine # vorangestellt, und es wird nicht mehr möglich sein, dieser Pflanze Attribute hinzuzufügen. Möchtest du diese Pflanze wirklich eliminieren?',
+  plantSelect: 'Pflanze (Etiketten-ID)'
 };

@@ -10,7 +10,7 @@ export const base = {
     lot: 'lot | lots',
     cultivar: 'cultivar | cultivars',
     plant: 'plant | plants',
-    plantGroup: 'plant group | plant groups',
+    plantGroup: 'group | groups',
     attribution: 'attribution | attributions',
     orchard: 'orchard | orchards',
     rootstock: 'rootstock | rootstocks',

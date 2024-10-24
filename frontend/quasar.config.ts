@@ -98,7 +98,7 @@ export default configure((ctx) => {
       open: false, // true opens browser window automatically
       // websockets are not configured on our nginx proxy so we bypass it and
       // use the dev server directly
-      hmr: { clientPort: 9000 },
+      hmr: { clientPort: 9200 },
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
@@ -173,9 +173,34 @@ export default configure((ctx) => {
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
       workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
+      workboxOptions: {
+        // autoreload: https://quasar.dev/quasar-cli-webpack/developing-pwa/configuring-pwa#reload-and-update-automatically
+        skipWaiting: true,
+        clientsClaim: true,
+      },
       // swFilename: 'sw.js',
       // manifestFilename: 'manifest.json'
-      // extendManifestJson (json) {},
+      extendManifestJson(json) {
+        const hue = parseInt(process.env.VITE_PRIMARY_COLOR_HUE || '');
+        const saturation = parseInt(
+          process.env.VITE_PRIMARY_COLOR_SATURATION || '',
+        );
+        const lightness = parseInt(
+          process.env.VITE_PRIMARY_COLOR_LIGHTNESS || '',
+        );
+        const color =
+          Number.isNaN(hue) ||
+          Number.isNaN(saturation) ||
+          Number.isNaN(lightness)
+            ? undefined
+            : `#${hslToRgb(hue, saturation, lightness)}`;
+        json.theme_color = color || json.theme_color;
+        json.background_color = color || json.background_color;
+
+        json.short_name = process.env.VITE_ORG_ABBREVIATION || json.short_name;
+        json.name = process.env.VITE_ORG || json.name;
+        return json;
+      },
       // useCredentialsForManifestTag: true,
       // injectPwaMetaTags: false,
       // extendPWACustomSWConf (esbuildConf) {},
@@ -235,3 +260,19 @@ export default configure((ctx) => {
     },
   };
 });
+
+function hslToRgb(h: number, s: number, l: number) {
+  s /= 100;
+  l /= 100;
+  const k = (n: number) => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) =>
+    l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return (
+    (Math.round(255 * f(0)) << 16) +
+    (Math.round(255 * f(8)) << 8) +
+    Math.round(255 * f(4))
+  )
+    .toString(16)
+    .padStart(6, '0');
+}

@@ -1,16 +1,18 @@
 <template>
   <q-layout view="lhr Lpr fFf">
     <q-page-container>
-      <BaseSuspense>
-        <template #default>
-          <router-view />
-        </template>
-        <template #fallback>
-          <div class="fixed-center">
-            <BaseSpinner size="xl" />
-          </div>
-        </template>
-      </BaseSuspense>
+      <q-pull-to-refresh @refresh="reloadPage">
+        <BaseSuspense>
+          <template #default>
+            <router-view />
+          </template>
+          <template #fallback>
+            <div class="fixed-center">
+              <BaseSpinner size="xl" />
+            </div>
+          </template>
+        </BaseSuspense>
+      </q-pull-to-refresh>
     </q-page-container>
 
     <q-drawer
@@ -41,4 +43,8 @@ import MainNav from 'components/Layout/TheNav/TheNav.vue';
 import { useQuasar } from 'quasar';
 
 const $q = useQuasar();
+
+function reloadPage() {
+  window.location.reload();
+}
 </script>

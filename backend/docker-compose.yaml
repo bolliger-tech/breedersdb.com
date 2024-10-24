@@ -84,7 +84,7 @@ services:
               # frontend
               location / {
                   proxy_set_header Host localhost;
-                  proxy_pass http://host.docker.internal:9000/;
+                  proxy_pass http://host.docker.internal:9200/;
               }
           }
       }

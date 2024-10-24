@@ -20,12 +20,14 @@ import { rootstocks } from './rootstocks';
 import { users } from './users';
 import { entity } from './entity';
 import { analyze } from './analyze';
+import { pwa } from './pwa';
 
 const messages = {
   base,
   nav,
   errorNotFound,
   auth,
+  pwa,
 
   entity,
   attributes,

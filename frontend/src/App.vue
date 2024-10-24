@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import TheDarkModeColorProvider from 'components/Layout/DarkMode/TheDarkModeColorProvider.vue';
-defineOptions({
-  name: 'App',
-});
+import { usePwaUpdate } from './composables/usePwaUpdate';
+
+usePwaUpdate();
 </script>

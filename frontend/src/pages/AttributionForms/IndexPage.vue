@@ -84,11 +84,13 @@ const { queryArg: subset } = useQueryArg<'active' | 'disabled' | 'all'>({
   defaultValue: 'active',
   replace: true,
 });
-const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
-  { value: 'active', label: t('entity.tabs.active') },
-  { value: 'disabled', label: t('entity.tabs.disabled') },
-  { value: 'all', label: t('entity.tabs.all') },
-];
+const tabs = computed<{ value: UnwrapRef<typeof subset>; label: string }[]>(
+  () => [
+    { value: 'active', label: t('entity.tabs.active') },
+    { value: 'disabled', label: t('entity.tabs.disabled') },
+    { value: 'all', label: t('entity.tabs.all') },
+  ],
+);
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
   subset,
@@ -197,7 +199,7 @@ const {
   columns,
   title: t('attributionForms.title', 2),
   subsetLabel: computed(
-    () => tabs.find((t) => t.value === subset.value)?.label,
+    () => tabs.value.find((t) => t.value === subset.value)?.label,
   ),
   transformDataFn: transformData,
 });

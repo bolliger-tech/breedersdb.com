@@ -1,21 +1,21 @@
 export const users = {
   title: 'User | Users',
-  searchPlaceholder: 'Search by email',
+  searchPlaceholder: 'Nach E-Mail suchen',
   fields: {
-    email: 'Email',
-    locale: 'Locale',
-    failedSigninAttempts: 'Failed signin attempts',
-    lastSignin: 'Last signin',
-    password: 'Password',
-    newPassword: 'New Password'
+    email: 'E-Mail',
+    locale: 'Sprache',
+    failedSigninAttempts: 'Fehlerhafte Anmeldeversuche',
+    lastSignin: 'Letzte Anmeldung',
+    password: 'Passwort',
+    newPassword: 'Neues Passwort'
   },
   validation: {
-    invalidEmail: 'Invalid email address',
-    invalidPassword: 'Make the password longer or more complex. (8 characters if: uppercase+lowercase+number+special character, 12 characters if: uppercase+lowercase+number, 32 characters otherwise)',
-    emailNotUnique: 'There is already an account with this email address. Please use the existing account.'
+    invalidEmail: 'Ungültige E-Mail-Adresse',
+    invalidPassword: 'Mache das Passwort länger oder komplexer. (8 Zeichen wenn: Großbuchstaben+Kleinbuchstaben+Nummer+Sonderzeichen, 12 Zeichen wenn: Großbuchstaben+Kleinbuchstaben+Nummer, sonst 32 Zeichen)',
+    emailNotUnique: 'Es gibt bereits ein Konto mit dieser E-Mail-Adresse. Bitte nutze das bestehende Konto.'
   },
-  deleteConfirmation: 'Are you sure you want to delete this user?',
-  changePassword: 'Change Password',
-  changePasswordWarningOthers: 'Changing the password will immediately log out the user on all devices!',
-  changePasswordWarningMe: 'Changing the password will immediately log you out on all devices, including this one!'
+  deleteConfirmation: 'Benutzer wirklich löschen?',
+  changePassword: 'Passwort ändern',
+  changePasswordWarningOthers: 'Das Ändern des Passworts meldet den Benutzer sofort auf allen Geräten ab!',
+  changePasswordWarningMe: 'Das Ändern des Passworts wird dich sofort auf allen Geräten abmelden, einschliesslich diesem!'
 };

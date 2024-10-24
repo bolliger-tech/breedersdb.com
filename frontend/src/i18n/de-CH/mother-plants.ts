@@ -1,21 +1,21 @@
 export const motherPlants = {
-  title: 'Mother Plant | Mother Plants',
-  searchPlaceholder: 'Search by name, crossing name or plant label ID',
+  title: 'Mutterpflanze | Mutterpflanzen',
+  searchPlaceholder: 'Suche nach Name, Kreuzungsname oder Label-ID der Pflanze',
   fields: {
-    dateImpregnated: 'Date impregnated',
-    dateFruitsHarvested: 'Date fruits harvested',
-    numbFlowers: 'Number of flowers',
-    numbFruits: 'Number of fruits',
-    numbSeeds: 'Number of seeds',
-    plant: 'Plant',
+    dateImpregnated: 'Datum Befruchtung',
+    dateFruitsHarvested: 'Erntedatum der Früchte',
+    numbFlowers: 'Anzahl Blühten',
+    numbFruits: 'Anzahl Früchte',
+    numbSeeds: 'Anzahl Samen',
+    plant: 'Pflanze',
     pollen: 'Pollen',
-    crossing: 'Crossing'
+    crossing: 'Kreuzung'
   },
   hints: {
-    crossing: 'Mother cultivar: {motherCultivar}, father cultivar: {fatherCultivar}',
-    plantCultivar: 'Cultivar of the selected plant: {cultivar}',
-    pollenCultivar: 'Cultivar of the selected pollen: {cultivar}'
+    crossing: 'Mutter-Cultivar: {motherCultivar}, Vater-Cultivar: {fatherCultivar}',
+    plantCultivar: 'Cultivar der ausgewählten Pflanze: {cultivar}',
+    pollenCultivar: 'Cultivar der ausgewählten Pollen: {cultivar}'
   },
-  crossingPlantCultivarMismatch: 'The cultivar of the selected plant ({plantCultivar}) does not match the mother cultivar of the crossing ({crossingMotherPlantCultivar}).',
-  crossingPollenCultivarMismatch: 'The cultivar of the selected pollen ({pollenCultivar}) does not match the father cultivar of the crossing ({crossingFatherPlantCultivar}).'
+  crossingPlantCultivarMismatch: 'Das Cultivar der ausgewählten Pflanze ({plantCultivar}) entspricht nicht dem Mutter-Cultivar der Kreuzung ({crossingMotherPlantCultivar}).',
+  crossingPollenCultivarMismatch: 'Das Cultivar der ausgewählten Pollen ({pollenCultivar}) entspricht nicht dem Vater-Cultivar der Kreuzung ({crossingFatherPlantCultivar}).'
 };

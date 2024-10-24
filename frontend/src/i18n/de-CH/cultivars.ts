@@ -1,35 +1,32 @@
 export const cultivars = {
   title: 'Cultivar | Cultivars',
   searchPlaceholder: {
-    subset: 'Search {subset} by name or acronym',
-    all: 'Search by name or acronym'
-  },
-  analyze: {
-    title: 'Analyze'
+    subset: 'Suche {subset} nach Name oder Kürzel',
+    all: 'Suche nach Name oder Kürzel'
   },
   fields: {
-    acronym: 'Acronym',
-    breeder: 'Breeder',
-    lot: 'Lot'
+    acronym: 'Kürzel',
+    breeder: 'Züchter/in',
+    lot: 'Los'
   },
   validation: {
-    nameNotUniqueWithLot: 'This name is already in use in combination with the selected lot',
-    nameSegmentFormat: 'Invalid format. Must be a three-digit number. Example: 012'
+    nameNotUniqueWithLot: 'Dieser Name wird bereits verwendet (in Kombination mit dem ausgewählten Los)',
+    nameSegmentFormat: 'Ungültiges Format. Muss eine dreistellige Zahl sein. Beispiel: 012'
   },
-  breedersCultivar: 'breeders cultivar | breeders cultivars',
-  variety: 'variety | varieties',
-  type: 'Type',
-  nameOverrideHint: 'The common name',
-  segmentNameHint: 'Format: three-digit number. Example: {example}',
+  breedersCultivar: 'Zuchtnummer | Zuchtnummern',
+  variety: 'Sorte | Sorten',
+  type: 'Typ',
+  nameOverrideHint: 'Der gebräuchliche Name',
+  segmentNameHint: 'Format: dreistellige Nummer. Beispiel: {example}',
   explainer: {
-    examples: 'Examples:',
+    examples: 'Beispiele:',
     1: {
-      base: 'Follows the {pattern} {placeholder}, where {lot} is the lot name and {cultivarPlaceholder} is a three-digit number.',
-      pattern: 'pattern'
+      base: 'Folgt dem {pattern} {placeholder}, wobei {lot} der Name und {cultivarPlaceholder} eine dreistellige Zahl ist.',
+      pattern: 'Format'
     },
     2: {
-      base: '{hint}: Use the auto-fill button.',
-      hint: 'Hint'
+      base: '{hint}: Verwende den Auto-Ausfüllen-Button.',
+      hint: 'Tipp'
     }
   }
 };

@@ -1,3 +1,3 @@
 export const graftings = {
-  title: 'Grafting | Graftings'
+  title: 'Veredelung | Veredelungen'
 };

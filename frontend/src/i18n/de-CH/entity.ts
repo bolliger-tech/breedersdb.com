@@ -2,54 +2,54 @@ export const entity = {
   commonColumns: {
     id: 'ID',
     name: 'Name',
-    note: 'Notes',
-    created: 'Created',
-    modified: 'Last updated',
+    note: 'Bemerkungen',
+    created: 'Erstellt',
+    modified: 'Zuletzt aktualisiert',
     displayName: 'Name',
-    explicitDisplayName: 'Display name',
-    nameSegment: 'Name segment',
-    fullName: 'Breeding name',
-    disabled: 'Disabled',
-    dateDisabled: 'Date disabled'
+    explicitDisplayName: 'Anzeigename',
+    nameSegment: 'Namenssegment',
+    fullName: 'Zuchtname',
+    disabled: 'Deaktiviert',
+    dateDisabled: 'Datum deaktiviert'
   },
-  add: 'Add new',
-  search: 'Search list',
-  searchPlaceholderName: 'Search by name',
+  add: 'Hinzufügen',
+  search: 'Liste durchsuchen',
+  searchPlaceholderName: 'Nach Namen suchen',
   tabs: {
-    active: 'Active',
-    disabled: 'Disabled',
-    all: 'All'
+    active: 'Aktiv',
+    disabled: 'Deaktiviert',
+    all: 'Alle'
   },
   list: {
-    fullscreen: 'Fullscreen',
-    exitFullscreen: 'Exit fullscreen',
-    addColumn: 'Add Column',
-    dataIsNotFresh: 'Data may not be accurate because some filter rules are invalid.',
-    noColumnError: 'No columns selected. Add a column to see data.',
-    noData: 'No data.'
+    fullscreen: 'Vollbild',
+    exitFullscreen: 'Vollbild verlassen',
+    addColumn: 'Spalte hinzufügen',
+    dataIsNotFresh: 'Daten sind möglicherweise nicht korrekt, da Filterregeln ungültig sind.',
+    noColumnError: 'Keine Spalten ausgewählt. Füge Spalten hinzu, um Daten zu sehen.',
+    noData: 'Keine Daten.'
   },
-  basics: 'Basics',
-  noImages: 'No images available',
-  failedToLoadImage: 'Failed to load image',
-  noData: 'No data available',
+  basics: 'Basisdaten',
+  noImages: 'Keine Bilder vorhanden',
+  failedToLoadImage: 'Fehler beim Laden des Bildes',
+  noData: 'Keine Daten vorhanden',
   nameExplainerIntro: {
-    base: 'This is the {structuredName} (required). If you prefer a different name, you can override it with the {displayName} field below.',
-    structuredName: 'structured breeding name',
-    displayName: 'display name'
+    base: 'Dies ist der {structuredName} (erforderlich). Wenn du einen anderen Namen bevorzugst, kannst du diesen mit dem Feld {displayName} überschreiben.',
+    structuredName: 'strukturierter Zuchtname',
+    displayName: 'Anzeigename'
   },
   nameOverrideHint: {
-    onNameSegment: 'If you wish the system to show a different name, fill in the display name field below.',
-    onNameOverride: 'This is how the {entity} will be displayed. If not overridden, it will show the breeding name.'
+    onNameSegment: 'Fülle unten das Feld Anzeigename aus, wenn du möchtest, dass das System einen anderen Namen anzeigt.',
+    onNameOverride: 'So wird die/das {entity} angezeigt. Wenn du dieses Feld nicht ausfüllst, wird der Zuchtname angezeigt.'
   },
-  autoFillNextSegment: 'Auto-fill',
-  nameSegmentDataError: 'Failed to load data. Auto-fill not available, limited validation only.',
-  labelIdOmitZeros: 'You can omit leading zeros',
+  autoFillNextSegment: 'Auto-Ausfüllen',
+  nameSegmentDataError: 'Fehler beim Laden der Daten. Auto-Ausfüllen nicht verfügbar und nur begrenzte Validierung möglich.',
+  labelIdOmitZeros: 'Du kannst führende Nullen weglassen',
   picker: {
-    inputMethod: 'Select {entity} by',
-    scanQrCode: 'QR code',
-    plantLabelId: 'Plant label ID',
-    plantGroupLabelId: 'Group label ID',
-    cultivarName: 'Cultivar name',
-    lotName: 'Lot name'
+    inputMethod: '{entity} auswählen mit',
+    scanQrCode: 'QR-code',
+    plantLabelId: 'Etiketten-ID (Pflanze)',
+    plantGroupLabelId: 'Etiketten-ID (Gruppe)',
+    cultivarName: 'Cultivar-Name',
+    lotName: 'Los-Name'
   }
 };

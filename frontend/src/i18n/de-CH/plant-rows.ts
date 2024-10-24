@@ -1,14 +1,14 @@
 export const plantRows = {
-  title: 'Row | Rows',
+  title: 'Zeile | Zeilen',
   fields: {
-    orchard: 'Orchard',
-    dateCreated: 'Date created',
-    dateEliminated: 'Date disabled'
+    orchard: 'Standort',
+    dateCreated: 'Erstellungsdatum',
+    dateEliminated: 'Deaktivierungsdatum'
   },
   hints: {
-    dateEliminatedTrue: 'Adding an disabled date will disable this row',
-    dateEliminatedFalse: 'Removing the disabled date will enable this row'
+    dateEliminatedTrue: 'Das Hinzufügen eines Deaktivierungsdatums wird diese Zeile deaktivieren',
+    dateEliminatedFalse: 'Entfernen des Deaktivierungsdatums aktiviert diese Zeile'
   },
-  disableConfirmation: 'Disabling will make it impossible to add plants to this row. Do you really want to disable it?',
-  deleteConfirmation: "This row doesn't have any plants and will therefore be permanently deleted. Are you sure?"
+  disableConfirmation: 'Wenn du diese Zeile deaktivierst, kann du keine Pflanzen mehr zu dieser Zeile hinzufügen. Wirklich deaktivieren?',
+  deleteConfirmation: 'Diese Zeile hat keine Pflanzen und wird daher dauerhaft gelöscht. Löschen?'
 };

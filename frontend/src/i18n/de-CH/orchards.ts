@@ -1,6 +1,6 @@
 export const orchards = {
-  title: 'Orchard | Orchards',
-  disableExplainer: 'Disabling will make it impossible to add rows or lots to this orchard.',
-  disableConfirmation: 'Disabling will make it impossible to add rows or lots to this orchard. Do you really want to disable it?',
-  deleteConfirmation: "This orchard doesn't have any rows or lots and will therefore be permanently deleted. Are you sure?"
+  title: 'Standort | Standorte',
+  disableExplainer: 'Wenn du diesen Standort deaktivierst, kann du keine Zeilen oder Lose mehr zu diesem Standort hinzufügen.',
+  disableConfirmation: 'Wenn du diesen Standort deaktivierst, kann du keine Zeilen oder Lose mehr zu diesem Standort hinzufügen. Wirklich deaktivieren?',
+  deleteConfirmation: 'Dieser Standort hat keine Lose oder Zeilen und wird daher dauerhaft gelöscht. Löschen?'
 };

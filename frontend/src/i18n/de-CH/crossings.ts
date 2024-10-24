@@ -1,10 +1,10 @@
 export const crossings = {
-  title: 'Crossing | Crossings',
+  title: 'Kreuzung | Kreuzungen',
   fields: {
-    motherCultivar: 'Mother Cultivar',
-    fatherCultivar: 'Father Cultivar'
+    motherCultivar: 'Mutter-Cultivar',
+    fatherCultivar: 'Vater-Cultivar'
   },
   hints: {
-    readonlyCultivar: "Mother plants rely on this crossing, therefore the value can't be changed."
+    readonlyCultivar: 'Es beziehen sich Mutterpflanzen auf diese Kreuzung, dieser Wert kann darum nicht geändert werden.'
   }
 };

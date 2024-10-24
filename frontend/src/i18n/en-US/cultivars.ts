@@ -6,10 +6,6 @@ export const cultivars = {
     all: 'Search by name or acronym',
   },
 
-  analyze: {
-    title: 'Analyze',
-  },
-
   fields: {
     acronym: 'Acronym',
     breeder: 'Breeder',

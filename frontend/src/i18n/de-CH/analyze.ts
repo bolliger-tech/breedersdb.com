@@ -8,16 +8,13 @@ export const analyze = {
     hideExplanation: 'Erklärungen ausblenden',
     analysis: 'Analyse',
     addName: 'Speichern als …',
-    leaveConfirmation:
-      'Du hast ungespeicherte Änderungen! Möchtest du die Seite wirklich verlassen?',
+    leaveConfirmation: 'Du hast ungespeicherte Änderungen! Möchtest du die Seite wirklich verlassen?'
   },
   filter: {
-    attributionFilter:
-      'Kriterien filtern, um die Attribute (Zellenwerte) auszuwählen',
+    attributionFilter: 'Kriterien filtern, um die Attribute (Zellenwerte) auszuwählen',
     baseFilter: 'Kriterien filtern, um die {entityName} (Zeilen) auszuwählen',
     attribute: 'Attribut',
-    noFilter:
-      'Kein Filter definiert. Alle {entity} werden angezeigt. Klicke auf den Plus-Button, um Filterkriterien hinzuzufügen.',
+    noFilter: 'Kein Filter definiert. Alle {entity} werden angezeigt. Klicke auf den Plus-Button, um Filterkriterien hinzuzufügen.',
     simplifiable: 'Unnötige Komplexität erkannt.',
     simplify: 'Filter vereinfachen',
     invalid: 'Ungültige Filterregeln. Korrigiere oder lösche sie.',
@@ -25,24 +22,20 @@ export const analyze = {
     cultivarAndSubentities: 'Cultivars, seine Gruppen oder Pflanzen',
     explainer: {
       title: 'Erklärung:',
-      attributeWithNoAttributions:
-        'The {entity} have either no {column} attribution or at least one which satisfies: {column} {operator} {term}',
-      attribute:
-        'The {entity} has at least one attribution which satisfies: {column} {operator} {term}',
-      entity: 'The {entity} where {column} {operator} {term}',
-      invalidRule:
-        'Ungültige Regel. Bitte vervollständige, korrigiere oder lösche sie.',
+      attributeWithNoAttributions: 'Die/das {entity} hat entweder keine {column} Attributierung oder mindestens eine, die folgende Bedingung erfüllt: {column} {operator} {term}',
+      attribute: 'Die/das {entity} hat mindestens eine Attributierung, die folgende Bedingung erfüllt: {column} {operator} {term}',
+      entity: 'Die/das {entity} erfüllt: {column} {operator} {term}',
+      invalidRule: 'Ungültige Regel. Bitte vervollständige, korrigiere oder lösche sie.'
     },
     error: {
       column: 'Bitte Spalte auswählen.',
       operator: 'Bitte Operator auswählen.',
-      term: 'Bitte gültigen Wert eingeben.',
+      term: 'Bitte gültigen Wert eingeben.'
     },
     column: 'Zeile',
     operator: 'Operator',
     term: 'Wert',
-    withNoAttributions:
-      'Inklusive {entities} ohne {attributeName} Attributionen.',
+    withNoAttributions: 'Inklusive {entities} ohne {attributeName} Attributionen.',
     operators: {
       equals: 'gleich',
       notEquals: 'nicht gleich',
@@ -65,8 +58,8 @@ export const analyze = {
       andFilter: 'UND Kriterium',
       orFilter: 'ODER Kriterium',
       and: 'und',
-      or: 'oder',
-    },
+      or: 'oder'
+    }
   },
   result: {
     title: 'Ergebnisse',
@@ -82,12 +75,12 @@ export const analyze = {
       theMin: 'das Minimum',
       theMean: 'der Durchschnitt',
       theMedian: 'der Median',
-      theStdDev: 'die Standardabweichung',
+      theStdDev: 'die Standardabweichung'
     },
     aggTitle: '{value} ist {theAggregation} von:',
     altPhoto: 'Foto vom {date} von {author}',
     photo: 'Foto',
     downloadPhoto: 'Foto herunterladen',
-    lastRefresh: 'Letzte Aktualisierung: {date}',
-  },
+    lastRefresh: 'Letzte Aktualisierung: {date}'
+  }
 };

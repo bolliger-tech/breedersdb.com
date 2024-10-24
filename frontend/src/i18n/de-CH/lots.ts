@@ -1,30 +1,30 @@
 export const lots = {
-  title: 'Lot | Lots',
+  title: 'Los | Lose',
   fields: {
-    dateSowed: 'Date sowed',
-    numbSeedsSowed: 'Number of seeds sowed',
-    numbSeedlingsGrown: 'Number of seedlings grown',
-    seedTray: 'Seed tray',
-    datePlanted: 'Date planted',
-    numbSeedlingsPlanted: 'Number of seedlings planted',
-    plot: 'Plot',
-    crossing: 'Crossing',
-    orchard: 'Orchard'
+    dateSowed: 'Datum Aussaat',
+    numbSeedsSowed: 'Anzahl ausgesähter Samen',
+    numbSeedlingsGrown: 'Anzahl gesprossener Sämlinge',
+    seedTray: 'Saatschale',
+    datePlanted: 'Pflanzdatum',
+    numbSeedlingsPlanted: 'Anzahl gepflanzter Sämlinge',
+    plot: 'Beet',
+    crossing: 'Kreuzung',
+    orchard: 'Standort'
   },
   validation: {
-    invalidNameSegmentFormat: 'The name must be two digits followed by a capital letter. Example: 24A. Hint: Use the year as the first two digits.',
-    nameNotUniqueWithCrossing: 'This name is already in use for the selected crossing. Next available name: {name}'
+    invalidNameSegmentFormat: 'Der Name muss aus zwei Ziffern bestehen, gefolgt von einem Grossbuchstaben. Beispiel: 24A. Tipp: Nimm die Jahrzahl für die ersten zwei Ziffern.',
+    nameNotUniqueWithCrossing: 'Dieser Name wird bereits für verwendet (in Kombination mit der ausgewählten Kreuzung). Nächster freier Name: {name}'
   },
-  segmentNameHint: 'Format: two-digit number followed by an uppercase letter. Example: {example}',
+  segmentNameHint: 'Format: zweistellige Nummer gefolgt von einem Grossbuchstaben. Beispiel: {example}',
   explainer: {
-    examples: 'Examples:',
+    examples: 'Beispiele:',
     1: {
-      base: 'Follows the {pattern} {placeholder}, where {crossing} is the crossing name and {lotPlaceholder} is a two-digit number followed by an uppercase letter.',
-      pattern: 'pattern'
+      base: 'Folgt dem {pattern} {placeholder}, wobei {crossing} der Kreuzungsname und {lotPlaceholder} eine zweistellige Zahl ist, gefolgt von einem Grossbuchstaben.',
+      pattern: 'Format'
     },
     2: {
-      base: '{hint}: Use the current year as digits and ascending letters for lots of the same cross.',
-      hint: 'Hint'
+      base: '{hint}: Verwende die aktuelle Jahrzahl als Ziffern und fortlaufende Buchstaben für Lose der gleichen Kreuzung.',
+      hint: 'Tipp'
     }
   }
 };

@@ -72,7 +72,7 @@ jobs:
         working-directory: ./frontend/src/i18n
 
       - name: Fix quoting
-        run: yarn install && yarn exec eslint --ext .ts src/i18n --fix
+        run: yarn install && yarn exec eslint --ext .ts src/i18n -- --fix
         working-directory: ./frontend
 
       - name: Commit changes and create pull request

@@ -20,5 +20,6 @@ export const nav = {
     darkMode: { main: 'Dark mode', on: 'On', off: 'Off' },
     language: { main: 'Language' },
     logout: 'Logout',
+    reload: 'Update & Restart',
   },
 };

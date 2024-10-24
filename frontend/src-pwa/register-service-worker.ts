@@ -28,7 +28,8 @@ register(process.env.SERVICE_WORKER_FILE, {
   },
 
   updated(/* registration */) {
-    // console.log('New content is available; please refresh.')
+    // message is caught by src/composables/usePwaUpdate.ts
+    postMessage('bdb-swUpdated');
   },
 
   offline() {

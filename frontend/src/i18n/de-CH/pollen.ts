@@ -1,11 +1,11 @@
 export const pollen = {
   title: 'Pollen | Pollen',
-  searchPlaceholder: 'Search by name or cultivar',
+  searchPlaceholder: 'Nach Namen oder Cultivar suchen',
   fields: {
     cultivarName: 'Cultivar',
-    dateHarvested: 'Date harvested'
+    dateHarvested: 'Erntedatum'
   },
   validation: {
-    immutableCultivar: 'Cultivar cannot be changed, once the pollen is used in a mother plant.'
+    immutableCultivar: 'Cultivar kann nicht mehr geändert werden, sobald die Pollen von einer Mutterpflanze referenziert wurden.'
   }
 };

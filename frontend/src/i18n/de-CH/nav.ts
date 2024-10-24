@@ -1,31 +1,31 @@
 export const nav = {
   shared: {
-    list: 'List',
-    new: 'New',
-    addAttribute: 'Add attribute',
-    analyze: 'Analyze'
+    list: 'Auflisten',
+    new: 'Hinzufügen',
+    addAttribute: 'Attributieren',
+    analyze: 'Analysieren'
   },
   plants: {
-    plant: 'Plant',
-    eliminate: 'Eliminate'
+    plant: 'Pflanzen',
+    eliminate: 'Eliminieren'
   },
   more: {
-    main: 'More',
+    main: 'Mehr',
     attributionForms: {
-      main: 'Attribution Forms',
-      forms: 'Forms',
-      attributes: 'Attributes'
+      main: 'Attributierungsformulare',
+      forms: 'Formulare',
+      attributes: 'Attribute'
     },
-    settings: 'Settings',
+    settings: 'Einstellungen',
     darkMode: {
-      main: 'Dark mode',
-      on: 'On',
-      off: 'Off'
+      main: 'Nachtmodus',
+      on: 'Ein',
+      off: 'Aus'
     },
     language: {
-      main: 'Language'
+      main: 'Sprache'
     },
-    logout: 'Logout',
-    reload: 'Update & Restart'
+    logout: 'Abmelden',
+    reload: 'Aktualisieren & Neustarten'
   }
 };

@@ -92,7 +92,7 @@ export const attributions = {
     notesMustHaveValue:
       'Add a value or remove the note / photo for this attribute.',
 
-    saved: 'Attribute saved.',
+    saved: 'Attribution saved.',
     uploading: 'Saving… {percentage}%',
 
     noValues:

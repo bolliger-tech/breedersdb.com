@@ -63,6 +63,9 @@ jobs:
           # Visit https://crowdin.com/settings#api-key to create this token
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
+      - name: Chown files
+        run: sudo chown -R $USER:$USER frontend/src/i18n
+
       - name: Sync translation index.ts
         run: echo */ | xargs -n1 | grep -v 'en-US/' | xargs -n1 cp -v en-US/index.ts
         working-directory: ./frontend/src/i18n

@@ -1,12 +1,8 @@
 <template>
-  <q-stepper
+  <BaseStepper
     v-model="step"
-    animated
-    header-nav
-    contracted
     class="attribute-steps"
-    :transition-duration="TRANSITION_DURATION"
-    @transition="handleTransition"
+    @after-transition="onAfterTransition"
   >
     <q-step
       :name="1"
@@ -131,7 +127,7 @@
         <q-btn flat color="primary" :label="t('base.back')" @click="step = 3" />
       </q-stepper-navigation>
     </q-step>
-  </q-stepper>
+  </BaseStepper>
 </template>
 
 <script setup lang="ts">
@@ -141,6 +137,7 @@ import AttributionAddForm from 'src/components/Attribution/Add/AttributionAddFor
 import AttributionAddNoEntityError from 'src/components/Attribution/Add/AttributionAddNoEntityError.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
+import BaseStepper from 'src/components/Base/BaseStepper.vue';
 import { graphql, ResultOf } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -152,8 +149,6 @@ import {
   attributeFragment,
   type AttributeFragment,
 } from 'src/components/Attribute/attributeFragment';
-
-const TRANSITION_DURATION = 300;
 
 const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';
 const AUTHOR_STORAGE_KEY = 'breedersdb-attribution-author';
@@ -347,31 +342,9 @@ function getInitialStep() {
 
 const step = ref(getInitialStep());
 
-function handleTransition(to: string | number) {
+function onAfterTransition(to: string | number) {
   if (to === 3) {
-    // else some browsers are going shaky
-    setTimeout(() => {
-      props.focusEntityPicker?.();
-    }, TRANSITION_DURATION + 10);
+    props.focusEntityPicker?.();
   }
 }
 </script>
-
-<style scoped>
-:global(.attribute-steps .q-stepper__tab--active) {
-  background: color-mix(in srgb, currentColor 9%, white 5%);
-}
-:global(
-    .attribute-steps :is(.q-stepper__tab--active, .q-stepper__tab--done) .q-icon
-  ) {
-  color: white;
-}
-
-:global(.attribute-steps .q-stepper__header) {
-  min-height: 50px;
-}
-:global(.attribute-steps .q-stepper__header .q-stepper__tab) {
-  padding: 0 max(0.5em, calc(10svw - 24px - 4px));
-  min-height: clamp(50px, 7svw, 72px);
-}
-</style>

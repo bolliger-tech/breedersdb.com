@@ -43,14 +43,14 @@ import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSt
 import PlantPicker from 'src/components/Plant/PlantPicker.vue';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { computed, ref } from 'vue';
-import { PlantFragment } from 'src/components/Plant/plantFragment';
+import { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 
 const { t } = useI18n();
 
 const plantPickerRef = ref<InstanceType<typeof PlantPicker> | null>(null);
 
-const plant = ref<PlantFragment | null>(null);
+const plant = ref<PlantFragmentWithSegments | null>(null);
 const fetching = ref(false);
 
 const entityCaption = computed(() => {

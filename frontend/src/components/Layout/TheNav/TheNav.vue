@@ -11,6 +11,7 @@ import NavLevel0 from './NavLevel0.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { type NavItem } from 'src/components/Layout/TheNav/useNavItem';
 import ReloadButton from '../ReloadButton.vue';
+import { computed } from 'vue';
 
 const { t } = useI18n();
 
@@ -21,7 +22,7 @@ type NavDefinitionItem = Pick<
   children?: NavDefinitionItem[];
 };
 
-const navDefinition: NavDefinitionItem[] = [
+const navDefinition = computed<NavDefinitionItem[]>(() => [
   {
     label: t('plants.title', 2),
     to: '/plants',
@@ -37,11 +38,11 @@ const navDefinition: NavDefinitionItem[] = [
         icon: 'add',
         to: 'new',
       },
-      {
-        label: t('nav.plants.plant'),
-        icon: 'shovel',
-        to: 'plant',
-      },
+      // {
+      //   label: t('nav.plants.plant'),
+      //   icon: 'shovel',
+      //   to: 'plant',
+      // },
       {
         label: t('nav.plants.eliminate'),
         icon: 'trash',
@@ -312,7 +313,7 @@ const navDefinition: NavDefinitionItem[] = [
       },
     ],
   },
-];
+]);
 
 function setPaths(
   items: NavDefinitionItem[],
@@ -334,5 +335,5 @@ function setPaths(
   });
 }
 
-const navItems = setPaths(navDefinition, '', []);
+const navItems = computed(() => setPaths(navDefinition.value, '', []));
 </script>

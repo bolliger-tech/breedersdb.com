@@ -21,7 +21,7 @@ import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import { PlantFragment, plantFragment } from './plantFragment';
+import { PlantFragmentWithSegments, plantFragment } from './plantFragment';
 import { onMounted } from 'vue';
 import EntityPicker from 'src/components/Entity/EntityPicker.vue';
 
@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<PlantPickerProps>(), {
 });
 
 const emit = defineEmits<{
-  plant: [data: PlantFragment | null];
+  plant: [data: PlantFragmentWithSegments | null];
   fetching: [data: boolean];
 }>();
 onMounted(() => emit('plant', null));
@@ -125,7 +125,7 @@ onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
   if (d?.plants.length && !d.plants[0].disabled) {
-    emit('plant', d.plants[0]);
+    emit('plant', d.plants[0] as PlantFragmentWithSegments);
   }
 });
 

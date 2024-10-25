@@ -137,25 +137,27 @@ const { queryArg: subset } = useQueryArg<
   defaultValue: 'all',
   replace: true,
 });
-const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
-  { value: 'all', label: t('entity.tabs.all') },
-  {
-    value: 'plants',
-    label: t('plants.title', 2),
-  },
-  {
-    value: 'plantGroups',
-    label: t('plantGroups.title', 2),
-  },
-  {
-    value: 'cultivars',
-    label: t('cultivars.title', 2),
-  },
-  {
-    value: 'lots',
-    label: t('lots.title', 2),
-  },
-];
+const tabs = computed<{ value: UnwrapRef<typeof subset>; label: string }[]>(
+  () => [
+    { value: 'all', label: t('entity.tabs.all') },
+    {
+      value: 'plants',
+      label: t('plants.title', 2),
+    },
+    {
+      value: 'plantGroups',
+      label: t('plantGroups.title', 2),
+    },
+    {
+      value: 'cultivars',
+      label: t('cultivars.title', 2),
+    },
+    {
+      value: 'lots',
+      label: t('lots.title', 2),
+    },
+  ],
+);
 
 const {
   search,
@@ -477,7 +479,7 @@ const {
   }),
   title: t('attributions.title', 2),
   subsetLabel: computed(
-    () => tabs.find((t) => t.value === subset.value)?.label,
+    () => tabs.value.find((t) => t.value === subset.value)?.label,
   ),
   transformDataFn: transformData,
 });

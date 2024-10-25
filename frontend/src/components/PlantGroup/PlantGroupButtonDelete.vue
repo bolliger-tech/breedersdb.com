@@ -1,14 +1,19 @@
 <template>
   <EntityButtonDelete
-    :label="plantGroupHasPlants ? t('base.disable') : t('base.delete')"
+    :label="
+      plantGroupHasPlantsOrAttributions ? t('base.disable') : t('base.delete')
+    "
     :error="queryError || deleteError || disableError"
     :fetching="queryFetching || deleting || disabling"
     @delete="
-      () => (plantGroupHasPlants ? disablePlantGroup() : deletePlantGroup())
+      () =>
+        plantGroupHasPlantsOrAttributions
+          ? disablePlantGroup()
+          : deletePlantGroup()
     "
     @reset-errors="resetErrors"
   >
-    <template v-if="plantGroupHasPlants" #message>
+    <template v-if="plantGroupHasPlantsOrAttributions" #message>
       <BaseMessage
         type="warning"
         icon-size="xl"
@@ -61,15 +66,24 @@ const {
             count
           }
         }
+        attributions_aggregate {
+          aggregate {
+            count
+          }
+        }
       }
     }
   `),
   variables: { id: props.plantGroupId },
 });
 
-const plantGroupHasPlants = computed(() => {
-  return !!plantGroupData.value?.plant_groups_by_pk?.plants_aggregate?.aggregate
-    ?.count;
+const plantGroupHasPlantsOrAttributions = computed(() => {
+  return (
+    !!plantGroupData.value?.plant_groups_by_pk?.plants_aggregate?.aggregate
+      ?.count ||
+    !!plantGroupData.value?.plant_groups_by_pk?.attributions_aggregate
+      ?.aggregate?.count
+  );
 });
 
 const {

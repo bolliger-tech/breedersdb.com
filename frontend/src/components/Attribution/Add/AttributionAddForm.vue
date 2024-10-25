@@ -384,4 +384,3 @@ function showNoDataNotification() {
   });
 }
 </script>
-src/components/Attribution/attributionValueHasValue

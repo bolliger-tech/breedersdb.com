@@ -49,4 +49,8 @@ export const plants = {
     'Eliminating will move this plant to the list of disbled plants, it will make it impossible to add any further attributions and it will prefix the label id with a #. Are you sure you want to eliminate this plant?',
 
   plantSelect: 'Plant (label ID)',
+
+  eliminatePlant: 'Eliminate plant',
+  eliminatePlantSuccess: 'Plant {labelId} eliminated',
+  eliminatePlantError: 'Failed to eliminate plant. Please try again.',
 };

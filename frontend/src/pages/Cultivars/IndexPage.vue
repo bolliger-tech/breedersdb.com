@@ -76,17 +76,19 @@ const { queryArg: subset } = useQueryArg<
   defaultValue: 'breeders_cultivars',
   replace: true,
 });
-const tabs: { value: UnwrapRef<typeof subset>; label: string }[] = [
-  {
-    value: 'breeders_cultivars',
-    label: uppercaseFirstLetter(t('cultivars.breedersCultivar', 2)),
-  },
-  {
-    value: 'varieties',
-    label: uppercaseFirstLetter(t('cultivars.variety', 2)),
-  },
-  { value: 'all', label: t('entity.tabs.all') },
-];
+const tabs = computed<{ value: UnwrapRef<typeof subset>; label: string }[]>(
+  () => [
+    {
+      value: 'breeders_cultivars',
+      label: uppercaseFirstLetter(t('cultivars.breedersCultivar', 2)),
+    },
+    {
+      value: 'varieties',
+      label: uppercaseFirstLetter(t('cultivars.variety', 2)),
+    },
+    { value: 'all', label: t('entity.tabs.all') },
+  ],
+);
 
 const searchPlaceholder = computed(() => {
   if (subset.value === 'breeders_cultivars') {
@@ -282,7 +284,7 @@ const {
   columns,
   title: t('cultivars.title', 2),
   subsetLabel: computed(
-    () => tabs.find((t) => t.value === subset.value)?.label,
+    () => tabs.value.find((t) => t.value === subset.value)?.label,
   ),
 });
 </script>

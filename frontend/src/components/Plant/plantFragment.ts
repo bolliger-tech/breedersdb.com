@@ -1,7 +1,16 @@
 import { graphql, type FragmentOf } from 'src/graphql';
-import { plantGroupSegmentsFragment } from '../PlantGroup/plantGroupFragment';
+import {
+  plantGroupSegmentsFragment,
+  type PlantGroupSegmentsFragment,
+} from '../PlantGroup/plantGroupFragment';
+import type { Unpack } from 'src/utils/typescriptUtils';
 
 export type PlantFragment = FragmentOf<typeof plantFragment>;
+export type PlantFragmentWithSegments = Unpack<
+  Omit<PlantFragment, 'plant_group'> & {
+    plant_group: PlantGroupSegmentsFragment;
+  }
+>;
 
 export const plantFragment = graphql(
   `

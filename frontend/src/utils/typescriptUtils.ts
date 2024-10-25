@@ -6,3 +6,7 @@
 export type DistributiveOmit<T, K extends keyof any> = T extends any
   ? Omit<T, K>
   : never;
+
+export type Unpack<T> = {
+  [K in keyof T]: T[K] extends object ? Unpack<T[K]> : T[K];
+};

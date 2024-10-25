@@ -38,11 +38,11 @@ const navDefinition = computed<NavDefinitionItem[]>(() => [
         icon: 'add',
         to: 'new',
       },
-      {
-        label: t('nav.plants.plant'),
-        icon: 'shovel',
-        to: 'plant',
-      },
+      // {
+      //   label: t('nav.plants.plant'),
+      //   icon: 'shovel',
+      //   to: 'plant',
+      // },
       {
         label: t('nav.plants.eliminate'),
         icon: 'trash',

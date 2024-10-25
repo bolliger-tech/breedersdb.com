@@ -8,7 +8,7 @@
         !!val ||
         t('base.validation.xIsRequired', { x: t('users.fields.email') }),
       (val: string) =>
-        val.length > 254 || t('base.validation.maxLen', { x: 254 }), // https://stackoverflow.com/a/574698
+        val.length <= 254 || t('base.validation.maxLen', { x: 254 }), // https://stackoverflow.com/a/574698
       (val: string) => isValidEmail(val) || t('users.validation.invalidEmail'),
       async (val: string) =>
         (await isEmailUnique(val)) || t('users.validation.emailNotUnique'),

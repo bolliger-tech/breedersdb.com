@@ -9,8 +9,9 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
-    "dev": "quasar dev -m pwa",
-    "build": "quasar build -m pwa",
+    "dev": "VITE_BDB_VERSION=$(git rev-parse HEAD) quasar dev -m pwa",
+    "make:version": "mkdir -p dist && echo \\\"$(git rev-parse HEAD)\\\" > dist/version.json",
+    "build": "VITE_BDB_VERSION=$(git rev-parse HEAD) quasar build -m pwa",
     "build:sentry": "yarn run build && yarn run sentry:sourcemaps",
     "serve": "quasar serve dist/pwa --port 9200",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org bolligertech --project breedersdb ./dist && sentry-cli sourcemaps upload --org bolligertech --project breedersdb ./dist",

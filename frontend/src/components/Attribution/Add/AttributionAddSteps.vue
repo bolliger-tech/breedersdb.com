@@ -144,7 +144,7 @@ import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { graphql, ResultOf } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref, watch, type Slot } from 'vue';
+import { computed, ref, watch, type Slot, Ref } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
@@ -255,9 +255,9 @@ const form = computed(
   () => (formData.value?.attribution_forms_by_pk as AttributionForm) ?? null,
 );
 
-const attributeFormSelectRef = ref<InstanceType<
+const attributeFormSelectRef: Ref<InstanceType<
   typeof AttributionFormSelect
-> | null>(null);
+> | null> = ref<InstanceType<typeof AttributionFormSelect> | null>(null);
 
 function completeStep1() {
   Promise.resolve(attributeFormSelectRef.value?.validate()).then((valid) => {

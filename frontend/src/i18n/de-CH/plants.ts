@@ -35,5 +35,8 @@ export const plants = {
   },
   eliminate: 'Eliminieren',
   eliminateConfirmation: 'Die Eliminierung zügelt diese Pflanze auf die Liste der deaktivierten Pflanzen, der Etiketten-ID wird eine # vorangestellt, und es wird nicht mehr möglich sein, dieser Pflanze Attribute hinzuzufügen. Möchtest du diese Pflanze wirklich eliminieren?',
-  plantSelect: 'Pflanze (Etiketten-ID)'
+  plantSelect: 'Pflanze (Etiketten-ID)',
+  eliminatePlant: 'Pflanze eliminieren',
+  eliminatePlantSuccess: 'Pflanze {labelId} eliminiert',
+  eliminatePlantError: 'Fehler beim Eliminieren der Pflanze. Bitte versuche es erneut.'
 };

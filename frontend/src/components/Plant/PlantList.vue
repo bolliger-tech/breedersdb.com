@@ -101,7 +101,7 @@ const columns = [
     field: 'distance_plant_row_start',
     align: 'right' as const,
     sortable: true,
-    format: (v: Plant['distance_plant_row_start']) => (v ? n(v) : ''),
+    format: (v: Plant['distance_plant_row_start']) => (v !== null ? n(v) : ''),
   },
   {
     name: 'orchard' as const,

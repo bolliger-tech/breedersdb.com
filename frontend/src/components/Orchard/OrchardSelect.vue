@@ -64,6 +64,7 @@ const { data, error, fetching } = useQuery({
   query,
   variables,
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['orchards'] },
 });
 
 const orchardOptions = computed(() => data.value?.orchards ?? []);

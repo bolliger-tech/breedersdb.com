@@ -65,6 +65,7 @@ const { data, error, fetching, resume, pause } = useQuery({
   variables: variables,
   pause: !props.cultivarId,
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['cultivars'] },
 });
 watch(
   () => props.cultivarId,

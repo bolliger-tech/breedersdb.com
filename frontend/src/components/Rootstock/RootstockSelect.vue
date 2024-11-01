@@ -45,6 +45,7 @@ const query = graphql(`
 const { data, error, fetching } = useQuery({
   query,
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['rootstocks'] },
 });
 
 const rootstockOptions = computed(() => data.value?.rootstocks ?? []);

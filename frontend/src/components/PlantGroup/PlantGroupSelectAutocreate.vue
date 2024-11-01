@@ -151,6 +151,7 @@ const {
   variables: queryVars,
   requestPolicy: 'cache-and-network',
   pause: true,
+  context: { additionalTypenames: ['cultivars', 'lots'] },
 });
 
 watch(

@@ -155,6 +155,7 @@ const {
   query,
   variables,
   pause: true,
+  context: { additionalTypenames: ['cultivars'] },
 });
 
 watch(fetching, (f) => emit('fetching', f));

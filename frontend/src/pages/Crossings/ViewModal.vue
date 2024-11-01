@@ -173,6 +173,7 @@ const query = graphql(
 const { data, error, fetching } = await useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['crossings'] },
 });
 
 const crossing = computed(() => data.value?.crossings_by_pk);

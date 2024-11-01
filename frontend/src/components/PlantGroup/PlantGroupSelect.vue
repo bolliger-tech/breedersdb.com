@@ -79,6 +79,7 @@ const { data, error, fetching } = useQuery({
   query,
   variables,
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['plant_groups'] },
 });
 
 const plantGroupOptions = computed(() => data.value?.plant_groups ?? []);

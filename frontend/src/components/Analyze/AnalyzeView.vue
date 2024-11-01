@@ -63,6 +63,7 @@ const { data, error } = await useQuery({
   query,
   variables,
   pause: props.analyzeId === 'new',
+  context: { additionalTypenames: ['analyze_filters'] },
 });
 
 const show404 =

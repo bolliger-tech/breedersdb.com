@@ -190,6 +190,7 @@ const varietyLotQuery = graphql(`
 const { data: varietyLotData, fetching: varietyLotFetching } = useQuery({
   query: varietyLotQuery,
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['lots'] },
 });
 
 const varietyLots = computed(() => varietyLotData.value?.lots ?? []);
@@ -290,6 +291,7 @@ const {
   variables: varietyNameSegmentQueryVariables,
   pause: true,
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['cultivars'] },
 });
 
 // using this directly in the pause option of useQuery() doesn't work

@@ -124,6 +124,7 @@ const {
   query: lotsQuery,
   variables: lotsQueryVariables,
   pause: !props.crossing,
+  context: { additionalTypenames: ['lots'] },
 });
 watch(
   () => props.crossing,

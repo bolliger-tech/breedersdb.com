@@ -146,6 +146,7 @@ const {
   query,
   variables,
   pause: true,
+  context: { additionalTypenames: ['plant_groups'] },
 });
 
 watch(fetching, (f) => emit('fetching', f));

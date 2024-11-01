@@ -98,6 +98,7 @@ const { executeQuery, fetching } = useQuery({
   query: uniqueQuery,
   variables: queryVariables,
   pause: true,
+  context: { additionalTypenames: ['plants'] },
 });
 
 const nextFreeLabelId = ref<string | null>(null);

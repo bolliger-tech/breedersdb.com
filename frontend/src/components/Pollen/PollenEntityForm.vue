@@ -124,6 +124,7 @@ const { data: motherPlantsCountData, fetching: fetchingMotherPlantsCount } =
     variables: { pollen_id: 'id' in props.pollen ? props.pollen.id : -1 },
     pause: !('id' in props.pollen),
     requestPolicy: 'cache-and-network',
+    context: { additionalTypenames: ['mother_plants'] },
   });
 
 const motherPlantsCount = computed(() => {

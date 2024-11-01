@@ -39,6 +39,7 @@ export function useAttributesAsColumns() {
     query,
     variables: undefined,
     pause,
+    context: { additionalTypenames: ['attributes'] },
   });
 
   const columns = computed(() => {

@@ -73,6 +73,7 @@ const { data, error, fetching } = useQuery({
   query,
   requestPolicy: props.requestPolicy ?? 'cache-and-network',
   variables,
+  context: { additionalTypenames: ['lots'] },
 });
 
 const lotOptions = computed(() => data.value?.lots ?? []);

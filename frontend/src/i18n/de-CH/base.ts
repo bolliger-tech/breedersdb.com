@@ -7,7 +7,7 @@ export const base = {
   entityName: {
     crossing: 'Kreuzung | Kreuzungen',
     lot: 'Los | Lose',
-    cultivar: 'Cultivar | Cultivars',
+    cultivar: 'Cultivar | Cultivare',
     plant: 'Pflanze | Pflanzen',
     plantGroup: 'plant group | plant groups',
     attribution: 'Attributierung | Attributierungen',

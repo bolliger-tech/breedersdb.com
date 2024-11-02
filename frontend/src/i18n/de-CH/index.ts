@@ -23,6 +23,7 @@ import { users } from './users';
 import { entity } from './entity';
 import { analyze } from './analyze';
 import { pwa } from './pwa';
+import { settings } from './settings';
 
 const messages = {
   base,
@@ -30,6 +31,7 @@ const messages = {
   errorNotFound,
   auth,
   pwa,
+  settings,
 
   entity,
   attributes,

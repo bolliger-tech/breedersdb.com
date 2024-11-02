@@ -1,5 +1,5 @@
 export const cultivars = {
-  title: 'Cultivar | Cultivars',
+  title: 'Cultivar | Cultivare',
   searchPlaceholder: {
     subset: 'Suche {subset} nach Name oder Kürzel',
     all: 'Suche nach Name oder Kürzel'

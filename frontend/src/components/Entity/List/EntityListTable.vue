@@ -7,7 +7,7 @@
     no-route-fullscreen-exit
     :loading="loading"
     :rows="rows"
-    :rows-per-page-options="[10, 100, 1000]"
+    :rows-per-page-options="[10, 100, 200]"
     :visible-columns="visibleColumns"
     :wrap-cells="true"
     binary-state-sort

@@ -15,7 +15,10 @@
           <q-btn icon="close" flat round dense @click="open = false" />
         </div>
 
-        <BaseQrScanner @change="onChange" />
+        <BaseQrScanner
+          max-width-height="min(calc(100svw - 80px), calc(100svh - 130px))"
+          @change="onChange"
+        />
       </q-card-section>
       <q-separator />
     </q-card>

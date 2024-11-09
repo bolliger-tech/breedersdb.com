@@ -1,8 +1,13 @@
 <template>
   <div
     class="bg-grey-5 video-sized row justify-center items-center relative-position"
+    :style="{ maxWidth: maxWidthHeight, maxHeight: maxWidthHeight }"
   >
-    <canvas ref="canvasElement" class="video-sized absolute-top-left"></canvas>
+    <canvas
+      ref="canvasElement"
+      class="video-sized absolute-top-left"
+      :style="{ maxWidth: maxWidthHeight, maxHeight: maxWidthHeight }"
+    ></canvas>
     <div class="absolute q-pa-sm">
       <div
         v-if="error && errorMessage"
@@ -54,6 +59,7 @@ const emit = defineEmits<{
 defineProps<{
   errorMessage?: string;
   error?: boolean;
+  maxWidthHeight?: string;
 }>();
 
 const canvasElement = ref<HTMLCanvasElement | null>(null);

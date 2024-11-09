@@ -69,5 +69,6 @@ const { t } = useI18n();
 <style lang="scss" scoped>
 .base-graphql-error__msg {
   white-space: pre-wrap;
+  word-break: break-word;
 }
 </style>

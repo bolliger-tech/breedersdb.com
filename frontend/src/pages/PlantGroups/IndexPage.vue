@@ -244,6 +244,7 @@ const { executeQuery } = await useQuery({
   query: queryPlantGroupId,
   variables: scannedLabelId,
   pause: true,
+  context: { additionalTypenames: ['plant_groups', 'plants'] },
 });
 
 async function onScannedQr(code: string) {

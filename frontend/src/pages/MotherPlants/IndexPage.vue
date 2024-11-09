@@ -83,7 +83,7 @@ const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
 const { data, fetching, error } = await useQuery({
   query,
   variables,
-  context: { additionalTypenames: ['motherPlants'] },
+  context: { additionalTypenames: ['mother_plants'] },
 });
 
 const motherPlantsCount = computed(

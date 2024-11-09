@@ -61,6 +61,7 @@ const query = graphql(`
 const { data, error, fetching } = useQuery({
   query,
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['pollen'] },
 });
 
 const pollenOptions = computed(() => data.value?.pollen ?? []);

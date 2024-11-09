@@ -41,7 +41,6 @@ import BaseSuspense from 'components/Base/BaseSuspense/BaseSuspense.vue';
 import BaseSpinner from 'components/Base/BaseSpinner.vue';
 import MainNav from 'components/Layout/TheNav/TheNav.vue';
 import { useQuasar } from 'quasar';
-
 const $q = useQuasar();
 
 function reloadPage() {

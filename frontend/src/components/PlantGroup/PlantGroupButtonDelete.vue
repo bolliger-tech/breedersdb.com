@@ -75,6 +75,7 @@ const {
     }
   `),
   variables: { id: props.plantGroupId },
+  requestPolicy: 'network-only',
 });
 
 const plantGroupHasPlantsOrAttributions = computed(() => {

@@ -174,7 +174,10 @@ export default configure((ctx) => {
     pwa: {
       workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {
-        // autoreload: https://quasar.dev/quasar-cli-webpack/developing-pwa/configuring-pwa#reload-and-update-automatically
+        // some weird bug in quasar always adds skipWaiting() and clientsClaim()
+        // to the generated service worker… despite any setting here.
+        // so we'll keep it true here for documentation purposes and
+        // make the rest of the code work with it.
         skipWaiting: true,
         clientsClaim: true,
       },

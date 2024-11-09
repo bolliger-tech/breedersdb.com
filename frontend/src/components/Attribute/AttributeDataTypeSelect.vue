@@ -90,6 +90,7 @@ const { executeQuery, fetching } = useQuery({
   query,
   variables,
   pause: true,
+  context: { additionalTypenames: ['attribution_values'] },
 });
 
 async function hasAttributions() {

@@ -7,7 +7,7 @@
     @click="showDialog = true"
   />
   <q-dialog v-model="showDialog">
-    <q-card style="width: clamp(310px, 90vw, 1000px); max-width: unset">
+    <q-card style="width: clamp(310px, 90dvw, 1000px); max-width: unset">
       <q-card-section class="row items-center q-py-sm">
         <h2 class="q-ma-none nowrap-elipsis" style="width: calc(100% - 34px)">
           {{ t('attributions.add.addAttribute') }}

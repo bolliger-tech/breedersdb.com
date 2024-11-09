@@ -1,7 +1,7 @@
 <template>
   <q-icon name="help" class="base-explainer">
     <q-tooltip
-      max-width="min(90svw, 500px)"
+      max-width="min(90dvw, 500px)"
       anchor="top middle"
       self="bottom middle"
       class="text-body2 shadow-1"

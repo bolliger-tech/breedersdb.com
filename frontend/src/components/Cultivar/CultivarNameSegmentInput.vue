@@ -121,6 +121,7 @@ const {
   query: cultivarsQuery,
   variables: cultivarsQueryVariables,
   pause: !props.lot,
+  context: { additionalTypenames: ['cultivars'] },
 });
 watch(
   () => props.lot,

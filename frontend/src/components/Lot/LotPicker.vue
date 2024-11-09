@@ -176,6 +176,7 @@ const {
   query,
   variables,
   pause: true,
+  context: { additionalTypenames: ['lots'] },
 });
 
 watch(fetching, (f) => emit('fetching', f));

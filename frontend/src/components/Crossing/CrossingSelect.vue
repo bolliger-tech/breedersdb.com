@@ -80,6 +80,7 @@ const { data, error, fetching } = useQuery({
   query,
   variables,
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['crossings'] },
 });
 
 const crossingOptions = computed(() => data.value?.crossings ?? []);

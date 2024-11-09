@@ -65,6 +65,7 @@ const { data, error, fetching, resume, pause } = useQuery({
   variables: variables,
   pause: !props.crossingId,
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['crossings'] },
 });
 watch(
   () => props.crossingId,

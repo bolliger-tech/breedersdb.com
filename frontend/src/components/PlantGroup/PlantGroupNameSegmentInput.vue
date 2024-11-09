@@ -115,6 +115,7 @@ const {
   query: plantGroupsQuery,
   variables: plantGroupsQueryVariables,
   pause: !props.cultivar,
+  context: { additionalTypenames: ['plant_groups'] },
 });
 watch(
   () => props.cultivar,

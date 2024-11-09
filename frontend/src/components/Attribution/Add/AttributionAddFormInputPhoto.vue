@@ -139,11 +139,11 @@ watch([modelValue, preview], loadPreview, { immediate: true });
 <style scoped lang="scss">
 .attribute-form-input-photo {
   line-height: 0;
-  max-width: min(calc(100svw - 64px), 400px);
+  max-width: min(calc(100dvw - 64px), 400px);
 
   &__preview {
-    max-width: min(calc(100svw - 64px), 400px);
-    max-height: min(calc(100svw - 64px), 400px);
+    max-width: min(calc(100dvw - 64px), 400px);
+    max-height: min(calc(100dvw - 64px), 400px);
     transform: translateX(-50%);
     left: 50%;
     position: relative;

@@ -70,7 +70,18 @@ const query = graphql(
   [crossingFragment, cultivarFragment],
 );
 
-const { search, pagination, variables } = useEntityIndexHooks<typeof query>();
+const {
+  search,
+  pagination,
+  variables: _variables,
+} = useEntityIndexHooks<typeof query>();
+
+const variables = computed(() => ({
+  ..._variables.value,
+  where: {
+    _and: [{ is_variety: { _eq: false } }, ..._variables.value.where._and],
+  },
+}));
 
 const { data, fetching, error } = await useQuery({
   query,

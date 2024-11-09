@@ -133,6 +133,7 @@ const { data: motherPlantsData, fetching: fetchingMotherPlants } = useQuery({
   variables: { crossingId: 'id' in props.crossing ? props.crossing.id : -1 },
   pause: !('id' in props.crossing),
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['mother_plants'] },
 });
 
 const hasMotherPlants = computed(

@@ -51,6 +51,7 @@ const query = graphql(
 const { data, error, fetching } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['cultivars'] },
 });
 const cultivar = computed(() => data.value?.cultivars_by_pk);
 

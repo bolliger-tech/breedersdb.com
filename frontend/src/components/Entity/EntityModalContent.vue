@@ -1,5 +1,5 @@
 <template>
-  <q-card style="width: clamp(310px, 90vw, 1000px); max-width: unset">
+  <q-card style="width: clamp(310px, 90dvw, 1000px); max-width: unset">
     <q-card-section class="row items-center q-py-sm">
       <div style="width: calc(100% - 34px)">
         <slot name="title">
@@ -36,7 +36,7 @@
 
     <q-separator />
 
-    <q-card-section style="max-height: calc(100vh - 200px)" class="scroll">
+    <q-card-section style="max-height: calc(100dvh - 200px)" class="scroll">
       <slot></slot>
     </q-card-section>
 

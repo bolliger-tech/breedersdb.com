@@ -54,6 +54,7 @@ const query = graphql(
 
 const { data, error, fetching } = useQuery({
   query,
+  context: { additionalTypenames: ['attributes'] },
 });
 
 const attributeOptions = computed(

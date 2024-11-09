@@ -8,6 +8,7 @@ import {
 
 import routes from './routes';
 import { getUserFromCookie } from 'src/utils/authUtils';
+import { LoadingBar } from 'quasar';
 
 /*
  * If not building with SSR mode, you can
@@ -54,6 +55,9 @@ export default route(function (/* { store, ssrContext } */) {
       next();
     }
   });
+
+  Router.beforeEach(() => LoadingBar.start());
+  Router.afterEach(() => LoadingBar.stop());
 
   return Router;
 });

@@ -7,7 +7,7 @@
     no-route-fullscreen-exit
     :loading="loading"
     :rows="rows"
-    :rows-per-page-options="[10, 100, 1000]"
+    :rows-per-page-options="[10, 100, 200]"
     :visible-columns="visibleColumns"
     :wrap-cells="true"
     binary-state-sort
@@ -245,14 +245,14 @@ const orderedColumns = computed(() => {
 
 <style scoped lang="scss">
 .entity-list-table {
-  max-height: calc(100vh - 100px);
+  max-height: calc(100dvh - 100px);
 }
 
 .entity-list-table--fullscreen {
-  height: 100vh;
-  max-height: 100vh;
-  width: 100vw;
-  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  width: 100dvw;
+  max-width: 100dvw;
 }
 
 :global(.entity-list-table thead tr:first-child th) {

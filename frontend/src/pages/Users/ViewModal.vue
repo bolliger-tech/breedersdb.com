@@ -85,6 +85,7 @@ const query = graphql(
 const { data, error, fetching } = await useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['users'] },
 });
 
 const user = computed(() => data.value?.users_by_pk);

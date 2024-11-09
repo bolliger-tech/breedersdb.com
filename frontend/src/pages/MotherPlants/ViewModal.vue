@@ -145,6 +145,7 @@ const query = graphql(
 const { data, error, fetching } = await useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['mother_plants'] },
 });
 
 const motherPlant = computed(() => data.value?.mother_plants_by_pk);

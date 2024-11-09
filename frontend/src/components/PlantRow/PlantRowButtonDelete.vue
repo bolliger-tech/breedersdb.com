@@ -63,6 +63,7 @@ const {
     }
   `),
   variables: { id: props.plantRowId },
+  requestPolicy: 'network-only',
 });
 
 const plantRowHasPlants = computed(() => {

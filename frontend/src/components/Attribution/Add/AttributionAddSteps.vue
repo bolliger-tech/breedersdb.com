@@ -235,6 +235,7 @@ const {
   query: formQuery,
   variables: formVariables,
   pause: true,
+  context: { additionalTypenames: ['attribution_forms'] },
 });
 watch(
   formVariables,

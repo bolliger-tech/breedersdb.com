@@ -48,6 +48,7 @@ const query = graphql(
 const { data, error, fetching } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['attribution_forms'] },
 });
 const attributionForm = computed(
   () =>

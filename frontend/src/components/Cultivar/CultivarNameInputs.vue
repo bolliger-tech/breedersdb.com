@@ -65,6 +65,7 @@ const { data, error, fetching, resume, pause } = useQuery({
   variables: variables,
   pause: !props.lotId,
   requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['lots'] },
 });
 watch(
   () => props.lotId,

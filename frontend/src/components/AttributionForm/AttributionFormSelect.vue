@@ -64,6 +64,7 @@ const query = graphql(`
 
 const { data, error, fetching } = useQuery({
   query,
+  context: { additionalTypenames: ['attribution_forms'] },
 });
 
 const options = computed(() => data.value?.attribution_forms ?? []);

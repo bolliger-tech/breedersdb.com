@@ -78,7 +78,7 @@ function blurAnyFocusedElement() {
 }
 
 :global(.result-table-cell-attribution__overlay) {
-  width: 90svw;
+  width: 90dvw;
 }
 
 :global(.body--dark .result-table-cell-attribution__overlay) {

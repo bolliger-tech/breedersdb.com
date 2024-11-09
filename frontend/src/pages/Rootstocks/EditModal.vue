@@ -45,6 +45,7 @@ const query = graphql(
 const { data, error, fetching } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['rootstocks'] },
 });
 const rootstock = computed(() => data.value?.rootstocks_by_pk);
 

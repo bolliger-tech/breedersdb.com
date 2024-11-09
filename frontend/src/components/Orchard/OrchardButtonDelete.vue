@@ -70,6 +70,7 @@ const {
     }
   `),
   variables: { id: props.orchardId },
+  requestPolicy: 'network-only',
 });
 
 const orchardHasDependencies = computed(() => {

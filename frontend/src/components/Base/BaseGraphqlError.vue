@@ -49,7 +49,7 @@ const isOfflineError = computed(
     props.error.networkError &&
     !props.error.response &&
     ((typeof navigator !== 'undefined' && navigator.onLine === false) ||
-      /request failed|failed to fetch|network\s?error/i.test(
+      /request failed|failed to fetch|network\s?error|load failed/i.test(
         props.error.networkError.message,
       )),
 );

@@ -93,11 +93,11 @@ const transition = computed(() => `all ${props.transitionDuration}ms ease`);
   transition: v-bind(transition);
 
   &--progress {
-    width: min(calc(100svw - 36px), 436px);
+    width: min(calc(100dvw - 36px), 436px);
   }
 
   &--counter {
-    width: min(calc(100svw - 126px), 344px);
+    width: min(calc(100dvw - 126px), 344px);
   }
 
   &__progress-container {

@@ -1,7 +1,7 @@
 <template>
   <q-menu
     :model-value="show || !!_graphqlError || !!_message"
-    max-width="min(500px, 90svw)"
+    max-width="min(500px, 90dvw)"
     anchor="top middle"
     self="bottom middle"
     :offset="[0, 8]"

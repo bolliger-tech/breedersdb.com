@@ -26,7 +26,7 @@ defineProps<NavLevel1Props>();
   list-style: none;
   padding: 0;
   overflow-y: auto;
-  max-height: calc(100svh - 83px);
+  max-height: calc(100dvh - 83px);
 
   @media screen and (min-width: $breakpoint-md-min) {
     bottom: auto;

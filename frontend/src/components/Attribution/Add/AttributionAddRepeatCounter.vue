@@ -12,7 +12,7 @@
         v-model="showExplainer"
         anchor="top middle"
         self="bottom middle"
-        style="max-width: min(90svw, 500px)"
+        style="max-width: min(90dvw, 500px)"
       >
         <i18n-t keypath="attributions.add.counter.description" scope="global">
           <template #count

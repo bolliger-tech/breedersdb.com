@@ -45,7 +45,7 @@
     <q-card
       v-touch-swipe.right="() => $emit('previous')"
       v-touch-swipe.left="() => $emit('next')"
-      style="max-width: calc(100svw - 48px); max-height: calc(100svh - 48px)"
+      style="max-width: calc(100dvw - 48px); max-height: calc(100dvh - 48px)"
     >
       <q-card-section class="row justify-end q-pa-sm">
         <q-btn flat dense round icon="close" @click="open = false" />
@@ -57,10 +57,10 @@
           spinner-color="primary"
           fit="contain"
           style="
-            max-width: calc(100svw - 80px);
-            width: calc(100svw - 80px);
-            max-height: calc(100svh - 222px);
-            height: calc(100svh - 222px);
+            max-width: calc(100dvw - 80px);
+            width: calc(100dvw - 80px);
+            max-height: calc(100dvh - 222px);
+            height: calc(100dvh - 222px);
           "
           :draggable="false"
         >

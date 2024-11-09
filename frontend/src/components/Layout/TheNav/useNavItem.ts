@@ -26,10 +26,7 @@ export function useNavItem(item: NavItem) {
   }
 
   const isActiveRoute = computed(() => {
-    if (
-      item.path === route.path ||
-      (route.meta.navPaths as string[] | undefined)?.includes(item.path)
-    ) {
+    if (item.path === route.path) {
       return true;
     }
 

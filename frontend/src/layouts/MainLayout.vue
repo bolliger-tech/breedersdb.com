@@ -2,15 +2,10 @@
   <q-layout view="lhr Lpr fFf">
     <q-page-container>
       <q-pull-to-refresh @refresh="reloadPage">
-        <div v-if="routeIsLoading" class="fixed-center">
-          <BaseSpinner size="xl" />
-        </div>
-
-        <BaseSuspense v-else>
+        <BaseSuspense>
           <template #default>
             <router-view />
           </template>
-
           <template #fallback>
             <div class="fixed-center">
               <BaseSpinner size="xl" />
@@ -46,22 +41,9 @@ import BaseSuspense from 'components/Base/BaseSuspense/BaseSuspense.vue';
 import BaseSpinner from 'components/Base/BaseSpinner.vue';
 import MainNav from 'components/Layout/TheNav/TheNav.vue';
 import { useQuasar } from 'quasar';
-import { useRouteLoadState } from 'src/layouts/useRouteLoadState';
-import { useRouter } from 'vue-router';
-
 const $q = useQuasar();
 
 function reloadPage() {
   window.location.reload();
 }
-
-const { inject: injectRouteLoadState } = useRouteLoadState();
-const routeIsLoading = injectRouteLoadState();
-
-const router = useRouter();
-// the following hooks are not added in /router/index.ts because we can not
-// provide the routeIsLoading early enough (because quasar boot files are loaded
-// after the router)
-router.beforeEach(() => (routeIsLoading.value = true));
-router.afterEach(() => (routeIsLoading.value = false));
 </script>

@@ -22,6 +22,7 @@
     debounce="300"
     :loading="fetchingNameUnique"
     required
+    :explainer="t('crossings.nameExplainer')"
   />
   <CultivarSelect
     :ref="(el: InputRef) => (refs.motherCultivarId = el)"

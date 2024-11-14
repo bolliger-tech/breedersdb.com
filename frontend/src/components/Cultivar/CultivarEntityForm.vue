@@ -58,6 +58,7 @@
     :ref="(el: InputRef) => (refs.acronym = el)"
     v-model="data.acronym"
     :label="t('cultivars.fields.acronym')"
+    :explainer="t('cultivars.acronymExplainer')"
     type="text"
     autocomplete="off"
     :rules="[

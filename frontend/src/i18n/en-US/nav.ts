@@ -17,7 +17,12 @@ export const nav = {
       attributes: 'Attributes',
     },
     settings: 'Settings',
-    darkMode: { main: 'Dark mode', on: 'On', off: 'Off' },
+    darkMode: {
+      main: 'Dark mode',
+      on: 'On',
+      off: 'Off',
+      system: 'Sync with system',
+    },
     language: { main: 'Language' },
     logout: 'Logout',
     reload: 'Update & Restart',

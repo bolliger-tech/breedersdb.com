@@ -37,17 +37,17 @@ function setColors(isDark: boolean) {
 }
 
 watch(
+  () => $q.dark.mode,
+  (mode) => $q.localStorage.set(DARK_MODE_KEY, mode),
+);
+
+watch(
   () => $q.dark.isActive,
-  (isDark) => {
-    setColors(isDark);
-    $q.localStorage.set(DARK_MODE_KEY, isDark);
-  },
+  (isActive) => setColors(isActive),
 );
 
 onMounted(() => {
-  if ($q.localStorage.has(DARK_MODE_KEY)) {
-    $q.dark.set($q.localStorage.getItem(DARK_MODE_KEY) === true);
-  }
+  $q.dark.set($q.localStorage.getItem(DARK_MODE_KEY) || 'auto');
   setColors($q.dark.isActive);
 });
 </script>

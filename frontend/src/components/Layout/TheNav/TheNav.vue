@@ -268,6 +268,16 @@ const navDefinition = computed<NavDefinitionItem[]>(() => [
               },
             },
           },
+          {
+            to: 'system',
+            component: {
+              component: DarkModeSetter,
+              props: {
+                isDark: 'auto',
+                label: t('nav.more.darkMode.system'),
+              },
+            },
+          },
         ],
       },
       {

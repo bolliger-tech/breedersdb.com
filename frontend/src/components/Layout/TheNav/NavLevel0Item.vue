@@ -6,7 +6,8 @@
         ref="item"
         clickable
         class="item q-px-none"
-        :focused="isOpen || isHovered || hasFocus"
+        :class="{ 'is-open': isOpen }"
+        :focused="isHovered || hasFocus"
         manual-focus
         @click.stop="clickHandler"
         @mouseenter="isHovered = true"
@@ -108,5 +109,8 @@ function clickHandler() {
   @media screen and (min-width: $breakpoint-md-min) {
     width: 100px;
   }
+}
+.is-open {
+  background-color: var(--q-link-color);
 }
 </style>

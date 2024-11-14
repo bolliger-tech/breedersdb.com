@@ -9,7 +9,7 @@
           x: t('entity.commonColumns.nameSegment'),
         }),
       (val: string) =>
-        (val && /^[-_\w\d]{1,25}$/.test(val)) ||
+        (val && /^[-_\p{Letter}\d]{1,25}$/u.test(val)) ||
         t('base.validation.noSpecialCharsMaxLength', { max: 25 }),
       async (val: string) =>
         (await isNameSegmentUnique(val)) ||

@@ -66,7 +66,7 @@
         !val || val.length <= 8 || t('base.validation.maxLen', { x: 8 }),
       (val: string | null | undefined) =>
         !val ||
-        /^[-_\w\d]{1,8}$/.test(val) ||
+        /^[-_\p{Letter}\d]{1,8}$/u.test(val) ||
         t('base.validation.noSpecialCharsMaxLength', { max: 8 }),
       async (val: string | null | undefined) =>
         !val ||

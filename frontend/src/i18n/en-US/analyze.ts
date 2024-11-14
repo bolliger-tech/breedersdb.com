@@ -27,14 +27,17 @@ export const analyze = {
     invalid: 'Invalid filter rules. Rectify or delete them.',
     valid: 'Congrats, all rules are valid.',
 
-    cultivarAndSubentities: 'cultivar, its groups or plants',
+    entities: {
+      cultivarAndSubentities: 'cultivar, its groups or plants',
+      groupAndSubentities: 'group or its plants',
+    },
 
     explainer: {
       title: 'Explanation:',
       attributeWithNoAttributions:
-        'The {entity} have either no {column} attribution or at least one which satisfies: {column} {operator} {term}',
+        'The {entity} that have either no {column} attribution or at least one which satisfies: {column} {operator} {term}',
       attribute:
-        'The {entity} has at least one attribution which satisfies: {column} {operator} {term}',
+        'The {entity} that have at least one attribution which satisfies: {column} {operator} {term}',
       entity: 'The {entity} where {column} {operator} {term}',
       invalidRule: 'Invalid rule. Either complete, correct or delete it.',
     },

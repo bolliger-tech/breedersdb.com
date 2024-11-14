@@ -77,13 +77,20 @@ const entityName = computed(() => {
 
 const explainer = computed(() => {
   const args = {
-    entity: props.rule?.isAttribute
-      ? t('analyze.filter.cultivarAndSubentities')
-      : entityName.value,
+    entity: entityName.value,
     column: column.value,
     operator: operator.value,
     term: term.value,
   };
+
+  if (props.rule?.isAttribute) {
+    if (props.baseTable === BaseTable.Cultivars) {
+      args.entity = t('analyze.filter.entities.cultivarAndSubentities');
+    } else if (props.baseTable === BaseTable.PlantGroups) {
+      args.entity = t('analyze.filter.entities.groupAndSubentities');
+    }
+  }
+
   if (props.rule?.isAttribute) {
     if (props.rule.includeEntitiesWithoutAttributions) {
       return t('analyze.filter.explainer.attributeWithNoAttributions', args);

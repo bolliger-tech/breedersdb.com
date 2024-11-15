@@ -159,7 +159,9 @@ const nextFreeNameSegment = computed(() => {
 
 const additionalWhere = computed(() => {
   if (!props.crossing?.id) {
-    return {};
+    return {
+      crossing_id: { _eq: -1 },
+    };
   }
   return {
     crossing_id: { _eq: props.crossing.id },

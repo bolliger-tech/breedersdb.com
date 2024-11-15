@@ -33,7 +33,7 @@
     >
       {{ n(lot.numb_seedlings_grown) }}
     </EntityViewTableRow>
-    <EntityViewTableRow :label="t('lots.fields.seedTray')">
+    <EntityViewTableRow :label="t('lots.fields.seedTray')" multiline>
       {{ lot.seed_tray }}
     </EntityViewTableRow>
     <EntityViewTableRow :label="t('lots.fields.datePlanted')">
@@ -45,7 +45,7 @@
     >
       {{ n(lot.numb_seedlings_planted) }}
     </EntityViewTableRow>
-    <EntityViewTableRow :label="t('lots.fields.plot')">
+    <EntityViewTableRow :label="t('lots.fields.plot')" multiline>
       {{ lot.plot }}
     </EntityViewTableRow>
     <EntityViewTableRow v-if="lot.orchard" :label="t('lots.fields.orchard')">

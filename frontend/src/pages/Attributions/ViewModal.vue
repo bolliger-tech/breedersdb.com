@@ -21,12 +21,7 @@
         />
       </div>
       <EntityViewTable>
-        <EntityViewTableRow v-if="attribution.data_type === 'TEXT'">
-          <strong>{{ t('attributions.columns.value') }}</strong>
-          <br />
-          <span style="white-space: pre-line">{{ getValue(attribution) }}</span>
-        </EntityViewTableRow>
-        <EntityViewTableRow v-else :label="t('attributions.columns.value')">
+        <EntityViewTableRow :label="t('attributions.columns.value')" multiline>
           {{ getValue(attribution) }}
         </EntityViewTableRow>
 

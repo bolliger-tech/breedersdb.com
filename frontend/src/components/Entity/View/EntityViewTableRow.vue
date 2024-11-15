@@ -5,6 +5,7 @@
     :class="{
       'entity-view-table-row--dense': tableProps?.dense,
       'entity-view-table-row--no-hover': tableProps?.noHover,
+      'entity-view-table-row--multiline': multiline,
     }"
   >
     <th v-if="label">
@@ -23,6 +24,7 @@ import { entityViewTableProps } from './EntityViewTable.vue';
 export interface EntityViewTableRow {
   label?: string | undefined;
   renderEmpty?: boolean;
+  multiline?: boolean;
 }
 
 defineProps<EntityViewTableRow>();
@@ -53,6 +55,10 @@ $border: 1px solid $grey-4;
   &--dense,
   &--dense:first-child {
     border: none;
+  }
+
+  &--multiline {
+    white-space: pre-line;
   }
   .body--dark & {
     border-color: $grey-8;

@@ -21,7 +21,7 @@ export const nav = {
       main: 'Dark mode',
       on: 'On',
       off: 'Off',
-      system: 'Sync with system',
+      system: 'Auto',
     },
     language: { main: 'Language' },
     logout: 'Logout',

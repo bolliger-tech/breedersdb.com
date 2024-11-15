@@ -18,6 +18,7 @@
     :ref="(el: InputRef) => (refs.orchardId = el)"
     v-model="data.orchard_id"
     :required="true"
+    :include-id="data.orchard_id || undefined"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateSowed = el)"

@@ -53,6 +53,7 @@
     :hint="`${t('cultivars.nameOverrideHint')}. ${t('base.required')}.`"
     :cultivar-id="('id' in props.cultivar && props.cultivar.id) || undefined"
     :loading="varietyNameSegmentFetching"
+    :required="type === 'variety'"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.acronym = el)"

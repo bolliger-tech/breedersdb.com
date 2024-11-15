@@ -11,6 +11,7 @@
     :hint="hint"
     :placeholder="fullName"
     :maxlength="maxlength"
+    :required="required"
     @update:model-value="updateModelValue"
   />
 </template>
@@ -28,6 +29,7 @@ export interface LotNameInputProps {
   loading?: boolean;
   hint?: string;
   maxlength?: number;
+  required?: boolean;
 }
 
 defineProps<LotNameInputProps>();

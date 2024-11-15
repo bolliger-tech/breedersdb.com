@@ -154,7 +154,7 @@ const nextFreeNameSegment = computed(() => {
 
 const additionalWhere = computed(() => {
   if (!props.lot?.id) {
-    return {};
+    return { lot_id: { _eq: -1 } };
   }
   return {
     lot_id: { _eq: props.lot.id },

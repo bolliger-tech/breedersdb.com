@@ -151,7 +151,9 @@ const nextFreeNameSegment = computed(() => {
 
 const additionalWhere = computed(() => {
   if (!props.cultivar?.id) {
-    return {};
+    return {
+      cultivar_id: { _eq: -1 },
+    };
   }
   return {
     cultivar_id: { _eq: props.cultivar.id },

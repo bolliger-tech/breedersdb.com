@@ -20,7 +20,8 @@ export const nav = {
     darkMode: {
       main: 'Nachtmodus',
       on: 'Ein',
-      off: 'Aus'
+      off: 'Aus',
+      system: 'Automatisch'
     },
     language: {
       main: 'Sprache'

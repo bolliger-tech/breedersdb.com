@@ -9,6 +9,7 @@ export const cultivars = {
     breeder: 'Züchter/in',
     lot: 'Los'
   },
+  acronymExplainer: 'Beim Erfassen einer neuen Kreuzung, dient das Kürzel als Teil des Kreuzungsnamens. Kürzel müssen einmalig sein.',
   validation: {
     nameNotUniqueWithLot: 'Dieser Name wird bereits verwendet (in Kombination mit dem ausgewählten Los)',
     nameSegmentFormat: 'Ungültiges Format. Muss eine dreistellige Zahl sein. Beispiel: 012'

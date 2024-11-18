@@ -19,7 +19,10 @@ export const analyze = {
     simplify: 'Filter vereinfachen',
     invalid: 'Ungültige Filterregeln. Korrigiere oder lösche sie.',
     valid: 'Glückwunsch, alle Regeln sind gültig.',
-    cultivarAndSubentities: 'Cultivars, seine Gruppen oder Pflanzen',
+    entities: {
+      cultivarAndSubentities: 'Cultivar, dessen Gruppen oder Pflanzen',
+      groupAndSubentities: 'Gruppe oder dessen Pflanzen'
+    },
     explainer: {
       title: 'Erklärung:',
       attributeWithNoAttributions: 'Die/das {entity} hat entweder keine {column} Attributierung oder mindestens eine, die folgende Bedingung erfüllt: {column} {operator} {term}',

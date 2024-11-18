@@ -30,10 +30,8 @@
       :created="cultivar.created"
       :modified="cultivar.modified"
     />
-    <EntityViewTableRow v-if="cultivar.note">
-      <strong>{{ t('entity.commonColumns.note') }}</strong>
-      <br />
-      <span style="white-space: pre-line">{{ cultivar.note }}</span>
+    <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
+      {{ cultivar.note }}
     </EntityViewTableRow>
   </EntityViewTable>
 </template>

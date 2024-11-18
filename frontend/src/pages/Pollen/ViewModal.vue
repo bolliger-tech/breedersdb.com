@@ -33,10 +33,8 @@
           :created="pollen.created"
           :modified="pollen.modified"
         />
-        <EntityViewTableRow v-if="pollen.note">
-          <strong>{{ t('entity.commonColumns.note') }}</strong>
-          <br />
-          <span style="white-space: pre-line">{{ pollen.note }}</span>
+        <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
+          {{ pollen.note }}
         </EntityViewTableRow>
       </EntityViewTable>
 

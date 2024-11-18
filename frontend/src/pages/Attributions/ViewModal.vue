@@ -34,10 +34,8 @@
           </RouterLink>
         </EntityViewTableRow>
 
-        <EntityViewTableRow v-if="attribution.text_note">
-          <strong>{{ t('entity.commonColumns.note') }}</strong>
-          <br />
-          <span style="white-space: pre-line">{{ attribution.text_note }}</span>
+        <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
+          {{ attribution.text_note }}
         </EntityViewTableRow>
         <EntityViewTableRow
           v-if="attribution.photo_note"

@@ -57,10 +57,8 @@
       :created="lot.created"
       :modified="lot.modified"
     />
-    <EntityViewTableRow v-if="lot.note">
-      <strong>{{ t('entity.commonColumns.note') }}</strong>
-      <br />
-      <span style="white-space: pre-line">{{ lot.note }}</span>
+    <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
+      {{ lot.note }}
     </EntityViewTableRow>
   </EntityViewTable>
 </template>

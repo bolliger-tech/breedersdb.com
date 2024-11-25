@@ -105,6 +105,11 @@
     :label="t('motherPlants.fields.numbFlowers')"
     type="number"
     autocomplete="off"
+    :step="1"
+    :rules="[
+      (value: string | null | undefined) =>
+        !value || isPositiveIntegerRule(value),
+    ]"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.numbFruits = el)"
@@ -112,6 +117,11 @@
     :label="t('motherPlants.fields.numbFruits')"
     type="number"
     autocomplete="off"
+    :step="1"
+    :rules="[
+      (value: string | number | null | undefined) =>
+        !value || isPositiveIntegerRule(value),
+    ]"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateFruitsHarvested = el)"
@@ -126,6 +136,11 @@
     :label="t('motherPlants.fields.numbSeeds')"
     type="number"
     autocomplete="off"
+    :step="1"
+    :rules="[
+      (value: string | number | null | undefined) =>
+        !value || isPositiveIntegerRule(value),
+    ]"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"
@@ -155,6 +170,7 @@ import PollenSelect, { PollenSelectPollen } from '../Pollen/PollenSelect.vue';
 import CrossingSelect, {
   CrossingSelectCrossing,
 } from '../Crossing/CrossingSelect.vue';
+import { useValidationRule } from 'src/composables/useValidationRule';
 
 export interface MotherPlantEntityFormProps {
   motherPlant: MotherPlantInsertInput | MotherPlantEditInput;
@@ -217,4 +233,6 @@ const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
 const selectedPlant = ref<PlantSelectPlant | null>(null);
 const selectedCrossing = ref<CrossingSelectCrossing | null>(null);
 const selectedPollen = ref<PollenSelectPollen | null>(null);
+
+const { isPositiveIntegerRule } = useValidationRule();
 </script>

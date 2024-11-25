@@ -25,6 +25,10 @@
     v-model="data.date_sowed"
     :label="t('lots.fields.dateSowed')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <EntityInput
@@ -72,6 +76,10 @@
     v-model="data.date_planted"
     :label="t('lots.fields.datePlanted')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <EntityInput
@@ -183,5 +191,6 @@ watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
 
-const { isPositiveIntegerRule } = useValidationRule();
+const { isPositiveIntegerRule, defaultDateValidationRule } =
+  useValidationRule();
 </script>

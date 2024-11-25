@@ -53,8 +53,8 @@ export type EntityInputProps = Omit<
   'bgColor' | 'dense' | 'outlined' | 'modelValue'
 > & {
   required?: boolean;
-  min?: number;
-  max?: number;
+  min?: number | string;
+  max?: number | string;
   step?: number;
   pattern?: string;
   maxlength?: number;

@@ -37,6 +37,10 @@
     v-model="data.date_grafted"
     :label="t('plants.fields.dateGrafted')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <RootstockSelect
@@ -52,6 +56,10 @@
     v-model="data.date_planted"
     :label="t('plants.fields.datePlanted')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <EntityInput
@@ -59,6 +67,10 @@
     v-model="data.date_labeled"
     :label="t('plants.fields.dateLabeled')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <EntityInput
@@ -66,6 +78,10 @@
     v-model="data.date_eliminated"
     :label="t('plants.fields.dateEliminated')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
     :hint="
       data.date_eliminated
@@ -98,6 +114,7 @@ import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { PlantEditInput, PlantInsertInput } from './PlantModalEdit.vue';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import { useValidationRule } from 'src/composables/useValidationRule';
 
 export interface PlantEntityFormProps {
   plant: PlantInsertInput | PlantEditInput;
@@ -165,4 +182,5 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
+const { defaultDateValidationRule } = useValidationRule();
 </script>

@@ -16,7 +16,10 @@
     ref="dateRef"
     v-model="date"
     :label="t('attributions.add.setDate')"
-    :rules="[(v: string) => !!v || t('base.required')]"
+    :rules="[
+      (v: string | null | undefined | Date) => !!v || t('base.required'),
+      (v: string | null | undefined | Date) => defaultDateValidationRule(v),
+    ]"
     required
     type="date"
   />
@@ -82,7 +85,7 @@ const showRepeat = computed(
   () => repeat.value > 0 || Number.isNaN(repeat.value),
 );
 
-const { makeIntegerRule } = useValidationRule();
+const { makeIntegerRule, defaultDateValidationRule } = useValidationRule();
 const isInRepeatRangeRule = makeIntegerRule({
   min: MIN_REPEAT,
   max: MAX_REPEAT,

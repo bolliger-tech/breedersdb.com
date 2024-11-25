@@ -73,6 +73,10 @@
     v-model="data.date_impregnated"
     :label="t('motherPlants.fields.dateImpregnated')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <PollenSelect
@@ -128,6 +132,10 @@
     v-model="data.date_fruits_harvested"
     :label="t('motherPlants.fields.dateFruitsHarvested')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <EntityInput
@@ -234,5 +242,6 @@ const selectedPlant = ref<PlantSelectPlant | null>(null);
 const selectedCrossing = ref<CrossingSelectCrossing | null>(null);
 const selectedPollen = ref<PollenSelectPollen | null>(null);
 
-const { isPositiveIntegerRule } = useValidationRule();
+const { isPositiveIntegerRule, defaultDateValidationRule } =
+  useValidationRule();
 </script>

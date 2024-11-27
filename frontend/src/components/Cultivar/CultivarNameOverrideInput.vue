@@ -6,6 +6,12 @@
     :maxlength="51"
     :rules="[
       (val: string | null | undefined) =>
+        required && !val
+          ? t('base.validation.xIsRequired', {
+              x: t('entity.commonColumns.explicitDisplayName'),
+            })
+          : true,
+      (val: string | null | undefined) =>
         !val || val.length <= 51 || t('base.validation.maxLen', { x: 51 }),
       (val: string | null | undefined) =>
         !val ||
@@ -23,6 +29,7 @@
         entity: t('base.entityName.cultivar', 1),
       })
     "
+    :required="required"
   />
 </template>
 
@@ -39,6 +46,7 @@ export interface CultivarNameInputProps {
   fullName: string | undefined;
   hint?: string;
   loading?: boolean;
+  required?: boolean;
 }
 
 const props = defineProps<CultivarNameInputProps>();

@@ -36,7 +36,7 @@
 
     <q-separator />
 
-    <q-card-section style="max-height: calc(100dvh - 200px)" class="scroll">
+    <q-card-section class="scroll entity-modal-content__default">
       <slot></slot>
     </q-card-section>
 
@@ -139,6 +139,19 @@ const { t } = useI18n();
   white-space: nowrap;
   overflow-x: clip;
   text-overflow: ellipsis;
+}
+
+.entity-modal-content__default {
+  max-height: calc(100dvh - 200px);
+}
+
+/* fix pwa standalone-mode footer hidden */
+:global(
+    body:is(.platform-ios, .platform-android:not(.native-mobile))
+      .q-dialog__inner--minimized
+      .entity-modal-content__default
+  ) {
+  max-height: calc(100dvh - 260px);
 }
 
 :global(.body--dark .entity-modal-content__error-tooltip) {

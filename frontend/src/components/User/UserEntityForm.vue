@@ -18,6 +18,7 @@
     debounce="300"
     :loading="fetchingEmailUnique"
     required
+    trim
   />
   <EntitySelect
     :ref="(el: InputRef) => (refs.locale = el)"

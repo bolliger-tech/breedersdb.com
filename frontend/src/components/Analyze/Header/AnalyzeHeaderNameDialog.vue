@@ -13,7 +13,7 @@
       <q-card-section>
         <EntityInput
           ref="inputRef"
-          v-model.trim="name"
+          v-model="name"
           :rules="[
             (v: string | null | undefined) =>
               !!v ||
@@ -26,6 +26,8 @@
           required
           :loading="isUniqueFetching"
           :label="t('entity.commonColumns.name')"
+          trim
+          debounce="300"
           @keydown.enter="validateNameAndSave"
         />
       </q-card-section>

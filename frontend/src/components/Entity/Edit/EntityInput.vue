@@ -24,6 +24,7 @@
           : inputStyle
       "
       @update:model-value="updateModelValue"
+      @blur="onBlur"
     >
       <template v-if="$slots.error" #error>
         <slot name="error"></slot>
@@ -38,7 +39,7 @@
 <script setup lang="ts">
 import { useInputBackground } from 'src/composables/useInputBackground';
 import type { QInput, QInputProps } from 'quasar';
-import { ComponentPublicInstance, ref, type Slot } from 'vue';
+import { ComponentPublicInstance, nextTick, ref, type Slot } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { focusInView } from 'src/utils/focusInView';
@@ -53,14 +54,15 @@ export type EntityInputProps = Omit<
   'bgColor' | 'dense' | 'outlined' | 'modelValue'
 > & {
   required?: boolean;
-  min?: number;
-  max?: number;
+  min?: number | string;
+  max?: number | string;
   step?: number;
   pattern?: string;
   maxlength?: number;
   autocomplete?: string;
   explainer?: string;
   placeholder?: string;
+  trim?: boolean; // workaround for https://github.com/quasarframework/quasar/issues/17663
 };
 
 const props = defineProps<EntityInputProps>();
@@ -80,6 +82,16 @@ function updateModelValue(value: QInputProps['modelValue']) {
     modelValue.value = null;
   } else {
     modelValue.value = value;
+  }
+}
+
+async function onBlur(e: Event) {
+  if (props.trim && typeof modelValue.value === 'string') {
+    modelValue.value = modelValue.value.trim();
+    await nextTick();
+  }
+  if (props.onBlur) {
+    props.onBlur(e);
   }
 }
 

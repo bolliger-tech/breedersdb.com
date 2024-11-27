@@ -55,6 +55,7 @@ export const base = {
     integer: 'Must be an integer.',
     integerBetween:
       'Must be an integer between {min} and {max} with a step of {step}.',
+    dateBetween: 'Must be a date between {min} and {max}.',
     nameNotUnique: 'This name is already in use.',
     xMustBeGreaterThanZero: '{x} must be greater than zero.',
     noNewLinesMaxLength:

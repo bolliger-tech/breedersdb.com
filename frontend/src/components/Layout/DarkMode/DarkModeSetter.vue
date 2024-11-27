@@ -5,10 +5,10 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
+import { Dark, useQuasar } from 'quasar';
 
 export interface DarkModeSetter {
-  isDark: ReturnType<typeof useQuasar>['dark']['isActive'];
+  isDark: Parameters<Dark['set']>[0];
   label: string;
 }
 

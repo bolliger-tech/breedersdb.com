@@ -16,7 +16,10 @@
     ref="dateRef"
     v-model="date"
     :label="t('attributions.add.setDate')"
-    :rules="[(v: string) => !!v || t('base.required')]"
+    :rules="[
+      (v: string | null | undefined | Date) => !!v || t('base.required'),
+      (v: string | null | undefined | Date) => defaultDateValidationRule(v),
+    ]"
     required
     type="date"
   />
@@ -37,14 +40,12 @@
     :label="t('attributions.add.repeatCount')"
     required
     :rules="[
-      (v: number) => !!v || t('base.required'),
-      (v: number) => v > 0 || t('base.validation.min', { x: 1 }),
-      (v: number) => v <= 1000 || t('base.validation.max', { x: 1000 }),
-      (v: number) => Number.isInteger(v) || t('base.validation.integer'),
+      (v: string | number | null | undefined) => !!v || t('base.required'),
+      (v: string | number | null | undefined) => isInRepeatRangeRule(v),
     ]"
     type="number"
-    :min="1"
-    :max="1000"
+    :min="MIN_REPEAT"
+    :max="MAX_REPEAT"
     :step="1"
   />
 </template>
@@ -55,6 +56,10 @@ import EntityInput, {
 } from 'src/components/Entity/Edit/EntityInput.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { ref, computed } from 'vue';
+import { useValidationRule } from 'src/composables/useValidationRule';
+
+const MIN_REPEAT = 1;
+const MAX_REPEAT = 1000;
 
 const { t } = useI18n();
 
@@ -79,4 +84,10 @@ defineExpose({
 const showRepeat = computed(
   () => repeat.value > 0 || Number.isNaN(repeat.value),
 );
+
+const { makeIntegerRule, defaultDateValidationRule } = useValidationRule();
+const isInRepeatRangeRule = makeIntegerRule({
+  min: MIN_REPEAT,
+  max: MAX_REPEAT,
+});
 </script>

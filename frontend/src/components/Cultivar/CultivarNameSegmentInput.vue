@@ -59,7 +59,8 @@
 
     <template #inputHint>
       {{ t('base.required') }}.
-      <i18n-t keypath="cultivars.explainer.2.base" scope="global">
+      {{ t('cultivars.segmentNameHint', { example: '017' }) }}.
+      <i18n-t v-if="lot" keypath="cultivars.explainer.2.base" scope="global">
         <template #hint
           ><strong>{{ t('cultivars.explainer.2.hint') }}</strong></template
         >
@@ -153,7 +154,7 @@ const nextFreeNameSegment = computed(() => {
 
 const additionalWhere = computed(() => {
   if (!props.lot?.id) {
-    return {};
+    return { lot_id: { _eq: -1 } };
   }
   return {
     lot_id: { _eq: props.lot.id },

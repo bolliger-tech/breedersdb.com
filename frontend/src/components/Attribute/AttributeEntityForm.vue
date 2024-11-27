@@ -17,6 +17,7 @@
     autocomplete="off"
     debounce="300"
     required
+    trim
     :loading="fetchingNameUnique"
   />
   <AttributeDataTypeSelect

@@ -28,17 +28,8 @@
           {{ attribute.validation_rule?.step }}
         </EntityViewTableRow>
         <EntityViewTableRow
-          v-if="attribute.data_type === 'TEXT' && defaultValue !== ''"
-        >
-          <template v-if="attribute.data_type === 'TEXT'">
-            <strong>{{ t('attributes.columns.defaultValue') }}</strong>
-            <br />
-            <span style="white-space: pre-line">{{ defaultValue }}</span>
-          </template>
-        </EntityViewTableRow>
-        <EntityViewTableRow
-          v-else
           :label="t('attributes.columns.defaultValue')"
+          multiline
         >
           <template v-if="defaultValue !== ''">
             {{ defaultValue }}
@@ -62,8 +53,9 @@
         <EntityViewTableRow
           v-if="attribute.description"
           :label="t('attributes.columns.description')"
+          multiline
         >
-          <span style="white-space: pre-line">{{ attribute.description }}</span>
+          {{ attribute.description }}
         </EntityViewTableRow>
         <EntityViewTableRow :label="t('attributes.columns.attributeType')">
           {{ attributeTypeToLabel(attribute.attribute_type, t) }}

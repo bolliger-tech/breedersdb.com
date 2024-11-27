@@ -16,7 +16,7 @@
         </div>
 
         <BaseQrScanner
-          max-width-height="min(calc(100svw - 80px), calc(100svh - 130px))"
+          max-width-height="min(calc(100svw - 80px), calc(100svh - 130px), 400px)"
           @change="onChange"
         />
       </q-card-section>

@@ -12,6 +12,9 @@ export const cultivars = {
     lot: 'Lot',
   },
 
+  acronymExplainer:
+    'When creating a new crossing, the acronym is typically used as part of the crossings name. If an acronym is specified, it must be unique.',
+
   validation: {
     nameNotUniqueWithLot:
       'This name is already in use in combination with the selected lot',

@@ -35,10 +35,8 @@
           :created="plantRow.created"
           :modified="plantRow.modified"
         />
-        <EntityViewTableRow v-if="plantRow.note">
-          <strong>{{ t('entity.commonColumns.note') }}</strong>
-          <br />
-          <span style="white-space: pre-line">{{ plantRow.note }}</span>
+        <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
+          {{ plantRow.note }}
         </EntityViewTableRow>
       </EntityViewTable>
 

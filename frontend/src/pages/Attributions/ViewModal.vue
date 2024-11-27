@@ -21,12 +21,7 @@
         />
       </div>
       <EntityViewTable>
-        <EntityViewTableRow v-if="attribution.data_type === 'TEXT'">
-          <strong>{{ t('attributions.columns.value') }}</strong>
-          <br />
-          <span style="white-space: pre-line">{{ getValue(attribution) }}</span>
-        </EntityViewTableRow>
-        <EntityViewTableRow v-else :label="t('attributions.columns.value')">
+        <EntityViewTableRow :label="t('attributions.columns.value')" multiline>
           {{ getValue(attribution) }}
         </EntityViewTableRow>
 
@@ -39,10 +34,8 @@
           </RouterLink>
         </EntityViewTableRow>
 
-        <EntityViewTableRow v-if="attribution.text_note">
-          <strong>{{ t('entity.commonColumns.note') }}</strong>
-          <br />
-          <span style="white-space: pre-line">{{ attribution.text_note }}</span>
+        <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
+          {{ attribution.text_note }}
         </EntityViewTableRow>
         <EntityViewTableRow
           v-if="attribution.photo_note"

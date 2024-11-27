@@ -53,11 +53,13 @@
     :hint="`${t('cultivars.nameOverrideHint')}. ${t('base.required')}.`"
     :cultivar-id="('id' in props.cultivar && props.cultivar.id) || undefined"
     :loading="varietyNameSegmentFetching"
+    :required="type === 'variety'"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.acronym = el)"
     v-model="data.acronym"
     :label="t('cultivars.fields.acronym')"
+    :explainer="t('cultivars.acronymExplainer')"
     type="text"
     autocomplete="off"
     :rules="[
@@ -65,7 +67,7 @@
         !val || val.length <= 8 || t('base.validation.maxLen', { x: 8 }),
       (val: string | null | undefined) =>
         !val ||
-        /^[-_\w\d]{1,8}$/.test(val) ||
+        /^[-_\p{Letter}\d]{1,8}$/u.test(val) ||
         t('base.validation.noSpecialCharsMaxLength', { max: 8 }),
       async (val: string | null | undefined) =>
         !val ||
@@ -73,11 +75,13 @@
         t('base.validation.nameNotUnique'),
     ]"
     :loading="fetchingAcronymUnique"
+    debounce="300"
+    trim
   />
   <EntityInput
     v-if="type === 'variety'"
     :ref="(el: InputRef) => (refs.breeder = el)"
-    v-model="data.breeder"
+    v-model.trim="data.breeder"
     :label="t('cultivars.fields.breeder')"
     type="text"
     autocomplete="off"
@@ -88,7 +92,7 @@
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"
-    v-model="data.note"
+    v-model.trim="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"

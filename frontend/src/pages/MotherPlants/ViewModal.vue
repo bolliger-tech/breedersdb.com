@@ -72,10 +72,8 @@
           :created="motherPlant.created"
           :modified="motherPlant.modified"
         />
-        <EntityViewTableRow v-if="motherPlant.note">
-          <strong>{{ t('entity.commonColumns.note') }}</strong>
-          <br />
-          <span style="white-space: pre-line">{{ motherPlant.note }}</span>
+        <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
+          {{ motherPlant.note }}
         </EntityViewTableRow>
       </EntityViewTable>
     </template>

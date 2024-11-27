@@ -18,12 +18,17 @@
     :ref="(el: InputRef) => (refs.orchardId = el)"
     v-model="data.orchard_id"
     :required="true"
+    :include-id="data.orchard_id || undefined"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateSowed = el)"
     v-model="data.date_sowed"
     :label="t('lots.fields.dateSowed')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <EntityInput
@@ -33,18 +38,11 @@
     type="number"
     autocomplete="off"
     :step="1"
+    :min="0"
+    :max="MAX_INT_PG"
     :rules="[
-      (value: string | null | undefined) =>
-        !value ||
-        isValidInteger({
-          value,
-          validation: { min: 0, max: MAX_INT_PG, step: 1 },
-        }) ||
-        t('base.validation.integerBetween', {
-          min: 0,
-          max: MAX_INT_PG,
-          step: 1,
-        }),
+      (value: string | number | null | undefined) =>
+        !value || isPositiveIntegerRule(value),
     ]"
   />
   <EntityInput
@@ -54,23 +52,16 @@
     type="number"
     autocomplete="off"
     :step="1"
+    :min="0"
+    :max="MAX_INT_PG"
     :rules="[
-      (value: string | null | undefined) =>
-        !value ||
-        isValidInteger({
-          value,
-          validation: { min: 0, max: MAX_INT_PG, step: 1 },
-        }) ||
-        t('base.validation.integerBetween', {
-          min: 0,
-          max: MAX_INT_PG,
-          step: 1,
-        }),
+      (value: string | number | null | undefined) =>
+        !value || isPositiveIntegerRule(value),
     ]"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.seedTray = el)"
-    v-model="data.seed_tray"
+    v-model.trim="data.seed_tray"
     :label="t('lots.fields.seedTray')"
     type="text"
     autocomplete="off"
@@ -85,6 +76,10 @@
     v-model="data.date_planted"
     :label="t('lots.fields.datePlanted')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <EntityInput
@@ -94,23 +89,16 @@
     type="number"
     autocomplete="off"
     :step="1"
+    :min="0"
+    :max="MAX_INT_PG"
     :rules="[
-      (value: string | null | undefined) =>
-        !value ||
-        isValidInteger({
-          value,
-          validation: { min: 0, max: MAX_INT_PG, step: 1 },
-        }) ||
-        t('base.validation.integerBetween', {
-          min: 0,
-          max: MAX_INT_PG,
-          step: 1,
-        }),
+      (value: string | number | null | undefined) =>
+        !value || isPositiveIntegerRule(value),
     ]"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.plot = el)"
-    v-model="data.plot"
+    v-model.trim="data.plot"
     :label="t('lots.fields.plot')"
     type="text"
     :rows="1"
@@ -123,7 +111,7 @@
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"
-    v-model="data.note"
+    v-model.trim="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"
@@ -142,9 +130,9 @@ import { LotEditInput, LotInsertInput } from './LotModalEdit.vue';
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import CrossingSelect from '../Crossing/CrossingSelect.vue';
 import OrchardSelect from '../Orchard/OrchardSelect.vue';
-import { MAX_INT_PG } from 'src/utils/constants';
-import { isValidInteger } from 'src/utils/validationUtils';
 import LotNameInputs from './LotNameInputs.vue';
+import { useValidationRule } from 'src/composables/useValidationRule';
+import { MAX_INT_PG } from 'src/utils/constants';
 
 export interface LotEntityFormProps {
   lot: LotInsertInput | LotEditInput;
@@ -202,4 +190,7 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
+
+const { isPositiveIntegerRule, defaultDateValidationRule } =
+  useValidationRule();
 </script>

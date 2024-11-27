@@ -5,6 +5,7 @@
 
 import { configure } from 'quasar/wrappers';
 import { fileURLToPath } from 'node:url';
+import { hslToRgb } from './scripts/hsl-to-rgb';
 
 export default configure((ctx) => {
   return {
@@ -202,6 +203,14 @@ export default configure((ctx) => {
 
         json.short_name = process.env.VITE_ORG_ABBREVIATION || json.short_name;
         json.name = process.env.VITE_ORG || json.name;
+
+        if (json.icons && Array.isArray(json.icons)) {
+          json.icons = json.icons.map((icon) => ({
+            ...icon,
+            purpose: 'maskable',
+          }));
+        }
+
         return json;
       },
       // useCredentialsForManifestTag: true,
@@ -263,19 +272,3 @@ export default configure((ctx) => {
     },
   };
 });
-
-function hslToRgb(h: number, s: number, l: number) {
-  s /= 100;
-  l /= 100;
-  const k = (n: number) => (n + h / 30) % 12;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n: number) =>
-    l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-  return (
-    (Math.round(255 * f(0)) << 16) +
-    (Math.round(255 * f(8)) << 8) +
-    Math.round(255 * f(4))
-  )
-    .toString(16)
-    .padStart(6, '0');
-}

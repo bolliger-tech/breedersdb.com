@@ -35,10 +35,8 @@
           :created="crossing.created"
           :modified="crossing.modified"
         />
-        <EntityViewTableRow v-if="crossing.note">
-          <strong>{{ t('entity.commonColumns.note') }}</strong>
-          <br />
-          <span style="white-space: pre-line">{{ crossing.note }}</span>
+        <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
+          {{ crossing.note }}
         </EntityViewTableRow>
       </EntityViewTable>
 

@@ -18,6 +18,7 @@
     debounce="300"
     :loading="fetchingNameUnique"
     required
+    trim
   />
   <CultivarSelect
     :ref="(el: InputRef) => (refs.cultivarId = el)"
@@ -36,11 +37,15 @@
     v-model="data.date_harvested"
     :label="t('pollen.fields.dateHarvested')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"
-    v-model="data.note"
+    v-model.trim="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"
@@ -63,6 +68,7 @@ import CultivarSelect, {
 } from '../Cultivar/CultivarSelect.vue';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
+import { useValidationRule } from 'src/composables/useValidationRule';
 
 export interface PollenEntityFormProps {
   pollen: PollenInsertInput | PollenEditInput;
@@ -130,4 +136,6 @@ const { data: motherPlantsCountData, fetching: fetchingMotherPlantsCount } =
 const motherPlantsCount = computed(() => {
   return motherPlantsCountData.value?.mother_plants_aggregate?.aggregate?.count;
 });
+
+const { defaultDateValidationRule } = useValidationRule();
 </script>

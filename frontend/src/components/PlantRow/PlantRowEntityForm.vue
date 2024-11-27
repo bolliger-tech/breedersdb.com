@@ -18,6 +18,7 @@
     debounce="300"
     :loading="fetchingNameUnique"
     required
+    trim
   />
   <OrchardSelect
     :ref="(el: InputRef) => (refs.orchardId = el)"
@@ -30,6 +31,10 @@
     v-model="data.date_created"
     :label="t('plantRows.fields.dateCreated')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
   />
   <EntityInput
@@ -37,6 +42,10 @@
     v-model="data.date_eliminated"
     :label="t('plantRows.fields.dateEliminated')"
     type="date"
+    :rules="[
+      (v: string | null | undefined | Date) =>
+        !v || defaultDateValidationRule(v),
+    ]"
     autocomplete="off"
     :hint="
       data.date_eliminated
@@ -60,6 +69,7 @@ import {
 import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
 import OrchardSelect from '../Orchard/OrchardSelect.vue';
 import { useIsUnique } from 'src/composables/useIsUnique';
+import { useValidationRule } from 'src/composables/useValidationRule';
 
 export interface PlantRowEntityFormProps {
   plantRow: PlantRowInsertInput | PlantRowEditInput;
@@ -100,10 +110,11 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 
 watch(data, (newData) => emits('change', newData), { deep: true });
 
-const { t } = useI18n();
-
 const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
   tableName: 'plant_rows',
   existingId: ('id' in props.plantRow && props.plantRow.id) || undefined,
 });
+
+const { t } = useI18n();
+const { defaultDateValidationRule } = useValidationRule();
 </script>

@@ -17,7 +17,8 @@
     "test:unit": "vitest",
     "test:unit:ci": "vitest run",
     "graphql:schema": "gql.tada generate-schema --output='./src/graphql.graphql' http://localhost/api/hasura/v1/graphql",
-    "graphql:output": "gql.tada generate-output"
+    "graphql:output": "gql.tada generate-output",
+    "color:primary": "node scripts/primary-color.js"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.12",

@@ -12,6 +12,7 @@
     :error="labelIdIsNotUnique"
     reactive-rules
     required
+    trim
     @blur="paddLabelId"
   >
     <template v-if="labelIdIsNotUnique" #error>

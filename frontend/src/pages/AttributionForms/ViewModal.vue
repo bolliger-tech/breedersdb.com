@@ -15,12 +15,12 @@
         <EntityViewTableRow :label="t('entity.commonColumns.name')">
           {{ attributionForm.name }}
         </EntityViewTableRow>
-        <EntityViewTableRow v-if="attributionForm.description">
-          <strong>{{ t('attributionForms.columns.description') }}</strong>
-          <br />
-          <span style="white-space: pre-line">{{
-            attributionForm.description
-          }}</span>
+        <EntityViewTableRow
+          v-if="attributionForm.description"
+          :label="t('attributionForms.columns.description')"
+          multiline
+        >
+          {{ attributionForm.description }}
         </EntityViewTableRow>
         <EntityTableViewTimestampRows
           :created="attributionForm.created"

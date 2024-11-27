@@ -48,6 +48,7 @@ export const base = {
     max: 'Der Maximalwert ist {x}.',
     integer: 'Muss eine Ganzzahl sein.',
     integerBetween: 'Muss eine Ganzzahl zwischen {min} und {max} sein mit einem Abstand von {step}.',
+    dateBetween: 'Muss ein Datum zwischen {min} und {max} sein.',
     nameNotUnique: 'Dieser Name ist bereits vergeben.',
     xMustBeGreaterThanZero: '{x} muss grösser als Null sein.',
     noNewLinesMaxLength: 'Ungültige Zeichen oder Länge. Zeilenumbrüche sind nicht erlaubt. Muss zwischen 1 und {max} Zeichen lang sein.',

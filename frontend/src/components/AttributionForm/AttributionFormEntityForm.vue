@@ -18,6 +18,7 @@
     debounce="300"
     required
     :loading="fetchingNameUnique"
+    trim
   />
   <EntityInput
     v-model.trim="data.description"

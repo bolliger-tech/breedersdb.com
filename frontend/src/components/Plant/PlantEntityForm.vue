@@ -91,7 +91,7 @@
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"
-    v-model="data.note"
+    v-model.trim="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"

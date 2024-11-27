@@ -75,11 +75,13 @@
         t('base.validation.nameNotUnique'),
     ]"
     :loading="fetchingAcronymUnique"
+    debounce="300"
+    trim
   />
   <EntityInput
     v-if="type === 'variety'"
     :ref="(el: InputRef) => (refs.breeder = el)"
-    v-model="data.breeder"
+    v-model.trim="data.breeder"
     :label="t('cultivars.fields.breeder')"
     type="text"
     autocomplete="off"
@@ -90,7 +92,7 @@
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"
-    v-model="data.note"
+    v-model.trim="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"

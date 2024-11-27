@@ -18,6 +18,7 @@
     debounce="300"
     :loading="fetchingNameUnique"
     required
+    trim
   />
   <OrchardSelect
     :ref="(el: InputRef) => (refs.orchardId = el)"

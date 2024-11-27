@@ -15,6 +15,7 @@
     debounce="300"
     :loading="fetchingNameUnique"
     required
+    trim
   />
   <EntityToggle
     :ref="(el: InputRef) => (refs.disabled = el)"

@@ -8,6 +8,7 @@
     :type="inputType"
     :autogrow="props.dataType === 'TEXT'"
     autocomplete="off"
+    :trim="props.dataType === 'TEXT'"
   />
   <BaseInputLabel
     v-else-if="['DATE'].includes(props.dataType)"

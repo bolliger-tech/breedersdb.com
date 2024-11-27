@@ -61,7 +61,7 @@
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.seedTray = el)"
-    v-model="data.seed_tray"
+    v-model.trim="data.seed_tray"
     :label="t('lots.fields.seedTray')"
     type="text"
     autocomplete="off"
@@ -98,7 +98,7 @@
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.plot = el)"
-    v-model="data.plot"
+    v-model.trim="data.plot"
     :label="t('lots.fields.plot')"
     type="text"
     :rows="1"
@@ -111,7 +111,7 @@
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"
-    v-model="data.note"
+    v-model.trim="data.note"
     :label="t('entity.commonColumns.note')"
     type="textarea"
     autocomplete="off"

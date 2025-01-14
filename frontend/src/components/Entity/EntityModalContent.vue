@@ -55,6 +55,13 @@
         <slot name="action-right">
           <template v-if="onEdit">
             <q-btn
+              v-if="printData"
+              flat
+              :label="t('base.print')"
+              color="primary"
+              @click="() => print(printData as string)"
+            />
+            <q-btn
               flat
               :label="t('base.edit')"
               color="primary"
@@ -101,6 +108,7 @@ import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vu
 import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import type { Slot } from 'vue';
+import { usePrint } from 'src/composables/usePrint';
 
 export interface EntityModalContentProps {
   title?: string;
@@ -109,6 +117,7 @@ export interface EntityModalContentProps {
   loading?: boolean;
   saveError?: CombinedError;
   validationError?: string | null;
+  printData?: string;
   // make emit handler available in template
   onSave?: () => void;
   onEdit?: () => void;
@@ -130,6 +139,8 @@ defineEmits<{
   save: [];
   resetErrors: [];
 }>();
+
+const { print } = usePrint();
 
 const { t } = useI18n();
 </script>

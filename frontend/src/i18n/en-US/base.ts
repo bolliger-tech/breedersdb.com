@@ -41,6 +41,7 @@ export const base = {
   back: 'Back',
   rename: 'Rename',
   export: 'Export',
+  print: 'Print',
 
   error: 'Error',
   required: 'Required',

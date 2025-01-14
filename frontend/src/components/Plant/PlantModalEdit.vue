@@ -6,6 +6,7 @@
     index-path="/plants"
     sprite-icon="tree"
     :subtitle="t('plants.title', 1)"
+    :title="title"
   >
     <template #form="{ setFormRef, onChange }">
       <PlantEntityForm

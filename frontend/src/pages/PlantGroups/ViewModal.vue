@@ -6,6 +6,7 @@
   <EntityModalContent
     v-else-if="plantGroup"
     sprite-icon="tree-group"
+    :print-data="print || undefined"
     @edit="edit"
   >
     <template #title-text>
@@ -78,6 +79,7 @@ import {
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import PlantList from 'src/components/Plant/PlantList.vue';
+import { makeLabel } from 'src/utils/labelUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -116,6 +118,16 @@ const plantGroup = computed(() => data.value?.plant_groups_by_pk);
 const attributions = computed(
   () =>
     (plantGroup.value?.attributions_views || []) as AttributionsViewFragment[],
+);
+
+const print = computed(
+  () =>
+    plantGroup.value &&
+    plantGroup.value.label_id &&
+    makeLabel({
+      code: plantGroup.value.label_id,
+      desc: plantGroup.value.display_name,
+    }),
 );
 
 const route = useRoute();

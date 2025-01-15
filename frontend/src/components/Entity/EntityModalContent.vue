@@ -81,12 +81,11 @@
               color="primary"
               @click="$emit('cancel')"
             />
-            <q-btn
-              flat
-              :label="t('base.save')"
-              color="primary"
+            <EntityModalContentSave
               :loading="loading"
-              @click="$emit('save')"
+              :save-then-print="saveThenPrint"
+              @save="$emit('save')"
+              @save-then-print="$emit('saveThenPrint')"
             />
             <BaseErrorTooltip
               :graphql-error="saveError"
@@ -103,6 +102,7 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import EntityButtonDelete from './EntityButtonDelete.vue';
+import EntityModalContentSave from './EntityModalContentSave.vue';
 import { CombinedError } from '@urql/vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
@@ -117,7 +117,8 @@ export interface EntityModalContentProps {
   loading?: boolean;
   saveError?: CombinedError;
   validationError?: string | null;
-  printData?: string;
+  printData?: string; // only used if onEdit is available
+  saveThenPrint?: boolean; // only used if onSave is available
   // make emit handler available in template
   onSave?: () => void;
   onEdit?: () => void;
@@ -137,6 +138,7 @@ defineEmits<{
   delete: [];
   cancel: [];
   save: [];
+  saveThenPrint: [];
   resetErrors: [];
 }>();
 

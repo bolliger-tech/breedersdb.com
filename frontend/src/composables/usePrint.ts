@@ -25,7 +25,12 @@ export function usePrint() {
     frame = document.body.appendChild(document.createElement('iframe'));
     frame.style.display = 'none';
     frame.src = 'data:text/html;charset=utf-8,' + content;
-    window.setTimeout(removeFrame, 1000);
+    return new Promise<void>((resolve) => {
+      window.setTimeout(() => {
+        removeFrame();
+        resolve();
+      }, 1000);
+    });
   }
 
   onBeforeUnmount(removeFrame);

@@ -35,6 +35,7 @@ export const base = {
   edit: 'Edit',
   new: 'New',
   save: 'Save',
+  saveThenPrint: 'Save & Print',
   cancel: 'Cancel',
   ok: 'OK',
   continue: 'Continue',
@@ -45,6 +46,8 @@ export const base = {
 
   error: 'Error',
   required: 'Required',
+  savedButPrintingFailed: 'Successfully saved data, but failed to print label.',
+  detailsInConsole: 'See console for details.',
 
   validation: {
     xIsRequired: '{x} is required',

@@ -3,7 +3,12 @@
     <BaseGraphqlError :error="error" />
   </q-card>
 
-  <EntityModalContent v-else-if="plant" sprite-icon="tree" @edit="edit">
+  <EntityModalContent
+    v-else-if="plant"
+    sprite-icon="tree"
+    :print-data="print || undefined"
+    @edit="edit"
+  >
     <template #title-text>
       <EntityLabelId entity-type="plant" :label-id="plant.label_id" />
     </template>
@@ -91,6 +96,7 @@ import { attributionsViewFragment } from 'src/components/Attribution/attribution
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
+import { makeLabel } from 'src/utils/labelUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -130,6 +136,15 @@ const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
 const plant = computed(() => data.value?.plants_by_pk);
 const attributions = computed(
   () => (plant.value?.attributions_views || []) as AttributionsViewFragment[],
+);
+
+const print = computed(
+  () =>
+    plant.value &&
+    makeLabel({
+      code: plant.value.label_id,
+      desc: plant.value.plant_group_name,
+    }),
 );
 
 const route = useRoute();

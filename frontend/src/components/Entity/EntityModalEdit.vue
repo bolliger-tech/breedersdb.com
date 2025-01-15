@@ -1,13 +1,15 @@
 <template>
   <EntityModalContent
-    :loading="savingEdit || savingInsert"
+    :loading="validating || savingEdit || savingInsert || printing"
     :save-error="saveError"
     :validation-error="validationError"
     :sprite-icon="spriteIcon"
     :title="t('base.edit')"
     :subtitle="subtitle"
+    :save-then-print="!!makeLabel"
     @cancel="cancel"
     @save="save"
+    @save-then-print="() => save(true)"
     @reset-errors="resetErrors"
   >
     <template #default>
@@ -54,6 +56,9 @@ import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { useCancel } from 'src/composables/useCancel';
 import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 import { TadaDocumentNode } from 'gql.tada';
+import { usePrint } from 'src/composables/usePrint';
+import { captureException } from '@sentry/browser';
+import { useQuasar } from 'quasar';
 
 /**
  * NOTE: your mutations must have a variable called $entity
@@ -77,6 +82,7 @@ const props = defineProps<{
   indexPath: string;
   spriteIcon: SpriteIcons;
   subtitle: string;
+  makeLabel?: (entityId: number) => Promise<string>;
 }>();
 
 const { cancel } = useCancel({ path: props.indexPath });
@@ -95,6 +101,7 @@ const {
   executeMutation: executeInsertMutation,
   fetching: savingInsert,
   error: saveInsertError,
+  data: insertResult,
 } = useMutation(props.insertMutation);
 
 const editedData = ref<EditVariables['entity']>();
@@ -102,6 +109,7 @@ const {
   executeMutation: executeEditMutation,
   fetching: savingEdit,
   error: saveEditError,
+  data: editResult,
 } = useMutation(props.editMutation);
 
 function onFormChange(data: typeof editedData.value | typeof insertData.value) {
@@ -114,8 +122,13 @@ function onFormChange(data: typeof editedData.value | typeof insertData.value) {
   }
 }
 
-async function save() {
+const validating = ref(false);
+
+async function save(print = false) {
+  validating.value = true;
   const isValid = await formRef.value?.validate();
+  validating.value = false;
+
   validationError.value = isValid ? null : t('base.validation.invalidFields');
   if (!isValid) {
     return;
@@ -130,6 +143,7 @@ async function save() {
   await nextTick();
 
   if (!saveError.value) {
+    if (print) await printLabel();
     makeModalPersistent(false);
     closeModal();
   }
@@ -137,7 +151,6 @@ async function save() {
 
 async function saveInsert() {
   if (!insertData.value) {
-    closeModal();
     return;
   }
 
@@ -148,7 +161,6 @@ async function saveInsert() {
 
 async function saveEdit() {
   if (!editedData.value) {
-    closeModal();
     return;
   }
 
@@ -164,11 +176,52 @@ async function saveEdit() {
 }
 
 const saveError = computed(() => saveInsertError.value || saveEditError.value);
+const saveResult = computed(() => insertResult.value || editResult.value);
 
 function resetErrors() {
   saveInsertError.value = undefined;
   saveEditError.value = undefined;
   validationError.value = null;
+}
+
+const printing = ref(false);
+const $q = useQuasar();
+const { print } = usePrint();
+
+async function printLabel() {
+  if (!props.makeLabel) {
+    return;
+  }
+
+  printing.value = true;
+
+  let id: number | undefined = undefined;
+  if (saveResult.value) {
+    const key = Object.keys(saveResult.value)[0];
+    id = saveResult.value[key].id;
+  } else if (!editedData.value && 'id' in props.entity) {
+    // happens if no changes were made
+    id = props.entity.id;
+  }
+
+  try {
+    if (!id) {
+      throw new Error('Failed to print: Missing entity id');
+    }
+    await print(await props.makeLabel(id));
+  } catch (e) {
+    if (e instanceof Error) {
+      captureException(e);
+    }
+    console.error('Failed to print label', e);
+    $q.notify({
+      type: 'negative',
+      message: t('base.savedButPrintingFailed'),
+      caption: t('base.detailsInConsole'),
+    });
+  } finally {
+    printing.value = false;
+  }
 }
 
 const { t } = useI18n();

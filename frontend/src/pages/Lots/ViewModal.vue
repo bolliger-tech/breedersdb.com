@@ -1,68 +1,55 @@
 <template>
-  <q-card v-if="error">
-    <BaseGraphqlError :error="error" />
-  </q-card>
+  <EntityFetchWrapper :error="error" :fetching="fetching">
+    <EntityModalContent v-if="lot" sprite-icon="lot" @edit="edit">
+      <template #title-text>
+        <EntityName :lot="lot" :crossing="lot.crossing" no-link />
+      </template>
+      <template #default>
+        <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
+        <LotEntityTable :lot="lot" />
 
-  <EntityModalContent v-else-if="lot" sprite-icon="lot" @edit="edit">
-    <template #title-text>
-      <EntityName :lot="lot" :crossing="lot.crossing" no-link />
-    </template>
-    <template #default>
-      <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <LotEntityTable :lot="lot" />
+        <EntityViewAllAttributions :attributions="attributions" show-entity />
 
-      <EntityViewAllAttributions :attributions="attributions" show-entity />
+        <h3 class="q-mb-md">{{ t('cultivars.title', 2) }}</h3>
+        <EntityRelatedTable
+          entity-key="cultivars"
+          :rows="lot.cultivars || []"
+          row-key="id"
+          :columns="cultivarsColumns"
+          default-sort-by="display_name"
+        >
+          <template #body-cell-display_name="cellProps">
+            <q-td key="display_name" :props="cellProps">
+              <RouterLink
+                :to="`/cultivars/${cellProps.row.id}`"
+                class="undecorated-link"
+              >
+                {{ cellProps.row.display_name }}
+              </RouterLink>
+            </q-td>
+          </template>
+        </EntityRelatedTable>
+      </template>
 
-      <h3 class="q-mb-md">{{ t('cultivars.title', 2) }}</h3>
-      <EntityRelatedTable
-        entity-key="cultivars"
-        :rows="lot.cultivars || []"
-        row-key="id"
-        :columns="cultivarsColumns"
-        default-sort-by="display_name"
-      >
-        <template #body-cell-display_name="cellProps">
-          <q-td key="display_name" :props="cellProps">
-            <RouterLink
-              :to="`/cultivars/${cellProps.row.id}`"
-              class="undecorated-link"
-            >
-              {{ cellProps.row.display_name }}
-            </RouterLink>
-          </q-td>
-        </template>
-      </EntityRelatedTable>
-    </template>
-
-    <template #action-left>
-      <LotButtonDelete
-        :lot-id="lot.id"
-        @deleted="() => router.push({ path: '/lots', query: route.query })"
-      />
-    </template>
-  </EntityModalContent>
-
-  <q-card v-else-if="fetching">
-    <BaseSpinner size="xl" />
-  </q-card>
-
-  <q-card v-else>
-    <BaseNotFound />
-  </q-card>
+      <template #action-left>
+        <LotButtonDelete
+          :lot-id="lot.id"
+          @deleted="() => router.push({ path: '/lots', query: route.query })"
+        />
+      </template>
+    </EntityModalContent>
+  </EntityFetchWrapper>
 </template>
 
 <script setup lang="ts">
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import LotButtonDelete from 'src/components/Lot/LotButtonDelete.vue';
-import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql, ResultOf } from 'src/graphql';
-import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import LotEntityTable from 'src/components/Lot/LotEntityTable.vue';
-import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import {
   attributionsViewFragment,
   type AttributionsViewFragment,
@@ -72,6 +59,7 @@ import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
+import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

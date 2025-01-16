@@ -36,6 +36,8 @@ export const base = {
   new: 'New',
   save: 'Save',
   saveThenPrint: 'Save & Print',
+  saveThenNewFromTemplate: 'Save & New Copy',
+  saveThenPrintThenNewFromTemplate: 'Save, Print & New Copy',
   cancel: 'Cancel',
   ok: 'OK',
   continue: 'Continue',

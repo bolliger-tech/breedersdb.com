@@ -83,9 +83,18 @@
             />
             <EntityModalContentSave
               :loading="loading"
-              :save-then-print="saveThenPrint"
-              @save="$emit('save')"
-              @save-then-print="$emit('saveThenPrint')"
+              v-on="{
+                save: () => $emit('save'),
+                ...(onSaveThenPrint && {
+                  saveThenPrint: () => $emit('saveThenPrint'),
+                }),
+                ...(onSaveThenNewFromTemplate && {
+                  saveThenNewFromTemplate: () =>
+                    $emit('saveThenNewFromTemplate'),
+                }),
+                saveThenPrintThenNewFromTemplate: () =>
+                  $emit('saveThenPrintThenNewFromTemplate'),
+              }"
             />
             <BaseErrorTooltip
               :graphql-error="saveError"
@@ -118,10 +127,11 @@ export interface EntityModalContentProps {
   saveError?: CombinedError;
   validationError?: string | null;
   printData?: string; // only used if onEdit is available
-  saveThenPrint?: boolean; // only used if onSave is available
   // make emit handler available in template
   onSave?: () => void;
   onEdit?: () => void;
+  onSaveThenPrint?: () => void;
+  onSaveThenNewFromTemplate?: () => void;
 }
 
 defineProps<EntityModalContentProps>();
@@ -139,6 +149,8 @@ defineEmits<{
   cancel: [];
   save: [];
   saveThenPrint: [];
+  saveThenNewFromTemplate: [];
+  saveThenPrintThenNewFromTemplate: [];
   resetErrors: [];
 }>();
 

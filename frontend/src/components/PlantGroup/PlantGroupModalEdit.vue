@@ -7,6 +7,14 @@
     sprite-icon="tree-group"
     :subtitle="t('plantGroups.title', 1)"
     :make-label="hasTemplate() ? getLabel : undefined"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/groups/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <PlantGroupEntityForm

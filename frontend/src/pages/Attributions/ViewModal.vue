@@ -1,128 +1,118 @@
 <template>
-  <q-card v-if="error">
-    <BaseGraphqlError :error="error" />
-  </q-card>
-
-  <EntityModalContent
-    v-else-if="attribution"
-    sprite-icon="star"
-    :title="attribution.attribute_name || 'Unknown'"
-    @edit="edit"
-  >
-    <template #default>
-      <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <div class="row bg-black rounded-borders justify-center q-mb-md">
-        <EntityViewAttributionImage
-          v-if="attribution.data_type === 'PHOTO' && attribution.text_value"
-          :file-name="attribution.text_value"
-          :attribution="attribution"
-          preview
-          :preview-height="400"
-        />
-      </div>
-      <EntityViewTable>
-        <EntityViewTableRow :label="t('attributions.columns.value')" multiline>
-          {{ getValue(attribution) }}
-        </EntityViewTableRow>
-
-        <EntityViewTableRow :label="t('attributes.title', 1)">
-          <RouterLink
-            :to="`/attributes/${attribution.attribute_id}`"
-            class="undecorated-link"
-          >
-            {{ attribution.attribute_name }}
-          </RouterLink>
-        </EntityViewTableRow>
-
-        <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
-          {{ attribution.text_note }}
-        </EntityViewTableRow>
-        <EntityViewTableRow
-          v-if="attribution.photo_note"
-          :label="t('attributions.columns.photoNote')"
-          render-empty
-        >
+  <EntityFetchWrapper :error="error" :fetching="fetching">
+    <EntityModalContent
+      v-if="attribution"
+      sprite-icon="star"
+      :title="attribution.attribute_name || 'Unknown'"
+      @edit="edit"
+    >
+      <template #default>
+        <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
+        <div class="row bg-black rounded-borders justify-center q-mb-md">
           <EntityViewAttributionImage
-            :file-name="attribution.photo_note"
+            v-if="attribution.data_type === 'PHOTO' && attribution.text_value"
+            :file-name="attribution.text_value"
             :attribution="attribution"
+            preview
+            :preview-height="400"
           />
-        </EntityViewTableRow>
-
-        <EntityViewTableRow :label="entityName" render-empty>
-          <EntityLink :entity="attribution" />
-        </EntityViewTableRow>
-
-        <EntityViewTableRow
-          v-if="attribution.plant && attribution.plant_group"
-          :label="t('plantGroups.title', 1)"
-          render-empty
-        >
-          <EntityLink :entity="{ plant_group: attribution.plant_group }" />
-        </EntityViewTableRow>
-
-        <EntityViewTableRow :label="t('attributions.columns.dateAttributed')">
-          {{ d(attribution.date_attributed, 'Ymd') }}
-        </EntityViewTableRow>
-
-        <EntityViewTableRow :label="t('attributions.columns.author')">
-          {{ attribution.author }}
-        </EntityViewTableRow>
-
-        <EntityViewTableRow
-          :label="t('attributions.columns.exceptionalAttribution')"
-        >
-          {{ attribution.exceptional_attribution ? '✓' : '' }}
-        </EntityViewTableRow>
-
-        <EntityViewTableRow :label="t('attributionForms.title', 1)">
-          <RouterLink
-            v-if="attribution.attribution_form"
-            :to="`/attribution-forms/${attribution.attribution_form.id}`"
-            class="undecorated-link"
+        </div>
+        <EntityViewTable>
+          <EntityViewTableRow
+            :label="t('attributions.columns.value')"
+            multiline
           >
-            {{ attribution.attribution_form.name }}
-          </RouterLink>
-        </EntityViewTableRow>
+            {{ getValue(attribution) }}
+          </EntityViewTableRow>
 
-        <EntityTableViewTimestampRows
-          v-if="attribution.created && attribution.modified"
-          :created="attribution.created"
-          :modified="attribution.modified"
+          <EntityViewTableRow :label="t('attributes.title', 1)">
+            <RouterLink
+              :to="`/attributes/${attribution.attribute_id}`"
+              class="undecorated-link"
+            >
+              {{ attribution.attribute_name }}
+            </RouterLink>
+          </EntityViewTableRow>
+
+          <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
+            {{ attribution.text_note }}
+          </EntityViewTableRow>
+          <EntityViewTableRow
+            v-if="attribution.photo_note"
+            :label="t('attributions.columns.photoNote')"
+            render-empty
+          >
+            <EntityViewAttributionImage
+              :file-name="attribution.photo_note"
+              :attribution="attribution"
+            />
+          </EntityViewTableRow>
+
+          <EntityViewTableRow :label="entityName" render-empty>
+            <EntityLink :entity="attribution" />
+          </EntityViewTableRow>
+
+          <EntityViewTableRow
+            v-if="attribution.plant && attribution.plant_group"
+            :label="t('plantGroups.title', 1)"
+            render-empty
+          >
+            <EntityLink :entity="{ plant_group: attribution.plant_group }" />
+          </EntityViewTableRow>
+
+          <EntityViewTableRow :label="t('attributions.columns.dateAttributed')">
+            {{ d(attribution.date_attributed, 'Ymd') }}
+          </EntityViewTableRow>
+
+          <EntityViewTableRow :label="t('attributions.columns.author')">
+            {{ attribution.author }}
+          </EntityViewTableRow>
+
+          <EntityViewTableRow
+            :label="t('attributions.columns.exceptionalAttribution')"
+          >
+            {{ attribution.exceptional_attribution ? '✓' : '' }}
+          </EntityViewTableRow>
+
+          <EntityViewTableRow :label="t('attributionForms.title', 1)">
+            <RouterLink
+              v-if="attribution.attribution_form"
+              :to="`/attribution-forms/${attribution.attribution_form.id}`"
+              class="undecorated-link"
+            >
+              {{ attribution.attribution_form.name }}
+            </RouterLink>
+          </EntityViewTableRow>
+
+          <EntityTableViewTimestampRows
+            v-if="attribution.created && attribution.modified"
+            :created="attribution.created"
+            :modified="attribution.modified"
+          />
+        </EntityViewTable>
+      </template>
+
+      <template #action-left>
+        <AttributionButtonDelete
+          :attribution-id="attribution.attribution_id"
+          :attribution-value-id="attribution.id"
+          @deleted="
+            () => router.push({ path: '/attributions', query: route.query })
+          "
         />
-      </EntityViewTable>
-    </template>
-
-    <template #action-left>
-      <AttributionButtonDelete
-        :attribution-id="attribution.attribution_id"
-        :attribution-value-id="attribution.id"
-        @deleted="
-          () => router.push({ path: '/attributions', query: route.query })
-        "
-      />
-    </template>
-  </EntityModalContent>
-
-  <q-card v-else-if="fetching">
-    <BaseSpinner size="xl" />
-  </q-card>
-
-  <q-card v-else>
-    <BaseNotFound />
-  </q-card>
+      </template>
+    </EntityModalContent>
+  </EntityFetchWrapper>
 </template>
 
 <script setup lang="ts">
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import AttributionButtonDelete from 'src/components/Attribution/AttributionButtonDelete.vue';
-import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
-import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import {
   AttributionsViewFragment,
   attributionsViewFragment,
@@ -142,6 +132,7 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

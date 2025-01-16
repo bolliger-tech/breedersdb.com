@@ -1,124 +1,114 @@
 <template>
-  <q-card v-if="error">
-    <BaseGraphqlError :error="error" />
-  </q-card>
+  <EntityFetchWrapper :error="error" :fetching="fetching">
+    <EntityModalContent
+      v-if="crossing"
+      sprite-icon="blossom"
+      :title="crossing.name"
+      @edit="edit"
+    >
+      <template #default>
+        <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
+        <EntityViewTable>
+          <EntityViewTableRow :label="t('entity.commonColumns.name')">
+            {{ crossing.name }}
+          </EntityViewTableRow>
+          <EntityViewTableRow :label="t('crossings.fields.motherCultivar')">
+            <RouterLink
+              :to="`/cultivars/${crossing.mother_cultivar?.id}`"
+              class="undecorated-link"
+            >
+              {{ crossing.mother_cultivar?.display_name }}
+            </RouterLink>
+          </EntityViewTableRow>
+          <EntityViewTableRow :label="t('crossings.fields.fatherCultivar')">
+            <RouterLink
+              :to="`/cultivars/${crossing.father_cultivar?.id}`"
+              class="undecorated-link"
+            >
+              {{ crossing.father_cultivar?.display_name }}
+            </RouterLink>
+          </EntityViewTableRow>
+          <EntityTableViewTimestampRows
+            :created="crossing.created"
+            :modified="crossing.modified"
+          />
+          <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
+            {{ crossing.note }}
+          </EntityViewTableRow>
+        </EntityViewTable>
 
-  <EntityModalContent
-    v-else-if="crossing"
-    sprite-icon="blossom"
-    :title="crossing.name"
-    @edit="edit"
-  >
-    <template #default>
-      <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <EntityViewTable>
-        <EntityViewTableRow :label="t('entity.commonColumns.name')">
-          {{ crossing.name }}
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('crossings.fields.motherCultivar')">
-          <RouterLink
-            :to="`/cultivars/${crossing.mother_cultivar?.id}`"
-            class="undecorated-link"
-          >
-            {{ crossing.mother_cultivar?.display_name }}
-          </RouterLink>
-        </EntityViewTableRow>
-        <EntityViewTableRow :label="t('crossings.fields.fatherCultivar')">
-          <RouterLink
-            :to="`/cultivars/${crossing.father_cultivar?.id}`"
-            class="undecorated-link"
-          >
-            {{ crossing.father_cultivar?.display_name }}
-          </RouterLink>
-        </EntityViewTableRow>
-        <EntityTableViewTimestampRows
-          :created="crossing.created"
-          :modified="crossing.modified"
+        <h3 class="q-mb-md">
+          {{ t('lots.title', 2) }}
+        </h3>
+        <EntityRelatedTable
+          entity-key="lots"
+          :rows="crossing.lots || []"
+          row-key="id"
+          :columns="lotsColumns"
+          default-sort-by="display_name"
+        >
+          <template #body-cell-display_name="cellProps">
+            <q-td key="display_name" :props="cellProps">
+              <RouterLink
+                :to="`/lots/${cellProps.row.id}`"
+                class="undecorated-link"
+              >
+                {{ cellProps.row.display_name }}
+              </RouterLink>
+            </q-td>
+          </template>
+        </EntityRelatedTable>
+
+        <h3 class="q-mb-md">
+          {{ t('motherPlants.title', 2) }}
+        </h3>
+        <EntityRelatedTable
+          entity-key="mother_plants"
+          :rows="crossing.mother_plants || []"
+          row-key="id"
+          :columns="motherPlantsColumns"
+          default-sort-by="name"
+        >
+          <template #body-cell-name="cellProps">
+            <q-td key="name" :props="cellProps">
+              <RouterLink
+                :to="`/mother-plants/${cellProps.row.id}`"
+                class="undecorated-link"
+              >
+                {{ cellProps.row.name }}
+              </RouterLink>
+            </q-td>
+          </template>
+          <template #body-cell-label_id="cellProps">
+            <q-td key="label_id" :props="cellProps">
+              <RouterLink
+                :to="`/plants/${cellProps.row.plant?.id}`"
+                class="undecorated-link"
+              >
+                {{ cellProps.row.plant?.label_id }}
+              </RouterLink>
+            </q-td>
+          </template>
+        </EntityRelatedTable>
+      </template>
+
+      <template #action-left>
+        <CrossingButtonDelete
+          :crossing-id="crossing.id"
+          @deleted="
+            () => router.push({ path: '/crossings', query: route.query })
+          "
         />
-        <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
-          {{ crossing.note }}
-        </EntityViewTableRow>
-      </EntityViewTable>
-
-      <h3 class="q-mb-md">
-        {{ t('lots.title', 2) }}
-      </h3>
-      <EntityRelatedTable
-        entity-key="lots"
-        :rows="crossing.lots || []"
-        row-key="id"
-        :columns="lotsColumns"
-        default-sort-by="display_name"
-      >
-        <template #body-cell-display_name="cellProps">
-          <q-td key="display_name" :props="cellProps">
-            <RouterLink
-              :to="`/lots/${cellProps.row.id}`"
-              class="undecorated-link"
-            >
-              {{ cellProps.row.display_name }}
-            </RouterLink>
-          </q-td>
-        </template>
-      </EntityRelatedTable>
-
-      <h3 class="q-mb-md">
-        {{ t('motherPlants.title', 2) }}
-      </h3>
-      <EntityRelatedTable
-        entity-key="mother_plants"
-        :rows="crossing.mother_plants || []"
-        row-key="id"
-        :columns="motherPlantsColumns"
-        default-sort-by="name"
-      >
-        <template #body-cell-name="cellProps">
-          <q-td key="name" :props="cellProps">
-            <RouterLink
-              :to="`/mother-plants/${cellProps.row.id}`"
-              class="undecorated-link"
-            >
-              {{ cellProps.row.name }}
-            </RouterLink>
-          </q-td>
-        </template>
-        <template #body-cell-label_id="cellProps">
-          <q-td key="label_id" :props="cellProps">
-            <RouterLink
-              :to="`/plants/${cellProps.row.plant?.id}`"
-              class="undecorated-link"
-            >
-              {{ cellProps.row.plant?.label_id }}
-            </RouterLink>
-          </q-td>
-        </template>
-      </EntityRelatedTable>
-    </template>
-
-    <template #action-left>
-      <CrossingButtonDelete
-        :crossing-id="crossing.id"
-        @deleted="() => router.push({ path: '/crossings', query: route.query })"
-      />
-    </template>
-  </EntityModalContent>
-
-  <q-card v-else-if="fetching">
-    <BaseSpinner size="xl" />
-  </q-card>
-
-  <q-card v-else>
-    <BaseNotFound />
-  </q-card>
+      </template>
+    </EntityModalContent>
+  </EntityFetchWrapper>
 </template>
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import CrossingButtonDelete from 'src/components/Crossing/CrossingButtonDelete.vue';
-import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { ResultOf, graphql } from 'src/graphql';
-import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { crossingFragment } from 'src/components/Crossing/crossingFragment';
 import { useI18n } from 'src/composables/useI18n';
@@ -126,12 +116,12 @@ import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
-import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

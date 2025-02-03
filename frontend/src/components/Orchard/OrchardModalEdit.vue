@@ -3,9 +3,17 @@
     :entity="orchard"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
-    index-path="/orchard"
+    index-path="/orchards"
     sprite-icon="orchard"
     :subtitle="t('orchards.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/orchards/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <OrchardEntityForm

@@ -6,6 +6,14 @@
     index-path="/users"
     sprite-icon="user"
     :subtitle="t('users.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/users/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <UserEntityForm

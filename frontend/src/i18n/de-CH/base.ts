@@ -33,6 +33,8 @@ export const base = {
   new: 'Neu',
   save: 'Speichern',
   saveThenPrint: 'Speichern & Drucken',
+  saveThenNewFromTemplate: 'Speichern & Neue Kopie',
+  saveThenPrintThenNewFromTemplate: 'Speichern, Drucken & Neue Kopie',
   cancel: 'Abbrechen',
   ok: 'OK',
   continue: 'Weiter',

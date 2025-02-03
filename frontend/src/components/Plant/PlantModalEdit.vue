@@ -8,6 +8,14 @@
     :subtitle="t('plants.title', 1)"
     :title="title"
     :make-label="hasTemplate() ? getLabel : undefined"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/plants/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <PlantEntityForm

@@ -6,6 +6,14 @@
     index-path="/cultivars"
     sprite-icon="cultivar"
     :subtitle="t('cultivars.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/cultivars/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <CultivarEntityForm

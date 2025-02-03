@@ -6,6 +6,14 @@
     index-path="/pollen"
     sprite-icon="male"
     :subtitle="t('pollen.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/pollen/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <PollenEntityForm

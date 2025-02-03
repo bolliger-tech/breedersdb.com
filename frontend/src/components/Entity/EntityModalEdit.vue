@@ -1,16 +1,31 @@
 <template>
   <EntityModalContent
-    :loading="validating || savingEdit || savingInsert || printing"
+    :loading="
+      validating ||
+      savingEdit ||
+      savingInsert ||
+      printing ||
+      preparingNewFromTemplate
+    "
     :save-error="saveError"
     :validation-error="validationError"
     :sprite-icon="spriteIcon"
     :title="t('base.edit')"
     :subtitle="subtitle"
     :save-then-print="!!makeLabel"
-    @cancel="cancel"
-    @save="save"
-    @save-then-print="() => save(true)"
-    @reset-errors="resetErrors"
+    v-on="{
+      save: createSaveThen(close),
+      cancel,
+      resetErrors,
+      ...(makeLabel && { saveThenPrint: createSaveThen(printLabel, close) }),
+      ...(onNewFromTemplate && {
+        saveThenNewFromTemplate: createSaveThen(newFromTemplate),
+      }),
+      saveThenPrintThenNewFromTemplate: createSaveThen(
+        printLabel,
+        newFromTemplate,
+      ),
+    }"
   >
     <template #default>
       <slot
@@ -83,6 +98,14 @@ const props = defineProps<{
   spriteIcon: SpriteIcons;
   subtitle: string;
   makeLabel?: (entityId: number) => Promise<string>;
+  // make emit handler available in template
+  onNewFromTemplate?: (templateId: number) => void;
+  withInsertData?: (data: InsertVariables['entity']) => InsertVariables;
+  withEditData?: (data: EditVariables['entity']) => EditVariables;
+}>();
+
+const emit = defineEmits<{
+  newFromTemplate: [templateId: number];
 }>();
 
 const { cancel } = useCancel({ path: props.indexPath });
@@ -124,14 +147,14 @@ function onFormChange(data: typeof editedData.value | typeof insertData.value) {
 
 const validating = ref(false);
 
-async function save(print = false) {
+async function save() {
   validating.value = true;
   const isValid = await formRef.value?.validate();
   validating.value = false;
 
   validationError.value = isValid ? null : t('base.validation.invalidFields');
   if (!isValid) {
-    return;
+    return Promise.reject();
   }
 
   if ('id' in props.entity) {
@@ -142,11 +165,14 @@ async function save(print = false) {
 
   await nextTick();
 
-  if (!saveError.value) {
-    if (print) await printLabel();
-    makeModalPersistent(false);
-    closeModal();
+  if (saveError.value) {
+    return Promise.reject();
   }
+}
+
+function close() {
+  makeModalPersistent(false);
+  closeModal();
 }
 
 async function saveInsert() {
@@ -154,9 +180,11 @@ async function saveInsert() {
     return;
   }
 
-  return executeInsertMutation({
-    entity: insertData.value,
-  } as InsertVariables);
+  const data =
+    props.withInsertData?.(insertData.value) ??
+    ({ entity: insertData.value } as InsertVariables);
+
+  return executeInsertMutation(data);
 }
 
 async function saveEdit() {
@@ -169,10 +197,14 @@ async function saveEdit() {
     throw new Error('Entity ID is missing');
   }
 
-  return executeEditMutation({
-    id: props.entity.id,
-    entity: editedData.value,
-  } as EditVariables);
+  const data =
+    props.withEditData?.(editedData.value) ??
+    ({
+      id: props.entity.id,
+      entity: editedData.value,
+    } as EditVariables);
+
+  return executeEditMutation(data);
 }
 
 const saveError = computed(() => saveInsertError.value || saveEditError.value);
@@ -183,6 +215,16 @@ function resetErrors() {
   saveEditError.value = undefined;
   validationError.value = null;
 }
+
+const entityId = computed<EditInput['id'] | undefined>(() => {
+  if ('id' in props.entity) {
+    return props.entity.id;
+  } else if (saveResult.value) {
+    const key = Object.keys(saveResult.value)[0];
+    return saveResult.value[key].id;
+  }
+  return undefined;
+});
 
 const printing = ref(false);
 const $q = useQuasar();
@@ -195,20 +237,11 @@ async function printLabel() {
 
   printing.value = true;
 
-  let id: number | undefined = undefined;
-  if (saveResult.value) {
-    const key = Object.keys(saveResult.value)[0];
-    id = saveResult.value[key].id;
-  } else if (!editedData.value && 'id' in props.entity) {
-    // happens if no changes were made
-    id = props.entity.id;
-  }
-
   try {
-    if (!id) {
+    if (!entityId.value) {
       throw new Error('Failed to print: Missing entity id');
     }
-    await print(await props.makeLabel(id));
+    await print(await props.makeLabel(entityId.value));
   } catch (e) {
     if (e instanceof Error) {
       captureException(e);
@@ -222,6 +255,29 @@ async function printLabel() {
   } finally {
     printing.value = false;
   }
+}
+
+const preparingNewFromTemplate = ref(false);
+async function newFromTemplate() {
+  if (!entityId.value) {
+    throw new Error('Failed to prepare new from template: Missing entity id');
+  }
+  preparingNewFromTemplate.value = true;
+  emit('newFromTemplate', entityId.value);
+}
+
+function createSaveThen(...actions: (() => Promise<void> | void)[]) {
+  return async () => {
+    try {
+      await save();
+      for (const action of actions) {
+        await action();
+      }
+    } catch (e) {
+      // ignore. errors must be handled in the actions
+      // promises are just used to chain the actions
+    }
+  };
 }
 
 const { t } = useI18n();

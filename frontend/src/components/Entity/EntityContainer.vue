@@ -38,7 +38,10 @@
     </template>
   </EntityList>
   <EntityModal
-    :model-value="!!$route.params.entityId || !!$route.path.match(/\/new\/?$/)"
+    :key="$route.path"
+    :model-value="
+      !!$route.params.entityId || !!$route.path.match(/\/new(?:\/(\d+))?\/?$/i)
+    "
     @update:model-value="closeModal"
   >
     <BaseSuspense>

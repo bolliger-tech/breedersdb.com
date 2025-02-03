@@ -100,6 +100,8 @@ const props = defineProps<{
   makeLabel?: (entityId: number) => Promise<string>;
   // make emit handler available in template
   onNewFromTemplate?: (templateId: number) => void;
+  withInsertData?: (data: InsertVariables['entity']) => InsertVariables;
+  withEditData?: (data: EditVariables['entity']) => EditVariables;
 }>();
 
 const emit = defineEmits<{
@@ -178,9 +180,11 @@ async function saveInsert() {
     return;
   }
 
-  return executeInsertMutation({
-    entity: insertData.value,
-  } as InsertVariables);
+  const data =
+    props.withInsertData?.(insertData.value) ??
+    ({ entity: insertData.value } as InsertVariables);
+
+  return executeInsertMutation(data);
 }
 
 async function saveEdit() {
@@ -193,10 +197,14 @@ async function saveEdit() {
     throw new Error('Entity ID is missing');
   }
 
-  return executeEditMutation({
-    id: props.entity.id,
-    entity: editedData.value,
-  } as EditVariables);
+  const data =
+    props.withEditData?.(editedData.value) ??
+    ({
+      id: props.entity.id,
+      entity: editedData.value,
+    } as EditVariables);
+
+  return executeEditMutation(data);
 }
 
 const saveError = computed(() => saveInsertError.value || saveEditError.value);

@@ -1,23 +1,22 @@
 <template>
-  <EntityModalContent
-    :loading="savingEdit || savingInsert"
-    :save-error="saveError"
-    :validation-error="validationError"
+  <EntityModalEdit
+    :entity="attributionForm"
+    :insert-mutation="insertMutation"
+    :edit-mutation="editMutation"
+    :with-insert-data="transformInsertData"
+    :with-edit-data="transformEditData"
+    index-path="/attribution-forms"
     sprite-icon="form"
-    :title="t('base.edit')"
     :subtitle="t('attributionForms.title', 1)"
-    @cancel="cancel"
-    @save="save"
-    @reset-errors="resetErrors"
   >
-    <template #default>
+    <template #form="{ setFormRef, onChange }">
       <AttributionFormEntityForm
-        ref="formRef"
+        :ref="(el) => setFormRef(el)"
         :attribution-form="attributionForm"
         @change="
           (data) => {
             previewAttributionForm = { id: -1, ...data };
-            changedData = data;
+            onChange(data);
           }
         "
       />
@@ -39,7 +38,7 @@
       />
       <div v-else></div>
     </template>
-  </EntityModalContent>
+  </EntityModalEdit>
 </template>
 
 <script setup lang="ts">
@@ -48,24 +47,12 @@ import {
   attributionFormFragment,
 } from 'src/components/AttributionForm/attributionFormFragment';
 import { graphql, VariablesOf } from 'src/graphql';
-import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import AttributionFormButtonDelete from 'src/components/AttributionForm/AttributionFormButtonDelete.vue';
 import AttributionFormEntityForm from 'src/components/AttributionForm/AttributionFormEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { computed, nextTick, ref } from 'vue';
+import { computed, ref } from 'vue';
 import AttributionFormPreview from 'src/components/AttributionForm/AttributionFormPreview.vue';
-import { useCancel } from 'src/composables/useCancel';
-import {
-  closeModalSymbol,
-  makeModalPersistentSymbol,
-} from 'src/components/Entity/modalProvideSymbols';
-import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import { useMutation } from '@urql/vue';
-
-/**
- * NOTE: Because we need to edit associated data (attribution_form_fields), we
- * can not use the EntityModalEdit component.
- */
+import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 
 export type AttributionFormEditInput = Omit<
   AttributionFormFragment,
@@ -78,11 +65,6 @@ export interface AttributionFormModalEditProps {
 }
 
 const props = defineProps<AttributionFormModalEditProps>();
-const formRef = ref<InstanceType<typeof AttributionFormEntityForm> | null>(
-  null,
-);
-
-const { cancel } = useCancel({ path: '/attribution-forms' });
 
 const insertMutation = graphql(
   `
@@ -128,47 +110,42 @@ const previewFormFields = computed(() =>
   })),
 );
 
-const changedData = ref<
-  AttributionFormInsertInput | AttributionFormEditInput | null
->();
-
-function getInsertData(): VariablesOf<typeof insertMutation>['entity'] | null {
-  if (!changedData.value) {
-    return null;
-  }
-
+function transformInsertData(
+  data: unknown,
+): VariablesOf<typeof insertMutation> {
+  const d = data as AttributionFormInsertInput;
   return {
-    name: changedData.value.name,
-    description: changedData.value.description,
-    disabled: changedData.value.disabled,
-    attribution_form_fields: {
-      data: changedData.value.attribution_form_fields
-        .filter((field) => !!field.attribute)
-        .map((field, index) => ({
-          priority: index,
-          attribute_id: field.attribute.id,
-        })),
+    entity: {
+      name: d.name,
+      description: d.description,
+      disabled: d.disabled,
+      attribution_form_fields: {
+        data: d.attribution_form_fields
+          .filter((field) => !!field.attribute)
+          .map((field, index) => ({
+            priority: index,
+            attribute_id: field.attribute.id,
+          })),
+      },
     },
   };
 }
 
-function getEditData(): VariablesOf<typeof editMutation> | null {
+function transformEditData(data: unknown): VariablesOf<typeof editMutation> {
+  const d = data as AttributionFormEditInput;
   if (!('id' in props.attributionForm)) {
     // this should never happen
     throw new Error('Entity ID is missing');
-  }
-  if (!changedData.value) {
-    return null;
   }
   const formId = props.attributionForm.id;
   return {
     id: formId,
     entity: {
-      name: changedData.value.name,
-      description: changedData.value.description,
-      disabled: changedData.value.disabled,
+      name: d.name,
+      description: d.description,
+      disabled: d.disabled,
     },
-    fields: changedData.value.attribution_form_fields
+    fields: d.attribution_form_fields
       .filter((field) => !!field.attribute)
       .map((field, index) => ({
         priority: index,
@@ -176,72 +153,5 @@ function getEditData(): VariablesOf<typeof editMutation> | null {
         attribution_form_id: formId,
       })),
   };
-}
-
-const validationError = ref<string | null>(null);
-const closeModal = useInjectOrThrow(closeModalSymbol);
-const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
-
-const {
-  executeMutation: executeInsertMutation,
-  fetching: savingInsert,
-  error: saveInsertError,
-} = useMutation(insertMutation);
-
-const {
-  executeMutation: executeEditMutation,
-  fetching: savingEdit,
-  error: saveEditError,
-} = useMutation(editMutation);
-
-async function save() {
-  const isValid = await formRef.value?.validate();
-  validationError.value = isValid ? null : t('base.validation.invalidFields');
-  if (!isValid) {
-    return;
-  }
-
-  if ('id' in props.attributionForm) {
-    await saveEdit();
-  } else {
-    await saveInsert();
-  }
-
-  await nextTick();
-
-  if (!saveError.value) {
-    makeModalPersistent(false);
-    closeModal();
-  }
-}
-
-async function saveInsert() {
-  const insertData = getInsertData();
-  if (!insertData) {
-    closeModal();
-    return;
-  }
-
-  return executeInsertMutation({
-    entity: insertData,
-  });
-}
-
-async function saveEdit() {
-  const editedData = getEditData();
-  if (!editedData) {
-    closeModal();
-    return;
-  }
-
-  return executeEditMutation(editedData);
-}
-
-const saveError = computed(() => saveInsertError.value || saveEditError.value);
-
-function resetErrors() {
-  saveInsertError.value = undefined;
-  saveEditError.value = undefined;
-  validationError.value = null;
 }
 </script>

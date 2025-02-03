@@ -6,6 +6,14 @@
     index-path="/graftings"
     sprite-icon="grafting"
     :subtitle="t('graftings.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/graftings/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <GraftingEntityForm

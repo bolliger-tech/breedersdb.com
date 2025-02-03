@@ -6,6 +6,14 @@
     index-path="/mother-plants"
     sprite-icon="female"
     :subtitle="t('motherPlants.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/mother-plants/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <MotherPlantEntityForm

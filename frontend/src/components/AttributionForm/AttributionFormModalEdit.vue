@@ -8,6 +8,14 @@
     index-path="/attribution-forms"
     sprite-icon="form"
     :subtitle="t('attributionForms.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/attribution-forms/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <AttributionFormEntityForm

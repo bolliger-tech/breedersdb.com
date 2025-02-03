@@ -6,6 +6,14 @@
     index-path="/crossing"
     sprite-icon="blossom"
     :subtitle="t('crossings.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/crossings/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <CrossingEntityForm

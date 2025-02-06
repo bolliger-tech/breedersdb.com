@@ -91,6 +91,7 @@ const { executeQuery, fetching } = useQuery({
   variables,
   pause: true,
   context: { additionalTypenames: ['attribution_values'] },
+  requestPolicy: 'cache-and-network',
 });
 
 async function hasAttributions() {

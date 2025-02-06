@@ -123,6 +123,7 @@ const {
   variables: cultivarsQueryVariables,
   pause: !props.lot,
   context: { additionalTypenames: ['cultivars'] },
+  requestPolicy: 'cache-and-network',
 });
 watch(
   () => props.lot,

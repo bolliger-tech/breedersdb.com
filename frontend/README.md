@@ -80,3 +80,10 @@ See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-
 - [Quasar](https://quasar.dev/) in [Quasar CLI with Vite](https://quasar.dev/start/quasar-cli) mode with [TypeScript](https://www.typescriptlang.org/)
 - [qgl.tada](https://gql-tada.0no.co/) for graphql type generation
 - [urql](https://commerce.nearform.com/open-source/urql/docs/) as graphql client
+- [vue-i18n](https://vue-i18n.intlify.dev/) for internationalization
+- [vue-router](https://next.router.vuejs.org/) for routing
+- [vitest](https://vitest.dev/) for testing
+
+## Testing
+
+See [frontend/TESTING.md](/frontend/TESTING.md)

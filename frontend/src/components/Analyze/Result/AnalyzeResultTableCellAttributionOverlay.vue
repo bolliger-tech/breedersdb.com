@@ -10,7 +10,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import { graphql } from 'src/graphql';
+import { graphql, ResultOf } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -51,6 +51,9 @@ export type AttributionDetails = AttributionsViewFragment & {
   lot: Omit<LotFragment, 'orchard' | 'crossing'> & {
     crossing: Required<LotFragment['crossing']>;
   };
+  attribution_form: ResultOf<
+    typeof query
+  >['attributions_view'][0]['attribution_form'];
 };
 
 const props = defineProps<AnalyzeResultTableCellAttributionOverlayProps>();
@@ -79,6 +82,10 @@ const query = graphql(
         }
         lot {
           ...lotFragment
+        }
+        attribution_form {
+          id
+          name
         }
       }
     }

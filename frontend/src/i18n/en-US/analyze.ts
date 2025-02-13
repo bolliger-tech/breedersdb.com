@@ -108,5 +108,13 @@ export const analyze = {
     downloadPhoto: 'Download photo',
 
     lastRefresh: 'Last data refresh: {date}',
+
+    about: {
+      attribution: 'About this attribution',
+      plant: 'About the plant',
+      plantGroup: 'About the plant group',
+      cultivar: 'About the cultivar',
+      lot: 'About the lot',
+    },
   },
 };

@@ -16,20 +16,32 @@
       v-model="showOverlay"
       :offset="[0, 8]"
       anchor="bottom middle"
-      class="result-table-cell-attribution__overlay bg-grey-9 q-pa-sm"
-      dark
+      class="result-table-cell-attribution__overlay q-pa-md"
+      :class="{ 'bg-grey-9': $q.dark.isActive }"
       no-parent-event
       self="top middle"
       max-width="450px"
       @hide="autocloseOverlay = true"
     >
-      <slot name="overlay"></slot>
+      <q-btn
+        v-if="autocloseOverlay == false"
+        icon="close"
+        dense
+        flat
+        round
+        class="absolute-top-right q-ma-xs"
+        @click="toggleOverlay"
+      />
+      <div style="max-width: calc(100% - 25px); min-height: 22px">
+        <slot name="overlay-title"></slot>
+      </div>
+      <slot name="overlay-body"></slot>
     </q-menu>
   </AttributionValueChip>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, type Slot } from 'vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
 export interface AnalyzeResultTableCellAttributionProps {
@@ -40,6 +52,12 @@ export interface AnalyzeResultTableCellAttributionProps {
 }
 
 defineProps<AnalyzeResultTableCellAttributionProps>();
+
+defineSlots<{
+  label: Slot;
+  'overlay-title': Slot;
+  'overlay-body': Slot;
+}>();
 
 const showOverlay = ref(false);
 const autocloseOverlay = ref(true);

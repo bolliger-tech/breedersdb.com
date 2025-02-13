@@ -4,12 +4,17 @@
     :plant-group="!!attribution.plant_group_id"
     :cultivar="!!attribution.cultivar_id"
     :lot="!!attribution.lot_id"
-    :dark="dark"
   >
     <template #label>
       {{ n2semicolon(label) }}
     </template>
-    <template #overlay>
+    <template #[`overlay-title`]>
+      <h3 class="q-my-sm pre-line">{{ label }}</h3>
+      <p :class="$q.dark.isActive ? 'text-grey-5' : 'text-grey-9'">
+        {{ attribution.attribute_name }}
+      </p>
+    </template>
+    <template #[`overlay-body`]>
       <AnalyzeResultTableCellAttributionOverlay :id="attribution.id" />
     </template>
   </AnalyzeResultTableCellAttribution>
@@ -31,7 +36,6 @@ import { n2semicolon } from 'src/utils/stringUtils';
 
 export interface AnalyzeResultTableCellAttributionValueProps {
   attribution: AnalyzeAttributionsViewFields;
-  dark?: boolean;
 }
 
 const props = defineProps<AnalyzeResultTableCellAttributionValueProps>();

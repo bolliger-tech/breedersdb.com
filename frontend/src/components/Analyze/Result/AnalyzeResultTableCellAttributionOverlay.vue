@@ -39,18 +39,26 @@ export interface AnalyzeResultTableCellAttributionOverlayProps {
 }
 
 export type AttributionDetails = AttributionsViewFragment & {
-  plant: Omit<PlantFragment, 'plant_group'> & {
-    plant_group: Required<PlantFragment['plant_group']>;
-  };
-  plant_group: Omit<PlantGroupFragment, 'cultivar'> & {
-    cultivar: Required<PlantGroupFragment['cultivar']>;
-  };
-  cultivar: Omit<CultivarFragment, 'lot'> & {
-    lot: Required<CultivarFragment['lot']>;
-  };
-  lot: Omit<LotFragment, 'orchard' | 'crossing'> & {
-    crossing: Required<LotFragment['crossing']>;
-  };
+  plant:
+    | null
+    | (Omit<PlantFragment, 'plant_group'> & {
+        plant_group: Required<PlantFragment['plant_group']>;
+      });
+  plant_group:
+    | null
+    | (Omit<PlantGroupFragment, 'cultivar'> & {
+        cultivar: Required<PlantGroupFragment['cultivar']>;
+      });
+  cultivar:
+    | null
+    | (Omit<CultivarFragment, 'lot'> & {
+        lot: Required<CultivarFragment['lot']>;
+      });
+  lot:
+    | null
+    | (Omit<LotFragment, 'orchard' | 'crossing'> & {
+        crossing: Required<LotFragment['crossing']>;
+      });
   attribution_form: ResultOf<
     typeof query
   >['attributions_view'][0]['attribution_form'];

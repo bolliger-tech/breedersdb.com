@@ -1,16 +1,18 @@
 <template>
-  <div class="row items-center">
+  <div class="row items-center" :class="{ 'external-font-size': fontSize }">
     <BaseSpriteIcon
       :name="icon"
-      color="grey-7"
-      size="50px"
+      :color="iconColor || 'grey-7'"
+      :size="fontSize ? '2.5em' : '50px'"
       style="padding-bottom: 2px"
     />
     <div class="q-ml-sm">
       <slot name="title">
-        <h2 class="q-ma-none">
+        <h2 class="q-ma-none" :class="{ 'external-font-size': fontSize }">
           <EntityLabelId
-            v-if="entityType === 'plant' || entityType === 'plantGroup'"
+            v-if="
+              labelId && (entityType === 'plant' || entityType === 'plantGroup')
+            "
             :entity-type="entityType"
             :label-id="labelId || ''"
           />
@@ -31,6 +33,7 @@
       <slot name="subtitle">
         <EntityName
           v-if="
+            labelId &&
             (entityType === 'plant' || entityType === 'plantGroup') &&
             plantGroup
           "
@@ -53,9 +56,23 @@ import EntityName, {
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { computed, type Slot } from 'vue';
 
-interface PlantOrPlantGroup {
-  entityType: 'plant' | 'plantGroup';
+interface Plant {
+  entityType: 'plant';
   labelId: string;
+  plantGroup: PlantGroupNameProps['plantGroup'] & {
+    cultivar?: PlantGroupNameProps['cultivar'] & {
+      lot?: PlantGroupNameProps['lot'] & {
+        crossing?: PlantGroupNameProps['crossing'];
+      };
+    };
+  };
+  cultivar?: never;
+  lot?: never;
+}
+
+interface PlantGroup {
+  entityType: 'plantGroup';
+  labelId?: string | null;
   plantGroup: PlantGroupNameProps['plantGroup'] & {
     cultivar?: PlantGroupNameProps['cultivar'] & {
       lot?: PlantGroupNameProps['lot'] & {
@@ -89,9 +106,13 @@ interface Lot {
   };
 }
 
-export type EntityCardProps = PlantOrPlantGroup | Cultivar | Lot;
+export type EntityCardProps = (Plant | PlantGroup | Cultivar | Lot) & {
+  fontSize?: string;
+  iconColor?: string;
+};
 
 const props = defineProps<EntityCardProps>();
+
 defineSlots<{
   title: Slot;
   subtitle: Slot;
@@ -112,3 +133,9 @@ const icon = computed(() => {
   throw new Error('Invalid entity type');
 });
 </script>
+
+<style scoped>
+.external-font-size {
+  font-size: v-bind(fontSize);
+}
+</style>

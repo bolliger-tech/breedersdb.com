@@ -9,10 +9,15 @@
       {{ n2semicolon(label) }}
     </template>
     <template #[`overlay-title`]>
-      <h3 class="q-my-sm pre-line">{{ label }}</h3>
-      <p :class="$q.dark.isActive ? 'text-grey-5' : 'text-grey-9'">
-        {{ attribution.attribute_name }}
-      </p>
+      <RouterLink :to="`/attributions/${attribution.id}`" class="entity-link">
+        <p
+          :class="$q.dark.isActive ? 'text-grey-5' : 'text-grey-8'"
+          class="text-overline q-my-none"
+        >
+          {{ attribution.attribute_name }}
+        </p>
+        <h3 class="q-mt-none q-mb-md pre-line">{{ label }}</h3>
+      </RouterLink>
     </template>
     <template #[`overlay-body`]>
       <AnalyzeResultTableCellAttributionOverlay :id="attribution.id" />
@@ -51,3 +56,15 @@ const label = computed(() => {
   return formatResultColumnValue({ value, type, d, n });
 });
 </script>
+
+<style lang="scss" scoped>
+.entity-link {
+  color: unset;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: var(--q-link-color-hover);
+  }
+}
+</style>

@@ -109,6 +109,9 @@ export const analyze = {
 
     lastRefresh: 'Last data refresh: {date}',
 
+    attributedEntity: 'Attributed {entity}',
+    note: 'Note',
+
     about: {
       attribution: 'About this attribution',
       plant: 'About the plant',

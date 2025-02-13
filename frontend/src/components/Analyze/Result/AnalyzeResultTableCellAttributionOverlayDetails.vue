@@ -19,7 +19,7 @@
     </div>
 
     <template v-if="data.text_note">
-      <div class="text-body2" style="white-space: pre-line">
+      <div class="text-body2 pre-line">
         {{ data.text_note }}
       </div>
       <q-separator class="q-my-sm" dark />

@@ -1,75 +1,63 @@
 <template>
-  <q-card v-if="error">
-    <BaseGraphqlError :error="error" />
-  </q-card>
+  <EntityFetchWrapper :error="error" :fetching="fetching">
+    <EntityModalContent
+      v-if="plantGroup"
+      sprite-icon="tree-group"
+      :print-data="print || undefined"
+      @edit="edit"
+    >
+      <template #title-text>
+        <EntityName
+          :plant-group="plantGroup"
+          :cultivar="plantGroup.cultivar"
+          :lot="plantGroup.cultivar?.lot"
+          :crossing="plantGroup.cultivar?.lot?.crossing"
+          no-link
+        />
+      </template>
 
-  <EntityModalContent
-    v-else-if="plantGroup"
-    sprite-icon="tree-group"
-    @edit="edit"
-  >
-    <template #title-text>
-      <EntityName
-        :plant-group="plantGroup"
-        :cultivar="plantGroup.cultivar"
-        :lot="plantGroup.cultivar?.lot"
-        :crossing="plantGroup.cultivar?.lot?.crossing"
-        no-link
-      />
-    </template>
+      <template #default>
+        <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
+        <PlantGroupEntityTable :plant-group="plantGroup" />
 
-    <template #default>
-      <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <PlantGroupEntityTable :plant-group="plantGroup" />
+        <EntityViewAllAttributions :attributions="attributions" show-entity />
 
-      <EntityViewAllAttributions :attributions="attributions" show-entity />
+        <h3 class="q-mb-md">{{ t('plants.title', 2) }}</h3>
+        <PlantList
+          :rows="plantGroup.plants"
+          :visible-columns="[
+            'label_id',
+            'plant_row',
+            'distance_plant_row_start',
+            'orchard',
+            'date_planted',
+            'date_eliminated',
+          ]"
+        />
+      </template>
 
-      <h3 class="q-mb-md">{{ t('plants.title', 2) }}</h3>
-      <PlantList
-        :rows="plantGroup.plants"
-        :visible-columns="[
-          'label_id',
-          'plant_row',
-          'distance_plant_row_start',
-          'orchard',
-          'date_planted',
-          'date_eliminated',
-        ]"
-      />
-    </template>
-
-    <template #action-left>
-      <PlantGroupButtonDelete
-        v-if="!plantGroup.disabled"
-        :plant-group-id="plantGroup.id"
-        @deleted="() => router.push({ path: '/groups', query: route.query })"
-      />
-      <div v-else></div>
-    </template>
-  </EntityModalContent>
-
-  <q-card v-else-if="fetching">
-    <BaseSpinner size="xl" />
-  </q-card>
-
-  <q-card v-else>
-    <BaseNotFound />
-  </q-card>
+      <template #action-left>
+        <PlantGroupButtonDelete
+          v-if="!plantGroup.disabled"
+          :plant-group-id="plantGroup.id"
+          @deleted="() => router.push({ path: '/groups', query: route.query })"
+        />
+        <div v-else></div>
+      </template>
+    </EntityModalContent>
+  </EntityFetchWrapper>
 </template>
 
 <script setup lang="ts">
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PlantGroupButtonDelete from 'src/components/PlantGroup/PlantGroupButtonDelete.vue';
 import PlantGroupEntityTable from 'src/components/PlantGroup/PlantGroupEntityTable.vue';
-import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql } from 'src/graphql';
-import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityName from 'src/components/Entity/EntityName.vue';
-import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import {
   attributionsViewFragment,
@@ -78,6 +66,8 @@ import {
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import PlantList from 'src/components/Plant/PlantList.vue';
+import { makeLabel } from 'src/utils/labelUtils';
+import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -116,6 +106,16 @@ const plantGroup = computed(() => data.value?.plant_groups_by_pk);
 const attributions = computed(
   () =>
     (plantGroup.value?.attributions_views || []) as AttributionsViewFragment[],
+);
+
+const print = computed(
+  () =>
+    plantGroup.value &&
+    plantGroup.value.label_id &&
+    makeLabel({
+      code: plantGroup.value.label_id,
+      desc: plantGroup.value.display_name,
+    }),
 );
 
 const route = useRoute();

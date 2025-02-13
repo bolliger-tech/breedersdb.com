@@ -55,6 +55,13 @@
         <slot name="action-right">
           <template v-if="onEdit">
             <q-btn
+              v-if="printData"
+              flat
+              :label="t('base.print')"
+              color="primary"
+              @click="() => print(printData as string)"
+            />
+            <q-btn
               flat
               :label="t('base.edit')"
               color="primary"
@@ -74,12 +81,20 @@
               color="primary"
               @click="$emit('cancel')"
             />
-            <q-btn
-              flat
-              :label="t('base.save')"
-              color="primary"
+            <EntityModalContentSave
               :loading="loading"
-              @click="$emit('save')"
+              v-on="{
+                save: () => $emit('save'),
+                ...(onSaveThenPrint && {
+                  saveThenPrint: () => $emit('saveThenPrint'),
+                }),
+                ...(onSaveThenNewFromTemplate && {
+                  saveThenNewFromTemplate: () =>
+                    $emit('saveThenNewFromTemplate'),
+                }),
+                saveThenPrintThenNewFromTemplate: () =>
+                  $emit('saveThenPrintThenNewFromTemplate'),
+              }"
             />
             <BaseErrorTooltip
               :graphql-error="saveError"
@@ -96,11 +111,13 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import EntityButtonDelete from './EntityButtonDelete.vue';
+import EntityModalContentSave from './EntityModalContentSave.vue';
 import { CombinedError } from '@urql/vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import type { Slot } from 'vue';
+import { usePrint } from 'src/composables/usePrint';
 
 export interface EntityModalContentProps {
   title?: string;
@@ -109,9 +126,12 @@ export interface EntityModalContentProps {
   loading?: boolean;
   saveError?: CombinedError;
   validationError?: string | null;
+  printData?: string; // only used if onEdit is available
   // make emit handler available in template
   onSave?: () => void;
   onEdit?: () => void;
+  onSaveThenPrint?: () => void;
+  onSaveThenNewFromTemplate?: () => void;
 }
 
 defineProps<EntityModalContentProps>();
@@ -128,8 +148,13 @@ defineEmits<{
   delete: [];
   cancel: [];
   save: [];
+  saveThenPrint: [];
+  saveThenNewFromTemplate: [];
+  saveThenPrintThenNewFromTemplate: [];
   resetErrors: [];
 }>();
+
+const { print } = usePrint();
 
 const { t } = useI18n();
 </script>

@@ -6,6 +6,14 @@
     index-path="/rows"
     sprite-icon="rows"
     :subtitle="t('plantRows.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/rows/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <PlantRowEntityForm

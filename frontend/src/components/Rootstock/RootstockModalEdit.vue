@@ -6,6 +6,14 @@
     index-path="/rootstocks"
     sprite-icon="rootstock"
     :subtitle="t('rootstocks.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/rootstocks/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <RootstockEntityForm

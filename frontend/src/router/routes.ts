@@ -69,9 +69,14 @@ function createEntityRoutes(entity: string) {
             props: true,
           },
           {
-            path: 'new',
+            path: 'new/:templateId(\\d+)?',
             component: () => import(`pages/${entity}/AddModal.vue`),
-            props: { entityId: 'new' },
+            props: (route: RouteLocationNormalized) => ({
+              entityId: 'new',
+              templateId: route.params.templateId
+                ? parseInt(route.params.templateId.toString(), 10)
+                : undefined,
+            }),
           },
         ],
       },

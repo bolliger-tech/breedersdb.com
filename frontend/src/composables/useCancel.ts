@@ -5,8 +5,9 @@ export function useCancel({ path }: { path: string }) {
   const route = useRoute();
 
   function cancel() {
-    const canGoBack = !!router.options.history.state.back;
-    if (canGoBack) {
+    const last = router.options.history.state.back;
+    const isNewOrEdit = /\/(edit|new)(\/\d*)?$/;
+    if (!!last && !isNewOrEdit.test(last.toString())) {
       router.back();
     } else {
       router.push({ path, query: route.query });

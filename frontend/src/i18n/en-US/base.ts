@@ -35,15 +35,21 @@ export const base = {
   edit: 'Edit',
   new: 'New',
   save: 'Save',
+  saveThenPrint: 'Save & Print',
+  saveThenNewFromTemplate: 'Save & New Copy',
+  saveThenPrintThenNewFromTemplate: 'Save, Print & New Copy',
   cancel: 'Cancel',
   ok: 'OK',
   continue: 'Continue',
   back: 'Back',
   rename: 'Rename',
   export: 'Export',
+  print: 'Print',
 
   error: 'Error',
   required: 'Required',
+  savedButPrintingFailed: 'Successfully saved data, but failed to print label.',
+  detailsInConsole: 'See console for details.',
 
   validation: {
     xIsRequired: '{x} is required',

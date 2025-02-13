@@ -39,8 +39,10 @@
   </EntityList>
   <EntityModal
     ref="modal"
-    :key="modalKey"
-    :model-value="entityId !== null || !!$route.path.match(/\/new\/?$/)"
+    :key="$route.path"
+    :model-value="
+      entityId !== null || !!$route.path.match(/\/new(?:\/(\d+))?\/?$/i)
+    "
     :transition-show="transition"
     :transition-hide="transition"
     @update:model-value="closeModal"
@@ -168,7 +170,6 @@ const entityId = computed(() => {
   return parseInt(route.params.entityId.toString());
 });
 
-const modalKey = computed(() => entityId.value ?? 'new');
 const modal = ref<InstanceType<typeof EntityModal> | null>(null);
 
 const navigationEnabled = computed(

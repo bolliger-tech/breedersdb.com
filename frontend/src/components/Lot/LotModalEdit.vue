@@ -6,6 +6,14 @@
     index-path="/lots"
     sprite-icon="lot"
     :subtitle="t('lots.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/lots/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <LotEntityForm

@@ -6,6 +6,14 @@
     index-path="/attributes"
     sprite-icon="form"
     :subtitle="t('attributes.title', 1)"
+    @new-from-template="
+      (templateId) => {
+        $router.push({
+          path: `/attributes/new/${templateId}`,
+          query: $route.query,
+        });
+      }
+    "
   >
     <template #form="{ setFormRef, onChange }">
       <AttributeEntityForm

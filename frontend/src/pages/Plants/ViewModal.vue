@@ -1,80 +1,73 @@
 <template>
-  <q-card v-if="error">
-    <BaseGraphqlError :error="error" />
-  </q-card>
+  <EntityFetchWrapper :error="error" :fetching="fetching">
+    <EntityModalContent
+      v-if="plant"
+      sprite-icon="tree"
+      :print-data="print || undefined"
+      @edit="edit"
+    >
+      <template #title-text>
+        <EntityLabelId entity-type="plant" :label-id="plant.label_id" />
+      </template>
+      <template #subtitle-text>
+        <EntityName
+          v-if="plant.plant_group"
+          :plant-group="plant.plant_group"
+          :cultivar="plant.plant_group.cultivar"
+          :lot="plant.plant_group.cultivar?.lot"
+          :crossing="plant.plant_group.cultivar?.lot?.crossing"
+        />
+      </template>
 
-  <EntityModalContent v-else-if="plant" sprite-icon="tree" @edit="edit">
-    <template #title-text>
-      <EntityLabelId entity-type="plant" :label-id="plant.label_id" />
-    </template>
-    <template #subtitle-text>
-      <EntityName
-        v-if="plant.plant_group"
-        :plant-group="plant.plant_group"
-        :cultivar="plant.plant_group.cultivar"
-        :lot="plant.plant_group.cultivar?.lot"
-        :crossing="plant.plant_group.cultivar?.lot?.crossing"
-      />
-    </template>
+      <template #default>
+        <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
+        <PlantEntityTable :plant="plant" />
 
-    <template #default>
-      <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-      <PlantEntityTable :plant="plant" />
+        <EntityViewAllAttributions :attributions="attributions" />
 
-      <EntityViewAllAttributions :attributions="attributions" />
+        <h3 class="q-my-md">{{ t('motherPlants.title', 2) }}</h3>
+        <EntityRelatedTable
+          entity-key="plants"
+          :rows="plant.mother_plants || []"
+          row-key="id"
+          :columns="motherPlantColumns"
+          default-sort-by="name"
+        >
+          <template #body-cell-name="cellProps">
+            <q-td key="name" :props="cellProps">
+              <RouterLink
+                :to="`/mother-plants/${cellProps.row.id}`"
+                class="undecorated-link"
+              >
+                {{ cellProps.row.name }}
+              </RouterLink>
+            </q-td>
+          </template>
+          <template #body-cell-pollen="cellProps">
+            <q-td key="pollen" :props="cellProps">
+              <RouterLink
+                v-if="cellProps.row.pollen"
+                :to="`/pollen/${cellProps.row.pollen.id}`"
+                class="undecorated-link"
+              >
+                {{ cellProps.row.pollen.name }}
+              </RouterLink>
+            </q-td>
+          </template>
+        </EntityRelatedTable>
+      </template>
 
-      <h3 class="q-my-md">{{ t('motherPlants.title', 2) }}</h3>
-      <EntityRelatedTable
-        entity-key="plants"
-        :rows="plant.mother_plants || []"
-        row-key="id"
-        :columns="motherPlantColumns"
-        default-sort-by="name"
-      >
-        <template #body-cell-name="cellProps">
-          <q-td key="name" :props="cellProps">
-            <RouterLink
-              :to="`/mother-plants/${cellProps.row.id}`"
-              class="undecorated-link"
-            >
-              {{ cellProps.row.name }}
-            </RouterLink>
-          </q-td>
-        </template>
-        <template #body-cell-pollen="cellProps">
-          <q-td key="pollen" :props="cellProps">
-            <RouterLink
-              v-if="cellProps.row.pollen"
-              :to="`/pollen/${cellProps.row.pollen.id}`"
-              class="undecorated-link"
-            >
-              {{ cellProps.row.pollen.name }}
-            </RouterLink>
-          </q-td>
-        </template>
-      </EntityRelatedTable>
-    </template>
-
-    <template #action-left>
-      <PlantButtonEliminate v-if="!plant.disabled" :plant-id="plant.id" />
-      <div v-else></div>
-    </template>
-  </EntityModalContent>
-
-  <q-card v-else-if="fetching">
-    <BaseSpinner size="xl" />
-  </q-card>
-
-  <q-card v-else>
-    <BaseNotFound />
-  </q-card>
+      <template #action-left>
+        <PlantButtonEliminate v-if="!plant.disabled" :plant-id="plant.id" />
+        <div v-else></div>
+      </template>
+    </EntityModalContent>
+  </EntityFetchWrapper>
 </template>
 
 <script setup lang="ts">
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
-import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { graphql, ResultOf } from 'src/graphql';
-import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { computed } from 'vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
@@ -86,11 +79,12 @@ import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
-import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import { attributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
+import { makeLabel } from 'src/utils/labelUtils';
+import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -130,6 +124,15 @@ const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
 const plant = computed(() => data.value?.plants_by_pk);
 const attributions = computed(
   () => (plant.value?.attributions_views || []) as AttributionsViewFragment[],
+);
+
+const print = computed(
+  () =>
+    plant.value &&
+    makeLabel({
+      code: plant.value.label_id,
+      desc: plant.value.plant_group_name,
+    }),
 );
 
 const route = useRoute();

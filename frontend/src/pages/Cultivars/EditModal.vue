@@ -1,22 +1,12 @@
 <template>
-  <q-card v-if="error">
-    <BaseGraphqlError :error="error" />
-  </q-card>
-
-  <CultivarModalEdit
-    v-else-if="cultivar"
-    :cultivar="cultivar"
-    :is-variety="cultivar.is_variety"
-    :title="t('base.edit')"
-  />
-
-  <q-card v-else-if="fetching">
-    <BaseSpinner size="xl" />
-  </q-card>
-
-  <q-card v-else>
-    <BaseNotFound />
-  </q-card>
+  <EntityFetchWrapper :error="error" :fetching="fetching">
+    <CultivarModalEdit
+      v-if="cultivar"
+      :cultivar="cultivar"
+      :is-variety="cultivar.is_variety"
+      :title="t('base.edit')"
+    />
+  </EntityFetchWrapper>
 </template>
 
 <script setup lang="ts">
@@ -24,11 +14,9 @@ import { useQuery } from '@urql/vue';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
-import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import { useI18n } from 'src/composables/useI18n';
 import CultivarModalEdit from 'src/components/Cultivar/CultivarModalEdit.vue';
-import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
+import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

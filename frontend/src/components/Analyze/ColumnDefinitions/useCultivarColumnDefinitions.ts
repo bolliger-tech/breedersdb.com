@@ -75,6 +75,15 @@ const columnData: FilterColumnConstructorData[] = [
   // },
   {
     table: 'cultivars',
+    column: 'is_variety',
+    labelKey: 'cultivars.fields.isVariety',
+    schema: {
+      type: ColumnTypes.Boolean,
+      allowEmpty: false,
+    },
+  },
+  {
+    table: 'cultivars',
     column: 'acronym',
     labelKey: 'cultivars.fields.acronym',
     schema: {

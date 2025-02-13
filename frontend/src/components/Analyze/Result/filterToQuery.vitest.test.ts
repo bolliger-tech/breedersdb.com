@@ -2507,6 +2507,34 @@ cultivars(where: { _and: [
         );
       });
     });
+
+    it('should exclude varieties for lots', () => {
+      const filter = FilterNode.FilterRoot({
+        childrensConjunction: FilterConjunction.Or,
+        baseTable: BaseTable.Lots,
+      });
+      FilterNode.FilterLeaf({
+        parent: filter,
+        filterRule: filterRules.id,
+      });
+
+      const { query } = filterToQuery({
+        baseFilter: filter,
+        attributionFilter: emptyAttributionFilter,
+        columns: [],
+        pagination: basicPagination,
+      });
+
+      expect(query).toMatch(
+        new RegExp(
+          prepareForRegex(`
+lots(where: { _and: [
+{ _or: [ { id: { _gt: $v000 } } ] },
+{ is_variety: { _eq: false } }
+] }`).replaceAll('$v000', '$v\\d+'),
+        ),
+      );
+    });
   });
 
   describe('pagination', () => {

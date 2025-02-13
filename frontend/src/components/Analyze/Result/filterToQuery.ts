@@ -42,11 +42,19 @@ export function filterToQuery({
   columns: string[];
   pagination: AnalyzeResultPagination;
 }) {
+  const baseTable = baseFilter.getBaseTable();
   const where = filterToWhere(baseFilter);
+
+  if (baseTable === BaseTable.Lots) {
+    const conditions = [where.conditions, '{ is_variety: { _eq: false } }']
+      .filter(Boolean)
+      .join(', ');
+    where.conditions = `{ _and: [ ${conditions} ] }`;
+  }
+
   const whereString =
     where.conditions.length > 0 ? `where: ${where.conditions}` : '';
 
-  const baseTable = baseFilter.getBaseTable();
   const paginationString = toPaginationString({
     baseTable,
     pagination,

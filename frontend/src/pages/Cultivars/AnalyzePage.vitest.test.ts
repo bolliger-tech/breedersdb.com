@@ -249,7 +249,6 @@ describe('AnalyzePage', () => {
     cultivars(where: { _and: [ { id: { _gt: $v000 } } ] }, limit: $limit, offset: $offset, order_by: { id: asc }) {
       id
       display_name
-      full_name
       acronym
     }
 

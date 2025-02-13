@@ -72,19 +72,19 @@ const columnData: FilterColumnConstructorData[] = [
       },
     },
   },
-  {
-    table: 'plant_groups',
-    column: 'full_name',
-    labelKey: 'entity.commonColumns.fullName',
-    schema: {
-      type: ColumnTypes.Citext,
-      allowEmpty: false,
-      validation: {
-        maxLen: 77,
-        pattern: null,
-      },
-    },
-  },
+  // {
+  //   table: 'plant_groups',
+  //   column: 'full_name',
+  //   labelKey: 'entity.commonColumns.fullName',
+  //   schema: {
+  //     type: ColumnTypes.Citext,
+  //     allowEmpty: false,
+  //     validation: {
+  //       maxLen: 77,
+  //       pattern: null,
+  //     },
+  //   },
+  // },
   // This field is never exposed to the user, let's hide it here as well.
   // {
   //   table: 'plant_groups',

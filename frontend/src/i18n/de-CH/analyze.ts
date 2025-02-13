@@ -84,6 +84,15 @@ export const analyze = {
     altPhoto: 'Foto vom {date} von {author}',
     photo: 'Foto',
     downloadPhoto: 'Foto herunterladen',
-    lastRefresh: 'Letzte Aktualisierung: {date}'
+    lastRefresh: 'Letzte Aktualisierung: {date}',
+    attributedEntity: 'Attributierte/s {entity}',
+    note: 'Bemerkung',
+    about: {
+      attribution: 'Über diese Attributierung',
+      plant: 'Über die Pflanze',
+      plantGroup: 'Über die Gruppe',
+      cultivar: 'Über das Cultivar',
+      lot: 'Über das Los'
+    }
   }
 };

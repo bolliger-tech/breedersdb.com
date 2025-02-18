@@ -104,25 +104,24 @@
           />
         </template>
       </q-banner>
+
       <AttributionAddNoEntityError
-        v-else-if="entityId === null"
-        :entity-type="entityType"
+        v-else-if="!entity.data"
+        :entity-type="entity.type"
         @click="step = 3"
       />
 
-      <template v-else>
-        <slot name="entity-preview"></slot>
-        <AttributionAddForm
-          :key="attributeFormKey"
-          :entity-id="entityId"
-          :entity-type="entityType"
-          :form="form"
-          :date="date"
-          :author="author"
-          :repeat-target="repeatInt"
-          @saved="completeStep4"
-        />
-      </template>
+      <AttributionAddForm
+        v-else
+        :key="attributeFormKey"
+        :entity="entity"
+        :form="form"
+        :date="date"
+        :author="author"
+        :repeat-target="repeatInt"
+        @saved="completeStep4"
+      />
+
       <q-stepper-navigation>
         <q-btn flat color="primary" :label="t('base.back')" @click="step = 3" />
       </q-stepper-navigation>
@@ -133,7 +132,9 @@
 <script setup lang="ts">
 import AttributionFormSelect from 'src/components/AttributionForm/AttributionFormSelect.vue';
 import AttributionAddMetaData from 'src/components/Attribution/Add/AttributionAddMetaData.vue';
-import AttributionAddForm from 'src/components/Attribution/Add/AttributionAddForm.vue';
+import AttributionAddForm, {
+  type AttributionAddFormProps,
+} from 'src/components/Attribution/Add/AttributionAddForm.vue';
 import AttributionAddNoEntityError from 'src/components/Attribution/Add/AttributionAddNoEntityError.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
@@ -144,7 +145,6 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed, ref, watch, type Slot, Ref } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
-import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import {
   attributeFragment,
   type AttributeFragment,
@@ -160,8 +160,12 @@ const DATE_URL_KEY = 'date';
 const REPEAT_URL_KEY = 'repeat';
 
 export interface AttributionAddStepsProps {
-  entityId: number | null;
-  entityType: AttributableEntities;
+  entity:
+    | AttributionAddFormProps['entity']
+    | {
+        data: null;
+        type: AttributionAddFormProps['entity']['type'];
+      };
   entityLoading: boolean;
   entityIcon: string;
   focusEntityPicker?: () => void;
@@ -171,7 +175,6 @@ const props = defineProps<AttributionAddStepsProps>();
 
 defineSlots<{
   'entity-picker': Slot;
-  'entity-preview': Slot;
 }>();
 
 const emit = defineEmits<{
@@ -321,9 +324,9 @@ function completeStep4(repeatCount: number) {
 }
 
 watch(
-  () => props.entityId,
+  () => props.entity.data,
   () => {
-    if (props.entityId !== null) {
+    if (props.entity.data !== null) {
       step.value = 4;
     }
   },
@@ -335,7 +338,7 @@ const step2Done = computed(
   () => author.value.length > 0 && date.value.length > 0 && repeat.value >= 0,
 );
 
-const step3Done = computed(() => props.entityId !== null);
+const step3Done = computed(() => props.entity.data !== null);
 
 function getInitialStep() {
   // never jump directly to step 4 to make very clear, that any attribution input is lost

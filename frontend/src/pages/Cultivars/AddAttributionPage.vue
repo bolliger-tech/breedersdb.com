@@ -10,8 +10,7 @@
     <AttributionAddSteps
       :entity-caption="entityCaption"
       :entity-loading="fetching"
-      :entity-id="cultivar?.id || null"
-      :entity-type="AttributableEntities.Cultivar"
+      :entity="{ data: cultivar, type: AttributableEntities.Cultivar }"
       :focus-entity-picker="cultivarPickerRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#cultivar"
       @entity-step-completed="() => cultivarPickerRef?.loadEntity()"
@@ -23,15 +22,6 @@
           @fetching="(f) => (fetching = f)"
         />
       </template>
-
-      <template #entity-preview>
-        <EntityCard
-          v-if="cultivar"
-          :cultivar="cultivar"
-          entity-type="cultivar"
-        />
-        <!-- if the cultivar is missing AttributionAddSteps will handle it -->
-      </template>
     </AttributionAddSteps>
   </PageLayout>
 </template>
@@ -41,7 +31,6 @@ import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
 import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
 import CultivarPicker from 'src/components/Cultivar/CultivarPicker.vue';
-import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { computed, ref } from 'vue';
 import { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';

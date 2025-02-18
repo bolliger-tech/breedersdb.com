@@ -1,8 +1,10 @@
 <template>
+  <AttributionAddEntityPreview :entity="entity" />
+
   <AttributionAddAlreadyAttributed
     v-if="repeatTarget <= 1 && lastRepeat"
     :date="lastRepeat"
-    :entity-type="entityType"
+    :entity-type="entity.type"
   />
 
   <form>
@@ -32,7 +34,7 @@
       <template v-if="repeatTarget > 1" #counter>
         <AttributionAddRepeatCounter
           :total="repeatTarget"
-          :entity-type="entityType"
+          :entity-type="entity.type"
           :count="repeatCount"
           style="width: 100%"
           @reset="repeatCount = 0"
@@ -65,12 +67,14 @@ import AttributionAddAlreadyAttributed from 'src/components/Attribution/Add/Attr
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 import AttributionAddFormFieldList from 'src/components/Attribution/Add/AttributionAddFormFieldList.vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
+import AttributionAddEntityPreview, {
+  type AttributionAddFormPreviewProps,
+} from 'src/components/Attribution/Add/AttributionAddEntityPreview.vue';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
 export interface AttributionAddFormProps {
-  entityId: number;
-  entityType: AttributableEntities;
+  entity: AttributionAddFormPreviewProps['entity'];
   form: AttributionForm;
   date: string;
   author: string;
@@ -153,8 +157,8 @@ watch(attributeInputs, setDefaultValues, {
 
 const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
   formId: props.form.id,
-  entityId: props.entityId,
-  entityType: props.entityType,
+  entityId: props.entity.data.id,
+  entityType: props.entity.type,
 });
 
 const hasValues = computed(() =>
@@ -266,17 +270,21 @@ async function save() {
     author: props.author,
     dateAttributed: props.date,
     lotId:
-      props.entityType === AttributableEntities.Lot ? props.entityId : null,
+      props.entity.type === AttributableEntities.Lot
+        ? props.entity.data.id
+        : null,
     cultivarId:
-      props.entityType === AttributableEntities.Cultivar
-        ? props.entityId
+      props.entity.type === AttributableEntities.Cultivar
+        ? props.entity.data.id
         : null,
     plantGroupId:
-      props.entityType === AttributableEntities.PlantGroup
-        ? props.entityId
+      props.entity.type === AttributableEntities.PlantGroup
+        ? props.entity.data.id
         : null,
     plantId:
-      props.entityType === AttributableEntities.Plant ? props.entityId : null,
+      props.entity.type === AttributableEntities.Plant
+        ? props.entity.data.id
+        : null,
     attributionValues: attributions,
   });
 
@@ -365,7 +373,7 @@ function resetErrors() {
 }
 
 const { entity: entityName } = useAttributableEntityName({
-  entityType: props.entityType,
+  entityType: props.entity.type,
 });
 function showNoDataNotification() {
   $q.notify({

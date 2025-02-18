@@ -63,12 +63,15 @@
     <p class="q-ma-none text-body2">{{ data.text_note }}</p>
   </div>
 
-  <div class="row align-center overline-color">
+  <RouterLink
+    :to="`/attributions/${data.id}`"
+    class="row align-center overline-color"
+  >
     <BaseSpriteIcon name="star" size="xs" />
     <span class="q-ml-sm q-my-none text-overline">
       {{ t('analyze.result.about.attribution') }}
     </span>
-  </div>
+  </RouterLink>
 
   <EntityViewTable dense no-hover class="text-body2 q-mb-lg">
     <EntityViewTableRow :label="t('attributions.columns.dateAttributed')">
@@ -98,10 +101,10 @@
     />
   </EntityViewTable>
 
-  <div class="row align-center overline-color">
+  <RouterLink :to="link" class="row align-center overline-color">
     <BaseSpriteIcon :name="icon" size="xs" />
     <span class="q-ml-sm q-my-none text-overline">{{ about }}</span>
-  </div>
+  </RouterLink>
 
   <div class="text-body2">
     <PlantEntityTable v-if="data.plant" :plant="data.plant" dense no-hover />
@@ -207,6 +210,16 @@ const { t, d } = useI18n();
   color: $grey-8;
   .body--dark & {
     color: $grey-5;
+  }
+}
+
+a.overline-color {
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover,
+  &:focus {
+    color: var(--q-link-color-hover);
   }
 }
 </style>

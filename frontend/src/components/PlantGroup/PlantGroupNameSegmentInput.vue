@@ -116,6 +116,7 @@ const {
   variables: plantGroupsQueryVariables,
   pause: !props.cultivar,
   context: { additionalTypenames: ['plant_groups'] },
+  requestPolicy: 'cache-and-network',
 });
 watch(
   () => props.cultivar,

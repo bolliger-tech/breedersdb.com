@@ -6,7 +6,17 @@ BreedersDB is an application for plant breeding, developed for fruit trees. It f
 
 ## Architecture
 
-The application follows a client-server pattern. The backend (server) is a GraphQL API built with [Hasura](https://hasura.io) and [PostgreSQL](https://www.postgresql.org/). The frontend (client) is a web application developed in Typescript with the [Quasar](https://quasar.dev/) framework.
+The application follows a client-server pattern. The [`frontend`](/frontend) (client) is a PWA developed in Typescript with the [Quasar](https://quasar.dev/) framework. The [`backend`](/backend) (server) is a GraphQL API built with [Hasura](https://hasura.io) and [PostgreSQL](https://www.postgresql.org/). The [`cloud-function`](/cloud-function) is a side-car of the backend, that handles authentication, authorization and assets. Implemented as serverless function.
+
+### URL Schema
+
+| Service        | URL               | Description                                 |
+| -------------- | ----------------- | ------------------------------------------- |
+| Hasura         | `/api/console`    | The backend admin console                   |
+| Hasura         | `/api/v1/graphql` | The GraphQL API                             |
+| Cloud Function | `/api/internal`   | Not publicly exposed. Used by Hasura (auth) |
+| Cloud Function | `/api/assets`     | Public. Serves assets                       |
+| Frontend       | `/*`              | The web application                         |
 
 ## Installation
 

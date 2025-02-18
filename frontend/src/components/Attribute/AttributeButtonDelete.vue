@@ -70,6 +70,7 @@ const {
     }
   `),
   variables: { id: props.attributeId },
+  requestPolicy: 'network-only',
 });
 
 const attributeHasDependants = computed(() => {

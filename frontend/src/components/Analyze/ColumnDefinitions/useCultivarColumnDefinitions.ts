@@ -46,19 +46,19 @@ const columnData: FilterColumnConstructorData[] = [
       },
     },
   },
-  {
-    table: 'cultivars',
-    column: 'full_name',
-    labelKey: 'entity.commonColumns.fullName',
-    schema: {
-      type: ColumnTypes.Citext,
-      allowEmpty: false,
-      validation: {
-        maxLen: 58,
-        pattern: null,
-      },
-    },
-  },
+  // {
+  //   table: 'cultivars',
+  //   column: 'full_name',
+  //   labelKey: 'entity.commonColumns.fullName',
+  //   schema: {
+  //     type: ColumnTypes.Citext,
+  //     allowEmpty: false,
+  //     validation: {
+  //       maxLen: 58,
+  //       pattern: null,
+  //     },
+  //   },
+  // },
   // This field is never exposed to the user, let's hide it here as well.
   // {
   //   table: 'cultivars',
@@ -73,6 +73,15 @@ const columnData: FilterColumnConstructorData[] = [
   //     },
   //   },
   // },
+  {
+    table: 'cultivars',
+    column: 'is_variety',
+    labelKey: 'cultivars.fields.isVariety',
+    schema: {
+      type: ColumnTypes.Boolean,
+      allowEmpty: false,
+    },
+  },
   {
     table: 'cultivars',
     column: 'acronym',

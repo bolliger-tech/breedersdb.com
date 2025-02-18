@@ -236,6 +236,7 @@ const {
   variables: formVariables,
   pause: true,
   context: { additionalTypenames: ['attribution_forms'] },
+  requestPolicy: 'cache-and-network',
 });
 watch(
   formVariables,

@@ -4,7 +4,12 @@
 
 <script setup lang="ts">
 import { type BaseSpriteIconProps } from 'components/Base/BaseSpriteIcon/baseSpriteIconProps';
+import { computed } from 'vue';
 
 const props = defineProps<BaseSpriteIconProps>();
-const { name, ...rest } = props;
+const rest = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { name, ...rest } = props;
+  return rest;
+});
 </script>

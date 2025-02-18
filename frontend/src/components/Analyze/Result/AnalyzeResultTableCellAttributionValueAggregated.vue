@@ -3,7 +3,7 @@
     <template #label>
       {{ label }}
     </template>
-    <template #overlay>
+    <template #[`overlay-title`]>
       <i18n-t
         keypath="analyze.result.aggTitle"
         tag="h4"
@@ -11,7 +11,7 @@
         scope="global"
       >
         <template #value>
-          <AttributionValueChip aggregated dark max-width="80px">{{
+          <AttributionValueChip aggregated max-width="80px">{{
             label
           }}</AttributionValueChip
           >&nbsp;
@@ -20,11 +20,12 @@
           {{ aggregationName }}
         </template>
       </i18n-t>
+    </template>
+    <template #[`overlay-body`]>
       <AnalyzeResultTableCellAttributionValue
         v-for="attribution of attributions"
         :key="attribution.id"
         :attribution="attribution"
-        dark
       />
     </template>
   </AnalyzeResultTableCellAttribution>

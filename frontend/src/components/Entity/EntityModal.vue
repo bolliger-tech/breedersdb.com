@@ -1,8 +1,12 @@
 <template>
   <q-dialog
+    ref="dialog"
     v-model="visible"
     no-route-dismiss
     no-refocus
+    :transition-show="transition"
+    :transition-hide="transition"
+    :transition-duration="transitionDuration"
     :persistent="persistent"
     @before-hide="$emit('before-hide')"
     @hide="$emit('hide')"
@@ -18,6 +22,14 @@ import {
   makeModalPersistentSymbol,
 } from './modalProvideSymbols';
 import { useRoute } from 'vue-router';
+import type { QDialogProps, QDialog } from 'quasar';
+
+export interface EntityModalProps {
+  transition?: QDialogProps['transitionShow'];
+  transitionDuration?: number;
+}
+
+defineProps<EntityModalProps>();
 
 const visible = defineModel<boolean>();
 defineEmits<{
@@ -26,6 +38,12 @@ defineEmits<{
 }>();
 
 const persistent = ref(false);
+const dialog = ref<QDialog | null>(null);
+
+defineExpose({
+  persistent,
+  shake: () => dialog.value?.shake(),
+});
 
 const route = useRoute();
 watch(

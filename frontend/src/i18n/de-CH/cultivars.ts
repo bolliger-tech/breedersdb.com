@@ -7,7 +7,8 @@ export const cultivars = {
   fields: {
     acronym: 'Kürzel',
     breeder: 'Züchter/in',
-    lot: 'Los'
+    lot: 'Los',
+    isVariety: 'ist Sorte'
   },
   acronymExplainer: 'Beim Erfassen einer neuen Kreuzung, dient das Kürzel als Teil des Kreuzungsnamens. Kürzel müssen einmalig sein.',
   validation: {

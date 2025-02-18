@@ -10,7 +10,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import { graphql } from 'src/graphql';
+import { graphql, ResultOf } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -39,18 +39,29 @@ export interface AnalyzeResultTableCellAttributionOverlayProps {
 }
 
 export type AttributionDetails = AttributionsViewFragment & {
-  plant: Omit<PlantFragment, 'plant_group'> & {
-    plant_group: Required<PlantFragment['plant_group']>;
-  };
-  plant_group: Omit<PlantGroupFragment, 'cultivar'> & {
-    cultivar: Required<PlantGroupFragment['cultivar']>;
-  };
-  cultivar: Omit<CultivarFragment, 'lot'> & {
-    lot: Required<CultivarFragment['lot']>;
-  };
-  lot: Omit<LotFragment, 'orchard' | 'crossing'> & {
-    crossing: Required<LotFragment['crossing']>;
-  };
+  plant:
+    | null
+    | (Omit<PlantFragment, 'plant_group'> & {
+        plant_group: Required<PlantFragment['plant_group']>;
+      });
+  plant_group:
+    | null
+    | (Omit<PlantGroupFragment, 'cultivar'> & {
+        cultivar: Required<PlantGroupFragment['cultivar']>;
+      });
+  cultivar:
+    | null
+    | (Omit<CultivarFragment, 'lot'> & {
+        lot: Required<CultivarFragment['lot']>;
+      });
+  lot:
+    | null
+    | (Omit<LotFragment, 'orchard' | 'crossing'> & {
+        crossing: Required<LotFragment['crossing']>;
+      });
+  attribution_form: ResultOf<
+    typeof query
+  >['attributions_view'][0]['attribution_form'];
 };
 
 const props = defineProps<AnalyzeResultTableCellAttributionOverlayProps>();
@@ -79,6 +90,10 @@ const query = graphql(
         }
         lot {
           ...lotFragment
+        }
+        attribution_form {
+          id
+          name
         }
       }
     }

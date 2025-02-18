@@ -125,6 +125,7 @@ const {
   variables: lotsQueryVariables,
   pause: !props.crossing,
   context: { additionalTypenames: ['lots'] },
+  requestPolicy: 'cache-and-network',
 });
 watch(
   () => props.crossing,

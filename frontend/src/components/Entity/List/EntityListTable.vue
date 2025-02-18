@@ -130,7 +130,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import type { QSelectSlots, QTable, QTableProps, QTableSlots } from 'quasar';
+import type { QSelectSlots, QTableProps, QTableSlots } from 'quasar';
 import EntityListTableColumnSelector from './EntityListTableColumnSelector.vue';
 import EntityListTableHeaderCell from './EntityListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';

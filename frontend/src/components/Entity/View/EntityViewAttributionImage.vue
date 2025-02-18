@@ -39,8 +39,8 @@
     :transition-show="transition"
     :transition-hide="transition"
     :transition-duration="transitionDuration"
-    @keydown.left="$emit('previous')"
-    @keydown.right="$emit('next')"
+    @keydown.left.stop.prevent="$emit('previous')"
+    @keydown.right.stop.prevent="$emit('next')"
   >
     <q-card
       v-touch-swipe.right="() => $emit('previous')"

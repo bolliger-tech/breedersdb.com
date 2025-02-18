@@ -10,6 +10,7 @@ export const cultivars = {
     acronym: 'Acronym',
     breeder: 'Breeder',
     lot: 'Lot',
+    isVariety: 'is variety',
   },
 
   acronymExplainer:

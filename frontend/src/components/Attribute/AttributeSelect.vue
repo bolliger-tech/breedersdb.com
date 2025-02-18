@@ -55,6 +55,7 @@ const query = graphql(
 const { data, error, fetching } = useQuery({
   query,
   context: { additionalTypenames: ['attributes'] },
+  requestPolicy: 'cache-and-network',
 });
 
 const attributeOptions = computed(

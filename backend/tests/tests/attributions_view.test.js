@@ -816,3 +816,47 @@ test('view reflects attribution.date, .author change', async () => {
   expect(data.attributions_view[0].author).toBe('Petra');
   expect(data.attributions_view[0].date_attributed).toBe('2024-01-01');
 });
+
+test('timestamps correspond to the attribution_value timestamps', async () => {
+  const { value_id } = await insertAttributeValueWithAssociatedData({
+    is_lot: true,
+    attribute_data_type: 'INTEGER',
+    integer_value: 42,
+  });
+
+  // wait for the timestamps to differ by at least 1ms
+  await new Promise((r) => setTimeout(r, 1));
+
+  const attribution_value = await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdateAttributionValue($id: Int!) {
+        update_attribution_values_by_pk(
+          pk_columns: { id: $id }
+          _set: { integer_value: 43 }
+        ) {
+          id
+          created
+          modified
+        }
+      }
+    `,
+    variables: { id: value_id },
+  });
+
+  await refreshattributionsView();
+
+  const { data } = await postOrFail({ query: queryAll });
+
+  expect(data.attributions_view[0].id).toBe(value_id);
+  expect(data.attributions_view[0].integer_value).toBe(43);
+  expect(data.attributions_view[0].created).toBe(
+    attribution_value.data.update_attribution_values_by_pk.created,
+  );
+  expect(data.attributions_view[0].modified).toBe(
+    attribution_value.data.update_attribution_values_by_pk.modified,
+  );
+
+  const created = new Date(data.attributions_view[0].created);
+  const modified = new Date(data.attributions_view[0].modified);
+  expect(modified.getTime()).toBeGreaterThan(created.getTime());
+});

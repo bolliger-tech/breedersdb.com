@@ -7,7 +7,7 @@
   </h5>
 
   <div class="column" :class="{ reverse: openInputsOrdered[0] === 'photo' }">
-    <AttributionAddFormInputText
+    <AttributionInputText
       v-if="showTextInput"
       ref="textInputRef"
       :model-value="textNote"
@@ -20,7 +20,7 @@
       @blur="showTextInput = !!textNote"
     />
 
-    <AttributionAddFormInputPhoto
+    <AttributionInputPhoto
       v-if="showPhotoInput"
       ref="photoInputRef"
       v-model="photoNote"
@@ -55,24 +55,24 @@
 </template>
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import AttributionAddFormInputPhoto from 'src/components/Attribution/Add/AttributionAddFormInputPhoto.vue';
-import AttributionAddFormInputText from 'src/components/Attribution/Add/AttributionAddFormInputText.vue';
+import AttributionInputPhoto from 'src/components/Attribution/Input/AttributionInputPhoto.vue';
+import AttributionInputText from 'src/components/Attribution/Input/AttributionInputText.vue';
 import { nextTick, ref, watch } from 'vue';
 import { focusInView } from 'src/utils/focusInView';
 
-export interface AttributionAddFormInputNoteProps {
+export interface AttributionInputNoteProps {
   allowTextNote: boolean;
   allowPhotoNote: boolean;
   disabled?: boolean;
 }
 
-defineProps<AttributionAddFormInputNoteProps>();
+defineProps<AttributionInputNoteProps>();
 const textNote = defineModel<string | null>('textNote', { required: true });
 const photoNote = defineModel<File | null>('photoNote', { required: true });
 
-const textInputRef = ref<InstanceType<
-  typeof AttributionAddFormInputText
-> | null>(null);
+const textInputRef = ref<InstanceType<typeof AttributionInputText> | null>(
+  null,
+);
 
 defineExpose({
   clear,
@@ -83,9 +83,9 @@ defineExpose({
 const showTextInput = ref(textNote.value !== null);
 const showPhotoInput = ref(photoNote.value !== null);
 
-const photoInputRef = ref<InstanceType<
-  typeof AttributionAddFormInputPhoto
-> | null>(null);
+const photoInputRef = ref<InstanceType<typeof AttributionInputPhoto> | null>(
+  null,
+);
 
 const { t } = useI18n();
 

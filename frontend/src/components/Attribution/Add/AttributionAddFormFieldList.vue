@@ -4,7 +4,7 @@
     :class="{ 'attribute-form-field-list--no-bottom-border': noBottomBorder }"
   >
     <li v-for="field in fields" :key="field.priority">
-      <AttributionAddFormInput
+      <AttributionInput
         :ref="
           (el: InputRef) => {
             if (inputRefs) return (inputRefs[field.priority] = el);
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import AttributionAddFormInput from 'src/components/Attribution/Add/AttributionAddFormInput.vue';
+import AttributionInput from 'src/components/Attribution/Input/AttributionInput.vue';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { type InputRef } from 'src/composables/useEntityForm';
 import { type AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';

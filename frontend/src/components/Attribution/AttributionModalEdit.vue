@@ -23,7 +23,7 @@
         class="bg-black rounded-borders q-pa-sm"
         style="word-break: break-all"
       />
-      <AttributionAddFormInput
+      <AttributionInput
         v-else
         ref="formRef"
         v-model="model"
@@ -58,7 +58,7 @@ import {
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { useCancel } from 'src/composables/useCancel';
 import { computed, nextTick, ref, watch } from 'vue';
-import AttributionAddFormInput from 'src/components/Attribution/Add/AttributionAddFormInput.vue';
+import AttributionInput from 'src/components/Attribution/Input/AttributionInput.vue';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useMutation } from '@urql/vue';
 import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
@@ -188,7 +188,7 @@ watch(
   { deep: true },
 );
 
-const formRef = ref<InstanceType<typeof AttributionAddFormInput> | null>(null);
+const formRef = ref<InstanceType<typeof AttributionInput> | null>(null);
 
 async function save() {
   const isValid = await formRef.value?.validate();

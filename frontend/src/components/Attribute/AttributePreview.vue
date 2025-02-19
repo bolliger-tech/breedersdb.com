@@ -1,7 +1,7 @@
 <template>
   <q-card style="max-width: 592px">
     <q-card-section v-if="!attribute.disabled">
-      <AttributionAddFormInput
+      <AttributionInput
         v-model="previewModelValue"
         :attribute="attribute"
         :exceptional="false"
@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import AttributionAddFormInput from 'src/components/Attribution/Add/AttributionAddFormInput.vue';
+import AttributionInput from 'src/components/Attribution/Input/AttributionInput.vue';
 import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
 import { ref } from 'vue';
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';

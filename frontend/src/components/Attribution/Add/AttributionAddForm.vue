@@ -85,7 +85,7 @@ type AttributionValue = Omit<
   VariablesOf<typeof mutation>['attributionValues'][0],
   'attribution' | 'attribute'
 >;
-export type AttributionValueWithPhoto = Omit<AttributionValue, 'photo_note'> & {
+type AttributionValueWithPhoto = Omit<AttributionValue, 'photo_note'> & {
   photo_value: File | null | undefined;
   photo_note: File | null | undefined;
 };

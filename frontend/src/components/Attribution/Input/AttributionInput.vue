@@ -118,7 +118,6 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
@@ -142,7 +141,23 @@ export interface AttributionInputProps {
 
 const props = defineProps<AttributionInputProps>();
 
-const modelValue = defineModel<AttributionValueWithPhoto | undefined>({
+export interface AttributionInputValue {
+  id?: number | null | undefined;
+  attribute_id?: number | null | undefined;
+  attribution_id?: number | null | undefined;
+  boolean_value?: boolean | null | undefined;
+  date_value?: string | null | undefined;
+  exceptional_attribution?: boolean | null | undefined;
+  float_value?: number | null | undefined;
+  integer_value?: number | null | undefined;
+  offline_id?: string | null | undefined;
+  text_note?: string | null | undefined;
+  text_value?: string | null | undefined;
+  photo_value?: File | null | undefined;
+  photo_note?: File | null | undefined;
+}
+
+const modelValue = defineModel<AttributionInputValue | undefined>({
   required: true,
 });
 

@@ -58,10 +58,11 @@ import {
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { useCancel } from 'src/composables/useCancel';
 import { computed, nextTick, ref, watch } from 'vue';
-import AttributionInput from 'src/components/Attribution/Input/AttributionInput.vue';
+import AttributionInput, {
+  type AttributionInputValue,
+} from 'src/components/Attribution/Input/AttributionInput.vue';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useMutation } from '@urql/vue';
-import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { captureException } from '@sentry/browser';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
@@ -88,7 +89,7 @@ export interface AttributionModalEditProps {
 
 const props = defineProps<AttributionModalEditProps>();
 
-const model = ref<AttributionValueWithPhoto>({
+const model = ref<AttributionInputValue>({
   integer_value: props.attribution.integer_value,
   float_value: props.attribution.float_value,
   text_value: props.attribution.text_value,
@@ -98,7 +99,7 @@ const model = ref<AttributionValueWithPhoto>({
   photo_value: null,
   photo_note: null,
 });
-const editedData = ref<AttributionValueWithPhoto | null>(null);
+const editedData = ref<AttributionInputValue | null>(null);
 
 const hasPhoto =
   props.attribution.photo_note || props.attribution.data_type === 'PHOTO';

@@ -26,10 +26,11 @@
 </template>
 
 <script setup lang="ts">
-import AttributionInput from 'src/components/Attribution/Input/AttributionInput.vue';
+import AttributionInput, {
+  type AttributionInputValue,
+} from 'src/components/Attribution/Input/AttributionInput.vue';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { type InputRef } from 'src/composables/useEntityForm';
-import { type AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
 
 export interface AttributionAddFormFieldListProps {
   fields: {
@@ -43,7 +44,7 @@ export interface AttributionAddFormFieldListProps {
 defineProps<AttributionAddFormFieldListProps>();
 
 const inputRefs = defineModel<{ [key: number]: InputRef | null }>('inputRefs');
-const modelValue = defineModel<{ [key: number]: AttributionValueWithPhoto }>({
+const modelValue = defineModel<{ [key: number]: AttributionInputValue }>({
   required: true,
 });
 </script>

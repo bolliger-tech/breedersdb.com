@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import AttributionAddFormFieldList from 'src/components/Attribution/Add/AttributionAddFormFieldList.vue';
-import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
+import { type AttributionInputValue } from 'src/components/Attribution/Input/AttributionInput.vue';
 import { ref } from 'vue';
 import { type AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useI18n } from 'src/composables/useI18n';
@@ -35,7 +35,7 @@ export interface AttributionFormPreviewProps {
 
 defineProps<AttributionFormPreviewProps>();
 
-const attributionValues = ref<{ [key: number]: AttributionValueWithPhoto }>({});
+const attributionValues = ref<{ [key: number]: AttributionInputValue }>({});
 
 const { t } = useI18n();
 </script>

@@ -13,14 +13,14 @@
         v-model="modelValue[field.priority]"
         :attribute="field.attribute"
         :exceptional="field.exceptional"
-        :has-same-again="
-          fields.some(
-            (af) =>
-              af.attribute.id === field.attribute.id &&
-              af.priority !== field.priority,
-          )
-        "
-      />
+      >
+        <template v-if="count(field.attribute.id) > 1" #before>
+          <BaseMessage
+            type="warning"
+            :message="t('attributions.add.sameAgainWarning')"
+          />
+        </template>
+      </AttributionInput>
     </li>
   </ul>
 </template>
@@ -31,6 +31,8 @@ import AttributionInput, {
 } from 'src/components/Attribution/Input/AttributionInput.vue';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { type InputRef } from 'src/composables/useEntityForm';
+import { useI18n } from 'src/composables/useI18n';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 export interface AttributionAddFormFieldListProps {
   fields: {
@@ -41,12 +43,18 @@ export interface AttributionAddFormFieldListProps {
   noBottomBorder?: boolean;
 }
 
-defineProps<AttributionAddFormFieldListProps>();
+const props = defineProps<AttributionAddFormFieldListProps>();
 
 const inputRefs = defineModel<{ [key: number]: InputRef | null }>('inputRefs');
 const modelValue = defineModel<{ [key: number]: AttributionInputValue }>({
   required: true,
 });
+
+function count(fieldId: number): number {
+  return props.fields.filter((field) => field.attribute.id === fieldId).length;
+}
+
+const { t } = useI18n();
 </script>
 
 <style scoped lang="scss">

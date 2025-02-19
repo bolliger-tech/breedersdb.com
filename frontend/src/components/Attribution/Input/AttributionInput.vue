@@ -1,10 +1,6 @@
 <template>
   <BaseInputLabel :label="attribute.name" style="max-width: 592px">
-    <BaseMessage
-      v-if="hasSameAgain"
-      type="warning"
-      :message="t('attributions.add.sameAgainWarning')"
-    />
+    <slot name="before"></slot>
 
     <AttributionInputRating
       v-if="attribute.data_type === 'RATING'"
@@ -128,14 +124,13 @@ import AttributionInputDate from 'src/components/Attribution/Input/AttributionIn
 import AttributionInputBoolean from 'src/components/Attribution/Input/AttributionInputBoolean.vue';
 import AttributionInputPhoto from 'src/components/Attribution/Input/AttributionInputPhoto.vue';
 import AttributionInputNote from 'src/components/Attribution/Input/AttributionInputNote.vue';
-import { computed, ref, nextTick } from 'vue';
+import { computed, ref, nextTick, type Slot } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { DistributiveOmit } from 'src/utils/typescriptUtils';
 
 export interface AttributionInputProps {
   attribute: DistributiveOmit<AttributeFragment, 'created' | 'modified'>;
   exceptional: boolean;
-  hasSameAgain: boolean;
   hideNotes?: boolean;
 }
 
@@ -160,6 +155,10 @@ export interface AttributionInputValue {
 const modelValue = defineModel<AttributionInputValue | undefined>({
   required: true,
 });
+
+defineSlots<{
+  before: Slot;
+}>();
 
 defineExpose({ validate, focus: focusInvalid });
 

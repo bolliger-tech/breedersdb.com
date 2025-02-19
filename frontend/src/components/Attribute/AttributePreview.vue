@@ -5,7 +5,6 @@
         v-model="previewModelValue"
         :attribute="attribute"
         :exceptional="false"
-        :has-same-again="false"
         hide-notes
       />
     </q-card-section>

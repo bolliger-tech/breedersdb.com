@@ -29,7 +29,6 @@
         v-model="model"
         :attribute="attribution.attribute"
         :exceptional="attribution.exceptional_attribution"
-        :has-same-again="false"
       />
     </template>
 
@@ -294,4 +293,3 @@ function resetErrors() {
 
 const { t } = useI18n();
 </script>
-src/components/Attribution/attributionValueHasValue

@@ -62,7 +62,7 @@
       v-else-if="attribute.data_type === 'PHOTO'"
       :model-value="modelValue?.photo_value ?? null"
       @update:model-value="
-        (val: File | null) => updateModelValue({ photo_value: val })
+        (val: File | string | null) => updateModelValue({ photo_value: val })
       "
     />
 
@@ -148,8 +148,8 @@ export interface AttributionInputValue {
   offline_id?: string | null | undefined;
   text_note?: string | null | undefined;
   text_value?: string | null | undefined;
-  photo_value?: File | null | undefined;
-  photo_note?: File | null | undefined;
+  photo_value?: File | string | null | undefined;
+  photo_note?: File | string | null | undefined;
 }
 
 const modelValue = defineModel<AttributionInputValue | undefined>({
@@ -164,7 +164,8 @@ defineExpose({ validate, focus: focusInvalid });
 
 const photoNote = computed({
   get: () => modelValue.value?.photo_note ?? null,
-  set: (file: File | null) => updateModelValue({ photo_note: file ?? null }),
+  set: (file: File | string | null) =>
+    updateModelValue({ photo_note: file ?? null }),
 });
 
 const textNote = computed({
@@ -215,9 +216,9 @@ function updateModelValue({
   text_value?: string | null;
   boolean_value?: boolean | null;
   date_value?: string | null;
-  photo_value?: File | null;
+  photo_value?: File | string | null;
   text_note?: string | null;
-  photo_note?: File | null;
+  photo_note?: File | string | null;
 }) {
   const model = modelValue.value ?? {
     attribute_id: props.attribute.id,

@@ -2,44 +2,49 @@
   <div>
     <div
       class="attribute-form-input-photo relative-position bg-black rounded-borders"
-      :style="!modelValue ? 'min-height: 200px;' : ''"
+      :style="!photo ? 'min-height: 200px;' : ''"
     >
       <img
         ref="preview"
         class="attribute-form-input-photo__preview"
         :class="{ hidden: modelValue === null }"
+        @load="loading = false"
+        @onerror="loading = false"
       />
 
       <q-icon
-        v-if="!modelValue && !processing"
+        v-if="!modelValue && !processing && !loading"
         name="photo_camera"
         size="50px"
         class="absolute-center"
         color="white"
       />
 
-      <BaseSpinner
-        v-if="processing"
-        class="absolute-center q-ma-none"
-        style="line-height: 1"
-        size="xl"
-      />
+      <div v-if="processing || loading" class="absolute-center q-ma-none">
+        <q-spinner size="3em" color="primary" />
+      </div>
 
       <q-file
         ref="inputRef"
-        :model-value="modelValue"
+        :model-value="photo"
         :multiple="false"
         bg-color="transparent"
         input-style="opacity: 0"
         accept="image/jpeg,image/png"
         capture="environment"
-        clearable
         borderless
         dark
         class="attribute-form-input-photo__input"
         @update:model-value="updateModelValue"
-        @clear="$emit('clear')"
-      />
+      >
+        <template v-if="modelValue" #append>
+          <q-icon
+            name="cancel"
+            class="cursor-pointer attribute-form-input-photo__clear"
+            @click.stop.prevent="clear"
+          />
+        </template>
+      </q-file>
     </div>
     <BaseMessage v-if="isInvalidImage" type="error" :message="errorMessage" />
   </div>
@@ -49,15 +54,21 @@ import { resizeImageFile } from 'src/utils/imageResizer';
 import { watch, ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { hashFile } from 'src/composables/useImageUploader';
-import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import type { QFile } from 'quasar';
+import { getImageUrlRelative } from 'src/utils/imageUtils';
 
 const MAX_IMAGE_SIZE = 3840; // longest side, 4k
 const IMAGE_QUALITY = 0.9; // 0.0 - 1.0 (jpeg)
 
-const modelValue = defineModel<File | null>({
+const modelValue = defineModel<File | string | null>({
   required: true,
+});
+
+const photo = ref<File | null>(null);
+
+watch(modelValue, (value) => {
+  photo.value = typeof value === 'string' ? null : value;
 });
 
 const emit = defineEmits<{ clear: []; cancel: [] }>();
@@ -72,6 +83,12 @@ watch(inputRef, () => {
 onBeforeUnmount(() => {
   inputRef.value?.nativeEl.removeEventListener('cancel', emitCancle);
 });
+
+function clear() {
+  modelValue.value = null;
+  photo.value = null;
+  emit('clear');
+}
 
 const { t } = useI18n();
 
@@ -130,10 +147,20 @@ function loadPreview() {
     return;
   }
 
-  preview.value.src = URL.createObjectURL(modelValue.value);
+  if (modelValue.value instanceof File) {
+    preview.value.src = URL.createObjectURL(modelValue.value);
+    return;
+  }
+
+  preview.value.src = getImageUrlRelative({
+    serverFileName: modelValue.value,
+    desiredFileName: modelValue.value,
+  });
 }
 
 watch([modelValue, preview], loadPreview, { immediate: true });
+
+const loading = ref(!!modelValue.value);
 </script>
 
 <style scoped lang="scss">
@@ -159,14 +186,20 @@ watch([modelValue, preview], loadPreview, { immediate: true });
     margin: 0;
     cursor: pointer;
   }
-}
 
-:global(.attribute-form-input-photo .q-field__append) {
-  margin-right: 0.75em;
-}
+  &__clear {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    background: $negative;
+    border-radius: 100%;
+    opacity: 0.8;
+    transition: opacity 0.2s;
 
-:global(.attribute-form-input-photo .q-field__append .q-icon) {
-  background: black;
-  border-radius: 100%;
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 </style>

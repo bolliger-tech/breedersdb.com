@@ -68,7 +68,9 @@ export interface AttributionInputNoteProps {
 
 defineProps<AttributionInputNoteProps>();
 const textNote = defineModel<string | null>('textNote', { required: true });
-const photoNote = defineModel<File | null>('photoNote', { required: true });
+const photoNote = defineModel<File | string | null>('photoNote', {
+  required: true,
+});
 
 const textInputRef = ref<InstanceType<typeof AttributionInputText> | null>(
   null,

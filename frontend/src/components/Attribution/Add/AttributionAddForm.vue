@@ -86,8 +86,8 @@ type AttributionValue = Omit<
   'attribution' | 'attribute'
 >;
 type AttributionValueWithPhoto = Omit<AttributionValue, 'photo_note'> & {
-  photo_value: File | null | undefined;
-  photo_note: File | null | undefined;
+  photo_value: File | string | null | undefined;
+  photo_note: File | string | null | undefined;
 };
 
 const props = defineProps<AttributionAddFormProps>();
@@ -226,14 +226,15 @@ async function save() {
     // filter out attribution_values without a value
     .filter((av) => attributionValueHasValue(av))
     // transform AttributionValueWithPhoto[] into AttributionValue[] and File[]
+    // if a File is present
     .map((av) => {
       const { photo_value, photo_note, ...rest } = av;
-      if (photo_value) {
+      if (photo_value instanceof File) {
         return {
           photo: photo_value,
           attribution: { ...rest, text_value: photo_value.name },
         };
-      } else if (photo_note) {
+      } else if (photo_note instanceof File) {
         return {
           photo: photo_note,
           attribution: { ...rest, photo_note: photo_note.name },

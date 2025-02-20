@@ -128,29 +128,25 @@ const attributeInputs = computed<
 const attributionValues = ref<{ [key: number]: AttributionValueWithPhoto }>({});
 const attributeFormInputRefs = ref<{ [key: number]: InputRef | null }>({});
 
-function setDefaultValues() {
+function initializeValues() {
   for (const { attribute, priority, exceptional } of attributeInputs.value) {
     if (attributionValues.value[priority] === undefined) {
-      const { data_type, default_value } = attribute;
       attributionValues.value[priority] = {
         attribute_id: attribute.id,
         exceptional_attribution: exceptional,
-        boolean_value: data_type === 'BOOLEAN' ? default_value : null,
-        date_value: data_type === 'DATE' ? default_value : null,
-        float_value: data_type === 'FLOAT' ? default_value : null,
-        integer_value:
-          data_type === 'INTEGER' || data_type === 'RATING'
-            ? default_value
-            : null,
-        text_value: data_type === 'TEXT' ? default_value : null,
-        photo_value: null, // default_value is not supported for photos
+        boolean_value: null,
+        date_value: null,
+        float_value: null,
+        integer_value: null,
+        text_value: null,
+        photo_value: null,
         text_note: null,
         photo_note: null,
       };
     }
   }
 }
-watch(attributeInputs, setDefaultValues, {
+watch(attributeInputs, initializeValues, {
   immediate: true,
   deep: true,
 });

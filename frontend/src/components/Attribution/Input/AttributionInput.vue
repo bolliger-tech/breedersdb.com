@@ -124,7 +124,7 @@ import AttributionInputDate from 'src/components/Attribution/Input/AttributionIn
 import AttributionInputBoolean from 'src/components/Attribution/Input/AttributionInputBoolean.vue';
 import AttributionInputPhoto from 'src/components/Attribution/Input/AttributionInputPhoto.vue';
 import AttributionInputNote from 'src/components/Attribution/Input/AttributionInputNote.vue';
-import { computed, ref, nextTick, type Slot } from 'vue';
+import { computed, ref, nextTick, watch, onMounted, type Slot } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { DistributiveOmit } from 'src/utils/typescriptUtils';
 
@@ -273,6 +273,26 @@ const hasNoValue = computed(() => {
       modelValue.value.photo_value === null)
   );
 });
+
+function setDefaultValue() {
+  const { data_type, default_value } = props.attribute;
+  updateModelValue({
+    boolean_value: data_type === 'BOOLEAN' ? default_value : null,
+    date_value: data_type === 'DATE' ? default_value : null,
+    float_value: data_type === 'FLOAT' ? default_value : null,
+    integer_value:
+      data_type === 'INTEGER' || data_type === 'RATING' ? default_value : null,
+    text_value: data_type === 'TEXT' ? default_value : null,
+    photo_value: null, // default_value is not supported for photos
+  });
+}
+
+// initially set default value
+onMounted(() => {
+  if (hasNoValue.value) setDefaultValue();
+});
+// update default value when editing attribute (AttributePreview.vue)
+watch(() => props.attribute.default_value, setDefaultValue);
 
 const integerInputRef = ref<InstanceType<typeof AttributionInputNumber> | null>(
   null,

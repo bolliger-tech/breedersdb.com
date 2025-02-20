@@ -1,8 +1,15 @@
 <template>
+  <AttributionAddEditNote
+    v-if="editId"
+    :attribution-id="editId"
+    @cancel="$emit('cancelEdit', repeatCount)"
+    @deleted="onDeleted"
+  />
+
   <AttributionAddEntityPreview :entity="entity" />
 
   <AttributionAddAlreadyAttributed
-    v-if="repeatTarget <= 1 && lastRepeat"
+    v-if="repeatTarget <= 1 && lastRepeat && !editId"
     :date="lastRepeat"
     :entity-type="entity.type"
   />
@@ -14,7 +21,7 @@
       :fields="attributeInputs"
     />
 
-    <AttributionAddFormAddInput @add="(a) => extraAttributes.push(a)" />
+    <AttributionAddFormAddInput @add="addExtraAttribute" />
 
     <AttributionAddFormSaveButton
       :disable="isSaving || !!insertedAttribution"
@@ -28,7 +35,7 @@
       <template #error>
         <BaseErrorTooltip
           :message="uploadError || validationError"
-          :graphql-error="insertError"
+          :graphql-error="saveInsertError || saveEditError"
         />
       </template>
       <template v-if="repeatTarget > 1" #counter>
@@ -45,11 +52,10 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributionForm } from 'src/components/Attribution/Add/AttributionAddSteps.vue';
 import { graphql, VariablesOf } from 'src/graphql';
 import { useMutation } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
-import { ref, computed, nextTick, watch } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import {
   useImageUploader,
   UploadProgress,
@@ -70,89 +76,81 @@ import { attributionValueHasValue } from 'src/components/Attribution/attribution
 import AttributionAddEntityPreview, {
   type AttributionAddFormPreviewProps,
 } from 'src/components/Attribution/Add/AttributionAddEntityPreview.vue';
+import { type AttributionInputValue } from 'src/components/Attribution/Input/AttributionInput.vue';
+import AttributionAddEditNote from 'src/components/Attribution/Add/AttributionAddEditNote.vue';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
+type FormField = {
+  attribute: AttributeFragment;
+  priority: number;
+  exceptional: boolean;
+};
+
 export interface AttributionAddFormProps {
   entity: AttributionAddFormPreviewProps['entity'];
-  form: AttributionForm;
+  formId: number;
+  fields: FormField[];
+  values: { [key: number]: AttributionInputValue };
   date: string;
   author: string;
   repeatTarget: number;
+  edit: (id: number) => void;
+  editId?: number;
 }
 
 type AttributionValue = Omit<
-  VariablesOf<typeof mutation>['attributionValues'][0],
-  'attribution' | 'attribute'
+  VariablesOf<typeof insertMutation>['attributionValues'][0],
+  'attribution' | 'attribute' | 'created' | 'attribution_id'
 >;
-type AttributionValueWithPhoto = Omit<AttributionValue, 'photo_note'> & {
-  photo_value: File | string | null | undefined;
-  photo_note: File | string | null | undefined;
-};
 
 const props = defineProps<AttributionAddFormProps>();
 
 const emit = defineEmits<{
   saved: [repeatCount: number];
+  deleted: [repeatCount: number];
+  cancelEdit: [repeatCount: number];
 }>();
 
 const $q = useQuasar();
 const { t } = useI18n();
 
-const formFields = computed(() => props.form.attribution_form_fields);
-const extraAttributes = ref<AttributeFragment[]>([]);
-const attributeInputs = computed<
-  {
-    attribute: AttributeFragment;
-    priority: number;
-    exceptional: boolean;
-  }[]
->(() =>
-  formFields.value
-    .map((formField) => ({
-      attribute: formField.attribute as AttributeFragment,
-      priority: formField.priority,
-      exceptional: false,
-    }))
-    .concat(
-      extraAttributes.value.map((attribute, index) => ({
-        attribute,
-        priority: formFields.value.length + index,
-        exceptional: true,
-      })),
-    ),
-);
-
 // !!! uses the PRIORITY as the key !!!
 // (to allow multiple inserts of the same attribute)
-const attributionValues = ref<{ [key: number]: AttributionValueWithPhoto }>({});
+const attributionValues = ref<{ [key: number]: AttributionInputValue }>(
+  props.values,
+);
 const attributeFormInputRefs = ref<{ [key: number]: InputRef | null }>({});
 
-function initializeValues() {
-  for (const { attribute, priority, exceptional } of attributeInputs.value) {
-    if (attributionValues.value[priority] === undefined) {
-      attributionValues.value[priority] = {
-        attribute_id: attribute.id,
-        exceptional_attribution: exceptional,
-        boolean_value: null,
-        date_value: null,
-        float_value: null,
-        integer_value: null,
-        text_value: null,
-        photo_value: null,
-        text_note: null,
-        photo_note: null,
-      };
-    }
-  }
+const extraAttributes = ref<AttributeFragment[]>([]);
+const attributeInputs = computed<FormField[]>(() =>
+  props.fields.concat(
+    extraAttributes.value.map((attribute, index) => ({
+      attribute,
+      priority: props.fields.length + index,
+      exceptional: true,
+    })),
+  ),
+);
+
+function addExtraAttribute(attribute: AttributeFragment) {
+  extraAttributes.value.push(attribute);
+  attributionValues.value[attributeInputs.value.length] = {
+    attribute_id: attribute.id,
+    exceptional_attribution: true,
+    boolean_value: null,
+    date_value: null,
+    float_value: null,
+    integer_value: null,
+    text_value: null,
+    photo_value: null,
+    text_note: null,
+    photo_note: null,
+  };
 }
-watch(attributeInputs, initializeValues, {
-  immediate: true,
-  deep: true,
-});
 
 const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
-  formId: props.form.id,
+  formId: props.formId,
   entityId: props.entity.data.id,
   entityType: props.entity.type,
 });
@@ -163,7 +161,16 @@ const hasValues = computed(() =>
   ),
 );
 
-const mutation = graphql(`
+const uploadError = ref<string | undefined>(undefined);
+
+const validationError = ref<string | undefined>(undefined);
+const { validate } = useEntityForm({
+  refs: attributeFormInputRefs,
+  data: attributionValues,
+  initialData: props.values,
+});
+
+const insertMutation = graphql(`
   mutation InsertAttributions(
     $formId: Int!
     $author: citext!
@@ -191,21 +198,86 @@ const mutation = graphql(`
   }
 `);
 
-const uploadError = ref<string | undefined>(undefined);
-
-const validationError = ref<string | undefined>(undefined);
-const { validate } = useEntityForm({
-  refs: attributeFormInputRefs,
-  data: attributionValues,
-  initialData: {},
-});
-
 const {
   executeMutation: insertAttributions,
-  fetching: inserting,
-  error: insertError,
+  fetching: savingInsert,
+  error: saveInsertError,
   data: insertedAttribution,
-} = useMutation(mutation);
+} = useMutation(insertMutation);
+
+function saveInsert(attributions: AttributionValue[]) {
+  return insertAttributions(
+    {
+      formId: props.formId,
+      author: props.author,
+      dateAttributed: props.date,
+      lotId:
+        props.entity.type === AttributableEntities.Lot
+          ? props.entity.data.id
+          : null,
+      cultivarId:
+        props.entity.type === AttributableEntities.Cultivar
+          ? props.entity.data.id
+          : null,
+      plantGroupId:
+        props.entity.type === AttributableEntities.PlantGroup
+          ? props.entity.data.id
+          : null,
+      plantId:
+        props.entity.type === AttributableEntities.Plant
+          ? props.entity.data.id
+          : null,
+      attributionValues: attributions,
+    },
+    {
+      additionalTypenames: [
+        'attributions',
+        'attribution_values',
+        'attributions_view',
+      ],
+    },
+  );
+}
+
+const editMutation = graphql(`
+  mutation EditAttributions(
+    $attributionId: Int!
+    $attributionValues: [attribution_values_insert_input!]!
+  ) {
+    delete_attribution_values(
+      where: { attribution_id: { _eq: $attributionId } }
+    ) {
+      affected_rows
+    }
+    insert_attribution_values(objects: $attributionValues) {
+      affected_rows
+    }
+  }
+`);
+
+const {
+  executeMutation: editAttributions,
+  fetching: savingEdit,
+  error: saveEditError,
+} = useMutation(editMutation);
+
+function saveEdit(
+  attributionId: number,
+  attributionValues: AttributionValue[],
+) {
+  return editAttributions(
+    {
+      attributionId,
+      attributionValues: attributionValues.map((av) => ({
+        ...av,
+        attribution_id: attributionId,
+      })),
+    },
+    {
+      additionalTypenames: ['attribution_values', 'attributions_view'],
+    },
+  );
+}
 
 async function save() {
   if (!(await validate())) {
@@ -221,14 +293,19 @@ async function save() {
   const { photos, attributions } = Object.values(attributionValues.value)
     // filter out attribution_values without a value
     .filter((av) => attributionValueHasValue(av))
-    // transform AttributionValueWithPhoto[] into AttributionValue[] and File[]
-    // if a File is present
+    // extract files from photo_value and photo_note and replace them with their
+    // file name
     .map((av) => {
       const { photo_value, photo_note, ...rest } = av;
       if (photo_value instanceof File) {
         return {
           photo: photo_value,
           attribution: { ...rest, text_value: photo_value.name },
+        };
+      } else if (typeof photo_value === 'string') {
+        return {
+          photo: null,
+          attribution: { ...rest, text_value: photo_value },
         };
       } else if (photo_note instanceof File) {
         return {
@@ -262,46 +339,45 @@ async function save() {
     }
   }
 
-  await insertAttributions({
-    formId: props.form.id,
-    author: props.author,
-    dateAttributed: props.date,
-    lotId:
-      props.entity.type === AttributableEntities.Lot
-        ? props.entity.data.id
-        : null,
-    cultivarId:
-      props.entity.type === AttributableEntities.Cultivar
-        ? props.entity.data.id
-        : null,
-    plantGroupId:
-      props.entity.type === AttributableEntities.PlantGroup
-        ? props.entity.data.id
-        : null,
-    plantId:
-      props.entity.type === AttributableEntities.Plant
-        ? props.entity.data.id
-        : null,
-    attributionValues: attributions,
-  });
+  if (props.editId) {
+    await saveEdit(props.editId, attributions);
+  } else {
+    await saveInsert(attributions);
+    repeatCount.value += 1;
+  }
 
   await nextTick();
 
-  if (!insertError.value && insertedAttribution.value) {
-    $q.notify({
-      type: 'positive',
-      message: t('attributions.add.saved'),
-      color: 'primary',
-      timeout: 3000,
-      position: 'top',
-    });
-
-    repeatCount.value += 1;
-
-    window.setTimeout(() => {
-      emit('saved', repeatCount.value);
-    }, SAVE_BTN_TRANSITION_DURATION_MS);
+  if (saveEditError.value || saveInsertError.value) {
+    return;
   }
+
+  const attributionId =
+    props.editId || insertedAttribution.value?.insert_attributions_one?.id;
+
+  if (!attributionId) {
+    // e.g. on network error
+    return;
+  }
+
+  $q.notify({
+    type: 'positive',
+    message: t('attributions.add.saved'),
+    color: 'positive',
+    timeout: 5000,
+    position: 'top',
+    actions: [
+      {
+        label: t('attributions.add.edit'),
+        color: 'white',
+        handler: () => props.edit(attributionId),
+      },
+    ],
+  });
+
+  window.setTimeout(() => {
+    emit('saved', repeatCount.value);
+  }, SAVE_BTN_TRANSITION_DURATION_MS);
 }
 
 const photoUploadPercentage = ref(0);
@@ -346,7 +422,9 @@ const isUploadingPhotos = computed(
   () => photoUploadPercentage.value > 0 && photoUploadPercentage.value < 100,
 );
 
-const isSaving = computed(() => inserting.value || isUploadingPhotos.value);
+const isSaving = computed(
+  () => savingEdit.value || savingInsert.value || isUploadingPhotos.value,
+);
 
 const savingProgress = computed(() => {
   const photoProgress = photoUploadPercentage.value * 0.95;
@@ -365,7 +443,7 @@ const savingProgress = computed(() => {
 
 function resetErrors() {
   uploadError.value = undefined;
-  insertError.value = undefined;
+  saveInsertError.value = undefined;
   validationError.value = undefined;
 }
 
@@ -377,7 +455,7 @@ function showNoDataNotification() {
     type: 'warning',
     message: t('attributions.add.noValues', { entity: entityName.value }),
     color: 'warning',
-    timeout: 3000,
+    timeout: 5000,
     position: 'top',
     actions: [
       {
@@ -387,5 +465,11 @@ function showNoDataNotification() {
       },
     ],
   });
+}
+
+async function onDeleted() {
+  if (repeatCount.value > 0) repeatCount.value -= 1;
+  await nextTick();
+  emit('deleted', repeatCount.value);
 }
 </script>

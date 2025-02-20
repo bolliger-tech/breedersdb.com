@@ -60,6 +60,7 @@ export const attributions = {
     noFormSelected: 'No form selected.',
     missingMetadata: 'Missing metadata.',
     addMetadata: 'Add metadata',
+    missingValues: 'Missing attribution values.',
 
     alreadyAttributed:
       "You've already attributed this {entity} on this device with this form {timeAgo}.",
@@ -94,12 +95,21 @@ export const attributions = {
 
     saved: 'Attribution saved.',
     uploading: 'Saving… {percentage}%',
+    edit: 'Edit',
+    delete: 'Delete',
 
     noValues:
       'Nothing to save. Add some values or select a different {entity}.',
     changeEntity: 'Change {entity}',
 
     addAttribute: 'Add attribute',
+
+    editNote: {
+      info: 'You are editing an existing attribution.',
+      delete: 'Delete Attribution',
+      cancel: 'Cancel Edit',
+      deleted: 'Attribution deleted.',
+    },
   },
 
   noValueOnEdit: 'Please enter a value or delete the attribution.',

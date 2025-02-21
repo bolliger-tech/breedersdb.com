@@ -92,7 +92,7 @@ import {
 } from 'src/components/Attribute/attributeFragment';
 import { AttributionInputValue } from '../Input/AttributionInput.vue';
 
-export interface AttributionAddFormDataLoaderProps {
+export interface AttributionAddFormWrapperProps {
   entity:
     | AttributionAddFormProps['entity']
     | {
@@ -107,7 +107,7 @@ export interface AttributionAddFormDataLoaderProps {
   editId?: number;
 }
 
-const props = defineProps<AttributionAddFormDataLoaderProps>();
+const props = defineProps<AttributionAddFormWrapperProps>();
 
 const emit = defineEmits<{
   'select-form': [];
@@ -207,7 +207,7 @@ const {
 const editData = computed(() =>
   props.editId ? attributionToEdit.value?.attributions_by_pk : null,
 );
-const editEntity = computed<AttributionAddFormDataLoaderProps['entity']>(() => {
+const editEntity = computed<AttributionAddFormWrapperProps['entity']>(() => {
   return editData.value?.plant
     ? {
         data: editData.value.plant as PlantFragmentWithSegments,

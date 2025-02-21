@@ -83,7 +83,7 @@
     >
       <BaseGraphqlError v-if="formFetchError" :error="formFetchError" />
       <BaseSpinner v-else-if="formFetching" />
-      <AttributionAddFormDataLoader
+      <AttributionAddFormWrapper
         v-else
         :key="formKey"
         :entity="entity"
@@ -111,9 +111,9 @@ import AttributionFormSelect from 'src/components/AttributionForm/AttributionFor
 import AttributionAddMetaData from 'src/components/Attribution/Add/AttributionAddMetaData.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
-import AttributionAddFormDataLoader, {
-  type AttributionAddFormDataLoaderProps,
-} from 'src/components/Attribution/Add/AttributionAddFormDataLoader.vue';
+import AttributionAddFormWrapper, {
+  type AttributionAddFormWrapperProps,
+} from 'src/components/Attribution/Add/AttributionAddFormWrapper.vue';
 import BaseStepper from 'src/components/Base/BaseStepper.vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
@@ -136,7 +136,7 @@ const DATE_URL_KEY = 'date';
 const REPEAT_URL_KEY = 'repeat';
 
 export interface AttributionAddStepsProps {
-  entity: AttributionAddFormDataLoaderProps['entity'];
+  entity: AttributionAddFormWrapperProps['entity'];
   entityLoading: boolean;
   entityIcon: string;
   focusEntityPicker?: () => void;

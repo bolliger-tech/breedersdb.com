@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md absolute-center column items-center">
+  <div class="q-pa-md fixed-center column items-center text-center">
     <p>{{ t('auth.signOutMessage') }}</p>
     <SignOutForm />
   </div>

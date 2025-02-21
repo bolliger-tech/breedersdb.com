@@ -68,7 +68,7 @@ export const attributions = {
     numberPlaceholder: 'Nummer eingeben…',
     clearAttribute: 'Mit diesem Wert werden auch die Bemerkungen für dieses Attribut gelöscht. Möchtest du Wert und Kommentare löschen?',
     notesMustHaveValue: 'Füge einen Wert hinzu oder lösche die Bemerkung / das Foto für dieses Attribut.',
-    saved: 'Attribute saved.',
+    saved: 'Attributierung gespeichert.',
     uploading: 'Speichere… {percentage}%',
     edit: 'Bearbeiten',
     delete: 'Löschen',

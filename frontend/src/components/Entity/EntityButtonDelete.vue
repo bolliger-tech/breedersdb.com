@@ -4,6 +4,7 @@
     :label="label ? label : t('base.delete')"
     color="negative"
     :disable="disabled"
+    :size="size"
     @click="confirm = true"
   />
 
@@ -57,6 +58,7 @@ import BaseGraphqlError, {
 } from '../Base/BaseGraphqlError.vue';
 import BaseMessage from '../Base/BaseMessage.vue';
 import { singularize } from 'src/utils/stringUtils';
+import { type QBtnProps } from 'quasar';
 
 export interface EntityButtonEliminateProps {
   label?: string;
@@ -64,6 +66,7 @@ export interface EntityButtonEliminateProps {
   error?: BaseGraphqlErrorProps['error'];
   fetching?: boolean;
   disabled?: boolean;
+  size?: QBtnProps['size'];
 }
 
 const props = defineProps<EntityButtonEliminateProps>();

@@ -8,6 +8,7 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
+    "tsc": "vue-tsc --noEmit",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
     "dev": "VITE_BDB_VERSION=$(git rev-parse HEAD) quasar dev -m pwa",
     "build": "VITE_BDB_VERSION=${VITE_BDB_VERSION:-$(git rev-parse HEAD)} quasar build -m pwa",

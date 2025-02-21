@@ -11,25 +11,11 @@
     @reset-errors="resetErrors"
   >
     <template #default>
-      <div v-if="loadingPhotos" class="row justify-center">
-        <q-spinner color="primary" size="3em" />
-      </div>
-      <BaseMessage
-        v-else-if="photoFetchError"
-        type="error"
-        icon-size="3em"
-        message-color="negative"
-        :message="photoFetchError"
-        class="bg-black rounded-borders q-pa-sm"
-        style="word-break: break-all"
-      />
-      <AttributionAddFormInput
-        v-else
+      <AttributionInput
         ref="formRef"
         v-model="model"
         :attribute="attribution.attribute"
         :exceptional="attribution.exceptional_attribution"
-        :has-same-again="false"
       />
     </template>
 
@@ -58,18 +44,16 @@ import {
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { useCancel } from 'src/composables/useCancel';
 import { computed, nextTick, ref, watch } from 'vue';
-import AttributionAddFormInput from 'src/components/Attribution/Add/AttributionAddFormInput.vue';
+import AttributionInput, {
+  type AttributionInputValue,
+} from 'src/components/Attribution/Input/AttributionInput.vue';
 import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useMutation } from '@urql/vue';
-import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
-import BaseMessage from 'src/components/Base/BaseMessage.vue';
-import { captureException } from '@sentry/browser';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
 import {
   UploadProgress,
   useImageUploader,
 } from 'src/composables/useImageUploader';
-import { getImageUrlRelative } from 'src/utils/imageUtils';
 
 export type AttributionEditInput = Pick<
   AttributionsViewFragment,
@@ -88,63 +72,23 @@ export interface AttributionModalEditProps {
 
 const props = defineProps<AttributionModalEditProps>();
 
-const model = ref<AttributionValueWithPhoto>({
+const model = ref<AttributionInputValue>({
   integer_value: props.attribution.integer_value,
   float_value: props.attribution.float_value,
-  text_value: props.attribution.text_value,
+  text_value:
+    props.attribution.data_type === 'PHOTO'
+      ? null
+      : props.attribution.text_value,
   boolean_value: props.attribution.boolean_value,
   date_value: props.attribution.date_value,
   text_note: props.attribution.text_note,
-  photo_value: null,
-  photo_note: null,
+  photo_value:
+    props.attribution.data_type === 'PHOTO'
+      ? props.attribution.text_value
+      : null,
+  photo_note: props.attribution.photo_note,
 });
-const editedData = ref<AttributionValueWithPhoto | null>(null);
-
-const hasPhoto =
-  props.attribution.photo_note || props.attribution.data_type === 'PHOTO';
-
-const loadingPhotos = ref(hasPhoto);
-const photoFetchError = ref<string | null>(null);
-
-if (hasPhoto) {
-  addPhotosToModel();
-}
-
-async function addPhotosToModel() {
-  if (props.attribution.photo_note) {
-    model.value.photo_note = await loadPhoto(props.attribution.photo_note);
-  }
-  if (props.attribution.data_type === 'PHOTO' && props.attribution.text_value) {
-    model.value.photo_value = await loadPhoto(props.attribution.text_value);
-  }
-  loadingPhotos.value = false;
-}
-
-async function loadPhoto(fileName: string) {
-  return await fetch(
-    getImageUrlRelative({
-      serverFileName: fileName,
-      desiredFileName: fileName,
-    }),
-  )
-    .then(async (res) => {
-      if (!res.ok) {
-        throw new Error(
-          `Failed to fetch photo: ${res.status} ${res.statusText}. URL: ${res.url}`,
-        );
-      }
-      return new File([await res.blob()], fileName);
-    })
-    .catch((e) => {
-      if (e instanceof Error) {
-        captureException(e);
-        photoFetchError.value = e.message;
-      } else {
-        photoFetchError.value = 'Unknown error';
-      }
-      return null;
-    });
-}
+const editedData = ref<AttributionInputValue | null>(null);
 
 const editMutation = graphql(`
   mutation UpdateAttributionValue(
@@ -178,17 +122,14 @@ const validationError = ref<string | null>(null);
 
 watch(
   model,
-  async () => {
-    await nextTick();
-    if (!loadingPhotos.value) {
-      editedData.value = model.value;
-      makeModalPersistent(true);
-    }
+  () => {
+    editedData.value = model.value;
+    makeModalPersistent(true);
   },
   { deep: true },
 );
 
-const formRef = ref<InstanceType<typeof AttributionAddFormInput> | null>(null);
+const formRef = ref<InstanceType<typeof AttributionInput> | null>(null);
 
 async function save() {
   const isValid = await formRef.value?.validate();
@@ -242,10 +183,10 @@ async function saveEdit() {
     text_note,
   } = editedData.value;
   const editedAttributionValue = {
-    photo_note: null as string | null | undefined,
+    photo_note: typeof photo_note === 'string' ? photo_note : null,
     integer_value,
     float_value,
-    text_value,
+    text_value: typeof photo_value === 'string' ? photo_value : text_value,
     boolean_value,
     date_value,
     text_note,
@@ -253,7 +194,7 @@ async function saveEdit() {
   const photo = photo_value || photo_note;
 
   // upload photo if it was changed
-  if (photo) {
+  if (photo instanceof File) {
     const editedPhotoName = photo.name;
     const initialPhotoName =
       props.attribution.photo_note || props.attribution.text_value;
@@ -293,4 +234,3 @@ function resetErrors() {
 
 const { t } = useI18n();
 </script>
-src/components/Attribution/attributionValueHasValue

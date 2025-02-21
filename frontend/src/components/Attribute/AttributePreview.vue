@@ -1,11 +1,10 @@
 <template>
   <q-card style="max-width: 592px">
     <q-card-section v-if="!attribute.disabled">
-      <AttributionAddFormInput
+      <AttributionInput
         v-model="previewModelValue"
         :attribute="attribute"
         :exceptional="false"
-        :has-same-again="false"
         hide-notes
       />
     </q-card-section>
@@ -16,8 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import AttributionAddFormInput from 'src/components/Attribution/Add/AttributionAddFormInput.vue';
-import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
+import AttributionInput, {
+  type AttributionInputValue,
+} from 'src/components/Attribution/Input/AttributionInput.vue';
 import { ref } from 'vue';
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import type { DistributiveOmit } from 'src/utils/typescriptUtils';
@@ -29,7 +29,7 @@ export interface AttributePreviewProps {
 
 defineProps<AttributePreviewProps>();
 
-const previewModelValue = ref<AttributionValueWithPhoto | undefined>(undefined);
+const previewModelValue = ref<AttributionInputValue | undefined>(undefined);
 
 const { t } = useI18n();
 </script>

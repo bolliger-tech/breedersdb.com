@@ -1,12 +1,8 @@
 <template>
   <BaseInputLabel :label="attribute.name" style="max-width: 592px">
-    <BaseMessage
-      v-if="hasSameAgain"
-      type="warning"
-      :message="t('attributions.add.sameAgainWarning')"
-    />
+    <slot name="before"></slot>
 
-    <AttributionAddFormInputRating
+    <AttributionInputRating
       v-if="attribute.data_type === 'RATING'"
       :model-value="modelValue?.integer_value ?? null"
       :validation="attribute.validation_rule"
@@ -15,7 +11,7 @@
         (val: number | null) => updateModelValue({ integer_value: val })
       "
     />
-    <AttributionAddFormInputNumber
+    <AttributionInputNumber
       v-else-if="attribute.data_type === 'INTEGER'"
       ref="integerInputRef"
       :model-value="modelValue?.integer_value ?? null"
@@ -24,7 +20,7 @@
         (val: number | null) => updateModelValue({ integer_value: val })
       "
     />
-    <AttributionAddFormInputNumber
+    <AttributionInputNumber
       v-else-if="attribute.data_type === 'FLOAT'"
       ref="floatInputRef"
       :model-value="modelValue?.float_value ?? null"
@@ -33,7 +29,7 @@
         (val: number | null) => updateModelValue({ float_value: val })
       "
     />
-    <AttributionAddFormInputText
+    <AttributionInputText
       v-else-if="attribute.data_type === 'TEXT'"
       ref="textInputRef"
       :model-value="modelValue?.text_value ?? null"
@@ -48,25 +44,25 @@
         (val: string | null) => updateModelValue({ text_value: val })
       "
     />
-    <AttributionAddFormInputDate
+    <AttributionInputDate
       v-else-if="attribute.data_type === 'DATE'"
       :model-value="modelValue?.date_value ?? null"
       @update:model-value="
         (val: string | null) => updateModelValue({ date_value: val })
       "
     />
-    <AttributionAddFormInputBoolean
+    <AttributionInputBoolean
       v-else-if="attribute.data_type === 'BOOLEAN'"
       :model-value="modelValue?.boolean_value ?? null"
       @update:model-value="
         (val: boolean | null) => updateModelValue({ boolean_value: val })
       "
     />
-    <AttributionAddFormInputPhoto
+    <AttributionInputPhoto
       v-else-if="attribute.data_type === 'PHOTO'"
       :model-value="modelValue?.photo_value ?? null"
       @update:model-value="
-        (val: File | null) => updateModelValue({ photo_value: val })
+        (val: File | string | null) => updateModelValue({ photo_value: val })
       "
     />
 
@@ -75,7 +71,7 @@
     </div>
 
     <template v-if="!hideNotes">
-      <AttributionAddFormInputNote
+      <AttributionInputNote
         ref="noteInputRef"
         v-model:photo-note="photoNote"
         v-model:text-note="textNote"
@@ -118,39 +114,55 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributionValueWithPhoto } from 'src/components/Attribution/Add/AttributionAddForm.vue';
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
-import AttributionAddFormInputRating from 'src/components/Attribution/Add/AttributionAddFormInputRating.vue';
-import AttributionAddFormInputNumber from 'src/components/Attribution/Add/AttributionAddFormInputNumber.vue';
-import AttributionAddFormInputText from 'src/components/Attribution/Add/AttributionAddFormInputText.vue';
-import AttributionAddFormInputDate from 'src/components/Attribution/Add/AttributionAddFormInputDate.vue';
-import AttributionAddFormInputBoolean from 'src/components/Attribution/Add/AttributionAddFormInputBoolean.vue';
-import AttributionAddFormInputPhoto from 'src/components/Attribution/Add/AttributionAddFormInputPhoto.vue';
-import AttributionAddFormInputNote from 'src/components/Attribution/Add/AttributionAddFormInputNote.vue';
-import { computed, ref, nextTick } from 'vue';
+import AttributionInputRating from 'src/components/Attribution/Input/AttributionInputRating.vue';
+import AttributionInputNumber from 'src/components/Attribution/Input/AttributionInputNumber.vue';
+import AttributionInputText from 'src/components/Attribution/Input/AttributionInputText.vue';
+import AttributionInputDate from 'src/components/Attribution/Input/AttributionInputDate.vue';
+import AttributionInputBoolean from 'src/components/Attribution/Input/AttributionInputBoolean.vue';
+import AttributionInputPhoto from 'src/components/Attribution/Input/AttributionInputPhoto.vue';
+import AttributionInputNote from 'src/components/Attribution/Input/AttributionInputNote.vue';
+import { computed, ref, nextTick, watch, onMounted, type Slot } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { DistributiveOmit } from 'src/utils/typescriptUtils';
 
-export interface AttributionAddFormInputProps {
+export interface AttributionInputProps {
   attribute: DistributiveOmit<AttributeFragment, 'created' | 'modified'>;
   exceptional: boolean;
-  hasSameAgain: boolean;
   hideNotes?: boolean;
 }
 
-const props = defineProps<AttributionAddFormInputProps>();
+const props = defineProps<AttributionInputProps>();
 
-const modelValue = defineModel<AttributionValueWithPhoto | undefined>({
+export interface AttributionInputValue {
+  attribute_id?: number | null | undefined;
+  boolean_value?: boolean | null | undefined;
+  date_value?: string | null | undefined;
+  exceptional_attribution?: boolean | null | undefined;
+  float_value?: number | null | undefined;
+  integer_value?: number | null | undefined;
+  text_note?: string | null | undefined;
+  text_value?: string | null | undefined;
+  photo_value?: File | string | null | undefined;
+  photo_note?: File | string | null | undefined;
+}
+
+const modelValue = defineModel<AttributionInputValue | undefined>({
   required: true,
 });
+
+defineSlots<{
+  before: Slot;
+}>();
 
 defineExpose({ validate, focus: focusInvalid });
 
 const photoNote = computed({
   get: () => modelValue.value?.photo_note ?? null,
-  set: (file: File | null) => updateModelValue({ photo_note: file ?? null }),
+  set: (file: File | string | null) =>
+    updateModelValue({ photo_note: file ?? null }),
 });
 
 const textNote = computed({
@@ -160,9 +172,9 @@ const textNote = computed({
 
 const { t } = useI18n();
 const confirm = ref(false);
-const noteInputRef = ref<InstanceType<
-  typeof AttributionAddFormInputNote
-> | null>(null);
+const noteInputRef = ref<InstanceType<typeof AttributionInputNote> | null>(
+  null,
+);
 
 async function clearModelValue() {
   if (!modelValue.value) {
@@ -201,9 +213,9 @@ function updateModelValue({
   text_value?: string | null;
   boolean_value?: boolean | null;
   date_value?: string | null;
-  photo_value?: File | null;
+  photo_value?: File | string | null;
   text_note?: string | null;
-  photo_note?: File | null;
+  photo_note?: File | string | null;
 }) {
   const model = modelValue.value ?? {
     attribute_id: props.attribute.id,
@@ -259,15 +271,35 @@ const hasNoValue = computed(() => {
   );
 });
 
-const integerInputRef = ref<InstanceType<
-  typeof AttributionAddFormInputNumber
-> | null>(null);
-const floatInputRef = ref<InstanceType<
-  typeof AttributionAddFormInputNumber
-> | null>(null);
-const textInputRef = ref<InstanceType<
-  typeof AttributionAddFormInputText
-> | null>(null);
+function setDefaultValue() {
+  const { data_type, default_value } = props.attribute;
+  updateModelValue({
+    boolean_value: data_type === 'BOOLEAN' ? default_value : null,
+    date_value: data_type === 'DATE' ? default_value : null,
+    float_value: data_type === 'FLOAT' ? default_value : null,
+    integer_value:
+      data_type === 'INTEGER' || data_type === 'RATING' ? default_value : null,
+    text_value: data_type === 'TEXT' ? default_value : null,
+    photo_value: null, // default_value is not supported for photos
+  });
+}
+
+// initially set default value
+onMounted(() => {
+  if (hasNoValue.value) setDefaultValue();
+});
+// update default value when editing attribute (AttributePreview.vue)
+watch(() => props.attribute.default_value, setDefaultValue);
+
+const integerInputRef = ref<InstanceType<typeof AttributionInputNumber> | null>(
+  null,
+);
+const floatInputRef = ref<InstanceType<typeof AttributionInputNumber> | null>(
+  null,
+);
+const textInputRef = ref<InstanceType<typeof AttributionInputText> | null>(
+  null,
+);
 
 async function validate() {
   let valueIsValid: Promise<boolean> = Promise.resolve(true);

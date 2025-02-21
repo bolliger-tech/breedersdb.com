@@ -21,7 +21,7 @@
         :attribute="attribute"
         @change="
           (data) => {
-            previewAttribute = { id: -1, ...data };
+            Object.assign(previewAttribute, { id: -1 }, data);
             onChange({
               ...data,
               default_value: data.default_value as object | null,

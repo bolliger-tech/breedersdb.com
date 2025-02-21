@@ -4,7 +4,7 @@ export function attributionValueHasValue(attributionValue: {
   text_value?: string | null | undefined;
   boolean_value?: boolean | null | undefined;
   date_value?: string | null | undefined;
-  photo_value?: File | null | undefined;
+  photo_value?: File | string | null | undefined;
 }) {
   return (
     attributionValue.integer_value !== null ||

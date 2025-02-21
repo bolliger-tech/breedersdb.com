@@ -36,7 +36,8 @@
         ref="attributeMetaDataRef"
         v-model:author="author"
         v-model:date="date"
-        v-model:repeat="repeat"
+        :repeat="repeatInt"
+        @update:repeat="repeat = $event"
       />
 
       <q-stepper-navigation class="row justify-between reverse">
@@ -82,47 +83,22 @@
     >
       <BaseGraphqlError v-if="formFetchError" :error="formFetchError" />
       <BaseSpinner v-else-if="formFetching" />
-      <q-banner v-else-if="!form" class="text-white bg-negative">
-        {{ t('attributions.add.noFormSelected') }}
-        <template #action>
-          <q-btn
-            flat
-            color="white"
-            :label="t('attributions.add.selectForm')"
-            @click="step = 1"
-          />
-        </template>
-      </q-banner>
-      <q-banner v-else-if="!author || !date" class="text-white bg-negative">
-        {{ t('attributions.add.missingMetadata') }}
-        <template #action>
-          <q-btn
-            flat
-            color="white"
-            :label="t('attributions.add.addMetadata')"
-            @click="step = 2"
-          />
-        </template>
-      </q-banner>
-      <AttributionAddNoEntityError
-        v-else-if="entityId === null"
-        :entity-type="entityType"
-        @click="step = 3"
+      <AttributionAddFormWrapper
+        v-else
+        :key="formKey"
+        :entity="entity"
+        :form="form"
+        :date="date"
+        :author="author"
+        :repeat-target="repeatInt"
+        :edit="(id) => (editAttributionId = id)"
+        :edit-id="editAttributionId || undefined"
+        @reset-edit-id="() => (editAttributionId = null)"
+        @select-form="() => (step = 1)"
+        @add-metadata="() => (step = 2)"
+        @select-entity="() => (step = 3)"
+        @reset-me="() => (formKey += 1)"
       />
-
-      <template v-else>
-        <slot name="entity-preview"></slot>
-        <AttributionAddForm
-          :key="attributeFormKey"
-          :entity-id="entityId"
-          :entity-type="entityType"
-          :form="form"
-          :date="date"
-          :author="author"
-          :repeat-target="repeatInt"
-          @saved="completeStep4"
-        />
-      </template>
       <q-stepper-navigation>
         <q-btn flat color="primary" :label="t('base.back')" @click="step = 3" />
       </q-stepper-navigation>
@@ -133,22 +109,22 @@
 <script setup lang="ts">
 import AttributionFormSelect from 'src/components/AttributionForm/AttributionFormSelect.vue';
 import AttributionAddMetaData from 'src/components/Attribution/Add/AttributionAddMetaData.vue';
-import AttributionAddForm from 'src/components/Attribution/Add/AttributionAddForm.vue';
-import AttributionAddNoEntityError from 'src/components/Attribution/Add/AttributionAddNoEntityError.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
+import AttributionAddFormWrapper, {
+  type AttributionAddFormWrapperProps,
+} from 'src/components/Attribution/Add/AttributionAddFormWrapper.vue';
 import BaseStepper from 'src/components/Base/BaseStepper.vue';
-import { graphql, ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref, watch, type Slot, Ref } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
-import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import {
-  attributeFragment,
-  type AttributeFragment,
-} from 'src/components/Attribute/attributeFragment';
+  attributionFormFragment,
+  type AttributionFormFragment,
+} from 'src/components/AttributionForm/attributionFormFragment';
 
 const FORM_ID_STORAGE_KEY = 'breedersdb-attribution-form-id';
 const AUTHOR_STORAGE_KEY = 'breedersdb-attribution-author';
@@ -160,8 +136,7 @@ const DATE_URL_KEY = 'date';
 const REPEAT_URL_KEY = 'repeat';
 
 export interface AttributionAddStepsProps {
-  entityId: number | null;
-  entityType: AttributableEntities;
+  entity: AttributionAddFormWrapperProps['entity'];
   entityLoading: boolean;
   entityIcon: string;
   focusEntityPicker?: () => void;
@@ -171,7 +146,6 @@ const props = defineProps<AttributionAddStepsProps>();
 
 defineSlots<{
   'entity-picker': Slot;
-  'entity-preview': Slot;
 }>();
 
 const emit = defineEmits<{
@@ -182,33 +156,12 @@ const formQuery = graphql(
   `
     query AttributionForm($formId: Int!) {
       attribution_forms_by_pk(id: $formId) {
-        id
-        name
-        description
-        attribution_form_fields(
-          where: { attribute: { disabled: { _eq: false } } }
-          order_by: { priority: asc }
-        ) {
-          id
-          priority
-          attribute {
-            ...attributeFragment
-          }
-        }
+        ...attributionFormFragment
       }
     }
   `,
-  [attributeFragment],
+  [attributionFormFragment],
 );
-
-type Form = NonNullable<ResultOf<typeof formQuery>['attribution_forms_by_pk']>;
-export type AttributionForm = Form & {
-  attribution_form_fields: {
-    attribute: AttributeFragment;
-    priority: number;
-    id: number;
-  }[];
-};
 
 const { t } = useI18n();
 const { localStorage, sessionStorage } = useQuasar();
@@ -249,7 +202,10 @@ watch(
 );
 
 const form = computed(
-  () => (formData.value?.attribution_forms_by_pk as AttributionForm) ?? null,
+  () =>
+    (formData.value?.attribution_forms_by_pk as
+      | AttributionFormFragment
+      | undefined) ?? null,
 );
 
 const attributeFormSelectRef: Ref<InstanceType<
@@ -307,35 +263,27 @@ function completeStep3() {
 }
 
 // step 4
-const attributeFormKey = ref(0);
+const formKey = ref(0);
 
-function completeStep4(repeatCount: number) {
-  if (repeatCount >= repeatInt.value) {
-    // select next entity
-    step.value = 3;
-  } else {
-    // stay on the same entity
-    // but reset the AttributionAddForm
-    attributeFormKey.value += 1;
-  }
-}
-
-watch(
-  () => props.entityId,
-  () => {
-    if (props.entityId !== null) {
-      step.value = 4;
-    }
-  },
-);
+// all
+const editAttributionId = ref<number | null>(null);
 
 const step1Done = computed(() => formId.value > -1);
 
 const step2Done = computed(
-  () => author.value.length > 0 && date.value.length > 0 && repeat.value >= 0,
+  () =>
+    author.value.length > 0 && date.value.length > 0 && repeatInt.value >= 0,
 );
 
-const step3Done = computed(() => props.entityId !== null);
+const step3Done = computed(
+  () => !!props.entity.data || editAttributionId.value !== null,
+);
+
+watch(step3Done, (done) => {
+  if (done) {
+    step.value = 4;
+  }
+});
 
 function getInitialStep() {
   // never jump directly to step 4 to make very clear, that any attribution input is lost

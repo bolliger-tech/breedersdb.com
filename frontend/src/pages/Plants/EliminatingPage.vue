@@ -130,7 +130,7 @@ async function eliminate() {
       message: t('plants.eliminatePlantSuccess', {
         labelId: plant.value?.label_id,
       }),
-      color: 'primary',
+      color: 'positive',
       timeout: 3000,
       position: 'top',
     });

@@ -100,17 +100,20 @@ import AttributeLegendInput from './AttributeLegendInput.vue';
 import AttributeDefaultValueInput from './AttributeDefaultValueInput.vue';
 import { extend } from 'quasar';
 
+type Attribute = AttributeInsertInput | AttributeEditInput;
+
 export interface AttributeEntityFormProps {
-  attribute: AttributeInsertInput | AttributeEditInput;
+  attribute: Attribute;
 }
 
 const props = defineProps<AttributeEntityFormProps>();
 const emits = defineEmits<{
-  change: [data: typeof data.value];
+  change: [data: Attribute];
 }>();
 // for defineExpose() see below
 
 const initialData = {
+  id: 'id' in props.attribute ? props.attribute.id : undefined,
   name: props.attribute.name,
   validation_rule: props.attribute.validation_rule,
   data_type: props.attribute.data_type,
@@ -119,9 +122,9 @@ const initialData = {
   disabled: props.attribute.disabled,
   legend: props.attribute.legend,
   default_value: props.attribute.default_value,
-} as AttributeInsertInput;
+} as Attribute;
 
-const data = ref<AttributeInsertInput>(extend(true, {}, initialData));
+const data = ref<Attribute>(extend(true, {}, initialData));
 
 const refs = ref<{ [key: string]: InputRef | null }>({
   name: null,

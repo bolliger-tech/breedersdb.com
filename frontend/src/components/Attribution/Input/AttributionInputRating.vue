@@ -49,12 +49,12 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { useI18n } from 'src/composables/useI18n';
 
-export interface AttributionAddFormInputProps {
+export interface AttributionInputProps {
   validation: { min: number; max: number; step: 1 };
   legend: string[] | null;
 }
 
-const props = defineProps<AttributionAddFormInputProps>();
+const props = defineProps<AttributionInputProps>();
 
 const modelValue = defineModel<number | null>({ required: true });
 

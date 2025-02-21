@@ -10,8 +10,7 @@
     <AttributionAddSteps
       :entity-caption="entityCaption"
       :entity-loading="fetching"
-      :entity-id="lot?.id || null"
-      :entity-type="AttributableEntities.Lot"
+      :entity="{ data: lot, type: AttributableEntities.Lot }"
       :focus-entity-picker="lotPickerRef?.focus"
       entity-icon="svguse:/icons/sprite.svg#lot"
       @entity-step-completed="() => lotPickerRef?.loadEntity()"
@@ -23,11 +22,6 @@
           @fetching="(f) => (fetching = f)"
         />
       </template>
-
-      <template #entity-preview>
-        <EntityCard v-if="lot" entity-type="lot" :lot="lot" />
-        <!-- if the lot is missing AttributionAddSteps will handle it -->
-      </template>
     </AttributionAddSteps>
   </PageLayout>
 </template>
@@ -37,7 +31,6 @@ import PageLayout from 'src/layouts/PageLayout.vue';
 import { useI18n } from 'src/composables/useI18n';
 import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
 import LotPicker from 'src/components/Lot/LotPicker.vue';
-import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { computed, ref } from 'vue';
 import { LotFragment } from 'src/components/Lot/lotFragment';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';

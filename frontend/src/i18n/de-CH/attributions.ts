@@ -49,6 +49,7 @@ export const attributions = {
     noFormSelected: 'Kein Formular ausgewählt.',
     missingMetadata: 'Fehlende Metadaten.',
     addMetadata: 'Meta-Daten hinzufügen',
+    missingValues: 'Fehlende Attributierungswerte.',
     alreadyAttributed: 'Du hast diese/s {entity} auf diesem Gerät mit diesem Formular bereits {timeAgo} attributiert.',
     counter: {
       description: 'Während der letzten 24 Stunden hast du diese/s {entity} {count} Mal mit diesem Formular attributiert (Ziel {total}).',
@@ -69,9 +70,17 @@ export const attributions = {
     notesMustHaveValue: 'Füge einen Wert hinzu oder lösche die Bemerkung / das Foto für dieses Attribut.',
     saved: 'Attribute saved.',
     uploading: 'Speichere… {percentage}%',
+    edit: 'Bearbeiten',
+    delete: 'Löschen',
     noValues: 'Nichts zu speichern. Füge Werte hinzu oder wähle ein/e andere/s {entity}.',
     changeEntity: '{entity} ändern',
-    addAttribute: 'Attribut hinzufügen'
+    addAttribute: 'Attribut hinzufügen',
+    editNote: {
+      info: 'Du bearbeitest eine existierende Attributierung.',
+      delete: 'Attributierung löschen',
+      cancel: 'Bearbeiten abbrechen',
+      deleted: 'Attributierung gelöscht.'
+    }
   },
   noValueOnEdit: 'Bitte gib einen Wert ein oder lösche das Attribut.'
 };

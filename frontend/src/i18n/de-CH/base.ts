@@ -22,7 +22,8 @@ export const base = {
     second: 'Sekunde | Sekunden',
     minute: 'Minute | Minuten',
     hour: 'Stunde | Stunden',
-    day: 'Tag | Tage'
+    day: 'Tag | Tage',
+    never: 'nie'
   },
   show: 'Anzeigen',
   download: 'Herunterladen',

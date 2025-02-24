@@ -51,9 +51,9 @@ interface EntityLot {
   type: AttributableEntities.Lot;
 }
 
-export interface AttributionAddFormPreviewProps {
+export interface AttributionAddEntityPreviewProps {
   entity: EntityPlant | EntityPlantGroup | EntityCultivar | EntityLot;
 }
 
-defineProps<AttributionAddFormPreviewProps>();
+defineProps<AttributionAddEntityPreviewProps>();
 </script>

@@ -74,7 +74,7 @@ import { useAttributableEntityName } from 'src/components/Attribution/useAttribu
 import AttributionAddFormFieldList from 'src/components/Attribution/Add/AttributionAddFormFieldList.vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
 import AttributionAddEntityPreview, {
-  type AttributionAddFormPreviewProps,
+  type AttributionAddEntityPreviewProps,
 } from 'src/components/Attribution/Add/AttributionAddEntityPreview.vue';
 import { type AttributionInputValue } from 'src/components/Attribution/Input/AttributionInput.vue';
 import AttributionAddEditNote from 'src/components/Attribution/Add/AttributionAddEditNote.vue';
@@ -88,7 +88,7 @@ type FormField = {
 };
 
 export interface AttributionAddFormProps {
-  entity: AttributionAddFormPreviewProps['entity'];
+  entity: AttributionAddEntityPreviewProps['entity'];
   formId: number;
   fields: FormField[];
   values: { [key: number]: AttributionInputValue };

@@ -8,6 +8,12 @@
 
   <AttributionAddEntityPreview :entity="entity" />
 
+  <AttributionAddLastAttributed
+    :entity-id="entity.data.id"
+    :form-id="formId"
+    :entity-type="entity.type"
+  />
+
   <AttributionAddAlreadyAttributed
     v-if="repeatTarget <= 1 && lastRepeat && !editId"
     :date="lastRepeat"
@@ -78,6 +84,7 @@ import AttributionAddEntityPreview, {
 } from 'src/components/Attribution/Add/AttributionAddEntityPreview.vue';
 import { type AttributionInputValue } from 'src/components/Attribution/Input/AttributionInput.vue';
 import AttributionAddEditNote from 'src/components/Attribution/Add/AttributionAddEditNote.vue';
+import AttributionAddLastAttributed from 'src/components/Attribution/Add/AttributionAddLastAttributed.vue';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 

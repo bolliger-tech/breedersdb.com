@@ -25,6 +25,7 @@ export const base = {
     minute: 'minute | minutes',
     hour: 'hour | hours',
     day: 'day | days',
+    never: 'never',
   },
 
   show: 'Show',

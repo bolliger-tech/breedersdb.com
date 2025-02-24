@@ -50,6 +50,7 @@ export const attributions = {
     missingMetadata: 'Fehlende Metadaten.',
     addMetadata: 'Meta-Daten hinzufügen',
     missingValues: 'Fehlende Attributierungswerte.',
+    lastAttributed: 'Zuletzt mit diesem Formular attributiert {timeAgo}',
     alreadyAttributed: 'Du hast diese/s {entity} auf diesem Gerät mit diesem Formular bereits {timeAgo} attributiert.',
     counter: {
       description: 'Während der letzten 24 Stunden hast du diese/s {entity} {count} Mal mit diesem Formular attributiert (Ziel {total}).',

@@ -62,6 +62,7 @@ export const attributions = {
     addMetadata: 'Add metadata',
     missingValues: 'Missing attribution values.',
 
+    lastAttributed: 'Last attributed with this form {timeAgo}',
     alreadyAttributed:
       "You've already attributed this {entity} on this device with this form {timeAgo}.",
 

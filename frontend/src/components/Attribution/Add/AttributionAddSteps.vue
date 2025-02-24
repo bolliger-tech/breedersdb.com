@@ -291,6 +291,11 @@ function getInitialStep() {
 }
 
 const step = ref(getInitialStep());
+watch(step, (s) => {
+  if (s === 3) {
+    editAttributionId.value = null;
+  }
+});
 
 function onAfterTransition(to: string | number) {
   if (to === 3) {

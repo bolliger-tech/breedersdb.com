@@ -6,8 +6,9 @@
     :options="options"
     option-value="id"
     option-label="name"
-    :loading="fetching"
+    :loading="fetching || loading"
     :error="error"
+    :hint="hint"
     required
   >
     <template #option="option">
@@ -28,9 +29,17 @@ import { ResultOf, graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import EntitySelect, {
   EntitySelectInstance,
+  EntitySelectProps,
 } from 'src/components/Entity/Edit/EntitySelect.vue';
 
 export type AttributionForm = ResultOf<typeof query>['attribution_forms'][0];
+
+export interface AttributionFormSelectProps {
+  loading?: boolean;
+  hint?: EntitySelectProps<unknown>['hint'];
+}
+
+defineProps<AttributionFormSelectProps>();
 
 const selectRef: Ref<EntitySelectInstance<{
   id: number;

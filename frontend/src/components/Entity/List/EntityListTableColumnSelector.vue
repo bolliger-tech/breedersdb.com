@@ -1,6 +1,7 @@
 <template>
   <q-select
     v-if="possibleOptions.length > 0"
+    ref="selectRef"
     :label="t('entity.list.addColumn')"
     :model-value="null"
     :options="filteredOptions"
@@ -13,6 +14,9 @@
     @filter="filterOptions"
     @update:model-value="(option) => addColumn(option.value)"
   >
+    <template v-if="$slots['before-options']" #[`before-options`]>
+      <slot name="before-options"></slot>
+    </template>
     <template #option="optionProps">
       <slot name="option" v-bind="optionProps">
         <q-item v-bind="optionProps.itemProps">
@@ -28,8 +32,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
-import { QSelectSlots, QTableColumn } from 'quasar';
+import { computed, ref, watch } from 'vue';
+import { QSelect, QSelectSlots, QTableColumn } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import {
   FilterSelectOptionsUpdateFn,
@@ -51,6 +55,7 @@ const visibleColumns = defineModel<string[]>({ required: true });
 
 defineSlots<{
   option: QSelectSlots['option'];
+  'before-options': QSelectSlots['before-options'];
 }>();
 
 const { t } = useI18n();
@@ -83,6 +88,11 @@ function filterOptions(
     valueExtractorFn: (item) => item.label,
   });
 }
+
+// close select when columns are changed
+// e.g. by selecting columns of form (AnalyzeResultTableAddColumnsFromForm.vue)
+const selectRef = ref<QSelect | null>(null);
+watch(visibleColumns, () => selectRef.value?.hidePopup());
 
 const { inputBgColor } = useInputBackground();
 </script>

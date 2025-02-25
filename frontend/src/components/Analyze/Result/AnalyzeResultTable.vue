@@ -12,6 +12,11 @@
     @row-click="onRowClick"
     @export="onExport"
   >
+    <template #column-selector-before-options>
+      <AnalyzeResultTableAddColumnsFromForm
+        v-model:visible-columns="visibleColumns"
+      />
+    </template>
     <template #column-selector-option="{ opt, itemProps }">
       <q-item v-bind="itemProps">
         <q-item-section>
@@ -47,6 +52,7 @@ import AnalyzeResultTableColumnLabel from 'components/Analyze/Result/AnalyzeResu
 import { BaseTable } from '../Filter/filterNode';
 import { useRouter } from 'vue-router';
 import type { EntityExportButtonProps } from 'src/components/Entity/EntityExportButton.vue';
+import AnalyzeResultTableAddColumnsFromForm from './AnalyzeResultTableAddColumnsFromForm.vue';
 
 export interface AnalyzeResultTableProps
   extends AnalyzeResultTablePropsWithoutModel {

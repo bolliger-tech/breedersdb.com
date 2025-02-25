@@ -86,6 +86,13 @@ export const analyze = {
   result: {
     title: 'Results',
 
+    addColumnsFromForm: 'Add columns from form',
+    columnsAdded: '{count} column added. | {count} columns added.',
+    columnsAlreadyAdded:
+      "The selected form's attributes are already in the list of columns. Scroll to the right to see all columns.",
+    addColumnsFromFormHint:
+      "Select a form. It's attributes will be added as columns to the results table.",
+
     aggregations: {
       count: 'Count',
       max: 'Max',

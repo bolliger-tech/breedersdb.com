@@ -37,6 +37,12 @@
           v-model="visibleColumns"
           :all-columns="allColumns"
         >
+          <template
+            v-if="$slots['column-selector-before-options']"
+            #[`before-options`]
+          >
+            <slot name="column-selector-before-options"></slot>
+          </template>
           <template #option="columnSelectorOptionProps">
             <slot
               name="column-selector-option"
@@ -176,6 +182,7 @@ defineEmits<{
 const slots = defineSlots<{
   'body-cell': QTableSlots['body-cell'];
   'column-selector-option': QSelectSlots['option'];
+  'column-selector-before-options': QSelectSlots['before-options'];
   'header-cell-label': QTableSlots['header-cell'];
   [key: `body-cell-${string}`]: QTableSlots[`body-cell-${string}`];
 }>();

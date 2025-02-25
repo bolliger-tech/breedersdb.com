@@ -66,6 +66,10 @@ export const analyze = {
   },
   result: {
     title: 'Ergebnisse',
+    addColumnsFromForm: 'Spalten aus Formular hinzufügen',
+    columnsAdded: '{count} Spalte hinzugefügt. | {count} Spalten hinzugefügt.',
+    columnsAlreadyAdded: 'Die Attribute des ausgewählten Formulars sind bereits in der Ergebnistabelle. Scrolle nach rechts, um alle Spalten zu sehen.',
+    addColumnsFromFormHint: 'Wähle ein Formular. Dessen Attribute werden als Spalten zur Ergebnistabelle hinzugefügt.',
     aggregations: {
       count: 'Anzahl',
       max: 'Max',

@@ -1,7 +1,5 @@
 import * as ff from '@google-cloud/functions-framework';
-import { downloadFile } from '../lib/storage';
-import { buffer } from 'node:stream/consumers';
-import sharp from 'sharp';
+import { getCachedImageAsBuffer } from '../lib/image';
 
 export async function handleDownload(req: ff.Request, res: ff.Response) {
   if (req.method !== 'GET') {
@@ -31,20 +29,15 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
       .send('Bad Request: width and height must be numbers and greater than 0');
   }
 
-  const file = downloadFile(fileName);
   let buf;
   try {
-    buf = await buffer(file);
+    buf = await getCachedImageAsBuffer({ fileName, width, height });
   } catch (e: any) {
     if (e.message.includes('No such object')) {
       return res.status(404).send('Not Found');
     }
     console.error('Error downloading file:', e);
     return res.status(500).send('Internal Server Error');
-  }
-
-  if (width || height) {
-    buf = await sharp(buf).resize({ width, height, fit: 'inside' }).toBuffer();
   }
 
   // headers

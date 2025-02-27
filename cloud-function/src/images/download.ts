@@ -1,5 +1,6 @@
 import * as ff from '@google-cloud/functions-framework';
 import { getCachedImageAsBuffer } from '../lib/image';
+import { imageCacheConfig } from './cache';
 
 export async function handleDownload(req: ff.Request, res: ff.Response) {
   if (req.method !== 'GET') {
@@ -31,7 +32,12 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
 
   let buf;
   try {
-    buf = await getCachedImageAsBuffer({ fileName, width, height });
+    buf = await getCachedImageAsBuffer({
+      fileName,
+      width,
+      height,
+      config: imageCacheConfig,
+    });
   } catch (e: any) {
     if (e.message.includes('No such object')) {
       return res.status(404).send('Not Found');

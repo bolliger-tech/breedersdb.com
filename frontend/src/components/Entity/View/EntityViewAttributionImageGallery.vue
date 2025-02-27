@@ -14,7 +14,7 @@
           :file-name="(image.text_value || image.photo_note)!"
           :attribution="image"
           preview
-          :preview-height="200"
+          :preview-size="imageSizes.h200"
           :model-value="open === image.id"
           :transition="transition"
           :transition-duration="TRANSITION_DURATION"
@@ -44,6 +44,7 @@ import EntityViewAttributionImage, {
 import { ref } from 'vue';
 import { useTimeout } from 'quasar';
 import { onBeforeUnmount } from 'vue';
+import { imageSizes } from 'src/utils/imageSizes.ts';
 
 const TRANSITION_DURATION = 300;
 

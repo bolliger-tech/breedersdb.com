@@ -51,7 +51,7 @@
         :file-name="(data.photo_note || data.text_value)!"
         :attribution="data"
         preview
-        :preview-width="282"
+        :preview-size="imageSizes.w282"
       />
     </div>
   </div>
@@ -140,6 +140,7 @@ import LotEntityTable from 'src/components/Lot/LotEntityTable.vue';
 import { computed } from 'vue';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { RouterLink } from 'vue-router';
+import { imageSizes } from 'src/utils/imageSizes.ts';
 
 export interface AnalyzeResultTableCellAttributionOverlayDetailsProps {
   data: AttributionDetails;

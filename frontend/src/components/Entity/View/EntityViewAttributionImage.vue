@@ -4,7 +4,9 @@
       ref="previewRef"
       v-ripple
       :src="imgUrls['1x']"
-      :srcset="`${imgUrls['1x']}, ${imgUrls['2x']} 2x`"
+      :srcset="
+        '2x' in imgUrls ? `${imgUrls['1x']}, ${imgUrls['2x']} 2x` : undefined
+      "
       class="cursor-pointer"
       :class="{ invisible: !previewIsReady }"
       loading="lazy"
@@ -14,7 +16,7 @@
     />
     <div
       v-if="!previewIsReady"
-      :style="`height: ${previewHeight || DEFAULT_PREVIEW_HEIGHT}px; width: ${previewWidth || DEFAULT_PREVIEW_HEIGHT}px;`"
+      :style="`height: ${previewSize?.height || DEFAULT_PREVIEW_HEIGHT}px; width: ${previewSize?.width || DEFAULT_PREVIEW_HEIGHT}px;`"
     >
       <div class="absolute-center">
         <q-spinner size="3em" color="primary" />
@@ -117,15 +119,15 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { captureException } from '@sentry/browser';
 import { getImageFileName, getImageUrlRelative } from 'src/utils/imageUtils';
+import { imageSizes, AllowedImageSizes } from 'src/utils/imageSizes';
 
-const DEFAULT_PREVIEW_HEIGHT = 200;
+const DEFAULT_PREVIEW_HEIGHT = imageSizes.h200.height;
 
 export interface EntityViewAttributionImageProps {
   fileName: string;
   attribution: AttributionsViewFragment;
   preview?: boolean;
-  previewWidth?: number;
-  previewHeight?: number;
+  previewSize?: AllowedImageSizes;
   transition?: QDialogProps['transitionShow'];
   transitionDuration?: number;
   buttonSize?: QBtnProps['size'];
@@ -208,44 +210,62 @@ const desiredFileName = computed(() =>
   }),
 );
 
+function get2xDim({
+  width,
+  height,
+}: {
+  width: number | null;
+  height: number | null;
+}): AllowedImageSizes | undefined {
+  if (!width && !height) return undefined;
+  const w2 = width ? width * 2 : null;
+  const h2 = height ? height * 2 : null;
+  return Object.values(imageSizes).find(
+    (size) => size.width == w2 && size.height == h2, // type coercion intended
+  );
+}
+
 const imgUrls = computed(() => {
+  const dims1x = props.previewSize ?? imageSizes.h200;
+  const dims2x = get2xDim(dims1x);
+
   return {
     '1x': getImageUrlRelative({
       serverFileName: props.fileName,
       desiredFileName: desiredFileName.value,
-      maxWidth: props.previewWidth,
-      maxHeight: props.previewHeight || DEFAULT_PREVIEW_HEIGHT,
+      dimensions: dims1x,
     }),
-    '2x': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
-      maxWidth: props.previewWidth ? 2 * props.previewWidth : undefined,
-      maxHeight: 2 * (props.previewHeight || DEFAULT_PREVIEW_HEIGHT),
+    ...(dims2x && {
+      '2x': getImageUrlRelative({
+        serverFileName: props.fileName,
+        desiredFileName: desiredFileName.value,
+        dimensions: dims2x,
+      }),
     }),
     '320w': getImageUrlRelative({
       serverFileName: props.fileName,
       desiredFileName: desiredFileName.value,
-      maxWidth: 320,
+      dimensions: imageSizes.w320,
     }),
     '768w': getImageUrlRelative({
       serverFileName: props.fileName,
       desiredFileName: desiredFileName.value,
-      maxWidth: 768,
+      dimensions: imageSizes.w768,
     }),
     '1024w': getImageUrlRelative({
       serverFileName: props.fileName,
       desiredFileName: desiredFileName.value,
-      maxWidth: 1024,
+      dimensions: imageSizes.w1024,
     }),
     '2560w': getImageUrlRelative({
       serverFileName: props.fileName,
       desiredFileName: desiredFileName.value,
-      maxWidth: 2560,
+      dimensions: imageSizes.w2560,
     }),
     '3840w': getImageUrlRelative({
       serverFileName: props.fileName,
       desiredFileName: desiredFileName.value,
-      maxWidth: 3840,
+      dimensions: imageSizes.w3840,
     }),
     full: getImageUrlRelative({
       serverFileName: props.fileName,

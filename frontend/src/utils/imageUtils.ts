@@ -1,4 +1,5 @@
 import type { CellObject } from 'xlsx';
+import type { AllowedImageSizes } from './imageSizes';
 
 export function getImageFileName({
   entityName,
@@ -22,15 +23,14 @@ export function getImageFileName({
 export function getImageUrlRelative({
   serverFileName,
   desiredFileName,
-  maxWidth,
-  maxHeight,
+  dimensions,
 }: {
   serverFileName: string;
   desiredFileName: string;
-  maxWidth?: number;
-  maxHeight?: number;
+  dimensions?: AllowedImageSizes;
 }) {
   const desiredFileNameEncoded = encodeURIComponent(desiredFileName);
+  const { width: maxWidth, height: maxHeight } = dimensions ?? {};
   return (
     `/api/assets/images/${desiredFileNameEncoded}?file=${serverFileName}` +
     (maxWidth ? `&width=${maxWidth}` : '') +

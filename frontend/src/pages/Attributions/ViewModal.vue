@@ -14,7 +14,7 @@
             :file-name="attribution.text_value"
             :attribution="attribution"
             preview
-            :preview-height="400"
+            :preview-size="imageSizes.h400"
           />
         </div>
         <EntityViewTable>
@@ -133,6 +133,7 @@ import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAtt
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import { imageSizes } from 'src/utils/imageSizes.ts';
 
 const props = defineProps<{ entityId: number | string }>();
 

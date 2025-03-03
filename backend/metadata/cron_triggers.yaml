@@ -1,5 +1,5 @@
 - name: PruneImages
-  webhook: '{{EVENTS_URL}}'
+  webhook: '{{CLOUD_FUNCTION_URL}}/events'
   schedule: 53 4 7 * *
   include_in_metadata: true
   payload: {}
@@ -9,6 +9,6 @@
     timeout_seconds: 300
     tolerance_seconds: 3600
   headers:
-    - name: x-events-secret
-      value_from_env: EVENTS_SECRET
+    - name: X-Cloud-Function-Secret
+      value_from_env: CLOUD_FUNCTION_SECRET
   comment: Once a month, delete files from assets storage if they are not referenced in the attribute_values table.

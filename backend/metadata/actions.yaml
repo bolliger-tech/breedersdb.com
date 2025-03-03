@@ -2,41 +2,41 @@ actions:
   - name: ChangePassword
     definition:
       kind: synchronous
-      handler: '{{ACTIONS_URL}}'
+      handler: '{{CLOUD_FUNCTION_URL}}/actions'
       forward_client_headers: true
       headers:
-        - name: X-Actions-Secret
-          value_from_env: ACTIONS_SECRET
+        - name: X-Cloud-Function-Secret
+          value_from_env: CLOUD_FUNCTION_SECRET
     permissions:
       - role: user
   - name: InsertUser
     definition:
       kind: synchronous
-      handler: '{{ACTIONS_URL}}'
+      handler: '{{CLOUD_FUNCTION_URL}}/actions'
       headers:
-        - name: X-Actions-Secret
-          value_from_env: ACTIONS_SECRET
+        - name: X-Cloud-Function-Secret
+          value_from_env: CLOUD_FUNCTION_SECRET
     permissions:
       - role: user
   - name: Me
     definition:
       kind: ""
-      handler: '{{ACTIONS_URL}}'
+      handler: '{{CLOUD_FUNCTION_URL}}/actions'
       forward_client_headers: true
       headers:
-        - name: X-Actions-Secret
-          value_from_env: ACTIONS_SECRET
+        - name: X-Cloud-Function-Secret
+          value_from_env: CLOUD_FUNCTION_SECRET
     permissions:
       - role: user
       - role: public
   - name: SignIn
     definition:
       kind: synchronous
-      handler: '{{ACTIONS_URL}}'
+      handler: '{{CLOUD_FUNCTION_URL}}/actions'
       forward_client_headers: true
       headers:
-        - name: X-Actions-Secret
-          value_from_env: ACTIONS_SECRET
+        - name: X-Cloud-Function-Secret
+          value_from_env: CLOUD_FUNCTION_SECRET
         - name: X-Rate-Limit
           value: signin
     permissions:
@@ -45,11 +45,11 @@ actions:
   - name: SignOut
     definition:
       kind: synchronous
-      handler: '{{ACTIONS_URL}}'
+      handler: '{{CLOUD_FUNCTION_URL}}/actions'
       forward_client_headers: true
       headers:
-        - name: X-Actions-Secret
-          value_from_env: ACTIONS_SECRET
+        - name: X-Cloud-Function-Secret
+          value_from_env: CLOUD_FUNCTION_SECRET
     permissions:
       - role: user
 custom_types:

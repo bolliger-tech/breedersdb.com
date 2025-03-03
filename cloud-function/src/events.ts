@@ -1,16 +1,13 @@
 import * as ff from '@google-cloud/functions-framework';
-import { timingSafeEqual } from './lib/crypto';
 import { ErrorWithStatus } from './lib/errors';
 import { config } from './lib/config';
 import { pruneImages } from './images/prune';
+import { validateBackendAuth } from './auth/validateBackendAuth';
 
 export async function handleEvents(req: ff.Request, res: ff.Response) {
   try {
     // only access from hasura is allowed
-    if (
-      typeof req.headers['x-events-secret'] !== 'string' ||
-      !timingSafeEqual(req.headers['x-events-secret'], config.EVENTS_SECRET)
-    ) {
+    if (!validateBackendAuth(req)) {
       throw new ErrorWithStatus(401, 'Unauthorized');
     }
 

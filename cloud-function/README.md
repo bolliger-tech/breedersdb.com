@@ -17,7 +17,7 @@ This folder contains code intended to run as Google Cloud Function.
    cp .env.example .env
    ```
 
-1. Set `HASURA_GRAPHQL_ADMIN_SECRET` in `.env`. Ensure it matches the `.env` of the frontend. Also set `ACTIONS_SECRET` and ensure it matches the `.env` of the backend.
+1. Set `HASURA_GRAPHQL_ADMIN_SECRET` in `.env`. Ensure it matches the `.env` of the frontend. Also set `CLOUD_FUNCTION_SECRET` and ensure it matches the `.env` of the backend.
 
 1. Start the container in watch mode
 

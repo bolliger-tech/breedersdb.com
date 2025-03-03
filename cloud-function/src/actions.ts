@@ -1,5 +1,4 @@
 import * as ff from '@google-cloud/functions-framework';
-import { timingSafeEqual } from './lib/crypto';
 import { ErrorWithStatus } from './lib/errors';
 import { config } from './lib/config';
 import type { ActionProps } from './types';
@@ -8,6 +7,7 @@ import { SignIn } from './auth/SignIn';
 import { SignOut } from './auth/SignOut';
 import { Me } from './auth/Me';
 import { ChangePassword } from './auth/ChangePassword';
+import { validateBackendAuth } from './auth/validateBackendAuth';
 
 /* example request
 body: {
@@ -25,10 +25,7 @@ body: {
 export async function handleActions(req: ff.Request, res: ff.Response) {
   try {
     // only access from hasura is allowed
-    if (
-      typeof req.headers['x-actions-secret'] !== 'string' ||
-      !timingSafeEqual(req.headers['x-actions-secret'], config.ACTIONS_SECRET)
-    ) {
+    if (!validateBackendAuth(req)) {
       throw new ErrorWithStatus(401, 'Unauthorized');
     }
 

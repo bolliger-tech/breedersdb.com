@@ -1,4 +1,4 @@
-import { authenticateRequest } from './authenticateRequest';
+import { validateFrontendAuth } from './validateFrontendAuth';
 import { createAuthCookies } from '../lib/cookies';
 import { generateToken, hashToken, verifyPassword } from '../lib/crypto';
 import { ErrorWithStatus } from '../lib/errors';
@@ -62,7 +62,7 @@ export async function SignIn({
   }
 
   // check if user is already signed in
-  const auth = await authenticateRequest(ctx.req.headers.cookie);
+  const auth = await validateFrontendAuth(ctx.req.headers.cookie);
   if (auth) {
     if (auth.userId !== user.id) {
       throw new ErrorWithStatus(

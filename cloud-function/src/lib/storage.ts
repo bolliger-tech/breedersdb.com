@@ -1,4 +1,4 @@
-import { Storage } from '@google-cloud/storage';
+import { Storage, type GetFilesOptions } from '@google-cloud/storage';
 
 function getGCS() {
   const GOOGLE_APPLICATION_CREDENTIALS_BASE64 =
@@ -36,4 +36,16 @@ export function downloadFile(fileName: string) {
   const { storage, bucketName } = getGCS();
 
   return storage.bucket(bucketName).file(fileName).createReadStream();
+}
+
+export function getFiles(options: GetFilesOptions) {
+  const { storage, bucketName } = getGCS();
+
+  return storage.bucket(bucketName).getFiles(options);
+}
+
+export function deleteFile(fileName: string) {
+  const { storage, bucketName } = getGCS();
+
+  return storage.bucket(bucketName).file(fileName).delete();
 }

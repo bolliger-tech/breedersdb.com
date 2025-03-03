@@ -121,3 +121,30 @@ export const ChangePasswordMutation = /* GraphQL */ `
     }
   }
 `;
+
+export type ReferencedImagesQueryResponse = {
+  attribution_values: Array<{
+    photo_note: string | null;
+    text_value: string | null;
+  }>;
+};
+export const ReferencedImagesQuery = /* GraphQL */ `
+  query QueryReferencedImages($imagesCi: [citext!]!, $imagesStr: [String!]!) {
+    attribution_values(
+      where: {
+        _or: [
+          { photo_note: { _in: $imagesStr } }
+          {
+            _and: [
+              { text_value: { _in: $imagesCi } }
+              { attribute: { data_type: { _eq: PHOTO } } }
+            ]
+          }
+        ]
+      }
+    ) {
+      photo_note
+      text_value
+    }
+  }
+`;

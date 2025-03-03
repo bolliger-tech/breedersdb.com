@@ -12,7 +12,7 @@
       loading="lazy"
       @click="open = true"
       @load="previewIsReady = true"
-      @onerror="previewIsReady = true"
+      @error="previewIsReady = true"
     />
     <div
       v-if="!previewIsReady"

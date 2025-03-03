@@ -1,8 +1,7 @@
 {
-  "extends": "@quasar/app-vite/tsconfig-preset",
+  "extends": "./.quasar/tsconfig.json",
   "compilerOptions": {
     "noErrorTruncation": true,
-    "baseUrl": ".",
     "sourceMap": true,
     "inlineSources": true,
 
@@ -35,12 +34,11 @@
     ]
   },
   "exclude": [
-    "./dist",
-    "./.quasar",
-    "./node_modules",
-    "./src-capacitor",
-    "./src-cordova",
-    "./quasar.config.*.temporary.compiled*",
+    ".quasar/./../dist",
+    ".quasar/./../node_modules",
+    ".quasar/./../src-capacitor",
+    ".quasar/./../src-cordova",
+    ".quasar/./../quasar.config.*.temporary.compiled*",
     // 2024-07-22 CB: unresolved version mismatch of vite
     // as it concerns testing only, we took the risk to exclude it.
     // might be reenabled in the future.

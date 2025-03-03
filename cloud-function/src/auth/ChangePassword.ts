@@ -5,7 +5,7 @@ import { fetchGraphQL } from '../lib/fetch';
 import type { ActionProps, ActionResult } from '../types';
 import { validatePassword } from '../lib/validation';
 import type { UserOutput } from './types';
-import { authenticateRequest } from './authenticateRequest';
+import { validateFrontendAuth } from './validateFrontendAuth';
 import { createClearAuthCookies } from '../lib/cookies';
 
 export async function ChangePassword({
@@ -22,9 +22,9 @@ export async function ChangePassword({
   // The trigger user_tokens_delete_on_password_change deletes all tokens
   // for this user. If the user changed their own password, we must
   // clear it's cookies so the frontend automatically does the right thing.
-  // authenticateRequest needs to be called before the mutation
+  // validateFrontendAuth needs to be called before the mutation
   // otherwise the token is already invalid
-  const auth = await authenticateRequest(ctx.req.headers.cookie);
+  const auth = await validateFrontendAuth(ctx.req.headers.cookie);
   const isMe = auth && auth.userId === input.user_id;
   const headers = isMe
     ? {

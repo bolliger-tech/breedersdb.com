@@ -6,8 +6,9 @@ import {
 } from '../lib/cookies';
 import { fetchGraphQL } from '../lib/fetch';
 import { RollTokenLastVerifyMutation } from '../queries';
-import { authenticateRequest } from './authenticateRequest';
+import { validateFrontendAuth } from './validateFrontendAuth';
 
+// authentication hook for hasura: decides if a request to hasura is allowed
 // https://hasura.io/docs/latest/auth/authentication/unauthenticated-access/
 export async function authenticateHasuraRequest(
   req: ff.Request,
@@ -15,7 +16,7 @@ export async function authenticateHasuraRequest(
 ) {
   const cookies = req.body.headers.Cookie || req.body.headers.cookie;
   const operationName = req.body.request.operationName;
-  const auth = await authenticateRequest(cookies);
+  const auth = await validateFrontendAuth(cookies);
   if (!auth) {
     // allow SignIn in any case
     if (operationName !== 'SignIn') {

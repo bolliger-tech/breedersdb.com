@@ -3,8 +3,13 @@ import { UserTokenQuery } from '../queries';
 import { getTokenFromCookies } from '../lib/cookies';
 import { fetchGraphQL } from '../lib/fetch';
 
-// check actions/SignIn.ts for more details
-export async function authenticateRequest(cookie: string | undefined): Promise<{
+// validates requests directly from the frontend or from hasura by checking the
+// user's cookie.
+//
+// see actions/SignIn.ts for more details
+export async function validateFrontendAuth(
+  cookie: string | undefined,
+): Promise<{
   userId: number;
   dbToken: {
     id: number;

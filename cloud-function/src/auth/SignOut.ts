@@ -1,4 +1,4 @@
-import { authenticateRequest } from './authenticateRequest';
+import { validateFrontendAuth } from './validateFrontendAuth';
 import { createClearAuthCookies } from '../lib/cookies';
 import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
@@ -20,7 +20,7 @@ export async function SignOut({
     );
   }
 
-  const auth = await authenticateRequest(ctx.req.headers.cookie);
+  const auth = await validateFrontendAuth(ctx.req.headers.cookie);
   // should not happen, as this graphql mutation is protected by hasura
   if (!auth) {
     throw new ErrorWithStatus(401, 'Unauthorized');

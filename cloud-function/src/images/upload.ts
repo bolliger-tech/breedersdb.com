@@ -3,7 +3,7 @@ import { hashFileForStorage } from '../lib/crypto';
 import { config } from '../lib/config';
 import { uploadFile } from '../lib/storage';
 import sharp from 'sharp';
-import { authenticateRequest } from '../auth/authenticateRequest';
+import { validateFrontendAuth } from '../auth/validateFrontendAuth';
 
 const IMG_MAX_SIZE_MB = 16;
 
@@ -14,7 +14,7 @@ export async function handleUpload(req: ff.Request, res: ff.Response) {
     return res.status(405).send('Method Not Allowed');
   }
 
-  const auth = await authenticateRequest(req.headers.cookie);
+  const auth = await validateFrontendAuth(req.headers.cookie);
   if (!auth) {
     return res.status(401).send('Unauthorized');
   }

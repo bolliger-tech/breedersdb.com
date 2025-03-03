@@ -10,14 +10,15 @@
       class="cursor-pointer"
       :class="{ invisible: !previewIsReady }"
       loading="lazy"
+      :style="previewError ? previewSizeStyles : undefined"
       @click="open = true"
       @load="previewIsReady = true"
-      @error="previewIsReady = true"
+      @error="
+        previewIsReady = true;
+        previewError = true;
+      "
     />
-    <div
-      v-if="!previewIsReady"
-      :style="`height: ${previewSize?.height || DEFAULT_PREVIEW_HEIGHT}px; width: ${previewSize?.width || DEFAULT_PREVIEW_HEIGHT}px;`"
-    >
+    <div v-if="!previewIsReady" :style="previewSizeStyles">
       <div class="absolute-center">
         <q-spinner size="3em" color="primary" />
       </div>
@@ -275,4 +276,11 @@ const imgUrls = computed(() => {
 });
 
 const previewIsReady = ref(false);
+const previewError = ref(false);
+
+const previewSizeStyles = computed(() => {
+  const height = props.previewSize?.height || DEFAULT_PREVIEW_HEIGHT;
+  const width = props.previewSize?.width || DEFAULT_PREVIEW_HEIGHT;
+  return `height: ${height}px; width: ${width}px;`;
+});
 </script>

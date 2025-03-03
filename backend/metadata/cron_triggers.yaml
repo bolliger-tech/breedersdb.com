@@ -1,1 +1,14 @@
-[]
+- name: PruneImages
+  webhook: '{{EVENTS_URL}}'
+  schedule: 53 4 7 * *
+  include_in_metadata: true
+  payload: {}
+  retry_conf:
+    num_retries: 0
+    retry_interval_seconds: 10
+    timeout_seconds: 300
+    tolerance_seconds: 3600
+  headers:
+    - name: x-events-secret
+      value_from_env: EVENTS_SECRET
+  comment: Once a month, delete files from assets storage if they are not referenced in the attribute_values table.

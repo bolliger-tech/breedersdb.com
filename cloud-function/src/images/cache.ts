@@ -5,6 +5,10 @@ import type { CacheConfig } from '../lib/image';
 // see deployment for details.
 const CACHE_PREFIX = 'cached-';
 
+export const FILE_NAME_REGEX = new RegExp(
+  `^(?:${CACHE_PREFIX})?(\\w+)(?:-\\d+x\\d+)?\\.(\\w+)$`,
+);
+
 export const imageCacheConfig: CacheConfig = {
   allowedDimensions: [
     // ⚠ must correspond to /frontend/src/utils/imageSizes.ts

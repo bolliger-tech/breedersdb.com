@@ -5,6 +5,7 @@ import { config } from './lib/config';
 import { handleUpload } from './images/upload';
 import { handleDownload } from './images/download';
 import { authenticateHasuraRequest } from './auth/authenticateHasuraRequest';
+import { handleEvents } from './events';
 
 ff.http('func', (req: ff.Request, res: ff.Response) => {
   if (config.LOG_REQUESTS) {
@@ -15,6 +16,8 @@ ff.http('func', (req: ff.Request, res: ff.Response) => {
       return authenticateHasuraRequest(req, res);
     case 'actions':
       return handleActions(req, res);
+    case 'events':
+      return handleEvents(req, res);
     case 'health':
       return res.send('🫛🌱🌳🍎');
     case 'upload':

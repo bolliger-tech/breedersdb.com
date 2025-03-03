@@ -18,3 +18,10 @@ export type ActionResult<T> = {
     [key: string]: string[];
   };
 };
+
+export type EventResult<T> = {
+  response: T;
+  headers?: {
+    [key: string]: string[];
+  };
+};

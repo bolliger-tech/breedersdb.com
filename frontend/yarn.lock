@@ -1377,20 +1377,20 @@
     vite "^6.1.0"
     webpack-merge "^6.0.1"
 
-"@quasar/cli@^2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@quasar/cli/-/cli-2.4.1.tgz#b65088f2a3b5825535a1f571a31fdb48cc11a672"
-  integrity sha512-MrOmlqdkQhBxfPMbSrch3O7ClCAc0sLTLp9AWLzdB7uNaLbxcLP6zXN8+EPhDzFfMyxdG7jBP0FKEi7Wh+ezrQ==
+"@quasar/cli@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@quasar/cli/-/cli-2.5.0.tgz#dd623d1c6783340eefe5f5776ed586d7c37836a0"
+  integrity sha512-2Vdltr47k7iwjSAYdtpu2ekPdGCmtrKU84wrGMs4taPRsfFyVyRBnxM1jruSvcmk54eA5chwof+ljmrui37AOA==
   dependencies:
     "@quasar/ssl-certificate" "^1.0.0"
     ci-info "^4.0.0"
     compression "^1.7.4"
     connect-history-api-fallback "^2.0.0"
     cors "^2.8.5"
-    cross-spawn "^7.0.3"
-    express "^4.19.2"
+    cross-spawn "^7.0.6"
+    express "^4.21.2"
     fs-extra "^11.2.0"
-    http-proxy-middleware "^2.0.6"
+    http-proxy-middleware "^2.0.7"
     kolorist "^1.8.0"
     minimist "^1.2.8"
     open "^9.1.0"
@@ -3726,7 +3726,7 @@ execa@^8.0.1:
     signal-exit "^4.1.0"
     strip-final-newline "^3.0.0"
 
-express@^4.19.2, express@^4.21.2:
+express@^4.21.2:
   version "4.21.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.21.2.tgz#cf250e48362174ead6cea4a566abef0162c1ec32"
   integrity sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==
@@ -4272,7 +4272,7 @@ http-errors@2.0.0:
     statuses "2.0.1"
     toidentifier "1.0.1"
 
-http-proxy-middleware@^2.0.6:
+http-proxy-middleware@^2.0.7:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/http-proxy-middleware/-/http-proxy-middleware-2.0.7.tgz#915f236d92ae98ef48278a95dedf17e991936ec6"
   integrity sha512-fgVY8AV7qU7z/MmXJ/rxwbrtQH4jBQ9m7kp3llF0liB7glmFeVZFBepQb32T3y8n8k2+AEYuMPCpinYW+/CuRA==

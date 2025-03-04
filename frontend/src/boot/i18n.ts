@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/prefer-ts-expect-error */
-import { boot } from 'quasar/wrappers';
+import { defineBoot } from '#q-app/wrappers';
 import { createI18n } from 'vue-i18n';
 
 import { messages, datetimeFormats, DEFAULT_LOCALE } from 'src/i18n';
@@ -36,7 +35,7 @@ export const i18n = createI18n({
   datetimeFormats,
 });
 
-export default boot(({ app }) => {
+export default defineBoot(({ app }) => {
   // Set i18n instance on app
   app.use(i18n);
 });

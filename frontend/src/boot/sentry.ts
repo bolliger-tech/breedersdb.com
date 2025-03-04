@@ -1,7 +1,7 @@
-import { boot } from 'quasar/wrappers';
+import { defineBoot } from '#q-app/wrappers';
 import * as Sentry from '@sentry/vue';
 
-export default boot(({ app }) => {
+export default defineBoot(({ app }) => {
   Sentry.init({
     app,
     dsn: process.env.SENTRY_DSN,

@@ -3,11 +3,11 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-import { configure } from 'quasar/wrappers';
+import { defineConfig } from '#q-app/wrappers';
 import { fileURLToPath } from 'node:url';
 import { hslToRgb } from './scripts/hsl-to-rgb';
 
-export default configure((ctx) => {
+export default defineConfig((ctx) => {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -88,7 +88,7 @@ export default configure((ctx) => {
           'vite-plugin-checker',
           {
             vueTsc: {
-              tsconfigPath: 'tsconfig.vue-tsc.json',
+              tsconfigPath: true,
             },
             eslint: {
               lintCommand:
@@ -206,10 +206,11 @@ export default configure((ctx) => {
           Number.isNaN(lightness)
             ? undefined
             : `#${hslToRgb(hue, saturation, lightness)}`;
-        json.theme_color = color || json.theme_color;
-        json.background_color = color || json.background_color;
+        json.theme_color = color || json.theme_color || '#043139';
+        json.background_color = color || json.background_color || '#043139';
 
-        json.short_name = process.env.VITE_ORG_ABBREVIATION || json.short_name;
+        json.short_name =
+          process.env.VITE_ORG_ABBREVIATION || json.short_name || 'client';
         json.name = process.env.VITE_ORG || json.name;
 
         if (json.icons && Array.isArray(json.icons)) {
@@ -276,7 +277,15 @@ export default configure((ctx) => {
       // extendBexScriptsConf (esbuildConf) {},
       // extendBexManifestJson (json) {},
 
-      contentScripts: ['my-content-script'],
+      /**
+       * The list of extra scripts (js/ts) not in your bex manifest that you want to
+       * compile and use in your browser extension. Maybe dynamic use them?
+       *
+       * Each entry in the list should be a relative filename to /src-bex/
+       *
+       * @example [ 'my-script.ts', 'sub-folder/my-other-script.js' ]
+       */
+      extraScripts: [],
     },
   };
 });

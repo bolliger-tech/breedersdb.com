@@ -1,4 +1,4 @@
-import { boot } from 'quasar/wrappers';
+import { defineBoot } from '#q-app/wrappers';
 import urql, {
   cacheExchange,
   Client,
@@ -74,6 +74,6 @@ export function createUrqlClient() {
   });
 }
 
-export default boot(({ app }) => {
+export default defineBoot(({ app }) => {
   app.use(urql, createUrqlClient());
 });

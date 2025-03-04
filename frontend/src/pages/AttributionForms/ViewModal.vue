@@ -100,8 +100,7 @@ function edit() {
 }
 
 const formFields = computed(() => {
-  const fields = (attributionForm.value?.attribution_form_fields ||
-    []) as AttributionFormFragment['attribution_form_fields'];
+  const fields = attributionForm.value?.attribution_form_fields || [];
   return fields.map((f) => ({ ...f, exceptional: false }));
 });
 </script>

@@ -6,10 +6,10 @@ export function useRouterPushWithoutScroll() {
   function routerPushWithoutScroll(to: RouteLocationRaw) {
     const x = window.scrollX;
     const y = window.scrollY;
-    router.push(to).then(() => {
+    void router.push(to).then(async () => {
       // 1. nextTick: the router sets the scroll position
       // 2. nextTick: we set it again
-      nextTick(() => nextTick(() => window.scrollTo(x, y)));
+      await nextTick(async () => await nextTick(() => window.scrollTo(x, y)));
     });
   }
 

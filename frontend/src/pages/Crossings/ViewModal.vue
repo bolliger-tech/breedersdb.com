@@ -173,7 +173,7 @@ const { localizedSortPredicate } = useLocalizedSort();
 const route = useRoute();
 const router = useRouter();
 function edit() {
-  router.push({
+  void router.push({
     path: `/crossings/${props.entityId}/edit`,
     query: route.query,
   });

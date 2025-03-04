@@ -85,9 +85,9 @@ export function useQueryArg<
   }
 
   watch(queryArg, (value) => syncToRoute(value, replace));
-  onMounted(() => {
+  onMounted(async () => {
     if (showDefaultInUrl) {
-      syncToRoute(queryArg.value, true);
+      await syncToRoute(queryArg.value, true);
     }
   });
 

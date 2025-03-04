@@ -157,7 +157,7 @@ const { localizedSortPredicate } = useLocalizedSort();
 const route = useRoute();
 const router = useRouter();
 function edit() {
-  router.push({
+  void router.push({
     path: `/pollen/${props.entityId}/edit`,
     query: route.query,
   });

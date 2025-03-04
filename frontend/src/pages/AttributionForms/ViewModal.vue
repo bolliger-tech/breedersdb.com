@@ -93,7 +93,7 @@ const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 function edit() {
-  router.push({
+  void router.push({
     path: `/attribution-forms/${props.entityId}/edit`,
     query: route.query,
   });

@@ -139,7 +139,7 @@ const print = computed(
 const route = useRoute();
 const router = useRouter();
 function edit() {
-  router.push({
+  void router.push({
     path: `/plants/${props.entityId}/edit`,
     query: route.query,
   });

@@ -18,7 +18,7 @@ export async function hashFile(file: File): Promise<string> {
     const reader = new FileReader();
     reader.onload = () => {
       const buffer = reader.result as ArrayBuffer;
-      crypto.subtle.digest('SHA-256', buffer).then((hash) => {
+      void crypto.subtle.digest('SHA-256', buffer).then((hash) => {
         const hashArray = Array.from(new Uint8Array(hash));
         const hashHex = hashArray
           .map((byte) => byte.toString(16).padStart(2, '0'))

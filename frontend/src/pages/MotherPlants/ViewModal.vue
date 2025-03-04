@@ -141,7 +141,7 @@ const { t, d } = useI18n();
 const route = useRoute();
 const router = useRouter();
 function edit() {
-  router.push({
+  void router.push({
     path: `/mother-plants/${props.entityId}/edit`,
     query: route.query,
   });

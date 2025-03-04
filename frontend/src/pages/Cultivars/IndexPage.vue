@@ -270,7 +270,7 @@ async function onScannedQr(code: string) {
       ?.plants?.[0]?.plant_group.cultivar_id;
 
   if (id) {
-    router.push({ path: `/cultivars/${id}` });
+    void router.push({ path: `/cultivars/${id}` });
   } else {
     search.value = code;
   }

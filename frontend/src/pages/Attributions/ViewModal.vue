@@ -169,7 +169,7 @@ const { t, d, n } = useI18n();
 const route = useRoute();
 const router = useRouter();
 function edit() {
-  router.push({
+  void router.push({
     path: `/attributions/${props.entityId}/edit`,
     query: route.query,
   });

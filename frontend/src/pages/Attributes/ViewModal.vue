@@ -147,7 +147,7 @@ const defaultValue = computed(() => {
 const route = useRoute();
 const router = useRouter();
 function edit() {
-  router.push({
+  void router.push({
     path: `/attributes/${props.entityId}/edit`,
     query: route.query,
   });

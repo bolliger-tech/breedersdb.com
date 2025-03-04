@@ -8,7 +8,7 @@ const EMAIL_REGEX =
 // 12 characters if: uppercase+lowercase+number
 // 32 characters otherwise
 const PASSWORD_REGEX =
-  /(^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$|^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{12,}$|^.{32,}$)/;
+  /(^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$|^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{12,}$|^.{32,}$)/;
 
 export function isValidEmail(val: string): boolean {
   return !!val?.length && EMAIL_REGEX.test(val);

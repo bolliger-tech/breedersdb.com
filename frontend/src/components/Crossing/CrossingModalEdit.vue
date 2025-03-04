@@ -41,10 +41,8 @@ import CrossingEntityForm from 'src/components/Crossing/CrossingEntityForm.vue';
 import CrossingButtonDelete from 'src/components/Crossing/CrossingButtonDelete.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { graphql } from 'src/graphql';
-import {
-  CrossingFragment,
-  crossingFragment,
-} from 'src/components/Crossing/crossingFragment';
+import type { CrossingFragment } from 'src/components/Crossing/crossingFragment';
+import { crossingFragment } from 'src/components/Crossing/crossingFragment';
 import { useI18n } from 'vue-i18n';
 
 export type CrossingEditInput = Omit<CrossingFragment, 'created' | 'modified'>;

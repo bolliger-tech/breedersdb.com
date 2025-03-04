@@ -47,10 +47,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  AttributeFragment,
-  attributeFragment,
-} from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import { attributeFragment } from 'src/components/Attribute/attributeFragment';
 import { graphql } from 'src/graphql';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import AttributeButtonDelete from 'src/components/Attribute/AttributeButtonDelete.vue';

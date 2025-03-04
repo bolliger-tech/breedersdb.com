@@ -113,15 +113,11 @@ import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import {
-  AttributionsViewFragment,
-  attributionsViewFragment,
-} from 'src/components/Attribution/attributionsViewFragment';
+import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import { attributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
-import {
-  AttributionFormFragment,
-  attributionFormFragment,
-} from 'src/components/AttributionForm/attributionFormFragment';
+import type { AttributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
+import { attributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { computed } from 'vue';
 import {
   formatResultColumnValue,

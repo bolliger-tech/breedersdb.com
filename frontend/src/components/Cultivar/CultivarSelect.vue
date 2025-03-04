@@ -22,8 +22,8 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
+import type { EntitySelectProps } from '../Entity/Edit/EntitySelect.vue';
 import EntitySelect, {
-  EntitySelectProps,
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';

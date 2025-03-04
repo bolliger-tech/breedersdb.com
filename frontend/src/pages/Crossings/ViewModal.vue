@@ -108,7 +108,8 @@
 import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import CrossingButtonDelete from 'src/components/Crossing/CrossingButtonDelete.vue';
-import { ResultOf, graphql } from 'src/graphql';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { crossingFragment } from 'src/components/Crossing/crossingFragment';
 import { useI18n } from 'src/composables/useI18n';

@@ -71,11 +71,12 @@ import AttributionFormSortableAttributeSelect from './AttributionFormSortableAtt
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import {
+import type {
   AttributionFormEditInput,
   AttributionFormInsertInput,
 } from './AttributionFormModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import { extend } from 'quasar';
 import { type AttributeFragment } from 'src/components/Attribute/attributeFragment';

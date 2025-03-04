@@ -5,7 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { Dark, useQuasar } from 'quasar';
+import type { Dark } from 'quasar';
+import { useQuasar } from 'quasar';
 
 export interface DarkModeSetter {
   isDark: Parameters<Dark['set']>[0];

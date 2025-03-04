@@ -112,9 +112,9 @@
 import { useI18n } from 'src/composables/useI18n';
 import EntityButtonDelete from './EntityButtonDelete.vue';
 import EntityModalContentSave from './EntityModalContentSave.vue';
-import { CombinedError } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
-import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
+import type { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import type { Slot } from 'vue';
 import { usePrint } from 'src/composables/usePrint';
@@ -172,10 +172,10 @@ const { t } = useI18n();
 
 /* fix pwa standalone-mode footer hidden */
 :global(
-    body:is(.platform-ios, .platform-android:not(.native-mobile))
-      .q-dialog__inner--minimized
-      .entity-modal-content__default
-  ) {
+  body:is(.platform-ios, .platform-android:not(.native-mobile))
+    .q-dialog__inner--minimized
+    .entity-modal-content__default
+) {
   max-height: calc(100dvh - 260px);
 }
 

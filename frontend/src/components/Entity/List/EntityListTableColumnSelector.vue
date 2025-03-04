@@ -33,12 +33,11 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
-import { QSelect, QSelectSlots, QTableColumn } from 'quasar';
+import type { QSelectSlots, QTableColumn } from 'quasar';
+import { QSelect } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
-import {
-  FilterSelectOptionsUpdateFn,
-  filterSelectOptions,
-} from 'src/utils/selectOptionFilter';
+import type { FilterSelectOptionsUpdateFn } from 'src/utils/selectOptionFilter';
+import { filterSelectOptions } from 'src/utils/selectOptionFilter';
 import { useInputBackground } from 'src/composables/useInputBackground';
 
 export interface EntityListTableColumnSelectorProps

@@ -6,9 +6,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import PollenModalEdit, {
-  PollenInsertInput,
-} from 'src/components/Pollen/PollenModalEdit.vue';
+import type { PollenInsertInput } from 'src/components/Pollen/PollenModalEdit.vue';
+import PollenModalEdit from 'src/components/Pollen/PollenModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';

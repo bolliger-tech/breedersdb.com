@@ -9,7 +9,7 @@ import {
   type MockMutation,
 } from 'src/utils/testHelpers';
 import { flushPromises } from '@vue/test-utils';
-import { OperationDefinitionNode } from 'graphql';
+import type { OperationDefinitionNode } from 'graphql';
 import {
   FilterNode,
   FilterConjunction,

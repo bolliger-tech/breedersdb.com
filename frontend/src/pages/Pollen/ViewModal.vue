@@ -95,7 +95,8 @@
 import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PollenButtonDelete from 'src/components/Pollen/PollenButtonDelete.vue';
-import { ResultOf, graphql } from 'src/graphql';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';
 import { useI18n } from 'src/composables/useI18n';

@@ -144,7 +144,7 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import EntityExportButton from 'src/components/Entity/EntityExportButton.vue';
 import type { EntityExportButtonProps } from 'src/components/Entity/EntityExportButton.vue';
-import { EntityListTableColum } from './types';
+import type { EntityListTableColum } from './types';
 import { n2semicolon } from 'src/utils/stringUtils';
 
 export interface EntityListTableProps extends EntityListTablePropsWithoutModel {

@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { NamedColor, QIconProps } from 'quasar';
+import type { NamedColor, QIconProps } from 'quasar';
 import { type Slot, computed } from 'vue';
 
 export interface BaseWarningProps {

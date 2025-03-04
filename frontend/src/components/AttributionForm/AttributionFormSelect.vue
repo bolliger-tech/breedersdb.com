@@ -24,13 +24,16 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, watch, ref, Ref } from 'vue';
-import { ResultOf, graphql } from 'src/graphql';
+import type { Ref } from 'vue';
+import { computed, watch, ref } from 'vue';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import EntitySelect, {
+import type {
   EntitySelectInstance,
   EntitySelectProps,
 } from 'src/components/Entity/Edit/EntitySelect.vue';
+import EntitySelect from 'src/components/Entity/Edit/EntitySelect.vue';
 
 export type AttributionForm = ResultOf<typeof query>['attribution_forms'][0];
 

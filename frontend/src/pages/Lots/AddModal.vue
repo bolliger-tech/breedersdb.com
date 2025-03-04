@@ -11,9 +11,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import LotModalEdit, {
-  LotInsertInput,
-} from 'src/components/Lot/LotModalEdit.vue';
+import type { LotInsertInput } from 'src/components/Lot/LotModalEdit.vue';
+import LotModalEdit from 'src/components/Lot/LotModalEdit.vue';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';

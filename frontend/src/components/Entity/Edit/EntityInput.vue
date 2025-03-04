@@ -39,7 +39,8 @@
 <script setup lang="ts">
 import { useInputBackground } from 'src/composables/useInputBackground';
 import type { QInput, QInputProps } from 'quasar';
-import { ComponentPublicInstance, nextTick, ref, type Slot } from 'vue';
+import type { ComponentPublicInstance } from 'vue';
+import { nextTick, ref, type Slot } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { focusInView } from 'src/utils/focusInView';

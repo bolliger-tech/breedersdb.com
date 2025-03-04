@@ -25,10 +25,10 @@
 
 <script setup lang="ts">
 import EntityCard from 'src/components/Entity/EntityCard.vue';
-import { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
-import { PlantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
-import { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
-import { LotFragment } from 'src/components/Lot/lotFragment';
+import type { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
+import type { PlantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
+import type { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import type { LotFragment } from 'src/components/Lot/lotFragment';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 
 interface EntityPlant {

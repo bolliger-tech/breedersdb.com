@@ -112,8 +112,8 @@
 import { type AttributeDataTypes } from 'src/graphql';
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref, watch } from 'vue';
-import { InputRef } from 'src/composables/useEntityForm';
-import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import type { InputRef } from 'src/composables/useEntityForm';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { MAX_INT_PG, MIN_INT_PG } from 'src/utils/constants';
 

@@ -62,11 +62,12 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import {
+import type {
   PlantRowEditInput,
   PlantRowInsertInput,
 } from './PlantRowModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import OrchardSelect from '../Orchard/OrchardSelect.vue';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import { useValidationRule } from 'src/composables/useValidationRule';

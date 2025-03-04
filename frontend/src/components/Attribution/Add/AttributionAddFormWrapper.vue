@@ -71,26 +71,21 @@ import {
 import AttributionAddForm, {
   type AttributionAddFormProps,
 } from 'src/components/Attribution/Add/AttributionAddForm.vue';
-import {
-  plantFragment,
-  PlantFragmentWithSegments,
-} from 'src/components/Plant/plantFragment';
-import {
-  PlantGroupFragment,
-  plantGroupFragment,
-} from 'src/components/PlantGroup/plantGroupFragment';
-import {
-  CultivarFragment,
-  cultivarFragment,
-} from 'src/components/Cultivar/cultivarFragment';
-import { LotFragment, lotFragment } from 'src/components/Lot/lotFragment';
+import type { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
+import { plantFragment } from 'src/components/Plant/plantFragment';
+import type { PlantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
+import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
+import type { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import type { LotFragment } from 'src/components/Lot/lotFragment';
+import { lotFragment } from 'src/components/Lot/lotFragment';
 import { useQuery } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import {
   attributeFragment,
   type AttributeFragment,
 } from 'src/components/Attribute/attributeFragment';
-import { AttributionInputValue } from '../Input/AttributionInput.vue';
+import type { AttributionInputValue } from '../Input/AttributionInput.vue';
 
 export interface AttributionAddFormWrapperProps {
   entity:

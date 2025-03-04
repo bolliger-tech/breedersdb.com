@@ -87,11 +87,12 @@ import EntityToggle from '../Entity/Edit/EntityToggle.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import {
+import type {
   AttributeEditInput,
   AttributeInsertInput,
 } from './AttributeModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import AttributeDataTypeSelect from './AttributeDataTypeSelect.vue';
 import AttributeTypeSelect from './AttributeTypeSelect.vue';

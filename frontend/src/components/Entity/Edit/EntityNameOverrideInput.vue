@@ -18,11 +18,12 @@
 </template>
 
 <script setup lang="ts">
-import EntityInput, { EntityInputProps } from './EntityInput.vue';
+import type { EntityInputProps } from './EntityInput.vue';
+import EntityInput from './EntityInput.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 import { focusInView } from 'src/utils/focusInView';
-import { InputRef } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
 
 export interface LotNameInputProps {
   fullName: string | undefined;

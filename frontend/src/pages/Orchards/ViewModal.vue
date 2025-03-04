@@ -84,7 +84,8 @@
 import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import OrchardButtonDelete from 'src/components/Orchard/OrchardButtonDelete.vue';
-import { graphql, ResultOf } from 'src/graphql';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { orchardFragment } from 'src/components/Orchard/orchardFragment';
 import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';

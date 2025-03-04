@@ -1,5 +1,5 @@
-import { QIconProps } from 'quasar';
-import { SpriteIcons } from './types';
+import type { QIconProps } from 'quasar';
+import type { SpriteIcons } from './types';
 
 // a dedicated file is used, because we need the interface
 // in a composable and non-components can't import from .vue files

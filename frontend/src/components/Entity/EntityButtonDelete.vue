@@ -53,9 +53,8 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
-import BaseGraphqlError, {
-  BaseGraphqlErrorProps,
-} from '../Base/BaseGraphqlError.vue';
+import type { BaseGraphqlErrorProps } from '../Base/BaseGraphqlError.vue';
+import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import BaseMessage from '../Base/BaseMessage.vue';
 import { singularize } from 'src/utils/stringUtils';
 import { type QBtnProps } from 'quasar';

@@ -50,9 +50,8 @@
 
 <script setup lang="ts">
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
-import EntityName, {
-  PlantGroupNameProps,
-} from 'src/components/Entity/EntityName.vue';
+import type { PlantGroupNameProps } from 'src/components/Entity/EntityName.vue';
+import EntityName from 'src/components/Entity/EntityName.vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { computed, type Slot } from 'vue';
 

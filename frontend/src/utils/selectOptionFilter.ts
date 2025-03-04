@@ -1,5 +1,5 @@
-import { QSelect } from 'quasar';
-import { Ref } from 'vue';
+import type { QSelect } from 'quasar';
+import type { Ref } from 'vue';
 import { escapeRegExp } from './stringUtils';
 
 export type FilterSelectOptionsUpdateFn = (

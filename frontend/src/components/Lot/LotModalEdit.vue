@@ -36,7 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import { LotFragment, lotFragment } from 'src/components/Lot/lotFragment';
+import type { LotFragment } from 'src/components/Lot/lotFragment';
+import { lotFragment } from 'src/components/Lot/lotFragment';
 import { graphql } from 'src/graphql';
 import LotButtonDelete from 'src/components/Lot/LotButtonDelete.vue';
 import LotEntityForm from 'src/components/Lot/LotEntityForm.vue';

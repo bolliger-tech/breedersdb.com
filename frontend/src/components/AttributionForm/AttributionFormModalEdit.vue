@@ -50,11 +50,10 @@
 </template>
 
 <script setup lang="ts">
-import {
-  AttributionFormFragment,
-  attributionFormFragment,
-} from 'src/components/AttributionForm/attributionFormFragment';
-import { graphql, VariablesOf } from 'src/graphql';
+import type { AttributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
+import { attributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
+import type { VariablesOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import AttributionFormButtonDelete from 'src/components/AttributionForm/AttributionFormButtonDelete.vue';
 import AttributionFormEntityForm from 'src/components/AttributionForm/AttributionFormEntityForm.vue';
 import { useI18n } from 'src/composables/useI18n';

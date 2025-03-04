@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { CombinedError } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
 import { ref, onErrorCaptured } from 'vue';
 import BaseSuspenseError from './BaseSuspenseError.vue';
 

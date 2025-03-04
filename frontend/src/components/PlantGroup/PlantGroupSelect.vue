@@ -29,9 +29,11 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { Ref, computed, nextTick, ref } from 'vue';
+import type { Ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { graphql } from 'src/graphql';
-import { CombinedError, useQuery } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
+import { useQuery } from '@urql/vue';
 import EntitySelect, {
   type EntitySelectInstance,
 } from '../Entity/Edit/EntitySelect.vue';

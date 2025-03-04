@@ -110,7 +110,7 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
-import { QBtnProps, QDialogProps } from 'quasar';
+import type { QBtnProps, QDialogProps } from 'quasar';
 import {
   dataTypeToColumnTypes,
   formatResultColumnValue,
@@ -120,7 +120,8 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { captureException } from '@sentry/browser';
 import { getImageFileName, getImageUrlRelative } from 'src/utils/imageUtils';
-import { imageSizes, AllowedImageSizes } from 'src/utils/imageSizes';
+import type { AllowedImageSizes } from 'src/utils/imageSizes';
+import { imageSizes } from 'src/utils/imageSizes';
 
 const DEFAULT_PREVIEW_HEIGHT = imageSizes.h200.height;
 

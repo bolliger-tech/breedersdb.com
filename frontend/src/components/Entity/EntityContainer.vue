@@ -67,10 +67,10 @@
 </template>
 
 <script setup lang="ts">
-import EntityList, { EntityListProps } from './List/EntityList.vue';
-import EntityListTable, {
-  EntityListTableProps,
-} from './List/EntityListTable.vue';
+import type { EntityListProps } from './List/EntityList.vue';
+import EntityList from './List/EntityList.vue';
+import type { EntityListTableProps } from './List/EntityListTable.vue';
+import EntityListTable from './List/EntityListTable.vue';
 import EntityModal, { type EntityModalProps } from './EntityModal.vue';
 import { type MatcherLocationAsPath, useRoute, useRouter } from 'vue-router';
 import { nextTick, type Slot, computed, ref, watch } from 'vue';

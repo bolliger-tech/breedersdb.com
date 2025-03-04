@@ -10,10 +10,8 @@
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
-import {
-  AttributionFormFragment,
-  attributionFormFragment,
-} from 'src/components/AttributionForm/attributionFormFragment';
+import type { AttributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
+import { attributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';

@@ -44,7 +44,8 @@
 <script setup lang="ts">
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import LotButtonDelete from 'src/components/Lot/LotButtonDelete.vue';
-import { graphql, ResultOf } from 'src/graphql';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { useI18n } from 'src/composables/useI18n';

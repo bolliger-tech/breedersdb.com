@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { QIconProps } from 'quasar';
+import type { QIconProps } from 'quasar';
 const { t } = useI18n();
 
 export interface BaseSpinnerProps {

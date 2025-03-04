@@ -42,10 +42,8 @@ import { computed, watch, type UnwrapRef } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
-import {
-  AttributeFragment,
-  attributeFragment,
-} from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import { attributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import {
   dataTypeToLabel,

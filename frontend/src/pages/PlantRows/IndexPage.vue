@@ -24,8 +24,10 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
-import { ResultOf, graphql } from 'src/graphql';
-import { UnwrapRef, computed, watch } from 'vue';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
+import type { UnwrapRef } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';

@@ -53,10 +53,8 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import AttributionFormButtonDelete from 'src/components/AttributionForm/AttributionFormButtonDelete.vue';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
-import {
-  AttributionFormFragment,
-  attributionFormFragment,
-} from 'src/components/AttributionForm/attributionFormFragment';
+import type { AttributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
+import { attributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';

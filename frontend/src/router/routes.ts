@@ -1,4 +1,4 @@
-import { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
+import type { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
 import { toKebabCase } from 'src/utils/stringUtils';
 
 function entityNameToRoutePath(entity: string) {

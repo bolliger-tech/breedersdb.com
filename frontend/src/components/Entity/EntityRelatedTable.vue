@@ -28,7 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import { type QTable, QTableSlots, useQuasar } from 'quasar';
+import type { QTableSlots } from 'quasar';
+import { type QTable, useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ref, watch } from 'vue';
 

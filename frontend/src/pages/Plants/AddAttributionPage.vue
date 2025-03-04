@@ -31,7 +31,7 @@ import { useI18n } from 'src/composables/useI18n';
 import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
 import PlantPicker from 'src/components/Plant/PlantPicker.vue';
 import { computed, ref } from 'vue';
-import { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
+import type { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 
 const { t } = useI18n();

@@ -60,8 +60,10 @@
 
 <script setup lang="ts" generic="T extends { [key: string]: any }">
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { QSelect, QSelectProps, QSelectSlots } from 'quasar';
+import type { QSelectProps, QSelectSlots } from 'quasar';
+import { QSelect } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
+import type { ShallowUnwrapRef } from 'vue';
 import {
   type ComponentPublicInstance,
   type VNodeRef,
@@ -69,15 +71,12 @@ import {
   ref,
   type Slot,
   type ShallowRef,
-  ShallowUnwrapRef,
 } from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
-import {
-  FilterSelectOptionsUpdateFn,
-  filterSelectOptions,
-} from 'src/utils/selectOptionFilter';
+import type { FilterSelectOptionsUpdateFn } from 'src/utils/selectOptionFilter';
+import { filterSelectOptions } from 'src/utils/selectOptionFilter';
 import { shallowRef } from 'vue';
-import { CombinedError } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { focusInView } from 'src/utils/focusInView';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';

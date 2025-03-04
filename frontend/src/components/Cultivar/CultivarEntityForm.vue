@@ -107,11 +107,12 @@ import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import {
+import type {
   CultivarEditInput,
   CultivarInsertInput,
 } from './CultivarModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import LotSelect from 'src/components/Lot/LotSelect.vue';
 import CultivarNameInputs from './CultivarNameInputs.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';

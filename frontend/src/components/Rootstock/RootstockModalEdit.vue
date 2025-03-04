@@ -37,10 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  RootstockFragment,
-  rootstockFragment,
-} from 'src/components/Rootstock/rootstockFragment';
+import type { RootstockFragment } from 'src/components/Rootstock/rootstockFragment';
+import { rootstockFragment } from 'src/components/Rootstock/rootstockFragment';
 import { graphql } from 'src/graphql';
 import RootstockButtonDelete from 'src/components/Rootstock/RootstockButtonDelete.vue';
 import RootstockEntityForm from 'src/components/Rootstock/RootstockEntityForm.vue';

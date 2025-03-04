@@ -10,9 +10,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import PlantRowModalEdit, {
-  PlantRowInsertInput,
-} from 'src/components/PlantRow/PlantRowModalEdit.vue';
+import type { PlantRowInsertInput } from 'src/components/PlantRow/PlantRowModalEdit.vue';
+import PlantRowModalEdit from 'src/components/PlantRow/PlantRowModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
 import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';

@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { CombinedError } from '@urql/core';
+import type { CombinedError } from '@urql/core';
 import { computed, onMounted } from 'vue';
 import { captureException } from '@sentry/browser';
 import { useI18n } from 'src/composables/useI18n';

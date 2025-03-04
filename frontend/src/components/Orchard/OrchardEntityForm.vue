@@ -34,8 +34,12 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import { OrchardEditInput, OrchardInsertInput } from './OrchardModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type {
+  OrchardEditInput,
+  OrchardInsertInput,
+} from './OrchardModalEdit.vue';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import EntityToggle from 'src/components/Entity/Edit/EntityToggle.vue';
 

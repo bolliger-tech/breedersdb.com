@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import LotNameSegmentInput from './LotNameSegmentInput.vue';
 import LotNameOverrideInput from './LotNameOverrideInput.vue';
-import { InputRef } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
 import { focusInView } from 'src/utils/focusInView';
 import { computed, ref, watch } from 'vue';
 import { useQuery } from '@urql/vue';

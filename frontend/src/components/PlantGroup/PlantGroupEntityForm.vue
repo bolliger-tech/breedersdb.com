@@ -52,7 +52,8 @@ import EntityToggle from '../Entity/Edit/EntityToggle.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import CultivarSelect from '../Cultivar/CultivarSelect.vue';
 import PlantGroupNameInputs from './PlantGroupNameInputs.vue';
 import type {

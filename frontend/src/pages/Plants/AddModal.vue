@@ -6,9 +6,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import PlantModalEdit, {
-  PlantInsertInput,
-} from 'src/components/Plant/PlantModalEdit.vue';
+import type { PlantInsertInput } from 'src/components/Plant/PlantModalEdit.vue';
+import PlantModalEdit from 'src/components/Plant/PlantModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';

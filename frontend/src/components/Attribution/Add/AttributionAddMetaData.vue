@@ -51,9 +51,8 @@
 </template>
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import EntityInput, {
-  EntityInputInstance,
-} from 'src/components/Entity/Edit/EntityInput.vue';
+import type { EntityInputInstance } from 'src/components/Entity/Edit/EntityInput.vue';
+import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { ref, computed } from 'vue';
 import { useValidationRule } from 'src/composables/useValidationRule';

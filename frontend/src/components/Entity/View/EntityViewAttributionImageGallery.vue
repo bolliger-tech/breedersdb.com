@@ -38,9 +38,8 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
-import EntityViewAttributionImage, {
-  EntityViewAttributionImageProps,
-} from './EntityViewAttributionImage.vue';
+import type { EntityViewAttributionImageProps } from './EntityViewAttributionImage.vue';
+import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { ref } from 'vue';
 import { useTimeout } from 'quasar';
 import { onBeforeUnmount } from 'vue';

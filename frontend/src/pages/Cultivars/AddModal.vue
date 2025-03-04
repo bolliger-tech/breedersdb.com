@@ -11,9 +11,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import CultivarModalEdit, {
-  CultivarInsertInput,
-} from 'src/components/Cultivar/CultivarModalEdit.vue';
+import type { CultivarInsertInput } from 'src/components/Cultivar/CultivarModalEdit.vue';
+import CultivarModalEdit from 'src/components/Cultivar/CultivarModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';

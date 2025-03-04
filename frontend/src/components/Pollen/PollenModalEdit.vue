@@ -39,10 +39,8 @@ import PollenEntityForm from 'src/components/Pollen/PollenEntityForm.vue';
 import PollenButtonDelete from 'src/components/Pollen/PollenButtonDelete.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { graphql } from 'src/graphql';
-import {
-  PollenFragment,
-  pollenFragment,
-} from 'src/components/Pollen/pollenFragment';
+import type { PollenFragment } from 'src/components/Pollen/pollenFragment';
+import { pollenFragment } from 'src/components/Pollen/pollenFragment';
 import { useI18n } from 'vue-i18n';
 
 export type PollenEditInput = Omit<

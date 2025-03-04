@@ -168,17 +168,19 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import {
+import type {
   MotherPlantEditInput,
   MotherPlantInsertInput,
 } from './MotherPlantModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
-import PlantSelect, { PlantSelectPlant } from '../Plant/PlantSelect.vue';
-import PollenSelect, { PollenSelectPollen } from '../Pollen/PollenSelect.vue';
-import CrossingSelect, {
-  CrossingSelectCrossing,
-} from '../Crossing/CrossingSelect.vue';
+import type { PlantSelectPlant } from '../Plant/PlantSelect.vue';
+import PlantSelect from '../Plant/PlantSelect.vue';
+import type { PollenSelectPollen } from '../Pollen/PollenSelect.vue';
+import PollenSelect from '../Pollen/PollenSelect.vue';
+import type { CrossingSelectCrossing } from '../Crossing/CrossingSelect.vue';
+import CrossingSelect from '../Crossing/CrossingSelect.vue';
 import { useValidationRule } from 'src/composables/useValidationRule';
 
 export interface MotherPlantEntityFormProps {

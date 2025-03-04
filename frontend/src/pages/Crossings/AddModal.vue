@@ -10,9 +10,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import CrossingModalEdit, {
-  CrossingInsertInput,
-} from 'src/components/Crossing/CrossingModalEdit.vue';
+import type { CrossingInsertInput } from 'src/components/Crossing/CrossingModalEdit.vue';
+import CrossingModalEdit from 'src/components/Crossing/CrossingModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
 import { crossingFragment } from 'src/components/Crossing/crossingFragment';

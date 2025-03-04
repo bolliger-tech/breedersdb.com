@@ -40,12 +40,11 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { ref, computed } from 'vue';
-import {
-  useImageUploader,
+import type {
   UploadProgress,
   UploadResponse,
-  hashFile,
 } from 'src/composables/useImageUploader';
+import { useImageUploader, hashFile } from 'src/composables/useImageUploader';
 import { resizeImageFile } from 'src/utils/imageResizer';
 
 const MAX_IMAGE_SIZE = 3840; // longest side, 4k

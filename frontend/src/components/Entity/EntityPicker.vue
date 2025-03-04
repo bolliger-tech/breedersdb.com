@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { QBtnToggleProps } from 'quasar';
+import type { QBtnToggleProps } from 'quasar';
 import { useQuasar } from 'quasar';
 import { computed, ref, watch } from 'vue';
 import { toKebabCase } from 'src/utils/stringUtils';

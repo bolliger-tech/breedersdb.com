@@ -21,7 +21,7 @@ import { BaseTable } from './filterNode';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 interface AnalyzeFilterRuleExplainerProps {
-  rule?: FilterRule;
+  rule?: FilterRule | undefined;
   baseTable: BaseTable;
 }
 

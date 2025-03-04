@@ -19,8 +19,8 @@ import { useEntityName } from 'src/composables/useEntityName';
 import type { BaseTable } from './filterNode';
 
 export interface AnalyzeFilterRuleNoAttributionsPredicateProps {
-  attributeName?: string;
-  modelValue?: boolean;
+  attributeName?: string | undefined;
+  modelValue?: boolean | undefined;
   baseTable: BaseTable;
 }
 

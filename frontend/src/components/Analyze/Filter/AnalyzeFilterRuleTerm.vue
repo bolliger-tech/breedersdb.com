@@ -80,8 +80,8 @@ import { FilterOperatorValue } from './filterRuleOperator';
 export interface AnalyzeFilterRuleTermProps {
   disabled: boolean;
   hide: boolean;
-  modelValue?: FilterRuleTerm;
-  operatorValue?: FilterOperatorValue;
+  modelValue?: FilterRuleTerm | undefined;
+  operatorValue?: FilterOperatorValue | undefined;
 }
 
 const { t } = useI18n();
@@ -187,6 +187,7 @@ const inputType = computed(() => {
     case null:
       return 'text';
     default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unknown type: ${type.value}`);
   }
 });

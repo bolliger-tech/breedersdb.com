@@ -42,8 +42,8 @@ import type { ColumnTypes } from 'src/utils/columnTypes';
 
 export interface AnalyzeFilterRuleOperatorProps {
   disabled: boolean;
-  modelValue?: FilterRuleOperator;
-  columnType?: ColumnTypes;
+  modelValue?: FilterRuleOperator | undefined;
+  columnType?: ColumnTypes | undefined;
 }
 
 const { t } = useI18n();

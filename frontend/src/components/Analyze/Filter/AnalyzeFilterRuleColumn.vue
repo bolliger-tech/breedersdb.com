@@ -48,7 +48,7 @@ import { useInputBackground } from 'src/composables/useInputBackground';
 import type { FilterRuleColumn } from './filterRuleColumn';
 
 export interface AnalyzeFilterRuleColumnProps {
-  modelValue?: FilterRuleColumn;
+  modelValue?: FilterRuleColumn | undefined;
   options: FilterRuleColumn[];
 }
 

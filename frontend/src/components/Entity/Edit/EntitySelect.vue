@@ -192,7 +192,7 @@ defineExpose({
   validate: () => selectRef.value?.validate(),
   focus: () => selectRef.value && focusInView(selectRef.value),
   filteredOptions,
-  updateInputValue: (value: string, noFilter?: boolean | undefined) =>
+  updateInputValue: (value: string, noFilter?: boolean) =>
     selectRef.value?.updateInputValue(value, noFilter),
   hidePopup: () => selectRef.value?.hidePopup(),
   blur: () => selectRef.value?.blur(),

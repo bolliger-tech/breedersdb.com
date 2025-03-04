@@ -160,12 +160,14 @@ watch(
   { deep: true },
 );
 
-const { executeMutation: refreshDbView } = useRefreshAttributionsView();
-const { data: lastRefresh, error: refreshError } = await refreshDbView({});
+const urql = useRefreshAttributionsView();
+const { data: lastRefresh, error: refreshError } = await urql.executeMutation(
+  {},
+);
 
 const lastRefreshDate = computed(() => {
   return lastRefresh?.refresh_attributions_view[0]?.last_refresh
-    ? new Date(lastRefresh.refresh_attributions_view[0].last_refresh as string)
+    ? new Date(lastRefresh.refresh_attributions_view[0].last_refresh)
     : null;
 });
 

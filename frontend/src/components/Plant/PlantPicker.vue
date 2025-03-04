@@ -21,7 +21,8 @@ import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import { PlantFragmentWithSegments, plantFragment } from './plantFragment';
+import type { PlantFragmentWithSegments } from './plantFragment';
+import { plantFragment } from './plantFragment';
 import { onMounted } from 'vue';
 import EntityPicker from 'src/components/Entity/EntityPicker.vue';
 
@@ -110,10 +111,10 @@ const query = graphql(
 const variables = computed(() => ({ label_id: input.value.plantLabelId }));
 
 const {
-  executeQuery,
   fetching,
   data,
   error: fetchError,
+  ...urql
 } = useQuery({
   query,
   pause: true,
@@ -132,6 +133,6 @@ watch(data, (d) => {
 
 async function loadPlant() {
   await nextTick(); // ensure the useQuery({variables}) is updated
-  await executeQuery();
+  await urql.executeQuery();
 }
 </script>

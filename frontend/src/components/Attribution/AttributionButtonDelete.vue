@@ -29,8 +29,8 @@ const emit = defineEmits<{
 
 const {
   error: attributionValueCountError,
-  executeQuery: fetchAttributionValueCount,
   fetching: fetchingAttributionValueCount,
+  ...urqlFetch
 } = useQuery({
   query: graphql(`
     query AttributionValueCount($attributionId: Int!) {
@@ -49,8 +49,8 @@ const {
 
 const {
   error: deleteAttributionValueError,
-  executeMutation: executeDeleteAttributionValue,
   fetching: deletingAttributionValue,
+  ...urqlDeleteAttributionValue
 } = useMutation(
   graphql(`
     mutation DeleteAttributionValue($attributionValueId: Int!) {
@@ -69,8 +69,8 @@ const {
 
 const {
   error: deleteAttributionValueAndAttributionError,
-  executeMutation: executeDeleteAttributionValueAndAttribution,
   fetching: deletingAttributionValueAndAttribution,
+  ...urqlDeleteAttributionValueAndAttribution
 } = useMutation(
   graphql(`
     mutation DeleteAttributionValueAndAttribution(
@@ -114,17 +114,17 @@ const deleting = computed(
 );
 
 async function deleteAttribution() {
-  const { data: countData } = await fetchAttributionValueCount();
+  const { data: countData } = await urqlFetch.executeQuery();
 
   const executeDelete =
     (countData.value?.attribution_values_aggregate.aggregate?.count || 0) > 1
-      ? executeDeleteAttributionValue(
+      ? urqlDeleteAttributionValue.executeMutation(
           {
             attributionValueId: props.attributionValueId,
           },
           { additionalTypenames: ['attributions_view'] },
         )
-      : executeDeleteAttributionValueAndAttribution(
+      : urqlDeleteAttributionValueAndAttribution.executeMutation(
           {
             attributionValueId: props.attributionValueId,
             attributionId: props.attributionId,
@@ -132,7 +132,7 @@ async function deleteAttribution() {
           { additionalTypenames: ['attributions_view'] },
         );
 
-  executeDelete.then((result) => {
+  void executeDelete.then((result) => {
     if (!result.data?.delete_attribution_values_by_pk) {
       console.error(`Failed to delete attribution ${props.attributionId}`);
     } else {

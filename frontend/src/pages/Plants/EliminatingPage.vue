@@ -74,7 +74,7 @@ import PlantPicker from 'src/components/Plant/PlantPicker.vue';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import BaseStepper from 'src/components/Base/BaseStepper.vue';
 import { nextTick, ref, watch } from 'vue';
-import { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
+import type { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
 import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -90,8 +90,8 @@ const fetching = ref(false);
 
 const {
   error,
-  executeMutation,
   fetching: eliminating,
+  ...urql
 } = useMutation(
   graphql(`
     mutation EliminatePlant($id: Int!) {
@@ -121,7 +121,7 @@ async function eliminate() {
     return;
   }
 
-  await executeMutation({ id: plant.value.id });
+  await urql.executeMutation({ id: plant.value.id });
   await nextTick();
 
   if (!error.value) {

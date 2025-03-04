@@ -37,15 +37,14 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import EntityInput, {
-  EntityInputInstance,
-} from '../Entity/Edit/EntityInput.vue';
+import type { EntityInputInstance } from '../Entity/Edit/EntityInput.vue';
+import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { computed, ref } from 'vue';
 import { watch } from 'vue';
 import { nextTick } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import { ValidationRule } from 'quasar';
+import type { ValidationRule } from 'quasar';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { focusInView } from 'src/utils/focusInView';
 
@@ -95,7 +94,7 @@ const uniqueQuery = graphql(`
 const queryVariables = ref({
   label_id: plantLabelIdUtils.zeroFill(labelId.value),
 });
-const { executeQuery, fetching } = useQuery({
+const { fetching, ...urql } = useQuery({
   query: uniqueQuery,
   variables: queryVariables,
   pause: true,
@@ -116,7 +115,7 @@ async function uniqueRule(newLabelId: string) {
   // if not, the next free label id is returned
   queryVariables.value.label_id = newLabelId;
   await nextTick(); // wait for the refs to be updated
-  const { data, error } = await executeQuery();
+  const { data, error } = await urql.executeQuery();
 
   if (error.value || !data.value) {
     console.error(error.value || new Error('No data returned'));

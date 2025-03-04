@@ -31,8 +31,8 @@ function resetErrors() {
 
 const {
   error,
-  executeMutation: executeDeleteGrafting,
   fetching: deleting,
+  ...urql
 } = useMutation(
   graphql(`
     mutation DeleteGrafting($id: Int!) {
@@ -44,7 +44,7 @@ const {
 );
 
 function deleteGrafting() {
-  executeDeleteGrafting({ id: props.graftingId }).then((result) => {
+  void urql.executeMutation({ id: props.graftingId }).then((result) => {
     if (!result.data?.delete_graftings_by_pk) {
       console.error(`Failed to delete grafting ${props.graftingId}`);
     } else {

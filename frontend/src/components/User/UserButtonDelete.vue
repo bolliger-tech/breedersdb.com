@@ -31,8 +31,8 @@ function resetErrors() {
 
 const {
   error,
-  executeMutation: executeDeleteUser,
   fetching: deleting,
+  ...urql
 } = useMutation(
   graphql(`
     mutation DeleteUser($id: Int!) {
@@ -44,7 +44,7 @@ const {
 );
 
 function deleteUser() {
-  executeDeleteUser({ id: props.userId }).then((result) => {
+  void urql.executeMutation({ id: props.userId }).then((result) => {
     // in case no user is found (which shouldn't happen) we don't get an error
     // currently the error is not displayed as creating a
     // GraphQL error is cumbersome

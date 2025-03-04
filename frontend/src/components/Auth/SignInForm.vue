@@ -57,7 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import { CombinedError, useMutation } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
+import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { onBeforeUnmount, ref } from 'vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
@@ -88,11 +89,7 @@ if (getUserFromCookie()) {
 const email = ref('');
 const password = ref('');
 
-const {
-  error,
-  fetching,
-  executeMutation: signIn,
-} = useMutation(
+const { error, fetching, ...urql } = useMutation(
   graphql(`
     mutation SignIn($email: citext!, $password: String!) {
       SignIn(email: $email, password: $password) {
@@ -104,17 +101,19 @@ const {
 );
 
 function onSubmit() {
-  signIn({ email: email.value, password: password.value }).then((result) => {
-    if (result.error) {
-      return;
-    }
-    if (result.data?.SignIn.locale) {
-      i18n.setAndPersistLocale(result.data.SignIn.locale as Locale);
-    } else {
-      console.error('No locale in SignIn response');
-    }
-    redirect();
-  });
+  void urql
+    .executeMutation({ email: email.value, password: password.value })
+    .then((result) => {
+      if (result.error) {
+        return;
+      }
+      if (result.data?.SignIn.locale) {
+        i18n.setAndPersistLocale(result.data.SignIn.locale as Locale);
+      } else {
+        console.error('No locale in SignIn response');
+      }
+      redirect();
+    });
 }
 
 const now = ref(new Date());

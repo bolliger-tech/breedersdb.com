@@ -36,10 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PlantFragment,
-  plantFragment,
-} from 'src/components/Plant/plantFragment';
+import type { PlantFragment } from 'src/components/Plant/plantFragment';
+import { plantFragment } from 'src/components/Plant/plantFragment';
 import { graphql } from 'src/graphql';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
 import PlantEntityForm from 'src/components/Plant/PlantEntityForm.vue';
@@ -106,8 +104,8 @@ const labelQuery = graphql(`
 const labelQueryVariables = ref({ id: -1 });
 const {
   data: labelData,
-  executeQuery: fetchLabelData,
   error: fetchLabelDataError,
+  ...urql
 } = await useQuery({
   query: labelQuery,
   variables: labelQueryVariables,
@@ -118,7 +116,7 @@ const {
 async function getLabel(id: number) {
   labelQueryVariables.value.id = id;
   await nextTick();
-  await fetchLabelData();
+  await urql.executeQuery();
   await nextTick();
   const data = labelData.value?.plants_by_pk;
   if (!data) {

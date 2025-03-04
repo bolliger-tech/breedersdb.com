@@ -131,9 +131,9 @@ const editMutation = graphql(
 );
 
 const {
-  executeMutation: executeEditMutation,
   fetching: savingEdit,
   error: saveEditError,
+  ...urqlEdit
 } = useMutation(editMutation);
 
 const insertMutation = graphql(
@@ -164,9 +164,9 @@ const insertMutation = graphql(
 );
 
 const {
-  executeMutation: executeInsertMutation,
   fetching: savingInsert,
   error: saveInsertError,
+  ...urqlInsert
 } = useMutation(insertMutation);
 
 function filterToPojo(filter: FilterNode | undefined) {
@@ -198,11 +198,11 @@ async function save() {
   let respData: AnalyzeFiltersFragment | undefined = undefined;
 
   if (props.analyzeId === 'new') {
-    const resp = await executeInsertMutation(getMutationVariables());
+    const resp = await urqlInsert.executeMutation(getMutationVariables());
     newId = resp.data?.insert_analyze_filters_one?.id;
     respData = resp.data?.insert_analyze_filters_one || undefined;
   } else {
-    const resp = await executeEditMutation(
+    const resp = await urqlEdit.executeMutation(
       getMutationVariables(props.analyzeId) as Required<
         ReturnType<typeof getMutationVariables>
       >,

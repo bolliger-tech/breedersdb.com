@@ -27,7 +27,7 @@ export function useIsUnique({
   const variables = computed(() => ({
     where: { [columnName]: { _eq: term.value }, ...additionalWhere?.value },
   }));
-  const { executeQuery, fetching } = useQuery({
+  const { fetching, ...urql } = useQuery({
     query: query,
     variables,
     pause: true,
@@ -37,7 +37,7 @@ export function useIsUnique({
   async function isUnique(newName: string) {
     term.value = newName;
     await nextTick(); // wait for the refs to be updated
-    const result = await executeQuery();
+    const result = await urql.executeQuery();
     if (result.error.value) {
       console.error(result.error.value);
       throw new Error(result.error.value.message);

@@ -86,7 +86,7 @@ const query = graphql(`
 
 const variables = computed(() => ({ attributeId: props.attributeId }));
 
-const { executeQuery, fetching } = useQuery({
+const { fetching, ...urql } = useQuery({
   query,
   variables,
   pause: true,
@@ -98,7 +98,7 @@ async function hasAttributions() {
   if (!props.attributeId) {
     return false;
   }
-  const result = await executeQuery();
+  const result = await urql.executeQuery();
   if (result.error.value) {
     console.error(result.error);
     return false;

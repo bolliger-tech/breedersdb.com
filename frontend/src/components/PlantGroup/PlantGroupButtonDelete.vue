@@ -89,8 +89,8 @@ const plantGroupHasPlantsOrAttributions = computed(() => {
 
 const {
   error: deleteError,
-  executeMutation: executeDeletePlantGroup,
   fetching: deleting,
+  ...urqlDelete
 } = useMutation(
   graphql(`
     mutation DeletePlantGroup($id: Int!) {
@@ -103,8 +103,8 @@ const {
 
 const {
   error: disableError,
-  executeMutation: executeDisablePlantGroup,
   fetching: disabling,
+  ...urqlDisable
 } = useMutation(
   graphql(`
     mutation DisablePlantGroup($id: Int!) {
@@ -119,7 +119,7 @@ const {
 );
 
 function deletePlantGroup() {
-  executeDeletePlantGroup({ id: props.plantGroupId }).then((result) => {
+  void urqlDelete.executeMutation({ id: props.plantGroupId }).then((result) => {
     if (!result.data?.delete_plant_groups_by_pk) {
       console.error(`Failed to delete plantGroup ${props.plantGroupId}`);
     } else {
@@ -129,13 +129,15 @@ function deletePlantGroup() {
 }
 
 function disablePlantGroup() {
-  executeDisablePlantGroup({ id: props.plantGroupId }).then((result) => {
-    if (!result.data?.update_plant_groups_by_pk) {
-      console.error(`Failed to disable plantGroup ${props.plantGroupId}`);
-    } else {
-      emit('deleted');
-    }
-  });
+  void urqlDisable
+    .executeMutation({ id: props.plantGroupId })
+    .then((result) => {
+      if (!result.data?.update_plant_groups_by_pk) {
+        console.error(`Failed to disable plantGroup ${props.plantGroupId}`);
+      } else {
+        emit('deleted');
+      }
+    });
 }
 
 const { t } = useI18n();

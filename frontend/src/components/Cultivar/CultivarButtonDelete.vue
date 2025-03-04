@@ -31,8 +31,8 @@ function resetErrors() {
 
 const {
   error,
-  executeMutation: executeDeleteCultivar,
   fetching: deleting,
+  ...urql
 } = useMutation(
   graphql(`
     mutation DeleteCultivar($id: Int!) {
@@ -44,7 +44,7 @@ const {
 );
 
 function deleteCultivar() {
-  executeDeleteCultivar({ id: props.cultivarId }).then((result) => {
+  void urql.executeMutation({ id: props.cultivarId }).then((result) => {
     if (!result.data?.delete_cultivars_by_pk) {
       console.error(`Failed to delete cultivar ${props.cultivarId}`);
     } else {

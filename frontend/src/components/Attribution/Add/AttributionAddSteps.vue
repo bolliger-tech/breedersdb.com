@@ -118,7 +118,8 @@ import BaseStepper from 'src/components/Base/BaseStepper.vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref, watch, type Slot, Ref } from 'vue';
+import type { Ref } from 'vue';
+import { computed, ref, watch, type Slot } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
 import {
@@ -183,7 +184,7 @@ const {
   data: formData,
   error: formFetchError,
   fetching: formFetching,
-  executeQuery: fetchForm,
+  ...urqlForm
 } = useQuery({
   query: formQuery,
   variables: formVariables,
@@ -195,7 +196,7 @@ watch(
   formVariables,
   () => {
     if (formId.value > -1) {
-      fetchForm();
+      urqlForm.executeQuery();
     }
   },
   { immediate: true, deep: true, flush: 'post' },

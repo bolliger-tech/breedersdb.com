@@ -58,14 +58,13 @@
 </template>
 
 <script setup lang="ts">
-import { graphql, VariablesOf } from 'src/graphql';
+import type { VariablesOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { useMutation } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
-import {
-  useImageUploader,
-  UploadProgress,
-} from 'src/composables/useImageUploader';
+import type { UploadProgress } from 'src/composables/useImageUploader';
+import { useImageUploader } from 'src/composables/useImageUploader';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
@@ -74,7 +73,7 @@ import AttributionAddFormSaveButton from './AttributionAddFormSaveButton.vue';
 import AttributionAddRepeatCounter from 'src/components/Attribution/Add/AttributionAddRepeatCounter.vue';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import AttributionAddFormAddInput from 'src/components/Attribution/Add/AttributionAddFormAddInput.vue';
-import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import AttributionAddAlreadyAttributed from 'src/components/Attribution/Add/AttributionAddAlreadyAttributed.vue';
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 import AttributionAddFormFieldList from 'src/components/Attribution/Add/AttributionAddFormFieldList.vue';
@@ -206,14 +205,14 @@ const insertMutation = graphql(`
 `);
 
 const {
-  executeMutation: insertAttributions,
   fetching: savingInsert,
   error: saveInsertError,
   data: insertedAttribution,
+  ...urqlInsert
 } = useMutation(insertMutation);
 
 function saveInsert(attributions: AttributionValue[]) {
-  return insertAttributions(
+  return urqlInsert.executeMutation(
     {
       formId: props.formId,
       author: props.author,
@@ -263,16 +262,16 @@ const editMutation = graphql(`
 `);
 
 const {
-  executeMutation: editAttributions,
   fetching: savingEdit,
   error: saveEditError,
+  ...urqlEdit
 } = useMutation(editMutation);
 
 function saveEdit(
   attributionId: number,
   attributionValues: AttributionValue[],
 ) {
-  return editAttributions(
+  return urqlEdit.executeMutation(
     {
       attributionId,
       attributionValues: attributionValues.map((av) => ({

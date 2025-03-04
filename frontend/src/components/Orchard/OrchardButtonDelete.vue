@@ -83,8 +83,8 @@ const orchardHasDependencies = computed(() => {
 
 const {
   error: deleteError,
-  executeMutation: executeDeleteOrchard,
   fetching: deleting,
+  ...urqlDelete
 } = useMutation(
   graphql(`
     mutation DeleteOrchard($id: Int!) {
@@ -97,8 +97,8 @@ const {
 
 const {
   error: disableError,
-  executeMutation: executeDisableOrchard,
   fetching: disabling,
+  ...urqlDisable
 } = useMutation(
   graphql(`
     mutation DisableOrchard($id: Int!) {
@@ -110,7 +110,7 @@ const {
 );
 
 function deleteOrchard() {
-  executeDeleteOrchard({ id: props.orchardId }).then((result) => {
+  void urqlDelete.executeMutation({ id: props.orchardId }).then((result) => {
     if (!result.data?.delete_orchards_by_pk) {
       console.error(`Failed to delete orchard ${props.orchardId}`);
     } else {
@@ -120,7 +120,7 @@ function deleteOrchard() {
 }
 
 function disableOrchard() {
-  executeDisableOrchard({ id: props.orchardId }).then((result) => {
+  void urqlDisable.executeMutation({ id: props.orchardId }).then((result) => {
     if (!result.data?.update_orchards_by_pk) {
       console.error(`Failed to disable orchard ${props.orchardId}`);
     } else {

@@ -69,8 +69,8 @@ import {
 } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { useCancel } from 'src/composables/useCancel';
-import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
-import { TadaDocumentNode } from 'gql.tada';
+import type { SpriteIcons } from '../Base/BaseSpriteIcon/types';
+import type { TadaDocumentNode } from 'gql.tada';
 import { usePrint } from 'src/composables/usePrint';
 import { captureException } from '@sentry/browser';
 import { useQuasar } from 'quasar';
@@ -121,21 +121,21 @@ function setFormRef(form: InstanceType<FormRef>) {
 
 const insertData = ref<InsertVariables['entity']>();
 const {
-  executeMutation: executeInsertMutation,
   fetching: savingInsert,
   error: saveInsertError,
   data: insertResult,
+  ...urqlInsert
 } = useMutation(props.insertMutation);
 
 const editedData = ref<EditVariables['entity']>();
 const {
-  executeMutation: executeEditMutation,
   fetching: savingEdit,
   error: saveEditError,
   data: editResult,
+  ...urqlEdit
 } = useMutation(props.editMutation);
 
-function onFormChange(data: typeof editedData.value | typeof insertData.value) {
+function onFormChange(data: typeof editedData.value) {
   if (!data) {
     return;
   } else if ('id' in props.entity) {
@@ -184,7 +184,7 @@ async function saveInsert() {
     props.withInsertData?.(insertData.value) ??
     ({ entity: insertData.value } as InsertVariables);
 
-  return executeInsertMutation(data);
+  return urqlInsert.executeMutation(data);
 }
 
 async function saveEdit() {
@@ -204,7 +204,7 @@ async function saveEdit() {
       entity: editedData.value,
     } as EditVariables);
 
-  return executeEditMutation(data);
+  return urqlEdit.executeMutation(data);
 }
 
 const saveError = computed(() => saveInsertError.value || saveEditError.value);

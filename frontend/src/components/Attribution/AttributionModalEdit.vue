@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { graphql } from 'src/graphql';
 import AttributionButtonDelete from 'src/components/Attribution/AttributionButtonDelete.vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -47,13 +47,11 @@ import { computed, nextTick, ref, watch } from 'vue';
 import AttributionInput, {
   type AttributionInputValue,
 } from 'src/components/Attribution/Input/AttributionInput.vue';
-import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useMutation } from '@urql/vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
-import {
-  UploadProgress,
-  useImageUploader,
-} from 'src/composables/useImageUploader';
+import type { UploadProgress } from 'src/composables/useImageUploader';
+import { useImageUploader } from 'src/composables/useImageUploader';
 
 export type AttributionEditInput = Pick<
   AttributionsViewFragment,
@@ -108,9 +106,9 @@ const editMutation = graphql(`
 `);
 
 const {
-  executeMutation: executeEditMutation,
   fetching: savingEdit,
   error: saveError,
+  ...urqlEdit
 } = useMutation(editMutation);
 
 const { cancel } = useCancel({ path: '/attributions' });
@@ -217,7 +215,7 @@ async function saveEdit() {
     }
   }
 
-  return executeEditMutation(
+  return urqlEdit.executeMutation(
     {
       id: props.attribution.id,
       entity: editedAttributionValue,

@@ -68,7 +68,8 @@ import { QItem } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref, nextTick, watch, onBeforeUnmount } from 'vue';
 import { graphql } from 'src/graphql';
-import { CombinedError, useMutation, useQuery } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
+import { useMutation, useQuery } from '@urql/vue';
 
 export interface PlantGroupSelectAutocreateProps {
   searchValue: string;
@@ -145,7 +146,7 @@ const {
   data: queryData,
   error: fetchError,
   fetching: fetching,
-  executeQuery: executeQuery,
+  ...urqlQuery
 } = useQuery({
   query: query,
   variables: queryVars,
@@ -173,7 +174,7 @@ async function fetchPropositions() {
   };
 
   await nextTick();
-  executeQuery();
+  urqlQuery.executeQuery();
 }
 
 const propositions = computed(() => {
@@ -317,15 +318,15 @@ const insertPlantGroupMutation = graphql(`
 `);
 
 const {
-  executeMutation: executeCultivarMutation,
   fetching: savingCultivar,
   error: saveCultivarError,
+  ...urqlCultivarMutation
 } = useMutation(insertCultivarMutation);
 
 const {
-  executeMutation: executePlantGroupMutation,
   fetching: savingPlantGropup,
   error: savePlantGropupError,
+  ...urqlPlantGroupMutation
 } = useMutation(insertPlantGroupMutation);
 
 watch([saveCultivarError, savePlantGropupError], () => {
@@ -339,12 +340,12 @@ watch([savingCultivar, savingPlantGropup], () => {
 async function select(proposition: NonNullable<typeof propositions.value>[0]) {
   const resp =
     'cultivar' in proposition.entity
-      ? await executeCultivarMutation({
+      ? await urqlCultivarMutation.executeMutation({
           lotId: proposition.entity.cultivar.lot_id,
           cultivarNameSegment: proposition.entity.cultivar.name_segment,
           groupNameSegment: proposition.entity.cultivar.group.name_segment,
         })
-      : await executePlantGroupMutation({
+      : await urqlPlantGroupMutation.executeMutation({
           cultivarId: proposition.entity.group.cultivar_id,
           nameSegment: proposition.entity.group.name_segment,
         });

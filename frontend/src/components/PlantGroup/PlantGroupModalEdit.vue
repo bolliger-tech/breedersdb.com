@@ -36,10 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PlantGroupFragment,
-  plantGroupFragment,
-} from 'src/components/PlantGroup/plantGroupFragment';
+import type { PlantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
+import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { graphql } from 'src/graphql';
 import PlantGroupButtonDelete from 'src/components/PlantGroup/PlantGroupButtonDelete.vue';
 import PlantGroupEntityForm from 'src/components/PlantGroup/PlantGroupEntityForm.vue';
@@ -118,8 +116,8 @@ const labelQuery = graphql(`
 const labelQueryVariables = ref({ id: -1 });
 const {
   data: labelData,
-  executeQuery: fetchLabelData,
   error: fetchLabelDataError,
+  ...urql
 } = await useQuery({
   query: labelQuery,
   variables: labelQueryVariables,
@@ -130,7 +128,7 @@ const {
 async function getLabel(id: number) {
   labelQueryVariables.value.id = id;
   await nextTick();
-  await fetchLabelData();
+  await urql.executeQuery();
   await nextTick();
   const data = labelData.value?.plant_groups_by_pk;
   if (!data?.label_id) {

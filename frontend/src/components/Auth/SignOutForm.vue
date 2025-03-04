@@ -24,11 +24,7 @@ const { t } = useI18n();
 
 const router = useRouter();
 
-const {
-  error,
-  fetching,
-  executeMutation: signOut,
-} = useMutation(
+const { error, fetching, ...urql } = useMutation(
   graphql(`
     mutation SignOut {
       SignOut {
@@ -39,7 +35,7 @@ const {
 );
 
 const onSubmit = () => {
-  signOut({}).then(({ error }) => {
+  void urql.executeMutation({}).then(({ error }) => {
     if (!error) {
       router.push({ path: '/' });
     }

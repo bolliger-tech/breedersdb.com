@@ -20,7 +20,8 @@ import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import { CultivarFragment, cultivarFragment } from './cultivarFragment';
+import type { CultivarFragment } from './cultivarFragment';
+import { cultivarFragment } from './cultivarFragment';
 import { onMounted } from 'vue';
 import EntityPicker from 'src/components/Entity/EntityPicker.vue';
 
@@ -147,10 +148,10 @@ const variables = computed(() =>
 );
 
 const {
-  executeQuery,
   fetching,
   data,
   error: fetchError,
+  ...urql
 } = await useQuery({
   query,
   variables,
@@ -169,6 +170,6 @@ watch(data, (d) => {
 
 async function loadCultivar() {
   await nextTick(); // ensure the useQuery({variables}) is updated
-  await executeQuery();
+  await urql.executeQuery();
 }
 </script>

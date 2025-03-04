@@ -33,7 +33,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { AnalyzeAttributionsViewFields } from './filterToQuery';
+import type { AnalyzeAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';

@@ -1,8 +1,6 @@
 import { BaseTable, type FilterNode } from '../Filter/filterNode';
-import {
-  FilterRuleOperator,
-  FilterOperatorValue,
-} from '../Filter/filterRuleOperator';
+import type { FilterRuleOperator } from '../Filter/filterRuleOperator';
+import { FilterOperatorValue } from '../Filter/filterRuleOperator';
 import type { FilterRule } from '../Filter/filterRule';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';

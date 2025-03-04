@@ -125,7 +125,7 @@
 </template>
 
 <script lang="ts" setup>
-import { AttributionDetails } from './AnalyzeResultTableCellAttributionOverlay.vue';
+import type { AttributionDetails } from './AnalyzeResultTableCellAttributionOverlay.vue';
 import { useI18n } from 'src/composables/useI18n';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { type BaseSpriteIconProps } from 'components/Base/BaseSpriteIcon/baseSpriteIconProps';

@@ -34,17 +34,16 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
-import AnalyzeResultTable, {
-  AnalyzeResultTableProps,
-} from 'components/Analyze/Result/AnalyzeResultTable.vue';
+import type { AnalyzeResultTableProps } from 'components/Analyze/Result/AnalyzeResultTable.vue';
+import AnalyzeResultTable from 'components/Analyze/Result/AnalyzeResultTable.vue';
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
-import {
+import type {
   AnalyzeAttributionsViewFields,
   AnalyzeResult,
   AnalyzeResultEntityField,
   AnalyzeResultEntityRow,
-  filterToQuery,
 } from './filterToQuery';
+import { filterToQuery } from './filterToQuery';
 import { attributionToXlsx } from './exportResult';
 import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -53,11 +52,11 @@ import { useI18n } from 'src/composables/useI18n';
 import { debounce } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
 import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
-import {
+import type {
   ExportDataValue,
   TransformDataArgs,
-  useExport,
 } from 'src/composables/useExport';
+import { useExport } from 'src/composables/useExport';
 
 export interface AnalyzeResultProps {
   baseTable: BaseTable;

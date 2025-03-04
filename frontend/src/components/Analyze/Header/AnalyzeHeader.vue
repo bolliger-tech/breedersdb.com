@@ -48,18 +48,14 @@
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 import AnalyzeHeaderMoreMenu from './AnalyzeHeaderMoreMenu.vue';
-import {
-  BaseTable,
-  FilterNode,
-} from 'src/components/Analyze/Filter/filterNode';
+import type { FilterNode } from 'src/components/Analyze/Filter/filterNode';
+import { BaseTable } from 'src/components/Analyze/Filter/filterNode';
 import { graphql } from 'src/graphql';
 import { useMutation } from '@urql/vue';
-import {
-  AnalyzeFiltersFragment,
-  analyzeFiltersFragment,
-} from 'src/components/Analyze/analyzeFiltersFragment';
+import type { AnalyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFragment';
+import { analyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFragment';
 import { ref, computed, nextTick } from 'vue';
-import { AnalyzeFilterBaseTables } from 'src/graphql';
+import type { AnalyzeFilterBaseTables } from 'src/graphql';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import AnalyzeHeaderNameDialog from './AnalyzeHeaderNameDialog.vue';
 import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router';

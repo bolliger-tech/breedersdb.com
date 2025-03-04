@@ -10,7 +10,8 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
-import { graphql, ResultOf } from 'src/graphql';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';

@@ -44,9 +44,9 @@
 </template>
 
 <script lang="ts" setup>
-import { QTableColumn, QTableProps } from 'quasar';
+import type { QTableColumn, QTableProps } from 'quasar';
 import AnalyzeResultTableCell from './AnalyzeResultTableCell.vue';
-import { AnalyzeAttributionsViewFields } from './filterToQuery';
+import type { AnalyzeAttributionsViewFields } from './filterToQuery';
 import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
 import AnalyzeResultTableColumnLabel from 'components/Analyze/Result/AnalyzeResultTableColumnLabel.vue';
 import { BaseTable } from '../Filter/filterNode';

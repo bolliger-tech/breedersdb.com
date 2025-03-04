@@ -253,7 +253,7 @@ function processVideoFrame() {
     const imageData = renderingContext.getImageData(0, 0, el.width, el.height);
 
     const res = read_qrcodes_from_image_data(imageData, true);
-    for (let qr of res) {
+    for (const qr of res) {
       if ('content' in qr.data) {
         drawFrameAroundCode({
           topLeftCorner: qr.corners[0],

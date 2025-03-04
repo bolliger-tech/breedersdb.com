@@ -388,7 +388,7 @@ watch(
 );
 
 function getValue(row: AttributionsViewFragment) {
-  const type = dataTypeToColumnTypes(row.data_type as AttributeDataTypes);
+  const type = dataTypeToColumnTypes(row.data_type);
   const value = getAttributionValue(row);
 
   if (type === ColumnTypes.Photo) {

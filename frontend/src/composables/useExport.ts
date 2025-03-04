@@ -114,7 +114,7 @@ function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
                 ? ['modified', 'created'].includes(
                     column.name.split('.').pop() || '',
                   )
-                  ? new Date(value as string)
+                  ? new Date(value)
                   : n2semicolon(value)
                 : value; // should be: boolean | number | Date
 

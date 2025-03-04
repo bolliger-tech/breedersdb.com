@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { useI18n } from 'src/composables/useI18n';
-import type { AttributeDataTypes, AttributeTypes } from 'src/graphql';
+import type { AttributeTypes } from 'src/graphql';
 import {
   formatResultColumnValue,
   dataTypeToColumnTypes,
@@ -206,7 +206,7 @@ const columns = [
 ];
 
 function getValue(row: AttributionsViewFragment) {
-  const type = dataTypeToColumnTypes(row.data_type as AttributeDataTypes);
+  const type = dataTypeToColumnTypes(row.data_type);
   const value = getAttributionValue(row);
 
   if (type === ColumnTypes.Photo) {

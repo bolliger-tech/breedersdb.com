@@ -120,7 +120,7 @@ function getVisibleColumns() {
       ? $q.localStorage.getItem<string[]>(VISIBLE_COLUMNS_KEY)
       : data.value?.analyze_filters_by_pk?.visible_columns;
 
-  return (columns as string[] | null | undefined) || undefined;
+  return columns || undefined;
 }
 
 const baseFilter: Ref<FilterNode | undefined> = ref(undefined);

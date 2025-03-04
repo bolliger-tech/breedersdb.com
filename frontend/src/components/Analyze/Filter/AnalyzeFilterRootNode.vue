@@ -83,10 +83,11 @@
 <script lang="ts" setup>
 import AnalyzeFilterRuleAddButton from './AnalyzeFilterRuleAddButton.vue';
 import AnalyzeFilterNode from './AnalyzeFilterNode.vue';
-import { computed, Ref, ref, watch } from 'vue';
+import type { Ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { FilterNode, FilterConjunction, BaseTable } from './filterNode';
 import { useI18n } from 'src/composables/useI18n';
-import { FilterRuleColumn } from './filterRuleColumn';
+import type { FilterRuleColumn } from './filterRuleColumn';
 import { useEntityName } from 'src/composables/useEntityName';
 import { useFilterDragNode } from './useFilterDragNode';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';

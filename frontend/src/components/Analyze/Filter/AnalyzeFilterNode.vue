@@ -97,7 +97,7 @@ import AnalyzeFilterRule from './AnalyzeFilterRule.vue';
 import FilterRuleButtonAdd from './AnalyzeFilterRuleAddButton.vue';
 import { FilterNode, FilterConjunction } from './filterNode';
 import AnalyzeFilterRuleDropZone from './AnalyzeFilterRuleDropZone.vue';
-import { FilterRuleColumn } from './filterRuleColumn';
+import type { FilterRuleColumn } from './filterRuleColumn';
 import { useFilterDragNode } from './useFilterDragNode';
 
 export interface AnalyzeFilterNodeProps {

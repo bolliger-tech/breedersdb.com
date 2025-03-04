@@ -16,7 +16,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import { computed } from 'vue';
 import { useEntityName } from 'src/composables/useEntityName';
-import { BaseTable } from './filterNode';
+import type { BaseTable } from './filterNode';
 
 export interface AnalyzeFilterRuleNoAttributionsPredicateProps {
   attributeName?: string;

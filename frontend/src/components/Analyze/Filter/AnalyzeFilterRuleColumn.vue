@@ -42,12 +42,10 @@
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
-import {
-  filterSelectOptions,
-  FilterSelectOptionsUpdateFn,
-} from 'src/utils/selectOptionFilter';
+import type { FilterSelectOptionsUpdateFn } from 'src/utils/selectOptionFilter';
+import { filterSelectOptions } from 'src/utils/selectOptionFilter';
 import { useInputBackground } from 'src/composables/useInputBackground';
-import { FilterRuleColumn } from './filterRuleColumn';
+import type { FilterRuleColumn } from './filterRuleColumn';
 
 export interface AnalyzeFilterRuleColumnProps {
   modelValue?: FilterRuleColumn;

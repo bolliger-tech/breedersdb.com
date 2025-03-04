@@ -32,15 +32,13 @@
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 import { QSelect } from 'quasar';
-import {
-  filterSelectOptions,
-  FilterSelectOptionsUpdateFn,
-} from 'src/utils/selectOptionFilter';
+import type { FilterSelectOptionsUpdateFn } from 'src/utils/selectOptionFilter';
+import { filterSelectOptions } from 'src/utils/selectOptionFilter';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import { createGetFilterRuleOperators } from './createFilterRuleOperators';
-import { FilterRuleOperator } from './filterRuleOperator';
+import type { FilterRuleOperator } from './filterRuleOperator';
 import { computed } from 'vue';
-import { ColumnTypes } from 'src/utils/columnTypes';
+import type { ColumnTypes } from 'src/utils/columnTypes';
 
 export interface AnalyzeFilterRuleOperatorProps {
   disabled: boolean;

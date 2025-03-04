@@ -35,7 +35,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { FilterNode, FilterConjunction } from './filterNode';
+import type { FilterNode } from './filterNode';
+import { FilterConjunction } from './filterNode';
 import { addLeaf } from './filterNodeActions';
 
 export interface AnalyzeFilterRuleAddButtonProps {

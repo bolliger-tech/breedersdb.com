@@ -289,8 +289,7 @@ const varietyNameSegmentQueryVariables = computed(() => ({
 const {
   data: varietyNameSegmentData,
   fetching: varietyNameSegmentFetching,
-  resume: varietyNameSegmentFetchingResume,
-  pause: varietyNameSegmentFetchingPause,
+  ...urql
 } = useQuery({
   query: varietyNameSegmentQuery,
   variables: varietyNameSegmentQueryVariables,
@@ -306,9 +305,9 @@ const varietyNameSegmentQueryPause = computed(
 );
 watch(varietyNameSegmentQueryPause, (pause) => {
   if (pause) {
-    varietyNameSegmentFetchingPause();
+    urql.pause();
   } else {
-    varietyNameSegmentFetchingResume();
+    urql.resume();
   }
 });
 

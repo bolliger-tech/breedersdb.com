@@ -78,7 +78,7 @@ function onInputEnd() {
     value = utils.value.removePrefix(value);
   }
   modelValue.value = value;
-  inputRef.value?.blur;
+  inputRef.value?.blur();
 }
 
 function onFocus() {

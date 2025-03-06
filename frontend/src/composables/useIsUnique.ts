@@ -42,9 +42,16 @@ export function useIsUnique({
       console.error(result.error.value);
       throw new Error(result.error.value.message);
     }
-    const data = result.data?.value as Record<TableName, { id: number }[]>;
+    const data = result.data?.value as
+      | Record<TableName, { id: number }[]>
+      | undefined;
+    if (!data?.[tableName]) {
+      throw new Error(
+        `Missing key ${tableName} in response: ${JSON.stringify(data, null, 2)}`,
+      );
+    }
     return (
-      data?.[tableName].length === 0 || data?.[tableName][0]?.id === existingId
+      data[tableName].length === 0 || data[tableName][0]?.id === existingId
     );
   }
 

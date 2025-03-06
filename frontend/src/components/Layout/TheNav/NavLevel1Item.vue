@@ -46,7 +46,7 @@ import NavLevel2 from './NavLevel2.vue';
 import { ref, onBeforeUnmount, onMounted } from 'vue';
 import NavLevel1ItemIcon from './NavLevel1ItemIcon.vue';
 
-export interface NavLevel1ItemProps extends NavItem {}
+export type NavLevel1ItemProps = NavItem;
 
 const props = defineProps<NavLevel1ItemProps>();
 

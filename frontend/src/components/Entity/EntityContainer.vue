@@ -88,7 +88,7 @@ export interface EntityContainerProps
   visibleColumns: EntityListTableProps['visibleColumns'];
 }
 
-type EntityContainerPropsWithoutModels = {
+interface EntityContainerPropsWithoutModels extends EntityExportButtonProps {
   title: EntityListProps['title'];
   tabs?: EntityListProps['tabs'];
   searchPlaceholder?: EntityListProps['searchPlaceholder'];
@@ -99,7 +99,7 @@ type EntityContainerPropsWithoutModels = {
   addEntityPath?: string | MatcherLocationAsPath;
   viewEntityPathGetter: (id: number | string) => string | MatcherLocationAsPath;
   onScannedQr?: (data: string) => void;
-} & EntityExportButtonProps;
+}
 
 const props = defineProps<EntityContainerPropsWithoutModels>();
 

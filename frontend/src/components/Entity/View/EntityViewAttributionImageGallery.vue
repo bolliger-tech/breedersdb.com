@@ -60,9 +60,9 @@ const transition =
 
 const transitionTimeout = useTimeout();
 
-function show(id: number | null, direction: 'right' | 'left') {
+function show(id: number | null | undefined, direction: 'right' | 'left') {
   transition.value = `slide-${direction}`;
-  open.value = id;
+  open.value = id ?? null;
   transitionTimeout.registerTimeout(() => {
     transition.value = undefined;
   }, TRANSITION_DURATION);

@@ -135,11 +135,11 @@ type ExportDataArgs<
 > = FetchAllPagesArgs<Q, V> &
   Omit<FormatXlsxRowsWithColumns<ResultOf<Q>, C>, 'result'> & {
     title: string;
-    subsetLabel?: string;
-    sheetName?: string;
-    transformDataFn?: (
-      args: TransformDataArgs<T>,
-    ) => TransformDataResult | undefined;
+    subsetLabel?: string | undefined;
+    sheetName?: string | undefined;
+    transformDataFn?:
+      | ((args: TransformDataArgs<T>) => TransformDataResult | undefined)
+      | undefined;
   };
 
 export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({

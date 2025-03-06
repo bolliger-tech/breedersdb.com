@@ -97,11 +97,13 @@ const props = defineProps<{
   indexPath: string;
   spriteIcon: SpriteIcons;
   subtitle: string;
-  makeLabel?: (entityId: number) => Promise<string>;
+  makeLabel?: ((entityId: number) => Promise<string>) | undefined;
   // make emit handler available in template
-  onNewFromTemplate?: (templateId: number) => void;
-  withInsertData?: (data: InsertVariables['entity']) => InsertVariables;
-  withEditData?: (data: EditVariables['entity']) => EditVariables;
+  onNewFromTemplate?: ((templateId: number) => void) | undefined;
+  withInsertData?:
+    | ((data: InsertVariables['entity']) => InsertVariables)
+    | undefined;
+  withEditData?: ((data: EditVariables['entity']) => EditVariables) | undefined;
 }>();
 
 const emit = defineEmits<{

@@ -204,6 +204,7 @@ const inputMethodIsValid = computed(() => {
       );
   }
   // @ts-expect-error don't move into switch so ts complains if we add a new entity type
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   throw new Error(`Unknown entity type: ${props.entityType}`);
 });
 watch(
@@ -271,6 +272,7 @@ const entityName = computed(() => {
       return t('base.entityName.lot', 1);
   }
   // @ts-expect-error don't move into switch so ts complains if we add a new entity type
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   throw new Error(`Unknown entity type: ${props.entityType}`);
 });
 

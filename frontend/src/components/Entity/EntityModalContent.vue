@@ -120,18 +120,18 @@ import type { Slot } from 'vue';
 import { usePrint } from 'src/composables/usePrint';
 
 export interface EntityModalContentProps {
-  title?: string;
-  subtitle?: string;
-  spriteIcon?: SpriteIcons;
-  loading?: boolean;
-  saveError?: CombinedError;
-  validationError?: string | null;
-  printData?: string; // only used if onEdit is available
+  title?: string | undefined;
+  subtitle?: string | undefined;
+  spriteIcon?: SpriteIcons | undefined;
+  loading?: boolean | undefined;
+  saveError?: CombinedError | undefined;
+  validationError?: string | null | undefined;
+  printData?: string | undefined; // only used if onEdit is available
   // make emit handler available in template
-  onSave?: () => void;
-  onEdit?: () => void;
-  onSaveThenPrint?: () => void;
-  onSaveThenNewFromTemplate?: () => void;
+  onSave?: (() => void) | undefined;
+  onEdit?: (() => void) | undefined;
+  onSaveThenPrint?: (() => void) | undefined;
+  onSaveThenNewFromTemplate?: (() => void) | undefined;
 }
 
 defineProps<EntityModalContentProps>();

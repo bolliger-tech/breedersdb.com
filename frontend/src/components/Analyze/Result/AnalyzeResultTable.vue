@@ -87,7 +87,7 @@ const pagination = defineModel<QTableProps['pagination']>('pagination', {
 });
 
 const router = useRouter();
-async function onRowClick(row: AnalyzeResultTableProps['rows'][0]): void {
+async function onRowClick(row: AnalyzeResultTableProps['rows'][0]) {
   if (props.baseTable === BaseTable.Attributions) {
     throw new Error('Attributions must not be the base table for results.');
   }

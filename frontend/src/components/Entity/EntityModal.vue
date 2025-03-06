@@ -31,7 +31,7 @@ export interface EntityModalProps {
 
 defineProps<EntityModalProps>();
 
-const visible = defineModel<boolean>();
+const visible = defineModel<boolean>({ required: true });
 defineEmits<{
   'before-hide': [];
   hide: [];

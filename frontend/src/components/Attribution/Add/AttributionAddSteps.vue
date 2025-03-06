@@ -213,12 +213,14 @@ const attributeFormSelectRef: Ref<InstanceType<
   typeof AttributionFormSelect
 > | null> = ref<InstanceType<typeof AttributionFormSelect> | null>(null);
 
-function completeStep1() {
-  Promise.resolve(attributeFormSelectRef.value?.validate()).then((valid) => {
-    if (valid) {
-      step.value = 2;
-    }
-  });
+async function completeStep1() {
+  await Promise.resolve(attributeFormSelectRef.value?.validate()).then(
+    (valid) => {
+      if (valid) {
+        step.value = 2;
+      }
+    },
+  );
 }
 
 // step 2
@@ -250,12 +252,14 @@ const attributeMetaDataRef = ref<InstanceType<
   typeof AttributionAddMetaData
 > | null>(null);
 
-function completeStep2() {
-  Promise.resolve(attributeMetaDataRef.value?.validate()).then((valid) => {
-    if (valid) {
-      step.value = 3;
-    }
-  });
+async function completeStep2() {
+  await Promise.resolve(attributeMetaDataRef.value?.validate()).then(
+    (valid) => {
+      if (valid) {
+        step.value = 3;
+      }
+    },
+  );
 }
 
 // step 3

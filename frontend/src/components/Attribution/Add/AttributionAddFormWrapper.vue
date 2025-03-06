@@ -99,7 +99,7 @@ export interface AttributionAddFormWrapperProps {
   author: string;
   repeatTarget: number;
   edit: (id: number) => void;
-  editId?: number;
+  editId?: number | undefined;
 }
 
 const props = defineProps<AttributionAddFormWrapperProps>();

@@ -102,7 +102,7 @@ export interface AttributionAddFormProps {
   author: string;
   repeatTarget: number;
   edit: (id: number) => void;
-  editId?: number;
+  editId?: number | undefined;
 }
 
 type AttributionValue = Omit<

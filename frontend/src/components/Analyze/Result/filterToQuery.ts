@@ -601,6 +601,7 @@ function columnsToFields({
     .filter((column) => column.split('.').length === 2)
     .forEach((column) => {
       const field = column.split('.')[1];
+      if (!field) throw new Error(`Invalid column. Missing segment: ${column}`);
       fields += `${indentation}${toSnakeCase(field)}\n`;
     });
 

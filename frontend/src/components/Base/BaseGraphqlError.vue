@@ -36,7 +36,7 @@ import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 export interface BaseGraphqlErrorProps {
   error: CombinedError;
-  throw?: boolean;
+  throw?: boolean | undefined;
 }
 
 const props = withDefaults(defineProps<BaseGraphqlErrorProps>(), {

@@ -60,12 +60,12 @@ import { singularize } from 'src/utils/stringUtils';
 import { type QBtnProps } from 'quasar';
 
 export interface EntityButtonEliminateProps {
-  label?: string;
-  message?: string;
-  error?: BaseGraphqlErrorProps['error'];
-  fetching?: boolean;
-  disabled?: boolean;
-  size?: QBtnProps['size'];
+  label?: string | undefined;
+  message?: string | undefined;
+  error?: BaseGraphqlErrorProps['error'] | undefined;
+  fetching?: boolean | undefined;
+  disabled?: boolean | undefined;
+  size?: QBtnProps['size'] | undefined;
 }
 
 const props = defineProps<EntityButtonEliminateProps>();

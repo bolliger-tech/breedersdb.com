@@ -58,9 +58,9 @@ import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { type Slot, ref, watch } from 'vue';
 
 export interface BaseErrorTooltipProps {
-  show?: boolean;
-  graphqlError?: CombinedError | null;
-  message?: string | null;
+  show?: boolean | undefined;
+  graphqlError?: CombinedError | null | undefined;
+  message?: string | null | undefined;
 }
 
 const props = defineProps<BaseErrorTooltipProps>();

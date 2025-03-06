@@ -140,7 +140,7 @@ export interface AttributionAddStepsProps {
   entity: AttributionAddFormWrapperProps['entity'];
   entityLoading: boolean;
   entityIcon: string;
-  focusEntityPicker?: () => void;
+  focusEntityPicker?: (() => void) | undefined;
 }
 
 const props = defineProps<AttributionAddStepsProps>();

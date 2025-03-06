@@ -55,6 +55,8 @@ const plant = computed(() => {
     if (!data.value?.plants_by_pk) {
       return;
     }
+    if (!data.value.plants_by_pk.plant_group)
+      throw new Error('Plant group is required');
     return {
       ...emptyPlant,
       plant_group: data.value.plants_by_pk.plant_group,

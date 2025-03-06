@@ -100,26 +100,28 @@ export interface EntitySelectProps<T> extends EntitySelectPropsWithoutModel<T> {
 // for generic components we have to export all interfaces or none. else it currently throws an error
 export interface EntitySelectPropsWithoutModel<T> {
   label: string | undefined;
-  required?: boolean;
+  required?: boolean | undefined;
   optionValue: keyof T;
   optionLabel: keyof T;
   options: T[];
-  loading?: boolean;
-  error?: CombinedError | null;
-  clearable?: boolean;
-  optionDisable?: QSelectProps['optionDisable'];
-  noSort?: boolean;
-  explainer?: string;
-  rules?: QSelectProps['rules'];
-  filterFn?: (
-    value: string,
-    update: FilterSelectOptionsUpdateFn,
-    filteredOptions: ShallowRef<T[]>,
-  ) => void;
-  noOptionText?: string;
-  readonly?: QSelectProps['readonly'];
-  disable?: QSelectProps['disable'];
-  hint?: string;
+  loading?: boolean | undefined;
+  error?: CombinedError | null | undefined;
+  clearable?: boolean | undefined;
+  optionDisable?: QSelectProps['optionDisable'] | undefined;
+  noSort?: boolean | undefined;
+  explainer?: string | undefined;
+  rules?: QSelectProps['rules'] | undefined;
+  filterFn?:
+    | ((
+        value: string,
+        update: FilterSelectOptionsUpdateFn,
+        filteredOptions: ShallowRef<T[]>,
+      ) => void)
+    | undefined;
+  noOptionText?: string | undefined;
+  readonly?: QSelectProps['readonly'] | undefined;
+  disable?: QSelectProps['disable'] | undefined;
+  hint?: string | undefined;
   filterWithWildcardsAroundDots?: boolean;
 }
 
@@ -128,15 +130,9 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   loading: false,
   error: null,
   clearable: true,
-  optionDisable: undefined,
   noSort: false,
-  explainer: undefined,
-  rules: undefined,
-  filterFn: undefined,
-  noOptionText: undefined,
   readonly: false,
   disable: false,
-  hint: undefined,
   filterWithWildcardsAroundDots: false,
 });
 

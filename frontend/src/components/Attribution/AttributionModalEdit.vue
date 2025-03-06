@@ -182,12 +182,13 @@ async function saveEdit() {
   } = editedData.value;
   const editedAttributionValue = {
     photo_note: typeof photo_note === 'string' ? photo_note : null,
-    integer_value,
-    float_value,
-    text_value: typeof photo_value === 'string' ? photo_value : text_value,
-    boolean_value,
-    date_value,
-    text_note,
+    integer_value: integer_value ?? null,
+    float_value: float_value ?? null,
+    text_value:
+      typeof photo_value === 'string' ? photo_value : (text_value ?? null),
+    boolean_value: boolean_value ?? null,
+    date_value: date_value ?? null,
+    text_note: text_note ?? null,
   };
   const photo = photo_value || photo_note;
 

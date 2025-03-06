@@ -118,7 +118,8 @@ watch(
     const colsWithoutAggregates = newCols.map((c) => {
       const parts = c.split('.');
       const last = parts[parts.length - 1];
-      return (Object.values(AttributionAggregation) as string[]).includes(last)
+      return last &&
+        (Object.values(AttributionAggregation) as string[]).includes(last)
         ? parts.slice(0, -1).join('.')
         : c;
     });

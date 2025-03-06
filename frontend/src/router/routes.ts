@@ -7,7 +7,7 @@ function entityNameToRoutePath(entity: string) {
   // eg. AttributionForms -> attribution-forms
   return toKebabCase(
     entity !== 'Plants' && entity.startsWith('Plant')
-      ? entity.split('Plant').slice(-1)[0]
+      ? entity.replace(/^Plant/, '')
       : entity,
   );
 }

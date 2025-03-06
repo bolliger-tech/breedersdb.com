@@ -48,7 +48,7 @@ const slots = defineSlots<QTableSlots>();
 
 const paginationKey = `breedersdb-entity-related-table-pagination__${props.entityKey}`;
 const defaultPagination = {
-  sortBy: props.defaultSortBy || props.columns?.[0]?.name,
+  sortBy: props.defaultSortBy || (props.columns?.[0]?.name ?? null),
   descending: props.defaultDescending,
 };
 type Pagination = typeof defaultPagination;

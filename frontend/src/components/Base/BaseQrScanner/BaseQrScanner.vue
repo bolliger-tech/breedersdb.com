@@ -91,9 +91,9 @@ const waitWithPermissionRequest = ref(
     (!('standalone' in navigator) || !navigator.standalone)
   ),
 );
-watch(waitWithPermissionRequest, (v) => {
+watch(waitWithPermissionRequest, async (v) => {
   if (!v) {
-    initVideo();
+    await initVideo();
   }
 });
 
@@ -111,7 +111,7 @@ let animationFrame: number | null = null;
 
 let renderingContext: CanvasRenderingContext2D;
 
-onMounted(() => {
+onMounted(async () => {
   const context = canvasElement.value?.getContext('2d', {
     willReadFrequently: true,
   });
@@ -121,7 +121,7 @@ onMounted(() => {
     throw new Error('Failed to get canvas context');
   }
   if (!waitWithPermissionRequest.value) {
-    initVideo();
+    await initVideo();
   }
 });
 
@@ -152,7 +152,7 @@ async function initVideo() {
     video.srcObject = videoStream;
 
     await videoMetadataLoaded();
-    video.play();
+    await video.play();
 
     await canvasAndVideoAreReady();
     emit('ready');

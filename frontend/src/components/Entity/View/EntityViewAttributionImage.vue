@@ -4,9 +4,7 @@
       ref="previewRef"
       v-ripple
       :src="imgUrls['1x']"
-      :srcset="
-        '2x' in imgUrls ? `${imgUrls['1x']}, ${imgUrls['2x']} 2x` : undefined
-      "
+      :srcset="'2x' in imgUrls ? `${imgUrls['1x']}, ${imgUrls['2x']} 2x` : ''"
       class="cursor-pointer"
       :class="{ invisible: !previewIsReady }"
       loading="lazy"

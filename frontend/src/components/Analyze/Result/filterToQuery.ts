@@ -1,4 +1,8 @@
-import { BaseTable, type FilterNode } from '../Filter/filterNode';
+import {
+  BaseTable,
+  FilterConjunction,
+  type FilterNode,
+} from '../Filter/filterNode';
 import type { FilterRuleOperator } from '../Filter/filterRuleOperator';
 import { FilterOperatorValue } from '../Filter/filterRuleOperator';
 import type { FilterRule } from '../Filter/filterRule';
@@ -152,7 +156,7 @@ function toPaginationString({
 
 function filterToWhere(filter: FilterNode): GraphQLWhereArgs {
   const conjunction =
-    filter.getChildrensConjunction() === 'and' ? '_and' : '_or';
+    filter.getChildrensConjunction() === FilterConjunction.And ? '_and' : '_or';
 
   const where = filter
     .getChildren()

@@ -23,8 +23,8 @@ import { entityViewTableProps } from './EntityViewTable.vue';
 
 export interface EntityViewTableRow {
   label?: string | undefined;
-  renderEmpty?: boolean;
-  multiline?: boolean;
+  renderEmpty?: boolean | undefined;
+  multiline?: boolean | undefined;
 }
 
 defineProps<EntityViewTableRow>();

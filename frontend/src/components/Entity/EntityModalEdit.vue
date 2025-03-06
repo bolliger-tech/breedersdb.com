@@ -221,7 +221,7 @@ const entityId = computed<EditInput['id'] | undefined>(() => {
     return props.entity.id;
   } else if (saveResult.value) {
     const key = Object.keys(saveResult.value)[0];
-    return saveResult.value[key].id;
+    return key && saveResult.value[key].id;
   }
   return undefined;
 });

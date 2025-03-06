@@ -22,7 +22,7 @@ function getCounters() {
   return LocalStorage.getItem<Counter[]>(STORAGE_KEY) || [];
 }
 
-async function garbageCollect() {
+function garbageCollect() {
   const validCounters = getCounters().filter((counter) => {
     const date = new Date(counter.lastModified);
     const today = new Date();

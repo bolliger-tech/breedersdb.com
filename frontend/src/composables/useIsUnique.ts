@@ -11,7 +11,7 @@ export function useIsUnique({
   additionalWhere,
 }: {
   tableName: TableName;
-  existingId?: number;
+  existingId?: number | undefined;
   columnName?: string;
   additionalWhere?: Ref<Record<string, unknown>>;
 }) {

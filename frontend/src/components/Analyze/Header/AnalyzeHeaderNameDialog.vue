@@ -82,8 +82,8 @@ const { isUnique, fetching: isUniqueFetching } = useIsUnique({
   additionalWhere,
 });
 
-function validateNameAndSave() {
-  Promise.resolve(inputRef.value?.validate()).then((valid) => {
+async function validateNameAndSave() {
+  await Promise.resolve(inputRef.value?.validate()).then((valid) => {
     if (valid) {
       show.value = false;
       emit('save');

@@ -70,7 +70,7 @@ function handleProgress(progress: UploadProgress) {
 const { upload, abort } = useImageUploader(handleProgress);
 
 async function onSubmit() {
-  if (!fileInput.value || !fileInput.value.files?.length) {
+  if (!fileInput.value || !fileInput.value.files?.[0]) {
     uploadState.value = {
       status: 'error',
       errorMessage: 'Please select a file to upload.',

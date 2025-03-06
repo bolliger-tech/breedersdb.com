@@ -355,9 +355,11 @@ async function select(proposition: NonNullable<typeof propositions.value>[0]) {
     return;
   }
 
+  const respString = JSON.stringify(resp, null, 2);
+
   if (!resp.data) {
-    console.error(`Unexpected result from backend: ${resp}`);
-    throw new Error(`Unexpected result from backend: ${resp}`);
+    console.error(`Unexpected result from backend: ${respString}`);
+    throw new Error(`Unexpected result from backend: ${respString}`);
   }
 
   const groupId =
@@ -366,8 +368,8 @@ async function select(proposition: NonNullable<typeof propositions.value>[0]) {
       : resp.data.insert_cultivars_one?.plant_groups[0].id;
 
   if (typeof groupId === 'undefined') {
-    console.error(`Unexpected result from backend: ${resp}`);
-    throw new Error(`Unexpected result from backend: ${resp}`);
+    console.error(`Unexpected result from backend: ${respString}`);
+    throw new Error(`Unexpected result from backend: ${respString}`);
   }
 
   emit('select', groupId);

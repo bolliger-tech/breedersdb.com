@@ -7,7 +7,7 @@ export function useCancel({ path }: { path: string }) {
   async function cancel() {
     const last = router.options.history.state.back;
     const isNewOrEdit = /\/(edit|new)(\/\d*)?$/;
-    if (!!last && !isNewOrEdit.test(last.toString())) {
+    if (typeof last === 'string' && !isNewOrEdit.test(last)) {
       router.back();
     } else {
       await router.push({ path, query: route.query });

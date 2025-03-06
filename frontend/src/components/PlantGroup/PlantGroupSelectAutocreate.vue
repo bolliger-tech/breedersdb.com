@@ -279,7 +279,12 @@ function focusNext() {
     selectedItem.value = (selectedItem.value + 1) % propositions.value.length;
   }
 
-  const label = propositions.value[selectedItem.value].label;
+  const label = propositions.value[selectedItem.value]?.label;
+
+  if (!label) {
+    return;
+  }
+
   const item = document.getElementById(
     `plant-group-select-${label.existing}${label.new}`,
   );
@@ -365,7 +370,7 @@ async function select(proposition: NonNullable<typeof propositions.value>[0]) {
   const groupId =
     'insert_plant_groups_one' in resp.data
       ? resp.data.insert_plant_groups_one?.id
-      : resp.data.insert_cultivars_one?.plant_groups[0].id;
+      : resp.data.insert_cultivars_one?.plant_groups[0]?.id;
 
   if (typeof groupId === 'undefined') {
     console.error(`Unexpected result from backend: ${respString}`);

@@ -11,7 +11,7 @@
     <th v-if="label">
       {{ label }}
     </th>
-    <td :colspan="label ? undefined : 2">
+    <td :colspan="label ? 1 : 2">
       <slot></slot>
     </td>
   </tr>

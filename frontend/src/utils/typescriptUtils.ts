@@ -10,3 +10,16 @@ export type DistributiveOmit<T, K extends keyof any> = T extends any
 export type Unpack<T> = {
   [K in keyof T]: T[K] extends object ? Unpack<T[K]> : T[K];
 };
+
+/**
+ * Set all values of type `undefined` to `null`
+ *
+ * Examples:
+ * { a: undefined } -> { a: null }
+ * { a?: undefined } -> { a?: null }
+ * { a?: null | undefined } -> { a?: null }
+ * { a?: string | null | undefined } -> { a?: string | null }
+ */
+export type UndefinedToNull<T> = {
+  [P in keyof T]: T[P] extends undefined ? null : NonNullable<T[P]> | null;
+};

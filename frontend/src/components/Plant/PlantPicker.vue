@@ -46,7 +46,7 @@ defineExpose({
   loadEntity: async () => {
     inputRef.value?.emitInputs();
     await nextTick();
-    loadPlant();
+    await loadPlant();
   },
   focus: () => {
     inputRef.value?.focus();

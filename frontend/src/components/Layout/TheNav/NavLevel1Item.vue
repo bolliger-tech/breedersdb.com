@@ -9,9 +9,9 @@
     <template v-if="icon && label">
       <q-expansion-item
         v-if="children?.length"
-        :class="{ 'q-pb-none': isOpen, 'children-bg': isOpen }"
-        :model-value="isOpen"
-        @click.stop="isOpen = !isOpen"
+        :class="{ 'q-pb-none': open, 'children-bg': open }"
+        :model-value="open"
+        @click.stop="open = !open"
         @show="startScrollIntoView"
         @after-show="stopScrollIntoView"
       >
@@ -52,7 +52,7 @@ const props = defineProps<NavLevel1ItemProps>();
 
 const { isCurrentRoute } = useNavItem(props);
 
-const isOpen = ref(isCurrentRoute.value);
+const open = ref(isCurrentRoute.value);
 
 const navLevel2 = ref<InstanceType<typeof NavLevel2> | null>(null);
 let animationFrameId: number | null = null;
@@ -97,7 +97,7 @@ onBeforeUnmount(() => {
 });
 
 onMounted(() => {
-  if (isOpen.value) {
+  if (open.value) {
     scrollIntoViewAnimated();
   }
 });

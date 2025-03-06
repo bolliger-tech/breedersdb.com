@@ -72,8 +72,8 @@ import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import type {
-  AttributionFormEditInput,
   AttributionFormInsertInput,
+  AttributionFormModalEditProps,
 } from './AttributionFormModalEdit.vue';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
@@ -83,7 +83,7 @@ import { type AttributeFragment } from 'src/components/Attribute/attributeFragme
 import AttributeSelect from 'src/components/Attribute/AttributeSelect.vue';
 
 export interface AttributionFormEntityFormProps {
-  attributionForm: AttributionFormInsertInput | AttributionFormEditInput;
+  attributionForm: AttributionFormModalEditProps['attributionForm'];
 }
 
 const props = defineProps<AttributionFormEntityFormProps>();

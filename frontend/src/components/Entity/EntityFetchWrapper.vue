@@ -22,5 +22,8 @@ import BaseSpinner from 'src/components/Base/BaseSpinner.vue';
 import BaseNotFound from 'src/components/Base/BaseNotFound.vue';
 import type { CombinedError } from '@urql/vue';
 
-defineProps<{ error?: CombinedError; fetching?: boolean }>();
+defineProps<{
+  error?: CombinedError | undefined;
+  fetching?: boolean | undefined;
+}>();
 </script>

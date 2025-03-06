@@ -37,7 +37,7 @@ defineExpose({
   loadEntity: async () => {
     inputRef.value?.emitInputs();
     await nextTick();
-    loadLot();
+    await loadLot();
   },
   focus: () => {
     inputRef.value?.focus();
@@ -185,7 +185,7 @@ onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
   if (d?.lots.length) {
-    emit('lot', d.lots[0]);
+    emit('lot', d.lots[0] as LotFragment);
   }
 });
 

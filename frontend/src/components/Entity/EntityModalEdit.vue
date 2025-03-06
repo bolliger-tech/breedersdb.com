@@ -54,9 +54,17 @@ type FormRefConstructor = new (...args: any) => any;
     EditInput extends { id: number; [key: string]: any },
     InsertInput extends { [key: string]: any },
     InsertResult extends { [key: string]: any },
-    InsertVariables extends { entity: any; id?: never; [key: string]: any },
+    InsertVariables extends {
+      entity: Record<string, any>;
+      id?: never;
+      [key: string]: any;
+    },
     EditResult extends { [key: string]: any },
-    EditVariables extends { entity: any; id: number; [key: string]: any }
+    EditVariables extends {
+      entity: Record<string, any>;
+      id: number;
+      [key: string]: any;
+    }
   "
 >
 import { useMutation } from '@urql/vue';
@@ -137,7 +145,17 @@ const {
   ...urqlEdit
 } = useMutation(props.editMutation);
 
-function onFormChange(data: typeof editedData.value) {
+type OrUndefined<T> = {
+  [P in keyof T]: T[P] | undefined;
+};
+
+function onFormChange(data: OrUndefined<InsertVariables['entity']>) {
+  // remove undefined values
+  for (const key in data) {
+    if (data[key] === undefined) {
+      delete data[key];
+    }
+  }
   if (!data) {
     return;
   } else if ('id' in props.entity) {

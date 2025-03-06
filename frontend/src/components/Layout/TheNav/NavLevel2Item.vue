@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { useNavItem, type NavItem } from './useNavItem';
 
-export interface NavLevel2ItemProps extends NavItem {}
+export type NavLevel2ItemProps = NavItem;
 
 const props = defineProps<NavLevel2ItemProps>();
 

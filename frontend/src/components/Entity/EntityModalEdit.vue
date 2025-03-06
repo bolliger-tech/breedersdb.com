@@ -258,7 +258,7 @@ async function printLabel() {
 }
 
 const preparingNewFromTemplate = ref(false);
-async function newFromTemplate() {
+function newFromTemplate() {
   if (!entityId.value) {
     throw new Error('Failed to prepare new from template: Missing entity id');
   }

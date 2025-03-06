@@ -46,7 +46,7 @@ import { useNavItem } from './useNavItem';
 import { ref } from 'vue';
 import { computed } from 'vue';
 
-export interface NavLevel0ItemProps extends NavItem {}
+export type NavLevel0ItemProps = NavItem;
 
 const emit = defineEmits<{ open: [] }>();
 

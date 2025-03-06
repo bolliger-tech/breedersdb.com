@@ -143,7 +143,7 @@ async function save() {
   }
   try {
     await saveEdit();
-  } catch (error) {
+  } catch {
     return;
   }
 

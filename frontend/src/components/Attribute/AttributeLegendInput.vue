@@ -81,7 +81,7 @@ watch(modelValue, (newValues) => {
 
 watch(
   [() => props.validationRule, () => props.dataType],
-  async ([newValidationRule], [oldValidationRule]) => {
+  ([newValidationRule], [oldValidationRule]) => {
     if (props.dataType !== 'RATING') {
       modelValue.value = null;
       return;

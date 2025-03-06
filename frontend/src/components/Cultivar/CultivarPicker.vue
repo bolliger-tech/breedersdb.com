@@ -37,7 +37,7 @@ defineExpose({
   loadEntity: async () => {
     inputRef.value?.emitInputs();
     await nextTick();
-    loadCultivar();
+    await loadCultivar();
   },
   focus: () => {
     inputRef.value?.focus();

@@ -234,7 +234,7 @@ watch(author, (a) => localStorage.set(AUTHOR_STORAGE_KEY, a));
 
 const { queryArg: date } = useQueryArg({
   key: DATE_URL_KEY,
-  defaultValue: new Date().toISOString().split('T')[0],
+  defaultValue: new Date().toISOString().split('T')[0] as string,
   replace: true,
   showDefaultInUrl: true,
 });

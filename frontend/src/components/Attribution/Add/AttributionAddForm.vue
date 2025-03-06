@@ -84,6 +84,7 @@ import AttributionAddEntityPreview, {
 import { type AttributionInputValue } from 'src/components/Attribution/Input/AttributionInput.vue';
 import AttributionAddEditNote from 'src/components/Attribution/Add/AttributionAddEditNote.vue';
 import AttributionAddLastAttributed from 'src/components/Attribution/Add/AttributionAddLastAttributed.vue';
+import type { UndefinedToNull } from 'src/utils/typescriptUtils';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -299,6 +300,16 @@ async function save() {
   const { photos, attributions } = Object.values(attributionValues.value)
     // filter out attribution_values without a value
     .filter((av) => attributionValueHasValue(av))
+    // replace undefined values with null
+    .map((av) => {
+      return Object.entries(av).reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: value === undefined ? null : value,
+        }),
+        {} as UndefinedToNull<AttributionInputValue>,
+      );
+    })
     // extract files from photo_value and photo_note and replace them with their
     // file name
     .map((av) => {

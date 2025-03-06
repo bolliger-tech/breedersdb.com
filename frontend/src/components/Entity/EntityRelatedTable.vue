@@ -39,9 +39,9 @@ export interface EntityRelatedTableProps {
   rows: QTable['rows'];
   rowKey: QTable['rowKey'];
   columns: QTable['columns'];
-  defaultSortBy?: string;
-  defaultDescending?: boolean;
-  visibleColumns?: QTable['visibleColumns'];
+  defaultSortBy?: string | undefined;
+  defaultDescending?: boolean | undefined;
+  visibleColumns?: QTable['visibleColumns'] | undefined;
 }
 
 const props = defineProps<EntityRelatedTableProps>();

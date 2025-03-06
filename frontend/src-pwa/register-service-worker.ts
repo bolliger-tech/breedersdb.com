@@ -16,7 +16,7 @@ register(process.env.SERVICE_WORKER_FILE, {
   },
 
   registered(registration) {
-    setInterval(() => registration.update(), 1000 * 60 * 60); // hourly update check
+    setInterval(() => void registration.update(), 1000 * 60 * 60); // hourly update check
   },
 
   cached(/* registration */) {

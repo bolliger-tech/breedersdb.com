@@ -36,7 +36,7 @@ const slots = defineSlots<{
 const tableProps = inject(entityViewTableProps);
 
 const isEmpty = computed(() => {
-  return !slots.default()[0].children;
+  return !slots.default()[0]?.children;
 });
 </script>
 

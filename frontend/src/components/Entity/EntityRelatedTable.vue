@@ -22,6 +22,7 @@
       :key="slotName"
       #[slotName]="slotProps"
     >
+      <!-- @vue-expect-error ts-plugin(2345) -->
       <slot :name="slotName" v-bind="slotProps"></slot>
     </template>
   </q-table>

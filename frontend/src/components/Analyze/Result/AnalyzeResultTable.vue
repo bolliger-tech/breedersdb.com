@@ -60,7 +60,7 @@ export interface AnalyzeResultTableProps
   pagination: NonNullable<QTableProps['pagination']>;
 }
 
-type AnalyzeResultTablePropsWithoutModel = {
+interface AnalyzeResultTablePropsWithoutModel extends EntityExportButtonProps {
   rows: {
     id: number;
     [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[];
@@ -70,7 +70,7 @@ type AnalyzeResultTablePropsWithoutModel = {
   allColumns: QTableColumn[];
   dataIsFresh: boolean;
   baseTable: BaseTable;
-} & EntityExportButtonProps;
+}
 
 export type AnalyzeResultTableRequestDataParams = Parameters<
   NonNullable<QTableProps['onRequest']>

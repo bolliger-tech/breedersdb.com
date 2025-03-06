@@ -375,7 +375,7 @@ async function select(proposition: NonNullable<typeof propositions.value>[0]) {
   emit('select', groupId);
 }
 
-function selectFirst() {
+async function selectFirst() {
   if (!propositions.value) {
     return;
   }
@@ -385,7 +385,11 @@ function selectFirst() {
       ? propositions.value[selectedItem.value]
       : propositions.value[0];
 
-  select(proposition);
+  if (!proposition) {
+    return;
+  }
+
+  await select(proposition);
 }
 
 onBeforeUnmount(() => {

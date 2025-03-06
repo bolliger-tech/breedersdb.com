@@ -175,16 +175,18 @@ function filterOptions(
   searchValue: string,
   update: FilterSelectOptionsUpdateFn,
 ) {
-  props.filterFn
-    ? props.filterFn(searchValue, update, filteredOptions)
-    : filterSelectOptions({
-        searchValue,
-        update,
-        allOptions: Object.freeze([...options.value]),
-        filteredOptions,
-        valueExtractorFn: (item) => item[props.optionLabel],
-        withWildcardsAroundDots: props.filterWithWildcardsAroundDots,
-      });
+  if (props.filterFn) {
+    props.filterFn(searchValue, update, filteredOptions);
+  } else {
+    filterSelectOptions({
+      searchValue,
+      update,
+      allOptions: Object.freeze([...options.value]),
+      filteredOptions,
+      valueExtractorFn: (item) => item[props.optionLabel],
+      withWildcardsAroundDots: props.filterWithWildcardsAroundDots,
+    });
+  }
 }
 
 const selectRef = ref<QSelect | null>(null);

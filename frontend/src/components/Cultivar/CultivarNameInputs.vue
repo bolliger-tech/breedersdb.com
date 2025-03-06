@@ -63,7 +63,7 @@ const query = graphql(`
   }
 `);
 const variables = computed(() => ({ id: props.lotId }));
-const { data, error, fetching, resume, pause } = useQuery({
+const { data, error, fetching, ...urql } = useQuery({
   query: query,
   variables: variables,
   pause: !props.lotId,
@@ -74,9 +74,9 @@ watch(
   () => props.lotId,
   (newValue) => {
     if (newValue) {
-      resume();
+      urql.resume();
     } else {
-      pause();
+      urql.pause();
       data.value = undefined;
     }
   },

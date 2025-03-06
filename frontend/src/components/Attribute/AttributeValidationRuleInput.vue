@@ -161,7 +161,7 @@ const validationRule = ref({
 
 watch(
   [validationRule, () => props.dataType],
-  () => {
+  async () => {
     if (['INTEGER', 'FLOAT'].includes(props.dataType)) {
       modelValue.value = {
         min: validationRule.value.min ?? MIN_INT_PG,
@@ -180,9 +180,9 @@ watch(
       modelValue.value = null;
     }
 
-    minRef.value?.validate();
-    maxRef.value?.validate();
-    stepRef.value?.validate();
+    await minRef.value?.validate();
+    await maxRef.value?.validate();
+    await stepRef.value?.validate();
   },
   { deep: true },
 );

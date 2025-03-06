@@ -87,6 +87,11 @@ const foreignKeyError = computed(() => {
     regex,
   ) as string[];
 
+  if (!currentTable || !foreignTable) {
+    // this should never happen
+    throw new Error('Failed to parse foreign key error message');
+  }
+
   const currentEntity = singularize(
     currentTable.replace('plant_', '').replace('_', ' '),
   );

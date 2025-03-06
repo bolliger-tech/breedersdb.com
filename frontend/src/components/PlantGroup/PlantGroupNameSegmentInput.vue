@@ -109,8 +109,7 @@ const {
   data: plantGroupsData,
   error: plantGroupsError,
   fetching: fetchingPlantGroups,
-  resume: resumePlantGroupsQuery,
-  pause: pausePlantGroupsQuery,
+  ...urql
 } = useQuery({
   query: plantGroupsQuery,
   variables: plantGroupsQueryVariables,
@@ -122,9 +121,9 @@ watch(
   () => props.cultivar,
   (newValue) => {
     if (newValue) {
-      resumePlantGroupsQuery();
+      urql.resume();
     } else {
-      pausePlantGroupsQuery();
+      urql.pause();
       plantGroupsData.value = undefined;
     }
   },

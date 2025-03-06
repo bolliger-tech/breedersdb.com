@@ -148,26 +148,23 @@ import type { EntityListTableColum } from './types';
 import { n2semicolon } from 'src/utils/stringUtils';
 
 export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
-  pagination?: QTableProps['pagination'];
+  pagination?: QTableProps['pagination'] | undefined;
   visibleColumns: string[];
 }
 
-type EntityListTablePropsWithoutModel = {
+interface EntityListTablePropsWithoutModel extends EntityExportButtonProps {
   rows: QTableProps['rows'];
-  loading?: boolean;
+  loading?: boolean | undefined;
   allColumns: EntityListTableColum[];
-  dataIsFresh?: boolean;
-  headerHeight?: string;
-} & EntityExportButtonProps;
+  dataIsFresh?: boolean | undefined;
+  headerHeight?: string | undefined;
+}
 
 const props = withDefaults(defineProps<EntityListTablePropsWithoutModel>(), {
   loading: false,
   dataIsFresh: true,
-  headerHeight: undefined,
-  rowClick: undefined,
   isExporting: false,
   exportProgress: 0,
-  onExport: undefined,
 });
 const visibleColumns = defineModel<string[]>('visibleColumns', {
   required: true,

@@ -52,7 +52,7 @@ import { focusInView } from 'src/utils/focusInView';
 
 export interface EntityLabelIdInputProps {
   entityType: 'plant' | 'plantGroup';
-  errorMessage?: string;
+  errorMessage?: string | undefined;
 }
 
 const props = defineProps<EntityLabelIdInputProps>();

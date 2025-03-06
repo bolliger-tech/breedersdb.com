@@ -128,7 +128,7 @@ type InputMethod =
 
 export interface EntityPickerProps {
   entityType: 'plant' | 'plantGroup' | 'cultivar' | 'lot';
-  error?: string;
+  error?: string | undefined;
 }
 
 const props = defineProps<EntityPickerProps>();
@@ -144,13 +144,7 @@ const emit = defineEmits<{
   ];
 }>();
 
-const inputRef = ref<
-  | InstanceType<typeof BaseQrScanner>
-  | InstanceType<typeof EntityLabelIdInput>
-  | InstanceType<typeof CultivarSelect>
-  | InstanceType<typeof LotSelect>
-  | null
->(null);
+const inputRef = ref<InstanceType<typeof BaseQrScanner> | null>(null);
 
 const plantLabelId = ref<string>('');
 const plantGroupLabelId = ref<string>('');

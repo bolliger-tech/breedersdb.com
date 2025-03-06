@@ -9,13 +9,13 @@ import { useQuasar } from 'quasar';
 import { computed } from 'vue';
 
 export interface AttributionValueChipProps {
-  plant?: boolean;
-  plantGroup?: boolean;
-  cultivar?: boolean;
-  lot?: boolean;
-  aggregated?: boolean;
-  default?: boolean;
-  dark?: boolean;
+  plant?: boolean | undefined;
+  plantGroup?: boolean | undefined;
+  cultivar?: boolean | undefined;
+  lot?: boolean | undefined;
+  aggregated?: boolean | undefined;
+  default?: boolean | undefined;
+  dark?: boolean | undefined;
   maxWidth: string;
 }
 

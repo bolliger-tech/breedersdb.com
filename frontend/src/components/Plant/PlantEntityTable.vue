@@ -77,7 +77,7 @@ import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewT
 
 export interface PlantEntityTableProps {
   plant: PlantFragment;
-  dense?: boolean;
+  dense?: boolean | undefined;
 }
 
 defineProps<PlantEntityTableProps>();

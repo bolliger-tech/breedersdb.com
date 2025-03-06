@@ -45,10 +45,10 @@ import { ref, type Slot } from 'vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
 export interface AnalyzeResultTableCellAttributionProps {
-  plant?: boolean;
-  plantGroup?: boolean;
-  cultivar?: boolean;
-  lot?: boolean;
+  plant?: boolean | undefined;
+  plantGroup?: boolean | undefined;
+  cultivar?: boolean | undefined;
+  lot?: boolean | undefined;
 }
 
 defineProps<AnalyzeResultTableCellAttributionProps>();

@@ -54,7 +54,7 @@ const props =
 const { t, d, n } = useI18n();
 
 const label = computed(() => {
-  if (!props.attributions.length) {
+  if (!props.attributions[0]) {
     return '';
   }
 

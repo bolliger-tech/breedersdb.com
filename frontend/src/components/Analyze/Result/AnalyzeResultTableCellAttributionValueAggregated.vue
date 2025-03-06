@@ -122,6 +122,7 @@ const label = computed(() => {
         n,
       });
     default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unsupported aggregation: ${props.aggregation}`);
   }
 });

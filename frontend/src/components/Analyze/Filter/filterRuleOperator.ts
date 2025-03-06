@@ -49,6 +49,7 @@ export class FilterRuleOperator {
       case FilterOperatorValue.False:
         return 'analyze.filter.operators.isFalse';
       default:
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Unknown filter operator value: ${this.value}`);
     }
   }
@@ -136,6 +137,7 @@ export class FilterRuleOperator {
       case FilterOperatorValue.False:
         return [ColumnTypes.Boolean];
       default:
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Unknown filter operator value: ${this.value}`);
     }
   }

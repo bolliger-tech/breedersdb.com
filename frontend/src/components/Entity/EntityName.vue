@@ -20,26 +20,34 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed } from 'vue';
 
 export interface PlantGroupNameProps {
-  plantGroup?: {
-    id: number;
-    name_segment: string;
-    name_override: string | null;
-  };
-  cultivar?: {
-    id: number;
-    name_segment: string;
-    name_override: string | null;
-  };
-  lot?: {
-    id: number;
-    name_segment: string;
-    name_override: string | null;
-  };
-  crossing?: {
-    id: number;
-    name: string;
-  };
-  noLink?: boolean;
+  plantGroup?:
+    | {
+        id: number;
+        name_segment: string;
+        name_override: string | null;
+      }
+    | undefined;
+  cultivar?:
+    | {
+        id: number;
+        name_segment: string;
+        name_override: string | null;
+      }
+    | undefined;
+  lot?:
+    | {
+        id: number;
+        name_segment: string;
+        name_override: string | null;
+      }
+    | undefined;
+  crossing?:
+    | {
+        id: number;
+        name: string;
+      }
+    | undefined;
+  noLink?: boolean | undefined;
 }
 
 const props = defineProps<PlantGroupNameProps>();

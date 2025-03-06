@@ -36,6 +36,7 @@ export function useEntityName() {
         entityName = t('base.entityName.attribution', count);
         break;
       default:
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Unknown table: ${table}`);
     }
     return capitalize ? uppercaseFirstLetter(entityName) : entityName;

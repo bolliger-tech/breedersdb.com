@@ -43,7 +43,7 @@ import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { ref } from 'vue';
 import { useTimeout } from 'quasar';
 import { onBeforeUnmount } from 'vue';
-import { imageSizes } from 'src/utils/imageSizes.ts';
+import { imageSizes } from 'src/utils/imageSizes';
 
 const TRANSITION_DURATION = 300;
 

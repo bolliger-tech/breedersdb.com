@@ -165,12 +165,16 @@ function getMedian(
   if (!sortedValues.length) {
     return null;
   }
-  const median =
-    sortedValues.length % 2 === 0
-      ? (sortedValues[sortedValues.length / 2 - 1] +
-          sortedValues[sortedValues.length / 2]) /
-        2
-      : sortedValues[Math.floor(sortedValues.length / 2)];
+
+  let median: number;
+  if (sortedValues.length === 1) {
+    median = sortedValues[0]!;
+  } else if (sortedValues.length % 2 === 0) {
+    const upper = Math.round(sortedValues.length / 2);
+    median = (sortedValues[upper - 1]! + sortedValues[upper]!) / 2;
+  } else {
+    median = sortedValues[Math.floor(sortedValues.length / 2)]!;
+  }
 
   return type === ColumnTypes.Date ? new Date(median) : median;
 }

@@ -44,10 +44,10 @@ defineExpose({
   focus: async () => {
     const nameOverrideValid = (await nameOverrideRef.value?.validate()) || true;
     if (!nameOverrideValid) {
-      nameOverrideRef.value && focusInView(nameOverrideRef.value);
+      if (nameOverrideRef.value) focusInView(nameOverrideRef.value);
       return;
     }
-    nameSegmentRef.value && focusInView(nameSegmentRef.value);
+    if (nameSegmentRef.value) focusInView(nameSegmentRef.value);
   },
 });
 

@@ -212,8 +212,8 @@ const { t } = useI18n();
 const options = computed(() => {
   const options: {
     value: InputMethod;
-    label: QBtnToggleProps['options'][0]['label'];
-    icon: QBtnToggleProps['options'][0]['icon'];
+    label: NonNullable<QBtnToggleProps['options'][0]['label']>;
+    icon: NonNullable<QBtnToggleProps['options'][0]['icon']>;
   }[] = [
     {
       value: 'qr-code',

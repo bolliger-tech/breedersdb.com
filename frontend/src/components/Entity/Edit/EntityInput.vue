@@ -24,7 +24,7 @@
           : inputStyle
       "
       @update:model-value="updateModelValue"
-      @blur="onBlur"
+      @blur="blur"
     >
       <template v-if="$slots.error" #error>
         <slot name="error"></slot>
@@ -86,7 +86,7 @@ function updateModelValue(value: QInputProps['modelValue']) {
   }
 }
 
-async function onBlur(e: Event) {
+async function blur(e: Event) {
   if (props.trim && typeof modelValue.value === 'string') {
     modelValue.value = modelValue.value.trim();
     await nextTick();

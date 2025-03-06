@@ -56,13 +56,10 @@ import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import CultivarSelect from '../Cultivar/CultivarSelect.vue';
 import PlantGroupNameInputs from './PlantGroupNameInputs.vue';
-import type {
-  PlantGroupInsertInput,
-  PlantGroupEditInput,
-} from './PlantGroupModalEdit.vue';
+import type { PlantGroupModalEditProps } from './PlantGroupModalEdit.vue';
 
 export interface PlantGroupEntityFormProps {
-  plantGroup: PlantGroupInsertInput | PlantGroupEditInput;
+  plantGroup: PlantGroupModalEditProps['plantGroup'];
 }
 
 const props = defineProps<PlantGroupEntityFormProps>();

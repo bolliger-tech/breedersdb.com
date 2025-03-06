@@ -154,7 +154,7 @@ async function save() {
 
   validationError.value = isValid ? null : t('base.validation.invalidFields');
   if (!isValid) {
-    return Promise.reject();
+    return Promise.reject(new Error(t('base.validation.invalidFields')));
   }
 
   if ('id' in props.entity) {
@@ -166,7 +166,7 @@ async function save() {
   await nextTick();
 
   if (saveError.value) {
-    return Promise.reject();
+    return Promise.reject(saveError.value);
   }
 }
 

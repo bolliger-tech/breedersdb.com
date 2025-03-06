@@ -33,7 +33,10 @@ function createAttributeAndAnalyzeRoutes(entity: string) {
             path: ':analyzeId(\\d+)',
             component: () => import(`pages/${entity}/AnalyzePage.vue`),
             props: (route: RouteLocationNormalized) => ({
-              analyzeId: parseInt(route.params.analyzeId.toString(), 10),
+              analyzeId: parseInt(
+                route.params.analyzeId?.toString() ?? '-1',
+                10,
+              ),
               key: route.params.analyzeId,
             }),
           },

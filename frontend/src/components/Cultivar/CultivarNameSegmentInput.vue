@@ -116,8 +116,7 @@ const {
   data: cultivarsData,
   error: cultivarsError,
   fetching: fetchingCultivars,
-  resume: resumeCultivarsQuery,
-  pause: pauseCultivarsQuery,
+  ...urql
 } = useQuery({
   query: cultivarsQuery,
   variables: cultivarsQueryVariables,
@@ -129,9 +128,9 @@ watch(
   () => props.lot,
   (newValue) => {
     if (newValue) {
-      resumeCultivarsQuery();
+      urql.resume();
     } else {
-      pauseCultivarsQuery();
+      urql.pause();
       cultivarsData.value = undefined;
     }
   },

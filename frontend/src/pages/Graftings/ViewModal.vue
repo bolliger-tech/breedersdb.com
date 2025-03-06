@@ -23,7 +23,7 @@
         <GraftingButtonDelete
           :grafting-id="grafting.id"
           @deleted="
-            () => router.push({ path: '/graftings', query: route.query })
+            () => $router.push({ path: '/graftings', query: route.query })
           "
         />
       </template>
@@ -70,8 +70,8 @@ const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  void router.push({
+async function edit() {
+  await router.push({
     path: `/graftings/${props.entityId}/edit`,
     query: route.query,
   });

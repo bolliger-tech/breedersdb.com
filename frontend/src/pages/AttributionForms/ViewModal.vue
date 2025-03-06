@@ -38,7 +38,7 @@
           :attribution-form-id="attributionForm.id"
           @deleted="
             () =>
-              router.push({ path: '/attribution-forms', query: route.query })
+              $router.push({ path: '/attribution-forms', query: route.query })
           "
         />
         <div v-else></div>
@@ -92,8 +92,8 @@ const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  void router.push({
+async function edit() {
+  await router.push({
     path: `/attribution-forms/${props.entityId}/edit`,
     query: route.query,
   });

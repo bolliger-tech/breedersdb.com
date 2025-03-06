@@ -231,7 +231,7 @@ async function save() {
 
   if (props.analyzeId === 'new') {
     if (newId) {
-      router.replace({
+      await router.replace({
         path: `${pathWithoutId.value}/${newId.toString()}`,
         query: route.query,
       });
@@ -242,15 +242,15 @@ async function save() {
 const saving = computed(() => savingInsert.value || savingEdit.value);
 const saveError = computed(() => saveInsertError.value || saveEditError.value);
 
-function onDeleted() {
-  router.push({
+async function onDeleted() {
+  await router.push({
     path: pathWithoutId.value,
   });
 }
 
-function onDuplicate() {
+async function onDuplicate() {
   name.value = '';
-  router.push({
+  await router.push({
     path: `${pathWithoutId.value}/new`,
     query: route.query,
   });

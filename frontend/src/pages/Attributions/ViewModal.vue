@@ -97,7 +97,7 @@
           :attribution-id="attribution.attribution_id"
           :attribution-value-id="attribution.id"
           @deleted="
-            () => router.push({ path: '/attributions', query: route.query })
+            () => $router.push({ path: '/attributions', query: route.query })
           "
         />
       </template>
@@ -168,8 +168,8 @@ const { t, d, n } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  void router.push({
+async function edit() {
+  await router.push({
     path: `/attributions/${props.entityId}/edit`,
     query: route.query,
   });

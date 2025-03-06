@@ -36,7 +36,7 @@
       <template #action-left>
         <UserButtonDelete
           :user-id="user.id"
-          @deleted="() => router.push({ path: '/users', query: route.query })"
+          @deleted="() => $router.push({ path: '/users', query: route.query })"
         />
       </template>
     </EntityModalContent>
@@ -83,8 +83,8 @@ const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  void router.push({
+async function edit() {
+  await router.push({
     path: `/users/${props.entityId}/edit`,
     query: route.query,
   });

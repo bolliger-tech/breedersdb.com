@@ -34,7 +34,7 @@
       <template #action-left>
         <LotButtonDelete
           :lot-id="lot.id"
-          @deleted="() => router.push({ path: '/lots', query: route.query })"
+          @deleted="() => $router.push({ path: '/lots', query: route.query })"
         />
       </template>
     </EntityModalContent>
@@ -101,8 +101,8 @@ const attributions = computed(
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  void router.push({
+async function edit() {
+  await router.push({
     path: `/lots/${props.entityId}/edit`,
     query: route.query,
   });

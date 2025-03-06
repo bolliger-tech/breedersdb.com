@@ -308,7 +308,7 @@ async function onScannedQr(code: string) {
   await nextTick();
   const result = await urql.executeQuery();
   if (result.data.value?.plants.length === 1) {
-    void router.push({ path: `/plants/${result.data.value.plants[0].id}` });
+    await router.push({ path: `/plants/${result.data.value.plants[0].id}` });
   } else {
     search.value = code;
   }

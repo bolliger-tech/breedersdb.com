@@ -260,7 +260,7 @@ async function onScannedQr(code: string) {
       ?.plants?.[0]?.plant_group_id;
 
   if (id) {
-    router.push({ path: `/groups/${id}` });
+    await router.push({ path: `/groups/${id}` });
   } else {
     search.value = code;
   }

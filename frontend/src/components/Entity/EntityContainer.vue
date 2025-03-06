@@ -139,29 +139,29 @@ function restoreScrollPos() {
 
 const route = useRoute();
 const router = useRouter();
-function addNew() {
+async function addNew() {
   if (typeof props.addEntityPath === 'undefined') return;
   saveScrollPos();
   const path =
     typeof props.addEntityPath === 'string'
       ? props.addEntityPath
       : props.addEntityPath.path;
-  router.push({ path, query: route.query });
+  await router.push({ path, query: route.query });
 }
-function view(id: number | string) {
+async function view(id: number | string) {
   saveScrollPos();
   const pathRaw = props.viewEntityPathGetter(id);
   const path = typeof pathRaw === 'string' ? pathRaw : pathRaw.path;
-  router.push({ path, query: route.query });
+  await router.push({ path, query: route.query });
 }
-function closeModal() {
+async function closeModal() {
   const path =
     typeof props.listEntitiesPath === 'string'
       ? props.listEntitiesPath
       : props.listEntitiesPath.path;
 
-  router.push({ path, query: route.query }).then(() => {
-    nextTick(() => nextTick(() => restoreScrollPos()));
+  await router.push({ path, query: route.query }).then(async () => {
+    await nextTick(async () => await nextTick(() => restoreScrollPos()));
   });
 }
 
@@ -189,7 +189,7 @@ async function viewNext() {
     modal.value?.shake();
   } else {
     transition.value = 'slide-left';
-    view(props.rows[index + 1].id);
+    await view(props.rows[index + 1].id);
   }
 }
 
@@ -200,7 +200,7 @@ async function viewPrevious() {
     modal.value?.shake();
   } else {
     transition.value = 'slide-right';
-    view(props.rows[index - 1].id);
+    await view(props.rows[index - 1].id);
   }
 }
 

@@ -121,10 +121,10 @@ async function changePassword() {
       user_id: props.userId,
       password: data.value.password,
     })
-    .then(() => {
+    .then(async () => {
       if (props.userId === me.value?.id) {
         // trigger signin
-        router.push({ path: '/users' });
+        await router.push({ path: '/users' });
         return;
       }
       open.value = false;

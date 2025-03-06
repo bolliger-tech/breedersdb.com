@@ -87,7 +87,7 @@ const pagination = defineModel<QTableProps['pagination']>('pagination', {
 });
 
 const router = useRouter();
-function onRowClick(row: AnalyzeResultTableProps['rows'][0]): void {
+async function onRowClick(row: AnalyzeResultTableProps['rows'][0]): void {
   if (props.baseTable === BaseTable.Attributions) {
     throw new Error('Attributions must not be the base table for results.');
   }
@@ -100,6 +100,6 @@ function onRowClick(row: AnalyzeResultTableProps['rows'][0]): void {
     [BaseTable.Crossings]: '/crossings',
   };
 
-  router.push(`${routes[props.baseTable]}/${row.id}`);
+  await router.push(`${routes[props.baseTable]}/${row.id}`);
 }
 </script>

@@ -34,11 +34,11 @@ const { error, fetching, ...urql } = useMutation(
   `),
 );
 
-const onSubmit = () => {
-  void urql.executeMutation({}).then(({ error }) => {
+async function onSubmit() {
+  await urql.executeMutation({}).then(async ({ error }) => {
     if (!error) {
-      router.push({ path: '/' });
+      await router.push({ path: '/' });
     }
   });
-};
+}
 </script>

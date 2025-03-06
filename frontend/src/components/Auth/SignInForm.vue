@@ -77,13 +77,13 @@ const { registerInterval, removeInterval } = useInterval();
 const route = useRoute();
 const router = useRouter();
 
-function redirect() {
+async function redirect() {
   const redirect = route.query.redirect as string | undefined;
-  router.push({ path: redirect || '/' });
+  await router.push({ path: redirect || '/' });
 }
 
 if (getUserFromCookie()) {
-  redirect();
+  await redirect();
 }
 
 const email = ref('');
@@ -100,10 +100,10 @@ const { error, fetching, ...urql } = useMutation(
   `),
 );
 
-function onSubmit() {
-  void urql
+async function onSubmit() {
+  await urql
     .executeMutation({ email: email.value, password: password.value })
-    .then((result) => {
+    .then(async (result) => {
       if (result.error) {
         return;
       }
@@ -112,7 +112,7 @@ function onSubmit() {
       } else {
         console.error('No locale in SignIn response');
       }
-      redirect();
+      await redirect();
     });
 }
 

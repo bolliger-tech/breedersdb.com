@@ -71,7 +71,7 @@
           v-if="!orchard.disabled"
           :orchard-id="orchard.id"
           @deleted="
-            () => router.push({ path: '/orchards', query: route.query })
+            () => $router.push({ path: '/orchards', query: route.query })
           "
         />
         <div v-else></div>
@@ -135,8 +135,8 @@ const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  void router.push({
+async function edit() {
+  await router.push({
     path: `/orchards/${props.entityId}/edit`,
     query: route.query,
   });

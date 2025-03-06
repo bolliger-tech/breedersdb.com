@@ -72,7 +72,7 @@
           v-if="!attribute.disabled"
           :attribute-id="attribute.id"
           @deleted="
-            () => router.push({ path: '/attributes', query: route.query })
+            () => $router.push({ path: '/attributes', query: route.query })
           "
         />
         <div v-else></div>
@@ -146,8 +146,8 @@ const defaultValue = computed(() => {
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  void router.push({
+async function edit() {
+  await router.push({
     path: `/attributes/${props.entityId}/edit`,
     query: route.query,
   });

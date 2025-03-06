@@ -84,7 +84,7 @@
       <template #action-left>
         <PollenButtonDelete
           :pollen-id="pollen.id"
-          @deleted="() => router.push({ path: '/pollen', query: route.query })"
+          @deleted="() => $router.push({ path: '/pollen', query: route.query })"
         />
       </template>
     </EntityModalContent>
@@ -156,8 +156,8 @@ const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  void router.push({
+async function edit() {
+  await router.push({
     path: `/pollen/${props.entityId}/edit`,
     query: route.query,
   });

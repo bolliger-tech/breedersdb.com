@@ -96,7 +96,7 @@
         <CrossingButtonDelete
           :crossing-id="crossing.id"
           @deleted="
-            () => router.push({ path: '/crossings', query: route.query })
+            () => $router.push({ path: '/crossings', query: route.query })
           "
         />
       </template>
@@ -172,8 +172,8 @@ const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  void router.push({
+async function edit() {
+  await router.push({
     path: `/crossings/${props.entityId}/edit`,
     query: route.query,
   });

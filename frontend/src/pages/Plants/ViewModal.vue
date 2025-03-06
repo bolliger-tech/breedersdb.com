@@ -138,8 +138,8 @@ const print = computed(
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  void router.push({
+async function edit() {
+  await router.push({
     path: `/plants/${props.entityId}/edit`,
     query: route.query,
   });

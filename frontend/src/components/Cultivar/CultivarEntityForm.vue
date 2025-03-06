@@ -227,7 +227,7 @@ function automagicallySetLotId({
 
   if (newType === 'variety') {
     // if there is only one lot with is_variety === true, set it, no mater what
-    if (newVarietyLots.length === 1) {
+    if (newVarietyLots.length === 1 && newVarietyLots[0]) {
       data.value.lot_id = newVarietyLots[0].id;
     } else {
       // if the current lot_id is not a variety lot, set it to lastVarietyLotId

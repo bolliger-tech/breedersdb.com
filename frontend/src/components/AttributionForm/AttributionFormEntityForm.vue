@@ -138,11 +138,13 @@ function onDrop(pos: 'before' | 'after', dropIndex: number) {
   const dragItem = data.value.attribution_form_fields[dragIndex];
   if (dragIndex < dropIndex) dropIndex--;
   data.value.attribution_form_fields.splice(dragIndex, 1);
-  data.value.attribution_form_fields.splice(
-    dropIndex + (pos === 'after' ? 1 : 0),
-    0,
-    dragItem,
-  );
+  if (dragItem) {
+    data.value.attribution_form_fields.splice(
+      dropIndex + (pos === 'after' ? 1 : 0),
+      0,
+      dragItem,
+    );
+  }
 }
 
 const addedFormFields = ref(1);

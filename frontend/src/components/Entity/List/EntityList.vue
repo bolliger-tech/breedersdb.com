@@ -62,21 +62,21 @@ import type { Slot } from 'vue';
 import BaseQrScannerModal from 'src/components/Base/BaseQrScanner/BaseQrScannerModal.vue';
 
 export interface EntityListProps extends EntityListPropsWithoutModels {
-  tab?: string;
-  search?: string;
+  tab?: string | undefined;
+  search?: string | undefined;
 }
 
 interface EntityListPropsWithoutModels {
   title: string;
-  tabs?: { value: string; label: string }[];
-  searchPlaceholder?: string;
-  hasAddButton?: boolean;
-  onScannedQr?: (data: string) => void;
+  tabs?: { value: string; label: string }[] | undefined;
+  searchPlaceholder?: string | undefined;
+  hasAddButton?: boolean | undefined;
+  onScannedQr?: ((data: string) => void) | undefined;
 }
 
 defineProps<EntityListPropsWithoutModels>();
-const tab = defineModel<string>('tab');
-const search = defineModel<string>('search');
+const tab = defineModel<string | undefined>('tab');
+const search = defineModel<string | undefined>('search');
 defineSlots<{
   default: Slot;
   'add-button': Slot;

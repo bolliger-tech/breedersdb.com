@@ -2,6 +2,12 @@ import { defineBoot } from '#q-app/wrappers';
 import * as Sentry from '@sentry/vue';
 
 export default defineBoot(({ app }) => {
+  if (!process.env.SENTRY_DSN) {
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('SENTRY_DSN is not defined. Sentry will not be used.');
+    }
+    return;
+  }
   Sentry.init({
     app,
     dsn: process.env.SENTRY_DSN,

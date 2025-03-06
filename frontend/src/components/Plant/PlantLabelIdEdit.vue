@@ -122,7 +122,8 @@ async function uniqueRule(newLabelId: string) {
     return t('plants.errors.labelIdQueryError');
   }
 
-  nextFreeLabelId.value = data.value.plants_next_free_label_id[0].label_id;
+  nextFreeLabelId.value =
+    data.value.plants_next_free_label_id[0]?.label_id ?? null;
 
   // we use "external validation" in combination with the "error" slot for this.
   // to ignore "internal validation", we always return true here.

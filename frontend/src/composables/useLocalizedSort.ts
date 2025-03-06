@@ -22,8 +22,9 @@ export function useLocalizedSort({
 
   return {
     localizedSortCollator: collator.value,
-    localizedSortPredicate: collator.value.compare,
+    localizedSortPredicate: (a: string, b: string) =>
+      collator.value.compare(a, b),
     localizedSort: (array: string[]): string[] =>
-      array.sort(collator.value.compare),
+      array.sort((a, b) => collator.value.compare(a, b)),
   };
 }

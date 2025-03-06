@@ -67,7 +67,7 @@ export function useEntityIndexHooks<T>({
     const searchColumnsValue = toValue(searchColumns);
 
     if (search.value) {
-      if (searchColumnsValue.length === 1) {
+      if (searchColumnsValue.length === 1 && searchColumnsValue[0]) {
         where._and.push(
           nestObject({
             [searchColumnsValue[0]]: { _ilike: `%${search.value}%` },

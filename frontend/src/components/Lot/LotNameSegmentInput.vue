@@ -118,8 +118,7 @@ const {
   data: lotsData,
   error: lotsError,
   fetching: fetchingLots,
-  resume: resumeLotsQuery,
-  pause: pauseLotsQuery,
+  ...urql
 } = useQuery({
   query: lotsQuery,
   variables: lotsQueryVariables,
@@ -131,9 +130,9 @@ watch(
   () => props.crossing,
   (newValue) => {
     if (newValue) {
-      resumeLotsQuery();
+      urql.resume();
     } else {
-      pauseLotsQuery();
+      urql.pause();
       lotsData.value = undefined;
     }
   },

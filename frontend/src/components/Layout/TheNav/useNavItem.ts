@@ -6,12 +6,14 @@ export type NavItem = {
   to: string;
   path: string;
   navPath: string[];
-  isOpen?: boolean;
-  children?: NavItem[];
-  component?: { component: Component; props?: Record<string, unknown> };
-  label?: string;
-  icon?: BaseSpriteIconProps['name'];
-  isCurrentRoute?: boolean;
+  isOpen?: boolean | undefined;
+  children?: NavItem[] | undefined;
+  component?:
+    | { component: Component; props?: Record<string, unknown> | undefined }
+    | undefined;
+  label?: string | undefined;
+  icon?: BaseSpriteIconProps['name'] | undefined;
+  isCurrentRoute?: boolean | undefined;
 } & Omit<BaseSpriteIconProps, 'name'>;
 
 export function useNavItem(item: NavItem) {

@@ -18,7 +18,6 @@
 <script setup lang="ts">
 import PlantGroupNameSegmentInput from './PlantGroupNameSegmentInput.vue';
 import PlantGroupNameOverrideInput from './PlantGroupNameOverrideInput.vue';
-import type { InputRef } from 'src/composables/useEntityForm';
 import { focusInView } from 'src/utils/focusInView';
 import { computed, ref, watch } from 'vue';
 import { useQuery } from '@urql/vue';
@@ -35,8 +34,12 @@ const nameOverride = defineModel<string | null>('nameOverride', {
   required: true,
 });
 
-const nameSegmentRef = ref<InputRef | null>(null);
-const nameOverrideRef = ref<InputRef | null>(null);
+const nameSegmentRef = ref<InstanceType<
+  typeof PlantGroupNameSegmentInput
+> | null>(null);
+const nameOverrideRef = ref<InstanceType<
+  typeof PlantGroupNameOverrideInput
+> | null>(null);
 defineExpose({
   validate: async () =>
     ((await nameSegmentRef.value?.validate()) ?? true) &&

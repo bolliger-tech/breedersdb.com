@@ -58,8 +58,8 @@ import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 export interface EntityViewAttributionsTableProps {
   rows: AttributionsViewFragment[];
-  attributeType?: AttributeTypes;
-  showEntity?: boolean;
+  attributeType?: AttributeTypes | undefined;
+  showEntity?: boolean | undefined;
 }
 
 const props = defineProps<EntityViewAttributionsTableProps>();

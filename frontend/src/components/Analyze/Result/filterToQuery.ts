@@ -433,6 +433,7 @@ function toComparison({
         negate: true,
       };
     default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unknown operator: ${operator.value}`);
   }
 }
@@ -466,6 +467,7 @@ function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnTypes }) {
     case ColumnTypes.Photo:
       return true;
     default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unknown type: ${type}`);
   }
 }
@@ -494,6 +496,7 @@ function columnTypeToGraphQLType(type: ColumnTypes) {
     case ColumnTypes.Photo:
       return 'String';
     default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unknown type: ${type}`);
   }
 }

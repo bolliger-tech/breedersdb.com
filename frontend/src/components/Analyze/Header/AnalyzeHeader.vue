@@ -279,6 +279,7 @@ function isDirty() {
 onBeforeRouteLeave((to, from) => {
   const isDuplication = to.path.endsWith('/new');
   const isInitialSave =
+    typeof to.params.analyzeId === 'string' &&
     to.path === from.path.replace(/\/new$/, `/${to.params.analyzeId}`);
   const dirty = isDirty();
 

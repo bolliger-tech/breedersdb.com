@@ -24,7 +24,7 @@ async function reload() {
   if ('serviceWorker' in navigator) {
     const registrations = await navigator.serviceWorker.getRegistrations();
     const updated = registrations.map((r) => r.update());
-    Promise.allSettled(updated).then(() => location.reload());
+    await Promise.allSettled(updated).then(() => location.reload());
   } else {
     location.reload();
   }

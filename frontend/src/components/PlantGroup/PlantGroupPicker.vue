@@ -154,7 +154,7 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.plant_groups.length && !d.plant_groups[0].disabled) {
+  if (d?.plant_groups[0] && !d.plant_groups[0].disabled) {
     emit('plantGroup', d.plant_groups[0]);
   }
 });

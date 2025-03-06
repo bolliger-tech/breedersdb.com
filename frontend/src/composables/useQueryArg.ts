@@ -29,7 +29,7 @@ export function useQueryArg<
   const router = useRouter();
 
   function castToDefaultValueType(
-    value: LocationQueryValue | LocationQueryValue[],
+    value: LocationQueryValue | LocationQueryValue[] | undefined,
   ): T | undefined {
     if (value === undefined) {
       // not in url

@@ -60,7 +60,7 @@ const query = graphql(`
   }
 `);
 const variables = computed(() => ({ id: props.crossingId }));
-const { data, error, fetching, resume, pause } = useQuery({
+const { data, error, fetching, ...urql } = useQuery({
   query: query,
   variables: variables,
   pause: !props.crossingId,
@@ -71,9 +71,9 @@ watch(
   () => props.crossingId,
   (newValue) => {
     if (newValue) {
-      resume();
+      urql.resume();
     } else {
-      pause();
+      urql.pause();
       data.value = undefined;
     }
   },

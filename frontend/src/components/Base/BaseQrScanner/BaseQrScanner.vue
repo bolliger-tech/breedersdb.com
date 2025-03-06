@@ -57,9 +57,9 @@ const emit = defineEmits<{
 }>();
 
 defineProps<{
-  errorMessage?: string;
-  error?: boolean;
-  maxWidthHeight?: string;
+  errorMessage?: string | undefined;
+  error?: boolean | undefined;
+  maxWidthHeight?: string | undefined;
 }>();
 
 const canvasElement = ref<HTMLCanvasElement | null>(null);

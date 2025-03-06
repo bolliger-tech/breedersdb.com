@@ -54,16 +54,16 @@ export type EntityInputProps = Omit<
   QInputProps,
   'bgColor' | 'dense' | 'outlined' | 'modelValue'
 > & {
-  required?: boolean;
-  min?: number | string;
-  max?: number | string;
-  step?: number;
-  pattern?: string;
-  maxlength?: number;
-  autocomplete?: string;
-  explainer?: string;
-  placeholder?: string;
-  trim?: boolean; // workaround for https://github.com/quasarframework/quasar/issues/17663
+  required?: boolean | undefined;
+  min?: number | string | undefined;
+  max?: number | string | undefined;
+  step?: number | undefined;
+  pattern?: string | undefined;
+  maxlength?: number | undefined;
+  autocomplete?: string | undefined;
+  explainer?: string | undefined;
+  placeholder?: string | undefined;
+  trim?: boolean | undefined; // workaround for https://github.com/quasarframework/quasar/issues/17663
 };
 
 const props = defineProps<EntityInputProps>();

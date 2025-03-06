@@ -28,10 +28,10 @@ import type { InputRef } from 'src/composables/useEntityForm';
 export interface LotNameInputProps {
   fullName: string | undefined;
   rules?: EntityInputProps['rules'];
-  loading?: boolean;
-  hint?: string;
-  maxlength?: number;
-  required?: boolean;
+  loading?: boolean | undefined;
+  hint?: string | undefined;
+  maxlength?: number | undefined;
+  required?: boolean | undefined;
 }
 
 defineProps<LotNameInputProps>();

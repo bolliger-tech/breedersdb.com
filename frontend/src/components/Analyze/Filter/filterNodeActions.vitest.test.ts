@@ -55,13 +55,15 @@ describe('addLeaf', () => {
     addLeaf(parent, FilterConjunction.Or);
     const intermediateNode = parent.getChildren()[0];
 
+    expect(intermediateNode).toBeInstanceOf(FilterNode);
+
     expect(parent.getChildCount()).toBe(2);
     expect(parent.getChildrensConjunction()).toBe(FilterConjunction.Or);
-    expect(intermediateNode.getChildrensConjunction()).toBe(
+    expect(intermediateNode!.getChildrensConjunction()).toBe(
       FilterConjunction.And,
     );
-    expect(intermediateNode.getChildCount()).toBe(2);
-    expect(leafsBefore).toEqual(intermediateNode.getChildren());
+    expect(intermediateNode!.getChildCount()).toBe(2);
+    expect(leafsBefore).toEqual(intermediateNode!.getChildren());
   });
 });
 

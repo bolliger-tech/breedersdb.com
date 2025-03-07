@@ -27,6 +27,7 @@
       {{ cultivar.breeder }}
     </EntityViewTableRow>
     <EntityTableViewTimestampRows
+      v-if="cultivar.created && cultivar.modified"
       :created="cultivar.created"
       :modified="cultivar.modified"
     />
@@ -43,9 +44,10 @@ import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 export interface CultivarEntityTableProps {
-  cultivar: CultivarFragment;
+  cultivar: PartialWithUndefined<CultivarFragment>;
   dense?: boolean;
 }
 

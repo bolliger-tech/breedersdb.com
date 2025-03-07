@@ -24,6 +24,7 @@
       {{ plantGroup.disabled ? '✓' : '' }}
     </EntityViewTableRow>
     <EntityTableViewTimestampRows
+      v-if="plantGroup.created && plantGroup.modified"
       :created="plantGroup.created"
       :modified="plantGroup.modified"
     />
@@ -40,9 +41,10 @@ import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 export interface PlantGroupEntityTableProps {
-  plantGroup: PlantGroupFragment;
+  plantGroup: PartialWithUndefined<PlantGroupFragment>;
   dense?: boolean;
 }
 

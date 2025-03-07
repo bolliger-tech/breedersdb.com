@@ -168,10 +168,7 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import type {
-  MotherPlantEditInput,
-  MotherPlantInsertInput,
-} from './MotherPlantModalEdit.vue';
+import type { MotherPlantModalEditProps } from './MotherPlantModalEdit.vue';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
@@ -184,7 +181,7 @@ import CrossingSelect from '../Crossing/CrossingSelect.vue';
 import { useValidationRule } from 'src/composables/useValidationRule';
 
 export interface MotherPlantEntityFormProps {
-  motherPlant: MotherPlantInsertInput | MotherPlantEditInput;
+  motherPlant: MotherPlantModalEditProps['motherPlant'];
 }
 
 const props = defineProps<MotherPlantEntityFormProps>();

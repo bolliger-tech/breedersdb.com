@@ -59,6 +59,7 @@
       {{ plant.date_eliminated ? d(plant.date_eliminated, 'Ymd') : '' }}
     </EntityViewTableRow>
     <EntityTableViewTimestampRows
+      v-if="plant.created && plant.modified"
       :created="plant.created"
       :modified="plant.modified"
     />
@@ -74,9 +75,10 @@ import { type PlantFragment } from './plantFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 export interface PlantEntityTableProps {
-  plant: PlantFragment;
+  plant: PartialWithUndefined<PlantFragment>;
   dense?: boolean | undefined;
 }
 

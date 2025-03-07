@@ -23,3 +23,13 @@ export type Unpack<T> = {
 export type UndefinedToNull<T> = {
   [P in keyof T]: T[P] extends undefined ? null : NonNullable<T[P]> | null;
 };
+
+/**
+ * Like `Partial`, but also allows `undefined` values
+ *
+ * Example:
+ * { a: 1 } -> { a?: 1 | undefined }
+ */
+export type PartialWithUndefined<T> = {
+  [P in keyof T]?: T[P] | undefined;
+};

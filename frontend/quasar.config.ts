@@ -87,9 +87,7 @@ export default defineConfig((ctx) => {
         [
           'vite-plugin-checker',
           {
-            vueTsc: {
-              tsconfigPath: true,
-            },
+            vueTsc: true,
             eslint: {
               lintCommand:
                 'eslint -c ./eslint.config.js "./src*/**/*.{ts,js,mjs,cjs,vue}"',

@@ -55,44 +55,8 @@ import EntityName from 'src/components/Entity/EntityName.vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { computed, type Slot } from 'vue';
 
-interface Plant {
-  entityType: 'plant';
-  labelId: string;
-  plantGroup: PlantGroupNameProps['plantGroup'] & {
-    cultivar?: PlantGroupNameProps['cultivar'] & {
-      lot?: PlantGroupNameProps['lot'] & {
-        crossing?: PlantGroupNameProps['crossing'];
-      };
-    };
-  };
-  cultivar?: never;
-  lot?: never;
-}
-
-interface PlantGroup {
-  entityType: 'plantGroup';
-  labelId?: string | null;
-  plantGroup: PlantGroupNameProps['plantGroup'] & {
-    cultivar?: PlantGroupNameProps['cultivar'] & {
-      lot?: PlantGroupNameProps['lot'] & {
-        crossing?: PlantGroupNameProps['crossing'];
-      };
-    };
-  };
-  cultivar?: never;
-  lot?: never;
-}
-
-interface Cultivar {
-  entityType: 'cultivar';
-  labelId?: never;
-  plantGroup?: never;
-  cultivar: PlantGroupNameProps['cultivar'] & {
-    lot?: PlantGroupNameProps['lot'] & {
-      crossing?: PlantGroupNameProps['crossing'];
-    };
-  };
-  lot?: never;
+interface LotNameProp extends NonNullable<PlantGroupNameProps['lot']> {
+  crossing?: PlantGroupNameProps['crossing'];
 }
 
 interface Lot {
@@ -100,9 +64,41 @@ interface Lot {
   labelId?: never;
   plantGroup?: never;
   cultivar?: never;
-  lot: PlantGroupNameProps['lot'] & {
-    crossing?: PlantGroupNameProps['crossing'];
-  };
+  lot: LotNameProp;
+}
+
+interface CultivarNameProp
+  extends NonNullable<PlantGroupNameProps['cultivar']> {
+  lot?: LotNameProp | undefined;
+}
+
+interface Cultivar {
+  entityType: 'cultivar';
+  labelId?: never;
+  plantGroup?: never;
+  cultivar: CultivarNameProp;
+  lot?: never;
+}
+
+interface PlantGroupNameProp
+  extends NonNullable<PlantGroupNameProps['plantGroup']> {
+  cultivar?: CultivarNameProp | undefined;
+}
+
+interface PlantGroup {
+  entityType: 'plantGroup';
+  labelId?: string | null;
+  plantGroup: PlantGroupNameProp | undefined;
+  cultivar?: never;
+  lot?: never;
+}
+
+interface Plant {
+  entityType: 'plant';
+  labelId: string;
+  plantGroup: PlantGroupNameProp | undefined;
+  cultivar?: never;
+  lot?: never;
 }
 
 export type EntityCardProps = (Plant | PlantGroup | Cultivar | Lot) & {

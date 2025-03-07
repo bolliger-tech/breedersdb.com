@@ -116,10 +116,16 @@ export function waitPromise(ms: number) {
 function waitUntilMounted(wrapper: VueWrapper, Component: Component) {
   return new Promise<void>((resolve) => {
     try {
-      wrapper.findComponent(Component).vm;
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      wrapper.findComponent(Component).vm; // will throw if not mounted
       resolve();
-    } catch {}
-    setTimeout(() => waitUntilMounted(wrapper, Component).then(resolve), 10);
+    } catch {
+      // ignore
+    }
+    setTimeout(
+      () => void waitUntilMounted(wrapper, Component).then(resolve),
+      10,
+    );
   });
 }
 

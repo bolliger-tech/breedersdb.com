@@ -82,6 +82,7 @@ import type { TadaDocumentNode } from 'gql.tada';
 import { usePrint } from 'src/composables/usePrint';
 import { captureException } from '@sentry/browser';
 import { useQuasar } from 'quasar';
+import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 /**
  * NOTE: your mutations must have a variable called $entity
@@ -145,11 +146,7 @@ const {
   ...urqlEdit
 } = useMutation(props.editMutation);
 
-type OrUndefined<T> = {
-  [P in keyof T]: T[P] | undefined;
-};
-
-function onFormChange(data: OrUndefined<InsertVariables['entity']>) {
+function onFormChange(data: PartialWithUndefined<InsertVariables['entity']>) {
   // remove undefined values
   for (const key in data) {
     if (data[key] === undefined) {

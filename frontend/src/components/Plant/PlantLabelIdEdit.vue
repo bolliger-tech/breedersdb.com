@@ -37,7 +37,6 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import type { EntityInputInstance } from '../Entity/Edit/EntityInput.vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { computed, ref } from 'vue';
 import { watch } from 'vue';
@@ -64,7 +63,7 @@ const labelId = defineModel<string>({
   required: true,
 });
 
-const inputRef = ref<EntityInputInstance | null>(null);
+const inputRef = ref<InstanceType<typeof EntityInput> | null>(null);
 defineExpose({
   validate: () => inputRef.value?.validate(),
   focus: () => inputRef.value && focusInView(inputRef.value),

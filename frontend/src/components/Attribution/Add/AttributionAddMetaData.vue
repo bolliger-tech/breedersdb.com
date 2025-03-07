@@ -51,7 +51,6 @@
 </template>
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import type { EntityInputInstance } from 'src/components/Entity/Edit/EntityInput.vue';
 import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { ref, computed } from 'vue';
@@ -66,9 +65,9 @@ const author = defineModel<string | null>('author', { required: true });
 const date = defineModel<string | null>('date', { required: true });
 const repeat = defineModel<number>('repeat', { required: true });
 
-const authorRef = ref<EntityInputInstance | null>(null);
-const dateRef = ref<EntityInputInstance | null>(null);
-const repeatRef = ref<EntityInputInstance | null>(null);
+const authorRef = ref<InstanceType<typeof EntityInput> | null>(null);
+const dateRef = ref<InstanceType<typeof EntityInput> | null>(null);
+const repeatRef = ref<InstanceType<typeof EntityInput> | null>(null);
 
 defineExpose({
   validate: () => {

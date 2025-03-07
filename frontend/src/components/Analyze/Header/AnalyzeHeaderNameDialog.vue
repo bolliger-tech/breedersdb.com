@@ -53,7 +53,6 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import type { EntityInputInstance } from 'src/components/Entity/Edit/EntityInput.vue';
 import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import { ref, computed } from 'vue';
 import type { AnalyzeFilterBaseTables } from 'src/graphql';
@@ -69,7 +68,7 @@ const name = defineModel<string>('name', { required: true });
 const show = defineModel<boolean>('show', { required: true });
 const emit = defineEmits<{ save: [] }>();
 
-const inputRef = ref<EntityInputInstance | null>(null);
+const inputRef = ref<InstanceType<typeof EntityInput> | null>(null);
 const oldName = ref(name.value);
 
 const additionalWhere = computed(() => ({

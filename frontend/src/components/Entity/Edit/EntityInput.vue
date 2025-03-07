@@ -39,16 +39,10 @@
 <script setup lang="ts">
 import { useInputBackground } from 'src/composables/useInputBackground';
 import type { QInput, QInputProps } from 'quasar';
-import type { ComponentPublicInstance } from 'vue';
 import { nextTick, ref, type Slot } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { focusInView } from 'src/utils/focusInView';
-
-export type EntityInputInstance = ComponentPublicInstance<EntityInputProps> & {
-  validate: () => ReturnType<QInput['validate']> | undefined;
-  focus: () => ReturnType<QInput['focus']> | undefined;
-};
 
 export type EntityInputProps = Omit<
   QInputProps,

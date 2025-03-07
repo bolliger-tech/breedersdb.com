@@ -40,13 +40,12 @@ import { graphql } from 'src/graphql';
 import type { UseQueryArgs } from '@urql/vue';
 import { useQuery } from '@urql/vue';
 import type { EntitySelectProps } from '../Entity/Edit/EntitySelect.vue';
-import EntitySelect, {
-  type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 import type { FilterSelectOptionsUpdateFn } from 'src/utils/selectOptionFilter';
 import { selectFirstOption } from 'src/utils/selectOptionFilter';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
 export interface PlantSelectProps {
   required?: boolean;
@@ -57,10 +56,7 @@ export interface PlantSelectProps {
 }
 const props = defineProps<PlantSelectProps>();
 
-const plantRef = ref<EntitySelectInstance<{
-  id: number;
-  name: string;
-}> | null>(null);
+const plantRef = ref<ComponentExposed<typeof EntitySelect> | null>(null);
 
 defineExpose({
   validate: () => plantRef.value?.validate(),

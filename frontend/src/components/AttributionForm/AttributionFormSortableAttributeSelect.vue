@@ -78,7 +78,6 @@
 <script setup lang="ts">
 import AttributeSelect from 'src/components/Attribute/AttributeSelect.vue';
 import { ref } from 'vue';
-import { type EntitySelectInstance } from 'src/components/Entity/Edit/EntitySelect.vue';
 import { type AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { focusInView } from 'src/utils/focusInView';
 import { useQuasar } from 'quasar';
@@ -91,7 +90,7 @@ export interface AttributionFormSortableAttributeSelectProps {
 
 defineProps<AttributionFormSortableAttributeSelectProps>();
 
-const inputRef = ref<EntitySelectInstance<AttributeFragment> | null>(null);
+const inputRef = ref<InstanceType<typeof AttributeSelect> | null>(null);
 const containerRef = ref<HTMLDivElement | null>(null);
 
 defineExpose({

@@ -24,11 +24,10 @@ import { useI18n } from 'src/composables/useI18n';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { ref, computed } from 'vue';
-import EntitySelect, {
-  type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 import type { AttributeDataTypes } from 'src/graphql';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
 type OptionType = {
   value: string;
@@ -43,7 +42,9 @@ export interface AttributeDataTypeSelectProps {
 
 const props = defineProps<AttributeDataTypeSelectProps>();
 
-const attributeDataTypeRef = ref<EntitySelectInstance<OptionType> | null>(null);
+const attributeDataTypeRef = ref<ComponentExposed<typeof EntitySelect> | null>(
+  null,
+);
 
 defineExpose({
   validate: () => attributeDataTypeRef.value?.validate(),

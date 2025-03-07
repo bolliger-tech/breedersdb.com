@@ -18,10 +18,9 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import EntitySelect, {
-  type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
 export interface LotSelectProps {
   required?: boolean;
@@ -32,10 +31,7 @@ export interface LotSelectProps {
 
 const props = defineProps<LotSelectProps>();
 
-const lotRef = ref<EntitySelectInstance<{
-  id: number;
-  display_name: string;
-}> | null>(null);
+const lotRef = ref<ComponentExposed<typeof EntitySelect> | null>(null);
 
 defineExpose({
   validate: () => lotRef.value?.validate(),

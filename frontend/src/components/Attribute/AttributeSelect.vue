@@ -17,14 +17,13 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import EntitySelect, {
-  type EntitySelectInstance,
-} from 'src/components/Entity/Edit/EntitySelect.vue';
+import EntitySelect from 'src/components/Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 import {
   attributeFragment,
   type AttributeFragment,
 } from 'src/components/Attribute/attributeFragment';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
 export interface AttributeSelectProps {
   hideLabel?: boolean;
@@ -32,7 +31,7 @@ export interface AttributeSelectProps {
 
 defineProps<AttributeSelectProps>();
 
-const inputRef = ref<EntitySelectInstance<AttributeFragment> | null>(null);
+const inputRef = ref<ComponentExposed<typeof EntitySelect> | null>(null);
 
 defineExpose({
   validate: () => inputRef.value?.validate(),

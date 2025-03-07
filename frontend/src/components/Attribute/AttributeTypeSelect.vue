@@ -14,21 +14,19 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
-import EntitySelect, {
-  type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 import type { AttributeTypes } from 'src/graphql';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
 export interface AttributeTypeSelectProps {
   required?: boolean;
 }
 defineProps<AttributeTypeSelectProps>();
 
-const attributeTypeRef = ref<EntitySelectInstance<{
-  value: string;
-  label: string;
-}> | null>(null);
+const attributeTypeRef = ref<ComponentExposed<typeof EntitySelect> | null>(
+  null,
+);
 
 defineExpose({
   validate: () => attributeTypeRef.value?.validate(),

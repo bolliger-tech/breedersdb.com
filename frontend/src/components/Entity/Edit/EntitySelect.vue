@@ -1,5 +1,5 @@
 <template>
-  <BaseInputLabel :label="label" :explainer="explainer">
+  <BaseInputLabel ref="label" :label="label" :explainer="explainer">
     <template v-if="$slots.explainer" #explainer>
       <slot name="explainer"></slot>
     </template>
@@ -63,15 +63,7 @@ import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import type { QSelectProps, QSelectSlots } from 'quasar';
 import { QSelect } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
-import type { ShallowUnwrapRef } from 'vue';
-import {
-  type ComponentPublicInstance,
-  type VNodeRef,
-  computed,
-  ref,
-  type Slot,
-  type ShallowRef,
-} from 'vue';
+import { computed, ref, type Slot, type ShallowRef } from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import type { FilterSelectOptionsUpdateFn } from 'src/utils/selectOptionFilter';
 import { filterSelectOptions } from 'src/utils/selectOptionFilter';
@@ -80,17 +72,6 @@ import type { CombinedError } from '@urql/vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { focusInView } from 'src/utils/focusInView';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
-
-// it currently seems to be a bug with generic components. the currect type
-// would be without the `& VNodeRef` part.
-// but this throws an error. the workaround with `& VNodeRef` is not 100%
-// accurate, but it works.
-export type EntitySelectInstance<T> = {
-  validate: () => ReturnType<QSelect['validate']> | undefined;
-  focus: () => ReturnType<QSelect['focus']> | undefined;
-  filteredOptions: ShallowUnwrapRef<T[]>;
-} & ComponentPublicInstance<EntitySelectProps<T>> &
-  VNodeRef;
 
 // for generic components we have to export all interfaces or none. else it currently throws an error
 export interface EntitySelectProps<T> extends EntitySelectPropsWithoutModel<T> {
@@ -186,6 +167,7 @@ function filterOptions(
 }
 
 const selectRef = ref<QSelect | null>(null);
+const labelRef = ref<InstanceType<typeof BaseInputLabel> | null>(null);
 defineExpose({
   validate: () => selectRef.value?.validate(),
   focus: () => selectRef.value && focusInView(selectRef.value),
@@ -194,6 +176,7 @@ defineExpose({
     selectRef.value?.updateInputValue(value, noFilter),
   hidePopup: () => selectRef.value?.hidePopup(),
   blur: () => selectRef.value?.blur(),
+  $el: labelRef.value?.$el,
 });
 
 const { inputBgColor } = useInputBackground();

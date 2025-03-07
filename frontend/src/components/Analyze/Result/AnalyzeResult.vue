@@ -302,6 +302,10 @@ function unnestAttributions({
     let attributionFound = false;
     for (const attributionColumnName of attributionsColumnNames) {
       const attributions = row[attributionColumnName as `attributes.${number}`];
+      if (typeof attributions === 'undefined') {
+        // this should never happen
+        throw new Error(`Missing column: ${attributionColumnName}`);
+      }
       for (const attribution of attributions) {
         attributionFound = true;
 

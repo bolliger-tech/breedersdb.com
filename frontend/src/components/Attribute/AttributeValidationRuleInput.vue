@@ -125,9 +125,15 @@ const props = defineProps<AttributeEntityFormValidationRuleProps>();
 const modelValue = defineModel<AttributeFragment['validation_rule']>({
   required: true,
 });
-const stepRef = defineModel<InputRef | null>('stepRef', { required: true });
-const minRef = defineModel<InputRef | null>('minRef', { required: true });
-const maxRef = defineModel<InputRef | null>('maxRef', { required: true });
+const stepRef = defineModel<InputRef | null | undefined>('stepRef', {
+  required: true,
+});
+const minRef = defineModel<InputRef | null | undefined>('minRef', {
+  required: true,
+});
+const maxRef = defineModel<InputRef | null | undefined>('maxRef', {
+  required: true,
+});
 
 function integerUnlessTypeFloatRule(val: string | null) {
   return (

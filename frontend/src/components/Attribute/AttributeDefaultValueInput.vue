@@ -56,7 +56,7 @@ const props = defineProps<AttributeLegendInputProps>();
 const modelValue = defineModel<AttributeFragment['default_value']>({
   required: true,
 });
-const inputRef = defineModel<InputRef | null>('inputRef', {
+const inputRef = defineModel<InputRef | null | undefined>('inputRef', {
   required: true,
 });
 

@@ -24,6 +24,7 @@
         @change="
           (data) => {
             previewAttributionForm = { id: -1, ...data };
+            // @ts-ignore - data is of the correct type
             onChange(data);
           }
         "

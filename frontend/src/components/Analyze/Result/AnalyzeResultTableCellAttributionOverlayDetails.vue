@@ -140,7 +140,7 @@ import LotEntityTable from 'src/components/Lot/LotEntityTable.vue';
 import { computed } from 'vue';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { RouterLink } from 'vue-router';
-import { imageSizes } from 'src/utils/imageSizes.ts';
+import { imageSizes } from 'src/utils/imageSizes';
 
 export interface AnalyzeResultTableCellAttributionOverlayDetailsProps {
   data: AttributionDetails;

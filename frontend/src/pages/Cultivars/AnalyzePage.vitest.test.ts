@@ -217,18 +217,18 @@ describe('AnalyzePage', () => {
 
       await addAndRule(wrapper);
 
-      const column = await wrapper.findComponent(QueryFilterRuleColumn);
+      const column = wrapper.findComponent(QueryFilterRuleColumn);
       const currentColumn = column.vm.$props.options.find(
         (col: FilterRuleColumn) => col.name === 'cultivars.id',
       );
       await column.setValue(currentColumn);
-      const operator = await wrapper.findComponent(QueryFilterRuleOperator);
+      const operator = wrapper.findComponent(QueryFilterRuleOperator);
       await operator.setValue(
         new FilterRuleOperator({
           value: FilterOperatorValue.Greater,
         }),
       );
-      const term = await wrapper.findComponent(QueryFilterRuleTerm);
+      const term = wrapper.findComponent(QueryFilterRuleTerm);
       await term.setValue(new FilterRuleTerm({ value: '1' }));
 
       await flushPromises();

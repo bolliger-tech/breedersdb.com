@@ -60,7 +60,7 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import type { PollenEditInput, PollenInsertInput } from './PollenModalEdit.vue';
+import type { PollenModalEditProps } from './PollenModalEdit.vue';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
@@ -71,7 +71,7 @@ import { graphql } from 'src/graphql';
 import { useValidationRule } from 'src/composables/useValidationRule';
 
 export interface PollenEntityFormProps {
-  pollen: PollenInsertInput | PollenEditInput;
+  pollen: PollenModalEditProps['pollen'];
 }
 
 const props = defineProps<PollenEntityFormProps>();

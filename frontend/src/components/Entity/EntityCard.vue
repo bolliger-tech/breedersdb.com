@@ -87,7 +87,7 @@ interface PlantGroupNameProp
 
 interface PlantGroup {
   entityType: 'plantGroup';
-  labelId?: string | null;
+  labelId?: string | null | undefined;
   plantGroup: PlantGroupNameProp | undefined;
   cultivar?: never;
   lot?: never;

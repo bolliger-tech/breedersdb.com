@@ -69,7 +69,7 @@ import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import type { UserEditInput, UserInsertInput } from './UserModalEdit.vue';
+import type { UserModalEditProps } from './UserModalEdit.vue';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import { isValidEmail } from 'src/utils/validationUtils';
@@ -78,7 +78,7 @@ import { isValidPassword } from 'src/utils/validationUtils';
 import { useIsUnique } from 'src/composables/useIsUnique';
 
 export interface UserEntityFormProps {
-  user: UserInsertInput | UserEditInput;
+  user: UserModalEditProps['user'];
 }
 
 const props = defineProps<UserEntityFormProps>();

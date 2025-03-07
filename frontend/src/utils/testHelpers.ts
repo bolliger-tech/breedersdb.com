@@ -35,7 +35,7 @@ export function mount(
   } = {},
 ) {
   return VTUmount(Component, {
-    props: options.props,
+    props: options.props ?? null,
     global: {
       plugins: [i18n, [urql, createUrqlMockClient(options.urqlMock)]],
     },

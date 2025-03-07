@@ -436,9 +436,21 @@ function transformData({
   return {
     visibleColumns,
     data: data.map((attribution) => {
+      const {
+        /* eslint-disable @typescript-eslint/no-unused-vars */
+        // exclude the following fields from export
+        geo_location,
+        geo_location_accuracy,
+        plant,
+        plant_group,
+        cultivar,
+        lot,
+        /* eslint-enable @typescript-eslint/no-unused-vars */
+        ...rest
+      } = attribution;
       return {
-        // allow colums to access all data
-        ...attribution,
+        // allow colums to access all remaining fields
+        ...rest,
         // special column
         entity: getAttributionObjectName(attribution),
         entity_type: getAttributionObjectType(attribution),

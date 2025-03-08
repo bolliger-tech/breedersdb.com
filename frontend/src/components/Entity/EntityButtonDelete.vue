@@ -53,16 +53,16 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
-import type { BaseGraphqlErrorProps } from '../Base/BaseGraphqlError.vue';
-import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
-import BaseMessage from '../Base/BaseMessage.vue';
+import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { singularize } from 'src/utils/stringUtils';
 import { type QBtnProps } from 'quasar';
+import type { CombinedError } from '@urql/core';
 
 export interface EntityButtonEliminateProps {
   label?: string | undefined;
   message?: string | undefined;
-  error?: BaseGraphqlErrorProps['error'] | undefined;
+  error?: CombinedError | undefined;
   fetching?: boolean | undefined;
   disabled?: boolean | undefined;
   size?: QBtnProps['size'] | undefined;

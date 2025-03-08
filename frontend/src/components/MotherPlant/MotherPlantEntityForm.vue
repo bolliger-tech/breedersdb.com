@@ -36,7 +36,7 @@
     required
     @crossing-changed="
       (c) => {
-        selectedCrossing = c ? c : null;
+        selectedCrossing = c;
         data.plant_id && refs.plantId?.validate();
         data.pollen_id && refs.pollenId?.validate();
       }
@@ -67,7 +67,7 @@
             selectedCrossing.mother_cultivar.display_name,
         }),
     ]"
-    @plant-changed="(p) => (selectedPlant = p ? p : null)"
+    @plant-changed="(p) => (selectedPlant = p)"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateImpregnated = el)"
@@ -102,7 +102,7 @@
             selectedCrossing.father_cultivar.display_name,
         }),
     ]"
-    @pollen-changed="(p) => (selectedPollen = p ? p : null)"
+    @pollen-changed="(p) => (selectedPollen = p)"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.numbFlowers = el)"
@@ -238,9 +238,9 @@ const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
   existingId: ('id' in props.motherPlant && props.motherPlant.id) || undefined,
 });
 
-const selectedPlant = ref<PlantSelectPlant | null>(null);
-const selectedCrossing = ref<CrossingSelectCrossing | null>(null);
-const selectedPollen = ref<PollenSelectPollen | null>(null);
+const selectedPlant = ref<PlantSelectPlant>(undefined);
+const selectedCrossing = ref<CrossingSelectCrossing>(undefined);
+const selectedPollen = ref<PollenSelectPollen>(undefined);
 
 const { isPositiveIntegerRule, defaultDateValidationRule } =
   useValidationRule();

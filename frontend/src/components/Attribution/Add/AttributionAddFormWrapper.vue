@@ -287,8 +287,8 @@ const attributionValues = computed<{
 
         const idx = Object.values(acc).filter(
           (v) =>
-            v.attribute_id === value.attribute_id &&
-            v.exceptional_attribution === value.exceptional_attribution,
+            v?.attribute_id === value.attribute_id &&
+            v?.exceptional_attribution === value.exceptional_attribution,
         ).length;
 
         // should never happen as formFields depends on editData

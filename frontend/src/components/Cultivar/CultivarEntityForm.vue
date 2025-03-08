@@ -107,10 +107,7 @@ import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import type {
-  CultivarEditInput,
-  CultivarInsertInput,
-} from './CultivarModalEdit.vue';
+import type { CultivarModalEditProps } from './CultivarModalEdit.vue';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import LotSelect from 'src/components/Lot/LotSelect.vue';
@@ -122,7 +119,7 @@ import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 
 export interface CultivarEntityFormProps {
-  cultivar: CultivarInsertInput | CultivarEditInput;
+  cultivar: CultivarModalEditProps['cultivar'];
   isVariety: boolean;
 }
 

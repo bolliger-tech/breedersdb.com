@@ -137,7 +137,7 @@ async function save() {
     return;
   }
 
-  if (!attributionValueHasValue(model.value)) {
+  if (!model.value || !attributionValueHasValue(model.value)) {
     validationError.value = t('attributions.noValueOnEdit');
     return;
   }

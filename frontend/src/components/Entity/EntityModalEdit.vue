@@ -124,6 +124,7 @@ const { cancel } = useCancel({ path: props.indexPath });
 const validationError = ref<string | null>(null);
 const closeModal = useInjectOrThrow(closeModalSymbol);
 const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 const formRef = ref<InstanceType<FormRef> | null>(null);
 
 function setFormRef(form: InstanceType<FormRef>) {

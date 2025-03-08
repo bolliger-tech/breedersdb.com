@@ -60,10 +60,7 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import type {
-  CrossingEditInput,
-  CrossingInsertInput,
-} from './CrossingModalEdit.vue';
+import type { CrossingModalEditProps } from './CrossingModalEdit.vue';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
@@ -72,7 +69,7 @@ import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 
 export interface CrossingEntityFormProps {
-  crossing: CrossingInsertInput | CrossingEditInput;
+  crossing: CrossingModalEditProps['crossing'];
 }
 
 const props = defineProps<CrossingEntityFormProps>();

@@ -162,8 +162,8 @@ const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
 });
 
 const hasValues = computed(() =>
-  Object.values(attributionValues.value).some((av) =>
-    attributionValueHasValue(av),
+  Object.values(attributionValues.value).some(
+    (av) => av && attributionValueHasValue(av),
   ),
 );
 
@@ -298,15 +298,19 @@ async function save() {
 
   const { photos, attributions } = Object.values(attributionValues.value)
     // filter out attribution_values without a value
-    .filter((av) => attributionValueHasValue(av))
+    .filter((av) => av && attributionValueHasValue(av))
     // replace undefined values with null
     .map((av) => {
+      if (!av) {
+        // this should never happen as we already filtered out undefined values
+        throw new Error('Unexpected undefined value');
+      }
       return Object.entries(av).reduce(
         (acc, [key, value]) => ({
           ...acc,
           [key]: value === undefined ? null : value,
         }),
-        {} as UndefinedToNull<AttributionInputValue>,
+        {} as UndefinedToNull<NonNullable<AttributionInputValue>>,
       );
     })
     // extract files from photo_value and photo_note and replace them with their

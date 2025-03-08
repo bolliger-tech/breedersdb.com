@@ -29,16 +29,13 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import type {
-  GraftingEditInput,
-  GraftingInsertInput,
-} from './GraftingModalEdit.vue';
+import type { GraftingModalEditProps } from './GraftingModalEdit.vue';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 
 export interface GraftingEntityFormProps {
-  grafting: GraftingInsertInput | GraftingEditInput;
+  grafting: GraftingModalEditProps['grafting'];
 }
 
 const props = defineProps<GraftingEntityFormProps>();

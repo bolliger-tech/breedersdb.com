@@ -86,7 +86,7 @@ const model = ref<AttributionInputValue>({
       : null,
   photo_note: props.attribution.photo_note,
 });
-const editedData = ref<AttributionInputValue | null>(null);
+const editedData = ref<AttributionInputValue>(undefined);
 
 const editMutation = graphql(`
   mutation UpdateAttributionValue(

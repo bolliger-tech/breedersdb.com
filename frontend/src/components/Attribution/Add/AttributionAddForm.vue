@@ -78,13 +78,12 @@ import AttributionAddAlreadyAttributed from 'src/components/Attribution/Add/Attr
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 import AttributionAddFormFieldList from 'src/components/Attribution/Add/AttributionAddFormFieldList.vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
-import AttributionAddEntityPreview, {
-  type AttributionAddEntityPreviewProps,
-} from 'src/components/Attribution/Add/AttributionAddEntityPreview.vue';
+import AttributionAddEntityPreview from 'src/components/Attribution/Add/AttributionAddEntityPreview.vue';
 import { type AttributionInputValue } from 'src/components/Attribution/Input/AttributionInput.vue';
 import AttributionAddEditNote from 'src/components/Attribution/Add/AttributionAddEditNote.vue';
 import AttributionAddLastAttributed from 'src/components/Attribution/Add/AttributionAddLastAttributed.vue';
 import type { UndefinedToNull } from 'src/utils/typescriptUtils';
+import type { EntityPreviewEntity } from './attributionAddEntityPreviewTypes';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -95,7 +94,7 @@ type FormField = {
 };
 
 export interface AttributionAddFormProps {
-  entity: AttributionAddEntityPreviewProps['entity'];
+  entity: EntityPreviewEntity;
   formId: number;
   fields: FormField[];
   values: { [key: number]: AttributionInputValue };

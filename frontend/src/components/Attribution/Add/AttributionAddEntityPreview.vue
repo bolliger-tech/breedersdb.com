@@ -25,34 +25,11 @@
 
 <script setup lang="ts">
 import EntityCard from 'src/components/Entity/EntityCard.vue';
-import type { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
-import type { PlantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
-import type { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
-import type { LotFragment } from 'src/components/Lot/lotFragment';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
-
-interface EntityPlant {
-  data: PlantFragmentWithSegments;
-  type: AttributableEntities.Plant;
-}
-
-interface EntityPlantGroup {
-  data: PlantGroupFragment;
-  type: AttributableEntities.PlantGroup;
-}
-
-interface EntityCultivar {
-  data: CultivarFragment;
-  type: AttributableEntities.Cultivar;
-}
-
-interface EntityLot {
-  data: LotFragment;
-  type: AttributableEntities.Lot;
-}
+import type { EntityPreviewEntity } from './attributionAddEntityPreviewTypes';
 
 export interface AttributionAddEntityPreviewProps {
-  entity: EntityPlant | EntityPlantGroup | EntityCultivar | EntityLot;
+  entity: EntityPreviewEntity;
 }
 
 defineProps<AttributionAddEntityPreviewProps>();

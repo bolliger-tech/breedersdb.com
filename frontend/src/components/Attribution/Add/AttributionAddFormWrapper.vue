@@ -68,9 +68,7 @@ import {
   attributionFormFragment,
   type AttributionFormFragment,
 } from 'src/components/AttributionForm/attributionFormFragment';
-import AttributionAddForm, {
-  type AttributionAddFormProps,
-} from 'src/components/Attribution/Add/AttributionAddForm.vue';
+import AttributionAddForm from 'src/components/Attribution/Add/AttributionAddForm.vue';
 import type { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import type { PlantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
@@ -86,14 +84,10 @@ import {
   type AttributeFragment,
 } from 'src/components/Attribute/attributeFragment';
 import type { AttributionInputValue } from '../Input/AttributionInput.vue';
+import type { EntityPreviewEntityMaybeNoData } from './attributionAddEntityPreviewTypes';
 
 export interface AttributionAddFormWrapperProps {
-  entity:
-    | AttributionAddFormProps['entity']
-    | {
-        data: null;
-        type: AttributionAddFormProps['entity']['type'];
-      };
+  entity: EntityPreviewEntityMaybeNoData;
   form: AttributionFormFragment | null;
   date: string;
   author: string;

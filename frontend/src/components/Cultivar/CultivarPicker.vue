@@ -163,8 +163,8 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.cultivars.length) {
-    emit('cultivar', d.cultivars[0] as CultivarFragment);
+  if (d?.cultivars[0]) {
+    emit('cultivar', d.cultivars[0]);
   }
 });
 

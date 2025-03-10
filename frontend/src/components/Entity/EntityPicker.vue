@@ -144,7 +144,16 @@ const emit = defineEmits<{
   ];
 }>();
 
-const inputRef = ref<InstanceType<typeof BaseQrScanner> | null>(null);
+/* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
+type InputComponent = InstanceType<
+  | typeof BaseQrScanner
+  | typeof EntityLabelIdInput
+  | typeof CultivarSelect
+  | typeof LotSelect
+>;
+/* eslint-enable @typescript-eslint/no-duplicate-type-constituents */
+
+const inputRef = ref<InputComponent | null>(null);
 
 const plantLabelId = ref<string>('');
 const plantGroupLabelId = ref<string>('');

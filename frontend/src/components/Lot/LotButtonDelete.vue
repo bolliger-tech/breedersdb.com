@@ -43,8 +43,8 @@ const {
   `),
 );
 
-function deleteLot() {
-  void urql.executeMutation({ id: props.lotId }).then((result) => {
+async function deleteLot() {
+  await urql.executeMutation({ id: props.lotId }).then((result) => {
     if (!result.data?.delete_lots_by_pk) {
       console.error(`Failed to delete lot ${props.lotId}`);
     } else {

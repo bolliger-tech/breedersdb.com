@@ -223,7 +223,7 @@ function getValuesAsNumbers(
           throw new Error(`Unsupported type: ${type}`);
       }
     })
-    .filter(Boolean) as number[];
+    .filter((v) => v !== null);
 }
 
 function toTimespan(seconds: number) {

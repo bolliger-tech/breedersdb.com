@@ -112,8 +112,8 @@ const {
   `),
 );
 
-function deleteAttribute() {
-  void urqlDelete.executeMutation({ id: props.attributeId }).then((result) => {
+async function deleteAttribute() {
+  await urqlDelete.executeMutation({ id: props.attributeId }).then((result) => {
     if (!result.data?.delete_attributes_by_pk) {
       console.error(`Failed to delete attribute ${props.attributeId}`);
     } else {
@@ -122,14 +122,16 @@ function deleteAttribute() {
   });
 }
 
-function disableAttribute() {
-  void urqlDisable.executeMutation({ id: props.attributeId }).then((result) => {
-    if (!result.data?.update_attributes_by_pk) {
-      console.error(`Failed to disable attribute ${props.attributeId}`);
-    } else {
-      emit('deleted');
-    }
-  });
+async function disableAttribute() {
+  await urqlDisable
+    .executeMutation({ id: props.attributeId })
+    .then((result) => {
+      if (!result.data?.update_attributes_by_pk) {
+        console.error(`Failed to disable attribute ${props.attributeId}`);
+      } else {
+        emit('deleted');
+      }
+    });
 }
 
 const { t } = useI18n();

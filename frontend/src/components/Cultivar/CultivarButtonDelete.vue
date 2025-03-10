@@ -43,8 +43,8 @@ const {
   `),
 );
 
-function deleteCultivar() {
-  void urql.executeMutation({ id: props.cultivarId }).then((result) => {
+async function deleteCultivar() {
+  await urql.executeMutation({ id: props.cultivarId }).then((result) => {
     if (!result.data?.delete_cultivars_by_pk) {
       console.error(`Failed to delete cultivar ${props.cultivarId}`);
     } else {

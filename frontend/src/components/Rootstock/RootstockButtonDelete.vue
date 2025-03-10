@@ -43,8 +43,8 @@ const {
   `),
 );
 
-function deleteRootstock() {
-  void urql.executeMutation({ id: props.rootstockId }).then((result) => {
+async function deleteRootstock() {
+  await urql.executeMutation({ id: props.rootstockId }).then((result) => {
     if (!result.data?.delete_rootstocks_by_pk) {
       console.error(`Failed to delete rootstock ${props.rootstockId}`);
     } else {

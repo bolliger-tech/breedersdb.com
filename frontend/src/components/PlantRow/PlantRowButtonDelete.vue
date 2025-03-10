@@ -102,8 +102,8 @@ const {
   `),
 );
 
-function deletePlantRow() {
-  void urqlDelete.executeMutation({ id: props.plantRowId }).then((result) => {
+async function deletePlantRow() {
+  await urqlDelete.executeMutation({ id: props.plantRowId }).then((result) => {
     if (!result.data?.delete_plant_rows_by_pk) {
       console.error(`Failed to delete plantRow ${props.plantRowId}`);
     } else {
@@ -112,8 +112,8 @@ function deletePlantRow() {
   });
 }
 
-function disablePlantRow() {
-  void urqlDisable.executeMutation({ id: props.plantRowId }).then((result) => {
+async function disablePlantRow() {
+  await urqlDisable.executeMutation({ id: props.plantRowId }).then((result) => {
     if (!result.data?.update_plant_rows_by_pk) {
       console.error(`Failed to disable plantRow ${props.plantRowId}`);
     } else {

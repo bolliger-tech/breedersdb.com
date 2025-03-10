@@ -118,18 +118,20 @@ const {
   `),
 );
 
-function deletePlantGroup() {
-  void urqlDelete.executeMutation({ id: props.plantGroupId }).then((result) => {
-    if (!result.data?.delete_plant_groups_by_pk) {
-      console.error(`Failed to delete plantGroup ${props.plantGroupId}`);
-    } else {
-      emit('deleted');
-    }
-  });
+async function deletePlantGroup() {
+  await urqlDelete
+    .executeMutation({ id: props.plantGroupId })
+    .then((result) => {
+      if (!result.data?.delete_plant_groups_by_pk) {
+        console.error(`Failed to delete plantGroup ${props.plantGroupId}`);
+      } else {
+        emit('deleted');
+      }
+    });
 }
 
-function disablePlantGroup() {
-  void urqlDisable
+async function disablePlantGroup() {
+  await urqlDisable
     .executeMutation({ id: props.plantGroupId })
     .then((result) => {
       if (!result.data?.update_plant_groups_by_pk) {

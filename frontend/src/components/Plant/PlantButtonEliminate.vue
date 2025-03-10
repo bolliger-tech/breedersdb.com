@@ -70,8 +70,8 @@ const { error, fetching, ...urql } = useMutation(
   `),
 );
 
-function eliminate() {
-  void urql.executeMutation({ id: props.plantId }).then(() => {
+async function eliminate() {
+  await urql.executeMutation({ id: props.plantId }).then(() => {
     confirm.value = !!error.value;
   });
 }

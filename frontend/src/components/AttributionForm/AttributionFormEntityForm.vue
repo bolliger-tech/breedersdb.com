@@ -136,15 +136,14 @@ function onDrop(pos: 'before' | 'after', dropIndex: number) {
   // set the array order
   const dragIndex = currentDragItemId.value;
   const dragItem = data.value.attribution_form_fields[dragIndex];
+  if (!dragItem) throw new Error('Drag item not found');
   if (dragIndex < dropIndex) dropIndex--;
   data.value.attribution_form_fields.splice(dragIndex, 1);
-  if (dragItem) {
-    data.value.attribution_form_fields.splice(
-      dropIndex + (pos === 'after' ? 1 : 0),
-      0,
-      dragItem,
-    );
-  }
+  data.value.attribution_form_fields.splice(
+    dropIndex + (pos === 'after' ? 1 : 0),
+    0,
+    dragItem,
+  );
 }
 
 const addedFormFields = ref(1);

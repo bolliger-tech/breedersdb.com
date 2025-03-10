@@ -126,7 +126,7 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.plants.length && !d?.plants[0]?.disabled) {
+  if (d?.plants[0] && !d.plants[0].disabled) {
     emit('plant', d.plants[0] as PlantFragmentWithSegments);
   }
 });

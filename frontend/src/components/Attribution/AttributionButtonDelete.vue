@@ -132,7 +132,7 @@ async function deleteAttribution() {
           { additionalTypenames: ['attributions_view'] },
         );
 
-  void executeDelete.then((result) => {
+  await executeDelete.then((result) => {
     if (!result.data?.delete_attribution_values_by_pk) {
       console.error(`Failed to delete attribution ${props.attributionId}`);
     } else {

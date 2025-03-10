@@ -184,8 +184,8 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.lots.length) {
-    emit('lot', d.lots[0] as LotFragment);
+  if (d?.lots[0]) {
+    emit('lot', d.lots[0]);
   }
 });
 

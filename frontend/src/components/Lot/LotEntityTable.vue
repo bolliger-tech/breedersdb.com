@@ -74,7 +74,7 @@ import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 export interface LotEntityTableProps {
   lot: PartialWithUndefined<LotFragment>;
-  dense?: boolean;
+  dense?: boolean | undefined;
 }
 
 defineProps<LotEntityTableProps>();

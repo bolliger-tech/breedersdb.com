@@ -13,7 +13,9 @@
         color="primary"
         track-color="grey-3"
       >
-        <template v-if="exportProgress && exportProgress < 1">
+        <template
+          v-if="typeof exportProgress !== 'undefined' && exportProgress < 1"
+        >
           {{ (exportProgress * 100).toFixed() }}%
         </template>
         <template v-else>

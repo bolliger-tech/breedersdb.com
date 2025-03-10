@@ -43,8 +43,8 @@ const {
   `),
 );
 
-function deleteGrafting() {
-  void urql.executeMutation({ id: props.graftingId }).then((result) => {
+async function deleteGrafting() {
+  await urql.executeMutation({ id: props.graftingId }).then((result) => {
     if (!result.data?.delete_graftings_by_pk) {
       console.error(`Failed to delete grafting ${props.graftingId}`);
     } else {

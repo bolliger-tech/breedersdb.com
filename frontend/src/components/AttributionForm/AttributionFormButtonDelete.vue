@@ -114,8 +114,8 @@ const {
   `),
 );
 
-function deleteAttributionAddForm() {
-  void urqlDeleteAttributionForm
+async function deleteAttributionAddForm() {
+  await urqlDeleteAttributionForm
     .executeMutation({ id: props.attributionFormId })
     .then((result) => {
       if (!result.data?.delete_attribution_forms_by_pk) {
@@ -128,8 +128,8 @@ function deleteAttributionAddForm() {
     });
 }
 
-function disableAttributionAddForm() {
-  void urqlDisableAttributionForm
+async function disableAttributionAddForm() {
+  await urqlDisableAttributionForm
     .executeMutation({ id: props.attributionFormId })
     .then((result) => {
       if (!result.data?.update_attribution_forms_by_pk) {

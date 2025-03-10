@@ -45,7 +45,7 @@ import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 export interface PlantGroupEntityTableProps {
   plantGroup: PartialWithUndefined<PlantGroupFragment>;
-  dense?: boolean;
+  dense?: boolean | undefined;
 }
 
 defineProps<PlantGroupEntityTableProps>();

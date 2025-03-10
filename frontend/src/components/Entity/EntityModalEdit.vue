@@ -148,15 +148,16 @@ const {
 } = useMutation(props.editMutation);
 
 function onFormChange(data: PartialWithUndefined<InsertVariables['entity']>) {
+  if (!data) {
+    return;
+  }
   // remove undefined values
   for (const key in data) {
     if (data[key] === undefined) {
       delete data[key];
     }
   }
-  if (!data) {
-    return;
-  } else if ('id' in props.entity) {
+  if ('id' in props.entity) {
     editedData.value = data;
   } else {
     insertData.value = data;

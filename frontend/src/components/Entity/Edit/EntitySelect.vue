@@ -103,7 +103,7 @@ export interface EntitySelectPropsWithoutModel<T> {
   readonly?: QSelectProps['readonly'] | undefined;
   disable?: QSelectProps['disable'] | undefined;
   hint?: string | undefined;
-  filterWithWildcardsAroundDots?: boolean;
+  filterWithWildcardsAroundDots?: boolean | undefined;
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {

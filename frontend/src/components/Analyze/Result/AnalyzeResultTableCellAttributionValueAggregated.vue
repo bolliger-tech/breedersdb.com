@@ -33,7 +33,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { AnalyzeAttributionsViewFields } from './filterToQuery';
+import type { AnalyzeAttributionsViewFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
@@ -54,7 +54,7 @@ const props =
 const { t, d, n } = useI18n();
 
 const label = computed(() => {
-  if (!props.attributions.length) {
+  if (!props.attributions[0]) {
     return '';
   }
 
@@ -122,6 +122,7 @@ const label = computed(() => {
         n,
       });
     default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unsupported aggregation: ${props.aggregation}`);
   }
 });
@@ -164,12 +165,16 @@ function getMedian(
   if (!sortedValues.length) {
     return null;
   }
-  const median =
-    sortedValues.length % 2 === 0
-      ? (sortedValues[sortedValues.length / 2 - 1] +
-          sortedValues[sortedValues.length / 2]) /
-        2
-      : sortedValues[Math.floor(sortedValues.length / 2)];
+
+  let median: number;
+  if (sortedValues.length === 1) {
+    median = sortedValues[0]!;
+  } else if (sortedValues.length % 2 === 0) {
+    const upper = Math.round(sortedValues.length / 2);
+    median = (sortedValues[upper - 1]! + sortedValues[upper]!) / 2;
+  } else {
+    median = sortedValues[Math.floor(sortedValues.length / 2)]!;
+  }
 
   return type === ColumnTypes.Date ? new Date(median) : median;
 }
@@ -218,7 +223,7 @@ function getValuesAsNumbers(
           throw new Error(`Unsupported type: ${type}`);
       }
     })
-    .filter(Boolean) as number[];
+    .filter((v) => v !== null);
 }
 
 function toTimespan(seconds: number) {

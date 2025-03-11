@@ -52,15 +52,15 @@
 </template>
 
 <script lang="ts" setup>
-import { CombinedError } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { type Slot, ref, watch } from 'vue';
 
 export interface BaseErrorTooltipProps {
-  show?: boolean;
-  graphqlError?: CombinedError | null;
-  message?: string | null;
+  show?: boolean | undefined;
+  graphqlError?: CombinedError | null | undefined;
+  message?: string | null | undefined;
 }
 
 const props = defineProps<BaseErrorTooltipProps>();

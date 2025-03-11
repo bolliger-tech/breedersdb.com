@@ -34,17 +34,16 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
-import AnalyzeResultTable, {
-  AnalyzeResultTableProps,
-} from 'components/Analyze/Result/AnalyzeResultTable.vue';
+import type { AnalyzeResultTableProps } from 'components/Analyze/Result/AnalyzeResultTable.vue';
+import AnalyzeResultTable from 'components/Analyze/Result/AnalyzeResultTable.vue';
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
-import {
+import type {
   AnalyzeAttributionsViewFields,
   AnalyzeResult,
   AnalyzeResultEntityField,
   AnalyzeResultEntityRow,
-  filterToQuery,
 } from './filterToQuery';
+import { filterToQuery } from './filterToQuery';
 import { attributionToXlsx } from './exportResult';
 import { useQuery } from '@urql/vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
@@ -53,11 +52,11 @@ import { useI18n } from 'src/composables/useI18n';
 import { debounce } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
 import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
-import {
+import type {
   ExportDataValue,
   TransformDataArgs,
-  useExport,
 } from 'src/composables/useExport';
+import { useExport } from 'src/composables/useExport';
 
 export interface AnalyzeResultProps {
   baseTable: BaseTable;
@@ -119,7 +118,8 @@ watch(
     const colsWithoutAggregates = newCols.map((c) => {
       const parts = c.split('.');
       const last = parts[parts.length - 1];
-      return (Object.values(AttributionAggregation) as string[]).includes(last)
+      return last &&
+        (Object.values(AttributionAggregation) as string[]).includes(last)
         ? parts.slice(0, -1).join('.')
         : c;
     });
@@ -161,12 +161,14 @@ watch(
   { deep: true },
 );
 
-const { executeMutation: refreshDbView } = useRefreshAttributionsView();
-const { data: lastRefresh, error: refreshError } = await refreshDbView({});
+const urql = useRefreshAttributionsView();
+const { data: lastRefresh, error: refreshError } = await urql.executeMutation(
+  {},
+);
 
 const lastRefreshDate = computed(() => {
   return lastRefresh?.refresh_attributions_view[0]?.last_refresh
-    ? new Date(lastRefresh.refresh_attributions_view[0].last_refresh as string)
+    ? new Date(lastRefresh.refresh_attributions_view[0].last_refresh)
     : null;
 });
 
@@ -300,6 +302,10 @@ function unnestAttributions({
     let attributionFound = false;
     for (const attributionColumnName of attributionsColumnNames) {
       const attributions = row[attributionColumnName as `attributes.${number}`];
+      if (typeof attributions === 'undefined') {
+        // this should never happen
+        throw new Error(`Missing column: ${attributionColumnName}`);
+      }
       for (const attribution of attributions) {
         attributionFound = true;
 

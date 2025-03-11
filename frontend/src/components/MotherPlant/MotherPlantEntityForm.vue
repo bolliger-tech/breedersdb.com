@@ -36,7 +36,7 @@
     required
     @crossing-changed="
       (c) => {
-        selectedCrossing = c ? c : null;
+        selectedCrossing = c;
         data.plant_id && refs.plantId?.validate();
         data.pollen_id && refs.pollenId?.validate();
       }
@@ -67,7 +67,7 @@
             selectedCrossing.mother_cultivar.display_name,
         }),
     ]"
-    @plant-changed="(p) => (selectedPlant = p ? p : null)"
+    @plant-changed="(p) => (selectedPlant = p)"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.dateImpregnated = el)"
@@ -102,7 +102,7 @@
             selectedCrossing.father_cultivar.display_name,
         }),
     ]"
-    @pollen-changed="(p) => (selectedPollen = p ? p : null)"
+    @pollen-changed="(p) => (selectedPollen = p)"
   />
   <EntityInput
     :ref="(el: InputRef) => (refs.numbFlowers = el)"
@@ -168,21 +168,20 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import {
-  MotherPlantEditInput,
-  MotherPlantInsertInput,
-} from './MotherPlantModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { MotherPlantModalEditProps } from './MotherPlantModalEdit.vue';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
-import PlantSelect, { PlantSelectPlant } from '../Plant/PlantSelect.vue';
-import PollenSelect, { PollenSelectPollen } from '../Pollen/PollenSelect.vue';
-import CrossingSelect, {
-  CrossingSelectCrossing,
-} from '../Crossing/CrossingSelect.vue';
+import type { PlantSelectPlant } from '../Plant/PlantSelect.vue';
+import PlantSelect from '../Plant/PlantSelect.vue';
+import type { PollenSelectPollen } from '../Pollen/PollenSelect.vue';
+import PollenSelect from '../Pollen/PollenSelect.vue';
+import type { CrossingSelectCrossing } from '../Crossing/CrossingSelect.vue';
+import CrossingSelect from '../Crossing/CrossingSelect.vue';
 import { useValidationRule } from 'src/composables/useValidationRule';
 
 export interface MotherPlantEntityFormProps {
-  motherPlant: MotherPlantInsertInput | MotherPlantEditInput;
+  motherPlant: MotherPlantModalEditProps['motherPlant'];
 }
 
 const props = defineProps<MotherPlantEntityFormProps>();
@@ -239,9 +238,9 @@ const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
   existingId: ('id' in props.motherPlant && props.motherPlant.id) || undefined,
 });
 
-const selectedPlant = ref<PlantSelectPlant | null>(null);
-const selectedCrossing = ref<CrossingSelectCrossing | null>(null);
-const selectedPollen = ref<PollenSelectPollen | null>(null);
+const selectedPlant = ref<PlantSelectPlant>(undefined);
+const selectedCrossing = ref<CrossingSelectCrossing>(undefined);
+const selectedPollen = ref<PollenSelectPollen>(undefined);
 
 const { isPositiveIntegerRule, defaultDateValidationRule } =
   useValidationRule();

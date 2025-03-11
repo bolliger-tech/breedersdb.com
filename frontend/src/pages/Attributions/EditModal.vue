@@ -10,18 +10,14 @@
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
-import {
-  AttributionsViewFragment,
-  attributionsViewFragment,
-} from 'src/components/Attribution/attributionsViewFragment';
+import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import { attributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import AttributionModalEdit from 'src/components/Attribution/AttributionModalEdit.vue';
-import {
-  AttributeFragment,
-  attributeFragment,
-} from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import { attributeFragment } from 'src/components/Attribute/attributeFragment';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 
 const props = defineProps<{ entityId: number | string }>();

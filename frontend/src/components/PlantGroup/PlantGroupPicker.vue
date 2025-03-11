@@ -20,7 +20,8 @@ import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import { PlantGroupFragment, plantGroupFragment } from './plantGroupFragment';
+import type { PlantGroupFragment } from './plantGroupFragment';
+import { plantGroupFragment } from './plantGroupFragment';
 import { onMounted } from 'vue';
 import EntityPicker from 'src/components/Entity/EntityPicker.vue';
 
@@ -44,7 +45,7 @@ defineExpose({
   loadEntity: async () => {
     inputRef.value?.emitInputs();
     await nextTick();
-    loadPlantGroup();
+    await loadPlantGroup();
   },
   focus: () => {
     inputRef.value?.focus();
@@ -138,10 +139,10 @@ const variables = computed(() => ({
 }));
 
 const {
-  executeQuery,
   fetching,
   data,
   error: fetchError,
+  ...urql
 } = await useQuery({
   query,
   variables,
@@ -153,13 +154,13 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.plant_groups.length && !d.plant_groups[0].disabled) {
+  if (d?.plant_groups[0] && !d.plant_groups[0].disabled) {
     emit('plantGroup', d.plant_groups[0]);
   }
 });
 
 async function loadPlantGroup() {
   await nextTick(); // ensure the useQuery({variables}) is updated
-  await executeQuery();
+  await urql.executeQuery();
 }
 </script>

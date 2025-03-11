@@ -42,10 +42,8 @@ import CultivarEntityForm from 'src/components/Cultivar/CultivarEntityForm.vue';
 import CultivarButtonDelete from 'src/components/Cultivar/CultivarButtonDelete.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { graphql } from 'src/graphql';
-import {
-  CultivarFragment,
-  cultivarFragment,
-} from 'src/components/Cultivar/cultivarFragment';
+import type { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useI18n } from 'vue-i18n';
 
 export type CultivarEditInput = Omit<

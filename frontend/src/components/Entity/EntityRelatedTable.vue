@@ -22,13 +22,15 @@
       :key="slotName"
       #[slotName]="slotProps"
     >
+      <!-- @vue-expect-error ts-plugin(2345) -->
       <slot :name="slotName" v-bind="slotProps"></slot>
     </template>
   </q-table>
 </template>
 
 <script setup lang="ts">
-import { type QTable, QTableSlots, useQuasar } from 'quasar';
+import type { QTableSlots } from 'quasar';
+import { type QTable, useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { ref, watch } from 'vue';
 
@@ -37,9 +39,9 @@ export interface EntityRelatedTableProps {
   rows: QTable['rows'];
   rowKey: QTable['rowKey'];
   columns: QTable['columns'];
-  defaultSortBy?: string;
-  defaultDescending?: boolean;
-  visibleColumns?: QTable['visibleColumns'];
+  defaultSortBy?: string | undefined;
+  defaultDescending?: boolean | undefined;
+  visibleColumns?: QTable['visibleColumns'] | undefined;
 }
 
 const props = defineProps<EntityRelatedTableProps>();
@@ -47,7 +49,7 @@ const slots = defineSlots<QTableSlots>();
 
 const paginationKey = `breedersdb-entity-related-table-pagination__${props.entityKey}`;
 const defaultPagination = {
-  sortBy: props.defaultSortBy || props.columns?.[0]?.name,
+  sortBy: props.defaultSortBy || (props.columns?.[0]?.name ?? null),
   descending: props.defaultDescending,
 };
 type Pagination = typeof defaultPagination;

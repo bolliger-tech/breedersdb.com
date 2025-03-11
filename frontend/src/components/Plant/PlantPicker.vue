@@ -21,7 +21,8 @@ import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import { PlantFragmentWithSegments, plantFragment } from './plantFragment';
+import type { PlantFragmentWithSegments } from './plantFragment';
+import { plantFragment } from './plantFragment';
 import { onMounted } from 'vue';
 import EntityPicker from 'src/components/Entity/EntityPicker.vue';
 
@@ -45,7 +46,7 @@ defineExpose({
   loadEntity: async () => {
     inputRef.value?.emitInputs();
     await nextTick();
-    loadPlant();
+    await loadPlant();
   },
   focus: () => {
     inputRef.value?.focus();
@@ -110,10 +111,10 @@ const query = graphql(
 const variables = computed(() => ({ label_id: input.value.plantLabelId }));
 
 const {
-  executeQuery,
   fetching,
   data,
   error: fetchError,
+  ...urql
 } = useQuery({
   query,
   pause: true,
@@ -125,13 +126,13 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.plants.length && !d.plants[0].disabled) {
+  if (d?.plants[0] && !d.plants[0].disabled) {
     emit('plant', d.plants[0] as PlantFragmentWithSegments);
   }
 });
 
 async function loadPlant() {
   await nextTick(); // ensure the useQuery({variables}) is updated
-  await executeQuery();
+  await urql.executeQuery();
 }
 </script>

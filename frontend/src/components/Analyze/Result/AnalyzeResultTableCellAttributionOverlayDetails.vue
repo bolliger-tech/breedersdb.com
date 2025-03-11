@@ -125,7 +125,7 @@
 </template>
 
 <script lang="ts" setup>
-import { AttributionDetails } from './AnalyzeResultTableCellAttributionOverlay.vue';
+import type { AttributionDetails } from './AnalyzeResultTableCellAttributionOverlay.vue';
 import { useI18n } from 'src/composables/useI18n';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { type BaseSpriteIconProps } from 'components/Base/BaseSpriteIcon/baseSpriteIconProps';
@@ -140,7 +140,7 @@ import LotEntityTable from 'src/components/Lot/LotEntityTable.vue';
 import { computed } from 'vue';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { RouterLink } from 'vue-router';
-import { imageSizes } from 'src/utils/imageSizes.ts';
+import { imageSizes } from 'src/utils/imageSizes';
 
 export interface AnalyzeResultTableCellAttributionOverlayDetailsProps {
   data: AttributionDetails;

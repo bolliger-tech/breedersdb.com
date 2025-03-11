@@ -29,7 +29,7 @@ export function useQueryArg<
   const router = useRouter();
 
   function castToDefaultValueType(
-    value: LocationQueryValue | LocationQueryValue[],
+    value: LocationQueryValue | LocationQueryValue[] | undefined,
   ): T | undefined {
     if (value === undefined) {
       // not in url
@@ -85,9 +85,9 @@ export function useQueryArg<
   }
 
   watch(queryArg, (value) => syncToRoute(value, replace));
-  onMounted(() => {
+  onMounted(async () => {
     if (showDefaultInUrl) {
-      syncToRoute(queryArg.value, true);
+      await syncToRoute(queryArg.value, true);
     }
   });
 

@@ -87,11 +87,9 @@ import EntityToggle from '../Entity/Edit/EntityToggle.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import {
-  AttributeEditInput,
-  AttributeInsertInput,
-} from './AttributeModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { AttributeModalEditProps } from './AttributeModalEdit.vue';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import AttributeDataTypeSelect from './AttributeDataTypeSelect.vue';
 import AttributeTypeSelect from './AttributeTypeSelect.vue';
@@ -100,7 +98,7 @@ import AttributeLegendInput from './AttributeLegendInput.vue';
 import AttributeDefaultValueInput from './AttributeDefaultValueInput.vue';
 import { extend } from 'quasar';
 
-type Attribute = AttributeInsertInput | AttributeEditInput;
+type Attribute = AttributeModalEditProps['attribute'];
 
 export interface AttributeEntityFormProps {
   attribute: Attribute;

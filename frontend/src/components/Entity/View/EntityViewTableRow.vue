@@ -11,7 +11,7 @@
     <th v-if="label">
       {{ label }}
     </th>
-    <td :colspan="label ? undefined : 2">
+    <td :colspan="label ? 1 : 2">
       <slot></slot>
     </td>
   </tr>
@@ -23,8 +23,8 @@ import { entityViewTableProps } from './EntityViewTable.vue';
 
 export interface EntityViewTableRow {
   label?: string | undefined;
-  renderEmpty?: boolean;
-  multiline?: boolean;
+  renderEmpty?: boolean | undefined;
+  multiline?: boolean | undefined;
 }
 
 defineProps<EntityViewTableRow>();
@@ -36,7 +36,7 @@ const slots = defineSlots<{
 const tableProps = inject(entityViewTableProps);
 
 const isEmpty = computed(() => {
-  return !slots.default()[0].children;
+  return !slots.default()[0]?.children;
 });
 </script>
 

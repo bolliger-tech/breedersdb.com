@@ -31,8 +31,8 @@ function resetErrors() {
 
 const {
   error,
-  executeMutation: executeDeletePollen,
   fetching: deleting,
+  ...urql
 } = useMutation(
   graphql(`
     mutation DeletePollen($id: Int!) {
@@ -43,8 +43,8 @@ const {
   `),
 );
 
-function deletePollen() {
-  executeDeletePollen({ id: props.pollenId }).then((result) => {
+async function deletePollen() {
+  await urql.executeMutation({ id: props.pollenId }).then((result) => {
     if (!result.data?.delete_pollen_by_pk) {
       console.error(`Failed to delete pollen ${props.pollenId}`);
     } else {

@@ -29,7 +29,7 @@
 import AttributionInput, {
   type AttributionInputValue,
 } from 'src/components/Attribution/Input/AttributionInput.vue';
-import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { type InputRef } from 'src/composables/useEntityForm';
 import { useI18n } from 'src/composables/useI18n';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';

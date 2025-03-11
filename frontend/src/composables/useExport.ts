@@ -72,7 +72,7 @@ export type TransformDataArgs<T> = {
 };
 
 export type TransformDataResult = {
-  data: Record<string, ExportDataValue | unknown>[];
+  data: Record<string, ExportDataValue>[];
   visibleColumns: string[];
 };
 
@@ -114,7 +114,7 @@ function formatXlsxRowsWithColumns<T, C extends EntityListTableColum>({
                 ? ['modified', 'created'].includes(
                     column.name.split('.').pop() || '',
                   )
-                  ? new Date(value as string)
+                  ? new Date(value)
                   : n2semicolon(value)
                 : value; // should be: boolean | number | Date
 
@@ -135,11 +135,11 @@ type ExportDataArgs<
 > = FetchAllPagesArgs<Q, V> &
   Omit<FormatXlsxRowsWithColumns<ResultOf<Q>, C>, 'result'> & {
     title: string;
-    subsetLabel?: string;
-    sheetName?: string;
-    transformDataFn?: (
-      args: TransformDataArgs<T>,
-    ) => TransformDataResult | undefined;
+    subsetLabel?: string | undefined;
+    sheetName?: string | undefined;
+    transformDataFn?:
+      | ((args: TransformDataArgs<T>) => TransformDataResult | undefined)
+      | undefined;
   };
 
 export function exportData<T, Q extends DocumentInput, V extends AnyVariables>({

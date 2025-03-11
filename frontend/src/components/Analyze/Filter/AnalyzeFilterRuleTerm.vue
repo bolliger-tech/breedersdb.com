@@ -68,10 +68,8 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
-import {
-  filterSelectOptions,
-  FilterSelectOptionsUpdateFn,
-} from 'src/utils/selectOptionFilter';
+import type { FilterSelectOptionsUpdateFn } from 'src/utils/selectOptionFilter';
+import { filterSelectOptions } from 'src/utils/selectOptionFilter';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import { ColumnTypes } from 'src/utils/columnTypes';
 
@@ -82,8 +80,8 @@ import { FilterOperatorValue } from './filterRuleOperator';
 export interface AnalyzeFilterRuleTermProps {
   disabled: boolean;
   hide: boolean;
-  modelValue?: FilterRuleTerm;
-  operatorValue?: FilterOperatorValue;
+  modelValue?: FilterRuleTerm | undefined;
+  operatorValue?: FilterOperatorValue | undefined;
 }
 
 const { t } = useI18n();
@@ -189,6 +187,7 @@ const inputType = computed(() => {
     case null:
       return 'text';
     default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unknown type: ${type.value}`);
   }
 });

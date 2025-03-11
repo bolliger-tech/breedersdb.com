@@ -11,12 +11,12 @@ function nestObject(object: StringObj): StringObj {
     const [first, ...rest] = key.split('.');
 
     if (rest.length === 0) {
-      return { ...acc, [first]: value };
+      return { ...acc, [first!]: value };
     }
 
     return {
       ...acc,
-      [first]: nestObject({ [rest.join('.')]: value }),
+      [first!]: nestObject({ [rest.join('.')]: value }),
     };
   }, {});
 }
@@ -67,7 +67,7 @@ export function useEntityIndexHooks<T>({
     const searchColumnsValue = toValue(searchColumns);
 
     if (search.value) {
-      if (searchColumnsValue.length === 1) {
+      if (searchColumnsValue.length === 1 && searchColumnsValue[0]) {
         where._and.push(
           nestObject({
             [searchColumnsValue[0]]: { _ilike: `%${search.value}%` },

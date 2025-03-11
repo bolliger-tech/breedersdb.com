@@ -1,5 +1,5 @@
 import { FilterOperatorValue, FilterRuleOperator } from './filterRuleOperator';
-import { ColumnTypes } from 'src/utils/columnTypes';
+import type { ColumnTypes } from 'src/utils/columnTypes';
 
 export function createGetFilterRuleOperators() {
   const all = getAllFilterRuleOperators();

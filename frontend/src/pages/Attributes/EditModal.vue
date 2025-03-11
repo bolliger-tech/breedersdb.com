@@ -10,10 +10,8 @@
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
-import {
-  AttributeFragment,
-  attributeFragment,
-} from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import { attributeFragment } from 'src/components/Attribute/attributeFragment';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';

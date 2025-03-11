@@ -57,7 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import { CombinedError, useMutation } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
+import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { onBeforeUnmount, ref } from 'vue';
 import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
@@ -76,23 +77,19 @@ const { registerInterval, removeInterval } = useInterval();
 const route = useRoute();
 const router = useRouter();
 
-function redirect() {
+async function redirect() {
   const redirect = route.query.redirect as string | undefined;
-  router.push({ path: redirect || '/' });
+  await router.push({ path: redirect || '/' });
 }
 
 if (getUserFromCookie()) {
-  redirect();
+  await redirect();
 }
 
 const email = ref('');
 const password = ref('');
 
-const {
-  error,
-  fetching,
-  executeMutation: signIn,
-} = useMutation(
+const { error, fetching, ...urql } = useMutation(
   graphql(`
     mutation SignIn($email: citext!, $password: String!) {
       SignIn(email: $email, password: $password) {
@@ -103,18 +100,20 @@ const {
   `),
 );
 
-function onSubmit() {
-  signIn({ email: email.value, password: password.value }).then((result) => {
-    if (result.error) {
-      return;
-    }
-    if (result.data?.SignIn.locale) {
-      i18n.setAndPersistLocale(result.data.SignIn.locale as Locale);
-    } else {
-      console.error('No locale in SignIn response');
-    }
-    redirect();
-  });
+async function onSubmit() {
+  await urql
+    .executeMutation({ email: email.value, password: password.value })
+    .then(async (result) => {
+      if (result.error) {
+        return;
+      }
+      if (result.data?.SignIn.locale) {
+        i18n.setAndPersistLocale(result.data.SignIn.locale as Locale);
+      } else {
+        console.error('No locale in SignIn response');
+      }
+      await redirect();
+    });
 }
 
 const now = ref(new Date());

@@ -44,9 +44,9 @@
 </template>
 
 <script lang="ts" setup>
-import { QTableColumn, QTableProps } from 'quasar';
+import type { QTableColumn, QTableProps } from 'quasar';
 import AnalyzeResultTableCell from './AnalyzeResultTableCell.vue';
-import { AnalyzeAttributionsViewFields } from './filterToQuery';
+import type { AnalyzeAttributionsViewFields } from './filterToQuery';
 import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
 import AnalyzeResultTableColumnLabel from 'components/Analyze/Result/AnalyzeResultTableColumnLabel.vue';
 import { BaseTable } from '../Filter/filterNode';
@@ -60,7 +60,7 @@ export interface AnalyzeResultTableProps
   pagination: NonNullable<QTableProps['pagination']>;
 }
 
-type AnalyzeResultTablePropsWithoutModel = {
+interface AnalyzeResultTablePropsWithoutModel extends EntityExportButtonProps {
   rows: {
     id: number;
     [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[];
@@ -70,7 +70,7 @@ type AnalyzeResultTablePropsWithoutModel = {
   allColumns: QTableColumn[];
   dataIsFresh: boolean;
   baseTable: BaseTable;
-} & EntityExportButtonProps;
+}
 
 export type AnalyzeResultTableRequestDataParams = Parameters<
   NonNullable<QTableProps['onRequest']>
@@ -87,7 +87,7 @@ const pagination = defineModel<QTableProps['pagination']>('pagination', {
 });
 
 const router = useRouter();
-function onRowClick(row: AnalyzeResultTableProps['rows'][0]): void {
+async function onRowClick(row: AnalyzeResultTableProps['rows'][0]) {
   if (props.baseTable === BaseTable.Attributions) {
     throw new Error('Attributions must not be the base table for results.');
   }
@@ -100,6 +100,6 @@ function onRowClick(row: AnalyzeResultTableProps['rows'][0]): void {
     [BaseTable.Crossings]: '/crossings',
   };
 
-  router.push(`${routes[props.baseTable]}/${row.id}`);
+  await router.push(`${routes[props.baseTable]}/${row.id}`);
 }
 </script>

@@ -66,10 +66,10 @@ import { computed } from 'vue';
 const STORAGE_KEY = 'breedersdb-entity-modal-content-save__last-action';
 
 export interface EntityModalContentSaveProps {
-  loading?: boolean;
+  loading?: boolean | undefined;
   // make emit handler available in template
-  onSaveThenPrint?: () => void;
-  onSaveThenNewFromTemplate?: () => void;
+  onSaveThenPrint?: (() => void) | undefined;
+  onSaveThenNewFromTemplate?: (() => void) | undefined;
 }
 
 const props = defineProps<EntityModalContentSaveProps>();
@@ -134,12 +134,12 @@ function onClick(action: EmitKey) {
 
 <style lang="scss" scoped>
 :global(
-    .q-dialog__inner
-      > .q-card
-      > .q-card__actions
-      .entity-modal-content-save
-      .q-btn--rectangle
-  ) {
+  .q-dialog__inner
+    > .q-card
+    > .q-card__actions
+    .entity-modal-content-save
+    .q-btn--rectangle
+) {
   min-width: unset;
 }
 </style>

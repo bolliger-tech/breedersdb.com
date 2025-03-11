@@ -1,5 +1,5 @@
 <template>
-  <BaseInputLabel :label="label" :explainer="explainer">
+  <BaseInputLabel ref="label" :label="label" :explainer="explainer">
     <template v-if="$slots.explainer" #explainer>
       <slot name="explainer"></slot>
     </template>
@@ -60,38 +60,18 @@
 
 <script setup lang="ts" generic="T extends { [key: string]: any }">
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { QSelect, QSelectProps, QSelectSlots } from 'quasar';
+import type { QSelectProps, QSelectSlots } from 'quasar';
+import { QSelect } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
-import {
-  type ComponentPublicInstance,
-  type VNodeRef,
-  computed,
-  ref,
-  type Slot,
-  type ShallowRef,
-  ShallowUnwrapRef,
-} from 'vue';
+import { computed, ref, type Slot, type ShallowRef } from 'vue';
 import { useInputBackground } from 'src/composables/useInputBackground';
-import {
-  FilterSelectOptionsUpdateFn,
-  filterSelectOptions,
-} from 'src/utils/selectOptionFilter';
+import type { FilterSelectOptionsUpdateFn } from 'src/utils/selectOptionFilter';
+import { filterSelectOptions } from 'src/utils/selectOptionFilter';
 import { shallowRef } from 'vue';
-import { CombinedError } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { focusInView } from 'src/utils/focusInView';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
-
-// it currently seems to be a bug with generic components. the currect type
-// would be without the `& VNodeRef` part.
-// but this throws an error. the workaround with `& VNodeRef` is not 100%
-// accurate, but it works.
-export type EntitySelectInstance<T> = {
-  validate: () => ReturnType<QSelect['validate']> | undefined;
-  focus: () => ReturnType<QSelect['focus']> | undefined;
-  filteredOptions: ShallowUnwrapRef<T[]>;
-} & ComponentPublicInstance<EntitySelectProps<T>> &
-  VNodeRef;
 
 // for generic components we have to export all interfaces or none. else it currently throws an error
 export interface EntitySelectProps<T> extends EntitySelectPropsWithoutModel<T> {
@@ -101,27 +81,29 @@ export interface EntitySelectProps<T> extends EntitySelectPropsWithoutModel<T> {
 // for generic components we have to export all interfaces or none. else it currently throws an error
 export interface EntitySelectPropsWithoutModel<T> {
   label: string | undefined;
-  required?: boolean;
+  required?: boolean | undefined;
   optionValue: keyof T;
   optionLabel: keyof T;
   options: T[];
-  loading?: boolean;
-  error?: CombinedError | null;
-  clearable?: boolean;
-  optionDisable?: QSelectProps['optionDisable'];
-  noSort?: boolean;
-  explainer?: string;
-  rules?: QSelectProps['rules'];
-  filterFn?: (
-    value: string,
-    update: FilterSelectOptionsUpdateFn,
-    filteredOptions: ShallowRef<T[]>,
-  ) => void;
-  noOptionText?: string;
-  readonly?: QSelectProps['readonly'];
-  disable?: QSelectProps['disable'];
-  hint?: string;
-  filterWithWildcardsAroundDots?: boolean;
+  loading?: boolean | undefined;
+  error?: CombinedError | null | undefined;
+  clearable?: boolean | undefined;
+  optionDisable?: QSelectProps['optionDisable'] | undefined;
+  noSort?: boolean | undefined;
+  explainer?: string | undefined;
+  rules?: QSelectProps['rules'] | undefined;
+  filterFn?:
+    | ((
+        value: string,
+        update: FilterSelectOptionsUpdateFn,
+        filteredOptions: ShallowRef<T[]>,
+      ) => void)
+    | undefined;
+  noOptionText?: string | undefined;
+  readonly?: QSelectProps['readonly'] | undefined;
+  disable?: QSelectProps['disable'] | undefined;
+  hint?: string | undefined;
+  filterWithWildcardsAroundDots?: boolean | undefined;
 }
 
 const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
@@ -129,15 +111,9 @@ const props = withDefaults(defineProps<EntitySelectPropsWithoutModel<T>>(), {
   loading: false,
   error: null,
   clearable: true,
-  optionDisable: undefined,
   noSort: false,
-  explainer: undefined,
-  rules: undefined,
-  filterFn: undefined,
-  noOptionText: undefined,
   readonly: false,
   disable: false,
-  hint: undefined,
   filterWithWildcardsAroundDots: false,
 });
 
@@ -176,27 +152,31 @@ function filterOptions(
   searchValue: string,
   update: FilterSelectOptionsUpdateFn,
 ) {
-  props.filterFn
-    ? props.filterFn(searchValue, update, filteredOptions)
-    : filterSelectOptions({
-        searchValue,
-        update,
-        allOptions: Object.freeze([...options.value]),
-        filteredOptions,
-        valueExtractorFn: (item) => item[props.optionLabel],
-        withWildcardsAroundDots: props.filterWithWildcardsAroundDots,
-      });
+  if (props.filterFn) {
+    props.filterFn(searchValue, update, filteredOptions);
+  } else {
+    filterSelectOptions({
+      searchValue,
+      update,
+      allOptions: Object.freeze([...options.value]),
+      filteredOptions,
+      valueExtractorFn: (item) => item[props.optionLabel],
+      withWildcardsAroundDots: props.filterWithWildcardsAroundDots,
+    });
+  }
 }
 
 const selectRef = ref<QSelect | null>(null);
+const labelRef = ref<InstanceType<typeof BaseInputLabel> | null>(null);
 defineExpose({
   validate: () => selectRef.value?.validate(),
   focus: () => selectRef.value && focusInView(selectRef.value),
   filteredOptions,
-  updateInputValue: (value: string, noFilter?: boolean | undefined) =>
+  updateInputValue: (value: string, noFilter?: boolean) =>
     selectRef.value?.updateInputValue(value, noFilter),
   hidePopup: () => selectRef.value?.hidePopup(),
   blur: () => selectRef.value?.blur(),
+  $el: labelRef.value?.$el,
 });
 
 const { inputBgColor } = useInputBackground();

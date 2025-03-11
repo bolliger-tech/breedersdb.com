@@ -1,6 +1,6 @@
 <template>
   <EntitySelect
-    :ref="rootstockRef"
+    ref="rootstockRef"
     v-model="rootstock"
     :label="t('plants.fields.rootstock')"
     :options="rootstockOptions"
@@ -16,15 +16,11 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import EntitySelect, {
-  type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
-const rootstockRef = ref<EntitySelectInstance<{
-  id: number;
-  name: string;
-}> | null>(null);
+const rootstockRef = ref<ComponentExposed<typeof EntitySelect> | null>(null);
 
 defineExpose({
   validate: () => rootstockRef.value?.validate(),

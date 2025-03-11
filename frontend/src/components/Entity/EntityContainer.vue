@@ -67,10 +67,10 @@
 </template>
 
 <script setup lang="ts">
-import EntityList, { EntityListProps } from './List/EntityList.vue';
-import EntityListTable, {
-  EntityListTableProps,
-} from './List/EntityListTable.vue';
+import type { EntityListProps } from './List/EntityList.vue';
+import EntityList from './List/EntityList.vue';
+import type { EntityListTableProps } from './List/EntityListTable.vue';
+import EntityListTable from './List/EntityListTable.vue';
 import EntityModal, { type EntityModalProps } from './EntityModal.vue';
 import { type MatcherLocationAsPath, useRoute, useRouter } from 'vue-router';
 import { nextTick, type Slot, computed, ref, watch } from 'vue';
@@ -88,7 +88,7 @@ export interface EntityContainerProps
   visibleColumns: EntityListTableProps['visibleColumns'];
 }
 
-type EntityContainerPropsWithoutModels = {
+interface EntityContainerPropsWithoutModels extends EntityExportButtonProps {
   title: EntityListProps['title'];
   tabs?: EntityListProps['tabs'];
   searchPlaceholder?: EntityListProps['searchPlaceholder'];
@@ -99,7 +99,7 @@ type EntityContainerPropsWithoutModels = {
   addEntityPath?: string | MatcherLocationAsPath;
   viewEntityPathGetter: (id: number | string) => string | MatcherLocationAsPath;
   onScannedQr?: (data: string) => void;
-} & EntityExportButtonProps;
+}
 
 const props = defineProps<EntityContainerPropsWithoutModels>();
 
@@ -139,29 +139,29 @@ function restoreScrollPos() {
 
 const route = useRoute();
 const router = useRouter();
-function addNew() {
+async function addNew() {
   if (typeof props.addEntityPath === 'undefined') return;
   saveScrollPos();
   const path =
     typeof props.addEntityPath === 'string'
       ? props.addEntityPath
       : props.addEntityPath.path;
-  router.push({ path, query: route.query });
+  await router.push({ path, query: route.query });
 }
-function view(id: number | string) {
+async function view(id: number | string) {
   saveScrollPos();
   const pathRaw = props.viewEntityPathGetter(id);
   const path = typeof pathRaw === 'string' ? pathRaw : pathRaw.path;
-  router.push({ path, query: route.query });
+  await router.push({ path, query: route.query });
 }
-function closeModal() {
+async function closeModal() {
   const path =
     typeof props.listEntitiesPath === 'string'
       ? props.listEntitiesPath
       : props.listEntitiesPath.path;
 
-  router.push({ path, query: route.query }).then(() => {
-    nextTick(() => nextTick(() => restoreScrollPos()));
+  await router.push({ path, query: route.query }).then(async () => {
+    await nextTick(async () => await nextTick(() => restoreScrollPos()));
   });
 }
 
@@ -189,7 +189,7 @@ async function viewNext() {
     modal.value?.shake();
   } else {
     transition.value = 'slide-left';
-    view(props.rows[index + 1].id);
+    await view(props.rows[index + 1].id);
   }
 }
 
@@ -200,7 +200,7 @@ async function viewPrevious() {
     modal.value?.shake();
   } else {
     transition.value = 'slide-right';
-    view(props.rows[index - 1].id);
+    await view(props.rows[index - 1].id);
   }
 }
 

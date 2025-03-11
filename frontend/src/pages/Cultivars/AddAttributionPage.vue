@@ -32,7 +32,7 @@ import { useI18n } from 'src/composables/useI18n';
 import AttributionAddSteps from 'src/components/Attribution/Add/AttributionAddSteps.vue';
 import CultivarPicker from 'src/components/Cultivar/CultivarPicker.vue';
 import { computed, ref } from 'vue';
-import { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import type { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 
 const { t } = useI18n();

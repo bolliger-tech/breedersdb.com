@@ -48,18 +48,14 @@
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 import AnalyzeHeaderMoreMenu from './AnalyzeHeaderMoreMenu.vue';
-import {
-  BaseTable,
-  FilterNode,
-} from 'src/components/Analyze/Filter/filterNode';
+import type { FilterNode } from 'src/components/Analyze/Filter/filterNode';
+import { BaseTable } from 'src/components/Analyze/Filter/filterNode';
 import { graphql } from 'src/graphql';
 import { useMutation } from '@urql/vue';
-import {
-  AnalyzeFiltersFragment,
-  analyzeFiltersFragment,
-} from 'src/components/Analyze/analyzeFiltersFragment';
+import type { AnalyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFragment';
+import { analyzeFiltersFragment } from 'src/components/Analyze/analyzeFiltersFragment';
 import { ref, computed, nextTick } from 'vue';
-import { AnalyzeFilterBaseTables } from 'src/graphql';
+import type { AnalyzeFilterBaseTables } from 'src/graphql';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import AnalyzeHeaderNameDialog from './AnalyzeHeaderNameDialog.vue';
 import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router';
@@ -135,9 +131,9 @@ const editMutation = graphql(
 );
 
 const {
-  executeMutation: executeEditMutation,
   fetching: savingEdit,
   error: saveEditError,
+  ...urqlEdit
 } = useMutation(editMutation);
 
 const insertMutation = graphql(
@@ -168,9 +164,9 @@ const insertMutation = graphql(
 );
 
 const {
-  executeMutation: executeInsertMutation,
   fetching: savingInsert,
   error: saveInsertError,
+  ...urqlInsert
 } = useMutation(insertMutation);
 
 function filterToPojo(filter: FilterNode | undefined) {
@@ -202,11 +198,11 @@ async function save() {
   let respData: AnalyzeFiltersFragment | undefined = undefined;
 
   if (props.analyzeId === 'new') {
-    const resp = await executeInsertMutation(getMutationVariables());
+    const resp = await urqlInsert.executeMutation(getMutationVariables());
     newId = resp.data?.insert_analyze_filters_one?.id;
     respData = resp.data?.insert_analyze_filters_one || undefined;
   } else {
-    const resp = await executeEditMutation(
+    const resp = await urqlEdit.executeMutation(
       getMutationVariables(props.analyzeId) as Required<
         ReturnType<typeof getMutationVariables>
       >,
@@ -235,7 +231,7 @@ async function save() {
 
   if (props.analyzeId === 'new') {
     if (newId) {
-      router.replace({
+      await router.replace({
         path: `${pathWithoutId.value}/${newId.toString()}`,
         query: route.query,
       });
@@ -246,15 +242,15 @@ async function save() {
 const saving = computed(() => savingInsert.value || savingEdit.value);
 const saveError = computed(() => saveInsertError.value || saveEditError.value);
 
-function onDeleted() {
-  router.push({
+async function onDeleted() {
+  await router.push({
     path: pathWithoutId.value,
   });
 }
 
-function onDuplicate() {
+async function onDuplicate() {
   name.value = '';
-  router.push({
+  await router.push({
     path: `${pathWithoutId.value}/new`,
     query: route.query,
   });
@@ -283,6 +279,7 @@ function isDirty() {
 onBeforeRouteLeave((to, from) => {
   const isDuplication = to.path.endsWith('/new');
   const isInitialSave =
+    typeof to.params.analyzeId === 'string' &&
     to.path === from.path.replace(/\/new$/, `/${to.params.analyzeId}`);
   const dirty = isDirty();
 

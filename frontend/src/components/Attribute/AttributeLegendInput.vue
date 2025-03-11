@@ -22,10 +22,10 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { type AttributeDataTypes } from 'src/graphql';
-import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { computed, onMounted, watch, ref } from 'vue';
-import { InputRef } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
 
 export interface AttributeLegendInputProps {
   dataType: AttributeDataTypes;
@@ -81,7 +81,7 @@ watch(modelValue, (newValues) => {
 
 watch(
   [() => props.validationRule, () => props.dataType],
-  async ([newValidationRule], [oldValidationRule]) => {
+  ([newValidationRule], [oldValidationRule]) => {
     if (props.dataType !== 'RATING') {
       modelValue.value = null;
       return;

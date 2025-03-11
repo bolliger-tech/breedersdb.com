@@ -20,7 +20,8 @@ import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import { CultivarFragment, cultivarFragment } from './cultivarFragment';
+import type { CultivarFragment } from './cultivarFragment';
+import { cultivarFragment } from './cultivarFragment';
 import { onMounted } from 'vue';
 import EntityPicker from 'src/components/Entity/EntityPicker.vue';
 
@@ -36,7 +37,7 @@ defineExpose({
   loadEntity: async () => {
     inputRef.value?.emitInputs();
     await nextTick();
-    loadCultivar();
+    await loadCultivar();
   },
   focus: () => {
     inputRef.value?.focus();
@@ -147,10 +148,10 @@ const variables = computed(() =>
 );
 
 const {
-  executeQuery,
   fetching,
   data,
   error: fetchError,
+  ...urql
 } = await useQuery({
   query,
   variables,
@@ -162,13 +163,13 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.cultivars.length) {
+  if (d?.cultivars[0]) {
     emit('cultivar', d.cultivars[0]);
   }
 });
 
 async function loadCultivar() {
   await nextTick(); // ensure the useQuery({variables}) is updated
-  await executeQuery();
+  await urql.executeQuery();
 }
 </script>

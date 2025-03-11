@@ -110,8 +110,8 @@ function resetErrors() {
 
 const {
   error,
-  executeMutation: executeDeleteFilter,
   fetching: deleting,
+  ...urql
 } = useMutation(
   graphql(`
     mutation DeleteAnalyzeFilter($id: Int!) {
@@ -122,13 +122,13 @@ const {
   `),
 );
 
-function deleteFilter() {
+async function deleteFilter() {
   if (props.analyzeId === 'new') {
     // this should never happen
     throw new Error("Can't delete an unsaved filter");
   }
 
-  executeDeleteFilter({ id: props.analyzeId }).then((result) => {
+  await urql.executeMutation({ id: props.analyzeId }).then((result) => {
     // in case no analyze_filter is found (which shouldn't happen) we don't get an error
     // currently the error is not displayed as creating a
     // GraphQL error is cumbersome

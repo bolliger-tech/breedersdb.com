@@ -96,7 +96,7 @@
         <CrossingButtonDelete
           :crossing-id="crossing.id"
           @deleted="
-            () => router.push({ path: '/crossings', query: route.query })
+            () => $router.push({ path: '/crossings', query: route.query })
           "
         />
       </template>
@@ -108,7 +108,8 @@
 import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import CrossingButtonDelete from 'src/components/Crossing/CrossingButtonDelete.vue';
-import { ResultOf, graphql } from 'src/graphql';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { crossingFragment } from 'src/components/Crossing/crossingFragment';
 import { useI18n } from 'src/composables/useI18n';
@@ -171,8 +172,8 @@ const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/crossings/${props.entityId}/edit`,
     query: route.query,
   });

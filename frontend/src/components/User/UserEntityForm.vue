@@ -60,11 +60,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  LocaleOption,
-  getLocaleOptions,
-  useI18n,
-} from 'src/composables/useI18n';
+import type { LocaleOption } from 'src/composables/useI18n';
+import { getLocaleOptions, useI18n } from 'src/composables/useI18n';
 import { DEFAULT_LOCALE } from 'src/i18n';
 import { ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
@@ -72,15 +69,16 @@ import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import { UserEditInput, UserInsertInput } from './UserModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { UserModalEditProps } from './UserModalEdit.vue';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { isValidEmail } from 'src/utils/validationUtils';
 import UserButtonChangePassword from './UserButtonChangePassword.vue';
 import { isValidPassword } from 'src/utils/validationUtils';
 import { useIsUnique } from 'src/composables/useIsUnique';
 
 export interface UserEntityFormProps {
-  user: UserInsertInput | UserEditInput;
+  user: UserModalEditProps['user'];
 }
 
 const props = defineProps<UserEntityFormProps>();

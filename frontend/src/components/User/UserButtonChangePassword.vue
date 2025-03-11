@@ -57,7 +57,8 @@ import { graphql } from 'src/graphql';
 import { useI18n } from 'src/composables/useI18n';
 import { useMe } from 'src/composables/useMe';
 import { ref, watch } from 'vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
@@ -95,11 +96,7 @@ const validationError = ref<string | null>(null);
 const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
 watch(isDirty, () => makeModalPersistent(isDirty.value));
 
-const {
-  executeMutation: executeChangePassword,
-  error,
-  fetching,
-} = useMutation(
+const { error, fetching, ...urql } = useMutation(
   graphql(`
     mutation ChangePassword($password: String!, $user_id: Int!) {
       ChangePassword(password: $password, user_id: $user_id) {
@@ -119,17 +116,19 @@ async function changePassword() {
     return;
   }
 
-  return executeChangePassword({
-    user_id: props.userId,
-    password: data.value.password,
-  }).then(() => {
-    if (props.userId === me.value?.id) {
-      // trigger signin
-      router.push({ path: '/users' });
-      return;
-    }
-    open.value = false;
-  });
+  return urql
+    .executeMutation({
+      user_id: props.userId,
+      password: data.value.password,
+    })
+    .then(async () => {
+      if (props.userId === me.value?.id) {
+        // trigger signin
+        await router.push({ path: '/users' });
+        return;
+      }
+      open.value = false;
+    });
 }
 
 const { t } = useI18n();

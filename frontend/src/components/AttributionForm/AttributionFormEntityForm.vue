@@ -71,18 +71,19 @@ import AttributionFormSortableAttributeSelect from './AttributionFormSortableAtt
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import {
-  AttributionFormEditInput,
+import type {
   AttributionFormInsertInput,
+  AttributionFormModalEditProps,
 } from './AttributionFormModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import { extend } from 'quasar';
 import { type AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import AttributeSelect from 'src/components/Attribute/AttributeSelect.vue';
 
 export interface AttributionFormEntityFormProps {
-  attributionForm: AttributionFormInsertInput | AttributionFormEditInput;
+  attributionForm: AttributionFormModalEditProps['attributionForm'];
 }
 
 const props = defineProps<AttributionFormEntityFormProps>();
@@ -135,6 +136,7 @@ function onDrop(pos: 'before' | 'after', dropIndex: number) {
   // set the array order
   const dragIndex = currentDragItemId.value;
   const dragItem = data.value.attribution_form_fields[dragIndex];
+  if (!dragItem) throw new Error('Drag item not found');
   if (dragIndex < dropIndex) dropIndex--;
   data.value.attribution_form_fields.splice(dragIndex, 1);
   data.value.attribution_form_fields.splice(

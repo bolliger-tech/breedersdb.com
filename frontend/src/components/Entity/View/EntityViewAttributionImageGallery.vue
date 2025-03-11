@@ -38,13 +38,12 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
-import EntityViewAttributionImage, {
-  EntityViewAttributionImageProps,
-} from './EntityViewAttributionImage.vue';
+import type { EntityViewAttributionImageProps } from './EntityViewAttributionImage.vue';
+import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { ref } from 'vue';
 import { useTimeout } from 'quasar';
 import { onBeforeUnmount } from 'vue';
-import { imageSizes } from 'src/utils/imageSizes.ts';
+import { imageSizes } from 'src/utils/imageSizes';
 
 const TRANSITION_DURATION = 300;
 
@@ -61,9 +60,9 @@ const transition =
 
 const transitionTimeout = useTimeout();
 
-function show(id: number | null, direction: 'right' | 'left') {
+function show(id: number | null | undefined, direction: 'right' | 'left') {
   transition.value = `slide-${direction}`;
-  open.value = id;
+  open.value = id ?? null;
   transitionTimeout.registerTimeout(() => {
     transition.value = undefined;
   }, TRANSITION_DURATION);

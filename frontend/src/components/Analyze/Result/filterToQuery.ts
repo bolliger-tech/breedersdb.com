@@ -1,8 +1,10 @@
-import { BaseTable, type FilterNode } from '../Filter/filterNode';
 import {
-  FilterRuleOperator,
-  FilterOperatorValue,
-} from '../Filter/filterRuleOperator';
+  BaseTable,
+  FilterConjunction,
+  type FilterNode,
+} from '../Filter/filterNode';
+import type { FilterRuleOperator } from '../Filter/filterRuleOperator';
+import { FilterOperatorValue } from '../Filter/filterRuleOperator';
 import type { FilterRule } from '../Filter/filterRule';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import type { FilterRuleTerm } from '../Filter/filterRuleTerm';
@@ -154,7 +156,7 @@ function toPaginationString({
 
 function filterToWhere(filter: FilterNode): GraphQLWhereArgs {
   const conjunction =
-    filter.getChildrensConjunction() === 'and' ? '_and' : '_or';
+    filter.getChildrensConjunction() === FilterConjunction.And ? '_and' : '_or';
 
   const where = filter
     .getChildren()
@@ -273,7 +275,7 @@ function toComparison({
   type: columnType,
 }: {
   operator: FilterRuleOperator;
-  term?: FilterRuleTerm;
+  term?: FilterRuleTerm | undefined;
   type: ColumnTypes;
 }): Comparison | undefined {
   const name = `v${varCounter++}`;
@@ -431,11 +433,18 @@ function toComparison({
         negate: true,
       };
     default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unknown operator: ${operator.value}`);
   }
 }
 
-function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnTypes }) {
+function cast({
+  term,
+  type,
+}: {
+  term?: FilterRuleTerm | undefined;
+  type: ColumnTypes;
+}) {
   switch (type) {
     case ColumnTypes.String:
     case ColumnTypes.Citext:
@@ -450,20 +459,23 @@ function cast({ term, type }: { term?: FilterRuleTerm; type: ColumnTypes }) {
       return String(term?.value).toLowerCase() === 'true';
     case ColumnTypes.Enum:
       return term?.value || '';
-    case ColumnTypes.Date:
+    case ColumnTypes.Date: {
       if (!term) return undefined;
       const date = new Date(term.value);
       return isNaN(date.getTime()) ? NaN : date.toISOString().split('T')[0];
-    case ColumnTypes.DateTime:
+    }
+    case ColumnTypes.DateTime: {
       if (!term) return undefined;
       const datetime = new Date(term.value);
       return isNaN(datetime.getTime()) ? NaN : datetime.toISOString();
+    }
     case ColumnTypes.Time:
       // TODO: handle time
       throw new Error('Not implemented');
     case ColumnTypes.Photo:
       return true;
     default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unknown type: ${type}`);
   }
 }
@@ -492,6 +504,7 @@ function columnTypeToGraphQLType(type: ColumnTypes) {
     case ColumnTypes.Photo:
       return 'String';
     default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unknown type: ${type}`);
   }
 }
@@ -588,6 +601,7 @@ function columnsToFields({
     .filter((column) => column.split('.').length === 2)
     .forEach((column) => {
       const field = column.split('.')[1];
+      if (!field) throw new Error(`Invalid column. Missing segment: ${column}`);
       fields += `${indentation}${toSnakeCase(field)}\n`;
     });
 

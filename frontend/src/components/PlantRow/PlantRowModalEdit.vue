@@ -35,10 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PlantRowFragment,
-  plantRowFragment,
-} from 'src/components/PlantRow/plantRowFragment';
+import type { PlantRowFragment } from 'src/components/PlantRow/plantRowFragment';
+import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
 import { graphql } from 'src/graphql';
 import PlantRowButtonDelete from 'src/components/PlantRow/PlantRowButtonDelete.vue';
 import PlantRowEntityForm from 'src/components/PlantRow/PlantRowEntityForm.vue';

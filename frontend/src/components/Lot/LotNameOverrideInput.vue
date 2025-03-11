@@ -31,7 +31,7 @@ import { useIsUnique } from 'src/composables/useIsUnique';
 import { useI18n } from 'src/composables/useI18n';
 import { ref } from 'vue';
 import { focusInView } from 'src/utils/focusInView';
-import { InputRef } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
 
 export interface LotNameInputProps {
   lotId: number | undefined;

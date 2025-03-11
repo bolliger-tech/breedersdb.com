@@ -60,18 +60,18 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import { PollenEditInput, PollenInsertInput } from './PollenModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { PollenModalEditProps } from './PollenModalEdit.vue';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
-import CultivarSelect, {
-  CultivarSelectCultivar,
-} from '../Cultivar/CultivarSelect.vue';
+import type { CultivarSelectCultivar } from '../Cultivar/CultivarSelect.vue';
+import CultivarSelect from '../Cultivar/CultivarSelect.vue';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { useValidationRule } from 'src/composables/useValidationRule';
 
 export interface PollenEntityFormProps {
-  pollen: PollenInsertInput | PollenEditInput;
+  pollen: PollenModalEditProps['pollen'];
 }
 
 const props = defineProps<PollenEntityFormProps>();

@@ -83,8 +83,8 @@ const attributeHasDependants = computed(() => {
 
 const {
   error: deleteError,
-  executeMutation: executeDeleteAttribute,
   fetching: deleting,
+  ...urqlDelete
 } = useMutation(
   graphql(`
     mutation DeleteAttribute($id: Int!) {
@@ -97,8 +97,8 @@ const {
 
 const {
   error: disableError,
-  executeMutation: executeDisableAttribute,
   fetching: disabling,
+  ...urqlDisable
 } = useMutation(
   graphql(`
     mutation DisableAttribute($id: Int!) {
@@ -112,8 +112,8 @@ const {
   `),
 );
 
-function deleteAttribute() {
-  executeDeleteAttribute({ id: props.attributeId }).then((result) => {
+async function deleteAttribute() {
+  await urqlDelete.executeMutation({ id: props.attributeId }).then((result) => {
     if (!result.data?.delete_attributes_by_pk) {
       console.error(`Failed to delete attribute ${props.attributeId}`);
     } else {
@@ -122,14 +122,16 @@ function deleteAttribute() {
   });
 }
 
-function disableAttribute() {
-  executeDisableAttribute({ id: props.attributeId }).then((result) => {
-    if (!result.data?.update_attributes_by_pk) {
-      console.error(`Failed to disable attribute ${props.attributeId}`);
-    } else {
-      emit('deleted');
-    }
-  });
+async function disableAttribute() {
+  await urqlDisable
+    .executeMutation({ id: props.attributeId })
+    .then((result) => {
+      if (!result.data?.update_attributes_by_pk) {
+        console.error(`Failed to disable attribute ${props.attributeId}`);
+      } else {
+        emit('deleted');
+      }
+    });
 }
 
 const { t } = useI18n();

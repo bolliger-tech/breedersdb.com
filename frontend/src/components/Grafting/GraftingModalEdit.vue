@@ -37,10 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  GraftingFragment,
-  graftingFragment,
-} from 'src/components/Grafting/graftingFragment';
+import type { GraftingFragment } from 'src/components/Grafting/graftingFragment';
+import { graftingFragment } from 'src/components/Grafting/graftingFragment';
 import { graphql } from 'src/graphql';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import GraftingButtonDelete from 'src/components/Grafting/GraftingButtonDelete.vue';

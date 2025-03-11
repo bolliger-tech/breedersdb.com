@@ -73,8 +73,8 @@ const plantRowHasPlants = computed(() => {
 
 const {
   error: deleteError,
-  executeMutation: executeDeletePlantRow,
   fetching: deleting,
+  ...urqlDelete
 } = useMutation(
   graphql(`
     mutation DeletePlantRow($id: Int!) {
@@ -87,8 +87,8 @@ const {
 
 const {
   error: disableError,
-  executeMutation: executeDisablePlantRow,
   fetching: disabling,
+  ...urqlDisable
 } = useMutation(
   graphql(`
     mutation DisablePlantRow($id: Int!) {
@@ -102,8 +102,8 @@ const {
   `),
 );
 
-function deletePlantRow() {
-  executeDeletePlantRow({ id: props.plantRowId }).then((result) => {
+async function deletePlantRow() {
+  await urqlDelete.executeMutation({ id: props.plantRowId }).then((result) => {
     if (!result.data?.delete_plant_rows_by_pk) {
       console.error(`Failed to delete plantRow ${props.plantRowId}`);
     } else {
@@ -112,8 +112,8 @@ function deletePlantRow() {
   });
 }
 
-function disablePlantRow() {
-  executeDisablePlantRow({ id: props.plantRowId }).then((result) => {
+async function disablePlantRow() {
+  await urqlDisable.executeMutation({ id: props.plantRowId }).then((result) => {
     if (!result.data?.update_plant_rows_by_pk) {
       console.error(`Failed to disable plantRow ${props.plantRowId}`);
     } else {

@@ -112,8 +112,8 @@
 import { type AttributeDataTypes } from 'src/graphql';
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref, watch } from 'vue';
-import { InputRef } from 'src/composables/useEntityForm';
-import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import type { InputRef } from 'src/composables/useEntityForm';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { MAX_INT_PG, MIN_INT_PG } from 'src/utils/constants';
 
@@ -125,9 +125,15 @@ const props = defineProps<AttributeEntityFormValidationRuleProps>();
 const modelValue = defineModel<AttributeFragment['validation_rule']>({
   required: true,
 });
-const stepRef = defineModel<InputRef | null>('stepRef', { required: true });
-const minRef = defineModel<InputRef | null>('minRef', { required: true });
-const maxRef = defineModel<InputRef | null>('maxRef', { required: true });
+const stepRef = defineModel<InputRef | null | undefined>('stepRef', {
+  required: true,
+});
+const minRef = defineModel<InputRef | null | undefined>('minRef', {
+  required: true,
+});
+const maxRef = defineModel<InputRef | null | undefined>('maxRef', {
+  required: true,
+});
 
 function integerUnlessTypeFloatRule(val: string | null) {
   return (
@@ -161,7 +167,7 @@ const validationRule = ref({
 
 watch(
   [validationRule, () => props.dataType],
-  () => {
+  async () => {
     if (['INTEGER', 'FLOAT'].includes(props.dataType)) {
       modelValue.value = {
         min: validationRule.value.min ?? MIN_INT_PG,
@@ -180,9 +186,9 @@ watch(
       modelValue.value = null;
     }
 
-    minRef.value?.validate();
-    maxRef.value?.validate();
-    stepRef.value?.validate();
+    await minRef.value?.validate();
+    await maxRef.value?.validate();
+    await stepRef.value?.validate();
   },
   { deep: true },
 );

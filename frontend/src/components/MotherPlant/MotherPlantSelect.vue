@@ -17,20 +17,16 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import EntitySelect, {
-  type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
 export interface MotherPlantSelectProps {
   required?: boolean;
 }
 defineProps<MotherPlantSelectProps>();
 
-const motherPlantRef = ref<EntitySelectInstance<{
-  id: number;
-  name: string;
-}> | null>(null);
+const motherPlantRef = ref<ComponentExposed<typeof EntitySelect> | null>(null);
 
 defineExpose({
   validate: () => motherPlantRef.value?.validate(),

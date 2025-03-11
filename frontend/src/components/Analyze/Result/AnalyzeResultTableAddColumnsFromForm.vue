@@ -76,7 +76,7 @@ const query = graphql(`
 
 const variables = computed(() => ({ formId: formId.value }));
 
-const { error, fetching, executeQuery } = useQuery({
+const { error, fetching, ...urql } = useQuery({
   query,
   context: { additionalTypenames: ['attribution_forms'] },
   requestPolicy: 'network-only', // so it can be unmounted right away
@@ -85,7 +85,7 @@ const { error, fetching, executeQuery } = useQuery({
 });
 
 async function onSelect() {
-  const { data } = await executeQuery();
+  const { data } = await urql.executeQuery();
   if (data.value?.attribution_forms_by_pk) {
     const columns =
       data.value.attribution_forms_by_pk.attribution_form_fields.map(

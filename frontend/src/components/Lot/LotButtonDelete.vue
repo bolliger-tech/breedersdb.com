@@ -31,8 +31,8 @@ function resetErrors() {
 
 const {
   error,
-  executeMutation: executeDeleteLot,
   fetching: deleting,
+  ...urql
 } = useMutation(
   graphql(`
     mutation DeleteLot($id: Int!) {
@@ -43,8 +43,8 @@ const {
   `),
 );
 
-function deleteLot() {
-  executeDeleteLot({ id: props.lotId }).then((result) => {
+async function deleteLot() {
+  await urql.executeMutation({ id: props.lotId }).then((result) => {
     if (!result.data?.delete_lots_by_pk) {
       console.error(`Failed to delete lot ${props.lotId}`);
     } else {

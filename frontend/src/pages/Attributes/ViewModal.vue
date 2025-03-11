@@ -72,7 +72,7 @@
           v-if="!attribute.disabled"
           :attribute-id="attribute.id"
           @deleted="
-            () => router.push({ path: '/attributes', query: route.query })
+            () => $router.push({ path: '/attributes', query: route.query })
           "
         />
         <div v-else></div>
@@ -87,10 +87,8 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import AttributeButtonDelete from 'src/components/Attribute/AttributeButtonDelete.vue';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
-import {
-  AttributeFragment,
-  attributeFragment,
-} from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import { attributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
@@ -148,8 +146,8 @@ const defaultValue = computed(() => {
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/attributes/${props.entityId}/edit`,
     query: route.query,
   });

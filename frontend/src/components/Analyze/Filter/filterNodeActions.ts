@@ -1,4 +1,5 @@
-import { FilterNode, FilterConjunction } from './filterNode';
+import type { FilterConjunction } from './filterNode';
+import { FilterNode } from './filterNode';
 import { FilterRule } from './filterRule';
 
 export function addLeaf(parent: FilterNode, conjunction: FilterConjunction) {

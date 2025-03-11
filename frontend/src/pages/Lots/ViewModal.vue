@@ -34,7 +34,7 @@
       <template #action-left>
         <LotButtonDelete
           :lot-id="lot.id"
-          @deleted="() => router.push({ path: '/lots', query: route.query })"
+          @deleted="() => $router.push({ path: '/lots', query: route.query })"
         />
       </template>
     </EntityModalContent>
@@ -44,7 +44,8 @@
 <script setup lang="ts">
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import LotButtonDelete from 'src/components/Lot/LotButtonDelete.vue';
-import { graphql, ResultOf } from 'src/graphql';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { useI18n } from 'src/composables/useI18n';
@@ -100,8 +101,8 @@ const attributions = computed(
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/lots/${props.entityId}/edit`,
     query: route.query,
   });

@@ -43,7 +43,7 @@ const toggleRef = ref<QToggle | null>(null);
 defineExpose({
   validate: () => !props.required || modelValue.value !== null,
   focus: () => {
-    toggleRef.value && focusInView(toggleRef.value.$el);
+    if (toggleRef.value) focusInView(toggleRef.value.$el);
   },
 });
 

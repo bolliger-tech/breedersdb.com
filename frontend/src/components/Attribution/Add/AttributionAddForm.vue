@@ -58,14 +58,13 @@
 </template>
 
 <script setup lang="ts">
-import { graphql, VariablesOf } from 'src/graphql';
+import type { VariablesOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { useMutation } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
-import {
-  useImageUploader,
-  UploadProgress,
-} from 'src/composables/useImageUploader';
+import type { UploadProgress } from 'src/composables/useImageUploader';
+import { useImageUploader } from 'src/composables/useImageUploader';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
@@ -74,17 +73,17 @@ import AttributionAddFormSaveButton from './AttributionAddFormSaveButton.vue';
 import AttributionAddRepeatCounter from 'src/components/Attribution/Add/AttributionAddRepeatCounter.vue';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import AttributionAddFormAddInput from 'src/components/Attribution/Add/AttributionAddFormAddInput.vue';
-import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import AttributionAddAlreadyAttributed from 'src/components/Attribution/Add/AttributionAddAlreadyAttributed.vue';
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 import AttributionAddFormFieldList from 'src/components/Attribution/Add/AttributionAddFormFieldList.vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
-import AttributionAddEntityPreview, {
-  type AttributionAddEntityPreviewProps,
-} from 'src/components/Attribution/Add/AttributionAddEntityPreview.vue';
+import AttributionAddEntityPreview from 'src/components/Attribution/Add/AttributionAddEntityPreview.vue';
 import { type AttributionInputValue } from 'src/components/Attribution/Input/AttributionInput.vue';
 import AttributionAddEditNote from 'src/components/Attribution/Add/AttributionAddEditNote.vue';
 import AttributionAddLastAttributed from 'src/components/Attribution/Add/AttributionAddLastAttributed.vue';
+import type { UndefinedToNull } from 'src/utils/typescriptUtils';
+import type { EntityPreviewEntity } from './attributionAddEntityPreviewTypes';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -95,7 +94,7 @@ type FormField = {
 };
 
 export interface AttributionAddFormProps {
-  entity: AttributionAddEntityPreviewProps['entity'];
+  entity: EntityPreviewEntity;
   formId: number;
   fields: FormField[];
   values: { [key: number]: AttributionInputValue };
@@ -103,7 +102,7 @@ export interface AttributionAddFormProps {
   author: string;
   repeatTarget: number;
   edit: (id: number) => void;
-  editId?: number;
+  editId?: number | undefined;
 }
 
 type AttributionValue = Omit<
@@ -163,8 +162,8 @@ const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
 });
 
 const hasValues = computed(() =>
-  Object.values(attributionValues.value).some((av) =>
-    attributionValueHasValue(av),
+  Object.values(attributionValues.value).some(
+    (av) => av && attributionValueHasValue(av),
   ),
 );
 
@@ -206,14 +205,14 @@ const insertMutation = graphql(`
 `);
 
 const {
-  executeMutation: insertAttributions,
   fetching: savingInsert,
   error: saveInsertError,
   data: insertedAttribution,
+  ...urqlInsert
 } = useMutation(insertMutation);
 
 function saveInsert(attributions: AttributionValue[]) {
-  return insertAttributions(
+  return urqlInsert.executeMutation(
     {
       formId: props.formId,
       author: props.author,
@@ -263,16 +262,16 @@ const editMutation = graphql(`
 `);
 
 const {
-  executeMutation: editAttributions,
   fetching: savingEdit,
   error: saveEditError,
+  ...urqlEdit
 } = useMutation(editMutation);
 
 function saveEdit(
   attributionId: number,
   attributionValues: AttributionValue[],
 ) {
-  return editAttributions(
+  return urqlEdit.executeMutation(
     {
       attributionId,
       attributionValues: attributionValues.map((av) => ({
@@ -299,7 +298,21 @@ async function save() {
 
   const { photos, attributions } = Object.values(attributionValues.value)
     // filter out attribution_values without a value
-    .filter((av) => attributionValueHasValue(av))
+    .filter((av) => av && attributionValueHasValue(av))
+    // replace undefined values with null
+    .map((av) => {
+      if (!av) {
+        // this should never happen as we already filtered out undefined values
+        throw new Error('Unexpected undefined value');
+      }
+      return Object.entries(av).reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: value === undefined ? null : value,
+        }),
+        {} as UndefinedToNull<NonNullable<AttributionInputValue>>,
+      );
+    })
     // extract files from photo_value and photo_note and replace them with their
     // file name
     .map((av) => {

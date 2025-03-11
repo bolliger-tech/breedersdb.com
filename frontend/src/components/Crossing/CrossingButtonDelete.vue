@@ -31,8 +31,8 @@ function resetErrors() {
 
 const {
   error,
-  executeMutation: executeDeleteCrossing,
   fetching: deleting,
+  ...urql
 } = useMutation(
   graphql(`
     mutation DeleteCrossing($id: Int!) {
@@ -43,8 +43,8 @@ const {
   `),
 );
 
-function deleteCrossing() {
-  executeDeleteCrossing({ id: props.crossingId }).then((result) => {
+async function deleteCrossing() {
+  await urql.executeMutation({ id: props.crossingId }).then((result) => {
     if (!result.data?.delete_crossings_by_pk) {
       console.error(`Failed to delete crossing ${props.crossingId}`);
     } else {

@@ -30,9 +30,12 @@
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
-import { UseQueryArgs, useQuery } from '@urql/vue';
-import { ResultOf, graphql } from 'src/graphql';
-import { computed, watch, UnwrapRef, ref, nextTick } from 'vue';
+import type { UseQueryArgs } from '@urql/vue';
+import { useQuery } from '@urql/vue';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
+import type { UnwrapRef } from 'vue';
+import { computed, watch, ref, nextTick } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useQueryArg } from 'src/composables/useQueryArg';
@@ -293,7 +296,7 @@ const queryPlantByLabelId = graphql(
   [plantFragment],
 );
 
-const { executeQuery } = await useQuery({
+const urql = await useQuery({
   query: queryPlantByLabelId,
   variables: variablesPlantByLabelId,
   pause: true,
@@ -303,9 +306,9 @@ const { executeQuery } = await useQuery({
 async function onScannedQr(code: string) {
   variablesPlantByLabelId.value.labelId = code;
   await nextTick();
-  const result = await executeQuery();
-  if (result.data.value?.plants.length === 1) {
-    router.push({ path: `/plants/${result.data.value.plants[0].id}` });
+  const result = await urql.executeQuery();
+  if (result.data.value?.plants.length === 1 && result.data.value.plants[0]) {
+    await router.push({ path: `/plants/${result.data.value.plants[0].id}` });
   } else {
     search.value = code;
   }

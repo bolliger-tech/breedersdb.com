@@ -9,9 +9,9 @@
     <template v-if="icon && label">
       <q-expansion-item
         v-if="children?.length"
-        :class="{ 'q-pb-none': isOpen, 'children-bg': isOpen }"
-        :model-value="isOpen"
-        @click.stop="isOpen = !isOpen"
+        :class="{ 'q-pb-none': open, 'children-bg': open }"
+        :model-value="open"
+        @click.stop="open = !open"
         @show="startScrollIntoView"
         @after-show="stopScrollIntoView"
       >
@@ -40,18 +40,19 @@
 </template>
 
 <script setup lang="ts">
-import { NavItem, useNavItem } from './useNavItem';
+import type { NavItem } from './useNavItem';
+import { useNavItem } from './useNavItem';
 import NavLevel2 from './NavLevel2.vue';
 import { ref, onBeforeUnmount, onMounted } from 'vue';
 import NavLevel1ItemIcon from './NavLevel1ItemIcon.vue';
 
-export interface NavLevel1ItemProps extends NavItem {}
+export type NavLevel1ItemProps = NavItem;
 
 const props = defineProps<NavLevel1ItemProps>();
 
 const { isCurrentRoute } = useNavItem(props);
 
-const isOpen = ref(isCurrentRoute.value);
+const open = ref(isCurrentRoute.value);
 
 const navLevel2 = ref<InstanceType<typeof NavLevel2> | null>(null);
 let animationFrameId: number | null = null;
@@ -96,7 +97,7 @@ onBeforeUnmount(() => {
 });
 
 onMounted(() => {
-  if (isOpen.value) {
+  if (open.value) {
     scrollIntoViewAnimated();
   }
 });

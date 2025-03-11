@@ -13,7 +13,9 @@
         color="primary"
         track-color="grey-3"
       >
-        <template v-if="exportProgress < 1">
+        <template
+          v-if="typeof exportProgress !== 'undefined' && exportProgress < 1"
+        >
           {{ (exportProgress * 100).toFixed() }}%
         </template>
         <template v-else>
@@ -32,15 +34,14 @@
 import { useI18n } from 'src/composables/useI18n';
 
 export interface EntityExportButtonProps {
-  isExporting?: boolean;
-  exportProgress?: number;
-  onExport?: () => void;
+  isExporting?: boolean | undefined;
+  exportProgress?: number | undefined;
+  onExport?: (() => void) | undefined;
 }
 
 withDefaults(defineProps<EntityExportButtonProps>(), {
   isExporting: false,
-  exportProgress: 0,
-  onExport: undefined,
+  exportProgress: 0.01,
 });
 
 defineEmits<{

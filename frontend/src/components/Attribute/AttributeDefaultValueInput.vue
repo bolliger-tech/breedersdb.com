@@ -38,12 +38,12 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { type AttributeDataTypes } from 'src/graphql';
-import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import EntityToggle from 'src/components/Entity/Edit/EntityToggle.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { computed } from 'vue';
-import { InputRef } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
 import { isValidFloat, isValidInteger } from 'src/utils/validationUtils';
 
 export interface AttributeLegendInputProps {
@@ -56,7 +56,7 @@ const props = defineProps<AttributeLegendInputProps>();
 const modelValue = defineModel<AttributeFragment['default_value']>({
   required: true,
 });
-const inputRef = defineModel<InputRef | null>('inputRef', {
+const inputRef = defineModel<InputRef | null | undefined>('inputRef', {
   required: true,
 });
 

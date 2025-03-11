@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { QBtnToggleProps } from 'quasar';
+import type { QBtnToggleProps } from 'quasar';
 import { useQuasar } from 'quasar';
 import { computed, ref, watch } from 'vue';
 import { toKebabCase } from 'src/utils/stringUtils';
@@ -128,7 +128,7 @@ type InputMethod =
 
 export interface EntityPickerProps {
   entityType: 'plant' | 'plantGroup' | 'cultivar' | 'lot';
-  error?: string;
+  error?: string | undefined;
 }
 
 const props = defineProps<EntityPickerProps>();
@@ -144,13 +144,16 @@ const emit = defineEmits<{
   ];
 }>();
 
-const inputRef = ref<
-  | InstanceType<typeof BaseQrScanner>
-  | InstanceType<typeof EntityLabelIdInput>
-  | InstanceType<typeof CultivarSelect>
-  | InstanceType<typeof LotSelect>
-  | null
->(null);
+/* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
+type InputComponent = InstanceType<
+  | typeof BaseQrScanner
+  | typeof EntityLabelIdInput
+  | typeof CultivarSelect
+  | typeof LotSelect
+>;
+/* eslint-enable @typescript-eslint/no-duplicate-type-constituents */
+
+const inputRef = ref<InputComponent | null>(null);
 
 const plantLabelId = ref<string>('');
 const plantGroupLabelId = ref<string>('');
@@ -204,6 +207,7 @@ const inputMethodIsValid = computed(() => {
       );
   }
   // @ts-expect-error don't move into switch so ts complains if we add a new entity type
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   throw new Error(`Unknown entity type: ${props.entityType}`);
 });
 watch(
@@ -217,8 +221,8 @@ const { t } = useI18n();
 const options = computed(() => {
   const options: {
     value: InputMethod;
-    label: QBtnToggleProps['options'][0]['label'];
-    icon: QBtnToggleProps['options'][0]['icon'];
+    label: NonNullable<QBtnToggleProps['options'][0]['label']>;
+    icon: NonNullable<QBtnToggleProps['options'][0]['icon']>;
   }[] = [
     {
       value: 'qr-code',
@@ -271,6 +275,7 @@ const entityName = computed(() => {
       return t('base.entityName.lot', 1);
   }
   // @ts-expect-error don't move into switch so ts complains if we add a new entity type
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   throw new Error(`Unknown entity type: ${props.entityType}`);
 });
 

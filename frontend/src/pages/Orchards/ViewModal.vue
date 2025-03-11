@@ -71,7 +71,7 @@
           v-if="!orchard.disabled"
           :orchard-id="orchard.id"
           @deleted="
-            () => router.push({ path: '/orchards', query: route.query })
+            () => $router.push({ path: '/orchards', query: route.query })
           "
         />
         <div v-else></div>
@@ -84,7 +84,8 @@
 import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import OrchardButtonDelete from 'src/components/Orchard/OrchardButtonDelete.vue';
-import { graphql, ResultOf } from 'src/graphql';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { orchardFragment } from 'src/components/Orchard/orchardFragment';
 import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
@@ -134,8 +135,8 @@ const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/orchards/${props.entityId}/edit`,
     query: route.query,
   });

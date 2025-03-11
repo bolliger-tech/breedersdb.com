@@ -45,10 +45,8 @@ import MotherPlantEntityForm from 'src/components/MotherPlant/MotherPlantEntityF
 import MotherPlantButtonDelete from 'src/components/MotherPlant/MotherPlantButtonDelete.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { graphql } from 'src/graphql';
-import {
-  MotherPlantFragment,
-  motherPlantFragment,
-} from 'src/components/MotherPlant/motherPlantFragment';
+import type { MotherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
+import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useI18n } from 'vue-i18n';
 
 export type MotherPlantEditInput = Omit<

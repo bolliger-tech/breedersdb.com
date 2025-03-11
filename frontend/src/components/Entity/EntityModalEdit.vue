@@ -54,9 +54,17 @@ type FormRefConstructor = new (...args: any) => any;
     EditInput extends { id: number; [key: string]: any },
     InsertInput extends { [key: string]: any },
     InsertResult extends { [key: string]: any },
-    InsertVariables extends { entity: any; id?: never; [key: string]: any },
+    InsertVariables extends {
+      entity: Record<string, any>;
+      id?: never;
+      [key: string]: any;
+    },
     EditResult extends { [key: string]: any },
-    EditVariables extends { entity: any; id: number; [key: string]: any }
+    EditVariables extends {
+      entity: Record<string, any>;
+      id: number;
+      [key: string]: any;
+    }
   "
 >
 import { useMutation } from '@urql/vue';
@@ -69,11 +77,12 @@ import {
 } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { useCancel } from 'src/composables/useCancel';
-import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
-import { TadaDocumentNode } from 'gql.tada';
+import type { SpriteIcons } from '../Base/BaseSpriteIcon/types';
+import type { TadaDocumentNode } from 'gql.tada';
 import { usePrint } from 'src/composables/usePrint';
 import { captureException } from '@sentry/browser';
 import { useQuasar } from 'quasar';
+import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 /**
  * NOTE: your mutations must have a variable called $entity
@@ -97,11 +106,13 @@ const props = defineProps<{
   indexPath: string;
   spriteIcon: SpriteIcons;
   subtitle: string;
-  makeLabel?: (entityId: number) => Promise<string>;
+  makeLabel?: ((entityId: number) => Promise<string>) | undefined;
   // make emit handler available in template
-  onNewFromTemplate?: (templateId: number) => void;
-  withInsertData?: (data: InsertVariables['entity']) => InsertVariables;
-  withEditData?: (data: EditVariables['entity']) => EditVariables;
+  onNewFromTemplate?: ((templateId: number) => void) | undefined;
+  withInsertData?:
+    | ((data: InsertVariables['entity']) => InsertVariables)
+    | undefined;
+  withEditData?: ((data: EditVariables['entity']) => EditVariables) | undefined;
 }>();
 
 const emit = defineEmits<{
@@ -113,6 +124,7 @@ const { cancel } = useCancel({ path: props.indexPath });
 const validationError = ref<string | null>(null);
 const closeModal = useInjectOrThrow(closeModalSymbol);
 const makeModalPersistent = useInjectOrThrow(makeModalPersistentSymbol);
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 const formRef = ref<InstanceType<FormRef> | null>(null);
 
 function setFormRef(form: InstanceType<FormRef>) {
@@ -121,24 +133,31 @@ function setFormRef(form: InstanceType<FormRef>) {
 
 const insertData = ref<InsertVariables['entity']>();
 const {
-  executeMutation: executeInsertMutation,
   fetching: savingInsert,
   error: saveInsertError,
   data: insertResult,
+  ...urqlInsert
 } = useMutation(props.insertMutation);
 
 const editedData = ref<EditVariables['entity']>();
 const {
-  executeMutation: executeEditMutation,
   fetching: savingEdit,
   error: saveEditError,
   data: editResult,
+  ...urqlEdit
 } = useMutation(props.editMutation);
 
-function onFormChange(data: typeof editedData.value | typeof insertData.value) {
+function onFormChange(data: PartialWithUndefined<InsertVariables['entity']>) {
   if (!data) {
     return;
-  } else if ('id' in props.entity) {
+  }
+  // remove undefined values
+  for (const key in data) {
+    if (data[key] === undefined) {
+      delete data[key];
+    }
+  }
+  if ('id' in props.entity) {
     editedData.value = data;
   } else {
     insertData.value = data;
@@ -154,7 +173,7 @@ async function save() {
 
   validationError.value = isValid ? null : t('base.validation.invalidFields');
   if (!isValid) {
-    return Promise.reject();
+    return Promise.reject(new Error(t('base.validation.invalidFields')));
   }
 
   if ('id' in props.entity) {
@@ -166,7 +185,7 @@ async function save() {
   await nextTick();
 
   if (saveError.value) {
-    return Promise.reject();
+    return Promise.reject(saveError.value);
   }
 }
 
@@ -184,7 +203,7 @@ async function saveInsert() {
     props.withInsertData?.(insertData.value) ??
     ({ entity: insertData.value } as InsertVariables);
 
-  return executeInsertMutation(data);
+  return urqlInsert.executeMutation(data);
 }
 
 async function saveEdit() {
@@ -204,7 +223,7 @@ async function saveEdit() {
       entity: editedData.value,
     } as EditVariables);
 
-  return executeEditMutation(data);
+  return urqlEdit.executeMutation(data);
 }
 
 const saveError = computed(() => saveInsertError.value || saveEditError.value);
@@ -221,7 +240,7 @@ const entityId = computed<EditInput['id'] | undefined>(() => {
     return props.entity.id;
   } else if (saveResult.value) {
     const key = Object.keys(saveResult.value)[0];
-    return saveResult.value[key].id;
+    return key && saveResult.value[key].id;
   }
   return undefined;
 });
@@ -258,7 +277,7 @@ async function printLabel() {
 }
 
 const preparingNewFromTemplate = ref(false);
-async function newFromTemplate() {
+function newFromTemplate() {
   if (!entityId.value) {
     throw new Error('Failed to prepare new from template: Missing entity id');
   }

@@ -112,26 +112,26 @@
 import { useI18n } from 'src/composables/useI18n';
 import EntityButtonDelete from './EntityButtonDelete.vue';
 import EntityModalContentSave from './EntityModalContentSave.vue';
-import { CombinedError } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
-import { SpriteIcons } from '../Base/BaseSpriteIcon/types';
+import type { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import type { Slot } from 'vue';
 import { usePrint } from 'src/composables/usePrint';
 
 export interface EntityModalContentProps {
-  title?: string;
-  subtitle?: string;
-  spriteIcon?: SpriteIcons;
-  loading?: boolean;
-  saveError?: CombinedError;
-  validationError?: string | null;
-  printData?: string; // only used if onEdit is available
+  title?: string | undefined;
+  subtitle?: string | undefined;
+  spriteIcon?: SpriteIcons | undefined;
+  loading?: boolean | undefined;
+  saveError?: CombinedError | undefined;
+  validationError?: string | null | undefined;
+  printData?: string | undefined; // only used if onEdit is available
   // make emit handler available in template
-  onSave?: () => void;
-  onEdit?: () => void;
-  onSaveThenPrint?: () => void;
-  onSaveThenNewFromTemplate?: () => void;
+  onSave?: (() => void) | undefined;
+  onEdit?: (() => void) | undefined;
+  onSaveThenPrint?: (() => void) | undefined;
+  onSaveThenNewFromTemplate?: (() => void) | undefined;
 }
 
 defineProps<EntityModalContentProps>();
@@ -172,10 +172,10 @@ const { t } = useI18n();
 
 /* fix pwa standalone-mode footer hidden */
 :global(
-    body:is(.platform-ios, .platform-android:not(.native-mobile))
-      .q-dialog__inner--minimized
-      .entity-modal-content__default
-  ) {
+  body:is(.platform-ios, .platform-android:not(.native-mobile))
+    .q-dialog__inner--minimized
+    .entity-modal-content__default
+) {
   max-height: calc(100dvh - 260px);
 }
 

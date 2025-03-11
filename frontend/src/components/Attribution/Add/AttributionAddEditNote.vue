@@ -58,12 +58,12 @@ const mutation = graphql(`
   }
 `);
 
-const { executeMutation, fetching: deleting, error } = useMutation(mutation);
+const { fetching: deleting, error, ...urql } = useMutation(mutation);
 
 const $q = useQuasar();
 
 async function deleteAttribution() {
-  await executeMutation(
+  await urql.executeMutation(
     { id: props.attributionId },
     {
       additionalTypenames: [

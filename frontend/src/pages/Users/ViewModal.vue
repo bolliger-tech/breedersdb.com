@@ -36,7 +36,7 @@
       <template #action-left>
         <UserButtonDelete
           :user-id="user.id"
-          @deleted="() => router.push({ path: '/users', query: route.query })"
+          @deleted="() => $router.push({ path: '/users', query: route.query })"
         />
       </template>
     </EntityModalContent>
@@ -50,7 +50,8 @@ import UserButtonDelete from 'src/components/User/UserButtonDelete.vue';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { userFragment } from 'src/components/User/userFragment';
-import { useI18n, Locale } from 'src/composables/useI18n';
+import type { Locale } from 'src/composables/useI18n';
+import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
@@ -82,8 +83,8 @@ const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/users/${props.entityId}/edit`,
     query: route.query,
   });

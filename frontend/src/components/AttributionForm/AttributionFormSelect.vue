@@ -24,13 +24,13 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { computed, watch, ref, Ref } from 'vue';
-import { ResultOf, graphql } from 'src/graphql';
+import { computed, watch, ref } from 'vue';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import EntitySelect, {
-  EntitySelectInstance,
-  EntitySelectProps,
-} from 'src/components/Entity/Edit/EntitySelect.vue';
+import type { EntitySelectProps } from 'src/components/Entity/Edit/EntitySelect.vue';
+import EntitySelect from 'src/components/Entity/Edit/EntitySelect.vue';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
 export type AttributionForm = ResultOf<typeof query>['attribution_forms'][0];
 
@@ -41,13 +41,7 @@ export interface AttributionFormSelectProps {
 
 defineProps<AttributionFormSelectProps>();
 
-const selectRef: Ref<EntitySelectInstance<{
-  id: number;
-  name: string;
-}> | null> = ref<EntitySelectInstance<{
-  id: number;
-  name: string;
-}> | null>(null);
+const selectRef = ref<ComponentExposed<typeof EntitySelect> | null>(null);
 
 defineExpose({
   validate: () => selectRef.value?.validate(),

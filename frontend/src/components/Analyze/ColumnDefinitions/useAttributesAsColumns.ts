@@ -35,7 +35,7 @@ export function useAttributesAsColumns() {
   const { localizedSortPredicate } = useLocalizedSort();
   const pause = ref(true);
 
-  const { data, fetching, error, executeQuery } = useQuery({
+  const { data, fetching, error, ...urql } = useQuery({
     query,
     variables: undefined,
     pause,
@@ -59,7 +59,7 @@ export function useAttributesAsColumns() {
   return {
     activate: () => {
       pause.value = false;
-      executeQuery();
+      urql.executeQuery();
     },
     data: columns,
     fetching,

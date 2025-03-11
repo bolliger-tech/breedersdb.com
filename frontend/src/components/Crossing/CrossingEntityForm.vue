@@ -60,18 +60,16 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import {
-  CrossingEditInput,
-  CrossingInsertInput,
-} from './CrossingModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { CrossingModalEditProps } from './CrossingModalEdit.vue';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import CultivarSelect from '../Cultivar/CultivarSelect.vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 
 export interface CrossingEntityFormProps {
-  crossing: CrossingInsertInput | CrossingEditInput;
+  crossing: CrossingModalEditProps['crossing'];
 }
 
 const props = defineProps<CrossingEntityFormProps>();

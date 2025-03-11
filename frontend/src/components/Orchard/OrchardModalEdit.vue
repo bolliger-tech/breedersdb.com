@@ -39,10 +39,8 @@ import OrchardEntityForm from 'src/components/Orchard/OrchardEntityForm.vue';
 import OrchardButtonDelete from 'src/components/Orchard/OrchardButtonDelete.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { graphql } from 'src/graphql';
-import {
-  OrchardFragment,
-  orchardFragment,
-} from 'src/components/Orchard/orchardFragment';
+import type { OrchardFragment } from 'src/components/Orchard/orchardFragment';
+import { orchardFragment } from 'src/components/Orchard/orchardFragment';
 import { useI18n } from 'vue-i18n';
 
 export type OrchardEditInput = Omit<OrchardFragment, 'created' | 'modified'>;

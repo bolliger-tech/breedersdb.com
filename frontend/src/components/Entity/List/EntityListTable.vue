@@ -144,30 +144,27 @@ import { useQueryArg } from 'src/composables/useQueryArg';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import EntityExportButton from 'src/components/Entity/EntityExportButton.vue';
 import type { EntityExportButtonProps } from 'src/components/Entity/EntityExportButton.vue';
-import { EntityListTableColum } from './types';
+import type { EntityListTableColum } from './types';
 import { n2semicolon } from 'src/utils/stringUtils';
 
 export interface EntityListTableProps extends EntityListTablePropsWithoutModel {
-  pagination?: QTableProps['pagination'];
+  pagination?: QTableProps['pagination'] | undefined;
   visibleColumns: string[];
 }
 
-type EntityListTablePropsWithoutModel = {
+interface EntityListTablePropsWithoutModel extends EntityExportButtonProps {
   rows: QTableProps['rows'];
-  loading?: boolean;
+  loading?: boolean | undefined;
   allColumns: EntityListTableColum[];
-  dataIsFresh?: boolean;
-  headerHeight?: string;
-} & EntityExportButtonProps;
+  dataIsFresh?: boolean | undefined;
+  headerHeight?: string | undefined;
+}
 
 const props = withDefaults(defineProps<EntityListTablePropsWithoutModel>(), {
   loading: false,
   dataIsFresh: true,
-  headerHeight: undefined,
-  rowClick: undefined,
   isExporting: false,
   exportProgress: 0,
-  onExport: undefined,
 });
 const visibleColumns = defineModel<string[]>('visibleColumns', {
   required: true,

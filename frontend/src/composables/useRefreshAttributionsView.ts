@@ -32,12 +32,12 @@ export async function useRefreshAttributionsViewThenQuery<T>(
   });
 
   const {
-    executeMutation: refreshAttributionsView,
     fetching: refreshingAttributionsView,
     error: attributionsRefreshError,
+    ...urql
   } = useRefreshAttributionsView();
 
-  await refreshAttributionsView({}).then(() => query.resume());
+  await urql.executeMutation({}).then(() => query.resume());
 
   const fetching = computed(
     () => query.fetching.value || refreshingAttributionsView.value,

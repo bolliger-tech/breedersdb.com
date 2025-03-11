@@ -69,8 +69,10 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
-import { graphql, ResultOf } from 'src/graphql';
-import { computed, UnwrapRef, watch } from 'vue';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
+import type { UnwrapRef } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import {
@@ -86,14 +88,15 @@ import {
   getAttributionValue,
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
-import { AttributeDataTypes } from 'src/graphql';
+import type { AttributeDataTypes } from 'src/graphql';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
-import { UseQueryArgs } from '@urql/vue';
-import { TransformDataArgs, useExport } from 'src/composables/useExport';
+import type { UseQueryArgs } from '@urql/vue';
+import type { TransformDataArgs } from 'src/composables/useExport';
+import { useExport } from 'src/composables/useExport';
 import {
   attributionToXlsx,
   getAttributionObjectName,
@@ -385,7 +388,7 @@ watch(
 );
 
 function getValue(row: AttributionsViewFragment) {
-  const type = dataTypeToColumnTypes(row.data_type as AttributeDataTypes);
+  const type = dataTypeToColumnTypes(row.data_type);
   const value = getAttributionValue(row);
 
   if (type === ColumnTypes.Photo) {
@@ -433,9 +436,21 @@ function transformData({
   return {
     visibleColumns,
     data: data.map((attribution) => {
+      const {
+        /* eslint-disable @typescript-eslint/no-unused-vars */
+        // exclude the following fields from export
+        geo_location,
+        geo_location_accuracy,
+        plant,
+        plant_group,
+        cultivar,
+        lot,
+        /* eslint-enable @typescript-eslint/no-unused-vars */
+        ...rest
+      } = attribution;
       return {
-        // allow colums to access all data
-        ...attribution,
+        // allow columns to access all remaining fields
+        ...rest,
         // special column
         entity: getAttributionObjectName(attribution),
         entity_type: getAttributionObjectType(attribution),

@@ -22,15 +22,18 @@
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
-import { ResultOf, graphql } from 'src/graphql';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed, watch } from 'vue';
-import { useI18n, Locale } from 'src/composables/useI18n';
+import type { Locale } from 'src/composables/useI18n';
+import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { userFragment } from 'src/components/User/userFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
-import { TransformDataArgs, useExport } from 'src/composables/useExport';
+import type { TransformDataArgs } from 'src/composables/useExport';
+import { useExport } from 'src/composables/useExport';
 
 const { t } = useI18n();
 

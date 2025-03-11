@@ -1,10 +1,12 @@
-import { FilterRuleColumn, FilterRuleColumnJson } from './filterRuleColumn';
+import type { FilterRuleColumnJson } from './filterRuleColumn';
+import { FilterRuleColumn } from './filterRuleColumn';
 import {
   FilterOperatorValue,
   FilterRuleOperator,
   type FilterRuleOperatorJson,
 } from './filterRuleOperator';
-import { FilterRuleTerm, FilterRuleTermJson } from './filterRuleTerm';
+import type { FilterRuleTermJson } from './filterRuleTerm';
+import { FilterRuleTerm } from './filterRuleTerm';
 import { ColumnTypes } from 'src/utils/columnTypes';
 
 export type FilterRuleSchema =
@@ -39,10 +41,10 @@ export class FilterRule {
     term,
     includeEntitiesWithoutAttributions,
   }: {
-    column?: FilterRuleColumn;
-    operator?: FilterRuleOperator;
-    term?: FilterRuleTerm;
-    includeEntitiesWithoutAttributions?: boolean;
+    column?: FilterRuleColumn | undefined;
+    operator?: FilterRuleOperator | undefined;
+    term?: FilterRuleTerm | undefined;
+    includeEntitiesWithoutAttributions?: boolean | undefined;
   } = {}) {
     this.column = column;
     this.operator = operator;
@@ -155,6 +157,7 @@ export class FilterRule {
       case ColumnTypes.Photo:
         return false;
       default:
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Unknown column type: ${this.type}`);
     }
   }

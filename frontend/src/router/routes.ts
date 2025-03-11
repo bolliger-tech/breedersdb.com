@@ -1,4 +1,4 @@
-import { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
+import type { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
 import { toKebabCase } from 'src/utils/stringUtils';
 
 function entityNameToRoutePath(entity: string) {
@@ -7,7 +7,7 @@ function entityNameToRoutePath(entity: string) {
   // eg. AttributionForms -> attribution-forms
   return toKebabCase(
     entity !== 'Plants' && entity.startsWith('Plant')
-      ? entity.split('Plant').slice(-1)[0]
+      ? entity.replace(/^Plant/, '')
       : entity,
   );
 }
@@ -33,7 +33,10 @@ function createAttributeAndAnalyzeRoutes(entity: string) {
             path: ':analyzeId(\\d+)',
             component: () => import(`pages/${entity}/AnalyzePage.vue`),
             props: (route: RouteLocationNormalized) => ({
-              analyzeId: parseInt(route.params.analyzeId.toString(), 10),
+              analyzeId: parseInt(
+                route.params.analyzeId?.toString() ?? '-1',
+                10,
+              ),
               key: route.params.analyzeId,
             }),
           },

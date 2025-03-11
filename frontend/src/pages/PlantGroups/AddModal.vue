@@ -10,9 +10,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import PlantGroupModalEdit, {
-  PlantGroupInsertInput,
-} from 'src/components/PlantGroup/PlantGroupModalEdit.vue';
+import type { PlantGroupInsertInput } from 'src/components/PlantGroup/PlantGroupModalEdit.vue';
+import PlantGroupModalEdit from 'src/components/PlantGroup/PlantGroupModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';

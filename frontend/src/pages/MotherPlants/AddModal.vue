@@ -10,9 +10,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import MotherPlantModalEdit, {
-  MotherPlantInsertInput,
-} from 'src/components/MotherPlant/MotherPlantModalEdit.vue';
+import type { MotherPlantInsertInput } from 'src/components/MotherPlant/MotherPlantModalEdit.vue';
+import MotherPlantModalEdit from 'src/components/MotherPlant/MotherPlantModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';

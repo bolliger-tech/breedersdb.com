@@ -11,7 +11,7 @@ export function useIsUnique({
   additionalWhere,
 }: {
   tableName: TableName;
-  existingId?: number;
+  existingId?: number | undefined;
   columnName?: string;
   additionalWhere?: Ref<Record<string, unknown>>;
 }) {
@@ -27,7 +27,7 @@ export function useIsUnique({
   const variables = computed(() => ({
     where: { [columnName]: { _eq: term.value }, ...additionalWhere?.value },
   }));
-  const { executeQuery, fetching } = useQuery({
+  const { fetching, ...urql } = useQuery({
     query: query,
     variables,
     pause: true,
@@ -37,14 +37,21 @@ export function useIsUnique({
   async function isUnique(newName: string) {
     term.value = newName;
     await nextTick(); // wait for the refs to be updated
-    const result = await executeQuery();
+    const result = await urql.executeQuery();
     if (result.error.value) {
       console.error(result.error.value);
       throw new Error(result.error.value.message);
     }
-    const data = result.data?.value as Record<TableName, { id: number }[]>;
+    const data = result.data?.value as
+      | Record<TableName, { id: number }[]>
+      | undefined;
+    if (!data?.[tableName]) {
+      throw new Error(
+        `Missing key ${tableName} in response: ${JSON.stringify(data, null, 2)}`,
+      );
+    }
     return (
-      data?.[tableName].length === 0 || data?.[tableName][0]?.id === existingId
+      data[tableName].length === 0 || data[tableName][0]?.id === existingId
     );
   }
 

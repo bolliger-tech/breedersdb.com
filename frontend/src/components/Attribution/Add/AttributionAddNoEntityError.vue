@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
+import type { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 
 export interface AttributionNoEntityErrorProps {

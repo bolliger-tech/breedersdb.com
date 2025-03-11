@@ -35,8 +35,8 @@
 </template>
 
 <script setup lang="ts">
+import type { UserFragment } from 'src/components/User/userFragment';
 import {
-  UserFragment,
   userFragment,
   userFragmentOnFullUserOutput,
 } from 'src/components/User/userFragment';

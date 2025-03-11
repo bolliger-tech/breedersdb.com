@@ -107,11 +107,9 @@ import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import {
-  CultivarEditInput,
-  CultivarInsertInput,
-} from './CultivarModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { CultivarModalEditProps } from './CultivarModalEdit.vue';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import LotSelect from 'src/components/Lot/LotSelect.vue';
 import CultivarNameInputs from './CultivarNameInputs.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
@@ -121,7 +119,7 @@ import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 
 export interface CultivarEntityFormProps {
-  cultivar: CultivarInsertInput | CultivarEditInput;
+  cultivar: CultivarModalEditProps['cultivar'];
   isVariety: boolean;
 }
 
@@ -226,7 +224,7 @@ function automagicallySetLotId({
 
   if (newType === 'variety') {
     // if there is only one lot with is_variety === true, set it, no mater what
-    if (newVarietyLots.length === 1) {
+    if (newVarietyLots.length === 1 && newVarietyLots[0]) {
       data.value.lot_id = newVarietyLots[0].id;
     } else {
       // if the current lot_id is not a variety lot, set it to lastVarietyLotId
@@ -288,8 +286,7 @@ const varietyNameSegmentQueryVariables = computed(() => ({
 const {
   data: varietyNameSegmentData,
   fetching: varietyNameSegmentFetching,
-  resume: varietyNameSegmentFetchingResume,
-  pause: varietyNameSegmentFetchingPause,
+  ...urql
 } = useQuery({
   query: varietyNameSegmentQuery,
   variables: varietyNameSegmentQueryVariables,
@@ -305,9 +302,9 @@ const varietyNameSegmentQueryPause = computed(
 );
 watch(varietyNameSegmentQueryPause, (pause) => {
   if (pause) {
-    varietyNameSegmentFetchingPause();
+    urql.pause();
   } else {
-    varietyNameSegmentFetchingResume();
+    urql.resume();
   }
 });
 

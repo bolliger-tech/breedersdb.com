@@ -134,22 +134,24 @@ export interface AttributionInputProps {
   hideNotes?: boolean;
 }
 
+export type AttributionInputValue =
+  | {
+      attribute_id?: number | null | undefined;
+      boolean_value?: boolean | null | undefined;
+      date_value?: string | null | undefined;
+      exceptional_attribution?: boolean | null | undefined;
+      float_value?: number | null | undefined;
+      integer_value?: number | null | undefined;
+      text_note?: string | null | undefined;
+      text_value?: string | null | undefined;
+      photo_value?: File | string | null | undefined;
+      photo_note?: File | string | null | undefined;
+    }
+  | undefined;
+
 const props = defineProps<AttributionInputProps>();
 
-export interface AttributionInputValue {
-  attribute_id?: number | null | undefined;
-  boolean_value?: boolean | null | undefined;
-  date_value?: string | null | undefined;
-  exceptional_attribution?: boolean | null | undefined;
-  float_value?: number | null | undefined;
-  integer_value?: number | null | undefined;
-  text_note?: string | null | undefined;
-  text_value?: string | null | undefined;
-  photo_value?: File | string | null | undefined;
-  photo_note?: File | string | null | undefined;
-}
-
-const modelValue = defineModel<AttributionInputValue | undefined>({
+const modelValue = defineModel<AttributionInputValue>({
   required: true,
 });
 

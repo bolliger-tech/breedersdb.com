@@ -84,7 +84,7 @@
       <template #action-left>
         <PollenButtonDelete
           :pollen-id="pollen.id"
-          @deleted="() => router.push({ path: '/pollen', query: route.query })"
+          @deleted="() => $router.push({ path: '/pollen', query: route.query })"
         />
       </template>
     </EntityModalContent>
@@ -95,7 +95,8 @@
 import { useQuery } from '@urql/vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import PollenButtonDelete from 'src/components/Pollen/PollenButtonDelete.vue';
-import { ResultOf, graphql } from 'src/graphql';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';
 import { useI18n } from 'src/composables/useI18n';
@@ -155,8 +156,8 @@ const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/pollen/${props.entityId}/edit`,
     query: route.query,
   });

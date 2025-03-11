@@ -97,7 +97,7 @@
           :attribution-id="attribution.attribution_id"
           :attribution-value-id="attribution.id"
           @deleted="
-            () => router.push({ path: '/attributions', query: route.query })
+            () => $router.push({ path: '/attributions', query: route.query })
           "
         />
       </template>
@@ -113,15 +113,11 @@ import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import {
-  AttributionsViewFragment,
-  attributionsViewFragment,
-} from 'src/components/Attribution/attributionsViewFragment';
+import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import { attributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
-import {
-  AttributionFormFragment,
-  attributionFormFragment,
-} from 'src/components/AttributionForm/attributionFormFragment';
+import type { AttributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
+import { attributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { computed } from 'vue';
 import {
   formatResultColumnValue,
@@ -133,7 +129,7 @@ import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAtt
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
-import { imageSizes } from 'src/utils/imageSizes.ts';
+import { imageSizes } from 'src/utils/imageSizes';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -172,8 +168,8 @@ const { t, d, n } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/attributions/${props.entityId}/edit`,
     query: route.query,
   });

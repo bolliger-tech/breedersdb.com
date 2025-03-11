@@ -11,8 +11,8 @@ import type { BaseSpriteIconProps } from 'components/Base/BaseSpriteIcon/baseSpr
 
 export interface NavLevel0ItemIconProps
   extends Omit<BaseSpriteIconProps, 'name'> {
-  label?: string;
-  icon?: BaseSpriteIconProps['name'];
+  label?: string | undefined;
+  icon?: BaseSpriteIconProps['name'] | undefined;
 }
 
 defineProps<NavLevel0ItemIconProps>();

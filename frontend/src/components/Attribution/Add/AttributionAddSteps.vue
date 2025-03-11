@@ -118,7 +118,8 @@ import BaseStepper from 'src/components/Base/BaseStepper.vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref, watch, type Slot, Ref } from 'vue';
+import type { Ref } from 'vue';
+import { computed, ref, watch, type Slot } from 'vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { useQuasar } from 'quasar';
 import {
@@ -139,7 +140,7 @@ export interface AttributionAddStepsProps {
   entity: AttributionAddFormWrapperProps['entity'];
   entityLoading: boolean;
   entityIcon: string;
-  focusEntityPicker?: () => void;
+  focusEntityPicker?: (() => void) | undefined;
 }
 
 const props = defineProps<AttributionAddStepsProps>();
@@ -183,7 +184,7 @@ const {
   data: formData,
   error: formFetchError,
   fetching: formFetching,
-  executeQuery: fetchForm,
+  ...urqlForm
 } = useQuery({
   query: formQuery,
   variables: formVariables,
@@ -195,7 +196,7 @@ watch(
   formVariables,
   () => {
     if (formId.value > -1) {
-      fetchForm();
+      urqlForm.executeQuery();
     }
   },
   { immediate: true, deep: true, flush: 'post' },
@@ -212,12 +213,14 @@ const attributeFormSelectRef: Ref<InstanceType<
   typeof AttributionFormSelect
 > | null> = ref<InstanceType<typeof AttributionFormSelect> | null>(null);
 
-function completeStep1() {
-  Promise.resolve(attributeFormSelectRef.value?.validate()).then((valid) => {
-    if (valid) {
-      step.value = 2;
-    }
-  });
+async function completeStep1() {
+  await Promise.resolve(attributeFormSelectRef.value?.validate()).then(
+    (valid) => {
+      if (valid) {
+        step.value = 2;
+      }
+    },
+  );
 }
 
 // step 2
@@ -231,7 +234,7 @@ watch(author, (a) => localStorage.set(AUTHOR_STORAGE_KEY, a));
 
 const { queryArg: date } = useQueryArg({
   key: DATE_URL_KEY,
-  defaultValue: new Date().toISOString().split('T')[0],
+  defaultValue: new Date().toISOString().split('T')[0] as string,
   replace: true,
   showDefaultInUrl: true,
 });
@@ -249,12 +252,14 @@ const attributeMetaDataRef = ref<InstanceType<
   typeof AttributionAddMetaData
 > | null>(null);
 
-function completeStep2() {
-  Promise.resolve(attributeMetaDataRef.value?.validate()).then((valid) => {
-    if (valid) {
-      step.value = 3;
-    }
-  });
+async function completeStep2() {
+  await Promise.resolve(attributeMetaDataRef.value?.validate()).then(
+    (valid) => {
+      if (valid) {
+        step.value = 3;
+      }
+    },
+  );
 }
 
 // step 3

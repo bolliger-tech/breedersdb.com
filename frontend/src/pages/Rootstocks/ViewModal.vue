@@ -23,7 +23,7 @@
         <RootstockButtonDelete
           :rootstock-id="rootstock.id"
           @deleted="
-            () => router.push({ path: '/rootstocks', query: route.query })
+            () => $router.push({ path: '/rootstocks', query: route.query })
           "
         />
       </template>
@@ -70,8 +70,8 @@ const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/rootstocks/${props.entityId}/edit`,
     query: route.query,
   });

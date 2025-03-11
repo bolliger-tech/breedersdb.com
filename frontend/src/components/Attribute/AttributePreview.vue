@@ -29,7 +29,7 @@ export interface AttributePreviewProps {
 
 defineProps<AttributePreviewProps>();
 
-const previewModelValue = ref<AttributionInputValue | undefined>(undefined);
+const previewModelValue = ref<AttributionInputValue>();
 
 const { t } = useI18n();
 </script>

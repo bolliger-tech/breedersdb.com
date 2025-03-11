@@ -80,8 +80,8 @@ const hasDependants = computed(() => {
 
 const {
   error: deleteError,
-  executeMutation: executeDeleteAttributionForm,
   fetching: deleting,
+  ...urqlDeleteAttributionForm
 } = useMutation(
   graphql(`
     mutation DeleteAttributionForm($id: Int!) {
@@ -99,8 +99,8 @@ const {
 
 const {
   error: disableError,
-  executeMutation: executeDisableAttributionForm,
   fetching: disabling,
+  ...urqlDisableAttributionForm
 } = useMutation(
   graphql(`
     mutation DisableAttributionForm($id: Int!) {
@@ -114,9 +114,10 @@ const {
   `),
 );
 
-function deleteAttributionAddForm() {
-  executeDeleteAttributionForm({ id: props.attributionFormId }).then(
-    (result) => {
+async function deleteAttributionAddForm() {
+  await urqlDeleteAttributionForm
+    .executeMutation({ id: props.attributionFormId })
+    .then((result) => {
       if (!result.data?.delete_attribution_forms_by_pk) {
         console.error(
           `Failed to delete attribution form ${props.attributionFormId}`,
@@ -124,13 +125,13 @@ function deleteAttributionAddForm() {
       } else {
         emit('deleted');
       }
-    },
-  );
+    });
 }
 
-function disableAttributionAddForm() {
-  executeDisableAttributionForm({ id: props.attributionFormId }).then(
-    (result) => {
+async function disableAttributionAddForm() {
+  await urqlDisableAttributionForm
+    .executeMutation({ id: props.attributionFormId })
+    .then((result) => {
       if (!result.data?.update_attribution_forms_by_pk) {
         console.error(
           `Failed to disable attribution form ${props.attributionFormId}`,
@@ -138,8 +139,7 @@ function disableAttributionAddForm() {
       } else {
         emit('deleted');
       }
-    },
-  );
+    });
 }
 
 const { t } = useI18n();

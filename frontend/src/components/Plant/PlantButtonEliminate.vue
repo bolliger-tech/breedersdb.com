@@ -57,11 +57,7 @@ const { t } = useI18n();
 
 const confirm = ref(false);
 
-const {
-  error,
-  executeMutation: eliminatePlant,
-  fetching,
-} = useMutation(
+const { error, fetching, ...urql } = useMutation(
   graphql(`
     mutation EliminatePlant($id: Int!) {
       update_plants_by_pk(
@@ -74,8 +70,8 @@ const {
   `),
 );
 
-function eliminate() {
-  eliminatePlant({ id: props.plantId }).then(() => {
+async function eliminate() {
+  await urql.executeMutation({ id: props.plantId }).then(() => {
     confirm.value = !!error.value;
   });
 }

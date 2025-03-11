@@ -10,9 +10,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import OrchardModalEdit, {
-  OrchardInsertInput,
-} from 'src/components/Orchard/OrchardModalEdit.vue';
+import type { OrchardInsertInput } from 'src/components/Orchard/OrchardModalEdit.vue';
+import OrchardModalEdit from 'src/components/Orchard/OrchardModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
 import { orchardFragment } from 'src/components/Orchard/orchardFragment';

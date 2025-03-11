@@ -53,11 +53,9 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import EntityInput, {
-  EntityInputInstance,
-} from 'src/components/Entity/Edit/EntityInput.vue';
+import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import { ref, computed } from 'vue';
-import { AnalyzeFilterBaseTables } from 'src/graphql';
+import type { AnalyzeFilterBaseTables } from 'src/graphql';
 import { useIsUnique } from 'src/composables/useIsUnique';
 
 export interface AnalyzeHeaderNameDialogProps {
@@ -70,7 +68,7 @@ const name = defineModel<string>('name', { required: true });
 const show = defineModel<boolean>('show', { required: true });
 const emit = defineEmits<{ save: [] }>();
 
-const inputRef = ref<EntityInputInstance | null>(null);
+const inputRef = ref<InstanceType<typeof EntityInput> | null>(null);
 const oldName = ref(name.value);
 
 const additionalWhere = computed(() => ({
@@ -83,8 +81,8 @@ const { isUnique, fetching: isUniqueFetching } = useIsUnique({
   additionalWhere,
 });
 
-function validateNameAndSave() {
-  Promise.resolve(inputRef.value?.validate()).then((valid) => {
+async function validateNameAndSave() {
+  await Promise.resolve(inputRef.value?.validate()).then((valid) => {
     if (valid) {
       show.value = false;
       emit('save');

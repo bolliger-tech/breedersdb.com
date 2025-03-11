@@ -22,13 +22,13 @@
       {{ lot.date_sowed ? d(lot.date_sowed, 'Ymd') : '' }}
     </EntityViewTableRow>
     <EntityViewTableRow
-      v-if="lot.numb_seeds_sowed !== null"
+      v-if="typeof lot.numb_seeds_sowed === 'number'"
       :label="t('lots.fields.numbSeedsSowed')"
     >
       {{ n(lot.numb_seeds_sowed) }}
     </EntityViewTableRow>
     <EntityViewTableRow
-      v-if="lot.numb_seedlings_grown !== null"
+      v-if="typeof lot.numb_seedlings_grown === 'number'"
       :label="t('lots.fields.numbSeedlingsGrown')"
     >
       {{ n(lot.numb_seedlings_grown) }}
@@ -40,7 +40,7 @@
       {{ lot.date_planted ? d(lot.date_planted, 'Ymd') : '' }}
     </EntityViewTableRow>
     <EntityViewTableRow
-      v-if="lot.numb_seedlings_planted !== null"
+      v-if="typeof lot.numb_seedlings_planted === 'number'"
       :label="t('lots.fields.numbSeedlingsPlanted')"
     >
       {{ n(lot.numb_seedlings_planted) }}
@@ -54,6 +54,7 @@
       </RouterLink>
     </EntityViewTableRow>
     <EntityTableViewTimestampRows
+      v-if="lot.created && lot.modified"
       :created="lot.created"
       :modified="lot.modified"
     />
@@ -69,10 +70,11 @@ import { type LotFragment } from './lotFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 export interface LotEntityTableProps {
-  lot: LotFragment;
-  dense?: boolean;
+  lot: PartialWithUndefined<LotFragment>;
+  dense?: boolean | undefined;
 }
 
 defineProps<LotEntityTableProps>();

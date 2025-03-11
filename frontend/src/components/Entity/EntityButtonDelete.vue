@@ -53,20 +53,19 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
-import BaseGraphqlError, {
-  BaseGraphqlErrorProps,
-} from '../Base/BaseGraphqlError.vue';
-import BaseMessage from '../Base/BaseMessage.vue';
+import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { singularize } from 'src/utils/stringUtils';
 import { type QBtnProps } from 'quasar';
+import type { CombinedError } from '@urql/core';
 
 export interface EntityButtonEliminateProps {
-  label?: string;
-  message?: string;
-  error?: BaseGraphqlErrorProps['error'];
-  fetching?: boolean;
-  disabled?: boolean;
-  size?: QBtnProps['size'];
+  label?: string | undefined;
+  message?: string | undefined;
+  error?: CombinedError | undefined;
+  fetching?: boolean | undefined;
+  disabled?: boolean | undefined;
+  size?: QBtnProps['size'] | undefined;
 }
 
 const props = defineProps<EntityButtonEliminateProps>();
@@ -87,6 +86,11 @@ const foreignKeyError = computed(() => {
   const [, currentTable, foreignTable] = props.error.message.match(
     regex,
   ) as string[];
+
+  if (!currentTable || !foreignTable) {
+    // this should never happen
+    throw new Error('Failed to parse foreign key error message');
+  }
 
   const currentEntity = singularize(
     currentTable.replace('plant_', '').replace('_', ' '),

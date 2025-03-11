@@ -6,9 +6,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import UserModalEdit, {
-  UserInsertInput,
-} from 'src/components/User/UserModalEdit.vue';
+import type { UserInsertInput } from 'src/components/User/UserModalEdit.vue';
+import UserModalEdit from 'src/components/User/UserModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
 import { userFragment } from 'src/components/User/userFragment';

@@ -45,17 +45,17 @@ import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import AnalyzeHeader from 'components/Analyze/Header/AnalyzeHeader.vue';
 import AnalyzeFilter from 'src/components/Analyze/Filter/AnalyzeFilter.vue';
 import AnalyzeResult from 'components/Analyze/Result/AnalyzeResult.vue';
-import { BaseTable, FilterNode } from './Filter/filterNode';
+import type { FilterNode } from './Filter/filterNode';
+import { BaseTable } from './Filter/filterNode';
 import { useAttributesAsColumns } from './ColumnDefinitions/useAttributesAsColumns';
-import { computed, onMounted, Ref, ref } from 'vue';
+import type { Ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useFilterColumns } from './ColumnDefinitions/useFilterColumns';
-import { QTableColumn } from 'quasar';
+import type { QTableColumn } from 'quasar';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import { useI18n } from 'src/composables/useI18n';
-import {
-  PrimitiveColumnValue,
-  formatResultColumnValue,
-} from 'src/utils/attributeUtils';
+import type { PrimitiveColumnValue } from 'src/utils/attributeUtils';
+import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { AttributionAggregation } from './Result/attributionAggregationTypes';
 import { useExplainFilters } from './useExplainFilters';

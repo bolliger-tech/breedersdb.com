@@ -56,7 +56,7 @@
         <PlantRowButtonDelete
           v-if="!plantRow.disabled"
           :plant-row-id="plantRow.id"
-          @deleted="() => router.push({ path: '/rows', query: route.query })"
+          @deleted="() => $router.push({ path: '/rows', query: route.query })"
         />
         <div v-else></div>
       </template>
@@ -109,8 +109,8 @@ const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/rows/${props.entityId}/edit`,
     query: route.query,
   });

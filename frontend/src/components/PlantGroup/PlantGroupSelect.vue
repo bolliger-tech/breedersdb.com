@@ -29,14 +29,14 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { Ref, computed, nextTick, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { graphql } from 'src/graphql';
-import { CombinedError, useQuery } from '@urql/vue';
-import EntitySelect, {
-  type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+import type { CombinedError } from '@urql/vue';
+import { useQuery } from '@urql/vue';
+import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 import PlantGroupSelectAutocreate from './PlantGroupSelectAutocreate.vue';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
 export interface PlantGroupSelectProps {
   required?: boolean;
@@ -45,10 +45,7 @@ export interface PlantGroupSelectProps {
 }
 const props = defineProps<PlantGroupSelectProps>();
 
-const plantGroupRef: Ref<EntitySelectInstance<{
-  id: number;
-  display_name: string;
-}> | null> = ref(null);
+const plantGroupRef = ref<ComponentExposed<typeof EntitySelect> | null>(null);
 
 defineExpose({
   validate: () => plantGroupRef.value?.validate(),

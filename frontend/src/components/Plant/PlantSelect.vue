@@ -34,19 +34,18 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ShallowRef, UnwrapRef, computed, nextTick, ref, watch } from 'vue';
+import type { ShallowRef, UnwrapRef } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { graphql } from 'src/graphql';
-import { UseQueryArgs, useQuery } from '@urql/vue';
-import EntitySelect, {
-  EntitySelectProps,
-  type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+import type { UseQueryArgs } from '@urql/vue';
+import { useQuery } from '@urql/vue';
+import type { EntitySelectProps } from '../Entity/Edit/EntitySelect.vue';
+import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
-import {
-  FilterSelectOptionsUpdateFn,
-  selectFirstOption,
-} from 'src/utils/selectOptionFilter';
+import type { FilterSelectOptionsUpdateFn } from 'src/utils/selectOptionFilter';
+import { selectFirstOption } from 'src/utils/selectOptionFilter';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
 export interface PlantSelectProps {
   required?: boolean;
@@ -57,10 +56,7 @@ export interface PlantSelectProps {
 }
 const props = defineProps<PlantSelectProps>();
 
-const plantRef = ref<EntitySelectInstance<{
-  id: number;
-  name: string;
-}> | null>(null);
+const plantRef = ref<ComponentExposed<typeof EntitySelect> | null>(null);
 
 defineExpose({
   validate: () => plantRef.value?.validate(),
@@ -105,7 +101,7 @@ const query = graphql(`
   }
 `);
 
-const { data, error, fetching, executeQuery } = useQuery({
+const { data, error, fetching, ...urql } = useQuery({
   query,
   variables,
   pause: !props.includeId,
@@ -138,7 +134,7 @@ async function filterOptions(
   }
   search.value = value.trim();
   await nextTick();
-  const result = await executeQuery();
+  const result = await urql.executeQuery();
   update(
     () => (filteredOptions.value = result.data?.value?.plants ?? []),
     (ref) => selectFirstOption(ref, value),

@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import { graphql } from 'src/graphql';
 import AttributionButtonDelete from 'src/components/Attribution/AttributionButtonDelete.vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -47,13 +47,11 @@ import { computed, nextTick, ref, watch } from 'vue';
 import AttributionInput, {
   type AttributionInputValue,
 } from 'src/components/Attribution/Input/AttributionInput.vue';
-import { AttributeFragment } from 'src/components/Attribute/attributeFragment';
+import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useMutation } from '@urql/vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
-import {
-  UploadProgress,
-  useImageUploader,
-} from 'src/composables/useImageUploader';
+import type { UploadProgress } from 'src/composables/useImageUploader';
+import { useImageUploader } from 'src/composables/useImageUploader';
 
 export type AttributionEditInput = Pick<
   AttributionsViewFragment,
@@ -88,7 +86,7 @@ const model = ref<AttributionInputValue>({
       : null,
   photo_note: props.attribution.photo_note,
 });
-const editedData = ref<AttributionInputValue | null>(null);
+const editedData = ref<AttributionInputValue>(undefined);
 
 const editMutation = graphql(`
   mutation UpdateAttributionValue(
@@ -108,9 +106,9 @@ const editMutation = graphql(`
 `);
 
 const {
-  executeMutation: executeEditMutation,
   fetching: savingEdit,
   error: saveError,
+  ...urqlEdit
 } = useMutation(editMutation);
 
 const { cancel } = useCancel({ path: '/attributions' });
@@ -139,13 +137,13 @@ async function save() {
     return;
   }
 
-  if (!attributionValueHasValue(model.value)) {
+  if (!model.value || !attributionValueHasValue(model.value)) {
     validationError.value = t('attributions.noValueOnEdit');
     return;
   }
   try {
     await saveEdit();
-  } catch (error) {
+  } catch {
     return;
   }
 
@@ -184,12 +182,13 @@ async function saveEdit() {
   } = editedData.value;
   const editedAttributionValue = {
     photo_note: typeof photo_note === 'string' ? photo_note : null,
-    integer_value,
-    float_value,
-    text_value: typeof photo_value === 'string' ? photo_value : text_value,
-    boolean_value,
-    date_value,
-    text_note,
+    integer_value: integer_value ?? null,
+    float_value: float_value ?? null,
+    text_value:
+      typeof photo_value === 'string' ? photo_value : (text_value ?? null),
+    boolean_value: boolean_value ?? null,
+    date_value: date_value ?? null,
+    text_note: text_note ?? null,
   };
   const photo = photo_value || photo_note;
 
@@ -217,7 +216,7 @@ async function saveEdit() {
     }
   }
 
-  return executeEditMutation(
+  return urqlEdit.executeMutation(
     {
       id: props.attribution.id,
       entity: editedAttributionValue,

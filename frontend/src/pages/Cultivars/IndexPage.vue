@@ -24,9 +24,12 @@
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
-import { UseQueryArgs, useQuery } from '@urql/vue';
-import { ResultOf, graphql } from 'src/graphql';
-import { computed, watch, ref, nextTick, UnwrapRef } from 'vue';
+import type { UseQueryArgs } from '@urql/vue';
+import { useQuery } from '@urql/vue';
+import type { ResultOf } from 'src/graphql';
+import { graphql } from 'src/graphql';
+import type { UnwrapRef } from 'vue';
+import { computed, watch, ref, nextTick } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
@@ -250,7 +253,7 @@ const queryCultivarId = computed(() =>
     : queryCultivarIdByPlantLabelId,
 );
 
-const { executeQuery } = await useQuery({
+const urql = await useQuery({
   query: queryCultivarId,
   variables: scannedLabelId,
   pause: true,
@@ -260,14 +263,14 @@ const { executeQuery } = await useQuery({
 async function onScannedQr(code: string) {
   scannedLabelId.value.labelId = code;
   await nextTick();
-  const { data } = await executeQuery();
+  const { data } = await urql.executeQuery();
   const id =
     data.value?.plant_groups?.[0]?.cultivar_id ||
     (data.value as unknown as ResultOf<typeof queryCultivarIdByPlantLabelId>)
       ?.plants?.[0]?.plant_group.cultivar_id;
 
   if (id) {
-    router.push({ path: `/cultivars/${id}` });
+    await router.push({ path: `/cultivars/${id}` });
   } else {
     search.value = code;
   }

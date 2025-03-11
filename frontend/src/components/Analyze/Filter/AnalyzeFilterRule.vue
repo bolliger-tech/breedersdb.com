@@ -78,14 +78,15 @@
 
 <script lang="ts" setup>
 import { computed, watch } from 'vue';
-import { FilterNode, FilterConjunction } from './filterNode';
+import type { FilterNode } from './filterNode';
+import { FilterConjunction } from './filterNode';
 import AnalyzeFilterRuleTerm from './AnalyzeFilterRuleTerm.vue';
 import AnalyzeFilterRuleColumn from './AnalyzeFilterRuleColumn.vue';
 import AnalyzeFilterRuleOperator from './AnalyzeFilterRuleOperator.vue';
 import AnalyzeFilterRuleExplainer from './AnalyzeFilterRuleExplainer.vue';
 import AnalyzeFilterRuleNoAttributionsPredicate from './AnalyzeFilterRuleNoAttributionsPredicate.vue';
-import { FilterRuleColumn } from './filterRuleColumn';
-import { FilterRuleOperator } from './filterRuleOperator';
+import type { FilterRuleColumn } from './filterRuleColumn';
+import type { FilterRuleOperator } from './filterRuleOperator';
 import { FilterRuleTerm } from './filterRuleTerm';
 import { createGetFilterRuleOperators } from './createFilterRuleOperators';
 import { useExplainFilters } from '../useExplainFilters';

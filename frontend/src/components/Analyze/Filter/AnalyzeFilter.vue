@@ -24,8 +24,9 @@ import { useI18n } from 'src/composables/useI18n';
 import AnalyzeFilterRootNode from './AnalyzeFilterRootNode.vue';
 import { computed } from 'vue';
 import { useEntityName } from 'src/composables/useEntityName';
-import { BaseTable, FilterNode } from './filterNode';
-import { FilterRuleColumn } from './filterRuleColumn';
+import type { FilterNode } from './filterNode';
+import { BaseTable } from './filterNode';
+import type { FilterRuleColumn } from './filterRuleColumn';
 
 export interface AnalyzeFilterProps {
   baseTable: BaseTable;

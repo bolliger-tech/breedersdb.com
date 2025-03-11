@@ -80,7 +80,7 @@
           :mother-plant-id="motherPlant.id"
           @deleted="
             () =>
-              router.push({
+              $router.push({
                 path: '/mother-plants',
                 query: route.query,
               })
@@ -140,8 +140,8 @@ const { t, d } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/mother-plants/${props.entityId}/edit`,
     query: route.query,
   });

@@ -68,7 +68,8 @@ import { QItem } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { computed, ref, nextTick, watch, onBeforeUnmount } from 'vue';
 import { graphql } from 'src/graphql';
-import { CombinedError, useMutation, useQuery } from '@urql/vue';
+import type { CombinedError } from '@urql/vue';
+import { useMutation, useQuery } from '@urql/vue';
 
 export interface PlantGroupSelectAutocreateProps {
   searchValue: string;
@@ -145,7 +146,7 @@ const {
   data: queryData,
   error: fetchError,
   fetching: fetching,
-  executeQuery: executeQuery,
+  ...urqlQuery
 } = useQuery({
   query: query,
   variables: queryVars,
@@ -173,7 +174,7 @@ async function fetchPropositions() {
   };
 
   await nextTick();
-  executeQuery();
+  urqlQuery.executeQuery();
 }
 
 const propositions = computed(() => {
@@ -278,7 +279,12 @@ function focusNext() {
     selectedItem.value = (selectedItem.value + 1) % propositions.value.length;
   }
 
-  const label = propositions.value[selectedItem.value].label;
+  const label = propositions.value[selectedItem.value]?.label;
+
+  if (!label) {
+    return;
+  }
+
   const item = document.getElementById(
     `plant-group-select-${label.existing}${label.new}`,
   );
@@ -317,15 +323,15 @@ const insertPlantGroupMutation = graphql(`
 `);
 
 const {
-  executeMutation: executeCultivarMutation,
   fetching: savingCultivar,
   error: saveCultivarError,
+  ...urqlCultivarMutation
 } = useMutation(insertCultivarMutation);
 
 const {
-  executeMutation: executePlantGroupMutation,
   fetching: savingPlantGropup,
   error: savePlantGropupError,
+  ...urqlPlantGroupMutation
 } = useMutation(insertPlantGroupMutation);
 
 watch([saveCultivarError, savePlantGropupError], () => {
@@ -339,12 +345,12 @@ watch([savingCultivar, savingPlantGropup], () => {
 async function select(proposition: NonNullable<typeof propositions.value>[0]) {
   const resp =
     'cultivar' in proposition.entity
-      ? await executeCultivarMutation({
+      ? await urqlCultivarMutation.executeMutation({
           lotId: proposition.entity.cultivar.lot_id,
           cultivarNameSegment: proposition.entity.cultivar.name_segment,
           groupNameSegment: proposition.entity.cultivar.group.name_segment,
         })
-      : await executePlantGroupMutation({
+      : await urqlPlantGroupMutation.executeMutation({
           cultivarId: proposition.entity.group.cultivar_id,
           nameSegment: proposition.entity.group.name_segment,
         });
@@ -354,25 +360,27 @@ async function select(proposition: NonNullable<typeof propositions.value>[0]) {
     return;
   }
 
+  const respString = JSON.stringify(resp, null, 2);
+
   if (!resp.data) {
-    console.error(`Unexpected result from backend: ${resp}`);
-    throw new Error(`Unexpected result from backend: ${resp}`);
+    console.error(`Unexpected result from backend: ${respString}`);
+    throw new Error(`Unexpected result from backend: ${respString}`);
   }
 
   const groupId =
     'insert_plant_groups_one' in resp.data
       ? resp.data.insert_plant_groups_one?.id
-      : resp.data.insert_cultivars_one?.plant_groups[0].id;
+      : resp.data.insert_cultivars_one?.plant_groups[0]?.id;
 
   if (typeof groupId === 'undefined') {
-    console.error(`Unexpected result from backend: ${resp}`);
-    throw new Error(`Unexpected result from backend: ${resp}`);
+    console.error(`Unexpected result from backend: ${respString}`);
+    throw new Error(`Unexpected result from backend: ${respString}`);
   }
 
   emit('select', groupId);
 }
 
-function selectFirst() {
+async function selectFirst() {
   if (!propositions.value) {
     return;
   }
@@ -382,7 +390,11 @@ function selectFirst() {
       ? propositions.value[selectedItem.value]
       : propositions.value[0];
 
-  select(proposition);
+  if (!proposition) {
+    return;
+  }
+
+  await select(proposition);
 }
 
 onBeforeUnmount(() => {

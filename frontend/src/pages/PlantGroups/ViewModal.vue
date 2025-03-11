@@ -40,7 +40,7 @@
         <PlantGroupButtonDelete
           v-if="!plantGroup.disabled"
           :plant-group-id="plantGroup.id"
-          @deleted="() => router.push({ path: '/groups', query: route.query })"
+          @deleted="() => $router.push({ path: '/groups', query: route.query })"
         />
         <div v-else></div>
       </template>
@@ -120,8 +120,8 @@ const print = computed(
 
 const route = useRoute();
 const router = useRouter();
-function edit() {
-  router.push({
+async function edit() {
+  await router.push({
     path: `/groups/${props.entityId}/edit`,
     query: route.query,
   });

@@ -13,7 +13,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { FilterRule } from './filterRule';
+import type { FilterRule } from './filterRule';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityName } from 'src/composables/useEntityName';
 import { ColumnTypes } from 'src/utils/columnTypes';
@@ -21,7 +21,7 @@ import { BaseTable } from './filterNode';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 
 interface AnalyzeFilterRuleExplainerProps {
-  rule?: FilterRule;
+  rule?: FilterRule | undefined;
   baseTable: BaseTable;
 }
 
@@ -47,19 +47,19 @@ const term = computed(() => {
     case ColumnTypes.Date:
       try {
         return new Date(props.rule?.term?.value as string).toLocaleDateString();
-      } catch (e) {
+      } catch {
         return '';
       }
     case ColumnTypes.DateTime:
       try {
         return new Date(props.rule?.term?.value as string).toLocaleString();
-      } catch (e) {
+      } catch {
         return '';
       }
     case ColumnTypes.Time:
       try {
         return new Date(props.rule?.term?.value as string).toLocaleTimeString();
-      } catch (e) {
+      } catch {
         return '';
       }
     default:

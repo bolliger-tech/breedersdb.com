@@ -10,8 +10,8 @@ import type { InjectionKey } from 'vue';
 import { provide } from 'vue';
 
 export interface EntityViewTableProps {
-  dense?: boolean;
-  noHover?: boolean;
+  dense?: boolean | undefined;
+  noHover?: boolean | undefined;
 }
 
 export const entityViewTableProps = Symbol() as InjectionKey<

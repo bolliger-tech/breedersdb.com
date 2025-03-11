@@ -22,11 +22,10 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import EntitySelect, {
-  EntitySelectProps,
-  type EntitySelectInstance,
-} from '../Entity/Edit/EntitySelect.vue';
+import type { EntitySelectProps } from '../Entity/Edit/EntitySelect.vue';
+import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
 export type CultivarSelectCultivar = typeof cultivar.value;
 
@@ -43,10 +42,7 @@ export interface CultivarSelectProps {
 }
 const props = defineProps<CultivarSelectProps>();
 
-const cultivarRef = ref<EntitySelectInstance<{
-  id: number;
-  display_name: string;
-}> | null>(null);
+const cultivarRef = ref<ComponentExposed<typeof EntitySelect> | null>(null);
 
 defineExpose({
   validate: () => cultivarRef.value?.validate(),

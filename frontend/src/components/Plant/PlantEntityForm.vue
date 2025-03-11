@@ -111,13 +111,14 @@ import GraftingSelect from 'src/components/Grafting/GraftingSelect.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import { PlantEditInput, PlantInsertInput } from './PlantModalEdit.vue';
+import type { PlantModalEditProps } from './PlantModalEdit.vue';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import { useValidationRule } from 'src/composables/useValidationRule';
 
 export interface PlantEntityFormProps {
-  plant: PlantInsertInput | PlantEditInput;
+  plant: PlantModalEditProps['plant'];
 }
 
 const props = defineProps<PlantEntityFormProps>();

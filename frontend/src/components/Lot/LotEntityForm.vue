@@ -126,8 +126,9 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import { LotEditInput, LotInsertInput } from './LotModalEdit.vue';
-import { InputRef, useEntityForm } from 'src/composables/useEntityForm';
+import type { LotModalEditProps } from './LotModalEdit.vue';
+import type { InputRef } from 'src/composables/useEntityForm';
+import { useEntityForm } from 'src/composables/useEntityForm';
 import CrossingSelect from '../Crossing/CrossingSelect.vue';
 import OrchardSelect from '../Orchard/OrchardSelect.vue';
 import LotNameInputs from './LotNameInputs.vue';
@@ -135,7 +136,7 @@ import { useValidationRule } from 'src/composables/useValidationRule';
 import { MAX_INT_PG } from 'src/utils/constants';
 
 export interface LotEntityFormProps {
-  lot: LotInsertInput | LotEditInput;
+  lot: LotModalEditProps['lot'];
   isVariety: boolean;
 }
 

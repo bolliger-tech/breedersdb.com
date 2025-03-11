@@ -6,9 +6,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import PlantModalEdit, {
-  PlantInsertInput,
-} from 'src/components/Plant/PlantModalEdit.vue';
+import type { PlantInsertInput } from 'src/components/Plant/PlantModalEdit.vue';
+import PlantModalEdit from 'src/components/Plant/PlantModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
@@ -56,6 +55,8 @@ const plant = computed(() => {
     if (!data.value?.plants_by_pk) {
       return;
     }
+    if (!data.value.plants_by_pk.plant_group)
+      throw new Error('Plant group is required');
     return {
       ...emptyPlant,
       plant_group: data.value.plants_by_pk.plant_group,

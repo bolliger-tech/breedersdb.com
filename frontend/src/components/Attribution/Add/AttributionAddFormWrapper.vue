@@ -68,43 +68,32 @@ import {
   attributionFormFragment,
   type AttributionFormFragment,
 } from 'src/components/AttributionForm/attributionFormFragment';
-import AttributionAddForm, {
-  type AttributionAddFormProps,
-} from 'src/components/Attribution/Add/AttributionAddForm.vue';
-import {
-  plantFragment,
-  PlantFragmentWithSegments,
-} from 'src/components/Plant/plantFragment';
-import {
-  PlantGroupFragment,
-  plantGroupFragment,
-} from 'src/components/PlantGroup/plantGroupFragment';
-import {
-  CultivarFragment,
-  cultivarFragment,
-} from 'src/components/Cultivar/cultivarFragment';
-import { LotFragment, lotFragment } from 'src/components/Lot/lotFragment';
+import AttributionAddForm from 'src/components/Attribution/Add/AttributionAddForm.vue';
+import type { PlantFragmentWithSegments } from 'src/components/Plant/plantFragment';
+import { plantFragment } from 'src/components/Plant/plantFragment';
+import type { PlantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
+import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
+import type { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
+import type { LotFragment } from 'src/components/Lot/lotFragment';
+import { lotFragment } from 'src/components/Lot/lotFragment';
 import { useQuery } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import {
   attributeFragment,
   type AttributeFragment,
 } from 'src/components/Attribute/attributeFragment';
-import { AttributionInputValue } from '../Input/AttributionInput.vue';
+import type { AttributionInputValue } from '../Input/AttributionInput.vue';
+import type { EntityPreviewEntityMaybeNoData } from './attributionAddEntityPreviewTypes';
 
 export interface AttributionAddFormWrapperProps {
-  entity:
-    | AttributionAddFormProps['entity']
-    | {
-        data: null;
-        type: AttributionAddFormProps['entity']['type'];
-      };
+  entity: EntityPreviewEntityMaybeNoData;
   form: AttributionFormFragment | null;
   date: string;
   author: string;
   repeatTarget: number;
   edit: (id: number) => void;
-  editId?: number;
+  editId?: number | undefined;
 }
 
 const props = defineProps<AttributionAddFormWrapperProps>();
@@ -292,8 +281,8 @@ const attributionValues = computed<{
 
         const idx = Object.values(acc).filter(
           (v) =>
-            v.attribute_id === value.attribute_id &&
-            v.exceptional_attribution === value.exceptional_attribution,
+            v?.attribute_id === value.attribute_id &&
+            v?.exceptional_attribution === value.exceptional_attribution,
         ).length;
 
         // should never happen as formFields depends on editData

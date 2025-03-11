@@ -61,7 +61,7 @@ function attributionValueToXlsx(attribution: AnalyzeAttributionsViewFields) {
       : valueKey === 'date_value'
         ? ({
             t: 'd',
-            v: new Date(attribution[valueKey] as string),
+            v: new Date(attribution[valueKey]),
             z: XLSX_FORMATS.date,
           } as CellObject)
         : valueKey === 'boolean_value'

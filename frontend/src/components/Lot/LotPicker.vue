@@ -20,7 +20,8 @@ import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
 import { computed } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
-import { LotFragment, lotFragment } from './lotFragment';
+import type { LotFragment } from './lotFragment';
+import { lotFragment } from './lotFragment';
 import { onMounted } from 'vue';
 import EntityPicker from 'src/components/Entity/EntityPicker.vue';
 
@@ -36,7 +37,7 @@ defineExpose({
   loadEntity: async () => {
     inputRef.value?.emitInputs();
     await nextTick();
-    loadLot();
+    await loadLot();
   },
   focus: () => {
     inputRef.value?.focus();
@@ -168,10 +169,10 @@ const variables = computed(() =>
 );
 
 const {
-  executeQuery,
   fetching,
   data,
   error: fetchError,
+  ...urql
 } = await useQuery({
   query,
   variables,
@@ -183,13 +184,13 @@ watch(fetching, (f) => emit('fetching', f));
 onBeforeUnmount(() => emit('fetching', false));
 
 watch(data, (d) => {
-  if (d?.lots.length) {
+  if (d?.lots[0]) {
     emit('lot', d.lots[0]);
   }
 });
 
 async function loadLot() {
   await nextTick(); // ensure the useQuery({variables}) is updated
-  await executeQuery();
+  await urql.executeQuery();
 }
 </script>

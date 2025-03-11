@@ -22,10 +22,10 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { QTableSlots } from 'quasar';
+import type { QTableSlots } from 'quasar';
 import AnalyzeResultTableCellAttributionValue from './AnalyzeResultTableCellAttributionValue.vue';
 import AnalyzeResultTableCellAttributionValueAggregated from './AnalyzeResultTableCellAttributionValueAggregated.vue';
-import { AnalyzeAttributionsViewFields } from './filterToQuery';
+import type { AnalyzeAttributionsViewFields } from './filterToQuery';
 import { AttributionAggregation } from './attributionAggregationTypes';
 import { n2semicolon } from 'src/utils/stringUtils';
 

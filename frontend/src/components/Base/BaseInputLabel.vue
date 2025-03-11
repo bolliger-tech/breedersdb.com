@@ -27,8 +27,8 @@ import { type Slot } from 'vue';
 // incorrect workaround.
 
 export interface BaseInputLabelProps {
-  label?: string;
-  explainer?: string;
+  label?: string | undefined;
+  explainer?: string | undefined;
 }
 
 defineProps<BaseInputLabelProps>();

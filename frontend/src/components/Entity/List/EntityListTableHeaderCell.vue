@@ -67,12 +67,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { QTableSlots } from 'quasar';
+import type { QTableSlots } from 'quasar';
 
 export interface EntityListTableHeaderCellProps {
   cellProps: Parameters<QTableSlots['header-cell']>[0];
   possibleDropTarget: boolean;
-  height?: string;
+  height?: string | undefined;
 }
 
 const props = withDefaults(defineProps<EntityListTableHeaderCellProps>(), {

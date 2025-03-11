@@ -41,11 +41,12 @@
 import { QItem, useQuasar } from 'quasar';
 import NavLevel0ItemIcon from './NavLevel0ItemIcon.vue';
 import NavLevel1 from './NavLevel1.vue';
-import { NavItem, useNavItem } from './useNavItem';
+import type { NavItem } from './useNavItem';
+import { useNavItem } from './useNavItem';
 import { ref } from 'vue';
 import { computed } from 'vue';
 
-export interface NavLevel0ItemProps extends NavItem {}
+export type NavLevel0ItemProps = NavItem;
 
 const emit = defineEmits<{ open: [] }>();
 

@@ -18,7 +18,6 @@
 <script setup lang="ts">
 import CultivarNameSegmentInput from './CultivarNameSegmentInput.vue';
 import CultivarNameOverrideInput from './CultivarNameOverrideInput.vue';
-import { InputRef } from 'src/composables/useEntityForm';
 import { focusInView } from 'src/utils/focusInView';
 import { computed, ref, watch } from 'vue';
 import { useQuery } from '@urql/vue';
@@ -35,8 +34,12 @@ const nameOverride = defineModel<string | null>('nameOverride', {
   required: true,
 });
 
-const nameSegmentRef = ref<InputRef | null>(null);
-const nameOverrideRef = ref<InputRef | null>(null);
+const nameSegmentRef = ref<InstanceType<
+  typeof CultivarNameSegmentInput
+> | null>(null);
+const nameOverrideRef = ref<InstanceType<
+  typeof CultivarNameOverrideInput
+> | null>(null);
 defineExpose({
   validate: async () =>
     ((await nameSegmentRef.value?.validate()) ?? true) &&
@@ -44,10 +47,10 @@ defineExpose({
   focus: async () => {
     const nameOverrideValid = (await nameOverrideRef.value?.validate()) || true;
     if (!nameOverrideValid) {
-      nameOverrideRef.value && focusInView(nameOverrideRef.value);
+      if (nameOverrideRef.value) focusInView(nameOverrideRef.value);
       return;
     }
-    nameSegmentRef.value && focusInView(nameSegmentRef.value);
+    if (nameSegmentRef.value) focusInView(nameSegmentRef.value);
   },
 });
 
@@ -60,7 +63,7 @@ const query = graphql(`
   }
 `);
 const variables = computed(() => ({ id: props.lotId }));
-const { data, error, fetching, resume, pause } = useQuery({
+const { data, error, fetching, ...urql } = useQuery({
   query: query,
   variables: variables,
   pause: !props.lotId,
@@ -71,9 +74,9 @@ watch(
   () => props.lotId,
   (newValue) => {
     if (newValue) {
-      resume();
+      urql.resume();
     } else {
-      pause();
+      urql.pause();
       data.value = undefined;
     }
   },

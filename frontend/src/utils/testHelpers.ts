@@ -120,12 +120,11 @@ function waitUntilMounted(wrapper: VueWrapper, Component: Component) {
       wrapper.findComponent(Component).vm; // will throw if not mounted
       resolve();
     } catch {
-      // ignore
+      setTimeout(
+        () => void waitUntilMounted(wrapper, Component).then(resolve),
+        10,
+      );
     }
-    setTimeout(
-      () => void waitUntilMounted(wrapper, Component).then(resolve),
-      10,
-    );
   });
 }
 

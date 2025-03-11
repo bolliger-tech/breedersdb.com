@@ -15,10 +15,12 @@ export type Unpack<T> = {
  * Set all values of type `undefined` to `null`
  *
  * Examples:
- * { a: undefined } -> { a: null }
- * { a?: undefined } -> { a?: null }
- * { a?: null | undefined } -> { a?: null }
- * { a?: string | null | undefined } -> { a?: string | null }
+ * ```
+ * - { a: undefined } -> { a: null }
+ * - { a?: undefined } -> { a?: null }
+ * - { a?: null | undefined } -> { a?: null }
+ * - { a?: string | null | undefined } -> { a?: string | null }
+ * ```
  */
 export type UndefinedToNull<T> = {
   [P in keyof T]: T[P] extends undefined ? null : NonNullable<T[P]> | null;
@@ -28,7 +30,9 @@ export type UndefinedToNull<T> = {
  * Like `Partial`, but also allows `undefined` values
  *
  * Example:
+ * ```
  * { a: 1 } -> { a?: 1 | undefined }
+ * ```
  */
 export type PartialWithUndefined<T> = {
   [P in keyof T]?: T[P] | undefined;

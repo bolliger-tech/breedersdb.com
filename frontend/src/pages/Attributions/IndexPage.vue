@@ -449,7 +449,7 @@ function transformData({
         ...rest
       } = attribution;
       return {
-        // allow colums to access all remaining fields
+        // allow columns to access all remaining fields
         ...rest,
         // special column
         entity: getAttributionObjectName(attribution),

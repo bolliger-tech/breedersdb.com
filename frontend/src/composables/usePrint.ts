@@ -16,6 +16,9 @@ export function usePrint() {
       encodeURIComponent('<html><head>') +
       '%3Cscript%3E' + // script tag. vue parser fails if not encoded here
       encodeURIComponent(
+        // !!! DO NOT CHANGE !!!
+        // or you will have to adapt the CSP hash
+        // see dev-nginx.conf AND deployment repo
         'window.onload = () => { console.info("print", document.body.textContent); window.print(); }',
       ) +
       '%3C%2Fscript%3E' + // /script tag. vue parser fails if not encoded here

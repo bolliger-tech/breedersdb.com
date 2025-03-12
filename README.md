@@ -10,13 +10,13 @@ The application follows a client-server pattern. The [`frontend`](/frontend) (cl
 
 ### URL Schema
 
-| Service        | URL               | Description                                 |
-| -------------- | ----------------- | ------------------------------------------- |
-| Hasura         | `/api/console`    | The backend admin console                   |
-| Hasura         | `/api/v1/graphql` | The GraphQL API                             |
-| Cloud Function | `/api/internal`   | Not publicly exposed. Used by Hasura (auth) |
-| Cloud Function | `/api/assets`     | Public. Serves assets                       |
-| Frontend       | `/*`              | The web application                         |
+| Service        | URL                      | Description                                 |
+| -------------- | ------------------------ | ------------------------------------------- |
+| Hasura         | `/api/hasura/console`    | The backend admin console                   |
+| Hasura         | `/api/hasura/v1/graphql` | The GraphQL API                             |
+| Cloud Function | `/api/internal`          | Not publicly exposed. Used by Hasura (auth) |
+| Cloud Function | `/api/assets`            | Public. Serves assets                       |
+| Frontend       | `/*`                     | The web application                         |
 
 ## Installation
 

@@ -6,6 +6,7 @@
 import { defineConfig } from '#q-app/wrappers';
 import { fileURLToPath } from 'node:url';
 import { hslToRgb } from './scripts/hsl-to-rgb';
+import injectColorsFromEnv from './scripts/vite-plugin-colors-from-env';
 
 export default defineConfig((ctx) => {
   return {
@@ -96,6 +97,7 @@ export default defineConfig((ctx) => {
           },
           { server: false },
         ],
+        injectColorsFromEnv(),
       ],
     },
 

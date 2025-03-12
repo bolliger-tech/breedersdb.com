@@ -11,20 +11,7 @@
       name="viewport"
       content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>"
     />
-    <!-- env variable replacement: see https://vite.dev/guide/env-and-mode#html-env-replacement -->
-    <style>
-      :root {
-        --bdb-primary-color-hue: %VITE_PRIMARY_COLOR_HUE% !important;
-        --bdb-primary-color-saturation: %VITE_PRIMARY_COLOR_SATURATION%% !important;
-        --bdb-primary-color-lightness: %VITE_PRIMARY_COLOR_LIGHTNESS%% !important;
-        --bdb-secondary-color-hue: %VITE_SECONDARY_COLOR_HUE% !important;
-        --bdb-secondary-color-saturation: %VITE_SECONDARY_COLOR_SATURATION%% !important;
-        --bdb-secondary-color-lightness: %VITE_SECONDARY_COLOR_LIGHTNESS%% !important;
-        --bdb-accent-color-hue: %VITE_ACCENT_COLOR_HUE% !important;
-        --bdb-accent-color-saturation: %VITE_ACCENT_COLOR_SATURATION%% !important;
-        --bdb-accent-color-lightness: %VITE_ACCENT_COLOR_LIGHTNESS%% !important;
-      }
-    </style>
+
     <link
       rel="icon"
       type="image/png"

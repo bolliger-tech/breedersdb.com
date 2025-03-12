@@ -28,7 +28,7 @@
   //
   // CUSTOMIZE THE COLORS via .env
 
-  // Overridden in frontend/index.html with values from frontend/.env
+  // Overridden in app.scss with values from frontend/.env
   --bdb-primary-color-hue: 189;
   --bdb-secondary-color-hue: calc(var(--bdb-primary-color-hue) + 180 + 19);
   --bdb-accent-color-hue: calc(var(--bdb-primary-color-hue) - 180 - 19);
@@ -148,45 +148,37 @@ $h6: (
   weight: 900
 );
 $subtitle1: (
-  size:
-    map-get(
+  size: map-get(
       $map: $h5,
       $key: 'size',
     ),
-  line-height:
-    map-get(
+  line-height: map-get(
       $map: $h5,
       $key: 'line-height',
     ),
-  letter-spacing:
-    map-get(
+  letter-spacing: map-get(
       $map: $h5,
       $key: 'letter-spacing',
     ),
-  weight:
-    map-get(
+  weight: map-get(
       $map: $h5,
       $key: 'weight',
     ),
 );
 $subtitle2: (
-  size:
-    map-get(
+  size: map-get(
       $map: $h6,
       $key: 'size',
     ),
-  line-height:
-    map-get(
+  line-height: map-get(
       $map: $h6,
       $key: 'line-height',
     ),
-  letter-spacing:
-    map-get(
+  letter-spacing: map-get(
       $map: $h6,
       $key: 'letter-spacing',
     ),
-  weight:
-    map-get(
+  weight: map-get(
       $map: $h6,
       $key: 'weight',
     ),

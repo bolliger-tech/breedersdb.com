@@ -30,7 +30,7 @@ import { useInterval } from 'quasar';
 
 const { t } = useI18n();
 const userAgent = navigator.userAgent;
-const version = __BDB_VERSION__;
+const version = import.meta.env.VITE_BDB_VERSION;
 const user = useMe().value?.email;
 const origin = window.location.origin;
 const now = ref(new Date().toLocaleString());

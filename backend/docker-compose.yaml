@@ -47,48 +47,9 @@ services:
       - hasura
     extra_hosts:
       - 'host.docker.internal:host-gateway'
-    command: >
-      sh -c 'echo "
-      events {
-          worker_connections 1024;
-      }
-
-      http {
-          client_max_body_size 32m;
-
-          server {
-              listen 80;
-              server_name localhost;
-
-              # trailing slash in proxy_pass removes url of location
-
-              # hasura
-              location /api/hasura/ {
-                  proxy_pass http://hasura:8080/;
-                  proxy_set_header Host localhost;
-              }
-              location = /api/hasura {
-                  return 301 /api/hasura/console;
-              }
-
-              # cloud-function
-              location /api/internal/ {
-                  proxy_set_header Host localhost;
-                  proxy_pass http://cloud-function:8090/;
-              }
-              location /api/assets/ {
-                  proxy_set_header Host localhost;
-                  proxy_pass http://cloud-function:8090/;
-              }
-
-              # frontend
-              location / {
-                  proxy_set_header Host localhost;
-                  proxy_pass http://host.docker.internal:9200/;
-              }
-          }
-      }
-      " > /etc/nginx/nginx.conf && nginx -g "daemon off;"'
+    volumes:
+      - ./dev-nginx.conf:/etc/nginx/nginx.conf
+    command: nginx -g "daemon off;"
 
 volumes:
   db_data:

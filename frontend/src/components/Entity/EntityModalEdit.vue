@@ -15,6 +15,7 @@
     :save-then-print="!!makeLabel"
     v-on="{
       save: createSaveThen(close),
+      keydown: onKeydown,
       cancel,
       resetErrors,
       ...(makeLabel && { saveThenPrint: createSaveThen(printLabel, close) }),
@@ -297,6 +298,13 @@ function createSaveThen(...actions: (() => Promise<void> | void)[]) {
       // promises are just used to chain the actions
     }
   };
+}
+
+function onKeydown(event: KeyboardEvent) {
+  // prevent arrow keys from navigating the page when editing
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    event.stopPropagation();
+  }
 }
 
 const { t } = useI18n();

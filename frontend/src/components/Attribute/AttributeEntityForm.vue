@@ -111,7 +111,6 @@ const emits = defineEmits<{
 // for defineExpose() see below
 
 const initialData = {
-  id: 'id' in props.attribute ? props.attribute.id : undefined,
   name: props.attribute.name,
   validation_rule: props.attribute.validation_rule,
   data_type: props.attribute.data_type,

@@ -32,7 +32,10 @@ export default function injectColorsFromEnv() {
           `:root {${cssVars.join('')}}`,
         );
       }
-      return code;
+      return {
+        code,
+        map: null, // quasar doesn't generate a source map for app.scss anyhow…
+      };
     },
   };
 }

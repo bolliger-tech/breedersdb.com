@@ -1,5 +1,5 @@
 <template>
-  <BaseInputLabel ref="label" :label="label" :explainer="explainer">
+  <BaseInputLabel ref="labelRef" :label="label" :explainer="explainer">
     <template v-if="$slots.explainer" #explainer>
       <slot name="explainer"></slot>
     </template>
@@ -168,6 +168,7 @@ function filterOptions(
 
 const selectRef = ref<QSelect | null>(null);
 const labelRef = ref<InstanceType<typeof BaseInputLabel> | null>(null);
+const labelEl = computed(() => labelRef.value?.$el);
 defineExpose({
   validate: () => selectRef.value?.validate(),
   focus: () => selectRef.value && focusInView(selectRef.value),
@@ -176,7 +177,7 @@ defineExpose({
     selectRef.value?.updateInputValue(value, noFilter),
   hidePopup: () => selectRef.value?.hidePopup(),
   blur: () => selectRef.value?.blur(),
-  $el: labelRef.value?.$el,
+  $el: labelEl,
 });
 
 const { inputBgColor } = useInputBackground();

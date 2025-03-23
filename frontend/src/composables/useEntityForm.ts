@@ -1,4 +1,5 @@
 import { computed, type Ref, type VNodeRef } from 'vue';
+import { is } from 'quasar';
 
 export type InputRef = VNodeRef & {
   validate: () => boolean | Promise<boolean> | undefined;
@@ -15,11 +16,7 @@ export function useEntityForm<T extends Record<string, unknown>>({
   data: Ref<T>;
   initialData: T;
 }) {
-  const isDirty = computed(() => {
-    return (Object.keys(initialData) as (keyof typeof initialData)[]).some(
-      (key) => data.value[key] !== initialData[key],
-    );
-  });
+  const isDirty = computed(() => !is.deepEqual(data.value, initialData));
 
   async function validate() {
     const validated = await Promise.all(

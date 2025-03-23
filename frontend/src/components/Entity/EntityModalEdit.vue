@@ -294,8 +294,11 @@ function createSaveThen(...actions: (() => Promise<void> | void)[]) {
         await action();
       }
     } catch (e) {
-      // ignore. errors must be handled in the actions
-      // promises are just used to chain the actions
+      // errors must be handled in the actions
+      // promises are just used to chain the actions.
+      // but report any unhandled errors
+      console.error('Failed to save and execute actions', e);
+      captureException(e);
     }
   };
 }

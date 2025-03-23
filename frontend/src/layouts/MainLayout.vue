@@ -15,24 +15,26 @@
       </q-pull-to-refresh>
     </q-page-container>
 
-    <q-drawer
-      v-if="$q.screen.gt.sm"
-      side="left"
-      persitent
-      no-swipe-open
-      no-swipe-close
-      show-if-above
-      :width="100"
-      class="bg-primary"
-      :model-value="true"
-      behavior="desktop"
-    >
-      <MainNav />
-    </q-drawer>
+    <template v-if="!noNav">
+      <q-drawer
+        v-if="$q.screen.gt.sm"
+        side="left"
+        persitent
+        no-swipe-open
+        no-swipe-close
+        show-if-above
+        :width="100"
+        class="bg-primary"
+        :model-value="true"
+        behavior="desktop"
+      >
+        <MainNav />
+      </q-drawer>
 
-    <q-footer v-else>
-      <MainNav />
-    </q-footer>
+      <q-footer v-else>
+        <MainNav />
+      </q-footer>
+    </template>
   </q-layout>
 </template>
 
@@ -40,8 +42,12 @@
 import BaseSuspense from 'components/Base/BaseSuspense/BaseSuspense.vue';
 import BaseSpinner from 'components/Base/BaseSpinner.vue';
 import MainNav from 'components/Layout/TheNav/TheNav.vue';
-import { useQuasar } from 'quasar';
-const $q = useQuasar();
+
+interface MainLayoutProps {
+  noNav?: boolean;
+}
+
+defineProps<MainLayoutProps>();
 
 function reloadPage() {
   window.location.reload();

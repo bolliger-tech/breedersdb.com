@@ -166,9 +166,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .form {
-  width: 100%;
-  min-width: 200px;
-  max-width: 400px;
+  width: clamp(200px, calc(100svw - 32px), 400px);
 }
 .graphql-error {
   max-width: 100%;

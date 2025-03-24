@@ -15,6 +15,7 @@
     :save-then-print="!!makeLabel"
     v-on="{
       save: createSaveThen(close),
+      keydown: onKeydown,
       cancel,
       resetErrors,
       ...(makeLabel && { saveThenPrint: createSaveThen(printLabel, close) }),
@@ -293,10 +294,20 @@ function createSaveThen(...actions: (() => Promise<void> | void)[]) {
         await action();
       }
     } catch (e) {
-      // ignore. errors must be handled in the actions
-      // promises are just used to chain the actions
+      // errors must be handled in the actions
+      // promises are just used to chain the actions.
+      // but report any unhandled errors
+      console.error('Failed to save and execute actions', e);
+      captureException(e);
     }
   };
+}
+
+function onKeydown(event: KeyboardEvent) {
+  // prevent arrow keys from navigating the page when editing
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    event.stopPropagation();
+  }
 }
 
 const { t } = useI18n();

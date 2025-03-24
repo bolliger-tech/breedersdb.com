@@ -4,7 +4,7 @@
       v-if="cultivar"
       :cultivar="cultivar"
       :title="t('base.new')"
-      :is-variety="false"
+      :is-variety="data?.cultivars_by_pk?.is_variety ?? false"
     />
   </EntityFetchWrapper>
 </template>

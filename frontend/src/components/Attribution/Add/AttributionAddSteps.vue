@@ -303,7 +303,10 @@ watch(step, (s) => {
 });
 
 function onAfterTransition(to: string | number) {
+  window.scrollTo(0, 0);
   if (to === 3) {
+    // on safari for ios, a manual tap on the input field is still needed
+    // see https://gist.github.com/cathyxz/73739c1bdea7d7011abb236541dc9aaa
     props.focusEntityPicker?.();
   }
 }

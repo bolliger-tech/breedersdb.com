@@ -11,7 +11,7 @@
         :key="image.id"
       >
         <EntityViewAttributionImage
-          :file-name="(image.text_value || image.photo_note)!"
+          :file-name="(image.photo_note || image.text_value)!"
           :attribution="image"
           preview
           :preview-size="imageSizes.h200"

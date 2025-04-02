@@ -47,11 +47,17 @@
               t('base.notAvailable')
             }}</span>
           </EntityViewTableRow>
-          <EntityViewTableRow :label="t('motherPlants.fields.numbFlowers')">
-            {{ motherPlant.numb_flowers }}
+          <EntityViewTableRow
+            v-if="typeof motherPlant.numb_flowers === 'number'"
+            :label="t('motherPlants.fields.numbFlowers')"
+          >
+            {{ n(motherPlant.numb_flowers) }}
           </EntityViewTableRow>
-          <EntityViewTableRow :label="t('motherPlants.fields.numbFruits')">
-            {{ motherPlant.numb_fruits }}
+          <EntityViewTableRow
+            v-if="typeof motherPlant.numb_fruits === 'number'"
+            :label="t('motherPlants.fields.numbFruits')"
+          >
+            {{ n(motherPlant.numb_fruits) }}
           </EntityViewTableRow>
           <EntityViewTableRow
             :label="t('motherPlants.fields.dateFruitsHarvested')"
@@ -62,8 +68,11 @@
                 : ''
             }}
           </EntityViewTableRow>
-          <EntityViewTableRow :label="t('motherPlants.fields.numbSeeds')">
-            {{ motherPlant.numb_seeds }}
+          <EntityViewTableRow
+            v-if="typeof motherPlant.numb_seeds === 'number'"
+            :label="t('motherPlants.fields.numbSeeds')"
+          >
+            {{ n(motherPlant.numb_seeds) }}
           </EntityViewTableRow>
           <EntityTableViewTimestampRows
             :created="motherPlant.created"
@@ -136,7 +145,7 @@ const { data, error, fetching } = await useQuery({
 
 const motherPlant = computed(() => data.value?.mother_plants_by_pk);
 
-const { t, d } = useI18n();
+const { t, d, n } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

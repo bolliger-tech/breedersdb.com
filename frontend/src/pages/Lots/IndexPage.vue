@@ -107,7 +107,7 @@ const columns = [
     label: t('lots.fields.numbSeedsSowed'),
     align: 'right' as const,
     field: 'numb_seeds_sowed',
-    format: (v: Lot['numb_seeds_sowed']) => (v ? n(v) : ''),
+    format: (v: Lot['numb_seeds_sowed']) => (typeof v === 'number' ? n(v) : ''),
     sortable: true,
   },
   {
@@ -115,7 +115,8 @@ const columns = [
     label: t('lots.fields.numbSeedlingsGrown'),
     align: 'right' as const,
     field: 'numb_seedlings_grown',
-    format: (v: Lot['numb_seedlings_grown']) => (v ? n(v) : ''),
+    format: (v: Lot['numb_seedlings_grown']) =>
+      typeof v === 'number' ? n(v) : '',
     sortable: true,
   },
   {
@@ -140,7 +141,8 @@ const columns = [
     label: t('lots.fields.numbSeedlingsPlanted'),
     align: 'right' as const,
     field: 'numb_seedlings_planted',
-    format: (v: Lot['numb_seedlings_planted']) => (v ? n(v) : ''),
+    format: (v: Lot['numb_seedlings_planted']) =>
+      typeof v === 'number' ? n(v) : '',
     sortable: true,
   },
   {

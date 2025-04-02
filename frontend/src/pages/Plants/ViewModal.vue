@@ -183,7 +183,8 @@ const motherPlantColumns = [
     label: t('motherPlants.fields.numbFlowers'),
     align: 'right' as const,
     sortable: true,
-    format: (v: MotherPlant['numb_flowers']) => (v ? n(v) : v),
+    format: (v: MotherPlant['numb_flowers']) =>
+      typeof v === 'number' ? n(v) : v,
   },
   {
     name: 'numb_fruits',
@@ -191,7 +192,8 @@ const motherPlantColumns = [
     label: t('motherPlants.fields.numbFruits'),
     align: 'right' as const,
     sortable: true,
-    format: (v: MotherPlant['numb_fruits']) => (v ? n(v) : v),
+    format: (v: MotherPlant['numb_fruits']) =>
+      typeof v === 'number' ? n(v) : v,
   },
   {
     name: 'date_fruits_harvested',
@@ -207,7 +209,8 @@ const motherPlantColumns = [
     label: t('motherPlants.fields.numbSeeds'),
     align: 'right' as const,
     sortable: true,
-    format: (v: MotherPlant['numb_seeds']) => (v ? n(v) : v),
+    format: (v: MotherPlant['numb_seeds']) =>
+      typeof v === 'number' ? n(v) : v,
   },
   {
     name: 'created',

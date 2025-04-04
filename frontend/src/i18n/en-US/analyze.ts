@@ -15,7 +15,7 @@ export const analyze = {
   filter: {
     attributionFilter:
       'Filter criteria to select the attributions (cell values)',
-    baseFilter: 'Filter criteria to select the {entityName} (rows)',
+    baseFilter: 'Filter criteria to select the {entityName} (table rows)',
 
     attribute: 'Attribute',
 

@@ -38,10 +38,23 @@
         </EntityViewTable>
 
         <h3 class="q-mb-md">
-          {{ t('plants.title', 2) }}
+          {{ t('plantRows.activePlants') }}
         </h3>
         <PlantList
-          :rows="plantRow.plants"
+          :rows="plantRow.plantsActive"
+          :visible-columns="[
+            'label_id',
+            'plant_group_name',
+            'distance_plant_row_start',
+            'date_planted',
+          ]"
+        />
+
+        <h3 class="q-mb-md">
+          {{ t('plantRows.eliminatedPlants') }}
+        </h3>
+        <PlantList
+          :rows="plantRow.plantsDisabled"
           :visible-columns="[
             'label_id',
             'plant_group_name',
@@ -88,7 +101,10 @@ const query = graphql(
       plant_rows_by_pk(id: $id) {
         ...plantRowFragment
         note
-        plants(where: { disabled: { _eq: false } }) {
+        plantsActive: plants(where: { disabled: { _eq: false } }) {
+          ...plantFragment
+        }
+        plantsDisabled: plants(where: { disabled: { _eq: true } }) {
           ...plantFragment
         }
       }

@@ -92,6 +92,3 @@ jobs:
           labels: l10n
           reviewers: ${{ github.actor }}
           delete-branch: true
-        env:
-          # disable pre-commit hooks (using husky)
-          HUSKY: '0'

@@ -3,30 +3,30 @@ export const nav = {
     list: 'Auflisten',
     new: 'Hinzufügen',
     addAttribute: 'Attributieren',
-    analyze: 'Analysieren'
+    analyze: 'Analysieren',
   },
   plants: {
     plant: 'Pflanzen',
-    eliminate: 'Eliminieren'
+    eliminate: 'Eliminieren',
   },
   more: {
     main: 'Mehr',
     attributionForms: {
       main: 'Attributierungsformulare',
       forms: 'Formulare',
-      attributes: 'Attribute'
+      attributes: 'Attribute',
     },
     settings: 'Einstellungen',
     darkMode: {
       main: 'Nachtmodus',
       on: 'Ein',
       off: 'Aus',
-      system: 'Automatisch'
+      system: 'Automatisch',
     },
     language: {
-      main: 'Sprache'
+      main: 'Sprache',
     },
     logout: 'Abmelden',
-    reload: 'Aktualisieren & Neustarten'
-  }
+    reload: 'Aktualisieren & Neustarten',
+  },
 };

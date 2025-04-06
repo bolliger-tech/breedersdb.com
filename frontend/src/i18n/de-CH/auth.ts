@@ -10,6 +10,6 @@ export const auth = {
     401: 'Passwort nicht korrekt. {nextTry}',
     429: 'Zu viele fehlgeschlagene Anmeldeversuche. {nextTry}',
     404: 'User nicht gefunden.',
-    nextTry: 'Nächste Versuch in {fromNow}'
-  }
+    nextTry: 'Nächste Versuch in {fromNow}',
+  },
 };

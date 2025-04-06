@@ -182,14 +182,6 @@ export default defineConfig((ctx) => {
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
       workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
-      workboxOptions: {
-        // some weird bug in quasar always adds skipWaiting() and clientsClaim()
-        // to the generated service worker… despite any setting here.
-        // so we'll keep it true here for documentation purposes and
-        // make the rest of the code work with it.
-        skipWaiting: true,
-        clientsClaim: true,
-      },
       // swFilename: 'sw.js',
       // manifestFilename: 'manifest.json'
       extendManifestJson(json) {
@@ -225,7 +217,12 @@ export default defineConfig((ctx) => {
       // useCredentialsForManifestTag: true,
       // injectPwaMetaTags: false,
       // extendPWACustomSWConf (esbuildConf) {},
-      // extendGenerateSWOptions (cfg) {},
+      extendGenerateSWOptions(cfg) {
+        cfg.globIgnores?.push('/api/*');
+        cfg.navigateFallbackDenylist = [/^\/api\//];
+        cfg.skipWaiting = true; // TODO: check if we could set this to false
+        cfg.clientsClaim = true; // TODO: check if we could set this to false. See https://web.dev/articles/service-worker-lifecycle#updates
+      },
       // extendInjectManifestOptions (cfg) {}
     },
 

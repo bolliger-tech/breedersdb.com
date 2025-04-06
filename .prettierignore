@@ -3,5 +3,3 @@
 /frontend/dist
 /frontend/.quasar
 /frontend/node_modules
-/frontend/src/i18n/*
-!/frontend/src/i18n/en-US

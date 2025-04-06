@@ -1,3 +1,3 @@
 export const rootstocks = {
-  title: 'Unterlage | Unterlagen'
+  title: 'Unterlage | Unterlagen',
 };

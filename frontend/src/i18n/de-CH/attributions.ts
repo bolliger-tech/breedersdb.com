@@ -5,7 +5,7 @@ export const attributions = {
     plants: 'Suche nach Attribut, Label-ID oder Gruppe',
     plantGroups: 'Suche nach Attribut oder Gruppe',
     cultivars: 'Suche nach Attribut oder Cultivar',
-    lots: 'Suche nach Attribute oder Los'
+    lots: 'Suche nach Attribute oder Los',
   },
   exportPrefix: 'Attributierung',
   columns: {
@@ -25,7 +25,7 @@ export const attributions = {
     attributedObjectName: 'Name des attributierten Objekts',
     attributionFormId: 'Formular ID',
     attributeId: 'Attribut ID',
-    dateCreated: 'Erstellt'
+    dateCreated: 'Erstellt',
   },
   observations: 'Beobachtungen',
   treatments: 'Behandlungen',
@@ -40,9 +40,11 @@ export const attributions = {
     setAuthor: 'Wer sammelt die Daten?',
     setDate: 'Wann werden/wurden die Daten erhoben?',
     repeat: 'Wiederholen',
-    shouldRepeat: 'Soll das gleiche Objekt mehrfach attributiert werden (statistische Attributierung).',
+    shouldRepeat:
+      'Soll das gleiche Objekt mehrfach attributiert werden (statistische Attributierung).',
     repeatCount: 'Anzahl Attributierungen pro Objekt',
-    repeatHint: 'Wie oft möchtest du das gleiche Objekt attributieren (Obergrenze, weniger ist möglich)?',
+    repeatHint:
+      'Wie oft möchtest du das gleiche Objekt attributieren (Obergrenze, weniger ist möglich)?',
     valueCount: '{count} Attributierungen',
     selectEntity: '{entity} auswählen',
     noEntitySelected: 'Kein/e {entity} ausgewählt.',
@@ -51,37 +53,45 @@ export const attributions = {
     addMetadata: 'Meta-Daten hinzufügen',
     missingValues: 'Fehlende Attributierungswerte.',
     lastAttributed: 'Zuletzt mit diesem Formular attributiert {timeAgo}',
-    alreadyAttributed: 'Du hast diese/s {entity} auf diesem Gerät mit diesem Formular bereits {timeAgo} attributiert.',
+    alreadyAttributed:
+      'Du hast diese/s {entity} auf diesem Gerät mit diesem Formular bereits {timeAgo} attributiert.',
     counter: {
-      description: 'Während der letzten 24 Stunden hast du diese/s {entity} {count} Mal mit diesem Formular attributiert (Ziel {total}).',
+      description:
+        'Während der letzten 24 Stunden hast du diese/s {entity} {count} Mal mit diesem Formular attributiert (Ziel {total}).',
       reset: 'Zähler zurücksetzen',
-      title: 'Anzahl'
+      title: 'Anzahl',
     },
     sameAgainWarning: 'Dieses Formular enthält dieses Attribut mehrfach.',
     notes: 'Bemerkungen',
     addTextNote: 'Bemerkung hinzufügen',
     addPhotoNote: 'Foto hinzufügen',
-    invalidNumber: 'Ungültige Nummer. Gültige Werte sind zwischen {min} und {max} mit einem Abstand von {step}.',
+    invalidNumber:
+      'Ungültige Nummer. Gültige Werte sind zwischen {min} und {max} mit einem Abstand von {step}.',
     invalidPhoto: 'Ungültiges oder nicht unterstütztes Bild.',
-    invalidInput: 'Einige Eingaben sind ungültig. Bitte überprüfe das Formular.',
-    notCurrentYearMonth: 'Das gewählte Datum liegt ausserhalb des laufenden Jahres oder Monats.',
+    invalidInput:
+      'Einige Eingaben sind ungültig. Bitte überprüfe das Formular.',
+    notCurrentYearMonth:
+      'Das gewählte Datum liegt ausserhalb des laufenden Jahres oder Monats.',
     textPlaceholder: 'Text eingeben…',
     numberPlaceholder: 'Nummer eingeben…',
-    clearAttribute: 'Mit diesem Wert werden auch die Bemerkungen für dieses Attribut gelöscht. Möchtest du Wert und Kommentare löschen?',
-    notesMustHaveValue: 'Füge einen Wert hinzu oder lösche die Bemerkung / das Foto für dieses Attribut.',
+    clearAttribute:
+      'Mit diesem Wert werden auch die Bemerkungen für dieses Attribut gelöscht. Möchtest du Wert und Kommentare löschen?',
+    notesMustHaveValue:
+      'Füge einen Wert hinzu oder lösche die Bemerkung / das Foto für dieses Attribut.',
     saved: 'Attributierung gespeichert.',
     uploading: 'Speichere… {percentage}%',
     edit: 'Bearbeiten',
     delete: 'Löschen',
-    noValues: 'Nichts zu speichern. Füge Werte hinzu oder wähle ein/e andere/s {entity}.',
+    noValues:
+      'Nichts zu speichern. Füge Werte hinzu oder wähle ein/e andere/s {entity}.',
     changeEntity: '{entity} ändern',
     addAttribute: 'Attribut hinzufügen',
     editNote: {
       info: 'Du bearbeitest eine existierende Attributierung.',
       delete: 'Attributierung löschen',
       cancel: 'Bearbeiten abbrechen',
-      deleted: 'Attributierung gelöscht.'
-    }
+      deleted: 'Attributierung gelöscht.',
+    },
   },
-  noValueOnEdit: 'Bitte gib einen Wert ein oder lösche das Attribut.'
+  noValueOnEdit: 'Bitte gib einen Wert ein oder lösche das Attribut.',
 };

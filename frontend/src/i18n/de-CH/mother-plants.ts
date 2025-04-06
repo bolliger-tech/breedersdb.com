@@ -9,13 +9,16 @@ export const motherPlants = {
     numbSeeds: 'Anzahl Samen',
     plant: 'Pflanze',
     pollen: 'Pollen',
-    crossing: 'Kreuzung'
+    crossing: 'Kreuzung',
   },
   hints: {
-    crossing: 'Mutter-Cultivar: {motherCultivar}, Vater-Cultivar: {fatherCultivar}',
+    crossing:
+      'Mutter-Cultivar: {motherCultivar}, Vater-Cultivar: {fatherCultivar}',
     plantCultivar: 'Cultivar der ausgewählten Pflanze: {cultivar}',
-    pollenCultivar: 'Cultivar der ausgewählten Pollen: {cultivar}'
+    pollenCultivar: 'Cultivar der ausgewählten Pollen: {cultivar}',
   },
-  crossingPlantCultivarMismatch: 'Das Cultivar der ausgewählten Pflanze ({plantCultivar}) entspricht nicht dem Mutter-Cultivar der Kreuzung ({crossingMotherPlantCultivar}).',
-  crossingPollenCultivarMismatch: 'Das Cultivar der ausgewählten Pollen ({pollenCultivar}) entspricht nicht dem Vater-Cultivar der Kreuzung ({crossingFatherPlantCultivar}).'
+  crossingPlantCultivarMismatch:
+    'Das Cultivar der ausgewählten Pflanze ({plantCultivar}) entspricht nicht dem Mutter-Cultivar der Kreuzung ({crossingMotherPlantCultivar}).',
+  crossingPollenCultivarMismatch:
+    'Das Cultivar der ausgewählten Pollen ({pollenCultivar}) entspricht nicht dem Vater-Cultivar der Kreuzung ({crossingFatherPlantCultivar}).',
 };

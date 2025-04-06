@@ -75,8 +75,7 @@ jobs:
         working-directory: ./frontend/src/i18n
 
       - name: Fix quoting
-        run: yarn install && yarn exec eslint --ext .ts src/i18n -- --fix
-        working-directory: ./frontend
+        run: yarn install && yarn exec prettier -- --write frontend/src/i18n/**/*.ts
 
       - name: Commit changes and create pull request
         uses: peter-evans/create-pull-request@v6

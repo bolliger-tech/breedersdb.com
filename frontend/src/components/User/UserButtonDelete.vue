@@ -50,8 +50,9 @@ async function deleteUser() {
     // GraphQL error is cumbersome
     if (!result.data?.delete_users_by_pk) {
       console.error(`Failed to delete user ${props.userId}`);
+    } else {
+      emit('deleted');
     }
-    emit('deleted');
   });
 }
 

@@ -20,8 +20,11 @@
       <EntityViewTableRow :label="t('plants.fields.serialInPlantRow')">
         {{ plant.serial_in_plant_row }}
       </EntityViewTableRow>
-      <EntityViewTableRow :label="t('plants.fields.distancePlantRowStart')">
-        {{ plant.distance_plant_row_start }}
+      <EntityViewTableRow
+        v-if="typeof plant.distance_plant_row_start === 'number'"
+        :label="t('plants.fields.distancePlantRowStart')"
+      >
+        {{ n(plant.distance_plant_row_start) }}
       </EntityViewTableRow>
     </template>
     <EntityViewTableRow :label="t('plants.fields.dateGrafted')">
@@ -84,5 +87,5 @@ export interface PlantEntityTableProps {
 
 defineProps<PlantEntityTableProps>();
 
-const { t, d } = useI18n();
+const { t, d, n } = useI18n();
 </script>

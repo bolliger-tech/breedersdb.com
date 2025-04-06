@@ -201,7 +201,8 @@ const columns = computed(() => [
     label: t('plants.fields.distancePlantRowStart'),
     align: 'right' as const,
     field: 'distance_plant_row_start',
-    format: (v: Plant['distance_plant_row_start']) => (v ? n(v) : ''),
+    format: (v: Plant['distance_plant_row_start']) =>
+      typeof v === 'number' ? n(v) : '',
     sortable: true,
   },
   {

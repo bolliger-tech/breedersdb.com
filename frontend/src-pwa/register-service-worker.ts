@@ -35,7 +35,7 @@ register(process.env.SERVICE_WORKER_FILE, {
   offline() {
     // !!! IMPORTANT !!!
     // When implementing offline capabilities, check (and probably change):
-    // quasar.conf.js -> configure() -> pwa -> workboxOptions
+    // quasar.conf.js -> configure() -> pwa -> extendGenerateSWOptions
     // as we set skipWaiting and clientsClaim there, which might lead to
     // different versions of the app running at the same time and thus cause
     // offline storage inconsistencies.

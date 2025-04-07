@@ -1,4 +1,13 @@
 <template>
+  <div class="row bg-black rounded-borders justify-center q-mb-md">
+    <EntityViewAttributionImage
+      v-if="attribution.data_type === 'PHOTO' && attribution.text_value"
+      :file-name="attribution.text_value"
+      :attribution="attribution"
+      preview
+      :preview-size="imageSizes.h400"
+    />
+  </div>
   <EntityViewTable :dense="dense">
     <EntityViewTableRow :label="t('attributions.columns.value')" multiline>
       {{ getValue(attribution) }}
@@ -83,10 +92,11 @@ import {
   dataTypeToColumnTypes,
   getAttributionValue,
 } from 'src/utils/attributeUtils';
-import EntityViewAttributionImage from 'src/components/Attribution/EntityViewAttributionImage.vue';
+import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import { computed } from 'vue';
+import { imageSizes } from 'src/utils/imageSizes';
 
 export interface AttributionEntityTableProps {
   attribution: AttributionsViewFragment & {

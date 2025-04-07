@@ -8,15 +8,6 @@
     >
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <div class="row bg-black rounded-borders justify-center q-mb-md">
-          <EntityViewAttributionImage
-            v-if="attribution.data_type === 'PHOTO' && attribution.text_value"
-            :file-name="attribution.text_value"
-            :attribution="attribution"
-            preview
-            :preview-size="imageSizes.h400"
-          />
-        </div>
         <AttributionEntityTable :attribution="attribution" />
       </template>
 
@@ -45,9 +36,7 @@ import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshA
 import type { AttributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { attributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { computed } from 'vue';
-import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
-import { imageSizes } from 'src/utils/imageSizes';
 import AttributionEntityTable from 'src/components/Attribution/AttributionEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();

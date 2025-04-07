@@ -8,22 +8,7 @@
     >
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <EntityViewTable>
-          <EntityViewTableRow :label="t('entity.commonColumns.name')">
-            {{ attributionForm.name }}
-          </EntityViewTableRow>
-          <EntityViewTableRow
-            v-if="attributionForm.description"
-            :label="t('attributionForms.columns.description')"
-            multiline
-          >
-            {{ attributionForm.description }}
-          </EntityViewTableRow>
-          <EntityTableViewTimestampRows
-            :created="attributionForm.created"
-            :modified="attributionForm.modified"
-          />
-        </EntityViewTable>
+        <AttributionFormEntityTable :attribution-form="attributionForm" />
 
         <h3 class="q-my-md">{{ t('attributionForms.columns.fields') }}</h3>
         <AttributionFormPreview
@@ -57,11 +42,9 @@ import type { AttributionFormFragment } from 'src/components/AttributionForm/att
 import { attributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
-import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import AttributionFormPreview from 'src/components/AttributionForm/AttributionFormPreview.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import AttributionFormEntityTable from 'src/components/AttributionForm/AttributionFormEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

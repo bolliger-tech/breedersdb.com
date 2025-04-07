@@ -8,18 +8,7 @@
     >
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <EntityViewTable>
-          <EntityViewTableRow :label="t('entity.commonColumns.name')">
-            {{ orchard.name }}
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('entity.commonColumns.disabled')">
-            {{ orchard.disabled ? '✓' : '' }}
-          </EntityViewTableRow>
-          <EntityTableViewTimestampRows
-            :created="orchard.created"
-            :modified="orchard.modified"
-          />
-        </EntityViewTable>
+        <OrchardEntityTable :orchard="orchard" />
 
         <h3 class="q-mb-md">
           {{ t('plantRows.title', 2) }}
@@ -91,13 +80,11 @@ import { orchardFragment } from 'src/components/Orchard/orchardFragment';
 import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
-import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import OrchardEntityTable from 'src/components/Orchard/OrchardEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

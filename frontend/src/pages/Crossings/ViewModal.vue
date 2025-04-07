@@ -8,34 +8,7 @@
     >
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <EntityViewTable>
-          <EntityViewTableRow :label="t('entity.commonColumns.name')">
-            {{ crossing.name }}
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('crossings.fields.motherCultivar')">
-            <RouterLink
-              :to="`/cultivars/${crossing.mother_cultivar?.id}`"
-              class="undecorated-link"
-            >
-              {{ crossing.mother_cultivar?.display_name }}
-            </RouterLink>
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('crossings.fields.fatherCultivar')">
-            <RouterLink
-              :to="`/cultivars/${crossing.father_cultivar?.id}`"
-              class="undecorated-link"
-            >
-              {{ crossing.father_cultivar?.display_name }}
-            </RouterLink>
-          </EntityViewTableRow>
-          <EntityTableViewTimestampRows
-            :created="crossing.created"
-            :modified="crossing.modified"
-          />
-          <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
-            {{ crossing.note }}
-          </EntityViewTableRow>
-        </EntityViewTable>
+        <CrossingEntityTable :crossing="crossing" />
 
         <h3 class="q-mb-md">
           {{ t('lots.title', 2) }}
@@ -114,15 +87,13 @@ import { computed } from 'vue';
 import { crossingFragment } from 'src/components/Crossing/crossingFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
-import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import CrossingEntityTable from 'src/components/Crossing/CrossingEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

@@ -8,34 +8,7 @@
     >
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <EntityViewTable>
-          <EntityViewTableRow :label="t('entity.commonColumns.name')">
-            {{ plantRow.name }}
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('plantRows.fields.orchard')">
-            <RouterLink
-              :to="`/orchards/${plantRow.orchard.id}`"
-              class="undecorated-link"
-            >
-              {{ plantRow.orchard.name }}
-            </RouterLink>
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('plantRows.fields.dateCreated')">
-            {{ plantRow.date_created ? d(plantRow.date_created, 'Ymd') : '' }}
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('entity.commonColumns.dateDisabled')">
-            {{
-              plantRow.date_eliminated ? d(plantRow.date_eliminated, 'Ymd') : ''
-            }}
-          </EntityViewTableRow>
-          <EntityTableViewTimestampRows
-            :created="plantRow.created"
-            :modified="plantRow.modified"
-          />
-          <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
-            {{ plantRow.note }}
-          </EntityViewTableRow>
-        </EntityViewTable>
+        <PlantRowEntityTable :plant-row="plantRow" />
 
         <h3 class="q-mb-md">
           {{ t('plantRows.activePlants') }}
@@ -86,12 +59,10 @@ import { computed } from 'vue';
 import { plantRowFragment } from 'src/components/PlantRow/plantRowFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
-import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantList from 'src/components/Plant/PlantList.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import PlantRowEntityTable from 'src/components/PlantRow/PlantRowEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -121,7 +92,7 @@ const { data, error, fetching } = await useQuery({
 
 const plantRow = computed(() => data.value?.plant_rows_by_pk);
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

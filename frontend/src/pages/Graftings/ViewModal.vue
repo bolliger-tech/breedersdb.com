@@ -8,15 +8,7 @@
     >
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <EntityViewTable>
-          <EntityViewTableRow :label="t('entity.commonColumns.name')">
-            {{ grafting.name }}
-          </EntityViewTableRow>
-          <EntityTableViewTimestampRows
-            :created="grafting.created"
-            :modified="grafting.modified"
-          />
-        </EntityViewTable>
+        <GraftingEntityTable :grafting="grafting" />
       </template>
 
       <template #action-left>
@@ -40,10 +32,8 @@ import { computed } from 'vue';
 import { graftingFragment } from 'src/components/Grafting/graftingFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
-import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import GraftingEntityTable from 'src/components/Grafting/GraftingEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

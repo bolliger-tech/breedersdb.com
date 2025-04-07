@@ -8,29 +8,7 @@
     >
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <EntityViewTable>
-          <EntityViewTableRow :label="t('users.fields.email')">
-            {{ user.email }}
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('users.fields.locale')">
-            {{ t(`base.locales.${user.locale as Locale}`) }}
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('users.fields.failedSigninAttempts')">
-            {{ user.failed_signin_attempts }}
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('users.fields.lastSignin')">
-            <template v-if="user.last_signin">{{
-              d(user.last_signin, 'YmdHis')
-            }}</template>
-            <span v-else class="text-body2 text-italic">{{
-              t('base.notAvailable')
-            }}</span>
-          </EntityViewTableRow>
-          <EntityTableViewTimestampRows
-            :created="user.created"
-            :modified="user.modified"
-          />
-        </EntityViewTable>
+        <UserEntityTable :user="user" />
       </template>
 
       <template #action-left>
@@ -50,13 +28,10 @@ import UserButtonDelete from 'src/components/User/UserButtonDelete.vue';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { userFragment } from 'src/components/User/userFragment';
-import type { Locale } from 'src/composables/useI18n';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
-import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import UserEntityTable from 'src/components/User/UserEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -79,7 +54,7 @@ const { data, error, fetching } = await useQuery({
 
 const user = computed(() => data.value?.users_by_pk);
 
-const { t, d } = useI18n();
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

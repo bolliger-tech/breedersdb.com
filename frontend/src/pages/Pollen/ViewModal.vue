@@ -8,32 +8,7 @@
     >
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <EntityViewTable>
-          <EntityViewTableRow :label="t('entity.commonColumns.name')">
-            {{ pollen.name }}
-          </EntityViewTableRow>
-          <EntityViewTableRow
-            v-if="pollen.cultivar"
-            :label="t('cultivars.title', 1)"
-            render-empty
-          >
-            <EntityName
-              :cultivar="pollen.cultivar"
-              :lot="pollen.cultivar.lot"
-              :crossing="pollen.cultivar.lot?.crossing"
-            />
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('pollen.fields.dateHarvested')">
-            {{ pollen.date_harvested ? d(pollen.date_harvested, 'Ymd') : '' }}
-          </EntityViewTableRow>
-          <EntityTableViewTimestampRows
-            :created="pollen.created"
-            :modified="pollen.modified"
-          />
-          <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
-            {{ pollen.note }}
-          </EntityViewTableRow>
-        </EntityViewTable>
+        <PollenEntityTable :pollen="pollen" />
 
         <h3 class="q-mb-md">
           {{ t('motherPlants.title', 2) }}
@@ -101,14 +76,11 @@ import { computed } from 'vue';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
-import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
-import EntityName from 'src/components/Entity/EntityName.vue';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import PollenEntityTable from 'src/components/Pollen/PollenEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 

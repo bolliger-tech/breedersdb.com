@@ -8,80 +8,7 @@
     >
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <EntityViewTable>
-          <EntityViewTableRow :label="t('entity.commonColumns.name')">
-            {{ motherPlant.name }}
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('motherPlants.fields.crossing')">
-            <RouterLink
-              :to="`/crossings/${motherPlant.crossing?.id}`"
-              class="undecorated-link"
-            >
-              {{ motherPlant.crossing?.name }}
-            </RouterLink>
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('motherPlants.fields.plant')">
-            <RouterLink
-              :to="`/plants/${motherPlant.plant?.id}`"
-              class="undecorated-link"
-            >
-              {{ motherPlant.plant?.label_id }}
-            </RouterLink>
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('motherPlants.fields.dateImpregnated')">
-            {{
-              motherPlant.date_impregnated
-                ? d(motherPlant.date_impregnated, 'Ymd')
-                : ''
-            }}
-          </EntityViewTableRow>
-          <EntityViewTableRow :label="t('motherPlants.fields.pollen')">
-            <RouterLink
-              v-if="motherPlant.pollen"
-              :to="`/pollen/${motherPlant.pollen?.id}`"
-              class="undecorated-link"
-            >
-              {{ motherPlant.pollen?.name }}
-            </RouterLink>
-            <span v-else class="text-body2 text-italic">{{
-              t('base.notAvailable')
-            }}</span>
-          </EntityViewTableRow>
-          <EntityViewTableRow
-            v-if="typeof motherPlant.numb_flowers === 'number'"
-            :label="t('motherPlants.fields.numbFlowers')"
-          >
-            {{ n(motherPlant.numb_flowers) }}
-          </EntityViewTableRow>
-          <EntityViewTableRow
-            v-if="typeof motherPlant.numb_fruits === 'number'"
-            :label="t('motherPlants.fields.numbFruits')"
-          >
-            {{ n(motherPlant.numb_fruits) }}
-          </EntityViewTableRow>
-          <EntityViewTableRow
-            :label="t('motherPlants.fields.dateFruitsHarvested')"
-          >
-            {{
-              motherPlant.date_fruits_harvested
-                ? d(motherPlant.date_fruits_harvested, 'Ymd')
-                : ''
-            }}
-          </EntityViewTableRow>
-          <EntityViewTableRow
-            v-if="typeof motherPlant.numb_seeds === 'number'"
-            :label="t('motherPlants.fields.numbSeeds')"
-          >
-            {{ n(motherPlant.numb_seeds) }}
-          </EntityViewTableRow>
-          <EntityTableViewTimestampRows
-            :created="motherPlant.created"
-            :modified="motherPlant.modified"
-          />
-          <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
-            {{ motherPlant.note }}
-          </EntityViewTableRow>
-        </EntityViewTable>
+        <MotherPlantEntityTable :mother-plant="motherPlant" />
       </template>
 
       <template #action-left>
@@ -109,10 +36,8 @@ import { computed } from 'vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
-import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import MotherPlantEntityTable from 'src/components/MotherPlant/MotherPlantEntityTable.vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -145,7 +70,7 @@ const { data, error, fetching } = await useQuery({
 
 const motherPlant = computed(() => data.value?.mother_plants_by_pk);
 
-const { t, d, n } = useI18n();
+const { t } = useI18n();
 
 const route = useRoute();
 const router = useRouter();

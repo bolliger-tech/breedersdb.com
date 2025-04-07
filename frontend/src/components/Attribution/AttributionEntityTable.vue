@@ -83,6 +83,8 @@ import {
   dataTypeToColumnTypes,
   getAttributionValue,
 } from 'src/utils/attributeUtils';
+import EntityViewAttributionImage from 'src/components/Attribution/EntityViewAttributionImage.vue';
+import EntityLink from 'src/components/Entity/EntityLink.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import { computed } from 'vue';
 

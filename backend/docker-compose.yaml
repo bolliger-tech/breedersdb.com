@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: bitnami/postgresql:16
+    image: bitnami/postgresql:17
     environment:
       POSTGRESQL_PASSWORD: postgres
       POSTGRESQL_DATABASE: '${POSTGRESQL_DATABASE:-postgres}'

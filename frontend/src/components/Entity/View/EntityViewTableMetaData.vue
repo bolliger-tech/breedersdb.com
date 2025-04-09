@@ -14,11 +14,13 @@
           }}
           <strong><BaseRelativeTime :timestamp="created" /></strong>
         </div>
-        &nbsp;
-        <div>
-          &mdash;&nbsp;{{ t('entity.commonColumns.modified') }}
-          <strong><BaseRelativeTime :timestamp="modified" /></strong>
-        </div>
+        <template v-if="modified !== created">
+          &nbsp;
+          <div>
+            &mdash;&nbsp;{{ t('entity.commonColumns.modified') }}
+            <strong><BaseRelativeTime :timestamp="modified" /></strong>
+          </div>
+        </template>
       </div>
     </div>
   </EntityViewTableRow>

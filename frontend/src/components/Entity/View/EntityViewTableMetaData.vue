@@ -1,6 +1,9 @@
 <template>
   <EntityViewTableRow no-hover>
-    <div class="row justify-between text-muted text-caption q-pt-xs">
+    <div
+      class="row justify-between text-muted text-caption"
+      :class="{ 'q-pt-xs': !dense }"
+    >
       <div class="q-pr-md">
         <q-icon name="tag" class="icon" />{{
           t('entity.commonColumns.id')
@@ -35,6 +38,7 @@ export interface EntityViewTableMetaDataProps {
   id: number;
   created: string;
   modified: string;
+  dense?: boolean;
 }
 
 defineProps<EntityViewTableMetaDataProps>();

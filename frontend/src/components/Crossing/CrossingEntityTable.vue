@@ -19,13 +19,14 @@
         {{ crossing.father_cultivar?.display_name }}
       </RouterLink>
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
-      :created="crossing.created"
-      :modified="crossing.modified"
-    />
     <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
       {{ crossing.note }}
     </EntityViewTableRow>
+    <EntityViewTableMetaData
+      :id="crossing.id"
+      :created="crossing.created"
+      :modified="crossing.modified"
+    />
   </EntityViewTable>
 </template>
 
@@ -34,7 +35,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { type CrossingFragment } from './crossingFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 
 export interface CrossingEntityTableProps {
   crossing: CrossingFragment & {

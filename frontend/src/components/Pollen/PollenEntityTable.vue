@@ -17,13 +17,14 @@
     <EntityViewTableRow :label="t('pollen.fields.dateHarvested')">
       {{ pollen.date_harvested ? d(pollen.date_harvested, 'Ymd') : '' }}
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
-      :created="pollen.created"
-      :modified="pollen.modified"
-    />
     <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
       {{ pollen.note }}
     </EntityViewTableRow>
+    <EntityViewTableMetaData
+      :id="pollen.id"
+      :created="pollen.created"
+      :modified="pollen.modified"
+    />
   </EntityViewTable>
 </template>
 
@@ -32,7 +33,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { type PollenFragment } from './pollenFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 
 export interface PollenEntityTableProps {

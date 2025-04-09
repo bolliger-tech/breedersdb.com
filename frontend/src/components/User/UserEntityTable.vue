@@ -17,7 +17,8 @@
         t('base.notAvailable')
       }}</span>
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
+    <EntityViewTableMetaData
+      :id="user.id"
       :created="user.created"
       :modified="user.modified"
     />
@@ -29,7 +30,7 @@ import { useI18n, type Locale } from 'src/composables/useI18n';
 import { type UserFragment } from './userFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 
 export interface UserEntityTableProps {
   user: UserFragment;

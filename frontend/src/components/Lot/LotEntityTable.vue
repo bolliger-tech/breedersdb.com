@@ -53,14 +53,15 @@
         {{ lot.orchard.name }}
       </RouterLink>
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
-      v-if="lot.created && lot.modified"
-      :created="lot.created"
-      :modified="lot.modified"
-    />
     <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
       {{ lot.note }}
     </EntityViewTableRow>
+    <EntityViewTableMetaData
+      v-if="lot.id && lot.created && lot.modified"
+      :id="lot.id"
+      :created="lot.created"
+      :modified="lot.modified"
+    />
   </EntityViewTable>
 </template>
 
@@ -69,7 +70,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { type LotFragment } from './lotFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 export interface LotEntityTableProps {

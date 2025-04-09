@@ -71,9 +71,9 @@
         {{ attribution.attribution_form.name }}
       </RouterLink>
     </EntityViewTableRow>
-
-    <EntityTableViewTimestampRows
+    <EntityViewTableMetaData
       v-if="attribution.created && attribution.modified"
+      :id="attribution.id"
       :created="attribution.created"
       :modified="attribution.modified"
     />
@@ -86,7 +86,7 @@ import type { AttributionFormFragment } from 'src/components/AttributionForm/att
 import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 import {
   formatResultColumnValue,
   dataTypeToColumnTypes,

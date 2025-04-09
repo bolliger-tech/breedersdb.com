@@ -63,13 +63,14 @@
     >
       {{ n(motherPlant.numb_seeds) }}
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
-      :created="motherPlant.created"
-      :modified="motherPlant.modified"
-    />
     <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
       {{ motherPlant.note }}
     </EntityViewTableRow>
+    <EntityViewTableMetaData
+      :id="motherPlant.id"
+      :created="motherPlant.created"
+      :modified="motherPlant.modified"
+    />
   </EntityViewTable>
 </template>
 
@@ -78,7 +79,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { type MotherPlantFragment } from './motherPlantFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 
 export interface MotherPlantEntityTableProps {
   motherPlant: MotherPlantFragment;

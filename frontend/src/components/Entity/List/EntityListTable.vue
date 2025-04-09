@@ -1,5 +1,6 @@
 <template>
   <q-table
+    ref="table"
     v-model:pagination="pagination"
     :class="{ 'entity-list-table--fullscreen': fullscreen }"
     :columns="orderedColumns"
@@ -150,8 +151,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
-import type { QSelectSlots, QTableProps, QTableSlots } from 'quasar';
+import { computed, nextTick, ref, watch } from 'vue';
+import type { QSelectSlots, QTable, QTableProps, QTableSlots } from 'quasar';
 import EntityListTableColumnSelector from './EntityListTableColumnSelector.vue';
 import EntityListTableHeaderCell from './EntityListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -259,6 +260,21 @@ const orderedColumns = computed(() => {
       visibleColumns.value.indexOf(a.name) -
       visibleColumns.value.indexOf(b.name),
   );
+});
+
+// scroll to right end if column is added
+const table = ref<QTable | null>(null);
+watch(visibleColumns, async (newVal, oldVal) => {
+  if (newVal.length > oldVal.length) {
+    await nextTick(); // wait until new columns are rendered
+    const dataContainer = table.value?.$el.querySelector('.q-table__middle');
+    if (dataContainer) {
+      dataContainer.scrollTo({
+        left: dataContainer.scrollWidth,
+        behavior: 'smooth',
+      });
+    }
+  }
 });
 </script>
 

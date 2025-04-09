@@ -14,7 +14,8 @@ export const analyze = {
   filter: {
     attributionFilter:
       'Kriterien filtern, um die Attribute (Zellenwerte) auszuwählen',
-    baseFilter: 'Kriterien filtern, um die {entityName} (Zeilen) auszuwählen',
+    baseFilter:
+      'Kriterien filtern, um die {entityName} (Tabellenzeilen) auszuwählen',
     attribute: 'Attribut',
     noFilter:
       'Kein Filter definiert. Alle {entity} werden angezeigt. Klicke auf den Plus-Button, um Filterkriterien hinzuzufügen.',

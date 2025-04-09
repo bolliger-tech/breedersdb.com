@@ -4,7 +4,7 @@ export const entity = {
     name: 'Name',
     note: 'Bemerkungen',
     created: 'Erstellt',
-    modified: 'Zuletzt aktualisiert',
+    modified: 'Aktualisiert',
     displayName: 'Name',
     explicitDisplayName: 'Anzeigename',
     nameSegment: 'Namenssegment',

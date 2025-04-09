@@ -24,6 +24,7 @@ export const base = {
     hour: 'Stunde | Stunden',
     day: 'Tag | Tage',
     never: 'nie',
+    error: 'Ungültiges Datum',
   },
   show: 'Anzeigen',
   download: 'Herunterladen',

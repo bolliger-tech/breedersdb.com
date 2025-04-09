@@ -4,7 +4,7 @@
     class="entity-view-table-row"
     :class="{
       'entity-view-table-row--dense': tableProps?.dense,
-      'entity-view-table-row--no-hover': tableProps?.noHover,
+      'entity-view-table-row--no-hover': tableProps?.noHover || noHover,
       'entity-view-table-row--multiline': multiline,
     }"
   >
@@ -25,6 +25,7 @@ export interface EntityViewTableRow {
   label?: string | undefined;
   renderEmpty?: boolean | undefined;
   multiline?: boolean | undefined;
+  noHover?: boolean | undefined;
 }
 
 defineProps<EntityViewTableRow>();

@@ -47,6 +47,7 @@ import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import { useExport } from 'src/composables/useExport';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t, n, d } = useI18n();
 
@@ -147,6 +148,7 @@ const plantsCount = computed(
 type Plant = ResultOf<typeof query>['plants'][0];
 
 const columns = computed(() => [
+  useIdColumn(),
   {
     name: 'label_id',
     label: t('plants.fields.labelId'),

@@ -103,6 +103,7 @@ import {
   getAttributionObjectType,
 } from 'src/components/Analyze/Result/exportResult';
 import { n2semicolon } from 'src/utils/stringUtils';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t, d, n } = useI18n();
 
@@ -243,6 +244,7 @@ const attributionsCount = computed(
 );
 
 const columns = computed(() => [
+  useIdColumn(),
   ...(subset.value === 'all'
     ? [
         {

@@ -53,6 +53,7 @@ import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTable
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 import type { TransformDataArgs } from 'src/composables/useExport';
 import { useExport } from 'src/composables/useExport';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t } = useI18n();
 
@@ -110,6 +111,7 @@ const attributionFormsCount = computed(
 );
 
 const columns = computed(() => [
+  useIdColumn(),
   {
     name: 'name',
     label: t('entity.commonColumns.name'),

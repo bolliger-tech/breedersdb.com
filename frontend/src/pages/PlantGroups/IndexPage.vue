@@ -47,6 +47,7 @@ import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { plantGroupLabelIdUtils } from 'src/utils/labelIdUtils';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import { useExport } from 'src/composables/useExport';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t } = useI18n();
 
@@ -151,6 +152,7 @@ const plantGroupsCount = computed(
 );
 
 const columns = computed(() => [
+  useIdColumn(),
   {
     name: 'display_name',
     label: t('entity.commonColumns.name'),

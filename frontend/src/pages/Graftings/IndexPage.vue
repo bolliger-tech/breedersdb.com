@@ -31,6 +31,7 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import { useExport } from 'src/composables/useExport';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t } = useI18n();
 
@@ -73,6 +74,7 @@ const graftingsCount = computed(
 );
 
 const columns = [
+  useIdColumn(),
   {
     name: 'name',
     label: t('entity.commonColumns.name'),

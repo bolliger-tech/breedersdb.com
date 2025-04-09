@@ -40,6 +40,7 @@ import { uppercaseFirstLetter } from 'src/utils/stringUtils';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import { useExport } from 'src/composables/useExport';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t } = useI18n();
 
@@ -153,6 +154,7 @@ const cultivarsCount = computed(
 type Cultivar = ResultOf<typeof query>['cultivars'][0];
 
 const columns = computed(() => [
+  useIdColumn(),
   {
     name: 'display_name',
     label: t('entity.commonColumns.displayName'),

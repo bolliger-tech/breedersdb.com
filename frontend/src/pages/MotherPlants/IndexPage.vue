@@ -40,6 +40,7 @@ import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import { useExport } from 'src/composables/useExport';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t, n, d } = useI18n();
 
@@ -94,6 +95,7 @@ const motherPlantsCount = computed(
 type MotherPlant = ResultOf<typeof query>['mother_plants'][0];
 
 const columns = [
+  useIdColumn(),
   {
     name: 'name',
     label: t('entity.commonColumns.name'),

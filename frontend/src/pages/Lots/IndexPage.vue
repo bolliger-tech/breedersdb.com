@@ -32,6 +32,7 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import { useExport } from 'src/composables/useExport';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t, n, d } = useI18n();
 
@@ -87,6 +88,7 @@ const lotsCount = computed(
 type Lot = ResultOf<typeof query>['lots'][0];
 
 const columns = [
+  useIdColumn(),
   {
     name: 'display_name',
     label: t('entity.commonColumns.name'),

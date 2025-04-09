@@ -1,5 +1,12 @@
 import type { Locale } from 'src/composables/useI18n';
 
+const ONE_SECOND = 1000;
+const ONE_MINUTE = ONE_SECOND * 60;
+const ONE_HOUR = ONE_MINUTE * 60;
+const ONE_DAY = ONE_HOUR * 24;
+const ONE_MONTH = ONE_DAY * 30;
+const ONE_YEAR = ONE_MONTH * 12;
+
 // get a relative time string
 // examples:
 // now
@@ -24,33 +31,50 @@ export function toLocaleRelativeTimeString(
 ) {
   const rtf = new Intl.RelativeTimeFormat(locale, options);
   const diff = new Date().getTime() - date.getTime();
+  const interval = getRelativeTimeInterval(date, secondsPrecision);
 
-  const diffSeconds = Math.trunc(diff / 1000);
-  const diffMinutes = Math.trunc(diff / 1000 / 60);
-  const diffHours = Math.trunc(diff / 1000 / 60 / 60);
-  const diffDays = Math.trunc(diff / 1000 / 60 / 60 / 24);
+  const diffDivisor = Math.round(diff / interval);
 
-  if (secondsPrecision && Math.abs(diffSeconds) < 60) {
-    return rtf.format(-diffSeconds, 'second');
+  switch (interval) {
+    case ONE_SECOND:
+      return rtf.format(-diffDivisor, 'second');
+    case ONE_MINUTE:
+      return rtf.format(-diffDivisor, 'minute');
+    case ONE_HOUR:
+      return rtf.format(-diffDivisor, 'hour');
+    case ONE_DAY:
+      return rtf.format(-diffDivisor, 'day');
+    case ONE_MONTH:
+      return rtf.format(-diffDivisor, 'month');
+    case ONE_YEAR:
+      return rtf.format(-diffDivisor, 'year');
+    default:
+      throw new Error('Invalid interval');
   }
+}
 
-  if (Math.abs(diffMinutes) < 60) {
-    return rtf.format(-diffMinutes, 'minute');
-  }
-  if (Math.abs(diffHours) < 24) {
-    return rtf.format(-diffHours, 'hour');
-  }
-  if (Math.abs(diffDays) < 30) {
-    return rtf.format(-diffDays, 'day');
-  }
+export function getRelativeTimeInterval(
+  date: Date,
+  secondsPrecision: boolean | undefined = false,
+) {
+  const diff = new Date().getTime() - date.getTime();
 
-  const diffMonths = Math.trunc(diff / 1000 / 60 / 60 / 24 / 30);
-  const diffYears = Math.trunc(diff / 1000 / 60 / 60 / 24 / 30 / 12);
-
-  if (Math.abs(diffMonths) < 12) {
-    return rtf.format(-diffMonths, 'month');
+  if (secondsPrecision && Math.abs(diff) < ONE_MINUTE) {
+    return ONE_SECOND;
   }
-  return rtf.format(-diffYears, 'year');
+  if (Math.abs(diff) < ONE_HOUR) {
+    return ONE_MINUTE;
+  }
+  if (Math.abs(diff) < ONE_DAY) {
+    return ONE_HOUR;
+  }
+  if (Math.abs(diff) < ONE_MONTH) {
+    return ONE_DAY;
+  }
+  if (Math.abs(diff) < ONE_YEAR) {
+    return ONE_MONTH;
+  }
+  return ONE_YEAR;
 }
 
 // 2024-09-26T19_07_05.532Z -> 2024-09-26T21:07:05

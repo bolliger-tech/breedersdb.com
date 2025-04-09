@@ -23,14 +23,15 @@
     <EntityViewTableRow :label="t('entity.commonColumns.disabled')">
       {{ plantGroup.disabled ? '✓' : '' }}
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
-      v-if="plantGroup.created && plantGroup.modified"
-      :created="plantGroup.created"
-      :modified="plantGroup.modified"
-    />
     <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
       {{ plantGroup.note }}
     </EntityViewTableRow>
+    <EntityViewTableMetaData
+      v-if="plantGroup.id && plantGroup.created && plantGroup.modified"
+      :id="plantGroup.id"
+      :created="plantGroup.created"
+      :modified="plantGroup.modified"
+    />
   </EntityViewTable>
 </template>
 
@@ -40,7 +41,7 @@ import { type PlantGroupFragment } from './plantGroupFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 export interface PlantGroupEntityTableProps {

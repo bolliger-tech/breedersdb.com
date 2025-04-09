@@ -17,13 +17,14 @@
     <EntityViewTableRow :label="t('entity.commonColumns.dateDisabled')">
       {{ plantRow.date_eliminated ? d(plantRow.date_eliminated, 'Ymd') : '' }}
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
-      :created="plantRow.created"
-      :modified="plantRow.modified"
-    />
     <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
       {{ plantRow.note }}
     </EntityViewTableRow>
+    <EntityViewTableMetaData
+      :id="plantRow.id"
+      :created="plantRow.created"
+      :modified="plantRow.modified"
+    />
   </EntityViewTable>
 </template>
 
@@ -32,7 +33,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { type PlantRowFragment } from './plantRowFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 
 export interface PlantRowEntityTableProps {
   plantRow: PlantRowFragment & {

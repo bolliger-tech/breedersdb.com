@@ -34,6 +34,7 @@ import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import type { TransformDataArgs } from 'src/composables/useExport';
 import { useExport } from 'src/composables/useExport';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t } = useI18n();
 
@@ -76,6 +77,7 @@ const usersCount = computed(
 type User = ResultOf<typeof query>['users'][0];
 
 const columns = [
+  useIdColumn(),
   {
     name: 'email',
     label: t('users.fields.email'),

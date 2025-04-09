@@ -36,6 +36,7 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import { useExport } from 'src/composables/useExport';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t, d } = useI18n();
 
@@ -95,6 +96,7 @@ const plantRowsCount = computed(
 type PlantRow = ResultOf<typeof query>['plant_rows'][0];
 
 const columns = computed(() => [
+  useIdColumn(),
   {
     name: 'name',
     label: t('entity.commonColumns.name'),

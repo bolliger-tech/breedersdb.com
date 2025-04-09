@@ -26,14 +26,15 @@
     <EntityViewTableRow :label="t('cultivars.fields.breeder')">
       {{ cultivar.breeder }}
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
-      v-if="cultivar.created && cultivar.modified"
-      :created="cultivar.created"
-      :modified="cultivar.modified"
-    />
     <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
       {{ cultivar.note }}
     </EntityViewTableRow>
+    <EntityViewTableMetaData
+      v-if="cultivar.id && cultivar.created && cultivar.modified"
+      :id="cultivar.id"
+      :created="cultivar.created"
+      :modified="cultivar.modified"
+    />
   </EntityViewTable>
 </template>
 
@@ -43,7 +44,7 @@ import { type CultivarFragment } from './cultivarFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
 
 export interface CultivarEntityTableProps {

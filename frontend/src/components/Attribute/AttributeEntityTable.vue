@@ -45,7 +45,8 @@
     <EntityViewTableRow :label="t('attributes.columns.attributeType')">
       {{ attributeTypeToLabel(attribute.attribute_type, t) }}
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
+    <EntityViewTableMetaData
+      :id="attribute.id"
       :created="attribute.created"
       :modified="attribute.modified"
     />
@@ -57,7 +58,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { type AttributeFragment } from './attributeFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 import {
   dataTypeToLabel,
   attributeTypeToLabel,

@@ -33,6 +33,7 @@ import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import { useExport } from 'src/composables/useExport';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t } = useI18n();
 
@@ -97,6 +98,7 @@ const crossingsCount = computed(
 type Crossing = ResultOf<typeof query>['crossings'][0];
 
 const columns = [
+  useIdColumn(),
   {
     name: 'name',
     label: t('entity.commonColumns.name'),

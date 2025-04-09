@@ -3,7 +3,8 @@
     <EntityViewTableRow :label="t('entity.commonColumns.name')">
       {{ rootstock.name }}
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
+    <EntityViewTableMetaData
+      :id="rootstock.id"
       :created="rootstock.created"
       :modified="rootstock.modified"
     />
@@ -15,7 +16,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { type RootstockFragment } from './rootstockFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 
 export interface RootstockEntityTableProps {
   rootstock: RootstockFragment;

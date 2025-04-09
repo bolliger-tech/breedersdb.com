@@ -9,7 +9,7 @@
       <template v-if="fetching">{{ t('base.loading') }}</template>
       <template v-else-if="error">{{ t('base.error') }}</template>
       <strong v-else :class="$q.dark.isActive ? 'text-white' : 'text-black'">
-        {{ timeAgo }}
+        <BaseRelativeTime :timestamp="data?.attributions[0]?.created" />.
       </strong>
     </template>
   </i18n-t>
@@ -17,12 +17,11 @@
 
 <script setup lang="ts">
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
-import { toLocaleRelativeTimeString } from 'src/utils/dateUtils';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { computed, watch, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { captureException } from '@sentry/browser';
+import BaseRelativeTime from 'src/components/Base/BaseRelativeTime.vue';
 
 const props = defineProps<{
   entityId: number;
@@ -87,24 +86,11 @@ const { fetching, data, error } = useQuery({
   pause,
 });
 
-const { locale, t } = useI18n();
-
-const timeAgo = computed(() => {
-  try {
-    const created = data.value?.attributions[0]?.created;
-    return created
-      ? toLocaleRelativeTimeString(new Date(created), locale.value)
-      : t('base.timespan.never');
-  } catch (e) {
-    captureException(e);
-    console.error(e);
-    return t('base.error');
-  }
-});
+const { t } = useI18n();
 
 watch(error, () => {
   if (error.value) {
-    // don't caputerException (network errors)
+    // don't capture exception (network errors)
     console.error(error.value);
   }
 });

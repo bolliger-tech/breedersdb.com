@@ -57,6 +57,7 @@ import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTable
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 import { useExport } from 'src/composables/useExport';
 import { n2semicolon } from 'src/utils/stringUtils';
+import { useIdColumn } from 'src/composables/useIdColumn';
 
 const { t, d, n } = useI18n();
 
@@ -118,6 +119,7 @@ const attributes = computed(
 );
 
 const columns = computed(() => [
+  useIdColumn(),
   {
     name: 'name',
     label: t('entity.commonColumns.name'),

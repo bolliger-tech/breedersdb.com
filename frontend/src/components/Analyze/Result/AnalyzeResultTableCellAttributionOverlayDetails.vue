@@ -94,10 +94,12 @@
         {{ data.attribution_form.name }}
       </RouterLink>
     </EntityViewTableRow>
-    <EntityTableViewTimestampRows
+    <EntityViewTableMetaData
       v-if="data.created && data.modified"
+      :id="data.id"
       :created="data.created"
       :modified="data.modified"
+      dense
     />
   </EntityViewTable>
 
@@ -131,7 +133,7 @@ import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vu
 import { type BaseSpriteIconProps } from 'components/Base/BaseSpriteIcon/baseSpriteIconProps';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
-import EntityTableViewTimestampRows from 'src/components/Entity/View/EntityViewTableTimestampRows.vue';
+import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import PlantGroupEntityTable from 'src/components/PlantGroup/PlantGroupEntityTable.vue';

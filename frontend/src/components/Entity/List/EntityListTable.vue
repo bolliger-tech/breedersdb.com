@@ -1,5 +1,6 @@
 <template>
   <q-table
+    ref="table"
     v-model:pagination="pagination"
     :class="{ 'entity-list-table--fullscreen': fullscreen }"
     :columns="orderedColumns"
@@ -84,7 +85,16 @@
         @drag-end="draggedColumn = null"
         @drag-start="draggedColumn = cellProps.col.name"
       >
-        <slot name="header-cell-label" v-bind="cellProps"></slot>
+        <slot name="header-cell-label" v-bind="cellProps">
+          <span
+            v-if="cellProps.col.monospaced || cellProps.col.muted"
+            :class="{
+              monospaced: cellProps.col.monospaced,
+              'text-muted': cellProps.col.muted,
+            }"
+            >{{ cellProps.col.label }}</span
+          >
+        </slot>
       </EntityListTableHeaderCell>
     </template>
 
@@ -104,7 +114,7 @@
 
     <template
       v-for="col in allColumns
-        .filter((c) => c.maxWidth || c.timestamp)
+        .filter((c) => c.timestamp || c.maxWidth || c.monospaced || c.muted) // ellipsis requires maxWidth
         .filter(
           (col) =>
             !bodyCellSlotNames.find((s) => s === `body-cell-${col.name}`),
@@ -117,26 +127,32 @@
         :style="col.maxWidth && `max-width: ${col.maxWidth}`"
       >
         <div
-          v-if="col.ellipsis"
-          style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+          v-if="cellProps.value"
+          :class="{
+            ellipsis: col.ellipsis,
+            monospaced: col.monospaced,
+            'text-muted': col.muted,
+          }"
         >
-          {{ n2semicolon(cellProps.value) }}
+          <template v-if="col.timestamp">
+            {{ d(cellProps.value, 'Ymd') }}<br />
+            <span class="text-muted">{{ d(cellProps.value, 'His') }}</span>
+          </template>
+          <template v-else-if="col.ellipsis">
+            {{ n2semicolon(cellProps.value) }}
+          </template>
+          <template v-else>
+            {{ cellProps.value }}
+          </template>
         </div>
-        <template v-else-if="col.timestamp && cellProps.value">
-          {{ d(cellProps.value, 'Ymd') }}<br />
-          <span class="text-muted">{{ d(cellProps.value, 'His') }}</span>
-        </template>
-        <template v-else>
-          {{ cellProps.value }}
-        </template>
       </q-td>
     </template>
   </q-table>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
-import type { QSelectSlots, QTableProps, QTableSlots } from 'quasar';
+import { computed, nextTick, ref, watch } from 'vue';
+import type { QSelectSlots, QTable, QTableProps, QTableSlots } from 'quasar';
 import EntityListTableColumnSelector from './EntityListTableColumnSelector.vue';
 import EntityListTableHeaderCell from './EntityListTableHeaderCell.vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -245,6 +261,21 @@ const orderedColumns = computed(() => {
       visibleColumns.value.indexOf(b.name),
   );
 });
+
+// scroll to right end if column is added
+const table = ref<QTable | null>(null);
+watch(visibleColumns, async (newVal, oldVal) => {
+  if (newVal.length > oldVal.length) {
+    await nextTick(); // wait until new columns are rendered
+    const dataContainer = table.value?.$el.querySelector('.q-table__middle');
+    if (dataContainer) {
+      dataContainer.scrollTo({
+        left: dataContainer.scrollWidth,
+        behavior: 'smooth',
+      });
+    }
+  }
+});
 </script>
 
 <style scoped lang="scss">
@@ -287,5 +318,16 @@ const orderedColumns = computed(() => {
 :global(.body--light .entity-list-table .q-table__middle) {
   border-left: 1px solid var(--q-shade);
   border-right: 1px solid var(--q-shade);
+}
+
+.monospaced {
+  font-family: $monospace;
+  font-weight: 600;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

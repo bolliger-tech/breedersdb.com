@@ -1,4 +1,5 @@
 import { useQuasar } from 'quasar';
+import { ID_COLUMN_NAME } from 'src/composables/useIdColumn';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import { toKebabCase } from 'src/utils/stringUtils';
 import { watch, toValue, type MaybeRef, computed } from 'vue';
@@ -10,9 +11,13 @@ export function useEntityTableColumns({
   defaultColumns: MaybeRef<string[]>;
   entityType: MaybeRef<string>;
 }) {
+  const defaultColumnsWithoutId = toValue(defaultColumns).filter(
+    (column) => column !== ID_COLUMN_NAME,
+  );
+
   const { queryArg: visibleColumns } = useQueryArg<string[]>({
     key: 'col',
-    defaultValue: toValue(defaultColumns),
+    defaultValue: defaultColumnsWithoutId,
     replace: true,
   });
 
@@ -25,7 +30,7 @@ export function useEntityTableColumns({
   // set again to force the adapted url if non default columns are set
   visibleColumns.value =
     localStorage.getItem<string[]>(localStorageKey.value) ??
-    toValue(defaultColumns);
+    defaultColumnsWithoutId;
 
   return {
     visibleColumns,

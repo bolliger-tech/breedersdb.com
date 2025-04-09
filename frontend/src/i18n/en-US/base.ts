@@ -26,6 +26,7 @@ export const base = {
     hour: 'hour | hours',
     day: 'day | days',
     never: 'never',
+    error: 'Failed to parse date',
   },
 
   show: 'Show',

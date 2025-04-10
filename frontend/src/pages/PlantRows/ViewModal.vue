@@ -11,7 +11,7 @@
         <PlantRowEntityTable :plant-row="plantRow" />
 
         <h3 class="q-mb-md">
-          {{ t('plantRows.activePlants') }}
+          {{ t('plants.active') }}
         </h3>
         <PlantList
           :rows="plantRow.plantsActive"
@@ -24,7 +24,7 @@
         />
 
         <h3 class="q-mb-md">
-          {{ t('plantRows.eliminatedPlants') }}
+          {{ t('plants.eliminated') }}
         </h3>
         <PlantList
           :rows="plantRow.plantsDisabled"

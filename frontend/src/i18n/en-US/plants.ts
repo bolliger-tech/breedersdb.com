@@ -1,6 +1,9 @@
 export const plants = {
   title: 'Plant | Plants',
 
+  active: 'Active plants',
+  eliminated: 'Eliminated plants',
+
   searchPlaceholder: 'Search by label ID or cultivar name',
   selectSearchNoOption: 'Type to search by label ID',
 

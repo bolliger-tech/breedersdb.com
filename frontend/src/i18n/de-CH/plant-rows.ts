@@ -15,6 +15,4 @@ export const plantRows = {
     'Wenn du diese Zeile deaktivierst, kann du keine Pflanzen mehr zu dieser Zeile hinzufügen. Wirklich deaktivieren?',
   deleteConfirmation:
     'Diese Zeile hat keine Pflanzen und wird daher dauerhaft gelöscht. Löschen?',
-  eliminatedPlants: 'Eliminierte Pflanzen',
-  activePlants: 'Aktive Pflanzen',
 };

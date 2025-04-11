@@ -41,9 +41,22 @@
           </template>
         </EntityRelatedTable>
 
-        <h3 class="q-mb-md">{{ t('plants.title', 2) }}</h3>
+        <h3 class="q-mb-md">{{ t('plants.active') }}</h3>
         <PlantList
-          :rows="plants"
+          :rows="plantsActive"
+          :visible-columns="[
+            'label_id',
+            'plant_group_name',
+            'plant_row',
+            'distance_plant_row_start',
+            'orchard',
+            'date_planted',
+          ]"
+        />
+
+        <h3 class="q-mb-md">{{ t('plants.eliminated') }}</h3>
+        <PlantList
+          :rows="plantsDisabled"
           :visible-columns="[
             'label_id',
             'plant_group_name',
@@ -109,7 +122,10 @@ const query = graphql(
         ...cultivarFragment
         plant_groups {
           ...plantGroupFragment
-          plants {
+          plantsActive: plants(where: { disabled: { _eq: false } }) {
+            ...plantFragment
+          }
+          plantsDisabled: plants(where: { disabled: { _eq: true } }) {
             ...plantFragment
           }
         }
@@ -139,8 +155,11 @@ const attributions = computed(
     (cultivar.value?.attributions_views || []) as AttributionsViewFragment[],
 );
 
-const plants = computed(
-  () => cultivar.value?.plant_groups.flatMap((pg) => pg.plants) || [],
+const plantsActive = computed(
+  () => cultivar.value?.plant_groups.flatMap((pg) => pg.plantsActive) || [],
+);
+const plantsDisabled = computed(
+  () => cultivar.value?.plant_groups.flatMap((pg) => pg.plantsDisabled) || [],
 );
 
 const { t, d } = useI18n();

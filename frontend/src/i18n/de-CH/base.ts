@@ -70,6 +70,7 @@ export const base = {
   },
   noResults: 'Keine Ergebnisse',
   noData: 'Keine Daten',
+  showAll: 'Alle anzeigen',
   qr: {
     title: 'QR-Scanner',
     permissionRequest:

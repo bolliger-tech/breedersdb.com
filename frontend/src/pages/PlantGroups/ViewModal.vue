@@ -22,9 +22,21 @@
 
         <EntityViewAllAttributions :attributions="attributions" show-entity />
 
-        <h3 class="q-mb-md">{{ t('plants.title', 2) }}</h3>
+        <h3 class="q-mb-md">{{ t('plants.active') }}</h3>
         <PlantList
-          :rows="plantGroup.plants"
+          :rows="plantGroup.plantsActive"
+          :visible-columns="[
+            'label_id',
+            'plant_row',
+            'distance_plant_row_start',
+            'orchard',
+            'date_planted',
+          ]"
+        />
+
+        <h3 class="q-mb-md">{{ t('plants.eliminated') }}</h3>
+        <PlantList
+          :rows="plantGroup.plantsDisabled"
           :visible-columns="[
             'label_id',
             'plant_row',
@@ -84,7 +96,10 @@ const query = graphql(
     ) {
       plant_groups_by_pk(id: $id) {
         ...plantGroupFragment
-        plants {
+        plantsActive: plants(where: { disabled: { _eq: false } }) {
+          ...plantFragment
+        }
+        plantsDisabled: plants(where: { disabled: { _eq: true } }) {
           ...plantFragment
         }
         attributions_views {

@@ -26,9 +26,9 @@
     <q-step
       :name="2"
       title=""
-      icon="sell"
-      done-icon="sell"
-      active-icon="sell"
+      icon="o_sell"
+      done-icon="o_sell"
+      active-icon="o_sell"
       :done="step2Done"
       :disable="!step1Done"
     >

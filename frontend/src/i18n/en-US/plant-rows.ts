@@ -16,7 +16,4 @@ export const plantRows = {
     'Disabling will make it impossible to add plants to this row. Do you really want to disable it?',
   deleteConfirmation:
     "This row doesn't have any plants and will therefore be permanently deleted. Are you sure?",
-
-  eliminatedPlants: 'Eliminated plants',
-  activePlants: 'Active plants',
 };

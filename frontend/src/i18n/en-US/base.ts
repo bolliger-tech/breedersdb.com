@@ -75,6 +75,7 @@ export const base = {
 
   noResults: 'No results',
   noData: 'No data',
+  showAll: 'Show all',
 
   qr: {
     title: 'QR scanner',

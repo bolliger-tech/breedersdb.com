@@ -1,18 +1,16 @@
 <template>
   <q-layout view="lhr Lpr fFf">
     <q-page-container>
-      <q-pull-to-refresh @refresh="reloadPage">
-        <BaseSuspense>
-          <template #default>
-            <router-view />
-          </template>
-          <template #fallback>
-            <div class="fixed-center">
-              <BaseSpinner size="xl" />
-            </div>
-          </template>
-        </BaseSuspense>
-      </q-pull-to-refresh>
+      <BaseSuspense>
+        <template #default>
+          <router-view />
+        </template>
+        <template #fallback>
+          <div class="fixed-center">
+            <BaseSpinner size="xl" />
+          </div>
+        </template>
+      </BaseSuspense>
     </q-page-container>
 
     <template v-if="!noNav">
@@ -48,8 +46,4 @@ interface MainLayoutProps {
 }
 
 defineProps<MainLayoutProps>();
-
-function reloadPage() {
-  window.location.reload();
-}
 </script>

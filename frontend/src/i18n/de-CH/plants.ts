@@ -1,5 +1,7 @@
 export const plants = {
   title: 'Pflanze | Pflanzen',
+  active: 'Aktive Pflanzen',
+  eliminated: 'Eliminierte Pflanzen',
   searchPlaceholder: 'Suche nach Etiketten-ID oder Cultivar',
   selectSearchNoOption: 'Tippe um nach Etiketten-ID zu suchen',
   fields: {

@@ -27,7 +27,7 @@
 
         <h3 class="q-my-md">{{ t('motherPlants.title', 2) }}</h3>
         <EntityRelatedTable
-          entity-key="plants"
+          entity-key="mother_plants"
           :rows="plant.mother_plants || []"
           row-key="id"
           :columns="motherPlantColumns"

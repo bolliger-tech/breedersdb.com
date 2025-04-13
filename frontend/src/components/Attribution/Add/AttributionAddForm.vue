@@ -6,13 +6,7 @@
     @deleted="onDeleted"
   />
 
-  <AttributionAddEntityPreview :entity="entity" />
-
-  <AttributionAddLastAttributed
-    :entity-id="entity.data.id"
-    :form-id="formId"
-    :entity-type="entity.type"
-  />
+  <AttributionAddEntity :entity="entity" :form-id="formId" />
 
   <AttributionAddAlreadyAttributed
     v-if="repeatTarget <= 1 && lastRepeat && !editId"
@@ -78,12 +72,11 @@ import AttributionAddAlreadyAttributed from 'src/components/Attribution/Add/Attr
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 import AttributionAddFormFieldList from 'src/components/Attribution/Add/AttributionAddFormFieldList.vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
-import AttributionAddEntityPreview from 'src/components/Attribution/Add/AttributionAddEntityPreview.vue';
 import { type AttributionInputValue } from 'src/components/Attribution/Input/AttributionInput.vue';
 import AttributionAddEditNote from 'src/components/Attribution/Add/AttributionAddEditNote.vue';
-import AttributionAddLastAttributed from 'src/components/Attribution/Add/AttributionAddLastAttributed.vue';
+import AttributionAddEntity from 'src/components/Attribution/Add/EntityInfo/AttributionAddEntity.vue';
 import type { UndefinedToNull } from 'src/utils/typescriptUtils';
-import type { EntityPreviewEntity } from './attributionAddEntityPreviewTypes';
+import type { EntityPreviewEntity } from './EntityInfo/attributionAddEntityTypes';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 

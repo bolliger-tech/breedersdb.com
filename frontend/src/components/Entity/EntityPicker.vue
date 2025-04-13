@@ -87,7 +87,7 @@
       v-else-if="inputMethod === 'lot-select'"
       ref="inputRef"
       v-model="lotId"
-      options="all"
+      options="no_varieties"
       required
       request-policy="cache-first"
       :label="t('entity.picker.lotName')"

@@ -52,6 +52,9 @@ export const attributions = {
     missingMetadata: 'Fehlende Metadaten.',
     addMetadata: 'Meta-Daten hinzufügen',
     missingValues: 'Fehlende Attributierungswerte.',
+    fieldsToDisplay: 'Sichtbare Felder',
+    location: 'Standort',
+    showLastAttributed: 'Zuletzt attributiert',
     lastAttributed: 'Zuletzt mit diesem Formular attributiert {timeAgo}',
     alreadyAttributed:
       'Du hast diese/s {entity} auf diesem Gerät mit diesem Formular bereits {timeAgo} attributiert.',

@@ -47,7 +47,7 @@ watch(
 );
 
 onMounted(() => {
-  $q.dark.set($q.localStorage.getItem(DARK_MODE_KEY) || 'auto');
+  $q.dark.set($q.localStorage.getItem(DARK_MODE_KEY) ?? 'auto');
   setColors($q.dark.isActive);
 });
 </script>

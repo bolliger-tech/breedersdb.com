@@ -95,3 +95,9 @@ code {
   white-space: pre-line;
   word-wrap: break-word;
 }
+
+.nowrap-ellipsis {
+  white-space: nowrap;
+  overflow-x: clip;
+  text-overflow: ellipsis;
+}

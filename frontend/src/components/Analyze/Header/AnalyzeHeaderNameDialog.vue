@@ -2,7 +2,7 @@
   <q-dialog v-model="show">
     <q-card style="min-width: 300px">
       <q-card-section class="row items-center q-py-sm">
-        <h2 class="q-ma-none nowrap-elipsis" style="width: calc(100% - 34px)">
+        <h2 class="q-ma-none nowrap-ellipsis" style="width: calc(100% - 34px)">
           {{ t('analyze.header.addName') }}
         </h2>
         <q-btn icon="close" flat round dense @click="onCancel" />

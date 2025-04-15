@@ -129,7 +129,7 @@
         <div
           v-if="cellProps.value"
           :class="{
-            ellipsis: col.ellipsis,
+            'nowrap-ellipsis': col.ellipsis,
             monospaced: col.monospaced,
             'text-muted': col.muted,
           }"
@@ -323,11 +323,5 @@ watch(visibleColumns, async (newVal, oldVal) => {
 .monospaced {
   font-family: $monospace;
   font-weight: 600;
-}
-
-.ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 </style>

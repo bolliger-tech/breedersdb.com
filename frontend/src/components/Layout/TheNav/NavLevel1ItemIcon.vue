@@ -1,13 +1,15 @@
 <template>
   <figure
-    class="row items-center q-mx-none child-item no-wrap"
+    class="row items-center q-mx-none child-item no-wrap full-width"
     :class="{
       'text-white': !isCurrentRoute,
       'text-secondary-100': isCurrentRoute,
     }"
   >
     <BaseSpriteIcon v-if="icon" :name="icon" size="sm" />
-    <figcaption v-if="label" class="q-ml-md">{{ label }}</figcaption>
+    <figcaption v-if="label" class="q-mx-md nowrap-ellipsis label">
+      {{ label }}
+    </figcaption>
   </figure>
 </template>
 
@@ -24,3 +26,9 @@ export interface NavLevel1ItemIconProps
 
 defineProps<NavLevel1ItemIconProps>();
 </script>
+
+<style scoped lang="scss">
+.label {
+  width: stretch;
+}
+</style>

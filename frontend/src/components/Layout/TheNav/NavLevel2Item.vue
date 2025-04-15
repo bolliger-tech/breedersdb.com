@@ -7,7 +7,7 @@
     />
     <q-item v-else clickable tag="a" :to="path" class="column justify-center">
       <span
-        class="label"
+        class="label nowrap-ellipsis"
         :class="{
           'text-white': !isCurrentRoute,
           'text-secondary-100': isCurrentRoute,
@@ -29,11 +29,6 @@ const { isCurrentRoute } = useNavItem(props);
 </script>
 
 <style scoped lang="scss">
-.label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 .label::before {
   content: '○';
   display: inline-block;

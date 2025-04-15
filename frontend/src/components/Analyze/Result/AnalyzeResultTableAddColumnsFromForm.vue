@@ -16,7 +16,7 @@
   <q-dialog v-model="open">
     <q-card style="width: clamp(310px, 90dvw, 600px); max-width: unset">
       <q-card-section>
-        <h3 class="q-ma-none nowrap-elipsis">
+        <h3 class="q-ma-none nowrap-ellipsis">
           {{ t('analyze.result.addColumnsFromForm') }}
         </h3>
       </q-card-section>

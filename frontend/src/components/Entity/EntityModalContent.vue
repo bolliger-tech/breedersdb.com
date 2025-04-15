@@ -17,13 +17,13 @@
             >
               <h2
                 v-if="title || $slots['title-text']"
-                class="q-ma-none nowrap-elipsis"
+                class="q-ma-none nowrap-ellipsis"
               >
                 <slot name="title-text">{{ title }}</slot>
               </h2>
               <h3
                 v-if="subtitle || $slots['subtitle-text']"
-                class="text-body1 q-ma-none nowrap-elipsis"
+                class="text-body1 q-ma-none nowrap-ellipsis"
               >
                 <slot name="subtitle-text">{{ subtitle }}</slot>
               </h3>
@@ -160,12 +160,6 @@ const { t } = useI18n();
 </script>
 
 <style lang="scss" scoped>
-.nowrap-elipsis {
-  white-space: nowrap;
-  overflow-x: clip;
-  text-overflow: ellipsis;
-}
-
 .entity-modal-content__default {
   max-height: calc(100dvh - 200px);
 }

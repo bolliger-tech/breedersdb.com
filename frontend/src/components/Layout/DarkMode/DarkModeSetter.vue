@@ -1,6 +1,6 @@
 <template>
   <q-item clickable class="column justify-center" @click="setMode">
-    <span class="label text-white">{{ label }}</span>
+    <span class="label nowrap-ellipsis text-white">{{ label }}</span>
   </q-item>
 </template>
 
@@ -22,11 +22,6 @@ function setMode() {
 </script>
 
 <style scoped lang="scss">
-.label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 .label::before {
   content: '○';
   display: inline-block;

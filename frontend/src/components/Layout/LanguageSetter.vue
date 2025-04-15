@@ -4,7 +4,7 @@
     class="column justify-center"
     @click="i18n.setAndPersistLocale(locale)"
   >
-    <span class="label text-white">{{ label }}</span>
+    <span class="label nowrap-ellipsis text-white">{{ label }}</span>
   </q-item>
 </template>
 
@@ -23,11 +23,6 @@ const i18n = useI18n({ useScope: 'global' });
 </script>
 
 <style scoped lang="scss">
-.label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 .label::before {
   content: '○';
   display: inline-block;

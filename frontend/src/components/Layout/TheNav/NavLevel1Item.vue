@@ -20,7 +20,6 @@
             :icon="icon"
             :label="label"
             :is-current-route="isCurrentRoute"
-            class="full-width"
           />
         </template>
         <template #default>

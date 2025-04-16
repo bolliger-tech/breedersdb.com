@@ -6,6 +6,7 @@
     index-path="/rows"
     sprite-icon="rows"
     :subtitle="t('plantRows.title', 1)"
+    :make-label="hasTextTemplate() ? getLabel : undefined"
     @new-from-template="
       (templateId) => {
         $router.push({
@@ -42,6 +43,8 @@ import PlantRowButtonDelete from 'src/components/PlantRow/PlantRowButtonDelete.v
 import PlantRowEntityForm from 'src/components/PlantRow/PlantRowEntityForm.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { useI18n } from 'src/composables/useI18n';
+import { makeTextLabel, hasTextTemplate } from 'src/utils/labelUtils';
+import { useGetEntityById } from 'src/composables/useGetEntityById';
 
 export type PlantRowEditInput = Omit<
   PlantRowFragment,
@@ -79,4 +82,31 @@ const editMutation = graphql(
 );
 
 const { t } = useI18n();
+
+const labelQuery = graphql(`
+  query PlantRowLabel($id: Int!) {
+    plant_rows_by_pk(id: $id) {
+      id
+      name
+    }
+  }
+`);
+
+const { getEntity } = useGetEntityById({
+  query: labelQuery,
+  additionalTypenames: ['plant_rows'],
+});
+
+async function getLabel(id: number) {
+  const data = await getEntity(id);
+  const text = data.value?.plant_rows_by_pk?.name;
+  if (!text) {
+    throw new Error('Failed to fetch label data');
+  }
+  const label = makeTextLabel({ text, caption: t('plantRows.title', 1) });
+  if (!label) {
+    throw new Error('Failed to make label');
+  }
+  return label;
+}
 </script>

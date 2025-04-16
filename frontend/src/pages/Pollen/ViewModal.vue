@@ -4,6 +4,7 @@
       v-if="pollen"
       sprite-icon="male"
       :title="pollen.name"
+      :print-data="print || undefined"
       @edit="edit"
     >
       <template #default>
@@ -81,6 +82,7 @@ import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import PollenEntityTable from 'src/components/Pollen/PollenEntityTable.vue';
+import { makeTextLabel } from 'src/utils/labelUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -124,6 +126,16 @@ const { data, error, fetching } = await useQuery({
 const pollen = computed(() => data.value?.pollen_by_pk);
 
 const { t, d } = useI18n();
+
+const print = computed(
+  () =>
+    pollen.value?.name &&
+    makeTextLabel({
+      text: pollen.value?.name,
+      caption: t('pollen.title', 1),
+    }),
+);
+
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();

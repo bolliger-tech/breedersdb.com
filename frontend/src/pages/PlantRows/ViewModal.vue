@@ -4,6 +4,7 @@
       v-if="plantRow"
       sprite-icon="rows"
       :title="plantRow.name"
+      :print-data="print || undefined"
       @edit="edit"
     >
       <template #default>
@@ -63,6 +64,7 @@ import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantList from 'src/components/Plant/PlantList.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import PlantRowEntityTable from 'src/components/PlantRow/PlantRowEntityTable.vue';
+import { makeTextLabel } from 'src/utils/labelUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -93,6 +95,15 @@ const { data, error, fetching } = await useQuery({
 const plantRow = computed(() => data.value?.plant_rows_by_pk);
 
 const { t } = useI18n();
+
+const print = computed(
+  () =>
+    plantRow.value?.name &&
+    makeTextLabel({
+      text: plantRow.value?.name,
+      caption: t('plantRows.title', 1),
+    }),
+);
 
 const route = useRoute();
 const router = useRouter();

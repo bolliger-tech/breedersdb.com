@@ -1,6 +1,11 @@
 <template>
   <EntityFetchWrapper :error="error" :fetching="fetching">
-    <EntityModalContent v-if="lot" sprite-icon="lot" @edit="edit">
+    <EntityModalContent
+      v-if="lot"
+      sprite-icon="lot"
+      :print-data="print || undefined"
+      @edit="edit"
+    >
       <template #title-text>
         <EntityName :lot="lot" :crossing="lot.crossing" no-link />
       </template>
@@ -61,6 +66,7 @@ import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import { makeTextLabel } from 'src/utils/labelUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -109,6 +115,16 @@ async function edit() {
 }
 
 const { t, d } = useI18n();
+
+const print = computed(
+  () =>
+    lot.value?.display_name &&
+    makeTextLabel({
+      text: lot.value?.display_name,
+      caption: t('lots.title', 1),
+    }),
+);
+
 const { localizedSortPredicate } = useLocalizedSort();
 
 type Cultivars = NonNullable<

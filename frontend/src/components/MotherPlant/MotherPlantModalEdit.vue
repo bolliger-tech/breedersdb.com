@@ -6,6 +6,7 @@
     index-path="/mother-plants"
     sprite-icon="female"
     :subtitle="t('motherPlants.title', 1)"
+    :make-label="hasTextTemplate() ? getLabel : undefined"
     @new-from-template="
       (templateId) => {
         $router.push({
@@ -48,6 +49,8 @@ import { graphql } from 'src/graphql';
 import type { MotherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useI18n } from 'vue-i18n';
+import { makeTextLabel, hasTextTemplate } from 'src/utils/labelUtils';
+import { useGetEntityById } from 'src/composables/useGetEntityById';
 
 export type MotherPlantEditInput = Omit<
   MotherPlantFragment,
@@ -111,4 +114,31 @@ const editMutation = graphql(
 );
 
 const { t } = useI18n();
+
+const labelQuery = graphql(`
+  query MotherPlantLabel($id: Int!) {
+    mother_plants_by_pk(id: $id) {
+      id
+      name
+    }
+  }
+`);
+
+const { getEntity } = useGetEntityById({
+  query: labelQuery,
+  additionalTypenames: ['mother_plants'],
+});
+
+async function getLabel(id: number) {
+  const data = await getEntity(id);
+  const text = data.value?.mother_plants_by_pk?.name;
+  if (!text) {
+    throw new Error('Failed to fetch label data');
+  }
+  const label = makeTextLabel({ text, caption: t('motherPlants.title', 1) });
+  if (!label) {
+    throw new Error('Failed to make label');
+  }
+  return label;
+}
 </script>

@@ -4,6 +4,7 @@
       v-if="crossing"
       sprite-icon="blossom"
       :title="crossing.name"
+      :print-data="print || undefined"
       @edit="edit"
     >
       <template #default>
@@ -94,6 +95,7 @@ import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragm
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import CrossingEntityTable from 'src/components/Crossing/CrossingEntityTable.vue';
+import { makeTextLabel } from 'src/utils/labelUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -139,6 +141,16 @@ const { data, error, fetching } = await useQuery({
 const crossing = computed(() => data.value?.crossings_by_pk);
 
 const { t, d } = useI18n();
+
+const print = computed(
+  () =>
+    crossing.value?.name &&
+    makeTextLabel({
+      text: crossing.value?.name,
+      caption: t('crossings.title', 1),
+    }),
+);
+
 const { localizedSortPredicate } = useLocalizedSort();
 
 const route = useRoute();

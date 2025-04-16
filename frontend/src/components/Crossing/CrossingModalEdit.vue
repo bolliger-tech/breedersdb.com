@@ -6,6 +6,7 @@
     index-path="/crossings"
     sprite-icon="blossom"
     :subtitle="t('crossings.title', 1)"
+    :make-label="hasTextTemplate() ? getLabel : undefined"
     @new-from-template="
       (templateId) => {
         $router.push({
@@ -44,6 +45,8 @@ import { graphql } from 'src/graphql';
 import type { CrossingFragment } from 'src/components/Crossing/crossingFragment';
 import { crossingFragment } from 'src/components/Crossing/crossingFragment';
 import { useI18n } from 'vue-i18n';
+import { makeTextLabel, hasTextTemplate } from 'src/utils/labelUtils';
+import { useGetEntityById } from 'src/composables/useGetEntityById';
 
 export type CrossingEditInput = Omit<CrossingFragment, 'created' | 'modified'>;
 export type CrossingInsertInput = Omit<
@@ -83,4 +86,31 @@ const editMutation = graphql(
 );
 
 const { t } = useI18n();
+
+const labelQuery = graphql(`
+  query CrossingLabel($id: Int!) {
+    crossings_by_pk(id: $id) {
+      id
+      name
+    }
+  }
+`);
+
+const { getEntity } = useGetEntityById({
+  query: labelQuery,
+  additionalTypenames: ['crossings'],
+});
+
+async function getLabel(id: number) {
+  const data = await getEntity(id);
+  const text = data.value?.crossings_by_pk?.name;
+  if (!text) {
+    throw new Error('Failed to fetch label data');
+  }
+  const label = makeTextLabel({ text, caption: t('crossings.title', 1) });
+  if (!label) {
+    throw new Error('Failed to make label');
+  }
+  return label;
+}
 </script>

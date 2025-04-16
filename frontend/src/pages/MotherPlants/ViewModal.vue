@@ -4,6 +4,7 @@
       v-if="motherPlant"
       sprite-icon="female"
       :title="motherPlant.name"
+      :print-data="print || undefined"
       @edit="edit"
     >
       <template #default>
@@ -38,6 +39,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import MotherPlantEntityTable from 'src/components/MotherPlant/MotherPlantEntityTable.vue';
+import { makeTextLabel } from 'src/utils/labelUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -71,6 +73,15 @@ const { data, error, fetching } = await useQuery({
 const motherPlant = computed(() => data.value?.mother_plants_by_pk);
 
 const { t } = useI18n();
+
+const print = computed(
+  () =>
+    motherPlant.value?.name &&
+    makeTextLabel({
+      text: motherPlant.value?.name,
+      caption: t('motherPlants.title', 1),
+    }),
+);
 
 const route = useRoute();
 const router = useRouter();

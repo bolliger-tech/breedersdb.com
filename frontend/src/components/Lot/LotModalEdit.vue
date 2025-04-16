@@ -6,6 +6,7 @@
     index-path="/lots"
     sprite-icon="lot"
     :subtitle="t('lots.title', 1)"
+    :make-label="hasTextTemplate() ? getLabel : undefined"
     @new-from-template="
       (templateId) => {
         $router.push({
@@ -43,6 +44,8 @@ import LotButtonDelete from 'src/components/Lot/LotButtonDelete.vue';
 import LotEntityForm from 'src/components/Lot/LotEntityForm.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { useI18n } from 'src/composables/useI18n';
+import { makeTextLabel, hasTextTemplate } from 'src/utils/labelUtils';
+import { useGetEntityById } from 'src/composables/useGetEntityById';
 
 export type LotEditInput = Omit<
   LotFragment,
@@ -99,4 +102,31 @@ const editMutation = graphql(
 );
 
 const { t } = useI18n();
+
+const labelQuery = graphql(`
+  query LotLabel($id: Int!) {
+    lots_by_pk(id: $id) {
+      id
+      display_name
+    }
+  }
+`);
+
+const { getEntity } = useGetEntityById({
+  query: labelQuery,
+  additionalTypenames: ['lots'],
+});
+
+async function getLabel(id: number) {
+  const data = await getEntity(id);
+  const text = data.value?.lots_by_pk?.display_name;
+  if (!text) {
+    throw new Error('Failed to fetch label data');
+  }
+  const label = makeTextLabel({ text, caption: t('lots.title', 1) });
+  if (!label) {
+    throw new Error('Failed to make label');
+  }
+  return label;
+}
 </script>

@@ -6,6 +6,7 @@
     index-path="/pollen"
     sprite-icon="male"
     :subtitle="t('pollen.title', 1)"
+    :make-label="hasTextTemplate() ? getLabel : undefined"
     @new-from-template="
       (templateId) => {
         $router.push({
@@ -42,6 +43,8 @@ import { graphql } from 'src/graphql';
 import type { PollenFragment } from 'src/components/Pollen/pollenFragment';
 import { pollenFragment } from 'src/components/Pollen/pollenFragment';
 import { useI18n } from 'vue-i18n';
+import { makeTextLabel, hasTextTemplate } from 'src/utils/labelUtils';
+import { useGetEntityById } from 'src/composables/useGetEntityById';
 
 export type PollenEditInput = Omit<
   PollenFragment,
@@ -94,4 +97,31 @@ const editMutation = graphql(
 );
 
 const { t } = useI18n();
+
+const labelQuery = graphql(`
+  query PollenLabel($id: Int!) {
+    pollen_by_pk(id: $id) {
+      id
+      name
+    }
+  }
+`);
+
+const { getEntity } = useGetEntityById({
+  query: labelQuery,
+  additionalTypenames: ['pollen'],
+});
+
+async function getLabel(id: number) {
+  const data = await getEntity(id);
+  const text = data.value?.pollen_by_pk?.name;
+  if (!text) {
+    throw new Error('Failed to fetch label data');
+  }
+  const label = makeTextLabel({ text, caption: t('pollen.title', 1) });
+  if (!label) {
+    throw new Error('Failed to make label');
+  }
+  return label;
+}
 </script>

@@ -84,7 +84,7 @@ import { attributionsViewFragment } from 'src/components/Attribution/attribution
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
-import { makeLabel } from 'src/utils/labelUtils';
+import { makeQrLabel } from 'src/utils/labelUtils';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 
 const props = defineProps<{ entityId: number | string }>();
@@ -130,7 +130,7 @@ const attributions = computed(
 const print = computed(
   () =>
     plant.value &&
-    makeLabel({
+    makeQrLabel({
       code: plant.value.label_id,
       desc: plant.value.plant_group_name,
     }),

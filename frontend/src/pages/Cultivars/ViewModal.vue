@@ -4,6 +4,7 @@
       v-if="cultivar"
       sprite-icon="cultivar"
       :title="cultivar.display_name"
+      :print-data="print || undefined"
       @edit="edit"
     >
       <template #title-text>
@@ -104,6 +105,7 @@ import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantList from 'src/components/Plant/PlantList.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
+import { makeTextLabel } from 'src/utils/labelUtils';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -163,6 +165,15 @@ const plantsDisabled = computed(
 );
 
 const { t, d } = useI18n();
+
+const print = computed(
+  () =>
+    cultivar.value?.display_name &&
+    makeTextLabel({
+      text: cultivar.value?.display_name,
+      caption: t('cultivars.title', 1),
+    }),
+);
 
 const route = useRoute();
 const router = useRouter();

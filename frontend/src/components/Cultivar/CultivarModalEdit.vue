@@ -6,6 +6,7 @@
     index-path="/cultivars"
     sprite-icon="cultivar"
     :subtitle="t('cultivars.title', 1)"
+    :make-label="hasTextTemplate() ? getLabel : undefined"
     @new-from-template="
       (templateId) => {
         $router.push({
@@ -45,6 +46,8 @@ import { graphql } from 'src/graphql';
 import type { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useI18n } from 'vue-i18n';
+import { makeTextLabel, hasTextTemplate } from 'src/utils/labelUtils';
+import { useGetEntityById } from 'src/composables/useGetEntityById';
 
 export type CultivarEditInput = Omit<
   CultivarFragment,
@@ -96,4 +99,31 @@ const editMutation = graphql(
 );
 
 const { t } = useI18n();
+
+const labelQuery = graphql(`
+  query CultivarLabel($id: Int!) {
+    cultivars_by_pk(id: $id) {
+      id
+      display_name
+    }
+  }
+`);
+
+const { getEntity } = useGetEntityById({
+  query: labelQuery,
+  additionalTypenames: ['cultivars'],
+});
+
+async function getLabel(id: number) {
+  const data = await getEntity(id);
+  const text = data.value?.cultivars_by_pk?.display_name;
+  if (!text) {
+    throw new Error('Failed to fetch label data');
+  }
+  const label = makeTextLabel({ text, caption: t('cultivars.title', 1) });
+  if (!label) {
+    throw new Error('Failed to make label');
+  }
+  return label;
+}
 </script>

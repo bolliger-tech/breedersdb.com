@@ -6,7 +6,7 @@
     index-path="/groups"
     sprite-icon="tree-group"
     :subtitle="t('plantGroups.title', 1)"
-    :make-label="hasTemplate() ? getLabel : undefined"
+    :make-label="hasQrTemplate() ? getLabel : undefined"
     @new-from-template="
       (templateId) => {
         $router.push({
@@ -43,9 +43,8 @@ import PlantGroupButtonDelete from 'src/components/PlantGroup/PlantGroupButtonDe
 import PlantGroupEntityForm from 'src/components/PlantGroup/PlantGroupEntityForm.vue';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { useI18n } from 'src/composables/useI18n';
-import { makeLabel, hasTemplate } from 'src/utils/labelUtils';
-import { useQuery } from '@urql/vue';
-import { ref, nextTick } from 'vue';
+import { makeQrLabel, hasQrTemplate } from 'src/utils/labelUtils';
+import { useGetEntityById } from 'src/composables/useGetEntityById';
 
 export type PlantGroupEditInput = Omit<
   PlantGroupFragment,
@@ -107,42 +106,31 @@ const editMutation = graphql(
 const labelQuery = graphql(`
   query PlantGroupLabel($id: Int!) {
     plant_groups_by_pk(id: $id) {
+      id
       label_id
       display_name
     }
   }
 `);
 
-const labelQueryVariables = ref({ id: -1 });
-const {
-  data: labelData,
-  error: fetchLabelDataError,
-  ...urql
-} = await useQuery({
+const { getEntity } = useGetEntityById({
   query: labelQuery,
-  variables: labelQueryVariables,
-  context: { additionalTypenames: ['plant_groups'] },
-  pause: true,
+  additionalTypenames: ['plant_groups'],
 });
 
 async function getLabel(id: number) {
-  labelQueryVariables.value.id = id;
-  await nextTick();
-  await urql.executeQuery();
-  await nextTick();
-  const data = labelData.value?.plant_groups_by_pk;
-  if (!data?.label_id) {
-    if (fetchLabelDataError.value) {
-      throw fetchLabelDataError.value;
-    }
+  const data = await getEntity(id);
+  const label_id = data.value?.plant_groups_by_pk?.label_id;
+  const display_name = data.value?.plant_groups_by_pk?.display_name;
+  if (!label_id || !display_name) {
     throw new Error('Failed to fetch label data');
   }
-  const label = makeLabel({
-    code: data.label_id,
-    desc: data.display_name,
+  const label = makeQrLabel({
+    code: label_id,
+    desc: display_name,
   });
   if (!label) {
-    throw new Error('Failed to make label for PlantGroup');
+    throw new Error('Failed to make label');
   }
   return label;
 }

@@ -78,7 +78,7 @@ import {
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import PlantList from 'src/components/Plant/PlantList.vue';
-import { makeLabel } from 'src/utils/labelUtils';
+import { makeQrLabel } from 'src/utils/labelUtils';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 
 const props = defineProps<{ entityId: number | string }>();
@@ -127,7 +127,7 @@ const print = computed(
   () =>
     plantGroup.value &&
     plantGroup.value.label_id &&
-    makeLabel({
+    makeQrLabel({
       code: plantGroup.value.label_id,
       desc: plantGroup.value.display_name,
     }),

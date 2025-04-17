@@ -1,3 +1,14 @@
+type User = {
+  id: number;
+  email: string;
+  locale: string;
+  password_hash: string;
+  first_failed_signin_attempt: string | null;
+  failed_signin_attempts: number;
+  last_signin: string | null;
+  created: string;
+  modified: string;
+};
 const UserFields = /* GraphQL */ `
   id
   email
@@ -18,6 +29,9 @@ export const InsertUserMutation = /* GraphQL */ `
   }
 `;
 
+export type UserQueryByEmailResponse = {
+  users: Array<User>;
+};
 export const UserQueryByEmail = /* GraphQL */ `
   query UserQueryByEmail($email: citext) {
     users(where: { email: { _eq: $email } }) {
@@ -145,6 +159,47 @@ export const ReferencedImagesQuery = /* GraphQL */ `
     ) {
       photo_note
       text_value
+    }
+  }
+`;
+
+export type LoggedActionsQueryResponse = {
+  logged_actions: Array<{
+    id: number;
+    context: any;
+    created: string;
+  }>;
+};
+export const LoggedActionsQuery = /* GraphQL */ `
+  query GetLoggedActions(
+    $name: String!
+    $subject: String!
+    $after: timestamptz!
+  ) {
+    logged_actions(
+      where: {
+        name: { _eq: $name }
+        subject: { _eq: $subject }
+        created: { _gt: $after }
+      }
+    ) {
+      id
+      context
+      created
+    }
+  }
+`;
+
+export const InsertLoggedActionMutation = /* GraphQL */ `
+  mutation InsertLoggedActionMutation(
+    $name: String!
+    $subject: String!
+    $context: jsonb
+  ) {
+    insert_logged_actions_one(
+      object: { name: $name, subject: $subject, context: $context }
+    ) {
+      id
     }
   }
 `;

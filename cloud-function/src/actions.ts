@@ -8,6 +8,8 @@ import { SignOut } from './auth/SignOut';
 import { Me } from './auth/Me';
 import { ChangePassword } from './auth/ChangePassword';
 import { validateBackendAuth } from './auth/validateBackendAuth';
+import { SendPasswordResetMail } from './auth/SendPasswordResetMail';
+import { ResetPassword } from './auth/ResetPassword';
 
 /* example request
 body: {
@@ -58,6 +60,12 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
         break;
       case 'ChangePassword':
         result = await ChangePassword(props);
+        break;
+      case 'SendPasswordResetMail':
+        result = await SendPasswordResetMail(props);
+        break;
+      case 'ResetPassword':
+        result = await ResetPassword(props);
         break;
       default:
         console.error('unknown action:', body);

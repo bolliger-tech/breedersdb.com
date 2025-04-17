@@ -1,4 +1,11 @@
-import { test, expect, beforeAll, afterAll } from 'bun:test';
+import {
+  test,
+  describe,
+  expect,
+  beforeAll,
+  afterAll,
+  afterEach,
+} from 'bun:test';
 import { post, postOrFail, postOrFailRaw } from '../fetch';
 import { config } from '../config';
 
@@ -491,4 +498,147 @@ test('change password resets failed sign in attempts', async () => {
   expect(result.data.ChangePassword.user.first_failed_signin_attempt).toBe(
     null,
   );
+});
+
+// -----------------------------------------------------------------------------
+// Password reset flow
+// -----------------------------------------------------------------------------
+describe('password reset flow', () => {
+  const sendPasswordResetMailMutation = /* GraphQL */ `
+    mutation SendPasswordResetMail($email: citext!) {
+      SendPasswordResetMail(email: $email) {
+        id
+      }
+    }
+  `;
+  const resetPasswordMutation = /* GraphQL */ `
+    mutation ResetPassword($token: String!, $password: String!) {
+      ResetPassword(token: $token, newPassword: $password) {
+        id
+      }
+    }
+  `;
+
+  afterEach(async () => {
+    // reset rate limiting
+    await postOrFail(
+      {
+        query: /* GraphQL */ `
+          mutation DeleteAllLoggedActions {
+            delete_logged_actions(where: {}) {
+              affected_rows
+            }
+          }
+        `,
+      },
+      adminHeaders,
+    );
+  });
+
+  describe('request password reset', () => {
+    test('invalid email', async () => {
+      const json = await post({
+        query: sendPasswordResetMailMutation,
+        variables: { email: 'invalid' },
+      });
+      expect(json.errors[0].extensions.code).toBe(400);
+      expect(json.errors[0].message).toBe(
+        'Bad Request: Enter a valid email address.',
+      );
+      expect(json.data).toBe(undefined);
+    });
+
+    test('rate limited', async () => {
+      let json;
+      for (let i = 0; i < 6; i++) {
+        json = await post({
+          query: sendPasswordResetMailMutation,
+          variables: { email: 'tester@breedersdb.com' },
+        });
+      }
+      expect(json.errors[0].extensions.code).toBe(429);
+      expect(json.errors[0].message).toBe(
+        'Too Many Requests: Too many password reset requests',
+      );
+      expect(json.data).toBe(undefined);
+    });
+
+    test('unknown email', async () => {
+      const json = await post({
+        query: sendPasswordResetMailMutation,
+        variables: { email: 'tester@breedersdb.com' },
+      });
+      expect(json.errors[0].extensions.code).toBe(404);
+      expect(json.errors[0].message).toBe('Not Found: User not found');
+      expect(json.data).toBe(undefined);
+    });
+
+    test.skip('smtp error', async () => {
+      // end-to-end testing is hard here
+      // test feature in the cloud-function instead
+    });
+    test.skip('happy case', async () => {
+      // end-to-end testing is hard here
+      // test feature in the cloud-function instead
+    });
+  });
+
+  describe('reset password', () => {
+    test('missing token', async () => {
+      const json = await post({
+        query: resetPasswordMutation,
+        variables: { password: 'Asdfasdf1!', token: '' },
+      });
+      expect(json.errors[0].extensions.code).toBe(400);
+      expect(json.errors[0].message).toBe(
+        'Bad Request: Missing or malformatted newPassword or token',
+      );
+      expect(json.data).toBe(undefined);
+    });
+
+    test('missing password', async () => {
+      const json = await post({
+        query: resetPasswordMutation,
+        variables: { token: 'asdf', password: '' },
+      });
+      expect(json.errors[0].extensions.code).toBe(400);
+      expect(json.errors[0].message).toBe(
+        'Bad Request: Missing or malformatted newPassword or token',
+      );
+      expect(json.data).toBe(undefined);
+    });
+
+    test.skip('invalid token: invalid signature', async () => {
+      // end-to-end testing is hard here
+      // test feature in the cloud-function instead
+    });
+    test.skip('invalid token: invalid issuer', async () => {
+      // end-to-end testing is hard here
+      // test feature in the cloud-function instead
+    });
+    test.skip('invalid token: invalid audience', async () => {
+      // end-to-end testing is hard here
+      // test feature in the cloud-function instead
+    });
+    test.skip('invalid token: expired', async () => {
+      // end-to-end testing is hard here
+      // test feature in the cloud-function instead
+    });
+    test.skip('unknown email', async () => {
+      // end-to-end testing is hard here
+      // test feature in the cloud-function instead
+    });
+    test.skip('user modified after token creation', async () => {
+      // end-to-end testing is hard here
+      // test feature in the cloud-function instead
+    });
+    test.skip('invalid password', async () => {
+      // end-to-end testing is hard here
+      // test feature in the cloud-function instead
+    });
+    test.skip('happy case', async () => {
+      // end-to-end testing is hard here
+      // test feature in the cloud-function instead
+    });
+  });
 });

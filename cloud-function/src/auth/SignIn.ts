@@ -6,10 +6,10 @@ import { fetchGraphQL } from '../lib/fetch';
 import {
   SetUserSigninAttemptsMutation,
   InsertUserTokenAndResetFailedSigninAttemptsMutations,
-  UserQueryByEmail,
 } from '../queries';
 import type { ActionProps, ActionResult } from '../types';
 import type { FullUserOutput } from './types';
+import { getUserByEmail } from '../lib/user';
 
 // get exponential backoff seconds
 // attempt 1: 0
@@ -51,15 +51,7 @@ export async function SignIn({
   }
 
   // get user
-  const user = await fetchGraphQL({
-    query: UserQueryByEmail,
-    variables: {
-      email: input.email,
-    },
-  }).then((data) => data?.data?.users?.[0]);
-  if (!user) {
-    throw new ErrorWithStatus(404, 'Not Found: User not found');
-  }
+  const user = await getUserByEmail(input.email);
 
   // check if user is already signed in
   const auth = await validateFrontendAuth(ctx.req.headers.cookie);

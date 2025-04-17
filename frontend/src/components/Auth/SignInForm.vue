@@ -1,41 +1,39 @@
 <template>
   <form class="form" @submit.prevent="onSubmit">
-    <div class="q-mb-md">
-      <q-input
-        v-model="email"
-        :label="t('auth.email')"
-        :bg-color="inputBgColor"
-        type="email"
-        autocomplete="username"
-        required
-        dense
-        outlined
-        :error="error?.graphQLErrors[0]?.extensions.code === 404"
-        :error-message="t('auth.errors.404')"
-      />
-      <EntityInputPassword
-        v-model="password"
-        :label="t('auth.password')"
-        autocomplete="current-password"
-        placeholder="*****"
-        required
-        hint=""
-        :error="
-          error &&
-          [401, 429].includes(error.graphQLErrors[0]?.extensions.code as number)
-        "
-      >
-        <template #error>
-          {{ error && formatFromNowErrorMessage(error) }}
-        </template>
-      </EntityInputPassword>
-      <q-btn
-        :label="t('auth.signInButton')"
-        :loading="fetching"
-        type="submit"
-        color="primary"
-      />
-    </div>
+    <EntityInput
+      v-model="email"
+      :label="t('auth.email')"
+      type="email"
+      autocomplete="username"
+      placeholder="mail@example.com"
+      required
+      hint=""
+      :error="error?.graphQLErrors[0]?.extensions.code === 404"
+      :error-message="t('auth.errors.404')"
+    />
+    <EntityInputPassword
+      v-model="password"
+      :label="t('auth.password')"
+      autocomplete="current-password"
+      placeholder="*****"
+      required
+      hint=""
+      :error="
+        error &&
+        [401, 429].includes(error.graphQLErrors[0]?.extensions.code as number)
+      "
+    >
+      <template #error>
+        {{ error && formatFromNowErrorMessage(error) }}
+      </template>
+    </EntityInputPassword>
+    <q-btn
+      class="q-mt-md float-right"
+      :label="t('auth.signInButton')"
+      :loading="fetching"
+      type="submit"
+      color="primary"
+    />
   </form>
   <BaseGraphqlError
     v-if="
@@ -54,18 +52,18 @@ import type { CombinedError } from '@urql/vue';
 import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { onBeforeUnmount, ref } from 'vue';
-import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
+import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getUserFromCookie } from 'src/utils/authUtils';
 import { useI18n } from 'src/composables/useI18n';
 import type { Locale } from 'src/composables/useI18n';
-import { useInputBackground } from 'src/composables/useInputBackground';
 import { toLocaleRelativeTimeString } from 'src/utils/dateUtils';
 import { useInterval } from 'quasar';
 import EntityInputPassword from 'src/components/Entity/Edit/EntityInputPassword.vue';
+import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
+
 const i18n = useI18n({ useScope: 'global' });
 const { t, locale } = i18n;
-const { inputBgColor } = useInputBackground();
 const { registerInterval, removeInterval } = useInterval();
 
 const route = useRoute();

@@ -13,18 +13,13 @@
         :error="error?.graphQLErrors[0]?.extensions.code === 404"
         :error-message="t('auth.errors.404')"
       />
-    </div>
-    <div class="q-mb-md">
-      <q-input
+      <EntityInputPassword
         v-model="password"
         :label="t('auth.password')"
-        :bg-color="inputBgColor"
-        type="password"
         autocomplete="current-password"
+        placeholder="*****"
         required
-        dense
-        outlined
-        bottom-slots
+        hint=""
         :error="
           error &&
           [401, 429].includes(error.graphQLErrors[0]?.extensions.code as number)
@@ -33,9 +28,7 @@
         <template #error>
           {{ error && formatFromNowErrorMessage(error) }}
         </template>
-      </q-input>
-    </div>
-    <div class="q-mb-md text-right">
+      </EntityInputPassword>
       <q-btn
         :label="t('auth.signInButton')"
         :loading="fetching"
@@ -69,6 +62,7 @@ import type { Locale } from 'src/composables/useI18n';
 import { useInputBackground } from 'src/composables/useInputBackground';
 import { toLocaleRelativeTimeString } from 'src/utils/dateUtils';
 import { useInterval } from 'quasar';
+import EntityInputPassword from 'src/components/Entity/Edit/EntityInputPassword.vue';
 const i18n = useI18n({ useScope: 'global' });
 const { t, locale } = i18n;
 const { inputBgColor } = useInputBackground();

@@ -19,15 +19,16 @@
       @save="changePassword"
       @reset-errors="() => (validationError = null)"
     >
-      <EntityInput
-        :ref="(el: InputRef) => (refs.passwordRef = el)"
+      <EntityInputPassword
+        :ref="(el: InputRef) => (refs.password = el)"
         v-model="data.password"
         :label="t('users.fields.newPassword')"
-        type="password"
         :autocomplete="me?.id === userId ? 'new-password' : 'off'"
+        required
         :rules="[
-          (val: string) =>
-            !!isValidPassword(val) || t('users.validation.invalidPassword'),
+          (val: string | null | undefined) =>
+            (!!val && isValidPassword(val)) ||
+            t('users.validation.invalidPassword'),
         ]"
       />
 
@@ -60,9 +61,9 @@ import { ref, watch } from 'vue';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
-import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
-import EntityInput from '../Entity/Edit/EntityInput.vue';
-import EntityModalContent from '../Entity/EntityModalContent.vue';
+import { makeModalPersistentSymbol } from 'src/components/Entity/modalProvideSymbols';
+import EntityInputPassword from 'src/components/Entity/Edit/EntityInputPassword.vue';
+import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import { isValidPassword } from 'src/utils/validationUtils';
 import { useRouter } from 'vue-router';
 import BaseInputLabel from '../Base/BaseInputLabel.vue';

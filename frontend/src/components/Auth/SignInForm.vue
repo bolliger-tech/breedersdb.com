@@ -18,6 +18,7 @@
       placeholder="*****"
       required
       hint=""
+      bottom-slots
       :error="
         error &&
         [401, 429].includes(error.graphQLErrors[0]?.extensions.code as number)

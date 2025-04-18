@@ -53,32 +53,20 @@ import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { onBeforeUnmount, ref } from 'vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
-import { useRoute, useRouter } from 'vue-router';
-import { getUserFromCookie } from 'src/utils/authUtils';
 import { useI18n } from 'src/composables/useI18n';
 import type { Locale } from 'src/composables/useI18n';
 import { toLocaleRelativeTimeString } from 'src/utils/dateUtils';
 import { useInterval } from 'quasar';
 import EntityInputPassword from 'src/components/Entity/Edit/EntityInputPassword.vue';
 import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
+import { useRedirectAuthenticatedUsers } from 'src/composables/useRedirectAuthenticatedUsers';
 
 const i18n = useI18n({ useScope: 'global' });
 const { t, locale } = i18n;
 const { registerInterval, removeInterval } = useInterval();
+const { redirect } = useRedirectAuthenticatedUsers();
 
-const route = useRoute();
-const router = useRouter();
-
-async function redirect() {
-  const redirect = route.query.redirect as string | undefined;
-  await router.push({ path: redirect || '/' });
-}
-
-if (getUserFromCookie()) {
-  await redirect();
-}
-
-const email = ref('');
+const email = ref(history.state.email || '');
 const password = ref('');
 
 const { error, fetching, ...urql } = useMutation(

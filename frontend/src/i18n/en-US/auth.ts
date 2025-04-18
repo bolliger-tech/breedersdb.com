@@ -14,8 +14,7 @@ export const auth = {
     invalidEmail: 'Invalid email address.',
     invalidPasswordOrToken:
       "Invalid password or reset link. Please verify you've opened the full link we sent you by email and you've entered a password.",
-    invalidToken:
-      "Invalid password reset link. Please verify you've opened the full link we sent you by email.",
+    invalidToken: 'Invalid or expired password reset link. Request a new link.',
     tokenExpired:
       'Password reset link has expired. Please request a new password reset link.',
   },
@@ -35,5 +34,6 @@ export const auth = {
       'The password reset token is missing. Please make sure you open the full link (without line breaks) we have sent you by email. Try to copy and paste the link in your browser.',
     passwordChanged:
       'Password changed. You can now sign in with your new password.',
+    requestNewToken: 'Get new password reset link',
   },
 };

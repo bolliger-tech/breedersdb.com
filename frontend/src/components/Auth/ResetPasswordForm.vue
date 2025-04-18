@@ -21,6 +21,13 @@
           t('users.validation.invalidPassword'),
       ]"
     />
+    <q-btn
+      v-if="isInvalidTokenError"
+      class="full-width q-mt-sm"
+      :label="t('auth.resetPassword.requestNewToken')"
+      color="negative"
+      :to="{ path: '/forgot-password' }"
+    />
     <div class="q-mt-xl q-mt-sm-lg row items-center justify-between">
       <q-btn
         dense
@@ -33,7 +40,7 @@
         :loading="fetching"
         type="submit"
         color="primary"
-        :disable="fetching || !!data"
+        :disable="fetching || !!data || isInvalidTokenError"
       />
     </div>
   </form>
@@ -106,4 +113,8 @@ const userError = computed(() => {
       return '';
   }
 });
+
+const isInvalidTokenError = computed(
+  () => error.value?.graphQLErrors[0]?.extensions.code === 401,
+);
 </script>

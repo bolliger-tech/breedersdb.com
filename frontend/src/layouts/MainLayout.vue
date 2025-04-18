@@ -13,26 +13,24 @@
       </BaseSuspense>
     </q-page-container>
 
-    <template v-if="!noNav">
-      <q-drawer
-        v-if="$q.screen.gt.sm"
-        side="left"
-        persitent
-        no-swipe-open
-        no-swipe-close
-        show-if-above
-        :width="100"
-        class="bg-primary"
-        :model-value="true"
-        behavior="desktop"
-      >
-        <MainNav />
-      </q-drawer>
+    <q-drawer
+      v-if="$q.screen.gt.sm"
+      side="left"
+      persitent
+      no-swipe-open
+      no-swipe-close
+      show-if-above
+      :width="100"
+      class="bg-primary"
+      :model-value="true"
+      behavior="desktop"
+    >
+      <MainNav />
+    </q-drawer>
 
-      <q-footer v-else>
-        <MainNav />
-      </q-footer>
-    </template>
+    <q-footer v-else>
+      <MainNav />
+    </q-footer>
   </q-layout>
 </template>
 
@@ -40,10 +38,4 @@
 import BaseSuspense from 'components/Base/BaseSuspense/BaseSuspense.vue';
 import BaseSpinner from 'components/Base/BaseSpinner.vue';
 import MainNav from 'components/Layout/TheNav/TheNav.vue';
-
-interface MainLayoutProps {
-  noNav?: boolean;
-}
-
-defineProps<MainLayoutProps>();
 </script>

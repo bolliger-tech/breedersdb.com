@@ -8,7 +8,6 @@
   <form v-else-if="!data" @submit.prevent="onSubmit">
     <EntityInputPassword
       v-model="password"
-      @update:model-value="error = undefined"
       :label="t('auth.resetPassword.newPassword')"
       autocomplete="new-password"
       placeholder="*****"
@@ -56,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
@@ -81,6 +80,10 @@ const { data, error, fetching, ...urql } = useMutation(
     }
   `),
 );
+
+// Reset graphql error when password changes so we see password validation
+// errors instead of the graphql error
+watch(password, () => (error.value = undefined));
 
 async function onSubmit() {
   await urql.executeMutation({

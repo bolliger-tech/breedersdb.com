@@ -109,6 +109,16 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/reset-password',
+    component: () => import('layouts/UnauthenticatedLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/Auth/ResetPasswordPage.vue'),
+      },
+    ],
+  },
+  {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     meta: { requiresAuth: true },

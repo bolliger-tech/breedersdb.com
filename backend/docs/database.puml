@@ -141,6 +141,15 @@ entity "**graftings**" #0000ff12 ##000088 {
   *""modified"": //timestamp with time zone //
 }
 
+entity "**logged_actions**" {
+  + ""id"": //integer [PK]//
+  --
+  *""name"": //text //
+  *""subject"": //text //
+  ""context"": //jsonb //
+  *""created"": //timestamp with time zone //
+}
+
 entity "**lots**" #ffff0012 ##888800 {
   + ""id"": //integer [PK]//
   --

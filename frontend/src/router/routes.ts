@@ -90,7 +90,7 @@ function createEntityRoutes(entity: string) {
 const routes: RouteRecordRaw[] = [
   {
     path: '/sign-in',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/UnauthenticatedLayout.vue'),
     props: { noNav: true },
     children: [
       {

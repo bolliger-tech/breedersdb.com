@@ -49,6 +49,7 @@ export default defineConfig((ctx) => {
         // extendTsConfig (tsConfig) {}
       },
 
+      // ⚠️ see redirect in App.vue before changing the router mode
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,

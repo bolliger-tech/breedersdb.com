@@ -28,13 +28,21 @@
         {{ error && formatFromNowErrorMessage(error) }}
       </template>
     </EntityInputPassword>
-    <q-btn
-      class="q-mt-md float-right"
-      :label="t('auth.signInButton')"
-      :loading="fetching"
-      type="submit"
-      color="primary"
-    />
+    <div class="q-mt-md row items-center justify-between">
+      <q-btn
+        dense
+        no-caps
+        flat
+        :to="{ path: '/forgot-password', state: { email } }"
+        :label="t('auth.forgotPassword.link')"
+      />
+      <q-btn
+        :label="t('auth.signInButton')"
+        :loading="fetching"
+        type="submit"
+        color="primary"
+      />
+    </div>
   </form>
   <BaseGraphqlError
     v-if="

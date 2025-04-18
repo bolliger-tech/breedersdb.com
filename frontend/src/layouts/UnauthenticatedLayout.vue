@@ -5,16 +5,19 @@
         style="min-height: 100svh"
         class="column items-center justify-center"
       >
-        <BaseSuspense>
-          <template #default>
-            <router-view />
-          </template>
-          <template #fallback>
-            <div class="fixed-center">
-              <BaseSpinner size="xl" />
-            </div>
-          </template>
-        </BaseSuspense>
+        <div style="width: clamp(200px, calc(100svw - 32px), 400px)">
+          <h1 class="q-mb-md text-center">{{ orgName }}</h1>
+          <BaseSuspense>
+            <template #default>
+              <router-view />
+            </template>
+            <template #fallback>
+              <div class="fixed-center">
+                <BaseSpinner size="xl" />
+              </div>
+            </template>
+          </BaseSuspense>
+        </div>
 
         <div class="text-h4 text-muted q-mt-xl q-mb-md">
           <BaseSpriteIcon name="blossom" size="lg" />
@@ -33,5 +36,6 @@ import BaseSpinner from 'components/Base/BaseSpinner.vue';
 import BaseSpriteIcon from 'components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import { useI18n } from 'src/composables/useI18n';
 
+const orgName = import.meta.env.VITE_ORG;
 const { t } = useI18n();
 </script>

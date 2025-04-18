@@ -1,5 +1,5 @@
 <template>
-  <form class="form" @submit.prevent="onSubmit">
+  <form @submit.prevent="onSubmit">
     <EntityInput
       v-model="email"
       :label="t('auth.email')"

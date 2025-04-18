@@ -1,6 +1,5 @@
 <template>
-  <h1 class="q-mb-md">{{ orgName }}</h1>
-  <h2>{{ t('auth.signInTitle') }}</h2>
+  <h2 class="text-center">{{ t('auth.signInTitle') }}</h2>
   <SignInForm />
 </template>
 
@@ -9,7 +8,6 @@ import SignInForm from 'components/Auth/SignInForm.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useRedirectAuthenticatedUsers } from 'src/composables/useRedirectAuthenticatedUsers';
 
-const orgName = import.meta.env.VITE_ORG;
 const { t } = useI18n();
 
 await useRedirectAuthenticatedUsers().redirectIfAuthenticated();

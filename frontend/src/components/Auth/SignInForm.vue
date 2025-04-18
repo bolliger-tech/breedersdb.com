@@ -51,7 +51,6 @@
         error?.graphQLErrors[0]?.extensions.code as number,
       )
     "
-    class="graphql-error"
     :error="error"
   />
 </template>

@@ -52,11 +52,7 @@
       class="q-mt-md float-right"
     />
   </template>
-  <BaseGraphqlError
-    v-if="error && !userError"
-    style="max-width: 100%"
-    :error="error"
-  />
+  <BaseGraphqlError v-if="error && !userError" :error="error" />
 </template>
 
 <script setup lang="ts">

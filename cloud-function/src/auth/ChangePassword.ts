@@ -1,12 +1,9 @@
-import { hashAndSaltPassword } from '../lib/crypto';
-import { ChangePasswordMutation } from '../queries';
 import { ErrorWithStatus } from '../lib/errors';
-import { fetchGraphQL } from '../lib/fetch';
 import type { ActionProps, ActionResult } from '../types';
-import { validatePassword } from '../lib/validation';
 import type { UserOutput } from './types';
 import { validateFrontendAuth } from './validateFrontendAuth';
 import { createClearAuthCookies } from '../lib/cookies';
+import { updateUserPassword } from '../lib/user';
 
 export async function ChangePassword({
   input,
@@ -15,9 +12,6 @@ export async function ChangePassword({
   if (!input || !input.user_id || !input.password) {
     throw new ErrorWithStatus(400, 'Bad Request: Missing user_id or password');
   }
-
-  validatePassword(input.password);
-  const passwordHash = await hashAndSaltPassword(input.password);
 
   // The trigger user_tokens_delete_on_password_change deletes all tokens
   // for this user. If the user changed their own password, we must
@@ -32,20 +26,13 @@ export async function ChangePassword({
       }
     : undefined;
 
-  const data = await fetchGraphQL({
-    query: ChangePasswordMutation,
-    variables: {
-      user_id: input.user_id,
-      password_hash: passwordHash,
-    },
+  const userId = await updateUserPassword({
+    userId: parseInt(input.user_id),
+    password: input.password,
   });
-  if (data.errors) {
-    const firstError = data.errors[0];
-    throw new ErrorWithStatus(400, firstError.message);
-  }
 
   return {
-    response: { id: data.data.update_users_by_pk.id },
+    response: { id: userId },
     headers,
   };
 }

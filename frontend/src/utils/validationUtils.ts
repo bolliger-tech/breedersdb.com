@@ -11,7 +11,7 @@ const PASSWORD_REGEX =
   /(^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$|^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{12,}$|^.{32,}$)/;
 
 export function isValidEmail(val: string): boolean {
-  return !!val?.length && EMAIL_REGEX.test(val);
+  return !!val?.length && val.length <= 254 && EMAIL_REGEX.test(val);
 }
 
 export function isValidPassword(val: string): boolean {

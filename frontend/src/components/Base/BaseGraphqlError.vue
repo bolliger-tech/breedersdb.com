@@ -1,5 +1,8 @@
 <template>
-  <article class="q-my-md q-pa-sm bg-black text-negative rounded-borders">
+  <article
+    class="q-my-md q-pa-sm bg-black text-negative rounded-borders"
+    style="max-width: 100%"
+  >
     <template v-if="isOfflineError">
       <BaseMessage type="error" icon-size="xl">
         <h3 class="q-my-none col text-white">

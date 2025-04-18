@@ -11,6 +11,7 @@
 - "!include public_crossings.yaml"
 - "!include public_cultivars.yaml"
 - "!include public_graftings.yaml"
+- "!include public_logged_actions.yaml"
 - "!include public_lots.yaml"
 - "!include public_materialized_view_refreshes.yaml"
 - "!include public_mother_plants.yaml"

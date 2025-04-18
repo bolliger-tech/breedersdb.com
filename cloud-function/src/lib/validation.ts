@@ -13,7 +13,7 @@ const PASSWORD_REGEX =
   /(^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$|^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{12,}$|^.{32,}$)/;
 
 export function validateEmail(email: string) {
-  if (!EMAIL_REGEX.test(email)) {
+  if (email.length > 254 || !EMAIL_REGEX.test(email)) {
     throw new ErrorWithStatus(400, 'Bad Request: Enter a valid email address.');
   }
 }

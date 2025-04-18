@@ -25,17 +25,28 @@ jobs:
         run: |
           HASURA_GRAPHQL_ADMIN_SECRET=$(openssl rand -hex 16)
           CLOUD_FUNCTION_SECRET=$(openssl rand -hex 16)
+          CLOUD_FUNCTION_URL=http://cloud-function:8090
           # backend
           echo "HASURA_GRAPHQL_ADMIN_SECRET=$HASURA_GRAPHQL_ADMIN_SECRET" >> backend/.env
           echo "CLOUD_FUNCTION_SECRET=$CLOUD_FUNCTION_SECRET" >> backend/.env
           echo "HASURA_GRAPHQL_AUTH_HOOK=http://cloud-function:8090/authenticate-hasura-request" >> backend/.env
-          echo "CLOUD_FUNCTION_URL=http://cloud-function:8090" >> backend/.env
+          echo "CLOUD_FUNCTION_URL=$CLOUD_FUNCTION_URL" >> backend/.env
           echo "HASURA_GRAPHQL_AUTH_HOOK_MODE=POST" >> backend/.env
           # cloud-function
           echo "HASURA_GRAPHQL_ADMIN_SECRET=$HASURA_GRAPHQL_ADMIN_SECRET" >> cloud-function/.env
           echo "CLOUD_FUNCTION_SECRET=$CLOUD_FUNCTION_SECRET" >> cloud-function/.env
+          echo "CLOUD_FUNCTION_URL=$CLOUD_FUNCTION_URL" >> cloud-function/.env
           echo "HASURA_GRAPHQL_URL=http://hasura:8080/v1/graphql" >> cloud-function/.env
           echo "NODE_ENV=production" >> cloud-function/.env
+          echo "PASSWORD_RESET_URL='http://localhost/#/reset-password?token={jwt}'" >> cloud-function/.env
+          echo "PASSWORD_RESET_SECRET=someSecretInProduction" >> cloud-function/.env
+          echo "EMAIL_HOST=mail.example.com" >> cloud-function/.env
+          echo "EMAIL_PORT=465" >> cloud-function/.env
+          echo "EMAIL_SECURE=true" >> cloud-function/.env
+          echo "EMAIL_USER=noreply@example.com" >> cloud-function/.env
+          echo "EMAIL_PASS=someSecretInProduction" >> cloud-function/.env
+          echo "EMAIL_FROM=noreply@example.com" >> cloud-function/.env
+          echo "EMAIL_REPLY_TO=admin@example.com" >> cloud-function/.env
 
       - name: Install Hasura-CLI
         run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash

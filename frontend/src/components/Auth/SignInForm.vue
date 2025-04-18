@@ -1,41 +1,41 @@
 <template>
-  <form class="form" @submit.prevent="onSubmit">
-    <div class="q-mb-md">
-      <q-input
-        v-model="email"
-        :label="t('auth.email')"
-        :bg-color="inputBgColor"
-        type="email"
-        autocomplete="username"
-        required
+  <form @submit.prevent="onSubmit">
+    <EntityInput
+      v-model="email"
+      :label="t('auth.email')"
+      type="email"
+      autocomplete="username"
+      placeholder="mail@example.com"
+      required
+      hint=""
+      :error="error?.graphQLErrors[0]?.extensions.code === 404"
+      :error-message="t('auth.errors.404')"
+    />
+    <EntityInputPassword
+      v-model="password"
+      :label="t('auth.password')"
+      autocomplete="current-password"
+      placeholder="*****"
+      required
+      hint=""
+      bottom-slots
+      :error="
+        error &&
+        [401, 429].includes(error.graphQLErrors[0]?.extensions.code as number)
+      "
+    >
+      <template #error>
+        {{ error && formatFromNowErrorMessage(error) }}
+      </template>
+    </EntityInputPassword>
+    <div class="q-mt-md row items-center justify-between">
+      <q-btn
         dense
-        outlined
-        :error="error?.graphQLErrors[0]?.extensions.code === 404"
-        :error-message="t('auth.errors.404')"
+        no-caps
+        flat
+        :to="{ path: '/forgot-password', state: { email } }"
+        :label="t('auth.forgotPassword.link')"
       />
-    </div>
-    <div class="q-mb-md">
-      <q-input
-        v-model="password"
-        :label="t('auth.password')"
-        :bg-color="inputBgColor"
-        type="password"
-        autocomplete="current-password"
-        required
-        dense
-        outlined
-        bottom-slots
-        :error="
-          error &&
-          [401, 429].includes(error.graphQLErrors[0]?.extensions.code as number)
-        "
-      >
-        <template #error>
-          {{ error && formatFromNowErrorMessage(error) }}
-        </template>
-      </q-input>
-    </div>
-    <div class="q-mb-md text-right">
       <q-btn
         :label="t('auth.signInButton')"
         :loading="fetching"
@@ -51,7 +51,6 @@
         error?.graphQLErrors[0]?.extensions.code as number,
       )
     "
-    class="graphql-error"
     :error="error"
   />
 </template>
@@ -61,32 +60,21 @@ import type { CombinedError } from '@urql/vue';
 import { useMutation } from '@urql/vue';
 import { graphql } from 'src/graphql';
 import { onBeforeUnmount, ref } from 'vue';
-import BaseGraphqlError from '../Base/BaseGraphqlError.vue';
-import { useRoute, useRouter } from 'vue-router';
-import { getUserFromCookie } from 'src/utils/authUtils';
+import BaseGraphqlError from 'src/components/Base/BaseGraphqlError.vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { Locale } from 'src/composables/useI18n';
-import { useInputBackground } from 'src/composables/useInputBackground';
 import { toLocaleRelativeTimeString } from 'src/utils/dateUtils';
 import { useInterval } from 'quasar';
+import EntityInputPassword from 'src/components/Entity/Edit/EntityInputPassword.vue';
+import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
+import { useRedirectAuthenticatedUsers } from 'src/composables/useRedirectAuthenticatedUsers';
+
 const i18n = useI18n({ useScope: 'global' });
 const { t, locale } = i18n;
-const { inputBgColor } = useInputBackground();
 const { registerInterval, removeInterval } = useInterval();
+const { redirect } = useRedirectAuthenticatedUsers();
 
-const route = useRoute();
-const router = useRouter();
-
-async function redirect() {
-  const redirect = route.query.redirect as string | undefined;
-  await router.push({ path: redirect || '/' });
-}
-
-if (getUserFromCookie()) {
-  await redirect();
-}
-
-const email = ref('');
+const email = ref(history.state.email || '');
 const password = ref('');
 
 const { error, fetching, ...urql } = useMutation(
@@ -163,12 +151,3 @@ onBeforeUnmount(() => {
   removeInterval();
 });
 </script>
-
-<style lang="scss" scoped>
-.form {
-  width: clamp(200px, calc(100svw - 32px), 400px);
-}
-.graphql-error {
-  max-width: 100%;
-}
-</style>

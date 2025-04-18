@@ -41,17 +41,17 @@
         (data.locale = option ? option.value : DEFAULT_LOCALE)
     "
   />
-  <EntityInput
+  <EntityInputPassword
     v-if="!('id' in props.user)"
     :ref="(el: InputRef) => (refs.password = el)"
     v-model="data.password"
     :label="t('users.fields.password')"
-    type="password"
     autocomplete="off"
     required
     :rules="[
-      (val: string) =>
-        !!isValidPassword(val) || t('users.validation.invalidPassword'),
+      (val: string | null | undefined) =>
+        (!!val && isValidPassword(val)) ||
+        t('users.validation.invalidPassword'),
     ]"
   />
   <template v-else>
@@ -63,11 +63,11 @@
 import type { LocaleOption } from 'src/composables/useI18n';
 import { getLocaleOptions, useI18n } from 'src/composables/useI18n';
 import { DEFAULT_LOCALE } from 'src/i18n';
-import { ref } from 'vue';
-import EntityInput from '../Entity/Edit/EntityInput.vue';
-import EntitySelect from '../Entity/Edit/EntitySelect.vue';
-import { watch } from 'vue';
-import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
+import { ref, watch } from 'vue';
+import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
+import EntitySelect from 'src/components/Entity/Edit/EntitySelect.vue';
+import EntityInputPassword from 'src/components/Entity/Edit/EntityInputPassword.vue';
+import { makeModalPersistentSymbol } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import type { UserModalEditProps } from './UserModalEdit.vue';
 import type { InputRef } from 'src/composables/useEntityForm';

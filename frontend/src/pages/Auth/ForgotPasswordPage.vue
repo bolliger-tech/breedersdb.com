@@ -1,10 +1,12 @@
 <template>
-  <h2 class="text-center">{{ t('auth.signInTitle') }}</h2>
-  <SignInForm />
+  <p>
+    {{ t('auth.forgotPassword.description') }}
+  </p>
+  <ForgotPasswordForm />
 </template>
 
 <script setup lang="ts">
-import SignInForm from 'components/Auth/SignInForm.vue';
+import ForgotPasswordForm from 'components/Auth/ForgotPasswordForm.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { useRedirectAuthenticatedUsers } from 'src/composables/useRedirectAuthenticatedUsers';
 

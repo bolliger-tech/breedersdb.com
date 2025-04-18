@@ -29,6 +29,26 @@ actions:
     permissions:
       - role: user
       - role: public
+  - name: ResetPassword
+    definition:
+      kind: synchronous
+      handler: '{{CLOUD_FUNCTION_URL}}/actions'
+      headers:
+        - name: X-Cloud-Function-Secret
+          value_from_env: CLOUD_FUNCTION_SECRET
+    permissions:
+      - role: user
+      - role: public
+  - name: SendPasswordResetMail
+    definition:
+      kind: synchronous
+      handler: '{{CLOUD_FUNCTION_URL}}/actions'
+      headers:
+        - name: X-Cloud-Function-Secret
+          value_from_env: CLOUD_FUNCTION_SECRET
+    permissions:
+      - role: public
+      - role: user
   - name: SignIn
     definition:
       kind: synchronous
@@ -37,8 +57,6 @@ actions:
       headers:
         - name: X-Cloud-Function-Secret
           value_from_env: CLOUD_FUNCTION_SECRET
-        - name: X-Rate-Limit
-          value: signin
     permissions:
       - role: user
       - role: public

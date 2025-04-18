@@ -16,6 +16,19 @@ type Query {
 }
 
 type Mutation {
+  ResetPassword(
+    newPassword: String!
+    token: String!
+  ): UserOutput!
+}
+
+type Mutation {
+  SendPasswordResetMail(
+    email: citext!
+  ): UserOutput!
+}
+
+type Mutation {
   SignIn(
     email: citext!
     password: String!

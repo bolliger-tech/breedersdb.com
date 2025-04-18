@@ -1,0 +1,3 @@
+table:
+  name: logged_actions
+  schema: public

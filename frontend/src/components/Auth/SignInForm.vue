@@ -151,12 +151,3 @@ onBeforeUnmount(() => {
   removeInterval();
 });
 </script>
-
-<style lang="scss" scoped>
-.form {
-  width: clamp(200px, calc(100svw - 32px), 400px);
-}
-.graphql-error {
-  max-width: 100%;
-}
-</style>

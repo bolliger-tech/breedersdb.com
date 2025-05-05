@@ -127,9 +127,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   if (videoStream) {
-    videoStream.getTracks().forEach(function (track) {
-      track.stop();
-    });
+    videoStream.getTracks().forEach((track) => track.stop());
   }
   if (videoFrame) {
     video.cancelVideoFrameCallback(videoFrame);

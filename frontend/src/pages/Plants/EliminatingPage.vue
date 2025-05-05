@@ -27,7 +27,7 @@
             color="primary"
             :label="t('base.continue')"
             :loading="fetching"
-            @click="step = 2"
+            @click="onContinue"
           />
         </q-stepper-navigation>
       </q-step>
@@ -148,6 +148,11 @@ function onAfterTransition(to: string | number) {
       eliminateButton.value?.$el.focus();
       break;
   }
+}
+
+async function onContinue() {
+  if (!plantPicker.value) throw new Error('PlantPicker ref is null');
+  await plantPicker.value.loadEntity();
 }
 
 watch(plant, (newPlant) => {

@@ -107,7 +107,7 @@ video.setAttribute('playsinline', ''); // no fullscreen (iOS)
 const videoAccess = ref(false);
 const loading = ref(true);
 let videoStream: MediaStream;
-let animationFrame: number | null = null;
+let videoFrame: number | null = null;
 
 let renderingContext: CanvasRenderingContext2D;
 
@@ -131,8 +131,9 @@ onBeforeUnmount(() => {
       track.stop();
     });
   }
-  if (animationFrame) {
-    cancelAnimationFrame(animationFrame);
+  if (videoFrame) {
+    video.cancelVideoFrameCallback(videoFrame);
+    videoFrame = null;
   }
 });
 
@@ -144,6 +145,7 @@ async function initVideo() {
         width: { ideal: 640 },
         height: { ideal: 640 },
         aspectRatio: { ideal: 1 },
+        frameRate: { ideal: 15 }, // Reduce frame rate to save battery
       },
     });
 
@@ -157,7 +159,7 @@ async function initVideo() {
     await canvasAndVideoAreReady();
     emit('ready');
 
-    animationFrame = requestAnimationFrame(processVideoFrame);
+    videoFrame = video.requestVideoFrameCallback(processVideoFrame);
   } catch (e) {
     if (
       e instanceof DOMException &&
@@ -269,7 +271,7 @@ function processVideoFrame() {
     }
   }
 
-  animationFrame = requestAnimationFrame(processVideoFrame);
+  videoFrame = video.requestVideoFrameCallback(processVideoFrame);
 }
 
 function drawFrameAroundCode(location: {

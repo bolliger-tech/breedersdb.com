@@ -1,5 +1,6 @@
 import sodium from 'libsodium-wrappers-sumo';
 import crypto from 'crypto';
+import jose from 'jose';
 import { config } from './config';
 
 const JWT_ALG = 'HS256';
@@ -51,7 +52,6 @@ export async function generateJws({
   } & Record<string, unknown>;
   key: string;
 }) {
-  const jose = await import('jose');
   const encSecret = new TextEncoder().encode(key);
   const { aud, sub, exp, ...rest } = payload;
   return await new jose.SignJWT(rest)
@@ -73,7 +73,6 @@ export async function verifyJwt({
   key: string;
   issuer?: string;
 }) {
-  const jose = await import('jose');
   return await jose.jwtVerify(jwt, new TextEncoder().encode(key), {
     algorithms: [JWT_ALG],
     audience: config.CLOUD_FUNCTION_URL,

@@ -7,10 +7,7 @@
     <template #settings>
       <q-toggle v-model="fields.plantGroup" :label="t('plantGroups.title')" />
       <q-toggle v-model="fields.cultivar" :label="t('cultivars.title')" />
-      <q-toggle
-        v-model="fields.location"
-        :label="t('attributions.add.location')"
-      />
+      <q-toggle v-model="fields.location" :label="t('plantRows.title')" />
       <q-toggle v-model="fields.orchard" :label="t('orchards.title')" />
     </template>
 

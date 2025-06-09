@@ -84,6 +84,7 @@ import { usePrint } from 'src/composables/usePrint';
 import { captureException } from '@sentry/browser';
 import { useQuasar } from 'quasar';
 import type { PartialWithUndefined } from 'src/utils/typescriptUtils';
+import { HandledError } from './HandledError';
 
 /**
  * NOTE: your mutations must have a variable called $entity
@@ -174,7 +175,9 @@ async function save() {
 
   validationError.value = isValid ? null : t('base.validation.invalidFields');
   if (!isValid) {
-    return Promise.reject(new Error(t('base.validation.invalidFields')));
+    return Promise.reject(
+      new HandledError('Validation failed: Invalid form fields'),
+    );
   }
 
   if ('id' in props.entity) {
@@ -294,6 +297,10 @@ function createSaveThen(...actions: (() => Promise<void> | void)[]) {
         await action();
       }
     } catch (e) {
+      if (e instanceof HandledError) {
+        // handled errors are expected, so we don't report them
+        return;
+      }
       // errors must be handled in the actions
       // promises are just used to chain the actions.
       // but report any unhandled errors

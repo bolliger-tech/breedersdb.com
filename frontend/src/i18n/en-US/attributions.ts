@@ -63,7 +63,6 @@ export const attributions = {
     missingValues: 'Missing attribution values.',
 
     fieldsToDisplay: 'Fields to display',
-    location: 'Location',
 
     showLastAttributed: 'Last attributed',
     lastAttributed: 'Last attributed with this form {timeAgo}',

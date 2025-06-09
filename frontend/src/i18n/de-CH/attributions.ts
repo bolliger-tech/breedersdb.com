@@ -53,7 +53,6 @@ export const attributions = {
     addMetadata: 'Meta-Daten hinzufügen',
     missingValues: 'Fehlende Attributierungswerte.',
     fieldsToDisplay: 'Sichtbare Felder',
-    location: 'Standort',
     showLastAttributed: 'Zuletzt attributiert',
     lastAttributed: 'Zuletzt mit diesem Formular attributiert {timeAgo}',
     alreadyAttributed:

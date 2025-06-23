@@ -267,13 +267,13 @@ watch(
   { immediate: true },
 );
 
-// unnests attributions and parse for export
-// eg. { id: 1, label_id: "123", attributes: [{ id: 1, text_value: "a" }, { id: 2, boolean_value: true }] }
+// unnest attributions and joined data and parse for export
+// eg. { id: 1, label_id: "123", plants__plant_rows__name: { id: 1, name: "B" } attributes__123: [{ id: 1, text_value: "a" }, { id: 2, boolean_value: true }] }
 // -> [
-//     { id: 1, label_id: "123", attribution__id: 1, attribution__value: "a" },
-//     { id: 1, label_id: "123", attribution__id: 2, attribution__value: true }
+//     { id: 1, label_id: "123", plants.plant_rows.name: "B", attribution__attribute_id: 123, attribution__id: 1, attribution__value: "a" },
+//     { id: 1, label_id: "123", plants.plant_rows.name: "B", attribution__attribute_id: 123, attribution__id: 2, attribution__value: true }
 // ]
-function unnestAttributions({
+function unnestData({
   data,
   visibleColumns,
 }: TransformDataArgs<AnalyzeResultEntityRow>) {
@@ -291,14 +291,31 @@ function unnestAttributions({
     // replace double underscores (which were added for graphql)
     const row = fixDataRowKeys(_row);
 
-    // copy of row without attributions
+    // unnest columns without attributions
     const rowWithoutAttributions = Object.fromEntries(
-      Object.entries(row).filter(
-        ([key]) => !attributionsColumnNames.includes(key),
-      ),
-    ) as { [key: string]: AnalyzeResultEntityField };
+      Object.entries(row)
+        .filter(([key]) => !attributionsColumnNames.includes(key))
+        .map(([key, value]) => {
+          if (!(value instanceof Object)) {
+            return [key, value];
+          }
+          const column = props.availableColumns.find(
+            (column) => column.name === key,
+          );
+          if (!column) {
+            // this should never happen
+            throw new Error(`Missing column: ${key}`);
+          }
+          if (!column.format) {
+            throw new Error(
+              `The value of column ${key} is an object but has no format function`,
+            );
+          }
+          return [key, column.format(value, row)];
+        }),
+    ) satisfies { [key: string]: AnalyzeResultEntityField };
 
-    // unnest all attributions
+    // unnest attributions
     let attributionFound = false;
     for (const attributionColumnName of attributionsColumnNames) {
       const attributions = row[attributionColumnName as `attributes.${number}`];
@@ -425,12 +442,18 @@ const {
   query,
   variables,
   visibleColumns: computed(() =>
-    // aggregation columns are included as their non-aggregated version
-    //    ["plants.id", "attributes.246", "attributes.244.count"]
-    // -> ["plants.id", "attributes.246", "attributes.244"]
     Array.from(
       new Set(
-        visibleColumns.value.map((key) => key.split('.').slice(0, 2).join('.')),
+        visibleColumns.value.map((key) => {
+          const parts = key.split('.');
+          if (parts.length === 3 && parts[0] === 'attributes') {
+            // aggregation columns are included as their non-aggregated version
+            //    ["plants.id", "attributes.246", "attributes.244.count"]
+            // -> ["plants.id", "attributes.246", "attributes.244"]
+            return parts.slice(0, 2).join('.');
+          }
+          return key;
+        }),
       ),
     ),
   ),
@@ -439,6 +462,6 @@ const {
     ...attributionsExportColums,
   ]),
   title: t('analyze.result.title', 2),
-  transformDataFn: unnestAttributions,
+  transformDataFn: unnestData,
 });
 </script>

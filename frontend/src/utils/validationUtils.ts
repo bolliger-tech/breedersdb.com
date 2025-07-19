@@ -86,11 +86,11 @@ function getMaxPrecision(...values: number[]) {
   return values.reduce((maxPrecision, val) => {
     const precision =
       val
-        .toLocaleString('fullwide', {
+        .toLocaleString(undefined, {
           useGrouping: false,
           maximumFractionDigits: 20,
         }) // use to locale string to correctly handle scientific notation
-        .split('.')[1]?.length || 0;
+        .split(/[.,]/)[1]?.length || 0;
     return Math.max(maxPrecision, precision);
   }, 0);
 }

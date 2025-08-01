@@ -136,8 +136,8 @@ const props = defineProps<EntityPickerProps>();
 const emit = defineEmits<{
   input: [
     data: {
-      plantLabelId: string;
-      plantGroupLabelId: string;
+      plantLabelId: string | null;
+      plantGroupLabelId: string | null;
       cultivarId: number | null;
       lotId: number | null;
     },
@@ -155,23 +155,34 @@ type InputComponent = InstanceType<
 
 const inputRef = ref<InputComponent | null>(null);
 
-const plantLabelId = ref<string>('');
-const plantGroupLabelId = ref<string>('');
+const plantLabelId = ref<string | null>(null);
+const plantGroupLabelId = ref<string | null>(null);
 const cultivarId = ref<number | null>(null);
 const lotId = ref<number | null>(null);
 
 defineExpose({
   focus: () => inputRef.value?.focus(),
-  emitInputs: () =>
-    emit('input', {
-      plantLabelId: plantLabelIdUtils.zeroFill(plantLabelId.value),
-      plantGroupLabelId: plantGroupLabelIdUtils.addPrefix(
-        plantGroupLabelIdUtils.zeroFill(plantGroupLabelId.value),
-      ),
-      cultivarId: cultivarId.value,
-      lotId: lotId.value,
-    }),
+  emitInputs,
 });
+
+function emitInputs() {
+  const _plantLabelId = plantLabelId.value
+    ? plantLabelIdUtils.zeroFill(plantLabelId.value)
+    : null;
+
+  const _plantGroupLabelId = plantGroupLabelId.value
+    ? plantGroupLabelIdUtils.addPrefix(
+        plantGroupLabelIdUtils.zeroFill(plantGroupLabelId.value),
+      )
+    : null;
+
+  emit('input', {
+    plantLabelId: _plantLabelId,
+    plantGroupLabelId: _plantGroupLabelId,
+    cultivarId: cultivarId.value,
+    lotId: lotId.value,
+  });
+}
 
 const localStorageKey = computed(
   () => `breedersdb-${toKebabCase(props.entityType)}-selector-input-method`,
@@ -280,21 +291,14 @@ const entityName = computed(() => {
 });
 
 function onQrInput(value: string) {
-  const _plantGroupLabelId = value && value.startsWith('G') ? value : '';
-  const _plantLabelId = !_plantGroupLabelId ? value : '';
+  const _plantGroupLabelId = value && value.startsWith('G') ? value : null;
+  const _plantLabelId = !_plantGroupLabelId ? value : null;
 
   plantLabelId.value = _plantLabelId;
   plantGroupLabelId.value = _plantGroupLabelId;
   cultivarId.value = null;
   lotId.value = null;
 
-  emit('input', {
-    plantLabelId: plantLabelIdUtils.zeroFill(_plantLabelId),
-    plantGroupLabelId: plantGroupLabelIdUtils.addPrefix(
-      plantGroupLabelIdUtils.zeroFill(_plantGroupLabelId),
-    ),
-    cultivarId: null,
-    lotId: null,
-  });
+  emitInputs();
 }
 </script>

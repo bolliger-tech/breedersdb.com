@@ -9,7 +9,7 @@ export const base = {
     lot: 'Los | Lose',
     cultivar: 'Cultivar | Cultivare',
     plant: 'Pflanze | Pflanzen',
-    plantGroup: 'plant group | plant groups',
+    plantGroup: 'Gruppe | Gruppen',
     attribution: 'Attributierung | Attributierungen',
     orchard: 'Standort | Standorte',
     rootstock: 'Unterlage | Unterlagen',

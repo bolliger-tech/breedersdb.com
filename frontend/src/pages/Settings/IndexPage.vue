@@ -36,9 +36,12 @@ const origin = window.location.origin;
 const now = ref(new Date().toLocaleString());
 const isInStandaloneMode =
   window.matchMedia('(display-mode: standalone)').matches ||
-  ('standalone' in window.navigator && window.navigator.standalone) ||
+  ('standalone' in navigator && navigator.standalone) ||
   document.referrer.includes('android-app://');
-const serviceWorker = navigator.serviceWorker.controller?.state ?? 'undefined';
+const serviceWorker =
+  'serviceWorker' in navigator && navigator.serviceWorker.controller
+    ? navigator.serviceWorker.controller.state
+    : 'undefined';
 
 const { registerInterval } = useInterval();
 

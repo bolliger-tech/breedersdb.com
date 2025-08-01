@@ -53,13 +53,13 @@ defineExpose({
 });
 
 const input = ref<{
-  plantLabelId: string;
-  plantGroupLabelId: string;
+  plantLabelId: string | null;
+  plantGroupLabelId: string | null;
   cultivarId: number | null;
   lotId: number | null;
 }>({
-  plantLabelId: '',
-  plantGroupLabelId: '',
+  plantLabelId: null,
+  plantGroupLabelId: null,
   cultivarId: null,
   lotId: null,
 });

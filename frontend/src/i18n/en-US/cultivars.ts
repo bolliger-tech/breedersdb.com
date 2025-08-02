@@ -2,8 +2,8 @@ export const cultivars = {
   title: 'Cultivar | Cultivars',
 
   searchPlaceholder: {
-    subset: 'Search {subset} by name or acronym',
-    all: 'Search by name or acronym',
+    subset: 'Search {subset} by name, acronym or ID',
+    all: 'Search by name, acronym or ID',
   },
 
   fields: {

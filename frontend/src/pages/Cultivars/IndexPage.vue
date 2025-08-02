@@ -132,6 +132,11 @@ const variables = computed(() => {
       { acronym: { _ilike: `%${search.value}%` } },
     );
 
+    const searchNumber = parseInt(search.value);
+    if (!isNaN(searchNumber)) {
+      or._or.push({ id: { _eq: searchNumber } });
+    }
+
     where._and.push(or);
   }
 

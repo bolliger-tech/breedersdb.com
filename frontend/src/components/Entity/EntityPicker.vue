@@ -107,7 +107,7 @@
 import { useI18n } from 'src/composables/useI18n';
 import type { QBtnToggleProps } from 'quasar';
 import { useQuasar } from 'quasar';
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { toKebabCase } from 'src/utils/stringUtils';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import BaseQrScanner from 'src/components/Base/BaseQrScanner/BaseQrScanner.vue';
@@ -290,7 +290,7 @@ const entityName = computed(() => {
   throw new Error(`Unknown entity type: ${props.entityType}`);
 });
 
-function onQrInput(value: string) {
+async function onQrInput(value: string) {
   const _plantGroupLabelId = value && value.startsWith('G') ? value : null;
   const _plantLabelId = !_plantGroupLabelId ? value : null;
 
@@ -299,6 +299,9 @@ function onQrInput(value: string) {
   cultivarId.value = null;
   lotId.value = null;
 
-  emitInputs();
+  if (plantLabelId.value || plantGroupLabelId.value) {
+    await nextTick();
+    emitInputs();
+  }
 }
 </script>

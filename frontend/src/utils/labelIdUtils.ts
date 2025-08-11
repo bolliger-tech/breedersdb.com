@@ -4,7 +4,7 @@ class LabelIdUtils {
     private readonly unprefixedLabelIdLength: number,
   ) {}
 
-  public isPrefixed(labelId: string | null | undefined) {
+  public isPrefixed(labelId: string | null | undefined): labelId is string {
     return !!(labelId && labelId.startsWith(this.prefix));
   }
 
@@ -14,17 +14,17 @@ class LabelIdUtils {
 
   public removePrefix(labelId: string | null | undefined) {
     return this.isPrefixed(labelId)
-      ? (labelId ?? '').substring(this.prefix.length)
+      ? labelId.substring(this.prefix.length)
       : (labelId ?? '');
   }
 
   public addPrefix(labelId: string | null | undefined) {
     return this.isPrefixed(labelId)
-      ? (labelId ?? '')
+      ? labelId
       : `${this.prefix}${labelId ?? ''}`;
   }
 
-  public isZeroFilled(labelId: string | null | undefined) {
+  public isZeroFilled(labelId: string | null | undefined): labelId is string {
     return (
       (!this.isPrefixed(labelId) &&
         (labelId ?? '').length === this.unprefixedLabelIdLength) ||
@@ -49,7 +49,7 @@ class LabelIdUtils {
     return `${this.getPrefix(labelId) || ''}${zeroFilledDigits}`;
   }
 
-  public isValid(labelId: string | null | undefined) {
+  public isValid(labelId: string | null | undefined): labelId is string {
     const unprefixed = this.removePrefix(labelId);
     const pattern = new RegExp(`^[0-9]{${this.unprefixedLabelIdLength}}$`);
     return pattern.test(unprefixed) && parseInt(unprefixed, 10) > 0;

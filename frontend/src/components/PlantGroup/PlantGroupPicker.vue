@@ -55,11 +55,13 @@ defineExpose({
 const input = ref<{
   plantLabelId: string | null;
   plantGroupLabelId: string | null;
+  plantGroupId: number | null;
   cultivarId: number | null;
   lotId: number | null;
 }>({
   plantLabelId: null,
   plantGroupLabelId: null,
+  plantGroupId: null,
   cultivarId: null,
   lotId: null,
 });
@@ -97,6 +99,22 @@ const error = computed<
   return undefined;
 });
 
+const queryPlantGroupById = graphql(
+  `
+    query PlantGroupById(
+      $id: Int!
+      $PlantGroupWithCultivar: Boolean! = true
+      $CultivarWithLot: Boolean! = true
+      $LotWithCrossing: Boolean! = true
+      $LotWithOrchard: Boolean! = false
+    ) {
+      plant_groups(where: { id: { _eq: $id } }) {
+        ...plantGroupFragment
+      }
+    }
+  `,
+  [plantGroupFragment],
+);
 const queryPlantGroupByLabelId = graphql(
   `
     query PlantGroupByLabelId(
@@ -132,11 +150,19 @@ const queryPlantGroupByPlantLabelId = graphql(
 const query = computed(() =>
   input.value.plantLabelId
     ? queryPlantGroupByPlantLabelId
-    : queryPlantGroupByLabelId,
+    : input.value.plantGroupId
+      ? queryPlantGroupById
+      : queryPlantGroupByLabelId,
 );
-const variables = computed(() => ({
+const labelIdForQuery = computed(() => ({
   labelId: input.value.plantLabelId || input.value.plantGroupLabelId || '',
 }));
+const plantGroupIdForQuery = computed(() => ({
+  id: input.value.plantGroupId || 0,
+}));
+const variables = computed(() =>
+  input.value.plantGroupId ? plantGroupIdForQuery.value : labelIdForQuery.value,
+);
 
 const {
   fetching,

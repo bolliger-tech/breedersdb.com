@@ -8,6 +8,7 @@
         v-model="inputMethod"
         :options="options"
         size="sm"
+        :dense="!$q.screen.gt.xs && options.length > 4"
         toggle-color="primary"
         stack
       />
@@ -36,6 +37,7 @@
           emit('input', {
             plantLabelId: plantLabelIdUtils.zeroFill(plantLabelId),
             plantGroupLabelId: '',
+            plantGroupId: null,
             cultivarId: null,
             lotId: null,
           })
@@ -59,12 +61,30 @@
             plantGroupLabelId: plantGroupLabelIdUtils.addPrefix(
               plantGroupLabelIdUtils.zeroFill(plantGroupLabelId),
             ),
+            plantGroupId: null,
             cultivarId: null,
             lotId: null,
           })
         "
       />
     </BaseInputLabel>
+
+    <PlantGroupSelect
+      v-else-if="inputMethod === 'plant-group-select'"
+      ref="inputRef"
+      v-model="plantGroupId"
+      :label="t('entity.picker.plantGroupSelect')"
+      required
+      @update:model-value="
+        emit('input', {
+          plantLabelId: '',
+          plantGroupLabelId: '',
+          plantGroupId: $event ?? null,
+          cultivarId: null,
+          lotId: null,
+        })
+      "
+    />
 
     <CultivarSelect
       v-else-if="inputMethod === 'cultivar-select'"
@@ -77,6 +97,7 @@
         emit('input', {
           plantLabelId: '',
           plantGroupLabelId: '',
+          plantGroupId: null,
           cultivarId: $event ?? null,
           lotId: null,
         })
@@ -95,6 +116,7 @@
         emit('input', {
           plantLabelId: '',
           plantGroupLabelId: '',
+          plantGroupId: null,
           cultivarId: null,
           lotId: $event ?? null,
         })
@@ -118,11 +140,13 @@ import {
   plantGroupLabelIdUtils,
   plantLabelIdUtils,
 } from 'src/utils/labelIdUtils';
+import PlantGroupSelect from '../PlantGroup/PlantGroupSelect.vue';
 
 type InputMethod =
   | 'qr-code'
   | 'plant-label-id'
   | 'plant-group-label-id'
+  | 'plant-group-select'
   | 'cultivar-select'
   | 'lot-select';
 
@@ -138,6 +162,7 @@ const emit = defineEmits<{
     data: {
       plantLabelId: string | null;
       plantGroupLabelId: string | null;
+      plantGroupId: number | null;
       cultivarId: number | null;
       lotId: number | null;
     },
@@ -157,6 +182,7 @@ const inputRef = ref<InputComponent | null>(null);
 
 const plantLabelId = ref<string | null>(null);
 const plantGroupLabelId = ref<string | null>(null);
+const plantGroupId = ref<number | null>(null);
 const cultivarId = ref<number | null>(null);
 const lotId = ref<number | null>(null);
 
@@ -179,6 +205,7 @@ function emitInputs() {
   emit('input', {
     plantLabelId: _plantLabelId,
     plantGroupLabelId: _plantGroupLabelId,
+    plantGroupId: plantGroupId.value,
     cultivarId: cultivarId.value,
     lotId: lotId.value,
   });
@@ -201,18 +228,21 @@ const inputMethodIsValid = computed(() => {
     case 'plantGroup':
       return (
         inputMethod.value === 'plant-label-id' ||
-        inputMethod.value === 'plant-group-label-id'
+        inputMethod.value === 'plant-group-label-id' ||
+        inputMethod.value === 'plant-group-select'
       );
     case 'cultivar':
       return (
         inputMethod.value === 'plant-label-id' ||
         inputMethod.value === 'plant-group-label-id' ||
+        inputMethod.value === 'plant-group-select' ||
         inputMethod.value === 'cultivar-select'
       );
     case 'lot':
       return (
         inputMethod.value === 'plant-label-id' ||
         inputMethod.value === 'plant-group-label-id' ||
+        inputMethod.value === 'plant-group-select' ||
         inputMethod.value === 'cultivar-select' ||
         inputMethod.value === 'lot-select'
       );
@@ -255,6 +285,12 @@ const options = computed(() => {
     icon: 'svguse:/icons/sprite.svg#tree-group',
   });
 
+  options.push({
+    value: 'plant-group-select',
+    label: t('entity.picker.plantGroupSelect'),
+    icon: 'svguse:/icons/sprite.svg#tree-group',
+  });
+
   if (props.entityType === 'plantGroup') return options;
 
   options.push({
@@ -294,14 +330,17 @@ async function onQrInput(value: string) {
   const _plantGroupLabelId = value && value.startsWith('G') ? value : null;
   const _plantLabelId = !_plantGroupLabelId ? value : null;
 
+  if (!_plantLabelId && !_plantGroupLabelId) {
+    return;
+  }
+
   plantLabelId.value = _plantLabelId;
   plantGroupLabelId.value = _plantGroupLabelId;
+  plantGroupId.value = null;
   cultivarId.value = null;
   lotId.value = null;
 
-  if (plantLabelId.value || plantGroupLabelId.value) {
-    await nextTick();
-    emitInputs();
-  }
+  await nextTick();
+  emitInputs();
 }
 </script>

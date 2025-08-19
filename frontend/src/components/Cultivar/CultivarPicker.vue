@@ -47,11 +47,13 @@ defineExpose({
 const input = ref<{
   plantLabelId: string | null;
   plantGroupLabelId: string | null;
+  plantGroupId: number | null;
   cultivarId: number | null;
   lotId: number | null;
 }>({
   plantLabelId: null,
   plantGroupLabelId: null,
+  plantGroupId: null,
   cultivarId: null,
   lotId: null,
 });
@@ -114,6 +116,21 @@ const queryCultivarByPlantGroupLabelId = graphql(
   `,
   [cultivarFragment],
 );
+const queryCultivarByPlantGroupId = graphql(
+  `
+    query CultivarByPlantGroupId(
+      $id: Int!
+      $CultivarWithLot: Boolean! = true
+      $LotWithCrossing: Boolean! = true
+      $LotWithOrchard: Boolean! = false
+    ) {
+      cultivars(where: { plant_groups: { id: { _eq: $id } } }) {
+        ...cultivarFragment
+      }
+    }
+  `,
+  [cultivarFragment],
+);
 const queryCultivarById = graphql(
   `
     query CultivarById(
@@ -134,17 +151,21 @@ const query = computed(() =>
     ? queryCultivarById
     : input.value.plantLabelId
       ? queryCultivarByPlantLabelId
-      : queryCultivarByPlantGroupLabelId,
+      : input.value.plantGroupLabelId
+        ? queryCultivarByPlantGroupLabelId
+        : queryCultivarByPlantGroupId,
 );
 
 const labelIdForQuery = computed(() => ({
   labelId: input.value.plantLabelId || input.value.plantGroupLabelId || '',
 }));
-const cultivarIdForQuery = computed(() => ({
-  id: input.value.cultivarId || 0,
+const entityIdForQuery = computed(() => ({
+  id: input.value.cultivarId || input.value.plantGroupId || 0,
 }));
 const variables = computed(() =>
-  input.value.cultivarId ? cultivarIdForQuery.value : labelIdForQuery.value,
+  entityIdForQuery.value.id > 0
+    ? entityIdForQuery.value
+    : labelIdForQuery.value,
 );
 
 const {

@@ -64,6 +64,7 @@ export const entity = {
     scanQrCode: 'QR code',
     plantLabelId: 'Plant label ID',
     plantGroupLabelId: 'Group label ID',
+    plantGroupSelect: 'Group name',
     cultivarName: 'Cultivar name',
     lotName: 'Lot name',
   },

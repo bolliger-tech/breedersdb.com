@@ -105,6 +105,39 @@ entity "**attributions**" #00ff0012 ##008800 {
   *""modified"": //timestamp with time zone //
 }
 
+entity "**cached_attributions**" {
+  Incrementally updated view for attributions.\nMaintained by triggers. Do not update manually. Read only.
+  ..
+  + ""id"": //integer [PK]//
+  --
+  ""integer_value"": //integer //
+  ""float_value"": //double precision //
+  ""text_value"": //citext //
+  ""boolean_value"": //boolean //
+  ""date_value"": //date //
+  ""text_note"": //character varying(2047) //
+  ""photo_note"": //character varying(69) //
+  *""exceptional_attribution"": //boolean //
+  *""attribute_name"": //citext //
+  *""attribute_id"": //integer [FK]//
+  *""data_type"": //text [FK]//
+  *""attribute_type"": //text [FK]//
+  *""attribution_id"": //integer [FK]//
+  ""plant_id"": //integer [FK]//
+  ""plant_group_id"": //integer [FK]//
+  ""cultivar_id"": //integer [FK]//
+  ""lot_id"": //integer [FK]//
+  *""attribution_form_id"": //integer [FK]//
+  ""combined_plant_group_id"": //integer [FK]//
+  ""combined_cultivar_id"": //integer [FK]//
+  *""created"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
+  *""author"": //citext //
+  *""date_attributed"": //date //
+  ""geo_location"": //geography(Point,4326) //
+  ""geo_location_accuracy"": //double precision //
+}
+
 entity "**crossings**" #ffff0012 ##888800 {
   + ""id"": //integer [PK]//
   --
@@ -170,14 +203,6 @@ entity "**lots**" #ffff0012 ##888800 {
   ""note"": //character varying(2047) //
   *""created"": //timestamp with time zone //
   *""modified"": //timestamp with time zone //
-}
-
-entity "**materialized_view_refreshes**" {
-  + ""id"": //integer [PK]//
-  --
-  *""view_name"": //text //
-  ""last_refresh"": //timestamp with time zone //
-  *""needs_refresh"": //boolean //
 }
 
 entity "**mother_plants**" #0000ff06 {
@@ -324,6 +349,28 @@ entity "**users**" {
 "**attributions**"   }--  "**plant_groups**"
 
 "**attributions**"   }--  "**plants**"
+
+"**cached_attributions**"   }--  "**attributes**"
+
+"**cached_attributions**"   }--  "**attribute_types**"
+
+"**cached_attributions**"   }--  "**attribution_forms**"
+
+"**cached_attributions**"   }--  "**attributions**"
+
+"**cached_attributions**"   }--  "**cultivars**"
+
+"**cached_attributions**"   }--  "**plant_groups**"
+
+"**cached_attributions**"   }--  "**cultivars**"
+
+"**cached_attributions**"   }--  "**attribute_data_types**"
+
+"**cached_attributions**"   }--  "**lots**"
+
+"**cached_attributions**"   }--  "**plant_groups**"
+
+"**cached_attributions**"   }--  "**plants**"
 
 "**crossings**"   }--  "**cultivars**"
 

@@ -69,7 +69,7 @@ async function deleteAttribution() {
       additionalTypenames: [
         'attributions',
         'attribution_values',
-        'attributions_view',
+        'cached_attributions',
       ],
     },
   );

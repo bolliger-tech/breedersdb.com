@@ -232,7 +232,7 @@ function saveInsert(attributions: AttributionValue[]) {
       additionalTypenames: [
         'attributions',
         'attribution_values',
-        'attributions_view',
+        'cached_attributions',
       ],
     },
   );
@@ -273,7 +273,7 @@ function saveEdit(
       })),
     },
     {
-      additionalTypenames: ['attribution_values', 'attributions_view'],
+      additionalTypenames: ['attribution_values', 'cached_attributions'],
     },
   );
 }

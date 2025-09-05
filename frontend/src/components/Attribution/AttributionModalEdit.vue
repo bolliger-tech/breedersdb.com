@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { graphql } from 'src/graphql';
 import AttributionButtonDelete from 'src/components/Attribution/AttributionButtonDelete.vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -54,7 +54,7 @@ import type { UploadProgress } from 'src/composables/useImageUploader';
 import { useImageUploader } from 'src/composables/useImageUploader';
 
 export type AttributionEditInput = Pick<
-  AttributionsViewFragment,
+  CachedAttributionsFragment,
   | 'integer_value'
   | 'float_value'
   | 'text_value'
@@ -65,7 +65,7 @@ export type AttributionEditInput = Pick<
 >;
 
 export interface AttributionModalEditProps {
-  attribution: AttributionsViewFragment & { attribute: AttributeFragment };
+  attribution: CachedAttributionsFragment & { attribute: AttributeFragment };
 }
 
 const props = defineProps<AttributionModalEditProps>();
@@ -94,12 +94,6 @@ const editMutation = graphql(`
     $entity: attribution_values_set_input!
   ) {
     update_attribution_values_by_pk(pk_columns: { id: $id }, _set: $entity) {
-      id
-    }
-    refresh_attributions_view(
-      where: { view_name: { _eq: "attributions_view" } }
-      limit: 1
-    ) {
       id
     }
   }
@@ -221,7 +215,7 @@ async function saveEdit() {
       id: props.attribution.id,
       entity: editedAttributionValue,
     },
-    { additionalTypenames: ['attributions_view'] },
+    { additionalTypenames: ['cached_attributions'] },
   );
 }
 

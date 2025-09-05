@@ -19,7 +19,7 @@ export function useAttributionViewColumnDefinitions() {
 
 const columnData: FilterColumnConstructorData[] = [
   {
-    table: 'attributions_view',
+    table: 'cached_attributions',
     column: 'text_note',
     labelKey: 'attributions.columns.textNoteLong',
     schema: {
@@ -32,7 +32,7 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'attributions_view',
+    table: 'cached_attributions',
     column: 'photo_note',
     labelKey: 'attributions.columns.photoNoteLong',
     schema: {
@@ -41,7 +41,7 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'attributions_view',
+    table: 'cached_attributions',
     column: 'exceptional_attribution',
     labelKey: 'attributions.columns.exceptionalAttribution',
     schema: {
@@ -50,7 +50,7 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'attributions_view',
+    table: 'cached_attributions',
     column: 'author',
     labelKey: 'attributions.columns.author',
     schema: {
@@ -63,7 +63,7 @@ const columnData: FilterColumnConstructorData[] = [
     },
   },
   {
-    table: 'attributions_view',
+    table: 'cached_attributions',
     column: 'date_attributed',
     labelKey: 'attributions.columns.dateAttributed',
     schema: {

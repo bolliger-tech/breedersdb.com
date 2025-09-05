@@ -69,7 +69,7 @@ const term = computed(() => {
 
 const { getEntityName } = useEntityName();
 const entityName = computed(() => {
-  if (props.rule?.tableName === 'attributions_view') {
+  if (props.rule?.tableName === 'cached_attributions') {
     return t('base.entityName.attribution', 2);
   }
   return getEntityName({ table: props.baseTable, plural: true });

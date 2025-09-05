@@ -48,7 +48,7 @@ import { useGetEntityById } from 'src/composables/useGetEntityById';
 
 export type PlantEditInput = Omit<
   PlantFragment,
-  'created' | 'modified' | 'attributions_views'
+  'created' | 'modified' | 'cached_attributions'
 >;
 export type PlantInsertInput = Omit<
   PlantEditInput,

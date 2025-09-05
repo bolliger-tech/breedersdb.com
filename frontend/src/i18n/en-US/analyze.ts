@@ -114,8 +114,6 @@ export const analyze = {
     photo: 'Photo',
     downloadPhoto: 'Download photo',
 
-    lastRefresh: 'Last data refresh: {date}',
-
     attributedEntity: 'Attributed {entity}',
     note: 'Note',
 

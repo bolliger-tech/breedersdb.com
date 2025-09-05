@@ -92,18 +92,6 @@ const queryMock: MockQuery = ({ query }) => {
 const mutationMock: MockMutation = (params) => {
   const queryName = (params.query.definitions[0] as OperationDefinitionNode)
     .name?.value;
-  if ('RefreshAttributionsView' === queryName) {
-    return urqlResp({
-      refresh_attributions_view: [
-        {
-          id: 1,
-          view_name: 'attributions_view',
-          last_refresh: '2024-06-06T11:43:12Z',
-          needs_refresh: false,
-        },
-      ],
-    })();
-  }
   throw new Error(`missing mutationMock for: ${queryName}`);
 };
 
@@ -259,7 +247,7 @@ describe('AnalyzePage', () => {
     }
   }
 
-  fragment AttributionFragment on attributions_view {
+  fragment AttributionFragment on cached_attributions {
     id
     integer_value
     float_value

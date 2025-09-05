@@ -57,12 +57,6 @@ const {
       delete_attribution_values_by_pk(id: $attributionValueId) {
         id
       }
-      refresh_attributions_view(
-        where: { view_name: { _eq: "attributions_view" } }
-        limit: 1
-      ) {
-        id
-      }
     }
   `),
 );
@@ -81,12 +75,6 @@ const {
         id
       }
       delete_attributions_by_pk(id: $attributionId) {
-        id
-      }
-      refresh_attributions_view(
-        where: { view_name: { _eq: "attributions_view" } }
-        limit: 1
-      ) {
         id
       }
     }
@@ -122,14 +110,14 @@ async function deleteAttribution() {
           {
             attributionValueId: props.attributionValueId,
           },
-          { additionalTypenames: ['attributions_view'] },
+          { additionalTypenames: ['cached_attributions'] },
         )
       : urqlDeleteAttributionValueAndAttribution.executeMutation(
           {
             attributionValueId: props.attributionValueId,
             attributionId: props.attributionId,
           },
-          { additionalTypenames: ['attributions_view'] },
+          { additionalTypenames: ['cached_attributions'] },
         );
 
   await executeDelete.then((result) => {

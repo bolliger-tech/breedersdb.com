@@ -107,7 +107,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import type { QBtnProps, QDialogProps } from 'quasar';
 import {
   dataTypeToColumnTypes,
@@ -125,7 +125,7 @@ const DEFAULT_PREVIEW_HEIGHT = imageSizes.h200.height;
 
 export interface EntityViewAttributionImageProps {
   fileName: string;
-  attribution: AttributionsViewFragment;
+  attribution: CachedAttributionsFragment;
   preview?: boolean;
   previewSize?: AllowedImageSizes;
   transition?: QDialogProps['transitionShow'];
@@ -153,7 +153,7 @@ const entityName = computed(() => {
   if (!name) {
     // report but don't fail
     const error = new Error(
-      'No entity name found for attribution. Consider using the `attributionsViewFragment` with `$AttributionsViewWithEntites = true`.',
+      'No entity name found for attribution. Consider using the `cachedAttributionsFragment` with `$CachedAttributionsWithEntites = true`.',
     );
     console.error(error.message, error.stack);
     captureException(error);

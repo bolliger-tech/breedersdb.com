@@ -10,8 +10,8 @@
 
 <script setup lang="ts">
 import { useQuery } from '@urql/vue';
-import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
-import { attributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
+import { cachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -24,30 +24,30 @@ const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query AttributionsView(
+    query CachedAttributions(
       $id: Int!
-      $AttributionsViewWithEntites: Boolean = true
+      $CachedAttributionsWithEntites: Boolean = true
     ) {
-      attributions_view(where: { id: { _eq: $id } }) {
-        ...attributionsViewFragment
+      cached_attributions(where: { id: { _eq: $id } }) {
+        ...cachedAttributionsFragment
         attribute {
           ...attributeFragment
         }
       }
     }
   `,
-  [attributionsViewFragment, attributeFragment],
+  [cachedAttributionsFragment, attributeFragment],
 );
 
 const { data, error, fetching } = useQuery({
   query,
   variables: { id: parseInt(props.entityId.toString()) },
-  context: { additionalTypenames: ['attributions_view'] },
+  context: { additionalTypenames: ['cached_attributions'] },
 });
 const attribution = computed(
   () =>
-    data.value?.attributions_view[0] as
-      | (AttributionsViewFragment & { attribute: AttributeFragment })
+    data.value?.cached_attributions[0] as
+      | (CachedAttributionsFragment & { attribute: AttributeFragment })
       | undefined,
 );
 

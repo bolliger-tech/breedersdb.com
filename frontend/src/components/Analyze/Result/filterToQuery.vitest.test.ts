@@ -482,7 +482,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { _and: [ { text_value: { _is_null: false } }, { text_value: { _neq: $v000 } } ] } } ] } } ] }',
+                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { _and: [ { text_value: { _is_null: false } }, { text_value: { _neq: $v000 } } ] } } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -525,7 +525,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _or: [ { text_value: { _is_null: true } }, { text_value: { _eq: $v000 } } ] } ] } } ] }',
+                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _or: [ { text_value: { _is_null: true } }, { text_value: { _eq: $v000 } } ] } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -568,7 +568,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { text_value: { _eq: $v000 } } ] } } ] }',
+                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { text_value: { _eq: $v000 } } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -611,7 +611,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { text_value: { _eq: $v000 } } ] } } ] }',
+                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { text_value: { _eq: $v000 } } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -655,7 +655,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { integer_value: { _eq: $v000 } } ] } } ] }',
+                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { integer_value: { _eq: $v000 } } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -699,7 +699,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { integer_value: { _eq: $v000 } } ] } } ] }',
+                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { integer_value: { _eq: $v000 } } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -743,7 +743,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { float_value: { _eq: $v000 } } ] } } ] }',
+                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { float_value: { _eq: $v000 } } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -781,7 +781,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { boolean_value: { _eq: $v000 } } ] } } ] }',
+                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { boolean_value: { _eq: $v000 } } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -820,7 +820,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { date_value: { _eq: $v000 } } ] } } ] }',
+                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { date_value: { _eq: $v000 } } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -858,7 +858,7 @@ cultivars(where: { _or: [
             expect(query).toMatch(
               new RegExp(
                 prepareForRegex(
-                  'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { text_value: { _is_null: $v000 } } ] } } ] }',
+                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { text_value: { _is_null: $v000 } } ] } } ] }',
                 ).replaceAll('$v000', '$v\\d+'),
               ),
             );
@@ -901,7 +901,7 @@ cultivars(where: { _or: [
               expect(query).toMatch(
                 new RegExp(
                   prepareForRegex(
-                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { _and: [ { text_value: { _is_null: false } }, { text_value: { _neq: $v000 } } ] } } ] } } ] }',
+                    'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { _and: [ { text_value: { _is_null: false } }, { text_value: { _neq: $v000 } } ] } } ] } } ] }',
                   ).replaceAll('$v000', '$v\\d+'),
                 ),
               );
@@ -944,7 +944,7 @@ cultivars(where: { _or: [
               expect(query).toMatch(
                 new RegExp(
                   prepareForRegex(
-                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _or: [ { text_value: { _is_null: true } }, { text_value: { _eq: $v000 } } ] } ] } } ] }',
+                    'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _or: [ { text_value: { _is_null: true } }, { text_value: { _eq: $v000 } } ] } ] } } ] }',
                   ).replaceAll('$v000', '$v\\d+'),
                 ),
               );
@@ -988,7 +988,7 @@ cultivars(where: { _or: [
               expect(query).toMatch(
                 new RegExp(
                   prepareForRegex(
-                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { integer_value: { _eq: $v000 } } } ] } } ] }',
+                    'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { integer_value: { _eq: $v000 } } } ] } } ] }',
                   ).replaceAll('$v000', '$v\\d+'),
                 ),
               );
@@ -1032,7 +1032,7 @@ cultivars(where: { _or: [
               expect(query).toMatch(
                 new RegExp(
                   prepareForRegex(
-                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { integer_value: { _eq: $v000 } } } ] } } ] }',
+                    'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { integer_value: { _eq: $v000 } } } ] } } ] }',
                   ).replaceAll('$v000', '$v\\d+'),
                 ),
               );
@@ -1076,7 +1076,7 @@ cultivars(where: { _or: [
               expect(query).toMatch(
                 new RegExp(
                   prepareForRegex(
-                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { float_value: { _eq: $v000 } } } ] } } ] }',
+                    'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { float_value: { _eq: $v000 } } } ] } } ] }',
                   ).replaceAll('$v000', '$v\\d+'),
                 ),
               );
@@ -1115,7 +1115,7 @@ cultivars(where: { _or: [
               expect(query).toMatch(
                 new RegExp(
                   prepareForRegex(
-                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { date_value: { _eq: $v000 } } } ] } } ] }',
+                    'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { date_value: { _eq: $v000 } } } ] } } ] }',
                   ).replaceAll('$v000', '$v\\d+'),
                 ),
               );
@@ -1158,7 +1158,7 @@ cultivars(where: { _or: [
               expect(query).toMatch(
                 new RegExp(
                   prepareForRegex(
-                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { text_value: { _ilike: $v000 } } } ] } } ] }',
+                    'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { text_value: { _ilike: $v000 } } } ] } } ] }',
                   ).replaceAll('$v000', '$v\\d+'),
                 ),
               );
@@ -1201,7 +1201,7 @@ cultivars(where: { _or: [
               expect(query).toMatch(
                 new RegExp(
                   prepareForRegex(
-                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { text_value: { _ilike: $v000 } } } ] } } ] }',
+                    'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { text_value: { _ilike: $v000 } } } ] } } ] }',
                   ).replaceAll('$v000', '$v\\d+'),
                 ),
               );
@@ -1244,7 +1244,7 @@ cultivars(where: { _or: [
               expect(query).toMatch(
                 new RegExp(
                   prepareForRegex(
-                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { text_value: { _ilike: $v000 } } } ] } } ] }',
+                    'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { text_value: { _ilike: $v000 } } } ] } } ] }',
                   ).replaceAll('$v000', '$v\\d+'),
                 ),
               );
@@ -1282,7 +1282,7 @@ cultivars(where: { _or: [
               expect(query).toMatch(
                 new RegExp(
                   prepareForRegex(
-                    'cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { boolean_value: { _eq: $v000 } } } ] } } ] }',
+                    'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { _not: { boolean_value: { _eq: $v000 } } } ] } } ] }',
                   ).replaceAll('$v000', '$v\\d+'),
                 ),
               );
@@ -1314,11 +1314,11 @@ cultivars(where: { _or: [
             new RegExp(
               prepareForRegex(`
 cultivars(where: { _and: [ { _or: [
-  { attributions_views: { _and: [
+  { cached_attributions: { _and: [
     { attribute_id: { _eq: 123 } },
     { integer_value: { _eq: $v000 } }
   ] } },
-  { attributions_views_aggregate: {
+  { cached_attributions_aggregate: {
     count: {
       predicate: { _eq: 0 },
       filter: { attribute_id: { _eq: 123 } }
@@ -1352,7 +1352,7 @@ cultivars(where: { _and: [ { _or: [
           expect(query).toMatch(
             new RegExp(
               prepareForRegex(`
-cultivars(where: { _and: [ { attributions_views: { _and: [ { attribute_id: { _eq: 123 } }, { integer_value: { _eq: $v000 } } ] } } ] }`).replaceAll(
+cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { integer_value: { _eq: $v000 } } ] } } ] }`).replaceAll(
                 '$v000',
                 '$v\\d+',
               ),
@@ -2769,10 +2769,10 @@ lots(where: { _and: [
       expect(query).toMatch(
         new RegExp(
           prepareForRegex(`
-attributes__1: attributions_views(where: { _and: [ { attribute_id: { _eq: 1 } } ] }, order_by: { date_attributed: desc }) {
+attributes__1: cached_attributions(where: { _and: [ { attribute_id: { _eq: 1 } } ] }, order_by: { date_attributed: desc }) {
   ...AttributionFragment
 }
-attributes__255: attributions_views(where: { _and: [ { attribute_id: { _eq: 255 } } ] }, order_by: { date_attributed: desc }) {
+attributes__255: cached_attributions(where: { _and: [ { attribute_id: { _eq: 255 } } ] }, order_by: { date_attributed: desc }) {
   ...AttributionFragment
 }`),
         ),
@@ -2790,7 +2790,7 @@ attributes__255: attributions_views(where: { _and: [ { attribute_id: { _eq: 255 
       parent: attributionFilter,
       filterRule: new FilterRule({
         column: new FilterRuleColumn({
-          tableName: 'attributions_views',
+          tableName: 'cached_attributions',
           tableColumnName: 'author',
           tableLabel: 'Attributions',
           tableColumnLabel: 'Author',
@@ -2820,10 +2820,10 @@ attributes__255: attributions_views(where: { _and: [ { attribute_id: { _eq: 255 
     expect(query).toMatch(
       new RegExp(
         prepareForRegex(`
-attributes__1: attributions_views(where: { _and: [ { attribute_id: { _eq: 1 } }, { _and: [ { author: { _eq: $v000 } } ] } ] }, order_by: { date_attributed: desc }) {
+attributes__1: cached_attributions(where: { _and: [ { attribute_id: { _eq: 1 } }, { _and: [ { author: { _eq: $v000 } } ] } ] }, order_by: { date_attributed: desc }) {
 ...AttributionFragment
 }
-attributes__255: attributions_views(where: { _and: [ { attribute_id: { _eq: 255 } }, { _and: [ { author: { _eq: $v000 } } ] } ] }, order_by: { date_attributed: desc }) {
+attributes__255: cached_attributions(where: { _and: [ { attribute_id: { _eq: 255 } }, { _and: [ { author: { _eq: $v000 } } ] } ] }, order_by: { date_attributed: desc }) {
 ...AttributionFragment
 }`).replaceAll('$v000', '$v\\d+'),
       ),
@@ -2869,7 +2869,7 @@ cultivars_aggregate(where: { _and: [ { id: { _gt: $v000 } } ] }) {
     expect(query).toMatch(
       new RegExp(
         prepareForRegex(`
-fragment AttributionFragment on attributions_view {
+fragment AttributionFragment on cached_attributions {
   id
   integer_value
   float_value
@@ -2922,7 +2922,7 @@ fragment AttributionFragment on attributions_view {
       parent: attributionFilter,
       filterRule: new FilterRule({
         column: new FilterRuleColumn({
-          tableName: 'attributions_views',
+          tableName: 'cached_attributions',
           tableColumnName: 'author',
           tableLabel: 'Attributions',
           tableColumnLabel: 'Author',
@@ -2962,7 +2962,7 @@ fragment AttributionFragment on attributions_view {
       parent: attributionFilter,
       filterRule: new FilterRule({
         column: new FilterRuleColumn({
-          tableName: 'attributions_views',
+          tableName: 'cached_attributions',
           tableColumnName: 'author',
           tableLabel: 'Attributions',
           tableColumnLabel: 'Author',

@@ -56,7 +56,7 @@ function attributionValueToXlsx(attribution: AnalyzeCachedAttributionsFields) {
     (key) => attribution[key] !== null,
   );
   const value =
-    !valueKey || !(valueKey in attribution) || !attribution[valueKey]
+    !valueKey || !(valueKey in attribution) || attribution[valueKey] === null
       ? null
       : valueKey === 'date_value'
         ? ({

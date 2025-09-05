@@ -3,6 +3,9 @@
     :entity="plant"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
+    :edit-mutation-context="{
+      additionalTypenames: ['cached_attributions'],
+    }"
     index-path="/plants"
     sprite-icon="tree"
     :subtitle="t('plants.title', 1)"
@@ -48,7 +51,7 @@ import { useGetEntityById } from 'src/composables/useGetEntityById';
 
 export type PlantEditInput = Omit<
   PlantFragment,
-  'created' | 'modified' | 'attributions_views'
+  'created' | 'modified' | 'cached_attributions'
 >;
 export type PlantInsertInput = Omit<
   PlantEditInput,

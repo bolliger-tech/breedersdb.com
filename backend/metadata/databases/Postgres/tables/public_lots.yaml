@@ -16,14 +16,12 @@ array_relationships:
         table:
           name: attributions
           schema: public
-  - name: attributions_views
+  - name: cached_attributions
     using:
-      manual_configuration:
-        column_mapping:
-          id: lot_id
-        insertion_order: null
-        remote_table:
-          name: attributions_view
+      foreign_key_constraint_on:
+        column: lot_id
+        table:
+          name: cached_attributions
           schema: public
   - name: cultivars
     using:

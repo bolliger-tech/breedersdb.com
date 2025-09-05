@@ -1,0 +1,65 @@
+table:
+  name: cached_attributions
+  schema: public
+object_relationships:
+  - name: attribute
+    using:
+      foreign_key_constraint_on: attribute_id
+  - name: attribute_data_type
+    using:
+      foreign_key_constraint_on: data_type
+  - name: attribute_type_table
+    using:
+      foreign_key_constraint_on: attribute_type
+  - name: attribution
+    using:
+      foreign_key_constraint_on: attribution_id
+  - name: attribution_form
+    using:
+      foreign_key_constraint_on: attribution_form_id
+  - name: cultivar
+    using:
+      foreign_key_constraint_on: combined_cultivar_id
+  - name: lot
+    using:
+      foreign_key_constraint_on: lot_id
+  - name: plant
+    using:
+      foreign_key_constraint_on: plant_id
+  - name: plant_group
+    using:
+      foreign_key_constraint_on: combined_plant_group_id
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - boolean_value
+        - exceptional_attribution
+        - photo_note
+        - text_note
+        - date_attributed
+        - date_value
+        - float_value
+        - geo_location_accuracy
+        - attribute_id
+        - attribution_form_id
+        - attribution_id
+        - combined_cultivar_id
+        - combined_plant_group_id
+        - cultivar_id
+        - id
+        - integer_value
+        - lot_id
+        - plant_group_id
+        - plant_id
+        - attribute_type
+        - data_type
+        - created
+        - modified
+        - attribute_name
+        - author
+        - geo_location
+        - text_value
+      filter: {}
+      allow_aggregations: true
+    comment: ""

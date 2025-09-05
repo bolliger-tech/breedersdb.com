@@ -3,6 +3,9 @@
     :entity="lot"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
+    :edit-mutation-context="{
+      additionalTypenames: ['cultivars', 'plant_groups', 'plants'],
+    }"
     index-path="/lots"
     sprite-icon="lot"
     :subtitle="t('lots.title', 1)"

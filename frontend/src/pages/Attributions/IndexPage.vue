@@ -8,7 +8,7 @@
       :title="t('attributions.title', 2)"
       :tabs="tabs"
       :search-placeholder="searchPlaceholder"
-      :rows="data?.attributions_view || []"
+      :rows="data?.cached_attributions || []"
       :loading="fetching"
       :all-columns="columns"
       list-entities-path="/attributions"
@@ -68,7 +68,6 @@
 
 <script setup lang="ts">
 import PageLayout from 'src/layouts/PageLayout.vue';
-import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import type { ResultOf } from 'src/graphql';
 import { graphql } from 'src/graphql';
 import type { UnwrapRef } from 'vue';
@@ -76,9 +75,9 @@ import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import {
-  attributionsViewFragment,
-  type AttributionsViewFragment,
-} from 'src/components/Attribution/attributionsViewFragment';
+  cachedAttributionsFragment,
+  type CachedAttributionsFragment,
+} from 'src/components/Attribution/cachedAttributionsFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
@@ -94,7 +93,7 @@ import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAtt
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
-import type { UseQueryArgs } from '@urql/vue';
+import { useQuery, type UseQueryArgs } from '@urql/vue';
 import type { TransformDataArgs } from 'src/composables/useExport';
 import { useExport } from 'src/composables/useExport';
 import {
@@ -109,29 +108,29 @@ const { t, d, n } = useI18n();
 
 const query = graphql(
   `
-    query AttributionsView(
+    query CachedAttributions(
       $limit: Int!
       $offset: Int!
-      $orderBy: [attributions_view_order_by!]
-      $where: attributions_view_bool_exp
-      $AttributionsViewWithEntites: Boolean = true
+      $orderBy: [cached_attributions_order_by!]
+      $where: cached_attributions_bool_exp
+      $CachedAttributionsWithEntites: Boolean = true
     ) {
-      attributions_view_aggregate(where: $where) {
+      cached_attributions_aggregate(where: $where) {
         aggregate {
           count
         }
       }
-      attributions_view(
+      cached_attributions(
         where: $where
         limit: $limit
         offset: $offset
         order_by: $orderBy
       ) {
-        ...attributionsViewFragment
+        ...cachedAttributionsFragment
       }
     }
   `,
-  [attributionsViewFragment],
+  [cachedAttributionsFragment],
 );
 
 const { queryArg: subset } = useQueryArg<
@@ -233,14 +232,15 @@ const variables = computed(() => {
   };
 });
 
-const { data, fetching, error } = await useRefreshAttributionsViewThenQuery({
+const { data, fetching, error } = await useQuery({
+  requestPolicy: 'cache-and-network',
   query,
   variables,
-  context: { additionalTypenames: ['attributions_view'] },
+  context: { additionalTypenames: ['cached_attributions'] },
 });
 
 const attributionsCount = computed(
-  () => data.value?.attributions_view_aggregate?.aggregate?.count || 0,
+  () => data.value?.cached_attributions_aggregate?.aggregate?.count || 0,
 );
 
 const columns = computed(() => [
@@ -262,14 +262,14 @@ const columns = computed(() => [
           name: 'plant.label_id',
           label: t('plants.fields.labelId'),
           align: 'left' as const,
-          field: (row: AttributionsViewFragment) => row.plant?.label_id,
+          field: (row: CachedAttributionsFragment) => row.plant?.label_id,
           sortable: true,
         },
         {
           name: 'plant_group.display_name',
           label: t('plants.fields.groupName'),
           align: 'left' as const,
-          field: (row: AttributionsViewFragment) =>
+          field: (row: CachedAttributionsFragment) =>
             row.plant_group?.display_name,
           sortable: true,
         },
@@ -281,7 +281,7 @@ const columns = computed(() => [
           name: 'plant_group.display_name',
           label: t('entity.commonColumns.displayName'),
           align: 'left' as const,
-          field: (row: AttributionsViewFragment) =>
+          field: (row: CachedAttributionsFragment) =>
             row.plant_group?.display_name,
           sortable: true,
         },
@@ -293,7 +293,8 @@ const columns = computed(() => [
           name: 'cultivar.display_name',
           label: t('entity.commonColumns.displayName'),
           align: 'left' as const,
-          field: (row: AttributionsViewFragment) => row.cultivar?.display_name,
+          field: (row: CachedAttributionsFragment) =>
+            row.cultivar?.display_name,
           sortable: true,
         },
       ]
@@ -304,7 +305,7 @@ const columns = computed(() => [
           name: 'lot.display_name',
           label: t('entity.commonColumns.displayName'),
           align: 'left' as const,
-          field: (row: AttributionsViewFragment) => row.lot?.display_name,
+          field: (row: CachedAttributionsFragment) => row.lot?.display_name,
           sortable: true,
         },
       ]
@@ -322,7 +323,7 @@ const columns = computed(() => [
     field: 'value',
     align: 'center' as const,
     sortable: false,
-    format: (val: unknown, row: AttributionsViewFragment) => getValue(row),
+    format: (val: unknown, row: CachedAttributionsFragment) => getValue(row),
   },
   {
     name: 'text_note',
@@ -346,7 +347,7 @@ const columns = computed(() => [
     field: 'date_attributed',
     align: 'left' as const,
     sortable: true,
-    format: (v: AttributionsViewFragment['date_attributed']) => d(v, 'Ymd'),
+    format: (v: CachedAttributionsFragment['date_attributed']) => d(v, 'Ymd'),
   },
   {
     name: 'author',
@@ -389,7 +390,7 @@ watch(
   { immediate: true },
 );
 
-function getValue(row: AttributionsViewFragment) {
+function getValue(row: CachedAttributionsFragment) {
   const type = dataTypeToColumnTypes(row.data_type);
   const value = getAttributionValue(row);
 
@@ -423,9 +424,9 @@ function transformData({
   data,
   visibleColumns,
 }: TransformDataArgs<
-  // ts hack to make query result compatible with AnalyzeAttributionsViewFields
+  // ts hack to make query result compatible with AnalyzeCachedAttributionsFields
   Omit<
-    NonNullableFields<ResultOf<typeof query>['attributions_view'][0]>,
+    NonNullableFields<ResultOf<typeof query>['cached_attributions'][0]>,
     'plant' | 'plant_group' | 'cultivar' | 'lot' | 'data_type'
   > & {
     plant: { id: number; label_id: string } | null;
@@ -468,7 +469,7 @@ const {
   isExporting,
   exportProgress,
 } = useExport({
-  entityName: 'attributions_view',
+  entityName: 'cached_attributions',
   query,
   variables,
   visibleColumns: computed(() => {

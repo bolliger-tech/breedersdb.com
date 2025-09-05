@@ -16,13 +16,6 @@
       :export-progress="exportProgress"
       @export="onExport"
     />
-    <div v-if="lastRefreshDate" class="text-caption">
-      {{
-        t('analyze.result.lastRefresh', {
-          date: lastRefreshDate?.toLocaleString(),
-        })
-      }}
-    </div>
 
     <div style="display: none">
       <!-- leave for testing and debugging -->
@@ -38,7 +31,7 @@ import type { AnalyzeResultTableProps } from 'components/Analyze/Result/AnalyzeR
 import AnalyzeResultTable from 'components/Analyze/Result/AnalyzeResultTable.vue';
 import { BaseTable, FilterConjunction, FilterNode } from '../Filter/filterNode';
 import type {
-  AnalyzeAttributionsViewFields,
+  AnalyzeCachedAttributionsFields,
   AnalyzeResult,
   AnalyzeResultEntityField,
   AnalyzeResultEntityRow,
@@ -51,7 +44,6 @@ import { type QTableColumn, useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { debounce } from 'quasar';
 import { AttributionAggregation } from './attributionAggregationTypes';
-import { useRefreshAttributionsView } from 'src/composables/useRefreshAttributionsView';
 import type {
   ExportDataValue,
   TransformDataArgs,
@@ -161,17 +153,6 @@ watch(
   { deep: true },
 );
 
-const urql = useRefreshAttributionsView();
-const { data: lastRefresh, error: refreshError } = await urql.executeMutation(
-  {},
-);
-
-const lastRefreshDate = computed(() => {
-  return lastRefresh?.refresh_attributions_view[0]?.last_refresh
-    ? new Date(lastRefresh.refresh_attributions_view[0].last_refresh)
-    : null;
-});
-
 const emptyBaseFilter = FilterNode.FilterRoot({
   childrensConjunction: FilterConjunction.And,
   baseTable: props.baseTable,
@@ -198,7 +179,6 @@ watch(
     () => props.attributionFilter,
     columnsToFetch,
     pagination,
-    () => lastRefresh,
   ],
   () => {
     debouncedFetching.value = true;
@@ -218,11 +198,7 @@ watch(
 const query = computed(() => queryData.value.query);
 const variables = computed(() => queryData.value.variables);
 
-const {
-  data,
-  fetching,
-  error: queryError,
-} = await useQuery<AnalyzeResult>({
+const { data, fetching, error } = await useQuery<AnalyzeResult>({
   query,
   variables,
 });
@@ -240,7 +216,7 @@ const fixDataRowKeys = (row: AnalyzeResultEntityRow) => {
   return Object.fromEntries(renamed) as {
     [key: `${string}`]: AnalyzeResultEntityField;
   } & {
-    [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[];
+    [key: `attributes.${number}`]: AnalyzeCachedAttributionsFields[];
   };
 };
 
@@ -252,8 +228,6 @@ const rows = computed(() => {
     fixDataRowKeys,
   ) as AnalyzeResultTableProps['rows'][0][];
 });
-
-const error = computed(() => refreshError || queryError.value);
 
 const totalResults = computed(() => {
   if (!data?.value) return 0;

@@ -72,11 +72,11 @@ import { useRoute, useRouter } from 'vue-router';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import { plantFragment } from 'src/components/Plant/plantFragment';
 import {
-  attributionsViewFragment,
-  type AttributionsViewFragment,
-} from 'src/components/Attribution/attributionsViewFragment';
+  cachedAttributionsFragment,
+  type CachedAttributionsFragment,
+} from 'src/components/Attribution/cachedAttributionsFragment';
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
-import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
+import { useQuery } from '@urql/vue';
 import PlantList from 'src/components/Plant/PlantList.vue';
 import { makeQrLabel } from 'src/utils/labelUtils';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
@@ -92,7 +92,7 @@ const query = graphql(
       $LotWithOrchard: Boolean! = false
       $LotWithCrossing: Boolean! = true
       $PlantWithSegments: Boolean! = true
-      $AttributionsViewWithEntites: Boolean! = true
+      $CachedAttributionsWithEntites: Boolean! = true
     ) {
       plant_groups_by_pk(id: $id) {
         ...plantGroupFragment
@@ -102,25 +102,28 @@ const query = graphql(
         plantsDisabled: plants(where: { disabled: { _eq: true } }) {
           ...plantFragment
         }
-        attributions_views {
-          ...attributionsViewFragment
+        cached_attributions {
+          ...cachedAttributionsFragment
         }
       }
     }
   `,
-  [plantGroupFragment, plantFragment, attributionsViewFragment],
+  [plantGroupFragment, plantFragment, cachedAttributionsFragment],
 );
 
-const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
+const { data, fetching, error } = await useQuery({
+  requestPolicy: 'cache-and-network',
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['cached_attributions'] },
 });
 
 const plantGroup = computed(() => data.value?.plant_groups_by_pk);
 
 const attributions = computed(
   () =>
-    (plantGroup.value?.attributions_views || []) as AttributionsViewFragment[],
+    (plantGroup.value?.cached_attributions ||
+      []) as CachedAttributionsFragment[],
 );
 
 const print = computed(

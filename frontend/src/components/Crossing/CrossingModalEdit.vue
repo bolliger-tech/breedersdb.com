@@ -3,6 +3,9 @@
     :entity="crossing"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
+    :edit-mutation-context="{
+      additionalTypenames: ['lots', 'cultivars', 'plant_groups', 'plants'],
+    }"
     index-path="/crossings"
     sprite-icon="blossom"
     :subtitle="t('crossings.title', 1)"

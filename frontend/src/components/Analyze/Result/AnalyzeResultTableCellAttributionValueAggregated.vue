@@ -33,7 +33,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import type { AnalyzeAttributionsViewFields } from './filterToQuery';
+import type { AnalyzeCachedAttributionsFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
 import { formatResultColumnValue } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
@@ -44,7 +44,7 @@ import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
 export interface AnalyzeResultTableCellAttributionValueAggregatedProps {
-  attributions: AnalyzeAttributionsViewFields[];
+  attributions: AnalyzeCachedAttributionsFields[];
   aggregation: AttributionAggregation;
 }
 
@@ -128,7 +128,7 @@ const label = computed(() => {
 });
 
 function getMin(
-  attributions: AnalyzeAttributionsViewFields[],
+  attributions: AnalyzeCachedAttributionsFields[],
   type: ColumnTypes,
 ) {
   const min = Math.min(...getValuesAsNumbers(attributions, type));
@@ -136,7 +136,7 @@ function getMin(
 }
 
 function getMax(
-  attributions: AnalyzeAttributionsViewFields[],
+  attributions: AnalyzeCachedAttributionsFields[],
   type: ColumnTypes,
 ) {
   const min = Math.max(...getValuesAsNumbers(attributions, type));
@@ -144,7 +144,7 @@ function getMax(
 }
 
 function getMean(
-  attributions: AnalyzeAttributionsViewFields[],
+  attributions: AnalyzeCachedAttributionsFields[],
   type: ColumnTypes,
 ) {
   const values = getValuesAsNumbers(attributions, type);
@@ -156,7 +156,7 @@ function getMean(
 }
 
 function getMedian(
-  attributions: AnalyzeAttributionsViewFields[],
+  attributions: AnalyzeCachedAttributionsFields[],
   type: ColumnTypes,
 ) {
   const sortedValues = getValuesAsNumbers(attributions, type).sort(
@@ -180,7 +180,7 @@ function getMedian(
 }
 
 function getStdDev(
-  attributions: AnalyzeAttributionsViewFields[],
+  attributions: AnalyzeCachedAttributionsFields[],
   type: ColumnTypes,
 ) {
   const values = getValuesAsNumbers(attributions, type);
@@ -196,7 +196,7 @@ function getStdDev(
 }
 
 function getValuesAsNumbers(
-  attributions: AnalyzeAttributionsViewFields[],
+  attributions: AnalyzeCachedAttributionsFields[],
   type: ColumnTypes,
 ) {
   if (

@@ -46,7 +46,7 @@
 <script lang="ts" setup>
 import type { QTableColumn, QTableProps } from 'quasar';
 import AnalyzeResultTableCell from './AnalyzeResultTableCell.vue';
-import type { AnalyzeAttributionsViewFields } from './filterToQuery';
+import type { AnalyzeCachedAttributionsFields } from './filterToQuery';
 import EntityListTable from 'src/components/Entity/List/EntityListTable.vue';
 import AnalyzeResultTableColumnLabel from 'components/Analyze/Result/AnalyzeResultTableColumnLabel.vue';
 import { BaseTable } from '../Filter/filterNode';
@@ -63,8 +63,8 @@ export interface AnalyzeResultTableProps
 interface AnalyzeResultTablePropsWithoutModel extends EntityExportButtonProps {
   rows: {
     id: number;
-    [key: `attributes.${number}`]: AnalyzeAttributionsViewFields[];
-    [key: string]: null | number | string | AnalyzeAttributionsViewFields[];
+    [key: `attributes.${number}`]: AnalyzeCachedAttributionsFields[];
+    [key: string]: null | number | string | AnalyzeCachedAttributionsFields[];
   }[];
   loading: boolean;
   allColumns: QTableColumn[];

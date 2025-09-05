@@ -3,6 +3,9 @@
     :entity="attribute"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
+    :edit-mutation-context="{
+      additionalTypenames: ['cached_attributions'],
+    }"
     index-path="/attributes"
     sprite-icon="form"
     :subtitle="t('attributes.title', 1)"

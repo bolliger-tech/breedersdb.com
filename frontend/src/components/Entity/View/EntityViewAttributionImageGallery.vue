@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import type { EntityViewAttributionImageProps } from './EntityViewAttributionImage.vue';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { ref } from 'vue';
@@ -48,7 +48,7 @@ import { imageSizes } from 'src/utils/imageSizes';
 const TRANSITION_DURATION = 300;
 
 export interface EntityViewAttributionsImageGalleryProps {
-  images: AttributionsViewFragment[];
+  images: CachedAttributionsFragment[];
 }
 
 defineProps<EntityViewAttributionsImageGalleryProps>();

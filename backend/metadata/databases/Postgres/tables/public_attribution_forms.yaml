@@ -16,6 +16,13 @@ array_relationships:
         table:
           name: attributions
           schema: public
+  - name: cached_attributions
+    using:
+      foreign_key_constraint_on:
+        column: attribution_form_id
+        table:
+          name: cached_attributions
+          schema: public
 insert_permissions:
   - role: user
     permission:

@@ -57,16 +57,16 @@ import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import LotEntityTable from 'src/components/Lot/LotEntityTable.vue';
 import {
-  attributionsViewFragment,
-  type AttributionsViewFragment,
-} from 'src/components/Attribution/attributionsViewFragment';
+  cachedAttributionsFragment,
+  type CachedAttributionsFragment,
+} from 'src/components/Attribution/cachedAttributionsFragment';
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityName from 'src/components/Entity/EntityName.vue';
-import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { makeTextLabel } from 'src/utils/labelUtils';
+import { useQuery } from '@urql/vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -76,7 +76,7 @@ const query = graphql(
       $id: Int!
       $LotWithOrchard: Boolean! = true
       $LotWithCrossing: Boolean! = true
-      $AttributionsViewWithEntites: Boolean! = true
+      $CachedAttributionsWithEntites: Boolean! = true
     ) {
       lots_by_pk(id: $id) {
         ...lotFragment
@@ -85,24 +85,26 @@ const query = graphql(
           display_name
           created
         }
-        attributions_views {
-          ...attributionsViewFragment
+        cached_attributions {
+          ...cachedAttributionsFragment
         }
       }
     }
   `,
-  [lotFragment, attributionsViewFragment],
+  [lotFragment, cachedAttributionsFragment],
 );
 
-const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
+const { data, fetching, error } = await useQuery({
+  requestPolicy: 'cache-and-network',
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['cached_attributions'] },
 });
 
 const lot = computed(() => data.value?.lots_by_pk);
 
 const attributions = computed(
-  () => (lot.value?.attributions_views || []) as AttributionsViewFragment[],
+  () => (lot.value?.cached_attributions || []) as CachedAttributionsFragment[],
 );
 
 const route = useRoute();

@@ -30,43 +30,45 @@ import AttributionButtonDelete from 'src/components/Attribution/AttributionButto
 import { graphql } from 'src/graphql';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
-import { attributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
-import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
+import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
+import { cachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import type { AttributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { attributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
 import { computed } from 'vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import AttributionEntityTable from 'src/components/Attribution/AttributionEntityTable.vue';
+import { useQuery } from '@urql/vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
 const query = graphql(
   `
-    query AttributionsView(
+    query CachedAttributions(
       $id: Int!
-      $AttributionsViewWithEntites: Boolean = true
+      $CachedAttributionsWithEntites: Boolean = true
     ) {
-      attributions_view(where: { id: { _eq: $id } }) {
-        ...attributionsViewFragment
+      cached_attributions(where: { id: { _eq: $id } }) {
+        ...cachedAttributionsFragment
         attribution_form {
           ...attributionFormFragment
         }
       }
     }
   `,
-  [attributionsViewFragment, attributionFormFragment],
+  [cachedAttributionsFragment, attributionFormFragment],
 );
 
-const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
+const { data, fetching, error } = await useQuery({
+  requestPolicy: 'cache-and-network',
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['cached_attributions'] },
 });
 
 const attribution = computed(
   () =>
-    data.value?.attributions_view[0] as
-      | (AttributionsViewFragment & {
+    data.value?.cached_attributions[0] as
+      | (CachedAttributionsFragment & {
           attribution_form: AttributionFormFragment;
         })
       | undefined,

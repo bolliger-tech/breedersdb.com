@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributionFormFragment } from 'src/components/AttributionForm/attributionFormFragment';
-import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
@@ -99,7 +99,7 @@ import { computed } from 'vue';
 import { imageSizes } from 'src/utils/imageSizes';
 
 export interface AttributionEntityTableProps {
-  attribution: AttributionsViewFragment & {
+  attribution: CachedAttributionsFragment & {
     attribution_form: AttributionFormFragment;
   };
   dense?: boolean | undefined;

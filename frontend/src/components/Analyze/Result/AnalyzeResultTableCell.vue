@@ -25,7 +25,7 @@ import { computed } from 'vue';
 import type { QTableSlots } from 'quasar';
 import AnalyzeResultTableCellAttributionValue from './AnalyzeResultTableCellAttributionValue.vue';
 import AnalyzeResultTableCellAttributionValueAggregated from './AnalyzeResultTableCellAttributionValueAggregated.vue';
-import type { AnalyzeAttributionsViewFields } from './filterToQuery';
+import type { AnalyzeCachedAttributionsFields } from './filterToQuery';
 import { AttributionAggregation } from './attributionAggregationTypes';
 import { n2semicolon } from 'src/utils/stringUtils';
 
@@ -40,7 +40,7 @@ export interface AnalyzeResultTableCellProps {
         }
       | {
           key: `attributes.${number}`;
-          value: AnalyzeAttributionsViewFields[];
+          value: AnalyzeCachedAttributionsFields[];
         }
     );
 }
@@ -54,7 +54,7 @@ const cellValue = computed(() => {
 
 const attributions = computed(() => {
   if (props.cellProps.col.name.startsWith('attributes.')) {
-    return (props.cellProps.value ?? []) as AnalyzeAttributionsViewFields[];
+    return (props.cellProps.value ?? []) as AnalyzeCachedAttributionsFields[];
   }
   return null;
 });

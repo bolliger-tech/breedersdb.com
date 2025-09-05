@@ -3,6 +3,9 @@
     :entity="cultivar"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
+    :edit-mutation-context="{
+      additionalTypenames: ['plant_groups', 'plants'],
+    }"
     index-path="/cultivars"
     sprite-icon="cultivar"
     :subtitle="t('cultivars.title', 1)"

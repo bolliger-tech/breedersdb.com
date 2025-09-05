@@ -10,3 +10,10 @@ array_relationships:
         table:
           name: attributes
           schema: public
+  - name: cached_attributions
+    using:
+      foreign_key_constraint_on:
+        column: data_type
+        table:
+          name: cached_attributions
+          schema: public

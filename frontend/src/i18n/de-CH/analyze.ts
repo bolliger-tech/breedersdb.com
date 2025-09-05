@@ -98,7 +98,6 @@ export const analyze = {
     altPhoto: 'Foto vom {date} von {author}',
     photo: 'Foto',
     downloadPhoto: 'Foto herunterladen',
-    lastRefresh: 'Letzte Aktualisierung: {date}',
     attributedEntity: 'Attributierte/s {entity}',
     note: 'Bemerkung',
     about: {

@@ -3,6 +3,9 @@
     :entity="plantGroup"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
+    :edit-mutation-context="{
+      additionalTypenames: ['plants', 'cached_attributions'],
+    }"
     index-path="/groups"
     sprite-icon="tree-group"
     :subtitle="t('plantGroups.title', 1)"

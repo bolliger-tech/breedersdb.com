@@ -3,6 +3,9 @@
     :entity="plant"
     :insert-mutation="insertMutation"
     :edit-mutation="editMutation"
+    :edit-mutation-context="{
+      additionalTypenames: ['cached_attributions'],
+    }"
     index-path="/plants"
     sprite-icon="tree"
     :subtitle="t('plants.title', 1)"

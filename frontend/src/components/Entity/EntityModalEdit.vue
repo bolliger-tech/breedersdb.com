@@ -68,6 +68,7 @@ type FormRefConstructor = new (...args: any) => any;
     }
   "
 >
+import type { OperationContext } from '@urql/vue';
 import { useMutation } from '@urql/vue';
 import { computed, ref, nextTick } from 'vue';
 import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
@@ -105,6 +106,8 @@ const props = defineProps<{
   entity: EditInput | InsertInput;
   insertMutation: TadaDocumentNode<InsertResult, InsertVariables, void>;
   editMutation: TadaDocumentNode<EditResult, EditVariables, void>;
+  insertMutationContext?: Partial<OperationContext>;
+  editMutationContext?: Partial<OperationContext>;
   indexPath: string;
   spriteIcon: SpriteIcons;
   subtitle: string;
@@ -207,7 +210,7 @@ async function saveInsert() {
     props.withInsertData?.(insertData.value) ??
     ({ entity: insertData.value } as InsertVariables);
 
-  return urqlInsert.executeMutation(data);
+  return urqlInsert.executeMutation(data, props.insertMutationContext);
 }
 
 async function saveEdit() {
@@ -227,7 +230,7 @@ async function saveEdit() {
       entity: editedData.value,
     } as EditVariables);
 
-  return urqlEdit.executeMutation(data);
+  return urqlEdit.executeMutation(data, props.editMutationContext);
 }
 
 const saveError = computed(() => saveInsertError.value || saveEditError.value);

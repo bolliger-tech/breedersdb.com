@@ -94,11 +94,10 @@ import { useRoute, useRouter } from 'vue-router';
 import CultivarEntityTable from 'src/components/Cultivar/CultivarEntityTable.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import {
-  attributionsViewFragment,
-  type AttributionsViewFragment,
-} from 'src/components/Attribution/attributionsViewFragment';
+  cachedAttributionsFragment,
+  type CachedAttributionsFragment,
+} from 'src/components/Attribution/cachedAttributionsFragment';
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
-import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
 import { plantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
@@ -106,6 +105,7 @@ import { plantFragment } from 'src/components/Plant/plantFragment';
 import PlantList from 'src/components/Plant/PlantList.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { makeTextLabel } from 'src/utils/labelUtils';
+import { useQuery } from '@urql/vue';
 
 const props = defineProps<{ entityId: number | string }>();
 
@@ -118,7 +118,7 @@ const query = graphql(
       $LotWithCrossing: Boolean = true
       $PlantGroupWithCultivar: Boolean! = false
       $PlantWithSegments: Boolean! = true
-      $AttributionsViewWithEntites: Boolean! = true
+      $CachedAttributionsWithEntites: Boolean! = true
     ) {
       cultivars_by_pk(id: $id) {
         ...cultivarFragment
@@ -131,8 +131,8 @@ const query = graphql(
             ...plantFragment
           }
         }
-        attributions_views {
-          ...attributionsViewFragment
+        cached_attributions {
+          ...cachedAttributionsFragment
         }
       }
     }
@@ -140,21 +140,23 @@ const query = graphql(
   [
     cultivarFragment,
     plantGroupFragment,
-    attributionsViewFragment,
+    cachedAttributionsFragment,
     plantFragment,
   ],
 );
 
-const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
+const { data, fetching, error } = await useQuery({
+  requestPolicy: 'cache-and-network',
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['cached_attributions'] },
 });
 
 const cultivar = computed(() => data.value?.cultivars_by_pk);
 
 const attributions = computed(
   () =>
-    (cultivar.value?.attributions_views || []) as AttributionsViewFragment[],
+    (cultivar.value?.cached_attributions || []) as CachedAttributionsFragment[],
 );
 
 const plantsActive = computed(

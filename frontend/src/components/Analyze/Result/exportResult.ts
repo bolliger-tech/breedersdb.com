@@ -3,12 +3,12 @@ import type { CellObject } from 'xlsx';
 import { getImageCell } from 'src/utils/imageUtils';
 
 import {
-  type AnalyzeAttributionsViewFields,
+  type AnalyzeCachedAttributionsFields,
   attributionValueKeys,
 } from './filterToQuery';
 
-export type AnalyzeAttributionsViewValueFields = Pick<
-  AnalyzeAttributionsViewFields,
+export type AnalyzeCachedAttributionsValueFields = Pick<
+  AnalyzeCachedAttributionsFields,
   | 'integer_value'
   | 'float_value'
   | 'text_value'
@@ -16,16 +16,16 @@ export type AnalyzeAttributionsViewValueFields = Pick<
   | 'date_value'
 >;
 
-export type AnalyzeAttributionsViewObjectFields = Pick<
-  AnalyzeAttributionsViewFields,
+export type AnalyzeCachedAttributionsObjectFields = Pick<
+  AnalyzeCachedAttributionsFields,
   'plant' | 'plant_group' | 'cultivar' | 'lot'
 >;
 
-export const attributionObjectKeys: (keyof AnalyzeAttributionsViewObjectFields)[] =
+export const attributionObjectKeys: (keyof AnalyzeCachedAttributionsObjectFields)[] =
   ['plant', 'plant_group', 'cultivar', 'lot'];
 
 export function getAttributionObjectName(
-  attribution: AnalyzeAttributionsViewFields,
+  attribution: AnalyzeCachedAttributionsFields,
 ) {
   return (
     attribution.plant?.label_id ??
@@ -37,7 +37,7 @@ export function getAttributionObjectName(
 }
 
 export function getAttributionObjectType(
-  attribution: AnalyzeAttributionsViewFields,
+  attribution: AnalyzeCachedAttributionsFields,
 ) {
   return attribution.plant
     ? 'plant'
@@ -50,7 +50,7 @@ export function getAttributionObjectType(
           : 'unknown';
 }
 
-function attributionValueToXlsx(attribution: AnalyzeAttributionsViewFields) {
+function attributionValueToXlsx(attribution: AnalyzeCachedAttributionsFields) {
   const entityName = getAttributionObjectName(attribution);
   const valueKey = attributionValueKeys.find(
     (key) => attribution[key] !== null,
@@ -78,7 +78,9 @@ function attributionValueToXlsx(attribution: AnalyzeAttributionsViewFields) {
   return value;
 }
 
-export function attributionToXlsx(attribution: AnalyzeAttributionsViewFields) {
+export function attributionToXlsx(
+  attribution: AnalyzeCachedAttributionsFields,
+) {
   const value = attributionValueToXlsx(attribution);
   const entityName = getAttributionObjectName(attribution);
   const objectType = getAttributionObjectType(attribution);

@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributeTypes } from 'src/graphql';
 import {
@@ -57,7 +57,7 @@ import EntityLink from 'src/components/Entity/EntityLink.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 
 export interface EntityViewAttributionsTableProps {
-  rows: AttributionsViewFragment[];
+  rows: CachedAttributionsFragment[];
   attributeType?: AttributeTypes | undefined;
   showEntity?: boolean | undefined;
 }
@@ -73,10 +73,13 @@ const columns = [
         {
           name: 'entity',
           label: t('attributions.columns.entity'),
-          field: (row: AttributionsViewFragment) => row,
+          field: (row: CachedAttributionsFragment) => row,
           align: 'left' as const,
           sortable: true,
-          sort: (a: AttributionsViewFragment, b: AttributionsViewFragment) => {
+          sort: (
+            a: CachedAttributionsFragment,
+            b: CachedAttributionsFragment,
+          ) => {
             // sort grouped by plant, plant_group, cultivar, lot
             if (a.plant && b.plant) {
               return localizedSortPredicate(a.plant.label_id, b.plant.label_id);
@@ -159,7 +162,7 @@ const columns = [
   {
     name: 'value',
     label: t('attributions.columns.value'),
-    field: (row: AttributionsViewFragment) => getValue(row),
+    field: (row: CachedAttributionsFragment) => getValue(row),
     align: 'left' as const,
     sortable: true,
     style: 'max-width: clamp(100px, 30vw, 300px);',
@@ -185,7 +188,8 @@ const columns = [
     field: 'date_attributed',
     align: 'left' as const,
     sortable: true,
-    format: (val: AttributionsViewFragment['date_attributed']) => d(val, 'Ymd'),
+    format: (val: CachedAttributionsFragment['date_attributed']) =>
+      d(val, 'Ymd'),
   },
   {
     name: 'author',
@@ -200,12 +204,12 @@ const columns = [
     field: 'exceptional_attribution',
     align: 'left' as const,
     sortable: true,
-    format: (val: AttributionsViewFragment['exceptional_attribution']) =>
+    format: (val: CachedAttributionsFragment['exceptional_attribution']) =>
       val ? '✓' : '',
   },
 ];
 
-function getValue(row: AttributionsViewFragment) {
+function getValue(row: CachedAttributionsFragment) {
   const type = dataTypeToColumnTypes(row.data_type);
   const value = getAttributionValue(row);
 

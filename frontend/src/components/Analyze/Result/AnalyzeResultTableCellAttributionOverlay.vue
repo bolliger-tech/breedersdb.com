@@ -22,9 +22,9 @@ import {
 } from 'src/components/Plant/plantFragment';
 import { lotFragment, type LotFragment } from 'src/components/Lot/lotFragment';
 import {
-  attributionsViewFragment,
-  type AttributionsViewFragment,
-} from 'src/components/Attribution/attributionsViewFragment';
+  cachedAttributionsFragment,
+  type CachedAttributionsFragment,
+} from 'src/components/Attribution/cachedAttributionsFragment';
 import {
   plantGroupFragment,
   type PlantGroupFragment,
@@ -34,36 +34,39 @@ import {
   type CultivarFragment,
 } from 'src/components/Cultivar/cultivarFragment';
 import { computed } from 'vue';
+import type { SimplifyDeep } from 'type-fest';
 
 export interface AnalyzeResultTableCellAttributionOverlayProps {
   id: number;
 }
 
-export type AttributionDetails = AttributionsViewFragment & {
-  plant:
-    | null
-    | (Omit<PlantFragment, 'plant_group'> & {
-        plant_group: Required<PlantFragment['plant_group']>;
-      });
-  plant_group:
-    | null
-    | (Omit<PlantGroupFragment, 'cultivar'> & {
-        cultivar: Required<PlantGroupFragment['cultivar']>;
-      });
-  cultivar:
-    | null
-    | (Omit<CultivarFragment, 'lot'> & {
-        lot: Required<CultivarFragment['lot']>;
-      });
-  lot:
-    | null
-    | (Omit<LotFragment, 'orchard' | 'crossing'> & {
-        crossing: Required<LotFragment['crossing']>;
-      });
-  attribution_form: ResultOf<
-    typeof query
-  >['attributions_view'][0]['attribution_form'];
-};
+export type AttributionDetails = SimplifyDeep<
+  CachedAttributionsFragment & {
+    plant:
+      | null
+      | (Omit<PlantFragment, 'plant_group'> & {
+          plant_group: Required<PlantFragment['plant_group']>;
+        });
+    plant_group:
+      | null
+      | (Omit<PlantGroupFragment, 'cultivar'> & {
+          cultivar: Required<PlantGroupFragment['cultivar']>;
+        });
+    cultivar:
+      | null
+      | (Omit<CultivarFragment, 'lot'> & {
+          lot: Required<CultivarFragment['lot']>;
+        });
+    lot:
+      | null
+      | (Omit<LotFragment, 'orchard' | 'crossing'> & {
+          crossing: Required<LotFragment['crossing']>;
+        });
+    attribution_form: ResultOf<
+      typeof query
+    >['cached_attributions'][0]['attribution_form'];
+  }
+>;
 
 const props = defineProps<AnalyzeResultTableCellAttributionOverlayProps>();
 
@@ -74,12 +77,12 @@ const query = graphql(
       $PlantWithSegments: Boolean! = true
       $PlantGroupWithCultivar: Boolean! = true
       $CultivarWithLot: Boolean! = true
-      $AttributionsViewWithEntites: Boolean! = false
+      $CachedAttributionsWithEntites: Boolean! = false
       $LotWithOrchard: Boolean! = false
       $LotWithCrossing: Boolean! = true
     ) {
-      attributions_view(where: { id: { _eq: $id } }) {
-        ...attributionsViewFragment
+      cached_attributions(where: { id: { _eq: $id } }) {
+        ...cachedAttributionsFragment
         plant {
           ...plantFragment
         }
@@ -100,7 +103,7 @@ const query = graphql(
     }
   `,
   [
-    attributionsViewFragment,
+    cachedAttributionsFragment,
     plantFragment,
     plantGroupFragment,
     cultivarFragment,
@@ -116,7 +119,7 @@ const { data, fetching, error } = useQuery({
 
 const attribution = computed(() =>
   data.value
-    ? (data.value.attributions_view[0] as AttributionDetails)
+    ? (data.value.cached_attributions[0] as AttributionDetails)
     : undefined,
 );
 

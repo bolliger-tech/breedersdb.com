@@ -16,7 +16,7 @@ export type AnalyzeResultEntityField = null | number | string;
 
 export type AnalyzeResultEntityRow = {
   [key: string]: AnalyzeResultEntityField;
-} & { [key: `attributes__${number}`]: AnalyzeAttributionsViewFields[] };
+} & { [key: `attributes__${number}`]: AnalyzeCachedAttributionsFields[] };
 
 export type AnalyzeResult = {
   [K in BaseTable]: AnalyzeResultEntityRow[];
@@ -211,9 +211,9 @@ function ruleToCriterion(rule: FilterRule): GraphQLWhereArgs | undefined {
       rule,
     });
     comparison.negate = false; // negation was handled in toAttributionValueCondition
-    const attributionCondition = `{ attributions_views: { _and: [ ${attributeIdCondition}, ${attributionValueCondition} ] } }`;
+    const attributionCondition = `{ cached_attributions: { _and: [ ${attributeIdCondition}, ${attributionValueCondition} ] } }`;
     if (rule.includeEntitiesWithoutAttributions) {
-      const noAttributionsCondition = `{ attributions_views_aggregate: { count: { predicate: { _eq: 0 }, filter: ${attributeIdCondition} } } }`;
+      const noAttributionsCondition = `{ cached_attributions_aggregate: { count: { predicate: { _eq: 0 }, filter: ${attributeIdCondition} } } }`;
       criterion = {
         conditions: `{ _or: [ ${attributionCondition}, ${noAttributionsCondition} ] }`,
         variables: [comparison.variable],
@@ -641,7 +641,7 @@ function columnsToFields({
         ? `, ${attributionWhere.conditions}`
         : '';
       fields += `
-${indentation}attributes__${attributeId}: attributions_views(where: { _and: [ { attribute_id: { _eq: ${attributeId} } }${filterConditions} ] }, order_by: { date_attributed: desc }) {
+${indentation}attributes__${attributeId}: cached_attributions(where: { _and: [ { attribute_id: { _eq: ${attributeId} } }${filterConditions} ] }, order_by: { date_attributed: desc }) {
 ${indentation}  ...AttributionFragment
 ${indentation}}
 `;
@@ -650,9 +650,9 @@ ${indentation}}
   return fields;
 }
 
-// IMPORTANT: adapt type `AnalyzeAttributionsViewFields` if changing fragment
+// IMPORTANT: adapt type `AnalyzeCachedAttributionsFields` if changing fragment
 const attributionFragment = `
-fragment AttributionFragment on attributions_view {
+fragment AttributionFragment on cached_attributions {
   id
   integer_value
   float_value
@@ -693,7 +693,7 @@ fragment AttributionFragment on attributions_view {
 }
 `;
 
-export type AnalyzeAttributionsViewFields = {
+export type AnalyzeCachedAttributionsFields = {
   id: number;
   integer_value: number | null;
   float_value: number | null;
@@ -721,8 +721,8 @@ export type AnalyzeAttributionsViewFields = {
   lot: { id: number; display_name: string } | null;
 };
 
-export type AnalyzeAttributionsViewValueFields = Pick<
-  AnalyzeAttributionsViewFields,
+export type AnalyzeCachedAttributionsValueFields = Pick<
+  AnalyzeCachedAttributionsFields,
   | 'integer_value'
   | 'float_value'
   | 'text_value'
@@ -730,7 +730,7 @@ export type AnalyzeAttributionsViewValueFields = Pick<
   | 'date_value'
 >;
 
-export const attributionValueKeys: (keyof AnalyzeAttributionsViewValueFields)[] =
+export const attributionValueKeys: (keyof AnalyzeCachedAttributionsValueFields)[] =
   ['integer_value', 'float_value', 'text_value', 'boolean_value', 'date_value'];
 
 type QueryVariable = {

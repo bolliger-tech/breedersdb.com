@@ -18,7 +18,7 @@ import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { lotFragment } from 'src/components/Lot/lotFragment';
-import { attributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import { cachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 
 const props = defineProps<{ templateId?: number; entityId: 'new' }>();
 
@@ -41,7 +41,7 @@ const query = graphql(
       $id: Int!
       $LotWithOrchard: Boolean! = false
       $LotWithCrossing: Boolean! = false
-      $AttributionsViewWithEntites: Boolean! = false
+      $CachedAttributionsWithEntites: Boolean! = false
     ) {
       lots_by_pk(id: $id) {
         ...lotFragment
@@ -50,13 +50,13 @@ const query = graphql(
           display_name
           created
         }
-        attributions_views {
-          ...attributionsViewFragment
+        cached_attributions {
+          ...cachedAttributionsFragment
         }
       }
     }
   `,
-  [lotFragment, attributionsViewFragment],
+  [lotFragment, cachedAttributionsFragment],
 );
 
 const { data, error, fetching } = useQuery({

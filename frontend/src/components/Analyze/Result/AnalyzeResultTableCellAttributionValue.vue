@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-import type { AnalyzeAttributionsViewFields } from './filterToQuery';
+import type { AnalyzeCachedAttributionsFields } from './filterToQuery';
 import { useI18n } from 'src/composables/useI18n';
 import {
   formatResultColumnValue,
@@ -40,7 +40,7 @@ import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 import { n2semicolon } from 'src/utils/stringUtils';
 
 export interface AnalyzeResultTableCellAttributionValueProps {
-  attribution: AnalyzeAttributionsViewFields;
+  attribution: AnalyzeCachedAttributionsFields;
 }
 
 const props = defineProps<AnalyzeResultTableCellAttributionValueProps>();

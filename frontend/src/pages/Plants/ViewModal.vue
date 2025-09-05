@@ -75,12 +75,12 @@ import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import EntityViewAllAttributions from 'src/components/Entity/View/EntityViewAllAttributions.vue';
-import type { AttributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import PlantButtonEliminate from 'src/components/Plant/PlantButtonEliminate.vue';
-import { useRefreshAttributionsViewThenQuery } from 'src/composables/useRefreshAttributionsView';
-import { attributionsViewFragment } from 'src/components/Attribution/attributionsViewFragment';
+import { useQuery } from '@urql/vue';
+import { cachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import { motherPlantFragment } from 'src/components/MotherPlant/motherPlantFragment';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
@@ -94,7 +94,7 @@ const query = graphql(
     query Plant(
       $id: Int!
       $PlantWithSegments: Boolean = true
-      $AttributionsViewWithEntites: Boolean = true
+      $CachedAttributionsWithEntites: Boolean = true
       $MotherPlantWithPlant: Boolean = false
       $MotherPlantWithPollen: Boolean = true
       $MotherPlantWithCrossing: Boolean = false
@@ -105,8 +105,8 @@ const query = graphql(
     ) {
       plants_by_pk(id: $id) {
         ...plantFragment
-        attributions_views {
-          ...attributionsViewFragment
+        cached_attributions {
+          ...cachedAttributionsFragment
         }
         mother_plants {
           ...motherPlantFragment
@@ -114,17 +114,20 @@ const query = graphql(
       }
     }
   `,
-  [plantFragment, motherPlantFragment, attributionsViewFragment],
+  [plantFragment, motherPlantFragment, cachedAttributionsFragment],
 );
 
-const { data, error, fetching } = await useRefreshAttributionsViewThenQuery({
+const { data, fetching, error } = await useQuery({
+  requestPolicy: 'cache-and-network',
   query,
   variables: { id: parseInt(props.entityId.toString()) },
+  context: { additionalTypenames: ['cached_attributions'] },
 });
 
 const plant = computed(() => data.value?.plants_by_pk);
 const attributions = computed(
-  () => (plant.value?.attributions_views || []) as AttributionsViewFragment[],
+  () =>
+    (plant.value?.cached_attributions || []) as CachedAttributionsFragment[],
 );
 
 const print = computed(

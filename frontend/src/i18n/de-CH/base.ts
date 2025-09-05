@@ -82,8 +82,8 @@ export const base = {
     permanantlyEnableCameraOnIOS: 'Kamera dauerhaft aktivieren (iOS)',
   },
   notAvailable: 'N/A',
-  deleteConfirmation: 'Möchtest du {entity} wirklich löschen?',
-  disableConfirmation: 'Möchtest du {entity} wirklich deaktivieren?',
+  deleteConfirmation: 'Möchtest du diese/n {entity} wirklich löschen?',
+  disableConfirmation: 'Möchtest du diese/n {entity} wirklich deaktivieren?',
   locales: {
     'en-US': 'Englisch',
     'de-CH': 'Deutsch',

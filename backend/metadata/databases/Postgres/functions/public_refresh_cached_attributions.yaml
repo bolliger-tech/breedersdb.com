@@ -1,0 +1,5 @@
+function:
+  name: refresh_cached_attributions
+  schema: public
+permissions:
+  - role: user

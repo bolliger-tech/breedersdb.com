@@ -28,9 +28,9 @@
     </q-btn>
   </div>
 
-  <AttributionAddFormName v-if="showFormName" :form-id="formId" />
+  <AttributionAddAboutFormName v-if="showFormName" :form-id="formId" />
 
-  <AttributionAddLastAttributed
+  <AttributionAddAboutLastAttributed
     v-if="lastAttributed"
     :entity-id="entityId"
     :form-id="formId"
@@ -39,24 +39,24 @@
 </template>
 
 <script lang="ts" setup>
-import AttributionAddLastAttributed from 'src/components/Attribution/Add/AttributionAddLastAttributed.vue';
+import AttributionAddAboutLastAttributed from 'src/components/Attribution/Add/About/AttributionAddAboutLastAttributed.vue';
 import { ref, type Slot, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import type { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { useI18n } from 'src/composables/useI18n';
-import AttributionAddFormName from '../AttributionAddFormName.vue';
+import AttributionAddAboutFormName from 'src/components/Attribution/Add/About/AttributionAddAboutFormName.vue';
 
 const KEY_LAST_ATTRIBUTED =
   'breedersdb-attribution-show-last-attributed-timestamp';
 const KEY_FORM_NAME = 'breedersdb-attribution-show-form-name';
 
-interface AttributionAddEntityInfoProps {
+interface AttributionAddAboutEntityInfoProps {
   entityId: number;
   entityType: AttributableEntities;
   formId: number;
 }
 
-defineProps<AttributionAddEntityInfoProps>();
+defineProps<AttributionAddAboutEntityInfoProps>();
 
 defineSlots<{
   settings: Slot;

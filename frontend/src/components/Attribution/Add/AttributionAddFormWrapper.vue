@@ -84,7 +84,7 @@ import {
   type AttributeFragment,
 } from 'src/components/Attribute/attributeFragment';
 import type { AttributionInputValue } from '../Input/AttributionInput.vue';
-import type { EntityPreviewEntityMaybeNoData } from './EntityInfo/attributionAddEntityTypes';
+import type { EntityPreviewEntityMaybeNoData } from './About/attributionAddAboutEntityTypes';
 
 export interface AttributionAddFormWrapperProps {
   entity: EntityPreviewEntityMaybeNoData;

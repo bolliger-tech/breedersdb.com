@@ -1,22 +1,22 @@
 <template>
-  <AttributionAddEntityInfoPlant
+  <AttributionAddAboutEntityInfoPlant
     v-if="entity.type === AttributableEntities.Plant"
     :entity="entity.data"
     :form-id="formId"
     v-model="fields.plant"
   />
-  <AttributionAddEntityInfoPlantGroup
+  <AttributionAddAboutEntityInfoPlantGroup
     v-else-if="entity.type === AttributableEntities.PlantGroup"
     :entity="entity.data"
     :form-id="formId"
     v-model="fields.plantGroup"
   />
-  <AttributionAddEntityInfoCultivar
+  <AttributionAddAboutEntityInfoCultivar
     v-else-if="entity.type === AttributableEntities.Cultivar"
     :entity="entity.data"
     :form-id="formId"
   />
-  <AttributionAddEntityInfoLot
+  <AttributionAddAboutEntityInfoLot
     v-else-if="entity.type === AttributableEntities.Lot"
     :entity="entity.data"
     :form-id="formId"
@@ -26,22 +26,22 @@
 
 <script setup lang="ts">
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
-import type { EntityPreviewEntity } from './attributionAddEntityTypes';
-import AttributionAddEntityInfoPlant from './AttributionAddEntityInfoPlant.vue';
-import AttributionAddEntityInfoPlantGroup from './AttributionAddEntityInfoPlantGroup.vue';
-import AttributionAddEntityInfoCultivar from './AttributionAddEntityInfoCultivar.vue';
-import AttributionAddEntityInfoLot from './AttributionAddEntityInfoLot.vue';
+import type { EntityPreviewEntity } from './attributionAddAboutEntityTypes';
+import AttributionAddAboutEntityInfoPlant from './AttributionAddAboutEntityInfoPlant.vue';
+import AttributionAddAboutEntityInfoPlantGroup from './AttributionAddAboutEntityInfoPlantGroup.vue';
+import AttributionAddAboutEntityInfoCultivar from './AttributionAddAboutEntityInfoCultivar.vue';
+import AttributionAddAboutEntityInfoLot from './AttributionAddAboutEntityInfoLot.vue';
 import { extend, useQuasar } from 'quasar';
 import { ref, watch } from 'vue';
 
 const LOCAL_STORAGE_KEY = 'breedersdb-attribution-entity-info';
 
-export interface AttributionAddEntityPreviewProps {
+export interface AttributionAddAboutEntityPreviewProps {
   entity: EntityPreviewEntity;
   formId: number;
 }
 
-defineProps<AttributionAddEntityPreviewProps>();
+defineProps<AttributionAddAboutEntityPreviewProps>();
 
 const defaultFields = {
   plant: {

@@ -1,5 +1,5 @@
 <template>
-  <AttributionAddEntityInfo
+  <AttributionAddAboutEntityInfo
     :entity-id="entity.id"
     :entity-type="AttributableEntities.PlantGroup"
     :form-id="formId"
@@ -32,24 +32,24 @@
         </template>
       </EntityCard>
     </template>
-  </AttributionAddEntityInfo>
+  </AttributionAddAboutEntityInfo>
 </template>
 
 <script lang="ts" setup>
 import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
-import AttributionAddEntityInfo from 'src/components/Attribution/Add/EntityInfo/AttributionAddEntityInfo.vue';
+import AttributionAddAboutEntityInfo from 'src/components/Attribution/Add/About/AttributionAddAboutEntityInfo.vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import type { PlantGroupFragment } from 'src/components/PlantGroup/plantGroupFragment';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { type Reactive } from 'vue';
 
-export interface AttributionAddEntityInfoPlantGroupProps {
+export interface AttributionAddAboutEntityInfoPlantGroupProps {
   entity: PlantGroupFragment;
   formId: number;
 }
 
-defineProps<AttributionAddEntityInfoPlantGroupProps>();
+defineProps<AttributionAddAboutEntityInfoPlantGroupProps>();
 
 const fields = defineModel<
   Reactive<{

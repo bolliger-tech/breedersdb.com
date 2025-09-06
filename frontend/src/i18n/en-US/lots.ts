@@ -11,6 +11,7 @@ export const lots = {
     plot: 'Plot',
     crossing: 'Crossing',
     orchard: 'Orchard',
+    lotId: 'Lot ID',
   },
 
   validation: {

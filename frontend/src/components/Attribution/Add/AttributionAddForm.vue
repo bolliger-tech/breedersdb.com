@@ -6,7 +6,7 @@
     @deleted="onDeleted"
   />
 
-  <AttributionAddEntity :entity="entity" :form-id="formId" />
+  <AttributionAddAboutEntity :entity="entity" :form-id="formId" />
 
   <AttributionAddAlreadyAttributed
     v-if="repeatTarget <= 1 && lastRepeat && !editId"
@@ -74,9 +74,9 @@ import AttributionAddFormFieldList from 'src/components/Attribution/Add/Attribut
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
 import { type AttributionInputValue } from 'src/components/Attribution/Input/AttributionInput.vue';
 import AttributionAddEditNote from 'src/components/Attribution/Add/AttributionAddEditNote.vue';
-import AttributionAddEntity from 'src/components/Attribution/Add/EntityInfo/AttributionAddEntity.vue';
+import AttributionAddAboutEntity from 'src/components/Attribution/Add/About/AttributionAddAboutEntity.vue';
 import type { UndefinedToNull } from 'src/utils/typescriptUtils';
-import type { EntityPreviewEntity } from './EntityInfo/attributionAddEntityTypes';
+import type { EntityPreviewEntity } from './About/attributionAddAboutEntityTypes';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 

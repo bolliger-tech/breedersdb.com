@@ -98,6 +98,7 @@ import type { TransformDataArgs } from 'src/composables/useExport';
 import { useExport } from 'src/composables/useExport';
 import {
   attributionToXlsx,
+  getAttributionObjectId,
   getAttributionObjectName,
   getAttributionObjectType,
 } from 'src/components/Analyze/Result/exportResult';
@@ -254,6 +255,16 @@ const columns = computed(() => [
           align: 'left' as const,
           sortable: false,
         },
+        {
+          name: 'entity_id',
+          label: t('attributions.columns.entityId'),
+          align: 'left' as const,
+          field: (row: CachedAttributionsFragment) =>
+            getAttributionObjectId(row),
+          sortable: true,
+          monospaced: true,
+          muted: true,
+        },
       ]
     : []),
   ...(subset.value === 'plants'
@@ -273,6 +284,15 @@ const columns = computed(() => [
             row.plant_group?.display_name,
           sortable: true,
         },
+        {
+          name: 'plant_id',
+          label: t('plants.fields.plantId'),
+          align: 'left' as const,
+          field: 'plant_id',
+          sortable: true,
+          monospaced: true,
+          muted: true,
+        },
       ]
     : []),
   ...(subset.value === 'plantGroups'
@@ -284,6 +304,15 @@ const columns = computed(() => [
           field: (row: CachedAttributionsFragment) =>
             row.plant_group?.display_name,
           sortable: true,
+        },
+        {
+          name: 'plant_group_id',
+          label: t('plantGroups.fields.plantGroupId'),
+          align: 'left' as const,
+          field: 'plant_group_id',
+          sortable: true,
+          monospaced: true,
+          muted: true,
         },
       ]
     : []),
@@ -297,6 +326,15 @@ const columns = computed(() => [
             row.cultivar?.display_name,
           sortable: true,
         },
+        {
+          name: 'cultivar_id',
+          label: t('cultivars.fields.cultivarId'),
+          align: 'left' as const,
+          field: 'cultivar_id',
+          sortable: true,
+          monospaced: true,
+          muted: true,
+        },
       ]
     : []),
   ...(subset.value === 'lots'
@@ -307,6 +345,15 @@ const columns = computed(() => [
           align: 'left' as const,
           field: (row: CachedAttributionsFragment) => row.lot?.display_name,
           sortable: true,
+        },
+        {
+          name: 'lot_id',
+          label: t('lots.fields.lotId'),
+          align: 'left' as const,
+          field: 'lot_id',
+          sortable: true,
+          monospaced: true,
+          muted: true,
         },
       ]
     : []),
@@ -457,6 +504,7 @@ function transformData({
         // special column
         entity: getAttributionObjectName(attribution),
         entity_type: getAttributionObjectType(attribution),
+        entity_id: getAttributionObjectId(attribution),
         // the serialized attribution
         ...attributionToXlsx(attribution),
       };

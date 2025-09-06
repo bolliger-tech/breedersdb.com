@@ -11,13 +11,13 @@
 <script lang="ts" setup>
 import { useI18n } from 'src/composables/useI18n';
 
-export interface AttributionAddEntityInfoLocationProps {
+export interface AttributionAddAboutEntityInfoLocationProps {
   location: (string | null)[];
   showOrchard: boolean;
   orchard: string | null;
 }
 
-defineProps<AttributionAddEntityInfoLocationProps>();
+defineProps<AttributionAddAboutEntityInfoLocationProps>();
 
 const { t } = useI18n();
 </script>

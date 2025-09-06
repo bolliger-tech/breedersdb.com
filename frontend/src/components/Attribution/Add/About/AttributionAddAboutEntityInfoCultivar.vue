@@ -1,5 +1,5 @@
 <template>
-  <AttributionAddEntityInfo
+  <AttributionAddAboutEntityInfo
     :entity-id="entity.id"
     :entity-type="AttributableEntities.Cultivar"
     :form-id="formId"
@@ -10,19 +10,19 @@
         :cultivar="entity"
       />
     </template>
-  </AttributionAddEntityInfo>
+  </AttributionAddAboutEntityInfo>
 </template>
 
 <script lang="ts" setup>
-import AttributionAddEntityInfo from 'src/components/Attribution/Add/EntityInfo/AttributionAddEntityInfo.vue';
+import AttributionAddAboutEntityInfo from 'src/components/Attribution/Add/About/AttributionAddAboutEntityInfo.vue';
 import { AttributableEntities } from '../../attributableEntities';
 import type { CultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 
-export interface AttributionAddEntityInfoCultivarProps {
+export interface AttributionAddAboutEntityInfoCultivarProps {
   entity: CultivarFragment;
   formId: number;
 }
 
-defineProps<AttributionAddEntityInfoCultivarProps>();
+defineProps<AttributionAddAboutEntityInfoCultivarProps>();
 </script>

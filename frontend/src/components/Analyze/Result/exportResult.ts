@@ -50,13 +50,25 @@ export function getAttributionObjectType(
           : 'unknown';
 }
 
+export function getAttributionObjectId(
+  attribution: AnalyzeCachedAttributionsFields,
+) {
+  return (
+    attribution.plant?.id ??
+    attribution.plant_group?.id ??
+    attribution.cultivar?.id ??
+    attribution.lot?.id ??
+    'unknown'
+  );
+}
+
 function attributionValueToXlsx(attribution: AnalyzeCachedAttributionsFields) {
   const entityName = getAttributionObjectName(attribution);
   const valueKey = attributionValueKeys.find(
     (key) => attribution[key] !== null,
   );
   const value =
-    !valueKey || !(valueKey in attribution) || !attribution[valueKey]
+    !valueKey || !(valueKey in attribution) || attribution[valueKey] === null
       ? null
       : valueKey === 'date_value'
         ? ({

@@ -1,5 +1,5 @@
 <template>
-  <AttributionAddEntityInfo
+  <AttributionAddAboutEntityInfo
     :entity-id="entity.id"
     :entity-type="AttributableEntities.Lot"
     :form-id="formId"
@@ -18,14 +18,14 @@
         <template #subtitle>
           <ul style="list-style: none" class="q-ma-none q-pa-none">
             <li v-if="fields.seedTrayLocation">
-              <AttributionAddEntityInfoLocation
+              <AttributionAddAboutEntityInfoLocation
                 :show-orchard="fields.orchard"
                 :orchard="entity.orchard?.name ?? null"
                 :location="[entity.seed_tray]"
               />
             </li>
             <li v-if="fields.plotLocation">
-              <AttributionAddEntityInfoLocation
+              <AttributionAddAboutEntityInfoLocation
                 :show-orchard="fields.orchard"
                 :orchard="entity.orchard?.name ?? null"
                 :location="[entity.plot]"
@@ -38,7 +38,7 @@
                 fields.orchard
               "
             >
-              <AttributionAddEntityInfoLocation
+              <AttributionAddAboutEntityInfoLocation
                 :show-orchard="fields.orchard"
                 :orchard="entity.orchard?.name ?? null"
                 :location="[]"
@@ -48,24 +48,24 @@
         </template>
       </EntityCard>
     </template>
-  </AttributionAddEntityInfo>
+  </AttributionAddAboutEntityInfo>
 </template>
 
 <script lang="ts" setup>
-import AttributionAddEntityInfo from 'src/components/Attribution/Add/EntityInfo/AttributionAddEntityInfo.vue';
+import AttributionAddAboutEntityInfo from 'src/components/Attribution/Add/About/AttributionAddAboutEntityInfo.vue';
 import { AttributableEntities } from '../../attributableEntities';
 import type { LotFragment } from 'src/components/Lot/lotFragment';
 import EntityCard from 'src/components/Entity/EntityCard.vue';
 import { useI18n } from 'src/composables/useI18n';
 import { type Reactive } from 'vue';
-import AttributionAddEntityInfoLocation from './AttributionAddEntityInfoLocation.vue';
+import AttributionAddAboutEntityInfoLocation from './AttributionAddAboutEntityInfoLocation.vue';
 
-export interface AttributionAddEntityInfoLotProps {
+export interface AttributionAddAboutEntityInfoLotProps {
   entity: LotFragment;
   formId: number;
 }
 
-defineProps<AttributionAddEntityInfoLotProps>();
+defineProps<AttributionAddAboutEntityInfoLotProps>();
 
 const fields = defineModel<
   Reactive<{

@@ -713,12 +713,12 @@ export type AnalyzeCachedAttributionsFields = {
   created: string;
   author: string;
   exceptional_attribution: boolean;
-  text_note: string;
-  photo_note: string;
-  plant: { id: number; label_id: string } | null;
-  plant_group: { id: number; display_name: string } | null;
-  cultivar: { id: number; display_name: string } | null;
-  lot: { id: number; display_name: string } | null;
+  text_note: string | null;
+  photo_note: string | null;
+  plant?: { id: number; label_id: string } | null;
+  plant_group?: { id: number; display_name: string } | null;
+  cultivar?: { id: number; display_name: string } | null;
+  lot?: { id: number; display_name: string } | null;
 };
 
 export type AnalyzeCachedAttributionsValueFields = Pick<

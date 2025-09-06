@@ -10,6 +10,7 @@ export const lots = {
     plot: 'Beet',
     crossing: 'Kreuzung',
     orchard: 'Standort',
+    lotId: 'Los-ID',
   },
   validation: {
     invalidNameSegmentFormat:

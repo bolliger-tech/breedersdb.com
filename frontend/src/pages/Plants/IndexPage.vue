@@ -231,7 +231,7 @@ const columns = computed(() => [
     sortable: true,
     format: (v: Plant['date_labeled']) => (v ? d(v, 'Ymd') : ''),
   },
-  ...(subset.value === 'disabled'
+  ...(subset.value !== 'active'
     ? [
         {
           name: 'date_eliminted',

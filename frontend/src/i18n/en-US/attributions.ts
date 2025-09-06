@@ -67,6 +67,8 @@ export const attributions = {
 
     showLastAttributed: 'Last attributed',
     lastAttributed: 'Last attributed with this form {timeAgo}',
+    formName: 'Form: {formName}',
+    showFormName: 'Show form name',
     alreadyAttributed:
       "You've already attributed this {entity} on this device with this form {timeAgo}.",
 

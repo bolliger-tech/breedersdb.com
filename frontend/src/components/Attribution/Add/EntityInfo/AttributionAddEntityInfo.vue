@@ -16,6 +16,10 @@
           <slot name="settings"></slot>
           <q-separator v-if="$slots.settings" />
           <q-toggle
+            v-model="showFormName"
+            :label="t('attributions.add.showFormName')"
+          />
+          <q-toggle
             v-model="lastAttributed"
             :label="t('attributions.add.showLastAttributed')"
           />
@@ -23,6 +27,8 @@
       </q-menu>
     </q-btn>
   </div>
+
+  <AttributionAddFormName v-if="showFormName" :form-id="formId" />
 
   <AttributionAddLastAttributed
     v-if="lastAttributed"
@@ -38,9 +44,11 @@ import { ref, type Slot, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import type { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { useI18n } from 'src/composables/useI18n';
+import AttributionAddFormName from '../AttributionAddFormName.vue';
 
-const LOCAL_STORAGE_KEY =
+const KEY_LAST_ATTRIBUTED =
   'breedersdb-attribution-show-last-attributed-timestamp';
+const KEY_FORM_NAME = 'breedersdb-attribution-show-form-name';
 
 interface AttributionAddEntityInfoProps {
   entityId: number;
@@ -58,11 +66,17 @@ defineSlots<{
 const { localStorage } = useQuasar();
 
 const lastAttributed = ref(
-  localStorage.getItem<Partial<boolean>>(LOCAL_STORAGE_KEY) ?? true,
+  localStorage.getItem<Partial<boolean>>(KEY_LAST_ATTRIBUTED) ?? true,
+);
+const showFormName = ref(
+  localStorage.getItem<Partial<boolean>>(KEY_FORM_NAME) ?? false,
 );
 
 watch(lastAttributed, (newVal) => {
-  localStorage.set(LOCAL_STORAGE_KEY, newVal);
+  localStorage.set(KEY_LAST_ATTRIBUTED, newVal);
+});
+watch(showFormName, (newVal) => {
+  localStorage.set(KEY_FORM_NAME, newVal);
 });
 
 const { t } = useI18n();

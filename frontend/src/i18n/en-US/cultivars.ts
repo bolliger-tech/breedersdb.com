@@ -11,6 +11,7 @@ export const cultivars = {
     breeder: 'Breeder',
     lot: 'Lot',
     isVariety: 'is variety',
+    cultivarId: 'Cultivar ID',
   },
 
   acronymExplainer:

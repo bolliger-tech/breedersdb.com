@@ -22,6 +22,7 @@ export const attributions = {
     attributeName: 'Attribute',
     entity: 'Entity',
     entityType: 'Entity type',
+    entityId: 'Entity ID',
     id: 'ID',
     attributedObjectType: 'Attributed object',
     attributedObjectName: 'Attributed object name',

@@ -21,6 +21,7 @@ export const plants = {
     plantRow: 'Row',
     grafting: 'Grafting',
     rootstock: 'Rootstock',
+    plantId: 'Plant ID',
   },
 
   errors: {

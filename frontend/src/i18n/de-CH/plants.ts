@@ -18,6 +18,7 @@ export const plants = {
     plantRow: 'Zeile',
     grafting: 'Veredelung',
     rootstock: 'Unterlage',
+    plantId: 'Pflanzen-ID',
   },
   errors: {
     labelId:

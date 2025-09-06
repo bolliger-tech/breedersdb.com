@@ -9,6 +9,7 @@ export const cultivars = {
     breeder: 'Züchter/in',
     lot: 'Los',
     isVariety: 'ist Sorte',
+    cultivarId: 'Cultivar-ID',
   },
   acronymExplainer:
     'Beim Erfassen einer neuen Kreuzung, dient das Kürzel als Teil des Kreuzungsnamens. Kürzel müssen einmalig sein.',

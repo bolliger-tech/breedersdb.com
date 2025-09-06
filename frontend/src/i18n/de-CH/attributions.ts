@@ -20,6 +20,7 @@ export const attributions = {
     attributeName: 'Attribut',
     entity: 'Objekt',
     entityType: 'Objekttyp',
+    entityId: 'Objekt-ID',
     id: 'ID',
     attributedObjectType: 'Attributiertes Objekt',
     attributedObjectName: 'Name des attributierten Objekts',
@@ -55,6 +56,8 @@ export const attributions = {
     fieldsToDisplay: 'Sichtbare Felder',
     showLastAttributed: 'Zuletzt attributiert',
     lastAttributed: 'Zuletzt mit diesem Formular attributiert {timeAgo}',
+    formName: 'Formular: {formName}',
+    showFormName: 'Formularname anzeigen',
     alreadyAttributed:
       'Du hast diese/s {entity} auf diesem Gerät mit diesem Formular bereits {timeAgo} attributiert.',
     counter: {
@@ -75,7 +78,7 @@ export const attributions = {
     notCurrentYearMonth:
       'Das gewählte Datum liegt ausserhalb des laufenden Jahres oder Monats.',
     textPlaceholder: 'Text eingeben…',
-    numberPlaceholder: 'Nummer eingeben…',
+    numberPlaceholder: 'Zahl eingeben…',
     clearAttribute:
       'Mit diesem Wert werden auch die Bemerkungen für dieses Attribut gelöscht. Möchtest du Wert und Kommentare löschen?',
     notesMustHaveValue:

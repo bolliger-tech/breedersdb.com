@@ -66,16 +66,22 @@
 <script setup lang="ts">
 import { QItem } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
-import { computed, ref, nextTick, watch, onBeforeUnmount } from 'vue';
+import { ref, watch, onBeforeUnmount, toRefs } from 'vue';
 import { graphql } from 'src/graphql';
 import type { CombinedError } from '@urql/vue';
-import { useMutation, useQuery } from '@urql/vue';
+import { useMutation } from '@urql/vue';
+import { useAutocreatePropositions } from './useAutocreatePropositions';
 
 export interface PlantGroupSelectAutocreateProps {
   searchValue: string;
 }
 
 const props = defineProps<PlantGroupSelectAutocreateProps>();
+const { searchValue } = toRefs(props);
+
+const { propositions, fetchError, fetching } = useAutocreatePropositions({
+  searchValue,
+});
 
 const emit = defineEmits<{
   saving: [boolean];
@@ -89,181 +95,6 @@ defineExpose({
 });
 
 const { t } = useI18n();
-
-const queryVars = ref({ fullTerm: '', prefix: '' });
-const query = graphql(`
-  query ExistingCultivarsAndLots($fullTerm: citext!, $prefix: citext!) {
-    cultivars_full_match: cultivars(
-      where: {
-        display_name: { _ilike: $fullTerm }
-        plant_groups_aggregate: { count: { predicate: { _eq: 0 } } }
-      }
-      order_by: { display_name: asc }
-      limit: 100
-    ) {
-      id
-      display_name
-    }
-    cultivars_prefix_match: cultivars(
-      where: { display_name: { _ilike: $prefix } }
-      order_by: { display_name: asc }
-      limit: 100
-    ) {
-      id
-      display_name
-    }
-    lots_full_match: lots(
-      where: {
-        display_name: { _ilike: $fullTerm }
-        cultivars_aggregate: { count: { predicate: { _eq: 0 } } }
-      }
-      order_by: { display_name: asc }
-      limit: 100
-    ) {
-      id
-      display_name
-    }
-    lots_prefix_match: lots(
-      where: { display_name: { _ilike: $prefix } }
-      order_by: { display_name: asc }
-      limit: 100
-    ) {
-      id
-      display_name
-      cultivars(
-        where: { name_override: { _is_null: true } }
-        order_by: { name_segment: desc }
-        limit: 1
-      ) {
-        id
-        name_segment
-      }
-    }
-  }
-`);
-
-const {
-  data: queryData,
-  error: fetchError,
-  fetching: fetching,
-  ...urqlQuery
-} = useQuery({
-  query: query,
-  variables: queryVars,
-  requestPolicy: 'cache-and-network',
-  pause: true,
-  context: { additionalTypenames: ['cultivars', 'lots'] },
-});
-
-watch(
-  () => props.searchValue,
-  () => fetchPropositions(),
-  {
-    immediate: true,
-  },
-);
-
-async function fetchPropositions() {
-  if (!props.searchValue || !props.searchValue.includes('.')) return;
-
-  const segments = props.searchValue.split('.');
-
-  queryVars.value = {
-    fullTerm: `%${segments.join('%.%')}%`,
-    prefix: `%${segments.slice(0, -1).join('%.%')}%`,
-  };
-
-  await nextTick();
-  urqlQuery.executeQuery();
-}
-
-const propositions = computed(() => {
-  if (fetching.value) return null;
-  if (fetchError.value) return null;
-  if (!queryData.value) return null;
-
-  const data = queryData.value;
-
-  if (data.cultivars_full_match.length) {
-    return data.cultivars_full_match.map((c) => {
-      return {
-        label: {
-          existing: c.display_name,
-          new: '.S',
-        },
-        nextFree: false,
-        entity: {
-          group: {
-            cultivar_id: c.id,
-            name_segment: 'S',
-          },
-        },
-      };
-    });
-  } else if (data.lots_full_match.length) {
-    return data.lots_full_match.map((l) => {
-      return {
-        label: {
-          existing: l.display_name,
-          new: '.001.S',
-        },
-        nextFree: true,
-        entity: {
-          cultivar: {
-            lot_id: l.id,
-            name_segment: '001',
-            group: {
-              name_segment: 'S',
-            },
-          },
-        },
-      };
-    });
-  } else if (data.lots_prefix_match.length) {
-    return data.lots_prefix_match.map((l) => {
-      const lastCultivarNameSegment = l.cultivars[0]
-        ? l.cultivars[0].name_segment
-        : '0';
-      const nextFreeCultivarNameSegment = String(
-        Number(lastCultivarNameSegment) + 1,
-      ).padStart(3, '0');
-      return {
-        label: {
-          existing: l.display_name,
-          new: `.${nextFreeCultivarNameSegment}.S`,
-        },
-        nextFree: true,
-        entity: {
-          cultivar: {
-            lot_id: l.id,
-            name_segment: nextFreeCultivarNameSegment,
-            group: {
-              name_segment: 'S',
-            },
-          },
-        },
-      };
-    });
-  } else if (data.cultivars_prefix_match.length) {
-    return data.cultivars_prefix_match.map((c) => {
-      return {
-        label: {
-          existing: c.display_name,
-          new: '.' + props.searchValue.split('.').pop(),
-        },
-        nextFree: false,
-        entity: {
-          group: {
-            cultivar_id: c.id,
-            name_segment: props.searchValue.split('.').pop() as string,
-          },
-        },
-      };
-    });
-  }
-
-  return null;
-});
 
 const selectedItem = ref<number | null>(null);
 

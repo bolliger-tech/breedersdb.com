@@ -133,8 +133,9 @@ const attributeInputs = computed<FormField[]>(() =>
 );
 
 function addExtraAttribute(attribute: AttributeFragment) {
+  const priority = attributeInputs.value.length;
   extraAttributes.value.push(attribute);
-  attributionValues.value[attributeInputs.value.length] = {
+  attributionValues.value[priority] = {
     attribute_id: attribute.id,
     exceptional_attribution: true,
     boolean_value: null,

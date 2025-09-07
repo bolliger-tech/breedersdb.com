@@ -58,6 +58,7 @@
 
     <EntityViewTableRow
       :label="t('attributions.columns.exceptionalAttribution')"
+      render-empty
     >
       {{ attribution.exceptional_attribution ? '✓' : '' }}
     </EntityViewTableRow>

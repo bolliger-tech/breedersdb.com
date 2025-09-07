@@ -74,10 +74,7 @@ import type { UnwrapRef } from 'vue';
 import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
-import {
-  cachedAttributionsFragment,
-  type CachedAttributionsFragment,
-} from 'src/components/Attribution/cachedAttributionsFragment';
+import { cachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
@@ -128,11 +125,19 @@ const query = graphql(
         order_by: $orderBy
       ) {
         ...cachedAttributionsFragment
+        attribution_form {
+          id
+          name
+        }
       }
     }
   `,
   [cachedAttributionsFragment],
 );
+
+type QueryResultCachedAttributions = ResultOf<
+  typeof query
+>['cached_attributions'][0];
 
 const { queryArg: subset } = useQueryArg<
   'plants' | 'plantGroups' | 'cultivars' | 'lots' | 'all'
@@ -259,7 +264,7 @@ const columns = computed(() => [
           name: 'entity_id',
           label: t('attributions.columns.entityId'),
           align: 'left' as const,
-          field: (row: CachedAttributionsFragment) =>
+          field: (row: QueryResultCachedAttributions) =>
             getAttributionObjectId(row),
           sortable: true,
           monospaced: true,
@@ -273,14 +278,14 @@ const columns = computed(() => [
           name: 'plant.label_id',
           label: t('plants.fields.labelId'),
           align: 'left' as const,
-          field: (row: CachedAttributionsFragment) => row.plant?.label_id,
+          field: (row: QueryResultCachedAttributions) => row.plant?.label_id,
           sortable: true,
         },
         {
           name: 'plant_group.display_name',
           label: t('plants.fields.groupName'),
           align: 'left' as const,
-          field: (row: CachedAttributionsFragment) =>
+          field: (row: QueryResultCachedAttributions) =>
             row.plant_group?.display_name,
           sortable: true,
         },
@@ -301,7 +306,7 @@ const columns = computed(() => [
           name: 'plant_group.display_name',
           label: t('entity.commonColumns.displayName'),
           align: 'left' as const,
-          field: (row: CachedAttributionsFragment) =>
+          field: (row: QueryResultCachedAttributions) =>
             row.plant_group?.display_name,
           sortable: true,
         },
@@ -322,7 +327,7 @@ const columns = computed(() => [
           name: 'cultivar.display_name',
           label: t('entity.commonColumns.displayName'),
           align: 'left' as const,
-          field: (row: CachedAttributionsFragment) =>
+          field: (row: QueryResultCachedAttributions) =>
             row.cultivar?.display_name,
           sortable: true,
         },
@@ -343,7 +348,7 @@ const columns = computed(() => [
           name: 'lot.display_name',
           label: t('entity.commonColumns.displayName'),
           align: 'left' as const,
-          field: (row: CachedAttributionsFragment) => row.lot?.display_name,
+          field: (row: QueryResultCachedAttributions) => row.lot?.display_name,
           sortable: true,
         },
         {
@@ -370,7 +375,7 @@ const columns = computed(() => [
     field: 'value',
     align: 'center' as const,
     sortable: false,
-    format: (val: unknown, row: CachedAttributionsFragment) => getValue(row),
+    format: (val: unknown, row: QueryResultCachedAttributions) => getValue(row),
   },
   {
     name: 'text_note',
@@ -394,7 +399,8 @@ const columns = computed(() => [
     field: 'date_attributed',
     align: 'left' as const,
     sortable: true,
-    format: (v: CachedAttributionsFragment['date_attributed']) => d(v, 'Ymd'),
+    format: (v: QueryResultCachedAttributions['date_attributed']) =>
+      d(v, 'Ymd'),
   },
   {
     name: 'author',
@@ -410,6 +416,22 @@ const columns = computed(() => [
     align: 'left' as const,
     sortable: true,
     format: (val: boolean) => (val ? '✓' : ''),
+  },
+  {
+    name: 'attribution_form.name',
+    label: t('attributions.columns.attributionFormName'),
+    field: (row: QueryResultCachedAttributions) => row.attribution_form.name,
+    align: 'left' as const,
+    sortable: true,
+  },
+  {
+    name: 'attribution_form_id',
+    label: t('attributions.columns.attributionFormId'),
+    field: 'attribution_form_id',
+    align: 'left' as const,
+    sortable: true,
+    monospaced: true,
+    muted: true,
   },
   ...useTimestampColumns(),
 ]);
@@ -437,7 +459,7 @@ watch(
   { immediate: true },
 );
 
-function getValue(row: CachedAttributionsFragment) {
+function getValue(row: QueryResultCachedAttributions) {
   const type = dataTypeToColumnTypes(row.data_type);
   const value = getAttributionValue(row);
 
@@ -473,7 +495,7 @@ function transformData({
 }: TransformDataArgs<
   // ts hack to make query result compatible with AnalyzeCachedAttributionsFields
   Omit<
-    NonNullableFields<ResultOf<typeof query>['cached_attributions'][0]>,
+    NonNullableFields<QueryResultCachedAttributions>,
     'plant' | 'plant_group' | 'cultivar' | 'lot' | 'data_type'
   > & {
     plant: { id: number; label_id: string } | null;

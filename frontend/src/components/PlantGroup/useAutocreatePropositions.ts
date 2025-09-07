@@ -86,7 +86,7 @@ const query = graphql(`
   }
 `);
 
-function isertPlaceholders(segments: string[]) {
+function insertPlaceholders(segments: string[]) {
   return `%${segments.join('%.%')}%`.replaceAll('%%', '%');
 }
 
@@ -120,9 +120,9 @@ export function useAutocreatePropositions({
     const segments = searchValue.value.split('.');
 
     queryVars.value = {
-      fullTerm: isertPlaceholders(segments),
-      prefix1: isertPlaceholders(segments.slice(0, -1)),
-      prefix2: isertPlaceholders(segments.slice(0, -2)),
+      fullTerm: insertPlaceholders(segments),
+      prefix1: insertPlaceholders(segments.slice(0, -1)),
+      prefix2: insertPlaceholders(segments.slice(0, -2)),
       nameOverride: segments[0] || '',
     };
 

@@ -505,3 +505,137 @@ test('father & mother cultivar can be changed if no mother plant is linked', asy
 
   expect(updated.data.update_crossings_by_pk.id).toBeNumber();
 });
+
+test('crossing name cannot conflict with existing lot name_override', async () => {
+  // First create a lot with name_override
+  await postOrFail({
+    query: `
+      mutation InsertLotWithNameOverride {
+        insert_lots_one(
+          object: {
+            name_segment: "24A"
+            name_override: "Conflict1"
+            orchard: { data: { name: "TestOrch" } }
+            crossing: { data: { name: "TestCr1" } }
+          }
+        ) {
+          id
+        }
+      }
+    `,
+  });
+
+  // Try to create a crossing with the same name as the lot's name_override
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Conflict1',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toMatch(
+    /crossing name Conflict1 conflicts with existing lot name_override/,
+  );
+});
+
+test('crossing name cannot conflict with existing cultivar name_override', async () => {
+  // First create a cultivar with name_override
+  await postOrFail({
+    query: `
+      mutation InsertCultivarWithNameOverride {
+        insert_cultivars_one(
+          object: {
+            name_segment: "001"
+            name_override: "Conflict2"
+            lot: {
+              data: {
+                name_segment: "24A"
+                orchard: { data: { name: "TestOrch" } }
+                crossing: { data: { name: "TestCr2" } }
+              }
+            }
+          }
+        ) {
+          id
+        }
+      }
+    `,
+  });
+
+  // Try to create a crossing with the same name as the cultivar's name_override
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Conflict2',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toMatch(
+    /crossing name Conflict2 conflicts with existing cultivar name_override/,
+  );
+});
+
+test('crossing name cannot conflict with existing plant group name_override', async () => {
+  // First create a plant group with name_override
+  await postOrFail({
+    query: `
+      mutation InsertPlantGroupWithNameOverride {
+        insert_plant_groups_one(
+          object: {
+            name_segment: "A"
+            name_override: "Conflict3"
+            cultivar: {
+              data: {
+                name_segment: "001"
+                lot: {
+                  data: {
+                    name_segment: "24A"
+                    orchard: { data: { name: "TestOrch" } }
+                    crossing: { data: { name: "TestCr3" } }
+                  }
+                }
+              }
+            }
+          }
+        ) {
+          id
+        }
+      }
+    `,
+  });
+
+  // Try to create a crossing with the same name as the plant group's name_override
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Conflict3',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toMatch(
+    /crossing name Conflict3 conflicts with existing plant group name_override/,
+  );
+});
+
+test('crossing name can be updated without conflicts', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'Original',
+    },
+  });
+
+  const updated = await postOrFail({
+    query: `
+      mutation UpdateCrossing($id: Int!, $name: citext) {
+        update_crossings_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
+          id
+          name
+        }
+      }
+    `,
+    variables: { id: resp.data.insert_crossings_one.id, name: 'Updated' },
+  });
+
+  expect(updated.data.update_crossings_by_pk.name).toBe('Updated');
+});

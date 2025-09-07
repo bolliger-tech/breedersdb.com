@@ -68,6 +68,12 @@ afterEach(async () => {
   await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAllLots {
+        delete_plant_groups(where: {}) {
+          affected_rows
+        }
+        delete_cultivars(where: {}) {
+          affected_rows
+        }
         delete_lots(where: {}) {
           affected_rows
         }
@@ -428,4 +434,162 @@ test('direct inserts of is_variety are impossible', async () => {
   expect(inserted.errors[0].message).toEqual(
     "field 'is_variety' not found in type: 'lots_insert_input'",
   );
+});
+
+test('lot name_override cannot conflict with existing crossing name', async () => {
+  // First create a crossing
+  await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'ExistCr1',
+      name_segment: '24A',
+      orchard_name: 'Orchard1',
+    },
+  });
+
+  // Try to create a lot with name_override that conflicts with crossing name
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'DiffCr1',
+      name_segment: '24B',
+      name_override: 'ExistCr1',
+      orchard_name: 'Orchard2',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toMatch(
+    /name_override ExistCr1 conflicts with existing crossing name/,
+  );
+});
+
+test('lot name_override cannot conflict with existing cultivar name_override', async () => {
+  // First create a cultivar with name_override
+  await postOrFail({
+    query: `
+      mutation InsertCultivarWithNameOverride {
+        insert_cultivars_one(
+          object: {
+            name_segment: "001"
+            name_override: "CultiOvr1"
+            lot: {
+              data: {
+                name_segment: "24A"
+                orchard: { data: { name: "TestOrch" } }
+                crossing: { data: { name: "TestCr1" } }
+              }
+            }
+          }
+        ) {
+          id
+        }
+      }
+    `,
+  });
+
+  // Try to create a lot with the same name_override
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'DiffCr2',
+      name_segment: '24B',
+      name_override: 'CultiOvr1',
+      orchard_name: 'Orchard2',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toMatch(
+    /name_override CultiOvr1 conflicts with existing cultivar name_override/,
+  );
+});
+
+test('lot name_override cannot conflict with existing plant group name_override', async () => {
+  // First create a plant group with name_override
+  await postOrFail({
+    query: `
+      mutation InsertPlantGroupWithNameOverride {
+        insert_plant_groups_one(
+          object: {
+            name_segment: "A"
+            name_override: "GroupOvr1"
+            cultivar: {
+              data: {
+                name_segment: "001"
+                lot: {
+                  data: {
+                    name_segment: "24A"
+                    orchard: { data: { name: "TestOrch" } }
+                    crossing: { data: { name: "TestCr1" } }
+                  }
+                }
+              }
+            }
+          }
+        ) {
+          id
+        }
+      }
+    `,
+  });
+
+  // Try to create a lot with the same name_override
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'DiffCr3',
+      name_segment: '24B',
+      name_override: 'GroupOvr1',
+      orchard_name: 'Orchard2',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toMatch(
+    /name_override GroupOvr1 conflicts with existing plant group name_override/,
+  );
+});
+
+test('lot name_override trims whitespace and converts empty strings to null', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'TestCr4',
+      name_segment: '24A',
+      name_override: '  \t\n  ',
+      orchard_name: 'Orchard1',
+    },
+  });
+
+  expect(resp.data.insert_crossings_one.lots[0].name_override).toBeNull();
+});
+
+test('lot name_override can be updated without conflicts', async () => {
+  const resp = await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'TestCr5',
+      name_segment: '24A',
+      name_override: 'OrigOvr',
+      orchard_name: 'Orchard1',
+    },
+  });
+
+  const updated = await postOrFail({
+    query: `
+      mutation UpdateLot($id: Int!, $name_override: citext) {
+        update_lots_by_pk(
+          pk_columns: { id: $id }
+          _set: { name_override: $name_override }
+        ) {
+          id
+          name_override
+        }
+      }
+    `,
+    variables: {
+      id: resp.data.insert_crossings_one.lots[0].id,
+      name_override: 'UpdOvr',
+    },
+  });
+
+  expect(updated.data.update_lots_by_pk.name_override).toBe('UpdOvr');
 });

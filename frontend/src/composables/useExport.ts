@@ -64,7 +64,8 @@ export type ExportDataValue =
   | boolean
   | Date
   | XLSX.CellObject
-  | null;
+  | null
+  | { [key: string]: ExportDataValue };
 
 export type TransformDataArgs<T> = {
   data: Array<T>;

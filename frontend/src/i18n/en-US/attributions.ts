@@ -26,6 +26,7 @@ export const attributions = {
     id: 'ID',
     attributedObjectType: 'Attributed object',
     attributedObjectName: 'Attributed object name',
+    attributionFormName: 'Form name',
     attributionFormId: 'Form ID',
     attributeId: 'Attribute ID',
     dateCreated: 'Created',

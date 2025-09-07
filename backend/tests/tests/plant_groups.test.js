@@ -267,3 +267,160 @@ test('modified is updated', async () => {
     new Date(data1.insert_plant_groups_one.modified).getTime(),
   ).toBeLessThan(new Date(data2.update_plant_groups_by_pk.modified).getTime());
 });
+
+test('plant group name_override cannot conflict with existing crossing name', async () => {
+  // First create a crossing
+  await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'ExistCr3',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      name_segment: 'A',
+    },
+  });
+
+  // Try to create a plant group with name_override that conflicts with crossing name
+  const { errors } = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'DiffCr7',
+      lot_name_segment: '24B',
+      orchard_name: 'Orchard 2',
+      cultivar_name_segment: '002',
+      name_segment: 'B',
+      name_override: 'ExistCr3',
+    },
+  });
+
+  expect(errors[0].extensions.internal.error.message).toMatch(
+    /name_override ExistCr3 conflicts with existing crossing name/,
+  );
+});
+
+test('plant group name_override cannot conflict with existing lot name_override', async () => {
+  // First create a lot with name_override
+  await postOrFail({
+    query: `
+      mutation InsertLotWithNameOverride {
+        insert_lots_one(
+          object: {
+            name_segment: "24A"
+            name_override: "LotOvr3"
+            orchard: { data: { name: "TestOrch" } }
+            crossing: { data: { name: "TestCr10" } }
+          }
+        ) {
+          id
+        }
+      }
+    `,
+  });
+
+  // Try to create a plant group with the same name_override
+  const { errors } = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'DiffCr8',
+      lot_name_segment: '24B',
+      orchard_name: 'Orchard 2',
+      cultivar_name_segment: '001',
+      name_segment: 'A',
+      name_override: 'LotOvr3',
+    },
+  });
+
+  expect(errors[0].extensions.internal.error.message).toMatch(
+    /name_override LotOvr3 conflicts with existing lot name_override/,
+  );
+});
+
+test('plant group name_override cannot conflict with existing cultivar name_override', async () => {
+  // First create a cultivar with name_override
+  await postOrFail({
+    query: `
+      mutation InsertCultivarWithNameOverride {
+        insert_cultivars_one(
+          object: {
+            name_segment: "001"
+            name_override: "CultiOvr3"
+            lot: {
+              data: {
+                name_segment: "24A"
+                orchard: { data: { name: "TestOrch" } }
+                crossing: { data: { name: "TestCr11" } }
+              }
+            }
+          }
+        ) {
+          id
+        }
+      }
+    `,
+  });
+
+  // Try to create a plant group with the same name_override
+  const { errors } = await post({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'DiffCr9',
+      lot_name_segment: '24B',
+      orchard_name: 'Orchard 2',
+      cultivar_name_segment: '002',
+      name_segment: 'A',
+      name_override: 'CultiOvr3',
+    },
+  });
+
+  expect(errors[0].extensions.internal.error.message).toMatch(
+    /name_override CultiOvr3 conflicts with existing cultivar name_override/,
+  );
+});
+
+test('plant group name_override trims whitespace and converts empty strings to null', async () => {
+  const { data } = await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'TestCr12',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      name_segment: 'A',
+      name_override: '  \t\n  ',
+    },
+  });
+
+  expect(data.insert_plant_groups_one.name_override).toBeNull();
+});
+
+test('plant group name_override can be updated without conflicts', async () => {
+  const { data: data1 } = await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      name_segment: 'A',
+      name_override: 'OrigOvr3',
+    },
+  });
+
+  const { data: data2 } = await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdatePlantGroup($id: Int!, $name_override: citext) {
+        update_plant_groups_by_pk(
+          pk_columns: { id: $id }
+          _set: { name_override: $name_override }
+        ) {
+          id
+          name_override
+        }
+      }
+    `,
+    variables: {
+      id: data1.insert_plant_groups_one.id,
+      name_override: 'UpdOvr3',
+    },
+  });
+
+  expect(data2.update_plant_groups_by_pk.name_override).toBe('UpdOvr3');
+});

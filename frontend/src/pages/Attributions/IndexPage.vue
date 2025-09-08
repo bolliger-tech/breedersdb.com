@@ -266,7 +266,7 @@ const columns = computed(() => [
           align: 'left' as const,
           field: (row: QueryResultCachedAttributions) =>
             getAttributionObjectId(row),
-          sortable: true,
+          sortable: false,
           monospaced: true,
           muted: true,
         },

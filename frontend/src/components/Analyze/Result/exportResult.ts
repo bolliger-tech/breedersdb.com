@@ -54,10 +54,10 @@ export function getAttributionObjectId(
   attribution: AnalyzeCachedAttributionsFields,
 ) {
   return (
-    attribution.plant?.id ??
-    attribution.plant_group?.id ??
-    attribution.cultivar?.id ??
-    attribution.lot?.id ??
+    attribution.plant_id ??
+    attribution.plant_group_id ??
+    attribution.cultivar_id ??
+    attribution.lot_id ??
     'unknown'
   );
 }

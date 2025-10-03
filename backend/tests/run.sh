@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-postgresql_database=${POSTGRESQL_DATABASE:-test}
+postgresql_database=${POSTGRES_DB:-test}
 pgpassword=${PGPASSWORD:-postgres}
 
 base_dir=$(dirname $(realpath $0))
@@ -58,7 +58,7 @@ function ensure_postgres_is_running() {
 
   if ! docker compose ps | grep -q postgres; then
     echo "Starting PostgreSQL..."
-    POSTGRESQL_DATABASE=${postgresql_database} docker compose up -d postgres
+    POSTGRES_DB=${postgresql_database} docker compose up -d postgres
 
     cat << EOF | timeout --foreground 30s sh
 while ! docker compose exec -T postgres pg_isready -q -U postgres; do
@@ -87,7 +87,7 @@ createdb -h localhost -U postgres ${postgresql_database}
 EOF
 
   # start hasura
-  POSTGRESQL_DATABASE=${postgresql_database} docker compose up -d hasura
+  POSTGRES_DB=${postgresql_database} docker compose up -d hasura
 
   # wait for hasura to be ready
   cat << EOF | timeout 30s bash

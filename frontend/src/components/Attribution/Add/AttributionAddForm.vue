@@ -49,6 +49,18 @@
       </template>
     </AttributionAddFormSaveButton>
   </form>
+
+  <AttributionAddForceSaveDialog
+    v-model="showForceSaveDialog"
+    :fields="requiredFieldsWithoutValue"
+    @cancel="showForceSaveDialog = false"
+    @confirm="
+      () => {
+        save(true);
+        showForceSaveDialog = false;
+      }
+    "
+  />
 </template>
 
 <script setup lang="ts">
@@ -77,10 +89,11 @@ import AttributionAddEditNote from 'src/components/Attribution/Add/AttributionAd
 import AttributionAddAboutEntity from 'src/components/Attribution/Add/About/AttributionAddAboutEntity.vue';
 import type { UndefinedToNull } from 'src/utils/typescriptUtils';
 import type { EntityPreviewEntity } from './About/attributionAddAboutEntityTypes';
+import AttributionAddForceSaveDialog from 'src/components/Attribution/Add/AttributionAddForceSaveDialog.vue';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
-type FormField = {
+export type FormField = {
   attribute: AttributeFragment;
   priority: number;
   exceptional: boolean;
@@ -162,6 +175,17 @@ const hasValues = computed(() =>
     (av) => av && attributionValueHasValue(av),
   ),
 );
+
+const requiredFieldsWithoutValue = computed(() =>
+  attributeInputs.value
+    .filter((field) => field.required)
+    .filter((field) => {
+      const value = attributionValues.value[field.priority];
+      return !value || !attributionValueHasValue(value);
+    }),
+);
+
+const showForceSaveDialog = ref(false);
 
 const uploadError = ref<string | undefined>(undefined);
 
@@ -281,7 +305,7 @@ function saveEdit(
   );
 }
 
-async function save() {
+async function save(ignoreRequired = false) {
   if (!(await validate())) {
     validationError.value = t('attributions.add.invalidInput');
     return;
@@ -289,6 +313,11 @@ async function save() {
 
   if (!hasValues.value) {
     showNoDataNotification();
+    return;
+  }
+
+  if (!ignoreRequired && requiredFieldsWithoutValue.value.length) {
+    showForceSaveDialog.value = true;
     return;
   }
 

@@ -22,4 +22,12 @@ export const attributionForms = {
     'Add as many form fields as you wish. You can reorder them by dragging and dropping.',
 
   required: 'Warn if not filled out',
+
+  missingDataDialog: {
+    title: 'Empty Required Fields',
+    message:
+      'The following fields are required but not filled out. Are you sure you want to save the attribution anyway?',
+    cancel: 'Close',
+    confirm: 'Save Anyway',
+  },
 };

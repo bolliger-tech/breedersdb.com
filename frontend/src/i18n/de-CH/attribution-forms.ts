@@ -15,4 +15,12 @@ export const attributionForms = {
   disableConfirmation: 'Möchtest du es wirklich deaktivieren?',
   fieldsExplainer:
     'Füge beliebig viele Formularfelder hinzu. Du kannst sie durch Ziehen und Ablegen anders anordnen.',
+  required: 'Warnen, wenn nicht ausgefüllt',
+  missingDataDialog: {
+    title: 'Leere Pflichtfelder',
+    message:
+      'Die folgenden Pflichtfelder sind nicht ausgefüllt. Möchtest du die Attributierung trotzdem speichern?',
+    cancel: 'Schliessen',
+    confirm: 'Trotzdem speichern',
+  },
 };

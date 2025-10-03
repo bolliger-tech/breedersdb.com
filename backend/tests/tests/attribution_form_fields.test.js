@@ -5,6 +5,7 @@ import { iso8601dateRegex } from '../utils';
 const insertMutation = /* GraphQL */ `
   mutation InsertAttributionFormField(
     $priority: Int
+    $required: Boolean = false
     $attribution_form_name: citext
     $attribute_name: citext
     $attribute_validation_rule: jsonb
@@ -14,6 +15,7 @@ const insertMutation = /* GraphQL */ `
     insert_attribution_form_fields_one(
       object: {
         priority: $priority
+        required: $required
         attribution_form: { data: { name: $attribution_form_name } }
         attribute: {
           data: {
@@ -27,6 +29,7 @@ const insertMutation = /* GraphQL */ `
     ) {
       id
       priority
+      required
       attribution_form {
         id
         name
@@ -67,6 +70,7 @@ test('insert', async () => {
     query: insertMutation,
     variables: {
       priority: 1,
+      required: true,
       attribution_form_name: 'Attribution Form 1',
       attribute_name: 'Attribution Attribute 1',
       attribute_validation_rule: { max: 9, min: 1, step: 1 },
@@ -77,6 +81,7 @@ test('insert', async () => {
 
   expect(resp.data.insert_attribution_form_fields_one.id).toBeGreaterThan(0);
   expect(resp.data.insert_attribution_form_fields_one.priority).toBe(1);
+  expect(resp.data.insert_attribution_form_fields_one.required).toBe(true);
   expect(
     resp.data.insert_attribution_form_fields_one.attribution_form.name,
   ).toBe('Attribution Form 1');

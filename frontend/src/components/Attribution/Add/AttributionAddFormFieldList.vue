@@ -13,6 +13,7 @@
         v-model="modelValue[field.priority]"
         :attribute="field.attribute"
         :exceptional="field.exceptional"
+        :required="field.required"
       >
         <template v-if="count(field.attribute.id) > 1" #before>
           <BaseMessage
@@ -37,6 +38,7 @@ import BaseMessage from 'src/components/Base/BaseMessage.vue';
 export interface AttributionAddFormFieldListProps {
   fields: {
     priority: number;
+    required: boolean;
     attribute: AttributeFragment;
     exceptional: boolean;
   }[];

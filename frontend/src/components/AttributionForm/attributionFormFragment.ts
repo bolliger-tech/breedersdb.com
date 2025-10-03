@@ -31,6 +31,7 @@ export const attributionFormFragment = graphql(
       ) {
         id
         priority
+        required
         attribute {
           ...attributeFragment
         }

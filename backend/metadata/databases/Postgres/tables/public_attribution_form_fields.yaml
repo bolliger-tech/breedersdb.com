@@ -13,20 +13,22 @@ insert_permissions:
     permission:
       check: {}
       columns:
-        - attribution_form_id
         - attribute_id
+        - attribution_form_id
         - priority
+        - required
     comment: ""
 select_permissions:
   - role: user
     permission:
       columns:
-        - id
-        - attribution_form_id
         - attribute_id
-        - priority
+        - attribution_form_id
         - created
+        - id
         - modified
+        - priority
+        - required
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -34,9 +36,10 @@ update_permissions:
   - role: user
     permission:
       columns:
-        - attribution_form_id
         - attribute_id
+        - attribution_form_id
         - priority
+        - required
       filter: {}
       check: {}
     comment: ""

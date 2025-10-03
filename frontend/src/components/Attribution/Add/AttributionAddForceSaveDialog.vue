@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { FormField } from './AttributionAddForm.vue';
+import { type FormField } from './AttributionAddForm.vue';
 
 defineProps<{
   fields: FormField[];

@@ -238,6 +238,7 @@ const formFields = computed(() => {
       priority: field.priority,
       attribute: field.attribute,
       exceptional: false,
+      required: field.required,
     }));
   }
 
@@ -254,6 +255,7 @@ const formFields = computed(() => {
         attribute,
         priority: (form?.attribution_form_fields.length || 0) + index,
         exceptional: true,
+        required: false,
       })) ?? [];
 
   return form?.attribution_form_fields
@@ -261,6 +263,7 @@ const formFields = computed(() => {
       priority: field.priority,
       attribute: field.attribute,
       exceptional: false,
+      required: field.required,
     }))
     .concat(extraAttributes);
 });

@@ -1,5 +1,11 @@
 <template>
-  <BaseInputLabel :label="attribute.name" style="max-width: 592px">
+  <BaseInputLabel style="max-width: 592px">
+    <template #label>
+      <span>
+        {{ attribute.name
+        }}<span v-if="required" style="color: var(--q-primary)">&nbsp;*</span>
+      </span>
+    </template>
     <slot name="before"></slot>
 
     <AttributionInputRating
@@ -131,6 +137,7 @@ import type { DistributiveOmit } from 'src/utils/typescriptUtils';
 export interface AttributionInputProps {
   attribute: DistributiveOmit<AttributeFragment, 'created' | 'modified'>;
   exceptional: boolean;
+  required: boolean;
   hideNotes?: boolean;
 }
 

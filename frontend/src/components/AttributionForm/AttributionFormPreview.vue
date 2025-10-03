@@ -30,6 +30,7 @@ export interface AttributionFormPreviewProps {
     priority: number;
     attribute: AttributeFragment;
     exceptional: boolean;
+    required: boolean;
   }[];
 }
 

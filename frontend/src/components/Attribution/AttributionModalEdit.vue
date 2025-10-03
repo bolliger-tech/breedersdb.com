@@ -16,6 +16,7 @@
         v-model="model"
         :attribute="attribution.attribute"
         :exceptional="attribution.exceptional_attribution"
+        :required="true"
       />
     </template>
 

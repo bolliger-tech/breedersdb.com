@@ -84,6 +84,7 @@ type FormField = {
   attribute: AttributeFragment;
   priority: number;
   exceptional: boolean;
+  required: boolean;
 };
 
 export interface AttributionAddFormProps {
@@ -128,6 +129,7 @@ const attributeInputs = computed<FormField[]>(() =>
       attribute,
       priority: props.fields.length + index,
       exceptional: true,
+      required: false,
     })),
   ),
 );

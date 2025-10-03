@@ -49,6 +49,7 @@
     :drop-zone-active="currentDragItemId !== null"
     :not-draggable="data.attribution_form_fields.length < 2"
     :no-space-before="data.attribution_form_fields.length < 2"
+    :any-drag-active="currentDragItemId !== null"
     @dragstart="currentDragItemId = index"
     @dragend="currentDragItemId = null"
     @drop="(pos) => onDrop(pos, index)"

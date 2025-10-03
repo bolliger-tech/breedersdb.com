@@ -1,43 +1,50 @@
 <template>
   <div
     ref="containerRef"
-    class="row items-center relative-position"
+    class="relative-position"
     :draggable="draggable"
     @dragstart="onDragStart"
     @dragend="onDragEnd"
   >
-    <template v-if="!noSpaceBefore">
-      <q-icon
-        v-if="!notDraggable"
-        name="drag_indicator"
-        style="color: var(--q-text-muted); transform: translateY(-0.35em)"
-        :style="{ cursor: draggable ? 'grabbing' : 'grab' }"
-        size="md"
-        class="col-auto q-mr-xs"
-        @mousedown="draggable = true"
-        @touchstart="draggable = true"
-        @mouseup="draggable = false"
-        @touchend="draggable = false"
-        @click.prevent.stop=""
+    <div class="row items-center relative-position">
+      <template v-if="!noSpaceBefore">
+        <q-icon
+          v-if="!notDraggable"
+          name="drag_indicator"
+          style="color: var(--q-text-muted); transform: translateY(-0.35em)"
+          :style="{ cursor: draggable ? 'grabbing' : 'grab' }"
+          size="md"
+          class="col-auto q-mr-xs"
+          @mousedown="draggable = true"
+          @touchstart="draggable = true"
+          @mouseup="draggable = false"
+          @touchend="draggable = false"
+          @click.prevent.stop=""
+        />
+        <div v-else style="width: 36px"></div>
+      </template>
+      <AttributeSelect
+        ref="inputRef"
+        v-model="modelValue"
+        class="col"
+        hide-label
       />
-      <div v-else style="width: 36px"></div>
-    </template>
-    <AttributeSelect
-      ref="inputRef"
-      v-model="modelValue"
-      class="col"
-      hide-label
+      <q-btn
+        class="col-auto q-ml-xs"
+        color="negative"
+        style="transform: translateY(-0.75em)"
+        dense
+        flat
+        icon="delete_outline"
+        rounded
+        @click="$emit('delete')"
+      />
+    </div>
+    <q-separator
+      style="transform: translateY(-0.5em)"
+      :color="anyDragActive ? 'transparent' : undefined"
     />
-    <q-btn
-      class="col-auto q-ml-xs"
-      color="negative"
-      style="transform: translateY(-0.75em)"
-      dense
-      flat
-      icon="delete_outline"
-      rounded
-      @click="$emit('delete')"
-    />
+
     <div
       class="absolute-top-left drop-zone"
       :class="{
@@ -77,7 +84,7 @@
 
 <script setup lang="ts">
 import AttributeSelect from 'src/components/Attribute/AttributeSelect.vue';
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import { type AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { focusInView } from 'src/utils/focusInView';
 import { useQuasar } from 'quasar';
@@ -86,6 +93,7 @@ export interface AttributionFormSortableAttributeSelectProps {
   dropZoneActive: boolean;
   notDraggable?: boolean;
   noSpaceBefore?: boolean;
+  anyDragActive?: boolean;
 }
 
 defineProps<AttributionFormSortableAttributeSelectProps>();
@@ -120,7 +128,10 @@ function setDropEffectMove(e: DragEvent) {
 
 const $q = useQuasar();
 
-function onDragStart(e: DragEvent) {
+async function onDragStart(e: DragEvent) {
+  emit('dragstart');
+  await nextTick();
+
   if (e.dataTransfer && containerRef.value) {
     e.dataTransfer.effectAllowed = 'move';
 
@@ -136,8 +147,6 @@ function onDragStart(e: DragEvent) {
     document.body.appendChild(ghost);
     e.dataTransfer.setDragImage(ghost, 0, 0);
   }
-
-  emit('dragstart');
 }
 
 function onDragEnd() {

@@ -1,12 +1,14 @@
 services:
   postgres:
-    image: bitnami/postgresql:17
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
     environment:
-      POSTGRESQL_PASSWORD: postgres
-      POSTGRESQL_DATABASE: '${POSTGRESQL_DATABASE:-postgres}'
-      POSTGRESQL_INITDB_ARGS: '--locale-provider=icu --icu-locale=en_US-u-kn-true'
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: '${POSTGRES_DB:-postgres}'
+      POSTGRES_INITDB_ARGS: '--locale-provider=icu --icu-locale=en_US-u-kn-true'
     volumes:
-      - db_data:/bitnami/postgresql
+      - db_data:/var/lib/postgresql/data
     ports:
       - '0.0.0.0:5432:5432'
     networks:
@@ -20,8 +22,8 @@ services:
     depends_on:
       - postgres
     environment:
-      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:postgres@postgres:5432/${POSTGRESQL_DATABASE:-postgres}
-      PG_DATABASE_URL: postgres://postgres:postgres@postgres:5432/${POSTGRESQL_DATABASE:-postgres}
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:postgres@postgres:5432/${POSTGRES_DB:-postgres}
+      PG_DATABASE_URL: postgres://postgres:postgres@postgres:5432/${POSTGRES_DB:-postgres}
       HASURA_GRAPHQL_ENABLE_CONSOLE: 'true'
       ## enable debugging mode. It is recommended to disable this in production
       HASURA_GRAPHQL_DEV_MODE: 'true'

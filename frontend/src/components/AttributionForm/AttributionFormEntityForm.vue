@@ -45,11 +45,13 @@
   <AttributionFormSortableAttributeSelect
     v-for="(formField, index) in data.attribution_form_fields"
     :key="formField.id"
-    v-model="formField.attribute"
+    v-model:attribute="formField.attribute"
+    v-model:required="formField.required"
     :drop-zone-active="currentDragItemId !== null"
     :not-draggable="data.attribution_form_fields.length < 2"
     :no-space-before="data.attribution_form_fields.length < 2"
     :any-drag-active="currentDragItemId !== null"
+    :last="index === data.attribution_form_fields.length - 1"
     @dragstart="currentDragItemId = index"
     @dragend="currentDragItemId = null"
     @drop="(pos) => onDrop(pos, index)"
@@ -156,6 +158,7 @@ function addFormField(attribute: AttributeFragment | null | undefined) {
   data.value.attribution_form_fields.push({
     id: -addedFormFields.value,
     attribute,
+    required: false,
     priority: data.value.attribution_form_fields.length,
   });
 }

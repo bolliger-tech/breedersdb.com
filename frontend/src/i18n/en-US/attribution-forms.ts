@@ -20,4 +20,6 @@ export const attributionForms = {
 
   fieldsExplainer:
     'Add as many form fields as you wish. You can reorder them by dragging and dropping.',
+
+  required: 'Warn if not filled out',
 };

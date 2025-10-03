@@ -25,7 +25,7 @@
       </template>
       <AttributeSelect
         ref="inputRef"
-        v-model="modelValue"
+        v-model="attribute"
         class="col"
         hide-label
       />
@@ -40,8 +40,15 @@
         @click="$emit('delete')"
       />
     </div>
+    <q-checkbox
+      v-model="required"
+      :label="t('attributionForms.required')"
+      :style="`transform: translate(${noSpaceBefore ? '0' : '2em'}, -1.5em)`"
+      size="sm"
+    />
     <q-separator
-      style="transform: translateY(-0.5em)"
+      v-if="!last"
+      style="transform: translateY(-0.75em)"
       :color="anyDragActive ? 'transparent' : undefined"
     />
 
@@ -55,7 +62,7 @@
         height: calc(50% + 0.5em);
         border-top-width: 1em;
         border-top-style: solid;
-        transform: translateY(-0.75em);
+        transform: translateY(-1.25em);
       "
       @dragenter="overTopDropZone = true"
       @dragleave="overTopDropZone = false"
@@ -72,7 +79,7 @@
         height: calc(50% + 0.5em);
         border-bottom-width: 1em;
         border-bottom-style: solid;
-        transform: translateY(0.25em);
+        transform: translateY(-0.25em);
       "
       @dragenter="overBottomDropZone = true"
       @dragleave="overBottomDropZone = false"
@@ -88,12 +95,14 @@ import { nextTick, ref } from 'vue';
 import { type AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { focusInView } from 'src/utils/focusInView';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'src/composables/useI18n';
 
 export interface AttributionFormSortableAttributeSelectProps {
   dropZoneActive: boolean;
   notDraggable?: boolean;
   noSpaceBefore?: boolean;
   anyDragActive?: boolean;
+  last?: boolean;
 }
 
 defineProps<AttributionFormSortableAttributeSelectProps>();
@@ -106,7 +115,13 @@ defineExpose({
   focus: () => inputRef.value && focusInView(inputRef.value),
 });
 
-const modelValue = defineModel<AttributeFragment | null | undefined>();
+const attribute = defineModel<AttributeFragment | null | undefined>(
+  'attribute',
+  { required: true },
+);
+const required = defineModel<boolean>('required', {
+  required: true,
+});
 
 const emit = defineEmits<{
   dragstart: [];
@@ -156,6 +171,8 @@ function onDragEnd() {
   draggable.value = false;
   emit('dragend');
 }
+
+const { t } = useI18n();
 </script>
 
 <style scoped lang="scss">

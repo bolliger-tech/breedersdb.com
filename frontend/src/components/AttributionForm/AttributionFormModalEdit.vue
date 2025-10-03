@@ -132,6 +132,7 @@ function transformInsertData(
           .filter((field) => !!field.attribute)
           .map((field, index) => ({
             priority: index,
+            required: field.required,
             attribute_id: field.attribute.id,
           })),
       },
@@ -157,6 +158,7 @@ function transformEditData(data: unknown): VariablesOf<typeof editMutation> {
       .filter((field) => !!field.attribute)
       .map((field, index) => ({
         priority: index,
+        required: field.required,
         attribute_id: field.attribute.id,
         attribution_form_id: formId,
       })),

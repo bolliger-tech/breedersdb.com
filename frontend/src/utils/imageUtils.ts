@@ -57,14 +57,15 @@ export function getImageCell({
     dateAttributed,
     attributionId,
   });
+  const url = `${window.location.origin}${getImageUrlRelative({
+    serverFileName,
+    desiredFileName: fileName,
+  })}`;
   return {
     t: 's',
-    v: fileName,
+    v: url,
     l: {
-      Target: `${window.location.origin}${getImageUrlRelative({
-        serverFileName,
-        desiredFileName: fileName,
-      })}`,
+      Target: url,
     },
   };
 }

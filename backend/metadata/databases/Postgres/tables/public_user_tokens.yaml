@@ -5,3 +5,31 @@ object_relationships:
   - name: user
     using:
       foreign_key_constraint_on: user_id
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - created
+        - expires
+        - id
+        - last_verify
+        - name
+        - type
+        - user_id
+      filter:
+        _and:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - type:
+              _eq: pat
+    comment: Users can view their own personal access tokens
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        _and:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - type:
+              _eq: pat
+    comment: Users can delete their own personal access tokens

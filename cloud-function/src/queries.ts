@@ -117,6 +117,8 @@ export const UserTokenQuery = /* GraphQL */ `
       user_id
       type
       last_verify
+      expires
+      name
     }
   }
 `;

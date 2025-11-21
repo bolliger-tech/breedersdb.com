@@ -7,6 +7,7 @@ import {
 import { fetchGraphQL } from '../lib/fetch';
 import { RollTokenLastVerifyMutation } from '../queries';
 import { validateFrontendAuth } from './validateFrontendAuth';
+import { validatePersonalAccessToken } from './validatePersonalAccessToken';
 
 // authentication hook for hasura: decides if a request to hasura is allowed
 // https://hasura.io/docs/latest/auth/authentication/unauthenticated-access/
@@ -15,7 +16,20 @@ export async function authenticateHasuraRequest(
   res: ff.Response,
 ) {
   const cookies = req.body.headers.Cookie || req.body.headers.cookie;
+  const authorization =
+    req.body.headers.Authorization || req.body.headers.authorization;
   const operationName = req.body.request.operationName;
+
+  // Try personal access token authentication first
+  const patAuth = await validatePersonalAccessToken(authorization);
+  if (patAuth) {
+    return res.send({
+      'X-Hasura-User-Id': patAuth.userId.toString(),
+      'X-Hasura-Role': 'user',
+    });
+  }
+
+  // Fall back to cookie-based authentication
   const auth = await validateFrontendAuth(cookies);
   if (!auth) {
     // allow SignIn in any case

@@ -9,6 +9,16 @@ actions:
           value_from_env: CLOUD_FUNCTION_SECRET
     permissions:
       - role: user
+  - name: CreatePersonalAccessToken
+    definition:
+      kind: synchronous
+      handler: '{{CLOUD_FUNCTION_URL}}/actions'
+      forward_client_headers: true
+      headers:
+        - name: X-Cloud-Function-Secret
+          value_from_env: CLOUD_FUNCTION_SECRET
+    permissions:
+      - role: user
   - name: InsertUser
     definition:
       kind: synchronous
@@ -74,6 +84,7 @@ custom_types:
   enums: []
   input_objects:
     - name: UserInsertInput
+    - name: CreatePersonalAccessTokenInput
   objects:
     - name: FullUserOutput
     - name: SignOutOutput
@@ -97,4 +108,5 @@ custom_types:
             schema: public
           source: Postgres
           type: object
+    - name: CreatePersonalAccessTokenOutput
   scalars: []

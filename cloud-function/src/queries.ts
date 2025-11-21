@@ -203,3 +203,27 @@ export const InsertLoggedActionMutation = /* GraphQL */ `
     }
   }
 `;
+
+export const InsertPersonalAccessTokenMutation = /* GraphQL */ `
+  mutation InsertPersonalAccessTokenMutation(
+    $user_id: Int!
+    $token_hash: String!
+    $name: citext!
+    $expires: timestamptz
+  ) {
+    insert_user_tokens_one(
+      object: {
+        user_id: $user_id
+        token_hash: $token_hash
+        type: "pat"
+        name: $name
+        expires: $expires
+      }
+    ) {
+      id
+      name
+      created
+      expires
+    }
+  }
+`;

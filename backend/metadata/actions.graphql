@@ -6,6 +6,12 @@ type Mutation {
 }
 
 type Mutation {
+  CreatePersonalAccessToken(
+    object: CreatePersonalAccessTokenInput!
+  ): CreatePersonalAccessTokenOutput!
+}
+
+type Mutation {
   InsertUser(
     object: UserInsertInput!
   ): FullUserOutput!
@@ -45,6 +51,11 @@ input UserInsertInput {
   locale: String
 }
 
+input CreatePersonalAccessTokenInput {
+  name: citext!
+  expires: timestamptz
+}
+
 type FullUserOutput {
   id: Int!
   email: citext!
@@ -66,5 +77,13 @@ type MeOutput {
 
 type UserOutput {
   id: Int!
+}
+
+type CreatePersonalAccessTokenOutput {
+  id: Int!
+  token: String!
+  name: citext!
+  expires: timestamptz
+  created: timestamptz!
 }
 

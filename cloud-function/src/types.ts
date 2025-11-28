@@ -4,6 +4,7 @@ export type ActionProps = {
     req: {
       headers: {
         cookie: string | undefined;
+        authorization: string | undefined;
       };
     };
     sessionVariables?: {

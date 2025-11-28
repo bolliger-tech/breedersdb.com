@@ -40,7 +40,12 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
     const props: ActionProps = {
       input: body.input,
       ctx: {
-        req: { headers: { cookie: req.headers.cookie } },
+        req: {
+          headers: {
+            cookie: req.headers.cookie,
+            authorization: req.headers.authorization,
+          },
+        },
         sessionVariables: body.session_variables,
       },
     };

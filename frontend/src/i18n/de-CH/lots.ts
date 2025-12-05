@@ -2,7 +2,7 @@ export const lots = {
   title: 'Los | Lose',
   fields: {
     dateSowed: 'Datum Aussaat',
-    numbSeedsSowed: 'Anzahl ausgesähter Samen',
+    numbSeedsSowed: 'Anzahl ausgesäter Samen',
     numbSeedlingsGrown: 'Anzahl gesprossener Sämlinge',
     seedTray: 'Saatschale',
     datePlanted: 'Pflanzdatum',
@@ -16,7 +16,7 @@ export const lots = {
     invalidNameSegmentFormat:
       'Der Name muss aus zwei Ziffern bestehen, gefolgt von einem Grossbuchstaben. Beispiel: 24A. Tipp: Nimm die Jahrzahl für die ersten zwei Ziffern.',
     nameNotUniqueWithCrossing:
-      'Dieser Name wird bereits für verwendet (in Kombination mit der ausgewählten Kreuzung). Nächster freier Name: {name}',
+      'Dieser Name wird bereits verwendet (in Kombination mit der ausgewählten Kreuzung). Nächster freier Name: {name}',
   },
   segmentNameHint:
     'Format: zweistellige Nummer gefolgt von einem Grossbuchstaben. Beispiel: {example}',

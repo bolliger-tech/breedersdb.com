@@ -50,7 +50,7 @@ export const plants = {
 
   eliminate: 'Eliminate',
   eliminateConfirmation:
-    'Eliminating will move this plant to the list of disbled plants, it will make it impossible to add any further attributions and it will prefix the label id with a #. Are you sure you want to eliminate this plant?',
+    'Eliminating will move this plant to the list of disabled plants, it will make it impossible to add any further attributions and it will prefix the label id with a #. Are you sure you want to eliminate this plant?',
 
   plantSelect: 'Plant (label ID)',
 

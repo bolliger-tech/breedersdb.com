@@ -10,7 +10,7 @@ export const auth = {
     401: 'Passwort nicht korrekt. {nextTry}',
     429: 'Zu viele fehlgeschlagene Anmeldeversuche. {nextTry}',
     404: 'User nicht gefunden.',
-    nextTry: 'Nächste Versuch in {fromNow}',
+    nextTry: 'Nächster Versuch in {fromNow}',
     invalidEmail: 'Ungültige E-Mail-Adresse.',
     invalidPasswordOrToken:
       'Ungültiges Passwort oder Link. Bitte stelle sicher, dass du den vollständigen Link aus unserer E-Mail geöffnet und ein Passwort eingegeben hast.',

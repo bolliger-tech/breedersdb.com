@@ -28,7 +28,7 @@ export const plantGroups = {
   explainer: {
     examples: 'Examples:',
     1: {
-      base: 'Follows the {pattern} {placeholder}, where {cultivar} is the cultivar name and {plantGroupPlaceholder} is an the group name. Allowed are letters, digits, hyphens and underscores, max. 25 characters.',
+      base: 'Follows the {pattern} {placeholder}, where {cultivar} is the cultivar name and {plantGroupPlaceholder} is the group name. Allowed are letters, digits, hyphens and underscores, max. 25 characters.',
       pattern: 'pattern',
     },
     2: {

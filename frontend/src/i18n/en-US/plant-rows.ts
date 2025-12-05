@@ -8,7 +8,7 @@ export const plantRows = {
   },
 
   hints: {
-    dateEliminatedTrue: 'Adding an disabled date will disable this row',
+    dateEliminatedTrue: 'Adding a disabled date will disable this row',
     dateEliminatedFalse: 'Removing the disabled date will enable this row',
   },
 

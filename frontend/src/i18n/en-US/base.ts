@@ -84,7 +84,7 @@ export const base = {
       'On MacOS: Make sure the browser is allowed camera access in "System Settings" -> "Privacy & Security" -> "Camera".',
     loading: 'Loading QR code scanner…',
     enablePermanently: 'Enable permanently',
-    permanantlyEnableCameraOnIOS: 'Enable camera permanently on iOS',
+    permanentlyEnableCameraOnIOS: 'Enable camera permanently on iOS',
   },
 
   notAvailable: 'N/A',

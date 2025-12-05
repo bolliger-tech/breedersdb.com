@@ -4,7 +4,7 @@ export const motherPlants = {
   fields: {
     dateImpregnated: 'Datum Befruchtung',
     dateFruitsHarvested: 'Erntedatum der Früchte',
-    numbFlowers: 'Anzahl Blühten',
+    numbFlowers: 'Anzahl Blüten',
     numbFruits: 'Anzahl Früchte',
     numbSeeds: 'Anzahl Samen',
     plant: 'Pflanze',

@@ -2,7 +2,7 @@ export const lots = {
   title: 'Los | Lose',
   fields: {
     dateSowed: 'Datum Aussaat',
-    numbSeedsSowed: 'Anzahl ausgesähter Samen',
+    numbSeedsSowed: 'Anzahl ausgesäter Samen',
     numbSeedlingsGrown: 'Anzahl gesprossener Sämlinge',
     seedTray: 'Saatschale',
     datePlanted: 'Pflanzdatum',

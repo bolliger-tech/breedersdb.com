@@ -38,7 +38,7 @@ export const attributes = {
   stepExplainerFloat:
     'Die Präzision des Wertes. Zum Beispiel 0.1 ermöglicht die Werte 0.1, 0.2, 0.3 etc. 0.01 ermöglicht 0.01, 0.02, 0.03 etc.',
   stepExplainerInteger:
-    'Der Abstand zwischen den Werten. Zum Beispiel erlaubt 2 die Werte 2, 4, 6, etc. (agenommen der Minimalwert sei 0).',
+    'Der Abstand zwischen den Werten. Zum Beispiel erlaubt 2 die Werte 2, 4, 6, etc. (angenommen der Minimalwert sei 0).',
   noDefaultValue: '(kein Standardwert)',
   dataTypeChangeNotAllowed:
     'Da dieses Attribut bereits verwendet wurde, ist eine Änderung des Datentyps nicht mehr möglich. Lösche zuerst die Attributionen oder erstelle ein neues Attribut mit dem gewünschten Datentyp.',

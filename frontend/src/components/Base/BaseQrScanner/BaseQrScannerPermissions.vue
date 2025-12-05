@@ -6,7 +6,7 @@
           class="q-my-sm"
           style="width: calc(100% - 34px); text-wrap: balance"
         >
-          {{ t('base.qr.permanantlyEnableCameraOnIOS') }}
+          {{ t('base.qr.permanentlyEnableCameraOnIOS') }}
         </h3>
         <q-btn v-close-popup icon="close" flat round dense />
       </q-card-section>

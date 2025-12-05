@@ -42,7 +42,7 @@ export const attributes = {
   maxLong: 'Maximum value',
   step: 'Step',
   stepExplainerFloat:
-    'The percision of the value. For example, 0.1 will allow 0.1, 0.2, 0.3, etc. 0.01, will allow 0.01, 0.02, 0.03, etc.',
+    'The precision of the value. For example, 0.1 will allow 0.1, 0.2, 0.3, etc. 0.01, will allow 0.01, 0.02, 0.03, etc.',
   stepExplainerInteger:
     'The distance between the values. For example, 2 will allow 2, 4, 6, etc. (assuming the minimum value is 0).',
 

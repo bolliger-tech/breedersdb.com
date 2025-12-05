@@ -5,7 +5,7 @@ export const attributions = {
     plants: 'Suche nach Attribut, Label-ID oder Gruppe',
     plantGroups: 'Suche nach Attribut oder Gruppe',
     cultivars: 'Suche nach Attribut oder Cultivar',
-    lots: 'Suche nach Attribute oder Los',
+    lots: 'Suche nach Attribut oder Los',
   },
   exportPrefix: 'Attributierung',
   columns: {

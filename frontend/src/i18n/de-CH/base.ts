@@ -79,7 +79,7 @@ export const base = {
       'Auf MacOS: Stelle sicher, dass der Browser auf die Kamera zugreifen darf: "Systemeinstellungen" -> "Privatsphäre & Sicherheit" -> "Kamera".',
     loading: 'Lade QR-Codescanner…',
     enablePermanently: 'Dauerhaft aktivieren',
-    permanantlyEnableCameraOnIOS: 'Kamera dauerhaft aktivieren (iOS)',
+    permanentlyEnableCameraOnIOS: 'Kamera dauerhaft aktivieren (iOS)',
   },
   notAvailable: 'N/A',
   deleteConfirmation: 'Möchtest du diese/n {entity} wirklich löschen?',

@@ -134,6 +134,10 @@ watch(data, (d) => {
 });
 
 async function loadPlant() {
+  if (!input.value.plantLabelId) {
+    emit('plant', null);
+    return;
+  }
   await nextTick(); // ensure the useQuery({variables}) is updated
   await urql.executeQuery();
 }

@@ -18,7 +18,7 @@ export async function authenticateHasuraRequest(
   const cookies = req.body.headers.Cookie || req.body.headers.cookie;
   const authorization =
     req.body.headers.Authorization || req.body.headers.authorization;
-  const operationName = req.body.request.operationName;
+  const operationName = req.body.request?.operationName;
 
   // Try personal access token authentication first
   const patAuth = await validatePersonalAccessToken(authorization);

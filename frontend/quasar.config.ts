@@ -7,6 +7,7 @@ import { defineConfig } from '#q-app/wrappers';
 import { fileURLToPath } from 'node:url';
 import { hslToRgb } from './scripts/hsl-to-rgb';
 import injectColorsFromEnv from './scripts/vite-plugin-colors-from-env';
+import { overrideAliasesInViteConfig } from './override';
 
 export default defineConfig((ctx) => {
   return {
@@ -101,6 +102,10 @@ export default defineConfig((ctx) => {
         ],
         injectColorsFromEnv(),
       ],
+
+      extendViteConf(viteConf) {
+        overrideAliasesInViteConfig(viteConf);
+      },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer

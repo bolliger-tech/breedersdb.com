@@ -756,8 +756,43 @@ describe('personal access tokens', () => {
     expect(json.data).toBe(undefined);
   });
 
+  test('fail to get me without bearer in header', async () => {
+    const json = await post({ query: meQuery }, { Authorization: pat1.token });
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('fail to get me with missing space in header', async () => {
+    const json = await post(
+      { query: meQuery },
+      { Authorization: 'Bearer' + pat1.token },
+    );
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('can get me with multiple spaces in header', async () => {
+    const json = await postOrFail(
+      { query: meQuery },
+      { Authorization: 'Bearer     ' + pat1.token + '   ' },
+    );
+    expect(json.data.Me.user.email).toBe(user2.email);
+  });
+
+  test('can get me with lower case in header', async () => {
+    const json = await postOrFail(
+      { query: meQuery },
+      { authorization: 'bearer     ' + pat1.token + '   ' },
+    );
+    expect(json.data.Me.user.email).toBe(user2.email);
+  });
+
   test('fail to get me with invalid tail personal access token', async () => {
-    const invalid = pat2.token.slice(0, -1) + 'x';
+    const invalid = pat1.token.slice(0, -1) + 'x';
     const json = await post(
       { query: meQuery },
       { Authorization: 'Bearer ' + invalid },
@@ -769,7 +804,7 @@ describe('personal access tokens', () => {
   });
 
   test('fail to get me with invalid head personal access token', async () => {
-    const invalid = 'x' + pat2.token.slice(1);
+    const invalid = 'x' + pat1.token.slice(1);
     const json = await post(
       { query: meQuery },
       { Authorization: 'Bearer ' + invalid },
@@ -781,7 +816,7 @@ describe('personal access tokens', () => {
   });
 
   test('fail to get me with tail shortened personal access token', async () => {
-    const invalid = pat2.token.slice(0, -1);
+    const invalid = pat1.token.slice(0, -1);
     const json = await post(
       { query: meQuery },
       { Authorization: 'Bearer ' + invalid },
@@ -793,7 +828,7 @@ describe('personal access tokens', () => {
   });
 
   test('fail to get me with head shortened personal access token', async () => {
-    const invalid = pat2.token.slice(1);
+    const invalid = pat1.token.slice(1);
     const json = await post(
       { query: meQuery },
       { Authorization: 'Bearer ' + invalid },
@@ -817,7 +852,7 @@ describe('personal access tokens', () => {
   });
 
   test('fail to get me with over long personal access token', async () => {
-    const invalid = pat2.token + pat2.token;
+    const invalid = pat1.token + pat1.token;
     const json = await post(
       { query: meQuery },
       { Authorization: 'Bearer ' + invalid },

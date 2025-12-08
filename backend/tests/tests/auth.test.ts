@@ -9,7 +9,7 @@ import {
 import { post, postOrFail, postOrFailRaw } from '../fetch';
 import { config } from '../config';
 
-const UserFields = /* GraphQL */ `
+const UserFields = `
   id
   email
   locale

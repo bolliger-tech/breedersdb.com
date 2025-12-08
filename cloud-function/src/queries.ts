@@ -9,7 +9,7 @@ type User = {
   created: string;
   modified: string;
 };
-const UserFields = /* GraphQL */ `
+const UserFields = `
   id
   email
   locale

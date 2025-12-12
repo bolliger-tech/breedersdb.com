@@ -24,6 +24,20 @@ select_permissions:
               _eq: pat
       allow_aggregations: true
     comment: Users can view their own personal access tokens
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - expires
+        - name
+      filter:
+        _and:
+          - user_id:
+              _eq: X-Hasura-User-Id
+          - type:
+              _eq: pat
+      check: {}
+    comment: ""
 delete_permissions:
   - role: user
     permission:

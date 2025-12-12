@@ -6,6 +6,7 @@ export type SpriteIcons =
   | 'female'
   | 'form'
   | 'grafting'
+  | 'key'
   | 'list'
   | 'locale'
   | 'logout'

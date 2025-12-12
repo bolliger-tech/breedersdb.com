@@ -102,10 +102,12 @@ const createPersonalAccessTokenMutation = /* GraphQL */ `
   ) {
     CreatePersonalAccessToken(object: { name: $name, expires: $expires }) {
       id
+      user_id
       name
       token
       created
       expires
+      last_verify
     }
   }
 `;
@@ -148,6 +150,7 @@ const user2 = {
   password: 'Asdfasdf1?',
 };
 let user2CookiesReqHeader: string;
+let user2Id: number;
 
 const adminHeaders = {
   'X-Hasura-Admin-Secret': config.HASURA_GRAPHQL_ADMIN_SECRET,
@@ -220,6 +223,7 @@ test('get users', async () => {
   expect(result.data.users[0].locale).not.toBe(null);
   expect(result.data.users[0].password_hash).not.toContain(user1.password);
 
+  user2Id = result.data.users[1].id;
   expect(result.data.users[1].email).toBe(user2.email);
   expect(result.data.users[1].failed_signin_attempts).toBe(0);
   expect(result.data.users[1].last_signin).toBe(null);
@@ -694,9 +698,11 @@ describe('personal access tokens', () => {
     );
 
     expect(result.data.CreatePersonalAccessToken.id).toBeGreaterThan(0);
+    expect(result.data.CreatePersonalAccessToken.user_id).toBe(user2Id);
     expect(result.data.CreatePersonalAccessToken.name).toBe('my first pat');
     expect(result.data.CreatePersonalAccessToken.token).toHaveLength(76);
     expect(result.data.CreatePersonalAccessToken.expires).toBe(null);
+    expect(result.data.CreatePersonalAccessToken.last_verify).toBe(null);
     pat1 = {
       id: result.data.CreatePersonalAccessToken.id,
       token: result.data.CreatePersonalAccessToken.token,
@@ -789,6 +795,15 @@ describe('personal access tokens', () => {
       { authorization: 'bearer     ' + pat1.token + '   ' },
     );
     expect(json.data.Me.user.email).toBe(user2.email);
+  });
+
+  test('last verify is not null after use', async () => {
+    const json = await postOrFail(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + pat1.token },
+    );
+    expect(json.data.Me.user.email).toBe(user2.email);
+    expect(json.data.Me.user.last_verify).not.toBe(null);
   });
 
   test('fail to get me with invalid tail personal access token', async () => {

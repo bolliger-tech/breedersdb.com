@@ -12,10 +12,12 @@ type CreatePersonalAccessTokenInput = {
 
 type CreatePersonalAccessTokenOutput = {
   id: number;
+  user_id: number;
   token: string;
   name: string;
   created: string;
   expires: string | null;
+  last_verify: string | null;
 };
 
 export async function CreatePersonalAccessToken({
@@ -88,10 +90,12 @@ export async function CreatePersonalAccessToken({
   return {
     response: {
       id: dbToken.id,
+      user_id: dbToken.user_id,
       token: pat,
       name: dbToken.name,
-      created: dbToken.created,
       expires: dbToken.expires,
+      last_verify: dbToken.last_verify,
+      created: dbToken.created,
     },
   };
 }

@@ -109,4 +109,13 @@ custom_types:
           source: Postgres
           type: object
     - name: CreatePersonalAccessTokenOutput
+      relationships:
+        - field_mapping:
+            user_id: id
+          name: user
+          remote_table:
+            name: users
+            schema: public
+          source: Postgres
+          type: object
   scalars: []

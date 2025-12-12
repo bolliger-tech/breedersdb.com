@@ -223,9 +223,11 @@ export const InsertPersonalAccessTokenMutation = /* GraphQL */ `
       }
     ) {
       id
+      user_id
       name
       created
       expires
+      last_verify
     }
   }
 `;

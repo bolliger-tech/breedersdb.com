@@ -81,9 +81,11 @@ type UserOutput {
 
 type CreatePersonalAccessTokenOutput {
   id: Int!
+  user_id: Int!
   token: String!
   name: citext!
   expires: timestamptz
+  last_verify: timestamptz
   created: timestamptz!
 }
 

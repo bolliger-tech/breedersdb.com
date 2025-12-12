@@ -22,6 +22,7 @@ select_permissions:
               _eq: X-Hasura-User-Id
           - type:
               _eq: pat
+      allow_aggregations: true
     comment: Users can view their own personal access tokens
 delete_permissions:
   - role: user

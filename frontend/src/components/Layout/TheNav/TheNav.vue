@@ -234,9 +234,19 @@ const navDefinition = computed<NavDefinitionItem[]>(() => [
         to: '/graftings',
       },
       {
-        label: t('users.title', 2),
+        label: t('nav.more.access'),
         icon: 'user',
         to: '/users',
+        children: [
+          {
+            label: t('users.title', 2),
+            to: '/users',
+          },
+          {
+            label: t('personalAccessTokens.title', 2),
+            to: '/personal-access-tokens',
+          },
+        ],
       },
       {
         label: t('nav.more.settings'),

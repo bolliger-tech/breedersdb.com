@@ -144,6 +144,7 @@ const routes: RouteRecordRaw[] = [
         'Lots',
         'PlantGroups',
         'Plants',
+        'PersonalAccessTokens',
       ].map(createEntityRoutes),
 
       {

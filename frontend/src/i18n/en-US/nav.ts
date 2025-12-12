@@ -26,5 +26,6 @@ export const nav = {
     language: { main: 'Language' },
     logout: 'Logout',
     reload: 'Update & Restart',
+    access: 'Access Control',
   },
 };

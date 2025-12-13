@@ -72,7 +72,7 @@ function onInputClick(e: Event) {
     typeof e.target.select === 'function'
   ) {
     e.target.select();
-    onCopyTokenClick();
+    void onCopyTokenClick();
   }
 }
 

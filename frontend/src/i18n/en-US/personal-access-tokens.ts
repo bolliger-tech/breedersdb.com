@@ -9,4 +9,10 @@ export const personalAccessTokens = {
   },
 
   expiresHint: 'Leave empty for indefinite validity.',
+
+  visibility: {
+    own: 'Only you can see your tokens.',
+    others:
+      'You can not see tokens of other users. They are only visible to their owner.',
+  },
 };

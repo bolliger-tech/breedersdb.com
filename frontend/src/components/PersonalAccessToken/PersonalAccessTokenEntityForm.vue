@@ -30,6 +30,7 @@
         !v || futureDateValidationRule(v),
     ]"
     autocomplete="off"
+    :hint="t('personalAccessTokens.expiresHint')"
   />
 </template>
 

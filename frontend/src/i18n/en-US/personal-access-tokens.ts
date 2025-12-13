@@ -6,4 +6,6 @@ export const personalAccessTokens = {
     expires: 'Expires',
     lastVerify: 'Last verify',
   },
+
+  expiresHint: 'Leave empty for indefinite validity.',
 };

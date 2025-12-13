@@ -29,6 +29,7 @@
           row-key="id"
           :columns="plantGroupColumns"
           default-sort-by="display_name"
+          @row-click="(_, row) => $router.push(`/groups/${row.id}`)"
         >
           <template #body-cell-display_name="cellProps">
             <q-td key="display_name" :props="cellProps">

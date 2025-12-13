@@ -19,6 +19,7 @@
           row-key="id"
           :columns="plantRowsColumns"
           default-sort-by="name"
+          @row-click="(_, row) => $router.push(`/rows/${row.id}`)"
         >
           <template #body-cell-name="cellProps">
             <q-td key="name" :props="cellProps">
@@ -41,6 +42,7 @@
           row-key="id"
           :columns="lotsColumns"
           default-sort-by="display_name"
+          @row-click="(_, row) => $router.push(`/lots/${row.id}`)"
         >
           <template #body-cell-display_name="cellProps">
             <q-td key="display_name" :props="cellProps">

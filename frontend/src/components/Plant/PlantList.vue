@@ -6,6 +6,7 @@
     :columns="columns"
     :visible-columns="visibleColumns"
     default-sort-by="label_id"
+    @row-click="(_, row) => $router.push(`/plants/${row.id}`)"
   >
     <template #body-cell-label_id="cellProps">
       <q-td key="label_id" :props="cellProps">

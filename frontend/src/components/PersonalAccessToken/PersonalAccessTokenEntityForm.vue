@@ -107,9 +107,9 @@ const { makeDateValidationRule } = useValidationRule();
 
 function futureDateValidationRule(value: string | null | undefined | Date) {
   const now = new Date();
-  const min = Object.assign(new Date(), now);
+  const min = new Date(now);
   min.setHours(0, 0, 0, 0);
-  const max = Object.assign(new Date(), now);
+  const max = new Date(now);
   max.setFullYear(now.getFullYear() + 10);
   return makeDateValidationRule({
     min,

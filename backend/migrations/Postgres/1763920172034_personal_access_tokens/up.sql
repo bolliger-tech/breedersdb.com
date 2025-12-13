@@ -4,7 +4,7 @@ alter table user_tokens add constraint user_tokens_type_check
 
 alter table user_tokens
     add column name    citext
-        check ( (type = 'pat' and name is not null and name ~ '^[^/\n]{1,120}$') or (type != 'pat' and name is null) ),
+        check ( (type = 'pat' and name is not null and name ~ '^[^\n]{1,120}$') or (type != 'pat' and name is null) ),
     add column expires timestamp with time zone
         check (type = 'pat' or (type != 'pat' and expires is null));
 

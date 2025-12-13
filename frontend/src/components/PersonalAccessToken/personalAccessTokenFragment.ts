@@ -1,9 +1,11 @@
 import { graphql, type FragmentOf } from 'src/graphql';
 
-export type UserTokenFragment = FragmentOf<typeof userTokenFragment>;
+export type PersonalAccessTokenFragment = FragmentOf<
+  typeof personalAccessTokenFragment
+>;
 
-export const userTokenFragment = graphql(`
-  fragment userTokenFragment on user_tokens @_unmask {
+export const personalAccessTokenFragment = graphql(`
+  fragment personalAccessTokenFragment on user_tokens @_unmask {
     id
     user_id
     name

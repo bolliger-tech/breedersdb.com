@@ -6,7 +6,7 @@
       v-model:visible-columns="visibleColumns"
       :title="t('personalAccessTokens.title', 2)"
       :search-placeholder="t('personalAccessTokens.searchPlaceholder')"
-      :rows="data?.user_tokens || []"
+      :rows="personalAccessTokens"
       :loading="fetching"
       :all-columns="columns"
       list-entities-path="/personal-access-tokens"
@@ -27,7 +27,7 @@ import { graphql } from 'src/graphql';
 import { computed, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
-import { userTokenFragment } from 'src/components/PersonalAccessToken/userTokenFragment';
+import { personalAccessTokenFragment } from 'src/components/PersonalAccessToken/personalAccessTokenFragment';
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
@@ -56,11 +56,11 @@ const query = graphql(
         offset: $offset
         order_by: $orderBy
       ) {
-        ...userTokenFragment
+        ...personalAccessTokenFragment
       }
     }
   `,
-  [userTokenFragment],
+  [personalAccessTokenFragment],
 );
 
 const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
@@ -76,7 +76,9 @@ const { data, fetching, error } = await useQuery({
   },
 });
 
-const userTokensCount = computed(
+const personalAccessTokens = computed(() => data.value?.user_tokens || []);
+
+const personalAccessTokensCount = computed(
   () => data.value?.user_tokens_aggregate?.aggregate?.count || 0,
 );
 
@@ -124,7 +126,7 @@ watch(
 );
 
 watch(
-  userTokensCount,
+  personalAccessTokensCount,
   (newValue) => {
     pagination.value.rowsNumber = newValue;
   },

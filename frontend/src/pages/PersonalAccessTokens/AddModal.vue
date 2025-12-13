@@ -1,8 +1,8 @@
 <template>
   <EntityFetchWrapper :error="error" :fetching="fetching">
     <PersonalAccessTokenModalEdit
-      v-if="userToken"
-      :personal-access-token="userToken"
+      v-if="personalAccessToken"
+      :personal-access-token="personalAccessToken"
       :title="t('base.new')"
     />
   </EntityFetchWrapper>
@@ -15,15 +15,14 @@ import PersonalAccessTokenModalEdit, {
 } from 'src/components/PersonalAccessToken/PersonalAccessTokenModalEdit.vue';
 import EntityFetchWrapper from 'src/components/Entity/EntityFetchWrapper.vue';
 import { useQuery } from '@urql/vue';
-import { userTokenFragment } from 'src/components/PersonalAccessToken/userTokenFragment';
+import { personalAccessTokenFragment } from 'src/components/PersonalAccessToken/personalAccessTokenFragment';
 import { graphql } from 'src/graphql';
 import { computed } from 'vue';
 
 const props = defineProps<{ templateId?: number; entityId: 'new' }>();
 
-const emptyUserToken: PersonalAccessTokenInsertInput = {
+const emptyPersonalAccessToken: PersonalAccessTokenInsertInput = {
   name: '',
-  hash: '',
   expires: null,
 };
 
@@ -31,11 +30,11 @@ const query = graphql(
   `
     query UserTokens($id: Int!) {
       user_tokens_by_pk(id: $id) {
-        ...userTokenFragment
+        ...personalAccessTokenFragment
       }
     }
   `,
-  [userTokenFragment],
+  [personalAccessTokenFragment],
 );
 
 const { data, error, fetching } = useQuery({
@@ -47,7 +46,7 @@ const { data, error, fetching } = useQuery({
   pause: !props.templateId,
 });
 
-const userToken = computed(() => {
+const personalAccessToken = computed(() => {
   if (props.templateId) {
     if (!data.value?.user_tokens_by_pk) {
       return;
@@ -56,11 +55,11 @@ const userToken = computed(() => {
       ? new Date(data.value.user_tokens_by_pk.expires)
       : null;
     return {
-      ...emptyUserToken,
+      ...emptyPersonalAccessToken,
       expires: expires?.toISOString().slice(0, 16) || null,
     };
   } else {
-    return emptyUserToken;
+    return emptyPersonalAccessToken;
   }
 });
 

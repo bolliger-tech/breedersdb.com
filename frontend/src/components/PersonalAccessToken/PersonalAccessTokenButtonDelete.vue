@@ -7,7 +7,7 @@
     "
     :error="error"
     :fetching="deleting"
-    @delete="deleteUserToken"
+    @delete="deletePersonalAccessToken"
     @reset-errors="resetErrors"
   />
 </template>
@@ -18,10 +18,10 @@ import EntityButtonDelete from 'src/components/Entity/EntityButtonDelete.vue';
 import { graphql } from 'src/graphql';
 import { useI18n } from 'src/composables/useI18n';
 
-export interface UserTokenButtonDeleteProps {
-  userTokenId: number;
+export interface PersonalAccessTokenButtonDeleteProps {
+  personalAccessTokenId: number;
 }
-const props = defineProps<UserTokenButtonDeleteProps>();
+const props = defineProps<PersonalAccessTokenButtonDeleteProps>();
 
 const emit = defineEmits<{
   deleted: [];
@@ -45,14 +45,18 @@ const {
   `),
 );
 
-async function deleteUserToken() {
-  await urql.executeMutation({ id: props.userTokenId }).then((result) => {
-    if (!result.data?.delete_user_tokens_by_pk) {
-      console.error(`Failed to delete user token ${props.userTokenId}`);
-    } else {
-      emit('deleted');
-    }
-  });
+async function deletePersonalAccessToken() {
+  await urql
+    .executeMutation({ id: props.personalAccessTokenId })
+    .then((result) => {
+      if (!result.data?.delete_user_tokens_by_pk) {
+        console.error(
+          `Failed to delete personal access token ${props.personalAccessTokenId}`,
+        );
+      } else {
+        emit('deleted');
+      }
+    });
 }
 
 const { t } = useI18n();

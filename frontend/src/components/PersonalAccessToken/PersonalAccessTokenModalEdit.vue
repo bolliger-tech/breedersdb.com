@@ -26,7 +26,7 @@
     <template #action-left>
       <PersonalAccessTokenButtonDelete
         v-if="'id' in personalAccessToken"
-        :user-token-id="personalAccessToken.id"
+        :personal-access-token-id="personalAccessToken.id"
         @deleted="
           () =>
             $router.push({
@@ -45,23 +45,21 @@ import { graphql } from 'src/graphql';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { useI18n } from 'src/composables/useI18n';
 import {
-  type UserTokenFragment,
-  userTokenFragment,
+  type PersonalAccessTokenFragment,
+  personalAccessTokenFragment,
   createPersonalAccessTokenFragment,
-} from './userTokenFragment';
+} from './personalAccessTokenFragment';
 import PersonalAccessTokenButtonDelete from './PersonalAccessTokenButtonDelete.vue';
 import PersonalAccessTokenEntityForm from './PersonalAccessTokenEntityForm.vue';
 
 export type PersonalAccessTokenEditInput = Omit<
-  UserTokenFragment,
+  PersonalAccessTokenFragment,
   'user_id' | 'type' | 'last_verify' | 'created'
 >;
 export type PersonalAccessTokenInsertInput = Omit<
   PersonalAccessTokenEditInput,
   'id'
-> & {
-  hash: string;
-};
+>;
 
 export interface PersonalAccessTokenModalEditProps {
   personalAccessToken:
@@ -91,11 +89,11 @@ const editMutation = graphql(
       $entity: user_tokens_set_input!
     ) {
       update_user_tokens_by_pk(pk_columns: { id: $id }, _set: $entity) {
-        ...userTokenFragment
+        ...personalAccessTokenFragment
       }
     }
   `,
-  [userTokenFragment],
+  [personalAccessTokenFragment],
 );
 
 const { t } = useI18n();

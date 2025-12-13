@@ -42,7 +42,7 @@ import { useExport } from 'src/composables/useExport';
 import { useIdColumn } from 'src/composables/useIdColumn';
 import PersonalAccessTokenCreatedDialog from 'src/components/PersonalAccessToken/PersonalAccessTokenCreatedDialog.vue';
 import type { TokenCreatedData } from 'src/components/PersonalAccessToken/PersonalAccessTokenModalEdit.vue';
-import { usePersonalAccessTokenCreated } from 'src/components/PersonalAccessToken/usPersonalAccessTokenCreated';
+import { usePersonalAccessTokenCreated } from 'src/components/PersonalAccessToken/usePersonalAccessTokenCreated';
 
 const { t } = useI18n();
 

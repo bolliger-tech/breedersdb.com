@@ -61,7 +61,7 @@ import {
 } from './personalAccessTokenFragment';
 import PersonalAccessTokenButtonDelete from './PersonalAccessTokenButtonDelete.vue';
 import PersonalAccessTokenEntityForm from './PersonalAccessTokenEntityForm.vue';
-import { usePersonalAccessTokenCreated } from './usPersonalAccessTokenCreated';
+import { usePersonalAccessTokenCreated } from './usePersonalAccessTokenCreated';
 
 type InsertResult = ResultOf<typeof insertMutation>;
 type EditResult = ResultOf<typeof editMutation>;

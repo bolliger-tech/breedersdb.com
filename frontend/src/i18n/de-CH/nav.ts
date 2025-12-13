@@ -28,5 +28,6 @@ export const nav = {
     },
     logout: 'Abmelden',
     reload: 'Aktualisieren & Neustarten',
+    access: 'Zugänge',
   },
 };

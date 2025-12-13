@@ -1,6 +1,7 @@
 import { validateFrontendAuth } from './validateFrontendAuth';
 import { ErrorWithStatus } from '../lib/errors';
 import type { ActionProps, ActionResult } from '../types';
+import { validatePersonalAccessToken } from './validatePersonalAccessToken';
 
 type MeOutput = {
   id: number;
@@ -9,7 +10,9 @@ type MeOutput = {
 export async function Me({
   ctx,
 }: ActionProps): Promise<ActionResult<MeOutput>> {
-  const auth = await validateFrontendAuth(ctx.req.headers.cookie);
+  const auth =
+    (await validatePersonalAccessToken(ctx.req.headers.authorization)) ||
+    (await validateFrontendAuth(ctx.req.headers.cookie));
   if (!auth) {
     throw new ErrorWithStatus(401, 'Unauthorized');
   }

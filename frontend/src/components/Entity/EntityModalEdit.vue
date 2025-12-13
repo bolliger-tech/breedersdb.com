@@ -122,6 +122,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   newFromTemplate: [templateId: number];
+  saved: [data: InsertResult | EditResult];
 }>();
 
 const { cancel } = useCancel({ path: props.indexPath });
@@ -194,6 +195,14 @@ async function save() {
   if (saveError.value) {
     return Promise.reject(saveError.value);
   }
+
+  if (!saveResult.value) {
+    return Promise.reject(
+      new Error('Save completed but no result was returned'),
+    );
+  }
+
+  emit('saved', saveResult.value);
 }
 
 function close() {

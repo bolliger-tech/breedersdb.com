@@ -32,6 +32,7 @@
           row-key="id"
           :columns="motherPlantColumns"
           default-sort-by="name"
+          @row-click="(_, row) => $router.push(`/mother-plants/${row.id}`)"
         >
           <template #body-cell-name="cellProps">
             <q-td key="name" :props="cellProps">

@@ -9,7 +9,7 @@ type User = {
   created: string;
   modified: string;
 };
-const UserFields = /* GraphQL */ `
+const UserFields = `
   id
   email
   locale
@@ -117,6 +117,8 @@ export const UserTokenQuery = /* GraphQL */ `
       user_id
       type
       last_verify
+      expires
+      name
     }
   }
 `;
@@ -200,6 +202,32 @@ export const InsertLoggedActionMutation = /* GraphQL */ `
       object: { name: $name, subject: $subject, context: $context }
     ) {
       id
+    }
+  }
+`;
+
+export const InsertPersonalAccessTokenMutation = /* GraphQL */ `
+  mutation InsertPersonalAccessTokenMutation(
+    $user_id: Int!
+    $token_hash: String!
+    $name: citext!
+    $expires: timestamptz
+  ) {
+    insert_user_tokens_one(
+      object: {
+        user_id: $user_id
+        token_hash: $token_hash
+        type: "pat"
+        name: $name
+        expires: $expires
+      }
+    ) {
+      id
+      user_id
+      name
+      created
+      expires
+      last_verify
     }
   }
 `;

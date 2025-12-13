@@ -212,6 +212,16 @@ watch(data, (d) => {
 });
 
 async function loadLot() {
+  if (
+    !input.value.plantLabelId &&
+    !input.value.plantGroupLabelId &&
+    !input.value.plantGroupId &&
+    !input.value.cultivarId &&
+    !input.value.lotId
+  ) {
+    emit('lot', null);
+    return;
+  }
   await nextTick(); // ensure the useQuery({variables}) is updated
   await urql.executeQuery();
 }

@@ -22,6 +22,7 @@
           row-key="id"
           :columns="cultivarsColumns"
           default-sort-by="display_name"
+          @row-click="(_, row) => $router.push(`/cultivars/${row.id}`)"
         >
           <template #body-cell-display_name="cellProps">
             <q-td key="display_name" :props="cellProps">

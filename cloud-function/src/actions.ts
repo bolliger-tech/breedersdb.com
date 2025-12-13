@@ -10,6 +10,7 @@ import { ChangePassword } from './auth/ChangePassword';
 import { validateBackendAuth } from './auth/validateBackendAuth';
 import { SendPasswordResetMail } from './auth/SendPasswordResetMail';
 import { ResetPassword } from './auth/ResetPassword';
+import { CreatePersonalAccessToken } from './auth/CreatePersonalAccessToken';
 
 /* example request
 body: {
@@ -39,7 +40,12 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
     const props: ActionProps = {
       input: body.input,
       ctx: {
-        req: { headers: { cookie: req.headers.cookie } },
+        req: {
+          headers: {
+            cookie: req.headers.cookie,
+            authorization: req.headers.authorization,
+          },
+        },
         sessionVariables: body.session_variables,
       },
     };
@@ -66,6 +72,9 @@ export async function handleActions(req: ff.Request, res: ff.Response) {
         break;
       case 'ResetPassword':
         result = await ResetPassword(props);
+        break;
+      case 'CreatePersonalAccessToken':
+        result = await CreatePersonalAccessToken(props);
         break;
       default:
         console.error('unknown action:', body);

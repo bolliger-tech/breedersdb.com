@@ -9,7 +9,7 @@ import {
 import { post, postOrFail, postOrFailRaw } from '../fetch';
 import { config } from '../config';
 
-const UserFields = /* GraphQL */ `
+const UserFields = `
   id
   email
   locale
@@ -95,6 +95,31 @@ const changePasswordMutation = /* GraphQL */ `
   }
 `;
 
+const createPersonalAccessTokenMutation = /* GraphQL */ `
+  mutation CreatePersonalAccessToken(
+    $name: citext!
+    $expires: timestamptz = null
+  ) {
+    CreatePersonalAccessToken(object: { name: $name, expires: $expires }) {
+      id
+      user_id
+      name
+      token
+      created
+      expires
+      last_verify
+    }
+  }
+`;
+
+const deletePersonalAccessTokenMutation = /* GraphQL */ `
+  mutation DeletePersonalAccessToken($id: Int!) {
+    delete_user_tokens_by_pk(id: $id) {
+      id
+    }
+  }
+`;
+
 // from: 'breedersdb.user={"email":"testtest@breedersdb.com"}; SameSite=None; Max-Age=34473600; Path=/, breedersdb.id.token=10.b659a53895d7a2e66ca85abb64a05b0a55dbfd523faa62e2ed72cf55125f2f70; HttpOnly; SameSite=None; Max-Age=34473600; Path=/'
 //   to: 'breedersdb.user={"email":"tester@breedersdb.com"}; breedersdb.id.token=9.d433bc46cf9629d9b351188ca113f0b0003811e781e207fa3542a5702d924183'
 const cookieReqHeaderFromRespHeader = (cookies: string) =>
@@ -125,6 +150,7 @@ const user2 = {
   password: 'Asdfasdf1?',
 };
 let user2CookiesReqHeader: string;
+let user2Id: number;
 
 const adminHeaders = {
   'X-Hasura-Admin-Secret': config.HASURA_GRAPHQL_ADMIN_SECRET,
@@ -197,6 +223,7 @@ test('get users', async () => {
   expect(result.data.users[0].locale).not.toBe(null);
   expect(result.data.users[0].password_hash).not.toContain(user1.password);
 
+  user2Id = result.data.users[1].id;
   expect(result.data.users[1].email).toBe(user2.email);
   expect(result.data.users[1].failed_signin_attempts).toBe(0);
   expect(result.data.users[1].last_signin).toBe(null);
@@ -640,5 +667,277 @@ describe('password reset flow', () => {
       // end-to-end testing is hard here
       // test feature in the cloud-function instead
     });
+  });
+});
+
+// -----------------------------------------------------------------------------
+// Personal Access Tokens
+// -----------------------------------------------------------------------------
+describe('personal access tokens', () => {
+  let pat1: {
+    id: number;
+    token: string;
+    expires?: string | null;
+  };
+  let pat2: {
+    id: number;
+    token: string;
+    expires?: string | null;
+  };
+
+  test('create personal access token', async () => {
+    if (!user2CookiesReqHeader) {
+      throw new Error('No cookies');
+    }
+    const result = await postOrFail(
+      {
+        query: createPersonalAccessTokenMutation,
+        variables: { name: 'my first pat' },
+      },
+      { Cookie: user2CookiesReqHeader },
+    );
+
+    expect(result.data.CreatePersonalAccessToken.id).toBeGreaterThan(0);
+    expect(result.data.CreatePersonalAccessToken.user_id).toBe(user2Id);
+    expect(result.data.CreatePersonalAccessToken.name).toBe('my first pat');
+    expect(result.data.CreatePersonalAccessToken.token).toHaveLength(76);
+    expect(result.data.CreatePersonalAccessToken.expires).toBe(null);
+    expect(result.data.CreatePersonalAccessToken.last_verify).toBe(null);
+    pat1 = {
+      id: result.data.CreatePersonalAccessToken.id,
+      token: result.data.CreatePersonalAccessToken.token,
+      expires: result.data.CreatePersonalAccessToken.expires,
+    };
+  });
+
+  test('create expired personal access token', async () => {
+    if (!user2CookiesReqHeader) {
+      throw new Error('No cookies');
+    }
+    const soon = new Date(Date.now() + 1000); // 1 second in the future
+    const result = await postOrFail(
+      {
+        query: createPersonalAccessTokenMutation,
+        variables: {
+          name: 'expires soon',
+          expires: soon.toISOString(),
+        },
+      },
+      { Cookie: user2CookiesReqHeader },
+    );
+
+    expect(result.data.CreatePersonalAccessToken.id).toBeGreaterThan(0);
+    expect(result.data.CreatePersonalAccessToken.name).toBe('expires soon');
+    expect(result.data.CreatePersonalAccessToken.token).toHaveLength(76);
+    expect(new Date(result.data.CreatePersonalAccessToken.expires)).toEqual(
+      soon,
+    );
+    pat2 = {
+      id: result.data.CreatePersonalAccessToken.id,
+      token: result.data.CreatePersonalAccessToken.token,
+      expires: result.data.CreatePersonalAccessToken.expires,
+    };
+  });
+
+  test('get me with personal access token', async () => {
+    const json = await postOrFail(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + pat1.token },
+    );
+    expect(json.data.Me.user.email).toBe(user2.email);
+  });
+
+  test('fail to get me with expired personal access token', async () => {
+    // wait for token to expire
+    const wait = new Date(pat2.expires!).getTime() - Date.now() + 10;
+    await new Promise((r) => setTimeout(r, wait));
+
+    const json = await post(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + pat2.token },
+    );
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('fail to get me without bearer in header', async () => {
+    const json = await post({ query: meQuery }, { Authorization: pat1.token });
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('fail to get me with missing space in header', async () => {
+    const json = await post(
+      { query: meQuery },
+      { Authorization: 'Bearer' + pat1.token },
+    );
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('can get me with multiple spaces in header', async () => {
+    const json = await postOrFail(
+      { query: meQuery },
+      { Authorization: 'Bearer     ' + pat1.token + '   ' },
+    );
+    expect(json.data.Me.user.email).toBe(user2.email);
+  });
+
+  test('can get me with lower case in header', async () => {
+    const json = await postOrFail(
+      { query: meQuery },
+      { authorization: 'bearer     ' + pat1.token + '   ' },
+    );
+    expect(json.data.Me.user.email).toBe(user2.email);
+  });
+
+  test('last verify is not null after use', async () => {
+    const json = await postOrFail(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + pat1.token },
+    );
+    expect(json.data.Me.user.email).toBe(user2.email);
+    expect(json.data.Me.user.last_verify).not.toBe(null);
+  });
+
+  test('fail to get me with invalid tail personal access token', async () => {
+    const invalid = pat1.token.slice(0, -1) + 'x';
+    const json = await post(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + invalid },
+    );
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('fail to get me with invalid head personal access token', async () => {
+    const invalid = 'x' + pat1.token.slice(1);
+    const json = await post(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + invalid },
+    );
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('fail to get me with tail shortened personal access token', async () => {
+    const invalid = pat1.token.slice(0, -1);
+    const json = await post(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + invalid },
+    );
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('fail to get me with head shortened personal access token', async () => {
+    const invalid = pat1.token.slice(1);
+    const json = await post(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + invalid },
+    );
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('fail to get me with empty personal access token', async () => {
+    const invalid = '';
+    const json = await post(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + invalid },
+    );
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('fail to get me with over long personal access token', async () => {
+    const invalid = pat1.token + pat1.token;
+    const json = await post(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + invalid },
+    );
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('delete personal access token', async () => {
+    if (!user2CookiesReqHeader) {
+      throw new Error('No cookies');
+    }
+    const result = await postOrFail(
+      {
+        query: deletePersonalAccessTokenMutation,
+        variables: { id: pat1.id },
+      },
+      { Authorization: 'Bearer ' + pat1.token },
+    );
+    expect(result.data.delete_user_tokens_by_pk.id).toBe(pat1.id);
+  });
+
+  test('fail to get me with deleted personal access token', async () => {
+    const json = await post(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + pat1.token },
+    );
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.data).toBe(undefined);
+  });
+
+  test('fail to create personal access token without auth', async () => {
+    const json = await post({
+      query: createPersonalAccessTokenMutation,
+      variables: { name: 'no auth' },
+    });
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.extensions?.code).toBe(401);
+    expect(json.errors[0]?.message).toBe(
+      'Unauthorized: User not authenticated',
+    );
+    expect(json.data).toBe(undefined);
+  });
+
+  test('fail to insert personal access token directly', async () => {
+    const json = await post({
+      query: /* GraphQL */ `
+        mutation MyMutation($hash: String!, $user1Id: Int!) {
+          insert_user_tokens_one(
+            object: {
+              name: "directly inserted"
+              token_hash: $hash
+              type: "pat"
+              user_id: $user1Id
+            }
+          ) {
+            id
+          }
+        }
+      `,
+      variables: { hash: pat1.token, user1Id: user1Id },
+    });
+    expect(json.errors).not.toBe(undefined);
+    expect(json.errors[0]?.message).toBe(
+      "field 'insert_user_tokens_one' not found in type: 'mutation_root'",
+    );
+    expect(json.data).toBe(undefined);
   });
 });

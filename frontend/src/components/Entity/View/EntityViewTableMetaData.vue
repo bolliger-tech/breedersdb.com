@@ -17,7 +17,7 @@
           }}
           <strong><BaseRelativeTime :timestamp="created" /></strong>
         </div>
-        <template v-if="modified !== created">
+        <template v-if="modified && modified !== created">
           &nbsp;
           <div>
             &mdash;&nbsp;{{ t('entity.commonColumns.modified') }}
@@ -37,7 +37,7 @@ import BaseRelativeTime from 'src/components/Base/BaseRelativeTime.vue';
 export interface EntityViewTableMetaDataProps {
   id: number;
   created: string;
-  modified: string;
+  modified?: string;
   dense?: boolean;
 }
 

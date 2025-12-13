@@ -25,7 +25,7 @@ export const auth = {
       'Gib deine E-Mail-Adresse ein und wir senden dir einen Link, mit dem du dein Passwort zurücksetzen kannst.',
     sendEmail: 'Passwort zurücksetzen',
     emailSent:
-      'Folgen den Anweisungen, die wir dir eben per E-Mail geschickt haben. Dieses Fenster kannst du schliessen.',
+      'Folge den Anweisungen, die wir dir eben per E-Mail geschickt haben. Dieses Fenster kannst du schliessen.',
   },
   resetPassword: {
     title: 'Passwort zurücksetzen',

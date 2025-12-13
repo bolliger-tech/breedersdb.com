@@ -190,6 +190,15 @@ watch(data, (d) => {
 });
 
 async function loadCultivar() {
+  if (
+    !input.value.plantLabelId &&
+    !input.value.plantGroupLabelId &&
+    !input.value.plantGroupId &&
+    !input.value.cultivarId
+  ) {
+    emit('cultivar', null);
+    return;
+  }
   await nextTick(); // ensure the useQuery({variables}) is updated
   await urql.executeQuery();
 }

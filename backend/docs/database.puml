@@ -312,6 +312,8 @@ entity "**user_tokens**" {
   *""type"": //character varying(10) //
   *""created"": //timestamp with time zone //
   ""last_verify"": //timestamp with time zone //
+  ""name"": //citext //
+  ""expires"": //timestamp with time zone //
 }
 
 entity "**users**" {

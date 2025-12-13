@@ -53,6 +53,9 @@
     "
     :error="error"
   />
+  <SignOutForm
+    v-if="error && error.graphQLErrors[0]?.extensions.code === 403"
+  />
 </template>
 
 <script setup lang="ts">
@@ -68,6 +71,7 @@ import { useInterval } from 'quasar';
 import EntityInputPassword from 'src/components/Entity/Edit/EntityInputPassword.vue';
 import EntityInput from 'src/components/Entity/Edit/EntityInput.vue';
 import { useRedirectAuthenticatedUsers } from 'src/composables/useRedirectAuthenticatedUsers';
+import SignOutForm from './SignOutForm.vue';
 
 const i18n = useI18n({ useScope: 'global' });
 const { t, locale } = i18n;

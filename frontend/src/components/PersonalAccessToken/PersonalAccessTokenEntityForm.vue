@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
@@ -45,6 +45,7 @@ import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import { useValidationRule } from 'src/composables/useValidationRule';
 import type { PersonalAccessTokenModalEditProps } from './PersonalAccessTokenModalEdit.vue';
+import { useMe } from 'src/composables/useMe';
 
 export interface PersonalAccessTokenEntityFormProps {
   personalAccessToken: PersonalAccessTokenModalEditProps['personalAccessToken'];
@@ -81,11 +82,23 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 
 watch(data, (newData) => emits('change', newData), { deep: true });
 
+const me = useMe();
+
+const additionalWhere = computed(() => {
+  if (!me.value?.id) {
+    return {};
+  }
+  return {
+    user_id: { _eq: me.value.id },
+  };
+});
+
 const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
   tableName: 'user_tokens',
   existingId:
     ('id' in props.personalAccessToken && props.personalAccessToken.id) ||
     undefined,
+  additionalWhere,
 });
 
 const { t } = useI18n();

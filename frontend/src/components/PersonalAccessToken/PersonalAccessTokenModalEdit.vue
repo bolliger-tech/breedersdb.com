@@ -20,7 +20,16 @@
       <PersonalAccessTokenEntityForm
         :ref="(el) => setFormRef(el)"
         :personal-access-token="personalAccessToken"
-        @change="onChange"
+        @change="
+          (data) => {
+            onChange({
+              ...data,
+              expires: data.expires
+                ? new Date(data.expires).toISOString() // fix TZ
+                : null,
+            });
+          }
+        "
       />
     </template>
 

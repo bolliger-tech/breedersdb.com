@@ -16,6 +16,9 @@ export const personalAccessTokens = {
       'You can not see tokens of other users. They are only visible to their owner.',
   },
 
+  tokenHidden:
+    'The original token is only shown once upon creation. Delete this token and create a new one if you lost it.',
+
   created: {
     title: 'Personal Access Token Created',
     message:

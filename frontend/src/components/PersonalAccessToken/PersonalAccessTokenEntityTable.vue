@@ -3,16 +3,16 @@
     <EntityViewTableRow :label="t('entity.commonColumns.name')">
       {{ personalAccessToken.name }}
     </EntityViewTableRow>
-    <EntityViewTableRow
-      :label="t('personalAccessTokens.fields.token')"
-      ellipsis
-    >
+    <EntityViewTableRow :label="t('personalAccessTokens.fields.token')">
       {{
         combineToPersonalAccessToken({
           tokenId: personalAccessToken.id,
-          token: '************',
+          token: '…',
         })
       }}
+      <BaseExplainer>
+        {{ t('personalAccessTokens.tokenHidden') }}
+      </BaseExplainer>
     </EntityViewTableRow>
     <EntityViewTableRow :label="t('personalAccessTokens.fields.expires')">
       {{
@@ -42,6 +42,7 @@ import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 import { combineToPersonalAccessToken } from 'src/utils/personalAccessToken';
+import BaseExplainer from 'src/components/Base/BaseExplainer.vue';
 
 export interface PersonalAccessTokenEntityTableProps {
   personalAccessToken: PersonalAccessTokenFragment;

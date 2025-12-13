@@ -16,6 +16,12 @@
       :export-progress="exportProgress"
       @export="onExport"
     />
+    <PersonalAccessTokenCreatedDialog
+      v-if="createdTokenData"
+      v-model="showTokenCreatedDialog"
+      :created-token-data="createdTokenData"
+      :key="createdTokenData.id"
+    />
   </PageLayout>
 </template>
 
@@ -24,7 +30,7 @@ import PageLayout from 'src/layouts/PageLayout.vue';
 import { useQuery } from '@urql/vue';
 import type { ResultOf } from 'src/graphql';
 import { graphql } from 'src/graphql';
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import EntityContainer from 'src/components/Entity/EntityContainer.vue';
 import { personalAccessTokenFragment } from 'src/components/PersonalAccessToken/personalAccessTokenFragment';
@@ -34,6 +40,9 @@ import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTable
 import type { TransformDataArgs } from 'src/composables/useExport';
 import { useExport } from 'src/composables/useExport';
 import { useIdColumn } from 'src/composables/useIdColumn';
+import PersonalAccessTokenCreatedDialog from 'src/components/PersonalAccessToken/PersonalAccessTokenCreatedDialog.vue';
+import type { TokenCreatedData } from 'src/components/PersonalAccessToken/PersonalAccessTokenModalEdit.vue';
+import { usePersonalAccessTokenCreated } from 'src/components/PersonalAccessToken/usPersonalAccessTokenCreated';
 
 const { t } = useI18n();
 
@@ -162,4 +171,14 @@ const {
   title: t('personalAccessTokens.title', 2),
   transformDataFn: transformData,
 });
+
+const showTokenCreatedDialog = ref(false);
+const createdTokenData = ref<TokenCreatedData>();
+
+function onTokenCreated(data: TokenCreatedData) {
+  createdTokenData.value = data;
+  showTokenCreatedDialog.value = true;
+}
+const { provide } = usePersonalAccessTokenCreated();
+provide(onTokenCreated);
 </script>

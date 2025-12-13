@@ -14,6 +14,7 @@
         });
       }
     "
+    @saved="onSaved"
   >
     <template #form="{ setFormRef, onChange }">
       <PersonalAccessTokenEntityForm
@@ -41,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { graphql } from 'src/graphql';
+import { graphql, type ResultOf } from 'src/graphql';
 import EntityModalEdit from 'src/components/Entity/EntityModalEdit.vue';
 import { useI18n } from 'src/composables/useI18n';
 import {
@@ -51,6 +52,12 @@ import {
 } from './personalAccessTokenFragment';
 import PersonalAccessTokenButtonDelete from './PersonalAccessTokenButtonDelete.vue';
 import PersonalAccessTokenEntityForm from './PersonalAccessTokenEntityForm.vue';
+import { usePersonalAccessTokenCreated } from './usPersonalAccessTokenCreated';
+
+type InsertResult = ResultOf<typeof insertMutation>;
+type EditResult = ResultOf<typeof editMutation>;
+
+export type TokenCreatedData = InsertResult['CreatePersonalAccessToken'];
 
 export type PersonalAccessTokenEditInput = Omit<
   PersonalAccessTokenFragment,
@@ -95,6 +102,14 @@ const editMutation = graphql(
   `,
   [personalAccessTokenFragment],
 );
+
+const { inject } = usePersonalAccessTokenCreated();
+const onTokenCreated = inject();
+function onSaved(data: InsertResult | EditResult) {
+  if ('CreatePersonalAccessToken' in data) {
+    onTokenCreated(data.CreatePersonalAccessToken);
+  }
+}
 
 const { t } = useI18n();
 </script>

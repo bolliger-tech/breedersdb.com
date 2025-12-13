@@ -15,4 +15,14 @@ export const personalAccessTokens = {
     others:
       'You can not see tokens of other users. They are only visible to their owner.',
   },
+
+  created: {
+    title: 'Personal Access Token Created',
+    message:
+      "Make sure to copy your new personal access token now. You won't be able to see it again!",
+    tokenCopied: 'Personal access token copied to clipboard.',
+    tokenCopyFailed: 'Failed to copy personal access token.',
+    validUntilDate: 'Valid until deleted, at most until {date}',
+    validUntilDeleted: 'Valid until deleted',
+  },
 };

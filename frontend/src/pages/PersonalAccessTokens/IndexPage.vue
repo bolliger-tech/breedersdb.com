@@ -71,7 +71,9 @@ const { search, pagination, variables } = useEntityIndexHooks<typeof query>({
 const { data, fetching, error } = await useQuery({
   query,
   variables,
-  context: { additionalTypenames: ['personal_access_tokens'] },
+  context: {
+    additionalTypenames: ['user_tokens', 'CreatePersonalAccessTokenOutput'],
+  },
 });
 
 const userTokensCount = computed(

@@ -13,7 +13,7 @@
     "sync:shared": "node scripts/sync-shared-files.js",
     "sync:check": "node scripts/sync-shared-files.js check",
     "dev": "VITE_BDB_VERSION=$(git rev-parse HEAD) quasar dev -m pwa",
-    "build": "npm run sync:shared && VITE_BDB_VERSION=${VITE_BDB_VERSION:-$(git rev-parse HEAD)} quasar build -m pwa",
+    "build": "VITE_BDB_VERSION=${VITE_BDB_VERSION:-$(git rev-parse HEAD)} quasar build -m pwa",
     "build:sentry": "yarn run build && yarn run sentry:sourcemaps",
     "serve": "quasar serve dist/pwa --port 9200",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org bolligertech --project breedersdb ./dist && sentry-cli sourcemaps upload --org bolligertech --project breedersdb ./dist",

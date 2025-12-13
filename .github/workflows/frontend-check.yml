@@ -2,17 +2,14 @@ name: Frontend Check (tsc, lint, build)
 
 on:
   push:
-    paths:
+    paths: &check_paths
       - 'frontend/**'
       - 'cloud-function/src/lib/personalAccessToken.ts'
       - '.github/workflows/frontend-check.yml'
   pull_request:
     branches:
       - main
-    paths:
-      - 'frontend/**'
-      - 'cloud-function/src/lib/personalAccessToken.ts'
-      - '.github/workflows/frontend-check.yml'
+    paths: *check_paths
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -40,6 +37,10 @@ jobs:
 
       - name: Run lint
         run: yarn lint
+        working-directory: ./frontend
+
+      - name: Sync shared files
+        run: yarn sync:shared
         working-directory: ./frontend
 
       - name: Run build

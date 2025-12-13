@@ -1,5 +1,6 @@
-// ⚠️ This file is a copy of /frontend/src/utils/personalAccessToken.ts ⚠️
-// Keep both files in sync when making changes.
+// ⚠️ This file is the source for /frontend/src/utils/personalAccessToken.ts ⚠️
+// The frontend version is automatically generated during build.
+// After making changes here, run 'npm run sync:shared' in the frontend directory.
 
 const TOKEN_ID_DIGITS = 12;
 

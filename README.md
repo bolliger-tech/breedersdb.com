@@ -53,6 +53,28 @@ See the [cloud-function README](/cloud-function/README.md).
 
 See the [frontend README](/frontend/README.md).
 
+## Shared Files
+
+Some files need to be shared between the frontend and cloud-function. These files are automatically synchronized during the frontend build process.
+
+The source of truth for shared files is in the `cloud-function` directory. The frontend versions are automatically generated.
+
+To manually sync shared files:
+
+```bash
+cd frontend
+npm run sync:shared
+```
+
+To check if shared files are in sync:
+
+```bash
+cd frontend
+npm run sync:check
+```
+
+**Important**: When editing shared files, always edit the source version in the `cloud-function` directory, then run `npm run sync:shared` in the frontend directory.
+
 ## Format the files
 
 ```bash

@@ -1,4 +1,4 @@
-// ⚠️ This file is a copy of /frontend/src/utils/personalAccessToken.ts ⚠️
+// ⚠️ This file is a copy of /cloud-function/src/lib/personalAccessToken.ts ⚠️
 // Keep both files in sync when making changes.
 
 const TOKEN_ID_DIGITS = 12;

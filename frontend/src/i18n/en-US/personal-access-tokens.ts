@@ -5,6 +5,7 @@ export const personalAccessTokens = {
   fields: {
     expires: 'Expires',
     lastVerify: 'Last verify',
+    token: 'Token',
   },
 
   expiresHint: 'Leave empty for indefinite validity.',

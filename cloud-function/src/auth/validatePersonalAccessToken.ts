@@ -3,6 +3,8 @@ import { UserTokenQuery } from '../queries';
 import { fetchGraphQL } from '../lib/fetch';
 import { splitPersonalAccessToken } from '../lib/personalAccessToken';
 
+export const LOG_ACCESS_EVERY_SECONDS = 15;
+
 // validates requests using personal access tokens from Authorization header
 export async function validatePersonalAccessToken(
   authorizationHeader: string | undefined,

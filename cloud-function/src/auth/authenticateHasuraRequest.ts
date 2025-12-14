@@ -7,7 +7,10 @@ import {
 import { fetchGraphQL } from '../lib/fetch';
 import { RollTokenLastVerifyMutation } from '../queries';
 import { validateFrontendAuth } from './validateFrontendAuth';
-import { validatePersonalAccessToken } from './validatePersonalAccessToken';
+import {
+  LOG_ACCESS_EVERY_SECONDS,
+  validatePersonalAccessToken,
+} from './validatePersonalAccessToken';
 
 // authentication hook for hasura: decides if a request to hasura is allowed
 // https://hasura.io/docs/latest/auth/authentication/unauthenticated-access/
@@ -23,6 +26,13 @@ export async function authenticateHasuraRequest(
   // Try personal access token authentication first
   const patAuth = await validatePersonalAccessToken(authorization);
   if (patAuth) {
+    // update last_verify if needed
+    const secondsSinceLastVerify = getSecondsSince(patAuth.dbToken.last_verify);
+    if (secondsSinceLastVerify > LOG_ACCESS_EVERY_SECONDS) {
+      await updateLastVerify({
+        tokenId: patAuth.dbToken.id,
+      });
+    }
     return res.send({
       'X-Hasura-User-Id': patAuth.userId.toString(),
       'X-Hasura-Role': 'user',
@@ -50,19 +60,11 @@ export async function authenticateHasuraRequest(
 
   // roll cookie expiration forward
   try {
-    const secondsSinceLastVerify = Math.floor(
-      (Date.now() - new Date(auth.dbToken.last_verify).getTime()) / 1000,
-    );
+    const secondsSinceLastVerify = getSecondsSince(auth.dbToken.last_verify);
     if (secondsSinceLastVerify > ROLL_EVERY_SECONDS) {
-      const rollResultUser = await fetchGraphQL({
-        query: RollTokenLastVerifyMutation,
-        variables: {
-          token_id: auth.cookiePayload.tokenId,
-        },
-      }).then((data) => data?.data?.update_user_tokens_by_pk?.user);
-      if (!rollResultUser) {
-        throw new Error('RollTokenLastVerifyMutation failed');
-      }
+      const rollResultUser = await updateLastVerify({
+        tokenId: auth.cookiePayload.tokenId,
+      });
       const newCookies = createAuthCookies(
         auth.cookiePayload.tokenId,
         auth.cookiePayload.token,
@@ -79,4 +81,24 @@ export async function authenticateHasuraRequest(
     'X-Hasura-User-Id': auth.userId.toString(),
     'X-Hasura-Role': 'user',
   });
+}
+
+async function updateLastVerify({ tokenId }: { tokenId: number }) {
+  const resp = await fetchGraphQL({
+    query: RollTokenLastVerifyMutation,
+    variables: {
+      token_id: tokenId,
+    },
+  }).then((data) => data?.data?.update_user_tokens_by_pk?.user);
+  if (!resp) {
+    throw new Error('RollTokenLastVerifyMutation failed');
+  }
+  return resp;
+}
+
+function getSecondsSince(dateString: string | null): number {
+  if (!dateString) return Infinity;
+  const date = new Date(dateString);
+  const now = new Date();
+  return Math.floor((now.getTime() - date.getTime()) / 1000);
 }

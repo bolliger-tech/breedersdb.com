@@ -18,8 +18,13 @@ export const users = {
   },
   deleteConfirmation: 'Benutzer wirklich löschen?',
   changePassword: 'Passwort ändern',
-  changePasswordWarningOthers:
-    'Das Ändern des Passworts meldet den Benutzer sofort auf allen Geräten ab!',
-  changePasswordWarningMe:
-    'Das Ändern des Passworts wird dich sofort auf allen Geräten abmelden, einschliesslich diesem!',
+  changePasswordWarning: {
+    base: 'Mit der Änderung des Passworts:',
+    logoutMe:
+      'wirst du sofort auf allen Geräten abgemeldet, einschliesslich diesem',
+    logoutOthers: 'wird dieser User sofort auf allen Geräten abgemeldet',
+    deletePatMe: 'werden alle deine persönlichen Zugangs-Tokens gelöscht',
+    deletePatOthers:
+      'werden alle persönlichen Zugangs-Token für diesen User gelöscht',
+  },
 };

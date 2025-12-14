@@ -22,8 +22,12 @@ export const users = {
 
   deleteConfirmation: 'Are you sure you want to delete this user?',
   changePassword: 'Change Password',
-  changePasswordWarningOthers:
-    'Changing the password will immediately log out the user on all devices!',
-  changePasswordWarningMe:
-    'Changing the password will immediately log you out on all devices, including this one!',
+
+  changePasswordWarning: {
+    base: 'Changing the password will:',
+    logoutMe: 'immediately log you out on all devices, including this one',
+    logoutOthers: 'immediately log out the user on all devices',
+    deletePatMe: 'delete all your personal access tokens',
+    deletePatOthers: 'delete all personal access tokens for this user',
+  },
 };

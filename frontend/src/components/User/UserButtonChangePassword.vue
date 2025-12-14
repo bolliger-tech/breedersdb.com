@@ -31,13 +31,7 @@
             t('users.validation.invalidPassword'),
         ]"
       />
-      <BaseMessage type="warning" class="q-mt-xl q-mt-sm-lg">
-        {{
-          me?.id === userId
-            ? t('users.changePasswordWarningMe')
-            : t('users.changePasswordWarningOthers')
-        }}
-      </BaseMessage>
+      <UserPasswordChangeWarning :is-me="me?.id === userId" />
       <template #action-left><div /></template>
     </EntityModalContent>
   </q-dialog>
@@ -58,7 +52,7 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import { isValidPassword } from 'src/utils/validationUtils';
 import { useRouter } from 'vue-router';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
-import BaseMessage from 'src/components/Base/BaseMessage.vue';
+import UserPasswordChangeWarning from './UserPasswordChangeWarning.vue';
 
 export interface UserButtonChangePasswordProps {
   userId: number;

@@ -24,7 +24,7 @@
 import type { NamedColor, QIconProps } from 'quasar';
 import { type Slot, computed } from 'vue';
 
-export interface BaseWarningProps {
+export interface BaseMessageProps {
   type: 'warning' | 'error' | 'success' | 'info';
   icon?: QIconProps['name'];
   iconColor?: QIconProps['color'];
@@ -33,11 +33,11 @@ export interface BaseWarningProps {
   messageColor?: NamedColor;
 }
 
-const props = defineProps<BaseWarningProps>();
+const props = defineProps<BaseMessageProps>();
 defineSlots<{ default: Slot }>();
 
 type Defaults = {
-  [x in BaseWarningProps['type']]: Omit<BaseWarningProps, 'type'>;
+  [x in BaseMessageProps['type']]: Omit<BaseMessageProps, 'type'>;
 };
 
 const defaults: Defaults = {

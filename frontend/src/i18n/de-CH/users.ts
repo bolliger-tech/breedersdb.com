@@ -25,6 +25,6 @@ export const users = {
     logoutOthers: 'wird dieser User sofort auf allen Geräten abgemeldet',
     deletePatMe: 'werden alle deine persönlichen Zugangs-Tokens gelöscht',
     deletePatOthers:
-      'werden alle persönlichen Zugangs-Token für diesen User gelöscht',
+      'werden alle persönlichen Zugangs-Tokens für diesen User gelöscht',
   },
 };

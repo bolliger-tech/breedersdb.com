@@ -75,8 +75,8 @@ import { useI18n } from 'src/composables/useI18n';
 import EntityInputPassword from 'src/components/Entity/Edit/EntityInputPassword.vue';
 import { isValidPassword } from 'src/utils/validationUtils';
 import { useRoute } from 'vue-router';
-import BaseMessage from 'components/Base/BaseMessage.vue';
-import UserPasswordChangeWarning from 'components/User/UserPasswordChangeWarning.vue';
+import BaseMessage from 'src/components/Base/BaseMessage.vue';
+import UserPasswordChangeWarning from 'src/components/User/UserPasswordChangeWarning.vue';
 
 const { t } = useI18n();
 const route = useRoute();

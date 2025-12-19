@@ -95,14 +95,49 @@ echo "Starting backend..."
 docker-compose -f "$SKRIPT_DIR/backend/docker-compose.yaml" up -d
 echo "Backend started."
 
+echo "Starting cloud-function..."
+docker-compose -f "$SKRIPT_DIR/cloud-function/docker-compose.yaml" up -d
+echo "Cloud-function started."
+
 echo "Waiting for backend to be ready..."
 while ! curl -s -f -o /dev/null http://localhost:8080/v1/graphql; do
   sleep 1;
 done
 echo "Backend is ready."
 
+echo "Waiting for cloud-function to be ready..."
+while ! curl -s -f -o /dev/null http://localhost:8090/health; do
+  sleep 1;
+done
+echo "Cloud-function is ready."
+
+if ! curl -s -f -o /dev/null http://localhost/api/hasura/v1/graphql; then
+  echo "Backend needs a second start..."
+  docker-compose -f "$SKRIPT_DIR/backend/docker-compose.yaml" up -d
+  echo "Backend started."
+
+  echo "Waiting for backend to be ready..."
+  while ! curl -s -f -o /dev/null http://localhost/api/hasura/v1/graphql; do
+    sleep 1;
+  done
+  echo "Backend is ready."
+fi
+
 echo "Reloading hasura metadata..."
 $(cd "$SKRIPT_DIR/backend" && hasura metadata reload --skip-update-check)
 echo "Hasura metadata reloaded."
+
+if ! command -v jq &> /dev/null; then
+  echo "jq could not be found, please install it to proceed."
+  exit 1
+fi
+
+echo "Inserting test user..."
+curl http://localhost/api/hasura/v1/graphql \
+  -H 'x-hasura-admin-secret: changeForProduction' \
+  -H 'content-type: application/json' \
+  --data-raw '{"query":"mutation InsertUser { InsertUser( object: { email: \"tester@breedersdb.com\", password: \"Asdfasdf.1\" } ) { email } }"}' \
+  | jq -e .data.InsertUser.email > /dev/null
+echo "Test user inserted."
 
 echo "Done."

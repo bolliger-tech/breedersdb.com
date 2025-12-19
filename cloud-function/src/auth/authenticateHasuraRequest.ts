@@ -24,8 +24,12 @@ export async function authenticateHasuraRequest(
   const operationName = req.body.request?.operationName;
 
   // Try personal access token authentication first
-  const patAuth = await validatePersonalAccessToken(authorization);
-  if (patAuth) {
+  if (authorization) {
+    const patAuth = await validatePersonalAccessToken(authorization);
+    if (!patAuth) {
+      return res.status(401).send('Unauthorized: Invalid token!');
+    }
+
     // update last_verify if needed
     const secondsSinceLastVerify = getSecondsSince(patAuth.dbToken.last_verify);
     if (secondsSinceLastVerify > LOG_ACCESS_EVERY_SECONDS) {

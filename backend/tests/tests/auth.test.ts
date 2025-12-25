@@ -757,16 +757,14 @@ describe('personal access tokens', () => {
       { Authorization: 'Bearer ' + pat2.token },
     );
     expect(json.errors).not.toBe(undefined);
-    expect(json.errors[0]?.extensions?.code).toBe(401);
-    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.errors[0]?.extensions?.code).toBe('access-denied');
     expect(json.data).toBe(undefined);
   });
 
   test('fail to get me without bearer in header', async () => {
     const json = await post({ query: meQuery }, { Authorization: pat1.token });
     expect(json.errors).not.toBe(undefined);
-    expect(json.errors[0]?.extensions?.code).toBe(401);
-    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.errors[0]?.extensions?.code).toBe('access-denied');
     expect(json.data).toBe(undefined);
   });
 
@@ -776,8 +774,7 @@ describe('personal access tokens', () => {
       { Authorization: 'Bearer' + pat1.token },
     );
     expect(json.errors).not.toBe(undefined);
-    expect(json.errors[0]?.extensions?.code).toBe(401);
-    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.errors[0]?.extensions?.code).toBe('access-denied');
     expect(json.data).toBe(undefined);
   });
 
@@ -813,8 +810,7 @@ describe('personal access tokens', () => {
       { Authorization: 'Bearer ' + invalid },
     );
     expect(json.errors).not.toBe(undefined);
-    expect(json.errors[0]?.extensions?.code).toBe(401);
-    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.errors[0]?.extensions?.code).toBe('access-denied');
     expect(json.data).toBe(undefined);
   });
 
@@ -825,8 +821,7 @@ describe('personal access tokens', () => {
       { Authorization: 'Bearer ' + invalid },
     );
     expect(json.errors).not.toBe(undefined);
-    expect(json.errors[0]?.extensions?.code).toBe(401);
-    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.errors[0]?.extensions?.code).toBe('access-denied');
     expect(json.data).toBe(undefined);
   });
 
@@ -837,8 +832,7 @@ describe('personal access tokens', () => {
       { Authorization: 'Bearer ' + invalid },
     );
     expect(json.errors).not.toBe(undefined);
-    expect(json.errors[0]?.extensions?.code).toBe(401);
-    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.errors[0]?.extensions?.code).toBe('access-denied');
     expect(json.data).toBe(undefined);
   });
 
@@ -849,8 +843,7 @@ describe('personal access tokens', () => {
       { Authorization: 'Bearer ' + invalid },
     );
     expect(json.errors).not.toBe(undefined);
-    expect(json.errors[0]?.extensions?.code).toBe(401);
-    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.errors[0]?.extensions?.code).toBe('access-denied');
     expect(json.data).toBe(undefined);
   });
 
@@ -861,8 +854,7 @@ describe('personal access tokens', () => {
       { Authorization: 'Bearer ' + invalid },
     );
     expect(json.errors).not.toBe(undefined);
-    expect(json.errors[0]?.extensions?.code).toBe(401);
-    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.errors[0]?.extensions?.code).toBe('access-denied');
     expect(json.data).toBe(undefined);
   });
 
@@ -873,8 +865,7 @@ describe('personal access tokens', () => {
       { Authorization: 'Bearer ' + invalid },
     );
     expect(json.errors).not.toBe(undefined);
-    expect(json.errors[0]?.extensions?.code).toBe(401);
-    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.errors[0]?.extensions?.code).toBe('access-denied');
     expect(json.data).toBe(undefined);
   });
 
@@ -898,8 +889,7 @@ describe('personal access tokens', () => {
       { Authorization: 'Bearer ' + pat1.token },
     );
     expect(json.errors).not.toBe(undefined);
-    expect(json.errors[0]?.extensions?.code).toBe(401);
-    expect(json.errors[0]?.message).toBe('Unauthorized');
+    expect(json.errors[0]?.extensions?.code).toBe('access-denied');
     expect(json.data).toBe(undefined);
   });
 

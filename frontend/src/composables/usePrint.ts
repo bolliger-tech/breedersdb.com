@@ -1,6 +1,6 @@
 import { onBeforeUnmount } from 'vue';
 import { useFetch } from './useFetch';
-import { Notify } from 'quasar';
+import { Notify, Dialog, SessionStorage } from 'quasar';
 import { useI18n } from './useI18n';
 
 const PRINT_SERVICE_URL = import.meta.env.VITE_PRINT_SERVICE_URL;
@@ -8,15 +8,15 @@ const PRINTERS_ENDPOINT = '/printers';
 const PRINT_ENDPOINT = '/print';
 const HEALTH_ENDPOINT = '/health';
 const TIMEOUT_MS = 3000;
+const SELECTED_PRINTER_KEY = 'breedersdb-selected-printer-id';
 
 const PASSTHROUGH_MARKER_TEMPLATE = '${%s}$';
 
 type Printer = {
   id: string;
-  name: string;
-  type: 'driver' | 'serial';
-  path: string;
-  baud?: number | undefined | null;
+  status: string;
+  description: string;
+  connectionType: string;
 };
 
 export function usePrint() {
@@ -89,19 +89,12 @@ function useBridgePrint(url: string) {
     return res.json() as Promise<Printer[]>;
   }
 
-  async function print(str: string) {
-    const firstDriverPrinter = (await getPrinters()).find(
-      (p) => p.type === 'driver',
-    );
-    if (!firstDriverPrinter) {
-      throw new Error('No printer available of type driver found');
-    }
-
+  async function print(str: string, printerId: string) {
     const resp = await fetchWithTimeout(baseUrl + PRINT_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'text/plain',
-        'X-Printer-Id': firstDriverPrinter.id,
+        'X-Printer-Id': printerId,
       },
       body: str,
       timeout: TIMEOUT_MS,
@@ -125,12 +118,78 @@ function useBridgePrint(url: string) {
     }
   }
 
+  async function selectPrinter(): Promise<Printer | null> {
+    const printers = await getPrinters();
+    if (printers.length === 0) {
+      throw new Error('No printers available');
+    }
+    if (printers.length === 1) {
+      return printers.pop() as Printer;
+    }
+    if (SessionStorage.has(SELECTED_PRINTER_KEY)) {
+      const storedId = SessionStorage.getItem<string>(SELECTED_PRINTER_KEY);
+      const storedPrinter = printers.find((p) => p.id === storedId);
+      if (storedPrinter) {
+        return storedPrinter;
+      }
+    }
+
+    const choice = await new Promise<string | null>((resolve) => {
+      Dialog.create({
+        title: t('print.selectPrinter'),
+        options: {
+          type: 'radio',
+          model: 'printerId',
+          items: printers.map((p) => ({
+            label: `${p.id} (${p.status})`,
+            value: p.id,
+          })),
+        },
+        cancel: true,
+        persistent: true,
+      })
+        .onOk((data) => {
+          resolve(data);
+        })
+        .onCancel(() => {
+          resolve(null);
+        });
+    });
+
+    const printer = printers.find((p) => p.id === choice) || null;
+
+    if (!printer) {
+      throw new Error('Printer selection failed');
+    }
+
+    SessionStorage.set(SELECTED_PRINTER_KEY, printer.id);
+
+    return printer;
+  }
+
   async function printWithUserFeedback(str: string) {
+    let printer: Printer | null = null;
     try {
-      await print(str);
+      printer = await selectPrinter();
+    } catch (error) {
+      Notify.create({
+        type: 'negative',
+        message: t('print.failure', {
+          error: error instanceof Error ? error.message : String(error),
+        }),
+      });
+      return;
+    }
+
+    if (!printer) {
+      return;
+    }
+
+    try {
+      await print(str, printer.id);
       Notify.create({
         type: 'positive',
-        message: t('print.success'),
+        message: t('print.success', { printer: printer.id }),
       });
     } catch (error) {
       const healthy = await bridgeIsHealthy();

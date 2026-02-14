@@ -22,6 +22,7 @@ import { entity } from './entity';
 import { analyze } from './analyze';
 import { pwa } from './pwa';
 import { settings } from './settings';
+import { info } from './info';
 import { personalAccessTokens } from './personal-access-tokens';
 
 const messages = {
@@ -31,6 +32,7 @@ const messages = {
   auth,
   pwa,
   settings,
+  info,
   personalAccessTokens,
 
   entity,

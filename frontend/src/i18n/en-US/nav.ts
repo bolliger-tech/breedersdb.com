@@ -27,5 +27,6 @@ export const nav = {
     logout: 'Logout',
     reload: 'Update & Restart',
     access: 'Access Control',
+    info: 'Info',
   },
 };

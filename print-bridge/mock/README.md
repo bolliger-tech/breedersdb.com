@@ -17,7 +17,7 @@ A super lightweight mock HTTP server for testing printer integrations. No extern
 ### Run
 
 ```sh
-cd mock
+cd print-bridge/mock
 npm run start
 ```
 

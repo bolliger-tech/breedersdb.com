@@ -172,6 +172,10 @@ function onFormChange(data: PartialWithUndefined<InsertVariables['entity']>) {
 
 const validating = ref(false);
 
+const hasSomethingToSave = computed(
+  () => !!editedData.value || !!insertData.value,
+);
+
 async function save() {
   validating.value = true;
   const isValid = await formRef.value?.validate();
@@ -182,6 +186,11 @@ async function save() {
     return Promise.reject(
       new HandledError('Validation failed: Invalid form fields'),
     );
+  }
+
+  if (!hasSomethingToSave.value) {
+    await cancel();
+    return;
   }
 
   if ('id' in props.entity) {

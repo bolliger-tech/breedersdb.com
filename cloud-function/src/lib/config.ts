@@ -37,9 +37,22 @@ if (!process.env.EMAIL_FROM) {
   throw new Error('EMAIL_FROM is not set');
 }
 
+// Max number of retries for fetchGraphQL when Hasura endpoint is unavailable or returns invalid JSON
+const FETCH_HASURA_RETRIES = parseInt(
+  process.env.FETCH_HASURA_RETRIES || '5',
+  10,
+);
+// Initial delay for retries in ms, will be multiplied by 2^attempt
+const FETCH_HASURA_INITIAL_DELAY_MS = parseInt(
+  process.env.FETCH_HASURA_INITIAL_DELAY_MS || '1000',
+  10,
+);
+
 export const config = {
   HASURA_GRAPHQL_URL: process.env.HASURA_GRAPHQL_URL,
   HASURA_GRAPHQL_ADMIN_SECRET: process.env.HASURA_GRAPHQL_ADMIN_SECRET,
+  FETCH_HASURA_RETRIES,
+  FETCH_HASURA_INITIAL_DELAY_MS,
   CLOUD_FUNCTION_SECRET: process.env.CLOUD_FUNCTION_SECRET,
   CLOUD_FUNCTION_URL: process.env.CLOUD_FUNCTION_URL,
   PASSWORD_RESET_SECRET: process.env.PASSWORD_RESET_SECRET,

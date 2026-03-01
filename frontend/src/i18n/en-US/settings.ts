@@ -1,12 +1,13 @@
 export const settings = {
   title: 'Settings',
-  subtitle:
-    'Currently this page is informational only. In case of bug reports, please send a screenshot of this page to the developer.',
-  userAgent: 'User agent',
-  version: 'Version',
-  user: 'User',
-  origin: 'Origin',
-  timestamp: 'Timestamp',
-  standalone: 'Standalone mode',
-  serviceWorker: 'Service worker',
+  print: {
+    title: 'Printing',
+    qrLabelTemplate: 'QR Label Template',
+    textLabelTemplate: 'Text Label Template',
+    labelTemplateHint: 'ZPL with placeholders.',
+    bridgeUrl: 'Print Bridge URL',
+    selectPrinter: 'Select Printer',
+    noPrintBridge:
+      'Print Bridge is not configured. Using system print dialog instead.',
+  },
 };

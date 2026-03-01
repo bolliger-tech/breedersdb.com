@@ -117,7 +117,7 @@ import BaseSpriteIcon from 'src/components/Base/BaseSpriteIcon/BaseSpriteIcon.vu
 import type { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 import BaseErrorTooltip from 'src/components/Base/BaseErrorTooltip.vue';
 import type { Slot } from 'vue';
-import { usePrint } from 'src/composables/usePrint';
+import { usePrint } from 'src/composables/print/usePrint';
 
 export interface EntityModalContentProps {
   title?: string | undefined;

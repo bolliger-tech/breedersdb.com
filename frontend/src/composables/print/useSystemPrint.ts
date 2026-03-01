@@ -1,6 +1,14 @@
 import { onBeforeUnmount } from 'vue';
+import {
+  PRINT_SERVICE_TYPE_SYSTEM,
+  type UsePrintResultCommon,
+} from './usePrint';
 
-export function usePrint() {
+const PASSTHROUGH_MARKER_TEMPLATE = '${%s}$';
+
+export function useSystemPrint(): UsePrintResultCommon & {
+  type: typeof PRINT_SERVICE_TYPE_SYSTEM;
+} {
   let frame: HTMLIFrameElement | null = null;
 
   function removeFrame() {
@@ -23,7 +31,7 @@ export function usePrint() {
       ) +
       '%3C%2Fscript%3E' + // /script tag. vue parser fails if not encoded here
       encodeURIComponent('</head><body>') +
-      encodeURIComponent(str) +
+      encodeURIComponent(wrapPassthroughMarker(str)) +
       encodeURIComponent('</body></html>');
     frame = document.body.appendChild(document.createElement('iframe'));
     frame.style.display = 'none';
@@ -39,6 +47,11 @@ export function usePrint() {
   onBeforeUnmount(removeFrame);
 
   return {
+    type: PRINT_SERVICE_TYPE_SYSTEM,
     print,
   };
+}
+
+function wrapPassthroughMarker(str: string) {
+  return PASSTHROUGH_MARKER_TEMPLATE.replace('%s', str);
 }

@@ -331,6 +331,11 @@ const navDefinition = computed<NavDefinitionItem[]>(() => [
           },
         },
       },
+      {
+        label: t('nav.more.info'),
+        icon: 'info',
+        to: '/info',
+      },
     ],
   },
 ]);

@@ -46,6 +46,7 @@ export const base = {
   print: 'Drucken',
   error: 'Fehler',
   required: 'Zwingend',
+  readonly: 'Schreibgeschützt',
   savedButPrintingFailed:
     'Daten erfolgreich gespeichert, aber Etikette konnte nicht gedruckt werden.',
   detailsInConsole: 'Siehe Konsole für Details.',
@@ -98,4 +99,5 @@ export const base = {
     title: 'Gerade gepflanzt, wächst noch…',
     message: 'Diese Funktion wird bald verfügbar sein.',
   },
+  copiedToClipboard: 'In Zwischenablage kopiert',
 };

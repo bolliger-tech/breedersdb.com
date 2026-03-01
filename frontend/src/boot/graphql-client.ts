@@ -31,6 +31,7 @@ export function createUrqlClient() {
   const retryOptions = {
     initialDelayMs: 50,
     randomDelay: false,
+    maxNumberAttempts: 5,
   };
 
   const loadingBarTriggers: MapExchangeOpts = {

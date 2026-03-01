@@ -18,14 +18,16 @@ fi
 # POST username and password to the server
   #-d '{"email": "'$email'", "password": "'$password'"}' \
 response=$(curl -X POST \
+  --fail-with-body \
+  -sS \
   -H "Content-Type: application/json" \
   -d '{"query":"mutation SignIn {SignIn(email: \"'$email'\", password: \"'$password'\") {id}}"}' \
   -i \
-  -s \
   http://localhost/api/hasura/v1/graphql)
 
-# Extract the token from the response headers
+# Extract token and user from the response headers
 token=$(echo "$response" | grep -i 'Set-Cookie: breedersdb.id.token=' | awk -F'=' '{print $2}' | awk -F';' '{print $1}')
+user=$(echo "$response" | grep -i 'Set-Cookie: breedersdb.user=' | awk -F'=' '{print $2}' | awk -F';' '{print $1}')
 
 if [ -z "$token" ]; then
   echo "Error: No token received from the server"
@@ -38,8 +40,10 @@ echo "Trying to run a query with the token..."
 
 # run graphql query
 curl -X POST \
+  --fail-with-body \
+  -sS \
   -H "Content-Type: application/json" \
-  -H "Cookie: breedersdb.id.token=$token" \
+  -H "Cookie: breedersdb.id.token=$token; breedersdb.user=$user" \
   -d '{"query":"query GetCrossings {crossings {id name created}}"}' \
   http://localhost/api/hasura/v1/graphql
 
@@ -47,8 +51,10 @@ echo
 echo "Me"
 
 curl -X POST \
+  --fail-with-body \
+  -sS \
   -H "Content-Type: application/json" \
-  -H "Cookie: breedersdb.id.token=$token" \
+  -H "Cookie: breedersdb.id.token=$token; breedersdb.user=$user" \
   -d '{"query":"query Me {Me {id user{id email locale created}}}"}' \
   http://localhost/api/hasura/v1/graphql
 
@@ -58,10 +64,11 @@ echo "Creating Personal Access Token..."
 
 pat_name="test-$(date +%s)"
 response=$(curl -X POST \
+  --fail-with-body \
+  -sS \
   -H "Content-Type: application/json" \
-  -H "Cookie: breedersdb.id.token=$token" \
+  -H "Cookie: breedersdb.id.token=$token; breedersdb.user=$user" \
   -d '{"query":"mutation CreatePersonalAccessToken {CreatePersonalAccessToken(object: {name: \"'$pat_name'\"}) { token }}"}' \
-  -s \
   http://localhost/api/hasura/v1/graphql
 )
 
@@ -71,6 +78,8 @@ echo
 echo "Testing Personal Access Token"
 
 curl -X POST \
+  --fail-with-body \
+  -sS \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $pat" \
   -d '{"query":"query Me {Me {id user{id email locale created}}}"}' \
@@ -80,14 +89,16 @@ echo
 echo "Deleting Personal Access Token..."
 
 response=$(curl -X POST \
+  --fail-with-body \
+  -sS \
   -H "Content-Type: application/json" \
-  -H "Cookie: breedersdb.id.token=$token" \
+  -H "Cookie: breedersdb.id.token=$token; breedersdb.user=$user" \
   -d '{"query":"mutation DeletePersonalAccessToken {delete_user_tokens(where: {name: {_eq: \"'$pat_name'\"}, type: {_eq: \"pat\"}}) {affected_rows}}"}' \
-  -s \
   http://localhost/api/hasura/v1/graphql
 )
 
-if [[ $(echo "$response" | jq .data.delete_user_tokens.affected_rows) -gt 0 ]]; then
+affected_rows=$(echo "$response" | jq -r '.data.delete_user_tokens.affected_rows // 0')
+if [[ "$affected_rows" -gt 0 ]]; then
   echo "Personal Access Token deleted successfully."
 else
   echo "Failed to delete Personal Access Token."
@@ -99,7 +110,9 @@ echo "Trying to sign out..."
 
 # sign out
 curl -X POST \
+  --fail-with-body \
+  -sS \
   -H "Content-Type: application/json" \
-  -H "Cookie: breedersdb.id.token=$token" \
+  -H "Cookie: breedersdb.id.token=$token; breedersdb.user=$user" \
   -d '{"query":"mutation SignOut {SignOut {user_id}}"}' \
   http://localhost/api/hasura/v1/graphql

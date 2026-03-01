@@ -34,7 +34,7 @@
         disable
         required
         :hint="`${t('base.readonly')}.`"
-        @click="copyToClipboard(qrLabelTemplate)"
+        @click="copyToClipboard(printBridgeUrl)"
       />
       <q-btn
         :label="t('settings.print.selectPrinter')"

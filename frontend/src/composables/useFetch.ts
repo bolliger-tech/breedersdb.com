@@ -25,13 +25,15 @@ export function useFetch() {
     const controller = new AbortController();
     const timer = registerTimeout(() => controller.abort(), timeout);
 
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
-
-    removeTimeout(timer);
-
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+    } finally {
+      removeTimeout(timer);
+    }
     return response;
   }
 

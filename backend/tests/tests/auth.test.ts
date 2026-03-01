@@ -124,13 +124,9 @@ const deletePersonalAccessTokenMutation = /* GraphQL */ `
 //   to: 'breedersdb.user={"email":"tester@breedersdb.com"}; breedersdb.id.token=9.d433bc46cf9629d9b351188ca113f0b0003811e781e207fa3542a5702d924183'
 const cookieReqHeaderFromRespHeader = (cookies: string) =>
   cookies
-    .split(',')
-    .map((c) =>
-      c
-        .split(';')
-        .map((c) => c.trim())
-        .filter((c) => c.startsWith('breedersdb')),
-    )
+    .split(/,\s*(?=breedersdb\.)/)
+    .map((cookie) => cookie.split(';')[0]?.trim())
+    .filter((cookie) => cookie?.startsWith('breedersdb.'))
     .join('; ');
 
 // ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️

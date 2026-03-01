@@ -18,7 +18,7 @@ export async function authenticateHasuraRequest(
   req: ff.Request,
   res: ff.Response,
 ) {
-  const cookies = req.body.headers.Cookie || req.body.headers.cookie;
+  const requestCookies = req.body.headers.Cookie || req.body.headers.cookie;
   const authorization =
     req.body.headers.Authorization || req.body.headers.authorization;
   const operationName = req.body.request?.operationName;
@@ -44,11 +44,11 @@ export async function authenticateHasuraRequest(
   }
 
   // Fall back to cookie-based authentication
-  const auth = await validateFrontendAuth(cookies);
+  const auth = await validateFrontendAuth(requestCookies);
   if (!auth) {
     // allow SignIn in any case
     if (operationName !== 'SignIn') {
-      const cookiePayload = getTokenFromCookies(cookies);
+      const cookiePayload = getTokenFromCookies(requestCookies);
       if (cookiePayload) {
         // cookie with token is present but invalid
         // unfortunately, the Set-Cookie header is only forwarded by hasura

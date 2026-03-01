@@ -64,3 +64,35 @@ export function getTokenFromCookies(cookies: string | undefined) {
 
   return tokenId && token ? { tokenId, token } : null;
 }
+
+export function getUserFromCookies(
+  cookies: string | undefined,
+): { id: number; email: string } | null {
+  if (!cookies) {
+    return null;
+  }
+
+  const user = cookies
+    .split(';')
+    .find((c) => c.trim().startsWith(`${FE_COOKIE_NAME}=`));
+
+  if (!user) {
+    return null;
+  }
+
+  const userJson = user.split('=')[1];
+  try {
+    const data = JSON.parse(userJson);
+    if (
+      typeof data === 'object' &&
+      data !== null &&
+      'id' in data &&
+      'email' in data
+    ) {
+      return { id: parseInt(data.id, 10), email: data.email };
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+}

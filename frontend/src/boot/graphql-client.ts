@@ -13,6 +13,74 @@ import { LoadingBar } from 'quasar';
 // must match with cloud-function/src/lib/cookies.ts
 const FE_COOKIE_NAME = 'breedersdb.user';
 
+/**
+ * GraphQL introspection query to wake up the server.
+ * This is a lightweight query used to ensure the server is responsive.
+ */
+const WAKEUP_QUERY = `query IntrospectionQuery {
+  __schema {
+    types {
+      name
+    }
+  }
+}`;
+
+/**
+ * Creates a custom fetch function that wakes up the server before sending
+ * non-idempotent requests after inactivity.
+ *
+ * The GraphQL server shuts down
+ * after ~15 minutes of inactivity and may fail on the first request after
+ * rebooting. This function sends a lightweight introspection query to wake
+ * up the server before sending mutations if the last request was more than
+ * 5 minutes ago. Queries are not affected since they are idempotent and can
+ * be retried by the user if they fail.
+ */
+function fetchWithWakeUp() {
+  let lastRequestTime = Date.now();
+  const INACTIVITY_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+
+  return async (uri: string | URL | Request, options?: RequestInit) => {
+    const timeSinceLastRequest = Date.now() - lastRequestTime;
+    lastRequestTime = Date.now();
+
+    const requestBody = options?.body;
+
+    // Requests without a string body are no mutations
+    if (typeof requestBody !== 'string') {
+      return fetch(uri, options);
+    }
+
+    const bodyObj = JSON.parse(requestBody);
+    const query = bodyObj.query || '';
+    const isMutation = query.trim().startsWith('mutation');
+
+    if (!isMutation) {
+      return fetch(uri, options);
+    }
+
+    // For mutations after 5+ minutes of inactivity, wake up the server first
+    if (isMutation && timeSinceLastRequest >= INACTIVITY_THRESHOLD) {
+      try {
+        await fetch(uri, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: WAKEUP_QUERY }),
+        });
+      } catch (error) {
+        console.warn(
+          'Wake-up query failed, but proceeding with original request',
+          error,
+        );
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+
+    // Send the actual request
+    return fetch(uri, options);
+  };
+}
+
 function startLoadingBar() {
   LoadingBar.start();
 }
@@ -62,6 +130,7 @@ export function createUrqlClient() {
 
   return new Client({
     url: '/api/hasura/v1/graphql',
+    fetch: fetchWithWakeUp(),
     exchanges: [
       requestPolicyExchange({
         ttl: 15 * 60 * 1000, // 15 minutes -- in the field, internet may be slow

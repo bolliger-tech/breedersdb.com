@@ -163,6 +163,10 @@ export function useBridgePrint(url: string): UsePrintResultCommon & {
         });
     });
 
+    if (!choice) {
+      return null;
+    }
+
     printer = printers.find((p) => p.id === choice) || null;
 
     if (!printer) {
@@ -180,6 +184,9 @@ export function useBridgePrint(url: string): UsePrintResultCommon & {
       printer = await getSelectedPrinter();
       if (!printer) {
         printer = await selectPrinter();
+      }
+      if (!printer) {
+        return;
       }
     } catch (error) {
       Notify.create({

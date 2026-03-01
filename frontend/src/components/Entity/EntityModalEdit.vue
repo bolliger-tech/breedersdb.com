@@ -81,7 +81,7 @@ import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { useCancel } from 'src/composables/useCancel';
 import type { SpriteIcons } from '../Base/BaseSpriteIcon/types';
 import type { TadaDocumentNode } from 'gql.tada';
-import { usePrint } from 'src/composables/usePrint';
+import { usePrint } from 'src/composables/print/usePrint';
 import { captureException } from '@sentry/browser';
 import { useQuasar } from 'quasar';
 import type { PartialWithUndefined } from 'src/utils/typescriptUtils';

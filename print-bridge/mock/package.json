@@ -1,0 +1,9 @@
+{
+  "name": "print-bridge-mock-server",
+  "version": "0.1.0",
+  "description": "Super lightweight mock server for printers testing",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  }
+}

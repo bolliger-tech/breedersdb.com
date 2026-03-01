@@ -50,6 +50,7 @@ export const base = {
 
   error: 'Error',
   required: 'Required',
+  readonly: 'Read-only',
   savedButPrintingFailed: 'Successfully saved data, but failed to print label.',
   detailsInConsole: 'See console for details.',
 
@@ -108,4 +109,6 @@ export const base = {
     title: 'Just planted, still growing…',
     message: 'This feature will soon be available.',
   },
+
+  copiedToClipboard: 'Copied to clipboard',
 };

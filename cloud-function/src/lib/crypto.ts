@@ -8,11 +8,14 @@ const JWT_ALG = 'HS256';
 export async function hashAndSaltPassword(password: string): Promise<string> {
   await sodium.ready;
 
-  return sodium.crypto_pwhash_str(
+  const hash = sodium.crypto_pwhash_str(
     password,
     sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
     sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
   );
+
+  // See https://github.com/jedisct1/libsodium.js/issues/364
+  return typeof hash === 'string' ? hash : sodium.to_string(hash);
 }
 
 export async function verifyPassword(

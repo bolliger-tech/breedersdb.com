@@ -1,16 +1,18 @@
-import { onBeforeUnmount } from 'vue';
-import { useFetch } from './useFetch';
-import { Notify, Dialog, SessionStorage } from 'quasar';
-import { useI18n } from './useI18n';
+import { computed, ref } from 'vue';
+import { useFetch } from '../useFetch';
+import { Notify, Dialog, LocalStorage } from 'quasar';
+import { useI18n } from '../useI18n';
+import {
+  PRINT_SERVICE_TYPE_BRIDGE,
+  type UsePrintResultCommon,
+} from './usePrint';
 
-const PRINT_SERVICE_URL = import.meta.env.VITE_PRINT_SERVICE_URL;
 const PRINTERS_ENDPOINT = '/printers';
 const PRINT_ENDPOINT = '/print';
 const HEALTH_ENDPOINT = '/health';
 const TIMEOUT_MS = 3000;
 const SELECTED_PRINTER_KEY = 'breedersdb-selected-printer-id';
-
-const PASSTHROUGH_MARKER_TEMPLATE = '${%s}$';
+const CACHE_PRINTERS_FOR_MS = 1000;
 
 type Printer = {
   id: string;
@@ -19,74 +21,74 @@ type Printer = {
   connectionType: string;
 };
 
-export function usePrint() {
-  const { print } = PRINT_SERVICE_URL
-    ? useBridgePrint(PRINT_SERVICE_URL)
-    : useSystemPrint();
-
-  return {
-    print,
-  };
-}
-
-function useSystemPrint() {
-  let frame: HTMLIFrameElement | null = null;
-
-  function removeFrame() {
-    if (frame) {
-      document.body.removeChild(frame);
-      frame = null;
-    }
-  }
-
-  function print(str: string) {
-    if (frame) document.body.removeChild(frame);
-    const content =
-      encodeURIComponent('<html><head>') +
-      '%3Cscript%3E' + // script tag. vue parser fails if not encoded here
-      encodeURIComponent(
-        // !!! DO NOT CHANGE !!!
-        // or you will have to adapt the CSP hash
-        // see dev-nginx.conf AND deployment repo
-        'window.onload = () => { console.info("print", document.body.textContent); window.print(); }',
-      ) +
-      '%3C%2Fscript%3E' + // /script tag. vue parser fails if not encoded here
-      encodeURIComponent('</head><body>') +
-      encodeURIComponent(wrapPassthroughMarker(str)) +
-      encodeURIComponent('</body></html>');
-    frame = document.body.appendChild(document.createElement('iframe'));
-    frame.style.display = 'none';
-    frame.src = 'data:text/html;charset=utf-8,' + content;
-    return new Promise<void>((resolve) => {
-      window.setTimeout(() => {
-        removeFrame();
-        resolve();
-      }, 1000);
-    });
-  }
-
-  onBeforeUnmount(removeFrame);
-
-  return {
-    print,
-  };
-}
-
-function wrapPassthroughMarker(str: string) {
-  return PASSTHROUGH_MARKER_TEMPLATE.replace('%s', str);
-}
-
-function useBridgePrint(url: string) {
+export function useBridgePrint(url: string): UsePrintResultCommon & {
+  type: typeof PRINT_SERVICE_TYPE_BRIDGE;
+  selectPrinter: () => Promise<Printer | null>;
+} {
   const { fetchWithTimeout } = useFetch();
   const { t } = useI18n();
+  const printersCache: { printers: Printer[] | null; timestamp: number } = {
+    printers: null,
+    timestamp: 0,
+  };
+
+  // Initialize from LocalStorage
+  const selectedPrinterIdRef = ref<string | null>(
+    LocalStorage.has(SELECTED_PRINTER_KEY)
+      ? LocalStorage.getItem<string>(SELECTED_PRINTER_KEY) || null
+      : null,
+  );
+
+  const selectedPrinterId = computed({
+    get() {
+      return selectedPrinterIdRef.value;
+    },
+    set(value: string | null) {
+      selectedPrinterIdRef.value = value;
+      if (value) {
+        LocalStorage.set(SELECTED_PRINTER_KEY, value);
+      } else {
+        LocalStorage.remove(SELECTED_PRINTER_KEY);
+      }
+    },
+  });
 
   const baseUrl = url.replace(/\/+$/, ''); // remove trailing slashes
 
   async function getPrinters() {
+    const now = Date.now();
+    if (
+      printersCache.printers &&
+      now - printersCache.timestamp < CACHE_PRINTERS_FOR_MS
+    ) {
+      return printersCache.printers;
+    }
     const res = await fetchWithTimeout(baseUrl + PRINTERS_ENDPOINT, {
       timeout: TIMEOUT_MS,
     });
-    return res.json() as Promise<Printer[]>;
+    if (!res.ok) {
+      throw new Error(
+        `Failed to fetch printers with status ${res.status}: ${await res.text()}`,
+      );
+    }
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+      throw new Error('Invalid printers response: expected an array');
+    }
+    if (
+      !data.every(
+        (item) =>
+          typeof item.id === 'string' && typeof item.status === 'string',
+      )
+    ) {
+      throw new Error(
+        'Invalid printers response: each printer must have an id and status string',
+      );
+    }
+    const printers = data as Printer[];
+    printersCache.printers = printers;
+    printersCache.timestamp = now;
+    return printers;
   }
 
   async function print(str: string, printerId: string) {
@@ -118,28 +120,33 @@ function useBridgePrint(url: string) {
     }
   }
 
+  async function getSelectedPrinter(): Promise<Printer | null> {
+    const printers = await getPrinters();
+    if (selectedPrinterId.value) {
+      return printers.find((p) => p.id === selectedPrinterId.value) || null;
+    }
+    return null;
+  }
+
   async function selectPrinter(): Promise<Printer | null> {
     const printers = await getPrinters();
     if (printers.length === 0) {
-      throw new Error('No printers available');
+      Dialog.create({
+        title: t('print.noPrintersAvailable'),
+        message: t('print.noPrintersAvailableMessage'),
+        ok: true,
+      });
+      return null;
     }
-    if (printers.length === 1) {
-      return printers.pop() as Printer;
-    }
-    if (SessionStorage.has(SELECTED_PRINTER_KEY)) {
-      const storedId = SessionStorage.getItem<string>(SELECTED_PRINTER_KEY);
-      const storedPrinter = printers.find((p) => p.id === storedId);
-      if (storedPrinter) {
-        return storedPrinter;
-      }
-    }
+
+    let printer = await getSelectedPrinter();
 
     const choice = await new Promise<string | null>((resolve) => {
       Dialog.create({
         title: t('print.selectPrinter'),
         options: {
           type: 'radio',
-          model: 'printerId',
+          model: printer?.id || '',
           items: printers.map((p) => ({
             label: `${p.id} (${p.status})`,
             value: p.id,
@@ -148,21 +155,21 @@ function useBridgePrint(url: string) {
         cancel: true,
         persistent: true,
       })
-        .onOk((data) => {
-          resolve(data);
+        .onOk((printerId) => {
+          resolve(printerId);
         })
         .onCancel(() => {
           resolve(null);
         });
     });
 
-    const printer = printers.find((p) => p.id === choice) || null;
+    printer = printers.find((p) => p.id === choice) || null;
 
     if (!printer) {
       throw new Error('Printer selection failed');
     }
 
-    SessionStorage.set(SELECTED_PRINTER_KEY, printer.id);
+    selectedPrinterId.value = printer.id;
 
     return printer;
   }
@@ -170,7 +177,10 @@ function useBridgePrint(url: string) {
   async function printWithUserFeedback(str: string) {
     let printer: Printer | null = null;
     try {
-      printer = await selectPrinter();
+      printer = await getSelectedPrinter();
+      if (!printer) {
+        printer = await selectPrinter();
+      }
     } catch (error) {
       Notify.create({
         type: 'negative',
@@ -210,6 +220,8 @@ function useBridgePrint(url: string) {
   }
 
   return {
+    type: PRINT_SERVICE_TYPE_BRIDGE,
     print: printWithUserFeedback,
+    selectPrinter,
   };
 }

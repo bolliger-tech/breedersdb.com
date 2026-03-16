@@ -29,7 +29,7 @@ function stopLoadingBar() {
 }
 
 export function createUrqlClient() {
-  const authFailed = (error: CombinedError) =>
+  const isAuthError = (error: CombinedError) =>
     error.graphQLErrors[0]?.message === 'webhook authentication request failed';
 
   const retryOptions: RetryExchangeOptions = {
@@ -39,7 +39,7 @@ export function createUrqlClient() {
     // HACK: retrying on auth failure is a hack to cope with cold starts of
     // hasura. For some reason, the first request after a cold start often
     // fails with an authentication error.
-    retryIf: (error) => !!error.networkError || authFailed(error),
+    retryIf: (error) => !!error.networkError || isAuthError(error),
   };
 
   const loadingBarTriggers: MapExchangeOpts = {

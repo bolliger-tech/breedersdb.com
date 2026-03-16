@@ -4,9 +4,10 @@ import urql, {
   Client,
   fetchExchange,
   mapExchange,
+  type CombinedError,
   type MapExchangeOpts,
 } from '@urql/vue';
-import { retryExchange } from '@urql/exchange-retry';
+import { retryExchange, type RetryExchangeOptions } from '@urql/exchange-retry';
 import { requestPolicyExchange } from '@urql/exchange-request-policy';
 import { LoadingBar } from 'quasar';
 
@@ -28,10 +29,17 @@ function stopLoadingBar() {
 }
 
 export function createUrqlClient() {
-  const retryOptions = {
+  const authFailed = (error: CombinedError) =>
+    error.graphQLErrors[0]?.message === 'webhook authentication request failed';
+
+  const retryOptions: RetryExchangeOptions = {
     initialDelayMs: 50,
     randomDelay: false,
-    maxNumberAttempts: 5,
+    maxNumberAttempts: 10,
+    // HACK: retrying on auth failure is a hack to cope with cold starts of
+    // hasura. For some reason, the first request after a cold start often
+    // fails with an authentication error.
+    retryIf: (error) => !!error.networkError || authFailed(error),
   };
 
   const loadingBarTriggers: MapExchangeOpts = {

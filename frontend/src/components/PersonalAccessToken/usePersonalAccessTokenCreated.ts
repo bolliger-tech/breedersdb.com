@@ -1,5 +1,5 @@
 import { provide, type InjectionKey } from 'vue';
-import type { TokenCreatedData } from './PersonalAccessTokenModalEdit.vue';
+import type { TokenCreatedData } from './personalAccessTokenFragment';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 
 const injectionKey = Symbol() as InjectionKey<(data: TokenCreatedData) => void>;

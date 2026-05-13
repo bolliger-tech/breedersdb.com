@@ -20,6 +20,8 @@ export type CreatePersonalAccessTokenFragment = FragmentOf<
   typeof createPersonalAccessTokenFragment
 >;
 
+export type TokenCreatedData = CreatePersonalAccessTokenFragment;
+
 export const createPersonalAccessTokenFragment = graphql(`
   fragment createPersonalAccessTokenFragment on CreatePersonalAccessTokenOutput
   @_unmask {

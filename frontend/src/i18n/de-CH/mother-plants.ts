@@ -17,6 +17,8 @@ export const motherPlants = {
     plantCultivar: 'Cultivar der ausgewählten Pflanze: {cultivar}',
     pollenCultivar: 'Cultivar der ausgewählten Pollen: {cultivar}',
   },
+  crossingMissingMotherCultivar:
+    'Der Kreuzung muss ein Mutter-Cultivar zugewiesen sein, bevor es einer Mutterpflanze zugeordnet werden kann.',
   crossingPlantCultivarMismatch:
     'Das Cultivar der ausgewählten Pflanze ({plantCultivar}) entspricht nicht dem Mutter-Cultivar der Kreuzung ({crossingMotherPlantCultivar}).',
   crossingPollenCultivarMismatch:

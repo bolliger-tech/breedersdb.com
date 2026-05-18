@@ -2,6 +2,31 @@ import { test, expect, afterEach } from 'bun:test';
 import { post, postOrFail } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
+const insertCultivarMutation = /* GraphQL */ `
+  mutation InsertCultivar(
+    $name_segment: citext!
+    $lot_name_segment: citext! = "24A"
+    $crossing_name: citext! = "C0"
+    $orchard_name: citext! = "Orchard 1"
+  ) {
+    insert_cultivars_one(
+      object: {
+        name_segment: $name_segment
+        lot: {
+          data: {
+            name_segment: $lot_name_segment
+            crossing: { data: { name: $crossing_name } }
+            orchard: { data: { name: $orchard_name } }
+          }
+        }
+      }
+    ) {
+      id
+      display_name
+    }
+  }
+`;
+
 const insertMutation = /* GraphQL */ `
   mutation InsertMotherPlant(
     $name: citext!
@@ -76,33 +101,11 @@ const insertMutation = /* GraphQL */ `
 `;
 
 const insertPlantMutation = /* GraphQL */ `
-  mutation InsertPlant(
-    $crossing_name: citext!
-    $lot_name_segment: citext!
-    $cultivar_name_segment: citext!
-    $label_id: citext!
-    $orchard_name: citext! = "Orchard 1"
-  ) {
+  mutation InsertPlant($cultivar_id: Int!, $label_id: citext!) {
     insert_plants_one(
       object: {
         label_id: $label_id
-        plant_group: {
-          data: {
-            name_segment: "A"
-            cultivar: {
-              data: {
-                name_segment: $cultivar_name_segment
-                lot: {
-                  data: {
-                    name_segment: $lot_name_segment
-                    orchard: { data: { name: $orchard_name } }
-                    crossing: { data: { name: $crossing_name } }
-                  }
-                }
-              }
-            }
-          }
-        }
+        plant_group: { data: { name_segment: "A", cultivar_id: $cultivar_id } }
       }
     ) {
       id
@@ -126,30 +129,8 @@ const insertPlantMutation = /* GraphQL */ `
 `;
 
 const insertPollenMutation = /* GraphQL */ `
-  mutation InsertPollen(
-    $name: citext!
-    $crossing_name: citext!
-    $lot_name_segment: citext!
-    $cultivar_name_segment: citext!
-    $orchard_name: citext! = "Orchard 1"
-  ) {
-    insert_pollen_one(
-      object: {
-        name: $name
-        cultivar: {
-          data: {
-            name_segment: $cultivar_name_segment
-            lot: {
-              data: {
-                name_segment: $lot_name_segment
-                crossing: { data: { name: $crossing_name } }
-                orchard: { data: { name: $orchard_name } }
-              }
-            }
-          }
-        }
-      }
-    ) {
+  mutation InsertPollen($name: citext!, $cultivar_id: Int!) {
+    insert_pollen_one(object: { name: $name, cultivar_id: $cultivar_id }) {
       id
       name
       cultivar {
@@ -194,14 +175,31 @@ afterEach(async () => {
 });
 
 test('insert', async () => {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
+    },
+  });
+
+  const fatherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '002',
+      lot_name_segment: '24A',
+      crossing_name: 'C2',
+      orchard_name: 'Orchard 2',
+    },
+  });
+
   const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
-      crossing_name: 'C1',
-      orchard_name: 'Orchard 1',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
       label_id: '00000001',
+      cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 
@@ -209,10 +207,7 @@ test('insert', async () => {
     query: insertPollenMutation,
     variables: {
       name: 'Pollen 1',
-      crossing_name: 'C2',
-      orchard_name: 'Orchard 2',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      cultivar_id: fatherCultivar.data.insert_cultivars_one.id,
     },
   });
 
@@ -229,9 +224,8 @@ test('insert', async () => {
       plant_id: plant.data.insert_plants_one.id,
       pollen_id: pollen.data.insert_pollen_one.id,
       crossing_name: 'C3',
-      crossing_mother_cultivar_id:
-        plant.data.insert_plants_one.plant_group.cultivar.id,
-      crossing_father_cultivar_id: pollen.data.insert_pollen_one.cultivar.id,
+      crossing_mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
+      crossing_father_cultivar_id: fatherCultivar.data.insert_cultivars_one.id,
     },
   });
 
@@ -255,10 +249,10 @@ test('insert', async () => {
   );
   expect(resp.data.insert_mother_plants_one.crossing.name).toBe('C3');
   expect(resp.data.insert_mother_plants_one.crossing.mother_cultivar.id).toBe(
-    plant.data.insert_plants_one.plant_group.cultivar.id,
+    motherCultivar.data.insert_cultivars_one.id,
   );
   expect(resp.data.insert_mother_plants_one.crossing.father_cultivar.id).toBe(
-    pollen.data.insert_pollen_one.cultivar.id,
+    fatherCultivar.data.insert_cultivars_one.id,
   );
   expect(resp.data.insert_mother_plants_one.created).toMatch(iso8601dateRegex);
   expect(resp.data.insert_mother_plants_one.modified).toEqual(
@@ -267,38 +261,30 @@ test('insert', async () => {
 });
 
 test('insert with contradicting plant cultivar', async () => {
-  const cultivar = await postOrFail({
-    query: /* GraphQL */ `
-      mutation InsertCultivar($name_segment: citext!) {
-        insert_cultivars_one(
-          object: {
-            name_segment: $name_segment
-            lot: {
-              data: {
-                name_segment: "24A"
-                crossing: { data: { name: "C0" } }
-                orchard: { data: { name: "Orchard 1" } }
-              }
-            }
-          }
-        ) {
-          id
-          display_name
-        }
-      }
-    `,
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
+    },
+  });
+
+  const notMotherCultivar = await postOrFail({
+    query: insertCultivarMutation,
     variables: {
       name_segment: '002',
+      lot_name_segment: '24A',
+      crossing_name: 'C2',
+      orchard_name: 'Orchard 2',
     },
   });
 
   const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
-      crossing_name: 'C1',
-      orchard_name: 'Orchard 2',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      cultivar_id: notMotherCultivar.data.insert_cultivars_one.id,
       label_id: '00000001',
     },
   });
@@ -314,8 +300,8 @@ test('insert with contradicting plant cultivar', async () => {
       numb_seeds: 4,
       note: 'Note',
       plant_id: plant.data.insert_plants_one.id,
-      crossing_name: 'C2',
-      crossing_mother_cultivar_id: cultivar.data.insert_cultivars_one.id,
+      crossing_name: 'C3',
+      crossing_mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 
@@ -324,39 +310,81 @@ test('insert with contradicting plant cultivar', async () => {
   );
 });
 
-test('insert with contradicting pollen cultivar', async () => {
-  const cultivar = await postOrFail({
-    query: /* GraphQL */ `
-      mutation InsertCultivar($name_segment: citext!) {
-        insert_cultivars_one(
-          object: {
-            name_segment: $name_segment
-            lot: {
-              data: {
-                name_segment: "24A"
-                crossing: { data: { name: "C0" } }
-                orchard: { data: { name: "Orchard 1" } }
-              }
-            }
-          }
-        ) {
-          id
-          display_name
-        }
-      }
-    `,
+test('insert with empty crossing mother cultivar', async () => {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
     variables: {
-      name_segment: '002',
+      name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
     },
   });
 
   const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
-      crossing_name: 'C1',
-      orchard_name: 'Orchard 2',
+      cultivar_id: motherCultivar.data.insert_cultivars_one.id,
+      label_id: '00000001',
+    },
+  });
+
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Mother plant 1',
+      date_impregnated: '2021-01-02',
+      date_fruits_harvested: '2021-01-03',
+      numb_flowers: 2,
+      numb_fruits: 3,
+      numb_seeds: 4,
+      note: 'Note',
+      plant_id: plant.data.insert_plants_one.id,
+      crossing_name: 'C3',
+      crossing_mother_cultivar_id: null,
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toMatch(
+    /The crossing of the mother plant must have a mother cultivar\./,
+  );
+});
+
+test('insert with contradicting pollen cultivar', async () => {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '001',
       lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
+    },
+  });
+
+  const fatherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '002',
+      lot_name_segment: '24A',
+      crossing_name: 'C2',
+      orchard_name: 'Orchard 2',
+    },
+  });
+
+  const notFatherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '003',
+      lot_name_segment: '24A',
+      crossing_name: 'C3',
+      orchard_name: 'Orchard 3',
+    },
+  });
+
+  const plant = await postOrFail({
+    query: insertPlantMutation,
+    variables: {
+      cultivar_id: motherCultivar.data.insert_cultivars_one.id,
       label_id: '00000001',
     },
   });
@@ -365,10 +393,7 @@ test('insert with contradicting pollen cultivar', async () => {
     query: insertPollenMutation,
     variables: {
       name: 'Pollen 1',
-      crossing_name: 'C2',
-      orchard_name: 'Orchard 3',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      cultivar_id: notFatherCultivar.data.insert_cultivars_one.id,
     },
   });
 
@@ -384,10 +409,9 @@ test('insert with contradicting pollen cultivar', async () => {
       note: 'Note',
       plant_id: plant.data.insert_plants_one.id,
       pollen_id: pollen.data.insert_pollen_one.id,
-      crossing_name: 'C3',
-      crossing_mother_cultivar_id:
-        plant.data.insert_plants_one.plant_group.cultivar_id,
-      crossing_father_cultivar_id: cultivar.data.insert_cultivars_one.id,
+      crossing_name: 'C4',
+      crossing_mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
+      crossing_father_cultivar_id: fatherCultivar.data.insert_cultivars_one.id,
     },
   });
 
@@ -397,12 +421,20 @@ test('insert with contradicting pollen cultivar', async () => {
 });
 
 test('insert name is unique', async () => {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
+    },
+  });
+
   const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
-      crossing_name: 'C1',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      cultivar_id: motherCultivar.data.insert_cultivars_one.id,
       label_id: '00000001',
     },
   });
@@ -413,8 +445,7 @@ test('insert name is unique', async () => {
       name: 'Mother plant 1',
       plant_id: plant.data.insert_plants_one.id,
       crossing_name: 'C2',
-      crossing_mother_cultivar_id:
-        plant.data.insert_plants_one.plant_group.cultivar_id,
+      crossing_mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 
@@ -424,8 +455,7 @@ test('insert name is unique', async () => {
       name: 'mother plant 1',
       plant_id: plant.data.insert_plants_one.id,
       crossing_name: 'C2',
-      crossing_mother_cultivar_id:
-        plant.data.insert_plants_one.plant_group.cultivar_id,
+      crossing_mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 
@@ -434,12 +464,20 @@ test('insert name is unique', async () => {
 });
 
 test('insert name is required', async () => {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
+    },
+  });
+
   const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
-      crossing_name: 'C1',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      cultivar_id: motherCultivar.data.insert_cultivars_one.id,
       label_id: '00000001',
     },
   });
@@ -450,8 +488,7 @@ test('insert name is required', async () => {
       name: '',
       plant_id: plant.data.insert_plants_one.id,
       crossing_name: 'C2',
-      crossing_mother_cultivar_id:
-        plant.data.insert_plants_one.plant_group.cultivar_id,
+      crossing_mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 
@@ -459,12 +496,20 @@ test('insert name is required', async () => {
 });
 
 test('modified', async () => {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
+    },
+  });
+
   const plant = await postOrFail({
     query: insertPlantMutation,
     variables: {
-      crossing_name: 'C1',
-      lot_name_segment: '24A',
-      cultivar_name_segment: '001',
+      cultivar_id: motherCultivar.data.insert_cultivars_one.id,
       label_id: '00000001',
     },
   });
@@ -475,8 +520,7 @@ test('modified', async () => {
       name: 'Mother plant 1',
       plant_id: plant.data.insert_plants_one.id,
       crossing_name: 'C2',
-      crossing_mother_cultivar_id:
-        plant.data.insert_plants_one.plant_group.cultivar_id,
+      crossing_mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 

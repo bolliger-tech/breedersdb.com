@@ -3,8 +3,20 @@ import { post, postOrFail } from '../fetch';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
-  mutation InsertCrossing($name: citext, $note: String) {
-    insert_crossings_one(object: { name: $name, note: $note }) {
+  mutation InsertCrossing(
+    $name: citext
+    $note: String
+    $mother_cultivar_id: Int
+    $father_cultivar_id: Int
+  ) {
+    insert_crossings_one(
+      object: {
+        name: $name
+        note: $note
+        mother_cultivar_id: $mother_cultivar_id
+        father_cultivar_id: $father_cultivar_id
+      }
+    ) {
       id
       name
       mother_cultivar_id
@@ -13,6 +25,31 @@ const insertMutation = /* GraphQL */ `
       created
       modified
       is_variety
+    }
+  }
+`;
+
+const insertCultivarMutation = /* GraphQL */ `
+  mutation InsertCultivar(
+    $name_segment: citext!
+    $lot_name_segment: citext! = "24A"
+    $crossing_name: citext! = "C0"
+    $orchard_name: citext! = "Orchard 1"
+  ) {
+    insert_cultivars_one(
+      object: {
+        name_segment: $name_segment
+        lot: {
+          data: {
+            name_segment: $lot_name_segment
+            crossing: { data: { name: $crossing_name } }
+            orchard: { data: { name: $orchard_name } }
+          }
+        }
+      }
+    ) {
+      id
+      display_name
     }
   }
 `;
@@ -129,16 +166,27 @@ test('modified', async () => {
 });
 
 test('mother cultivar can not be changed to a cultivar different from linked mother plants cultivar', async () => {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
+    },
+  });
+
   const crossing = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'cross1',
+      mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 
   await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertMotherPlant($crossing_id: Int!) {
+      mutation InsertMotherPlant($crossing_id: Int!, $cultivar_id: Int!) {
         insert_mother_plants_one(
           object: {
             name: "Mother1"
@@ -147,21 +195,7 @@ test('mother cultivar can not be changed to a cultivar different from linked mot
               data: {
                 label_id: "00000001"
                 plant_group: {
-                  data: {
-                    name_segment: "A"
-                    cultivar: {
-                      data: {
-                        name_segment: "001"
-                        lot: {
-                          data: {
-                            name_segment: "24A"
-                            orchard: { data: { name: "Orchard1" } }
-                            crossing_id: $crossing_id
-                          }
-                        }
-                      }
-                    }
-                  }
+                  data: { name_segment: "A", cultivar_id: $cultivar_id }
                 }
               }
             }
@@ -173,30 +207,17 @@ test('mother cultivar can not be changed to a cultivar different from linked mot
     `,
     variables: {
       crossing_id: crossing.data.insert_crossings_one.id,
+      cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 
   const newCultivar = await postOrFail({
-    query: /* GraphQL */ `
-      mutation InsertCultivar($crossing_id: Int!) {
-        insert_cultivars_one(
-          object: {
-            name_segment: "999"
-            lot: {
-              data: {
-                name_segment: "24B"
-                orchard: { data: { name: "Orchard2" } }
-                crossing_id: $crossing_id
-              }
-            }
-          }
-        ) {
-          id
-        }
-      }
-    `,
+    query: insertCultivarMutation,
     variables: {
-      crossing_id: crossing.data.insert_crossings_one.id,
+      name_segment: '999',
+      lot_name_segment: '24B',
+      crossing_name: 'C2',
+      orchard_name: 'Orchard 2',
     },
   });
 
@@ -222,58 +243,32 @@ test('mother cultivar can not be changed to a cultivar different from linked mot
   );
 });
 
-test('mother cultivar & father cultivar can be changed to the same cultivar as the linked mother plants cultivars', async () => {
+test('father cultivar can be changed to the same cultivar as the linked mother plants pollen cultivar', async () => {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
+    },
+  });
+
+  const fatherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '002',
+      lot_name_segment: '24A',
+      crossing_name: 'C2',
+      orchard_name: 'Orchard 2',
+    },
+  });
+
   const crossing = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'Abcd',
-    },
-  });
-
-  const motherCultivar = await postOrFail({
-    query: /* GraphQL */ `
-      mutation InsertCultivar($crossing_id: Int!) {
-        insert_cultivars_one(
-          object: {
-            name_segment: "123"
-            lot: {
-              data: {
-                name_segment: "24M"
-                orchard: { data: { name: "OrchardM" } }
-                crossing_id: $crossing_id
-              }
-            }
-          }
-        ) {
-          id
-        }
-      }
-    `,
-    variables: {
-      crossing_id: crossing.data.insert_crossings_one.id,
-    },
-  });
-  const fatherCultivar = await postOrFail({
-    query: /* GraphQL */ `
-      mutation InsertCultivar($crossing_id: Int!) {
-        insert_cultivars_one(
-          object: {
-            name_segment: "234"
-            lot: {
-              data: {
-                name_segment: "24F"
-                orchard: { data: { name: "OrchardF" } }
-                crossing_id: $crossing_id
-              }
-            }
-          }
-        ) {
-          id
-        }
-      }
-    `,
-    variables: {
-      crossing_id: crossing.data.insert_crossings_one.id,
+      mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 
@@ -314,17 +309,10 @@ test('mother cultivar & father cultivar can be changed to the same cultivar as t
 
   const updated = await post({
     query: /* GraphQL */ `
-      mutation UpdateCrossing(
-        $id: Int!
-        $mother_cultivar_id: Int!
-        $father_cultivar_id: Int!
-      ) {
+      mutation UpdateCrossing($id: Int!, $father_cultivar_id: Int!) {
         update_crossings_by_pk(
           pk_columns: { id: $id }
-          _set: {
-            mother_cultivar_id: $mother_cultivar_id
-            father_cultivar_id: $father_cultivar_id
-          }
+          _set: { father_cultivar_id: $father_cultivar_id }
         ) {
           id
         }
@@ -332,7 +320,6 @@ test('mother cultivar & father cultivar can be changed to the same cultivar as t
     `,
     variables: {
       id: crossing.data.insert_crossings_one.id,
-      mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
       father_cultivar_id: fatherCultivar.data.insert_cultivars_one.id,
     },
   });
@@ -341,16 +328,30 @@ test('mother cultivar & father cultivar can be changed to the same cultivar as t
 });
 
 test('father cultivar can not be changed to a cultivar different from linked pollen cultivar', async () => {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
+    },
+  });
+
   const crossing = await postOrFail({
     query: insertMutation,
     variables: {
       name: 'cross1',
+      mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 
   await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertMotherPlant($crossing_id: Int!) {
+      mutation InsertMotherPlant(
+        $crossing_id: Int!
+        $mother_cultivar_id: Int!
+      ) {
         insert_mother_plants_one(
           object: {
             name: "Mother1"
@@ -359,21 +360,7 @@ test('father cultivar can not be changed to a cultivar different from linked pol
               data: {
                 label_id: "00000001"
                 plant_group: {
-                  data: {
-                    name_segment: "A"
-                    cultivar: {
-                      data: {
-                        name_segment: "001"
-                        lot: {
-                          data: {
-                            name_segment: "24A"
-                            orchard: { data: { name: "Orchard1" } }
-                            crossing_id: $crossing_id
-                          }
-                        }
-                      }
-                    }
-                  }
+                  data: { name_segment: "A", cultivar_id: $mother_cultivar_id }
                 }
               }
             }
@@ -402,30 +389,17 @@ test('father cultivar can not be changed to a cultivar different from linked pol
     `,
     variables: {
       crossing_id: crossing.data.insert_crossings_one.id,
+      mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
     },
   });
 
   const newCultivar = await postOrFail({
-    query: /* GraphQL */ `
-      mutation InsertCultivar($crossing_id: Int!) {
-        insert_cultivars_one(
-          object: {
-            name_segment: "999"
-            lot: {
-              data: {
-                name_segment: "24B"
-                orchard: { data: { name: "Orchard10" } }
-                crossing_id: $crossing_id
-              }
-            }
-          }
-        ) {
-          id
-        }
-      }
-    `,
+    query: insertCultivarMutation,
     variables: {
-      crossing_id: crossing.data.insert_crossings_one.id,
+      name_segment: '002',
+      lot_name_segment: '24A',
+      crossing_name: 'C2',
+      orchard_name: 'Orchard 3',
     },
   });
 
@@ -509,7 +483,7 @@ test('father & mother cultivar can be changed if no mother plant is linked', asy
 test('crossing name cannot conflict with existing lot name_override', async () => {
   // First create a lot with name_override
   await postOrFail({
-    query: `
+    query: /* GraphQL */ `
       mutation InsertLotWithNameOverride {
         insert_lots_one(
           object: {
@@ -541,7 +515,7 @@ test('crossing name cannot conflict with existing lot name_override', async () =
 test('crossing name cannot conflict with existing cultivar name_override', async () => {
   // First create a cultivar with name_override
   await postOrFail({
-    query: `
+    query: /* GraphQL */ `
       mutation InsertCultivarWithNameOverride {
         insert_cultivars_one(
           object: {
@@ -578,7 +552,7 @@ test('crossing name cannot conflict with existing cultivar name_override', async
 test('crossing name cannot conflict with existing plant group name_override', async () => {
   // First create a plant group with name_override
   await postOrFail({
-    query: `
+    query: /* GraphQL */ `
       mutation InsertPlantGroupWithNameOverride {
         insert_plant_groups_one(
           object: {
@@ -626,7 +600,7 @@ test('crossing name can be updated without conflicts', async () => {
   });
 
   const updated = await postOrFail({
-    query: `
+    query: /* GraphQL */ `
       mutation UpdateCrossing($id: Int!, $name: citext) {
         update_crossings_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
           id

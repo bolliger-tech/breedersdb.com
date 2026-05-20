@@ -33,6 +33,12 @@
           })
         : undefined
     "
+    :rules="[
+      (v: CrossingSelectCrossing) =>
+        !v ||
+        !!v.mother_cultivar ||
+        t('motherPlants.crossingMissingMotherCultivar'),
+    ]"
     required
     @crossing-changed="
       (c) => {

@@ -34,6 +34,12 @@ export type AttributeFragment =
       legend: null;
       validation_rule: null;
       default_value: null;
+    })
+  | (Fragment & {
+      data_type: 'ENUM';
+      legend: null;
+      validation_rule: null;
+      default_value: null;
     });
 
 export const attributeFragment = graphql(`
@@ -47,6 +53,13 @@ export const attributeFragment = graphql(`
     disabled
     default_value
     legend
+    enum_options {
+      id
+      label
+      position
+      disabled
+      is_default
+    }
     created
     modified
   }

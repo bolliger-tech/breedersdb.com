@@ -55,6 +55,12 @@
     :data-type="data.data_type"
     :validation-rule="data.validation_rule"
   />
+  <AttributeEnumOptionsInput
+    v-if="data.data_type === 'ENUM'"
+    :ref="(el: InputRef) => (refs.enumOptions = el)"
+    v-model="enumOptions"
+    :attribute-id="'id' in attribute ? attribute.id : undefined"
+  />
   <EntityInput
     :ref="(el: InputRef) => (refs.description = el)"
     v-model.trim="data.description"
@@ -96,6 +102,9 @@ import AttributeTypeSelect from './AttributeTypeSelect.vue';
 import AttributeValidationRuleInput from './AttributeValidationRuleInput.vue';
 import AttributeLegendInput from './AttributeLegendInput.vue';
 import AttributeDefaultValueInput from './AttributeDefaultValueInput.vue';
+import AttributeEnumOptionsInput from './AttributeEnumOptionsInput.vue';
+import type { EnumOptionInput } from './AttributeEnumOptionsInput.vue';
+import { computed } from 'vue';
 import { extend } from 'quasar';
 
 type Attribute = AttributeModalEditProps['attribute'];
@@ -119,9 +128,17 @@ const initialData = {
   disabled: props.attribute.disabled,
   legend: props.attribute.legend,
   default_value: props.attribute.default_value,
+  enum_options: props.attribute.enum_options ?? [],
 } as Attribute;
 
 const data = ref<Attribute>(extend(true, {}, initialData));
+
+const enumOptions = computed<EnumOptionInput[]>({
+  get: () => (data.value.enum_options ?? []) as EnumOptionInput[],
+  set: (val) => {
+    data.value.enum_options = val as typeof data.value.enum_options;
+  },
+});
 
 const refs = ref<{ [key: string]: InputRef | null }>({
   name: null,
@@ -131,6 +148,7 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   max: null,
   defaultValue: null,
   legend: null,
+  enumOptions: null,
   description: null,
   attributeType: null,
   disabled: null,

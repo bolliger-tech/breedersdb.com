@@ -65,6 +65,7 @@ const attributeDataTypeOptions: { value: AttributeDataTypes; label: string }[] =
     { value: 'DATE', label: t('attributes.dataTypes.date') },
     { value: 'PHOTO', label: t('attributes.dataTypes.photo') },
     { value: 'RATING', label: t('attributes.dataTypes.rating') },
+    { value: 'ENUM', label: t('attributes.dataTypes.enum') },
   ];
 
 const attributeDataType = computed({

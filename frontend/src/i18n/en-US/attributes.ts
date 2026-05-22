@@ -17,6 +17,7 @@ export const attributes = {
     date: 'Date',
     photo: 'Photo',
     rating: 'Rating',
+    enum: 'Selection',
   },
 
   attributeTypes: {
@@ -24,6 +25,20 @@ export const attributes = {
     sample: 'Sample',
     treatment: 'Treatment',
     other: 'Other',
+  },
+
+  enumOptions: {
+    label: 'Options',
+    addOption: 'Add option',
+    optionPlaceholder: 'Option',
+    default: 'Default',
+    disabled: 'Disabled',
+    disabledExplainer:
+      "Disabled options can't be picked for new attributions but stay on existing ones.",
+    deleteUsedNotAllowed:
+      "This option is in use and can't be deleted. Disable it instead to hide it from new selections.",
+    noOptions: 'Add at least one option.',
+    duplicateLabel: 'Option labels must be unique.',
   },
 
   disableExplainer:

@@ -494,7 +494,7 @@ function columnTypeToGraphQLType(type: ColumnTypes) {
     case ColumnTypes.Boolean:
       return 'Boolean';
     case ColumnTypes.Enum:
-      return 'String';
+      return 'citext';
     case ColumnTypes.Date:
       return 'date';
     case ColumnTypes.DateTime:

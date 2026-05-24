@@ -1,0 +1,19 @@
+{
+  "name": "breedersdb-e2e-enum-attribute",
+  "private": true,
+  "description": "Browser click-through suite for the ENUM ('Auswahl') attribute type",
+  "scripts": {
+    "auth": "node auth.setup.js",
+    "tc1": "node tc1-create.js",
+    "tc2": "node tc2-validation.js",
+    "tc3": "node tc3-record.js",
+    "tc4": "node tc4-edit.js",
+    "tc5": "node tc5-rename.js",
+    "tc6": "node tc6-delete-disable.js",
+    "tc7": "node tc7-analyze.js",
+    "cleanup": "node cleanup.js"
+  },
+  "dependencies": {
+    "playwright": "^1.60.0"
+  }
+}

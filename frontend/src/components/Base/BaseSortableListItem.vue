@@ -44,10 +44,10 @@
         'drop-zone--hover': overTopDropZone && !draggable,
       }"
       style="
-        height: calc(50% + 0.5em);
+        height: calc(50% + 0.75em);
         border-top-width: 1em;
         border-top-style: solid;
-        transform: translateY(-1.25em);
+        transform: translateY(-1em);
       "
       @dragenter="overTopDropZone = true"
       @dragleave="overTopDropZone = false"
@@ -61,10 +61,10 @@
         'drop-zone--hover': overBottomDropZone && !draggable,
       }"
       style="
-        height: calc(50% + 0.5em);
+        height: calc(50% + 0.75em);
         border-bottom-width: 1em;
         border-bottom-style: solid;
-        transform: translateY(-0.25em);
+        transform: translateY(0.5em);
       "
       @dragenter="overBottomDropZone = true"
       @dragleave="overBottomDropZone = false"

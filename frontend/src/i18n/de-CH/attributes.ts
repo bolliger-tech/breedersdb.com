@@ -27,7 +27,7 @@ export const attributes = {
     label: 'Optionen',
     addOption: 'Option hinzufügen',
     optionPlaceholder: 'Option',
-    default: 'Standard',
+    preSelected: 'Vorausgewählt',
     disabled: 'Deaktiviert',
     disabledExplainer:
       'Deaktivierte Optionen können für neue Attributionen nicht ausgewählt werden, bleiben aber bei bestehenden erhalten.',

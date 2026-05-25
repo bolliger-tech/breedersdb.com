@@ -22,8 +22,17 @@
       hide-selected
       :clearable="clearable"
       :loading="loading"
-      :hint="hint ? hint : required ? t('base.required') : ''"
+      :hint="
+        hint
+          ? hint
+          : required
+            ? t('base.required')
+            : hideBottomSpace
+              ? undefined
+              : ''
+      "
       :label="inlineLabel"
+      :hide-bottom-space="hideBottomSpace"
       bottom-slots
       :readonly="readonly"
       :disable="disable"
@@ -103,6 +112,7 @@ export interface EntitySelectPropsWithoutModel<T> {
   readonly?: QSelectProps['readonly'] | undefined;
   disable?: QSelectProps['disable'] | undefined;
   hint?: string | undefined;
+  hideBottomSpace?: boolean | undefined;
   filterWithWildcardsAroundDots?: boolean | undefined;
 }
 

@@ -9,6 +9,7 @@
     :loading="fetching"
     :error="error"
     :clearable="false"
+    :hide-bottom-space="hideBottomSpace"
   />
 </template>
 
@@ -27,6 +28,7 @@ import type { ComponentExposed } from 'vue-component-type-helpers';
 
 export interface AttributeSelectProps {
   hideLabel?: boolean;
+  hideBottomSpace?: boolean;
 }
 
 defineProps<AttributeSelectProps>();

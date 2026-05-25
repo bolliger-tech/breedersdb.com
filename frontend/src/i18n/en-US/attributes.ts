@@ -31,7 +31,7 @@ export const attributes = {
     label: 'Options',
     addOption: 'Add option',
     optionPlaceholder: 'Option',
-    default: 'Default',
+    preSelected: 'Pre-selected',
     disabled: 'Disabled',
     disabledExplainer:
       "Disabled options can't be picked for new attributions but stay on existing ones.",

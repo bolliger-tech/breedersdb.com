@@ -156,9 +156,13 @@ function transformEditData(data: unknown): VariablesOf<typeof editMutation> {
     [];
   const current = isEnum ? (d.enum_options ?? []) : [];
 
-  const insertOptions = current
-    .filter((o) => o.id === undefined || o.id === null)
-    .map((o, position) => ({
+  // derive position from the index in the full current array so the saved order
+  // matches the on-screen order even when new and existing options are interleaved
+  const positioned = current.map((o, position) => ({ o, position }));
+
+  const insertOptions = positioned
+    .filter(({ o }) => o.id === undefined || o.id === null)
+    .map(({ o, position }) => ({
       attribute_id: id,
       label: o.label,
       position,
@@ -166,9 +170,12 @@ function transformEditData(data: unknown): VariablesOf<typeof editMutation> {
       is_default: o.is_default,
     }));
 
-  const updateOptions = current
-    .filter((o): o is typeof o & { id: number } => typeof o.id === 'number')
-    .map((o, position) => ({
+  const updateOptions = positioned
+    .filter(
+      (p): p is { o: typeof p.o & { id: number }; position: number } =>
+        typeof p.o.id === 'number',
+    )
+    .map(({ o, position }) => ({
       where: { id: { _eq: o.id } },
       _set: {
         label: o.label,

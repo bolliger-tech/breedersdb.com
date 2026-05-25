@@ -53,7 +53,7 @@ export const attributeFragment = graphql(`
     disabled
     default_value
     legend
-    enum_options {
+    enum_options(order_by: { position: asc }) {
       id
       label
       position

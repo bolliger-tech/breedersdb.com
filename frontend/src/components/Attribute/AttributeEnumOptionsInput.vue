@@ -1,17 +1,25 @@
 <template>
   <BaseInputLabel :label="t('attributes.enumOptions.label')">
-    <div
+    <BaseSortableListItem
       v-for="(option, idx) in modelValue"
-      :key="option.id ?? `new-${idx}`"
-      class="row items-center no-wrap q-gutter-sm q-mb-xs"
+      :key="option.id ?? option._uid ?? `new-${idx}`"
+      :drop-zone-active="currentDragItemId !== null"
+      :not-draggable="modelValue.length < 2"
+      :no-space-before="modelValue.length < 2"
+      :any-drag-active="currentDragItemId !== null"
+      :last="idx === modelValue.length - 1"
+      @dragstart="currentDragItemId = idx"
+      @dragend="currentDragItemId = null"
+      @drop="(pos) => onDrop(pos, idx)"
     >
       <EntityInput
         :ref="(el: InputRef) => (refs[idx] = el)"
         class="col"
         :model-value="option.label"
-        :label="`${t('attributes.enumOptions.optionPlaceholder')} ${idx + 1}`"
+        :placeholder="t('attributes.enumOptions.optionPlaceholder')"
         type="text"
         autocomplete="off"
+        hide-bottom-space
         :rules="[
           (v: string) =>
             !!v ||
@@ -29,28 +37,14 @@
         "
         @blur="updateOption(idx, { label: option.label.trim() })"
       />
-      <q-toggle
-        :model-value="option.is_default"
-        :label="t('attributes.enumOptions.default')"
-        dense
-        @update:model-value="(v: boolean) => setDefault(idx, v)"
-      />
-      <q-toggle
-        :model-value="option.disabled"
-        :label="t('attributes.enumOptions.disabled')"
-        dense
-        @update:model-value="(v: boolean) => updateOption(idx, { disabled: v })"
-      >
-        <q-tooltip>{{
-          t('attributes.enumOptions.disabledExplainer')
-        }}</q-tooltip>
-      </q-toggle>
       <q-btn
-        flat
-        round
-        dense
-        icon="delete"
+        class="col-auto q-ml-xs"
         color="negative"
+        style="top: 0.75em"
+        dense
+        flat
+        rounded
+        icon="delete_outline"
         :disable="isUsed(option)"
         @click="removeOption(idx)"
       >
@@ -58,19 +52,41 @@
           {{ t('attributes.enumOptions.deleteUsedNotAllowed') }}
         </q-tooltip>
       </q-btn>
-    </div>
 
-    <div v-if="emptyError" class="text-negative text-caption q-mt-xs">
+      <template #controls>
+        <div class="row items-center q-gutter-x-md">
+          <q-checkbox
+            :model-value="option.is_default"
+            :label="t('attributes.enumOptions.preSelected')"
+            size="sm"
+            @update:model-value="(v: boolean) => setDefault(idx, v)"
+          />
+          <q-checkbox
+            :model-value="option.disabled"
+            :label="t('attributes.enumOptions.disabled')"
+            size="sm"
+            @update:model-value="
+              (v: boolean) => updateOption(idx, { disabled: v })
+            "
+          >
+            <q-tooltip>{{
+              t('attributes.enumOptions.disabledExplainer')
+            }}</q-tooltip>
+          </q-checkbox>
+        </div>
+      </template>
+    </BaseSortableListItem>
+
+    <div v-if="emptyError" class="text-negative text-caption q-mb-xs">
       {{ t('attributes.enumOptions.noOptions') }}
     </div>
 
     <q-btn
-      flat
-      dense
+      outline
       no-caps
       icon="add"
       color="primary"
-      class="q-mt-sm"
+      class="full-width"
       :label="t('attributes.enumOptions.addOption')"
       @click="addOption"
     />
@@ -81,9 +97,10 @@
 import { useI18n } from 'src/composables/useI18n';
 import { useQuery } from '@urql/vue';
 import { graphql } from 'src/graphql';
-import { computed, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
+import BaseSortableListItem from 'src/components/Base/BaseSortableListItem.vue';
 import type { InputRef } from 'src/composables/useEntityForm';
 
 export type EnumOptionInput = {
@@ -92,6 +109,8 @@ export type EnumOptionInput = {
   position: number;
   disabled: boolean;
   is_default: boolean;
+  // transient, client-only key for stable v-for during drag reorder; never persisted
+  _uid?: number;
 };
 
 export interface AttributeEnumOptionsInputProps {
@@ -106,6 +125,12 @@ const { t } = useI18n();
 
 const refs = ref<{ [key: number]: InputRef | null }>({});
 const emptyError = ref(false);
+const currentDragItemId = ref<number | null>(null);
+
+let uidCounter = 0;
+function nextUid() {
+  return --uidCounter;
+}
 
 defineExpose({
   validate: async () => {
@@ -143,7 +168,7 @@ function setDefault(idx: number, value: boolean) {
   );
 }
 
-function addOption() {
+function appendEmptyOption() {
   setOptions([
     ...modelValue.value,
     {
@@ -151,13 +176,39 @@ function addOption() {
       position: modelValue.value.length,
       disabled: false,
       is_default: false,
+      _uid: nextUid(),
     },
   ]);
   emptyError.value = false;
 }
 
+async function addOption() {
+  appendEmptyOption();
+  await nextTick();
+  refs.value[modelValue.value.length - 1]?.focus?.();
+}
+
+// Start a fresh enum with one (empty) option visible, so the editor isn't blank.
+// Existing attributes load with their saved options, so this only seeds new ones.
+onMounted(() => {
+  if (modelValue.value.length === 0) appendEmptyOption();
+});
+
 function removeOption(idx: number) {
   setOptions(modelValue.value.filter((_, i) => i !== idx));
+}
+
+function onDrop(pos: 'before' | 'after', dropIndex: number) {
+  if (currentDragItemId.value === null) return;
+
+  const dragIndex = currentDragItemId.value;
+  const next = [...modelValue.value];
+  const dragItem = next[dragIndex];
+  if (!dragItem) return;
+  if (dragIndex < dropIndex) dropIndex--;
+  next.splice(dragIndex, 1);
+  next.splice(dropIndex + (pos === 'after' ? 1 : 0), 0, dragItem);
+  setOptions(next);
 }
 
 function isLabelUnique(label: string, idx: number) {

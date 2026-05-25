@@ -7,7 +7,10 @@
       :bg-color="inputBgColor"
       dense
       outlined
-      :hint="hint ?? (required ? t('base.required') : '')"
+      :hint="
+        hint ??
+        (required ? t('base.required') : hideBottomSpace ? undefined : '')
+      "
       :clearable="!required"
       :model-value="modelValue"
       :min="min"

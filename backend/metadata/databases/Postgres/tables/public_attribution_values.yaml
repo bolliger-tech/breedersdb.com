@@ -14,6 +14,11 @@ object_relationships:
         column_mapping:
           attribute_id: attribute_id
           attribute_enum_option_id: id
+    comment: >-
+      Wired manually because Hasura can only auto-derive relationships from
+      single-column foreign keys. This relationship is backed by the composite
+      FK (attribute_id, attribute_enum_option_id) -> attribute_enum_options
+      (attribute_id, id), so the column mapping must be declared by hand.
   - name: attribution
     using:
       foreign_key_constraint_on: attribution_id

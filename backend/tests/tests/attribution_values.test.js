@@ -712,7 +712,7 @@ test('insert TEXT empty', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'An attribution value must populate exactly one column of: integer_value, float_value, text_value, boolean_value or date_value.',
+    'An attribution value must populate exactly one column of: integer_value, float_value, text_value, boolean_value, date_value or attribute_enum_option_id.',
   );
 });
 
@@ -1201,7 +1201,7 @@ test('insert PHOTO empty', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'An attribution value must populate exactly one column of: integer_value, float_value, text_value, boolean_value or date_value.',
+    'An attribution value must populate exactly one column of: integer_value, float_value, text_value, boolean_value, date_value or attribute_enum_option_id.',
   );
 });
 

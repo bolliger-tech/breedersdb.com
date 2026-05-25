@@ -30,7 +30,9 @@ create table attribute_enum_options
     unique (attribute_id, id)
 );
 
-create index on attribute_enum_options (attribute_id);
+-- lists an attribute's options in display order; the leftmost column also serves
+-- plain attribute_id lookups and the on-delete-cascade from attributes
+create index on attribute_enum_options (attribute_id, position);
 create index on attribute_enum_options (disabled);
 -- at most one default option per attribute
 create unique index on attribute_enum_options (attribute_id) where is_default;
@@ -222,26 +224,12 @@ begin
     from attributes
     where id = new.attribute_id;
 
-    -- ENUM values reference an attribute_enum_option instead of a typed value column.
-    -- The composite FK guarantees the option belongs to this attribute.
-    if _data_type = 'ENUM' then
-        if new.attribute_enum_option_id is null then
-            raise exception 'An ENUM attribution value must reference an attribute_enum_option.';
-        end if;
-        if num_nonnulls(new.integer_value, new.float_value, new.text_value, new.boolean_value, new.date_value) <> 0 then
-            raise exception 'An ENUM attribution value must not populate integer_value, float_value, text_value, boolean_value or date_value.';
-        end if;
-        return new;
-    end if;
-
-    -- only ENUM values may reference an attribute_enum_option
-    if new.attribute_enum_option_id is not null then
-        raise exception 'Only ENUM attribution values may reference an attribute_enum_option.';
-    end if;
-
-    -- check that exactly one value is set
-    if num_nonnulls(new.integer_value, new.float_value, new.text_value, new.boolean_value, new.date_value) <> 1 then
-        raise exception 'An attribution value must populate exactly one column of: integer_value, float_value, text_value, boolean_value or date_value.';
+    -- check that exactly one value is set. ENUM values reference an attribute_enum_option
+    -- instead of a typed value column (the composite FK guarantees the option belongs to this
+    -- attribute), so it counts as one of the mutually exclusive value columns here.
+    if num_nonnulls(new.integer_value, new.float_value, new.text_value, new.boolean_value, new.date_value,
+                    new.attribute_enum_option_id) <> 1 then
+        raise exception 'An attribution value must populate exactly one column of: integer_value, float_value, text_value, boolean_value, date_value or attribute_enum_option_id.';
     end if;
 
     -- check that the value type matches the attribute type
@@ -249,7 +237,8 @@ begin
        _data_type = 'FLOAT' and new.float_value is null or
        _data_type = 'BOOLEAN' and new.boolean_value is null or
        _data_type = 'DATE' and new.date_value is null or
-       _data_type in ('TEXT', 'PHOTO') and new.text_value is null then
+       _data_type in ('TEXT', 'PHOTO') and new.text_value is null or
+       _data_type = 'ENUM' and new.attribute_enum_option_id is null then
         raise exception 'The value type does not match the attribute type.';
     end if;
 

@@ -18,7 +18,7 @@ import EntitySelect from 'src/components/Entity/Edit/EntitySelect.vue';
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import type { ComponentExposed } from 'vue-component-type-helpers';
 
-type EnumOption = NonNullable<AttributeFragment['enum_options']>[number];
+type EnumOption = AttributeFragment['enum_options'][number];
 
 const props = defineProps<{
   options: readonly EnumOption[];

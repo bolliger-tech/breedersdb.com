@@ -308,7 +308,7 @@ function setDefaultValue() {
   const { data_type, default_value } = props.attribute;
   const enumDefaultId =
     data_type === 'ENUM'
-      ? (props.attribute.enum_options?.find((o) => o.is_default)?.id ?? null)
+      ? (props.attribute.enum_options.find((o) => o.is_default)?.id ?? null)
       : null;
   updateModelValue({
     boolean_value: data_type === 'BOOLEAN' ? default_value : null,

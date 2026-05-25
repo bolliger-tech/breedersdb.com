@@ -131,7 +131,7 @@ function transformInsertData(
       legend: d.legend,
       ...(isEnum && {
         enum_options: {
-          data: (d.enum_options ?? []).map((o, position) => ({
+          data: d.enum_options.map((o, position) => ({
             label: o.label,
             position,
             disabled: o.disabled,
@@ -151,10 +151,8 @@ function transformEditData(data: unknown): VariablesOf<typeof editMutation> {
   }
   const id = props.attribute.id;
   const isEnum = d.data_type === 'ENUM';
-  const original =
-    ('enum_options' in props.attribute ? props.attribute.enum_options : []) ??
-    [];
-  const current = isEnum ? (d.enum_options ?? []) : [];
+  const original = props.attribute.enum_options;
+  const current = isEnum ? d.enum_options : [];
 
   // derive position from the index in the full current array so the saved order
   // matches the on-screen order even when new and existing options are interleaved

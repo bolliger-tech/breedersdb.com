@@ -69,14 +69,12 @@ const attribute = computed(() => {
       default_value: data.value.attributes_by_pk.default_value,
       legend: data.value.attributes_by_pk.legend,
       // copy template options as fresh, unsaved options (drop the source ids)
-      enum_options: (data.value.attributes_by_pk.enum_options ?? []).map(
-        (o) => ({
-          label: o.label,
-          position: o.position,
-          disabled: o.disabled,
-          is_default: o.is_default,
-        }),
-      ),
+      enum_options: data.value.attributes_by_pk.enum_options.map((o) => ({
+        label: o.label,
+        position: o.position,
+        disabled: o.disabled,
+        is_default: o.is_default,
+      })),
     } as DistributiveOmit<AttributeFragment, 'id' | 'created' | 'modified'>;
   } else {
     return emptyAttribute;

@@ -87,10 +87,10 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ref } from 'vue';
+import { watch, computed, ref } from 'vue';
+import { extend } from 'quasar';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import EntityToggle from '../Entity/Edit/EntityToggle.vue';
-import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import type { AttributeModalEditProps } from './AttributeModalEdit.vue';
@@ -104,8 +104,6 @@ import AttributeLegendInput from './AttributeLegendInput.vue';
 import AttributeDefaultValueInput from './AttributeDefaultValueInput.vue';
 import AttributeEnumOptionsInput from './AttributeEnumOptionsInput.vue';
 import type { EnumOptionInput } from './AttributeEnumOptionsInput.vue';
-import { computed } from 'vue';
-import { extend } from 'quasar';
 
 type Attribute = AttributeModalEditProps['attribute'];
 
@@ -128,13 +126,13 @@ const initialData = {
   disabled: props.attribute.disabled,
   legend: props.attribute.legend,
   default_value: props.attribute.default_value,
-  enum_options: props.attribute.enum_options ?? [],
+  enum_options: props.attribute.enum_options,
 } as Attribute;
 
 const data = ref<Attribute>(extend(true, {}, initialData));
 
 const enumOptions = computed<EnumOptionInput[]>({
-  get: () => (data.value.enum_options ?? []) as EnumOptionInput[],
+  get: () => data.value.enum_options,
   set: (val) => {
     data.value.enum_options = val as typeof data.value.enum_options;
   },

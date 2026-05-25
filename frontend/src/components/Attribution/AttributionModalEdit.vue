@@ -91,7 +91,7 @@ const model = ref<AttributionInputValue>({
   // option id (labels are unique per attribute)
   attribute_enum_option_id:
     props.attribution.data_type === 'ENUM'
-      ? (props.attribution.attribute.enum_options?.find(
+      ? (props.attribution.attribute.enum_options.find(
           (o) =>
             o.label.toLowerCase() ===
             (props.attribution.text_value ?? '').toLowerCase(),

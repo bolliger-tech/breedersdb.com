@@ -128,7 +128,7 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
         type,
         allowEmpty: false,
         validation: {
-          options: (attribute.enum_options ?? [])
+          options: attribute.enum_options
             .slice()
             .sort((a, b) => a.position - b.position)
             .map((o) => o.label),

@@ -26,6 +26,20 @@ entity "**attribute_data_types**" #00ff0012 ##008800 {
   --
 }
 
+entity "**attribute_enum_options**" #00ff0012 ##008800 {
+  + ""id"": //integer [PK]//
+  --
+  *""id"": //integer //
+  *""attribute_id"": //integer [FK]//
+  *""attribute_id"": //integer //
+  *""label"": //citext //
+  *""position"": //integer //
+  *""disabled"": //boolean //
+  *""is_default"": //boolean //
+  *""created"": //timestamp with time zone //
+  *""modified"": //timestamp with time zone //
+}
+
 entity "**attribute_types**" #00ff0012 ##008800 {
   + ""enum"": //text [PK]//
   --
@@ -87,6 +101,7 @@ entity "**attribution_values**" #00ff0012 ##008800 {
   ""offline_id"": //uuid //
   *""created"": //timestamp with time zone //
   *""modified"": //timestamp with time zone //
+  ""attribute_enum_option_id"": //integer [FK]//
 }
 
 entity "**attributions**" #00ff0012 ##008800 {
@@ -331,6 +346,8 @@ entity "**users**" {
 
 "**analyze_filters**"   }--  "**analyze_filter_base_tables**"
 
+"**attribute_enum_options**"   }--  "**attributes**"
+
 "**attributes**"   }--  "**attribute_types**"
 
 "**attributes**"   }--  "**attribute_data_types**"
@@ -342,6 +359,12 @@ entity "**users**" {
 "**attribution_values**"   }--  "**attributes**"
 
 "**attribution_values**"   }--  "**attributions**"
+
+"**attribution_values**"   }--  "**attribute_enum_options**"
+
+"**attribution_values**"   }--  "**attribute_enum_options**"
+
+"**attribution_values**"   }--  "**attribute_enum_options**"
 
 "**attributions**"   }--  "**attribution_forms**"
 

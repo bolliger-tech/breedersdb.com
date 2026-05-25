@@ -162,7 +162,7 @@ test('validation rule is empty for TEXT', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'The validation rule must be NULL for TEXT, BOOLEAN, DATE and PHOTO.',
+    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO and ENUM.',
   );
 });
 
@@ -178,7 +178,7 @@ test('validation rule is empty for BOOLEAN', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'The validation rule must be NULL for TEXT, BOOLEAN, DATE and PHOTO.',
+    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO and ENUM.',
   );
 });
 
@@ -194,7 +194,7 @@ test('validation rule is empty for DATE', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'The validation rule must be NULL for TEXT, BOOLEAN, DATE and PHOTO.',
+    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO and ENUM.',
   );
 });
 
@@ -210,7 +210,7 @@ test('validation rule is empty for PHOTO', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'The validation rule must be NULL for TEXT, BOOLEAN, DATE and PHOTO.',
+    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO and ENUM.',
   );
 });
 

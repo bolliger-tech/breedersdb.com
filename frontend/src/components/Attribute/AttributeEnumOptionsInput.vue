@@ -102,16 +102,7 @@ import EntityInput from '../Entity/Edit/EntityInput.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import BaseSortableListItem from 'src/components/Base/BaseSortableListItem.vue';
 import type { InputRef } from 'src/composables/useEntityForm';
-
-export type EnumOptionInput = {
-  id?: number;
-  label: string;
-  position: number;
-  disabled: boolean;
-  is_default: boolean;
-  // transient, client-only key for stable v-for during drag reorder; never persisted
-  _uid?: number;
-};
+import type { EnumOptionInput } from './enumOption';
 
 export interface AttributeEnumOptionsInputProps {
   attributeId?: number | undefined;

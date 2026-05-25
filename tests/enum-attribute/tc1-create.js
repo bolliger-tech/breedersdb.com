@@ -49,9 +49,9 @@ const { hasura } = require('./db');
       await rows.nth(i).locator('input[type=text]').fill(labels[i]);
       await sleep(150);
     }
-    await rows.nth(0).locator('.q-toggle:has-text("Standard")').click(); // default = Crisp
+    await rows.nth(0).locator('.q-checkbox:has-text("Vorausgewählt")').click(); // default = Crisp
     await sleep(200);
-    await rows.nth(2).locator('.q-toggle:has-text("Deaktiviert")').click(); // disabled = Mealy
+    await rows.nth(2).locator('.q-checkbox:has-text("Deaktiviert")').click(); // disabled = Mealy
     await sleep(200);
 
     await shot(page, 'tc1-filled.png');

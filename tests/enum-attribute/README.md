@@ -30,8 +30,9 @@ cd tests/enum-attribute
 npm install                 # installs playwright
 npx playwright install chromium
 
-export BREEDERSDB_PASSWORD='…'          # required
-export BREEDERSDB_EMAIL='tester@breedersdb.com'   # optional, this is the default
+# Dev credentials default to tester@breedersdb.com in config.js; override here if needed:
+# export BREEDERSDB_EMAIL='tester@breedersdb.com'
+# export BREEDERSDB_PASSWORD='…'
 npm run auth                # logs in once, saves session to ./.auth/state.json
 ```
 

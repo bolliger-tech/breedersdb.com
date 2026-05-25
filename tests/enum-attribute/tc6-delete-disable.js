@@ -125,7 +125,7 @@ const isDisabled = (btn) =>
   await withBrowser(async ({ page }) => {
     await openAttributeEdit(page, cfg.SAMPLE_ATTRIBUTE);
     const row = await rowByLabel(page, inUse.label);
-    await row.locator('.q-toggle:has-text("Deaktiviert")').click();
+    await row.locator('.q-checkbox:has-text("Deaktiviert")').click();
     await sleep(300);
     await page
       .locator('.q-dialog button:has-text("Speichern")')
@@ -175,7 +175,7 @@ const isDisabled = (btn) =>
   await withBrowser(async ({ page }) => {
     await openAttributeEdit(page, cfg.SAMPLE_ATTRIBUTE);
     const row = await rowByLabel(page, inUse.label);
-    await row.locator('.q-toggle:has-text("Deaktiviert")').click();
+    await row.locator('.q-checkbox:has-text("Deaktiviert")').click();
     await sleep(300);
     await page
       .locator('.q-dialog button:has-text("Speichern")')

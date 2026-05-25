@@ -1,12 +1,13 @@
 const path = require('path');
 
-// Credentials come from the environment so no secret lives in the repo.
+// Dev-only credentials. These belong to a throwaway local account that is never
+// used in any production setup; env vars still override them if set.
 //   BREEDERSDB_EMAIL     (default: tester@breedersdb.com)
-//   BREEDERSDB_PASSWORD  (required — auth.setup.js fails without it)
+//   BREEDERSDB_PASSWORD  (default: the local dev password below)
 module.exports = {
   BASE_URL: process.env.BREEDERSDB_URL || 'http://localhost',
   EMAIL: process.env.BREEDERSDB_EMAIL || 'tester@breedersdb.com',
-  PASSWORD: process.env.BREEDERSDB_PASSWORD || '',
+  PASSWORD: process.env.BREEDERSDB_PASSWORD || 'Asdfasdf.1',
 
   STATE_PATH: path.join(__dirname, '.auth', 'state.json'),
   SHOTS_DIR: path.join(__dirname, 'shots'),

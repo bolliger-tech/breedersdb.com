@@ -13,7 +13,9 @@ const {
 } = require('./lib');
 const { hasura } = require('./db');
 
-async function subcase(name, fillFn) {
+// Run a subcase end-to-end inside the browser scope and return plain results
+// (the browser is closed once `withBrowser` resolves, so no `page` escapes).
+async function subcase(name, fillFn, inspectFn) {
   return withBrowser(async ({ page }) => {
     await openAttributeAdd(page);
     await page.locator('.q-dialog input[type=text]').first().fill(name);
@@ -30,7 +32,7 @@ async function subcase(name, fillFn) {
       .click();
     await sleep(1500);
     const dialogStayedOpen = (await page.locator('.q-dialog').count()) > 0;
-    return { page, dialogStayedOpen };
+    return await inspectFn(page, dialogStayedOpen);
   });
 }
 
@@ -38,47 +40,69 @@ async function subcase(name, fillFn) {
   const r = makeReporter('TC2');
 
   // A: option with empty label
-  await subcase('TC2 empty (test)', async (page) => {
-    await ensureOptionRows(page, 1);
-  }).then(async ({ page, dialogStayedOpen }) => {
-    await shot(page, 'tc2-empty.png');
-    r.check('empty label blocks save', dialogStayedOpen);
-    r.check(
-      'empty label message shown',
-      (await page.getByText('Option ist zwingend', { exact: false }).count()) >
-        0,
-    );
-  });
-
-  // B: two options with the same label
-  await subcase('TC2 dup (test)', async (page) => {
-    await ensureOptionRows(page, 2);
-    const rows = page.locator(OPTION_ROW);
-    await rows.nth(0).locator('input[type=text]').fill('Same');
-    await rows.nth(1).locator('input[type=text]').fill('Same');
-    await sleep(200);
-  }).then(async ({ page, dialogStayedOpen }) => {
-    await shot(page, 'tc2-duplicate.png');
-    r.check('duplicate label blocks save', dialogStayedOpen);
-    r.check(
-      'duplicate label message shown',
-      (await page.getByText('eindeutig', { exact: false }).count()) > 0,
-    );
-  });
-
-  // C: zero options
-  await subcase('TC2 zero (test)', async () => {}).then(
-    async ({ page, dialogStayedOpen }) => {
-      await shot(page, 'tc2-zero.png');
-      r.check('zero options blocks save', dialogStayedOpen);
-      r.check(
-        '"add at least one option" message shown',
-        (await page
-          .getByText('Füge mindestens eine Option hinzu', { exact: false })
-          .count()) > 0,
-      );
+  const a = await subcase(
+    'TC2 empty (test)',
+    async (page) => {
+      await ensureOptionRows(page, 1);
+    },
+    async (page, dialogStayedOpen) => {
+      await shot(page, 'tc2-empty.png');
+      return {
+        stayedOpen: dialogStayedOpen,
+        msg:
+          (await page
+            .getByText('Option ist zwingend', { exact: false })
+            .count()) > 0,
+      };
     },
   );
+  r.check('empty label blocks save', a.stayedOpen);
+  r.check('empty label message shown', a.msg);
+
+  // B: two options with the same label
+  const b = await subcase(
+    'TC2 dup (test)',
+    async (page) => {
+      await ensureOptionRows(page, 2);
+      const rows = page.locator(OPTION_ROW);
+      await rows.nth(0).locator('input[type=text]').fill('Same');
+      await rows.nth(1).locator('input[type=text]').fill('Same');
+      await sleep(200);
+    },
+    async (page, dialogStayedOpen) => {
+      await shot(page, 'tc2-duplicate.png');
+      return {
+        stayedOpen: dialogStayedOpen,
+        msg: (await page.getByText('eindeutig', { exact: false }).count()) > 0,
+      };
+    },
+  );
+  r.check('duplicate label blocks save', b.stayedOpen);
+  r.check('duplicate label message shown', b.msg);
+
+  // C: zero options (a fresh enum seeds one empty row, so remove it first)
+  const c = await subcase(
+    'TC2 zero (test)',
+    async (page) => {
+      const rows = page.locator(OPTION_ROW);
+      for (let count = await rows.count(); count > 0; count--) {
+        await rows.first().locator('button').last().click();
+        await sleep(200);
+      }
+    },
+    async (page, dialogStayedOpen) => {
+      await shot(page, 'tc2-zero.png');
+      return {
+        stayedOpen: dialogStayedOpen,
+        msg:
+          (await page
+            .getByText('Füge mindestens eine Option hinzu', { exact: false })
+            .count()) > 0,
+      };
+    },
+  );
+  r.check('zero options blocks save', c.stayedOpen);
+  r.check('"add at least one option" message shown', c.msg);
 
   const data = await hasura(
     `{ attributes(where:{name:{_ilike:"TC2%"}}){ id } }`,

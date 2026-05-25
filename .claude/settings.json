@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun --bun run dev)",
+      "Bash(bun --bun run build)",
+      "Bash(bun --bun run tsc *)",
+      "Bash(bun --bun run lint *)"
+    ]
+  }
+}

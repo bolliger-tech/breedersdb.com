@@ -6,7 +6,7 @@ const cfg = require('./config');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Quasar option-row inside the enum options editor (one row per option).
-const OPTION_ROW = '.q-dialog .row:has(.q-toggle)';
+const OPTION_ROW = '.q-dialog .base-sortable-list-item';
 
 // Run `fn` against a fresh browser/context/page. `headless: false` is needed for
 // the attribution entity-picker (it inits the QR scanner / BarcodeDetector, which

@@ -24,11 +24,7 @@
       @update:model-value="updateModelValue"
       @blur="blur"
     >
-      <template
-        v-for="slot in slotNames.filter((s) => s in $slots)"
-        :key="slot"
-        #[slot]
-      >
+      <template v-for="slot in forwardedSlotNames()" :key="slot" #[slot]>
         <slot :name="slot"></slot>
       </template>
     </q-input>
@@ -76,7 +72,15 @@ export interface EntityInputSlots extends QInputSlots {
   explainer: Slot;
 }
 const slots = defineSlots<EntityInputSlots>();
-const slotNames = Object.keys(slots) as (keyof typeof slots)[];
+
+// Read the live slots object on every render so conditionally-added slots
+// (e.g. a v-if-gated #append) are forwarded once their condition turns true.
+// `explainer` is handled separately by BaseInputLabel, so it is excluded here.
+function forwardedSlotNames() {
+  return (Object.keys(slots) as (keyof EntityInputSlots)[]).filter(
+    (name) => name !== 'explainer',
+  );
+}
 
 function updateModelValue(value: QInputProps['modelValue']) {
   if (!props.required && value === '') {

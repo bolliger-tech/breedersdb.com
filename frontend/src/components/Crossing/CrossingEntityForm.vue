@@ -1,26 +1,4 @@
 <template>
-  <EntityInput
-    :ref="(el: InputRef) => (refs.name = el)"
-    v-model="data.name"
-    :label="t('entity.commonColumns.name')"
-    :rules="[
-      (val: string) =>
-        !!val ||
-        t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
-      (val: string) =>
-        /^[-_\p{Letter}\d]{1,8}$/u.test(val) ||
-        t('base.validation.noSpecialCharsMaxLength', { max: 8 }),
-      async (val: string) =>
-        (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
-    ]"
-    type="text"
-    autocomplete="off"
-    debounce="300"
-    :loading="fetchingNameUnique"
-    required
-    trim
-    :explainer="t('crossings.nameExplainer')"
-  />
   <CultivarSelect
     :ref="(el: InputRef) => (refs.motherCultivarId = el)"
     v-model="data.mother_cultivar_id"
@@ -43,6 +21,41 @@
         : undefined
     "
   />
+  <EntityInput
+    :ref="(el: InputRef) => (refs.name = el)"
+    v-model="data.name"
+    :label="t('entity.commonColumns.name')"
+    :rules="[
+      (val: string) =>
+        !!val ||
+        t('base.validation.xIsRequired', { x: t('entity.commonColumns.name') }),
+      (val: string) =>
+        /^[-_\p{Letter}\d]{1,8}$/u.test(val) ||
+        t('base.validation.noSpecialCharsMaxLength', { max: 8 }),
+      async (val: string) =>
+        (await isNameUnique(val)) || t('base.validation.nameNotUnique'),
+    ]"
+    type="text"
+    autocomplete="off"
+    debounce="300"
+    :loading="fetchingNameUnique"
+    :error="acronymsError ? true : undefined"
+    :error-message="
+      acronymsError ? t('crossings.acronymsLoadError') : undefined
+    "
+    required
+    trim
+    :explainer="t('crossings.nameExplainer')"
+  >
+    <template v-if="suggestedName && suggestedName !== data.name" #append>
+      <q-btn
+        :label="t('crossings.autoFillName')"
+        flat
+        dense
+        @click="applySuggestedName"
+      />
+    </template>
+  </EntityInput>
   <EntityInput
     :ref="(el: InputRef) => (refs.note = el)"
     v-model.trim="data.note"
@@ -141,4 +154,46 @@ const hasMotherPlantsWithPollen = computed(
     !!motherPlantsData.value?.mother_plants?.filter((mp) => mp.pollen_id)
       .length,
 );
+
+const cultivarAcronymsQuery = graphql(`
+  query CrossingCultivarAcronyms($ids: [Int!]!) {
+    cultivars(where: { id: { _in: $ids } }) {
+      id
+      acronym
+    }
+  }
+`);
+
+const acronymIds = computed(() =>
+  [data.value.mother_cultivar_id, data.value.father_cultivar_id].filter(
+    (id): id is number => !!id,
+  ),
+);
+
+const { data: acronymsData, error: acronymsError } = useQuery({
+  query: cultivarAcronymsQuery,
+  variables: computed(() => ({ ids: acronymIds.value })),
+  pause: computed(() => acronymIds.value.length === 0),
+  requestPolicy: 'cache-and-network',
+  context: { additionalTypenames: ['cultivars'] },
+});
+
+const suggestedName = computed(() => {
+  const byId = new Map(
+    acronymsData.value?.cultivars?.map((c) => [c.id, c.acronym]) ?? [],
+  );
+  const mother = byId.get(data.value.mother_cultivar_id ?? -1)?.trim() ?? '';
+  const father = byId.get(data.value.father_cultivar_id ?? -1)?.trim() ?? '';
+  return capitalize(mother) + capitalize(father);
+});
+
+function applySuggestedName() {
+  if (suggestedName.value) {
+    data.value.name = suggestedName.value;
+  }
+}
+
+function capitalize(s: string) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+}
 </script>

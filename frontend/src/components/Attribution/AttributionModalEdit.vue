@@ -88,13 +88,11 @@ const model = ref<AttributionInputValue>({
       : null,
   photo_note: props.attribution.photo_note,
   // the cache stores the enum option's label in text_value; map it back to the
-  // option id (labels are unique per attribute)
+  // option id (labels are unique per attribute, so the match is exact)
   attribute_enum_option_id:
     props.attribution.data_type === 'ENUM'
       ? (props.attribution.attribute.enum_options.find(
-          (o) =>
-            o.label.toLowerCase() ===
-            (props.attribution.text_value ?? '').toLowerCase(),
+          (o) => o.label === props.attribution.text_value,
         )?.id ?? null)
       : null,
 });
@@ -190,19 +188,16 @@ async function saveEdit() {
   const isEnum = props.attribution.data_type === 'ENUM';
   const editedAttributionValue = {
     photo_note: typeof photo_note === 'string' ? photo_note : null,
-    // ENUM values reference an option and must leave the typed columns null
-    integer_value: isEnum ? null : (integer_value ?? null),
-    float_value: isEnum ? null : (float_value ?? null),
+    integer_value: integer_value ?? null,
+    float_value: float_value ?? null,
     text_value: isEnum
       ? null
       : typeof photo_value === 'string'
         ? photo_value
         : (text_value ?? null),
-    boolean_value: isEnum ? null : (boolean_value ?? null),
-    date_value: isEnum ? null : (date_value ?? null),
-    attribute_enum_option_id: isEnum
-      ? (attribute_enum_option_id ?? null)
-      : null,
+    boolean_value: boolean_value ?? null,
+    date_value: date_value ?? null,
+    attribute_enum_option_id: attribute_enum_option_id ?? null,
     text_note: text_note ?? null,
   };
   const photo = photo_value || photo_note;

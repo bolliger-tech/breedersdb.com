@@ -76,7 +76,6 @@
       ref="enumInputRef"
       :options="attribute.enum_options"
       :model-value="modelValue?.attribute_enum_option_id ?? null"
-      :required="required"
       @update:model-value="
         (val: number | null) =>
           updateModelValue({ attribute_enum_option_id: val })

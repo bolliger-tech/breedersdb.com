@@ -6,8 +6,6 @@
     :options="visibleOptions"
     option-value="id"
     option-label="label"
-    :required="required"
-    :clearable="!required"
     @update:model-value="(opt) => emit('update:modelValue', opt?.id ?? null)"
   />
 </template>
@@ -23,7 +21,6 @@ type EnumOption = AttributeFragment['enum_options'][number];
 const props = defineProps<{
   options: readonly EnumOption[];
   modelValue: number | null;
-  required: boolean;
 }>();
 
 const emit = defineEmits<{ 'update:modelValue': [value: number | null] }>();

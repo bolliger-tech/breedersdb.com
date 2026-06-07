@@ -49,7 +49,7 @@
   >
     <template v-if="suggestedName && suggestedName !== data.name" #append>
       <q-btn
-        :label="t('entity.autoFillNextSegment')"
+        :label="t('crossings.autoFillName')"
         flat
         dense
         @click="applySuggestedName"

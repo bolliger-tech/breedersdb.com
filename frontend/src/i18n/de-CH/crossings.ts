@@ -6,6 +6,7 @@ export const crossings = {
   },
   nameExplainer:
     'Typischerweise setzt sich der Name aus den Kürzeln der Mutter und des Vaters zusammen. Die Einhaltung dieser Konvention verhindert zudem doppeltes Erfassen von Kreuzungen.',
+  autoFillName: 'Auto-Ausfüllen',
   acronymsLoadError:
     'Cultivar-Daten konnten nicht geladen werden. Auto-Ausfüllen nicht verfügbar.',
   hints: {

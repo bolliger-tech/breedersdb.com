@@ -142,6 +142,7 @@ import AttributionInputBoolean from 'src/components/Attribution/Input/Attributio
 import AttributionInputPhoto from 'src/components/Attribution/Input/AttributionInputPhoto.vue';
 import AttributionInputEnum from 'src/components/Attribution/Input/AttributionInputEnum.vue';
 import AttributionInputNote from 'src/components/Attribution/Input/AttributionInputNote.vue';
+import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
 import { computed, ref, nextTick, watch, onMounted, type Slot } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { DistributiveOmit } from 'src/utils/typescriptUtils';
@@ -291,17 +292,7 @@ function updateModelValue({
 }
 
 const hasNoValue = computed(() => {
-  return (
-    !modelValue.value ||
-    (modelValue.value.integer_value === null &&
-      modelValue.value.float_value === null &&
-      modelValue.value.text_value === null &&
-      modelValue.value.boolean_value === null &&
-      modelValue.value.date_value === null &&
-      modelValue.value.photo_value === null &&
-      (modelValue.value.attribute_enum_option_id === null ||
-        modelValue.value.attribute_enum_option_id === undefined))
-  );
+  return !modelValue.value || !attributionValueHasValue(modelValue.value);
 });
 
 function setDefaultValue() {

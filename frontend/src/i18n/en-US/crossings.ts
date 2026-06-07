@@ -9,6 +9,8 @@ export const crossings = {
   nameExplainer:
     "Typically, the name consists of the mother's and father's acronyms. Adhering to this convention also prevents duplicate crossings.",
 
+  acronymsLoadError: 'Failed to load cultivar data. Auto-fill not available.',
+
   hints: {
     readonlyCultivar:
       "Mother plants rely on this crossing, therefore the value can't be changed.",

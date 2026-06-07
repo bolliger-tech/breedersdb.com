@@ -182,7 +182,7 @@ function transformEditData(data: unknown): VariablesOf<typeof editMutation> {
         is_default: o.is_default,
       },
     }))
-    // turn defaults off before turning one on, to respect the single-default index
+    // turn defaults off before turning one on, to respect the single-default constraint during the update
     .sort((a, b) => Number(a._set.is_default) - Number(b._set.is_default));
 
   const currentIds = new Set(

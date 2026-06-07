@@ -16,6 +16,13 @@ array_relationships:
         table:
           name: attribution_form_fields
           schema: public
+  - name: enum_options
+    using:
+      foreign_key_constraint_on:
+        column: attribute_id
+        table:
+          name: attribute_enum_options
+          schema: public
   - name: attribution_values
     using:
       foreign_key_constraint_on:

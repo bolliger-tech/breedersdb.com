@@ -55,6 +55,12 @@
     :data-type="data.data_type"
     :validation-rule="data.validation_rule"
   />
+  <AttributeEnumOptionsInput
+    v-if="data.data_type === 'ENUM'"
+    :ref="(el: InputRef) => (refs.enumOptions = el)"
+    v-model="data.enum_options"
+    :attribute-id="'id' in attribute ? attribute.id : undefined"
+  />
   <EntityInput
     :ref="(el: InputRef) => (refs.description = el)"
     v-model.trim="data.description"
@@ -81,10 +87,10 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ref } from 'vue';
+import { watch, ref } from 'vue';
+import { extend } from 'quasar';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import EntityToggle from '../Entity/Edit/EntityToggle.vue';
-import { watch } from 'vue';
 import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import type { AttributeModalEditProps } from './AttributeModalEdit.vue';
@@ -96,9 +102,19 @@ import AttributeTypeSelect from './AttributeTypeSelect.vue';
 import AttributeValidationRuleInput from './AttributeValidationRuleInput.vue';
 import AttributeLegendInput from './AttributeLegendInput.vue';
 import AttributeDefaultValueInput from './AttributeDefaultValueInput.vue';
-import { extend } from 'quasar';
+import AttributeEnumOptionsInput from './AttributeEnumOptionsInput.vue';
+import type { EnumOptionInput } from './enumOption';
+import type { DistributiveOmit } from 'src/utils/typescriptUtils';
 
 type Attribute = AttributeModalEditProps['attribute'];
+
+// While editing, enum options can be unsaved (no `id`) and carry a transient `_uid`,
+// so the form's working copy uses `EnumOptionInput` instead of the stricter server
+// shape on `Attribute`. The parent reconciles this when transforming the emitted
+// data into mutation variables.
+type AttributeFormData = DistributiveOmit<Attribute, 'enum_options'> & {
+  enum_options: EnumOptionInput[];
+};
 
 export interface AttributeEntityFormProps {
   attribute: Attribute;
@@ -106,7 +122,7 @@ export interface AttributeEntityFormProps {
 
 const props = defineProps<AttributeEntityFormProps>();
 const emits = defineEmits<{
-  change: [data: Attribute];
+  change: [data: AttributeFormData];
 }>();
 // for defineExpose() see below
 
@@ -119,9 +135,10 @@ const initialData = {
   disabled: props.attribute.disabled,
   legend: props.attribute.legend,
   default_value: props.attribute.default_value,
-} as Attribute;
+  enum_options: props.attribute.enum_options,
+} as AttributeFormData;
 
-const data = ref<Attribute>(extend(true, {}, initialData));
+const data = ref<AttributeFormData>(extend(true, {}, initialData));
 
 const refs = ref<{ [key: string]: InputRef | null }>({
   name: null,
@@ -131,6 +148,7 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   max: null,
   defaultValue: null,
   legend: null,
+  enumOptions: null,
   description: null,
   attributeType: null,
   disabled: null,

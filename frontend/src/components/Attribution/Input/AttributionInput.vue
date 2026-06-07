@@ -71,6 +71,16 @@
         (val: File | string | null) => updateModelValue({ photo_value: val })
       "
     />
+    <AttributionInputEnum
+      v-else-if="attribute.data_type === 'ENUM'"
+      ref="enumInputRef"
+      :options="attribute.enum_options"
+      :model-value="modelValue?.attribute_enum_option_id ?? null"
+      @update:model-value="
+        (val: number | null) =>
+          updateModelValue({ attribute_enum_option_id: val })
+      "
+    />
 
     <div v-if="attribute.description" class="q-mt-sm pre-line">
       {{ attribute.description }}
@@ -129,7 +139,9 @@ import AttributionInputText from 'src/components/Attribution/Input/AttributionIn
 import AttributionInputDate from 'src/components/Attribution/Input/AttributionInputDate.vue';
 import AttributionInputBoolean from 'src/components/Attribution/Input/AttributionInputBoolean.vue';
 import AttributionInputPhoto from 'src/components/Attribution/Input/AttributionInputPhoto.vue';
+import AttributionInputEnum from 'src/components/Attribution/Input/AttributionInputEnum.vue';
 import AttributionInputNote from 'src/components/Attribution/Input/AttributionInputNote.vue';
+import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
 import { computed, ref, nextTick, watch, onMounted, type Slot } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { DistributiveOmit } from 'src/utils/typescriptUtils';
@@ -153,6 +165,7 @@ export type AttributionInputValue =
       text_value?: string | null | undefined;
       photo_value?: File | string | null | undefined;
       photo_note?: File | string | null | undefined;
+      attribute_enum_option_id?: number | null | undefined;
     }
   | undefined;
 
@@ -196,6 +209,7 @@ async function clearModelValue() {
   modelValue.value.boolean_value = null;
   modelValue.value.date_value = null;
   modelValue.value.photo_value = null;
+  modelValue.value.attribute_enum_option_id = null;
   modelValue.value.text_note = null;
   modelValue.value.photo_note = null;
   noteInputRef.value?.clear();
@@ -214,6 +228,7 @@ function updateModelValue({
   boolean_value,
   date_value,
   photo_value,
+  attribute_enum_option_id,
   text_note,
   photo_note,
 }: {
@@ -223,6 +238,7 @@ function updateModelValue({
   boolean_value?: boolean | null;
   date_value?: string | null;
   photo_value?: File | string | null;
+  attribute_enum_option_id?: number | null;
   text_note?: string | null;
   photo_note?: File | string | null;
 }) {
@@ -234,6 +250,7 @@ function updateModelValue({
     boolean_value: null,
     date_value: null,
     photo_value: null,
+    attribute_enum_option_id: null,
     exceptional_attribution: props.exceptional,
     text_note: null,
     photo_note: null,
@@ -245,7 +262,8 @@ function updateModelValue({
       text_value === null ||
       boolean_value === null ||
       date_value === null ||
-      photo_value === null) &&
+      photo_value === null ||
+      attribute_enum_option_id === null) &&
     (model.text_note || model.photo_note)
   ) {
     confirm.value = true;
@@ -262,6 +280,10 @@ function updateModelValue({
   model.date_value = date_value === undefined ? model.date_value : date_value;
   model.photo_value =
     photo_value === undefined ? model.photo_value : photo_value;
+  model.attribute_enum_option_id =
+    attribute_enum_option_id === undefined
+      ? model.attribute_enum_option_id
+      : attribute_enum_option_id;
   model.text_note = text_note === undefined ? model.text_note : text_note;
   model.photo_note = photo_note === undefined ? model.photo_note : photo_note;
 
@@ -269,19 +291,15 @@ function updateModelValue({
 }
 
 const hasNoValue = computed(() => {
-  return (
-    !modelValue.value ||
-    (modelValue.value.integer_value === null &&
-      modelValue.value.float_value === null &&
-      modelValue.value.text_value === null &&
-      modelValue.value.boolean_value === null &&
-      modelValue.value.date_value === null &&
-      modelValue.value.photo_value === null)
-  );
+  return !modelValue.value || !attributionValueHasValue(modelValue.value);
 });
 
 function setDefaultValue() {
   const { data_type, default_value } = props.attribute;
+  const enumDefaultId =
+    data_type === 'ENUM'
+      ? (props.attribute.enum_options.find((o) => o.is_default)?.id ?? null)
+      : null;
   updateModelValue({
     boolean_value: data_type === 'BOOLEAN' ? default_value : null,
     date_value: data_type === 'DATE' ? default_value : null,
@@ -290,6 +308,7 @@ function setDefaultValue() {
       data_type === 'INTEGER' || data_type === 'RATING' ? default_value : null,
     text_value: data_type === 'TEXT' ? default_value : null,
     photo_value: null, // default_value is not supported for photos
+    attribute_enum_option_id: enumDefaultId,
   });
 }
 
@@ -299,6 +318,14 @@ onMounted(() => {
 });
 // update default value when editing attribute (AttributePreview.vue)
 watch(() => props.attribute.default_value, setDefaultValue);
+watch(
+  () =>
+    props.attribute.data_type === 'ENUM'
+      ? props.attribute.enum_options
+      : undefined,
+  setDefaultValue,
+  { deep: true },
+);
 
 const integerInputRef = ref<InstanceType<typeof AttributionInputNumber> | null>(
   null,
@@ -307,6 +334,9 @@ const floatInputRef = ref<InstanceType<typeof AttributionInputNumber> | null>(
   null,
 );
 const textInputRef = ref<InstanceType<typeof AttributionInputText> | null>(
+  null,
+);
+const enumInputRef = ref<InstanceType<typeof AttributionInputEnum> | null>(
   null,
 );
 
@@ -324,6 +354,9 @@ async function validate() {
       break;
     case 'TEXT':
       valueIsValid = Promise.resolve(textInputRef.value?.validate() ?? false);
+      break;
+    case 'ENUM':
+      valueIsValid = Promise.resolve(enumInputRef.value?.validate() ?? false);
       break;
   }
 
@@ -354,6 +387,9 @@ function focusInvalid() {
       break;
     case 'TEXT':
       textInputRef.value?.focus();
+      break;
+    case 'ENUM':
+      enumInputRef.value?.focus();
       break;
   }
 }

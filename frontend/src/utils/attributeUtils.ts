@@ -19,6 +19,7 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
     DATE: ColumnTypes.Date,
     PHOTO: ColumnTypes.Photo,
     RATING: ColumnTypes.Rating,
+    ENUM: ColumnTypes.Enum,
   }[dataType];
 
   if (typeof type === 'undefined') {
@@ -37,6 +38,7 @@ export function dataTypeToLabel(dataType: AttributeDataTypes, t: TFunc) {
     DATE: t('attributes.dataTypes.date'),
     PHOTO: t('attributes.dataTypes.photo'),
     RATING: t('attributes.dataTypes.rating'),
+    ENUM: t('attributes.dataTypes.enum'),
   }[dataType];
 
   if (typeof type === 'undefined') {

@@ -7,7 +7,7 @@
       :bg-color="inputBgColor"
       dense
       outlined
-      :hint="hint ?? (required ? t('base.required') : '')"
+      :hint="resolvedHint"
       :clearable="!required"
       :model-value="modelValue"
       :min="min"
@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { useInputBackground } from 'src/composables/useInputBackground';
 import type { QInput, QInputProps, QInputSlots } from 'quasar';
-import { nextTick, ref, type Slot } from 'vue';
+import { computed, nextTick, ref, type Slot } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { focusInView } from 'src/utils/focusInView';
@@ -98,4 +98,14 @@ async function blur(e: Event) {
 
 const { inputBgColor } = useInputBackground();
 const { t } = useI18n();
+
+const resolvedHint = computed<string | undefined>(
+  () =>
+    props.hint ??
+    (props.required
+      ? t('base.required')
+      : props.hideBottomSpace
+        ? undefined
+        : ''),
+);
 </script>

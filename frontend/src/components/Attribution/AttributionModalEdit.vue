@@ -75,7 +75,8 @@ const model = ref<AttributionInputValue>({
   integer_value: props.attribution.integer_value,
   float_value: props.attribution.float_value,
   text_value:
-    props.attribution.data_type === 'PHOTO'
+    props.attribution.data_type === 'PHOTO' ||
+    props.attribution.data_type === 'ENUM'
       ? null
       : props.attribution.text_value,
   boolean_value: props.attribution.boolean_value,
@@ -86,6 +87,14 @@ const model = ref<AttributionInputValue>({
       ? props.attribution.text_value
       : null,
   photo_note: props.attribution.photo_note,
+  // the cache stores the enum option's label in text_value; map it back to the
+  // option id (labels are unique per attribute, so the match is exact)
+  attribute_enum_option_id:
+    props.attribution.data_type === 'ENUM'
+      ? (props.attribution.attribute.enum_options.find(
+          (o) => o.label === props.attribution.text_value,
+        )?.id ?? null)
+      : null,
 });
 const editedData = ref<AttributionInputValue>(undefined);
 
@@ -174,15 +183,21 @@ async function saveEdit() {
     boolean_value,
     date_value,
     text_note,
+    attribute_enum_option_id,
   } = editedData.value;
+  const isEnum = props.attribution.data_type === 'ENUM';
   const editedAttributionValue = {
     photo_note: typeof photo_note === 'string' ? photo_note : null,
     integer_value: integer_value ?? null,
     float_value: float_value ?? null,
-    text_value:
-      typeof photo_value === 'string' ? photo_value : (text_value ?? null),
+    text_value: isEnum
+      ? null
+      : typeof photo_value === 'string'
+        ? photo_value
+        : (text_value ?? null),
     boolean_value: boolean_value ?? null,
     date_value: date_value ?? null,
+    attribute_enum_option_id: attribute_enum_option_id ?? null,
     text_note: text_note ?? null,
   };
   const photo = photo_value || photo_note;

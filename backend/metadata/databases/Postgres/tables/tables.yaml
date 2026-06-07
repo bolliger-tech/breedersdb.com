@@ -1,6 +1,7 @@
 - "!include public_analyze_filter_base_tables.yaml"
 - "!include public_analyze_filters.yaml"
 - "!include public_attribute_data_types.yaml"
+- "!include public_attribute_enum_options.yaml"
 - "!include public_attribute_types.yaml"
 - "!include public_attributes.yaml"
 - "!include public_attribution_form_fields.yaml"

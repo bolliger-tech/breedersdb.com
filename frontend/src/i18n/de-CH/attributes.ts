@@ -15,12 +15,26 @@ export const attributes = {
     date: 'Datum',
     photo: 'Foto',
     rating: 'Bewertung',
+    enum: 'Auswahl',
   },
   attributeTypes: {
     observation: 'Beobachtung',
     sample: 'Muster',
     treatment: 'Behandlung',
     other: 'Sonstiges',
+  },
+  enumOptions: {
+    label: 'Optionen',
+    addOption: 'Option hinzufügen',
+    optionPlaceholder: 'Option',
+    preSelected: 'Vorausgewählt',
+    disabled: 'Deaktiviert',
+    disabledExplainer:
+      'Deaktivierte Optionen können für neue Attributionen nicht ausgewählt werden, bleiben aber bei bestehenden erhalten.',
+    deleteUsedNotAllowed:
+      'Diese Option wird verwendet und kann nicht gelöscht werden. Deaktiviere sie stattdessen, um sie für neue Auswahlen auszublenden.',
+    noOptions: 'Füge mindestens eine Option hinzu.',
+    duplicateLabel: 'Optionsbezeichnungen müssen eindeutig sein.',
   },
   disableExplainer:
     'Wenn du dieses Attribut deaktivierst, wird es in bestehenden Formularen versteckt und du kannst es nicht mehr zu neuen Formularen hinzufügen.',

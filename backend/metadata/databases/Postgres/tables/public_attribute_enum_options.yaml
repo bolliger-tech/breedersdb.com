@@ -1,0 +1,49 @@
+table:
+  name: attribute_enum_options
+  schema: public
+object_relationships:
+  - name: attribute
+    using:
+      foreign_key_constraint_on: attribute_id
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - attribute_id
+        - label
+        - position
+        - disabled
+        - is_default
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - id
+        - attribute_id
+        - label
+        - position
+        - disabled
+        - is_default
+        - created
+        - modified
+      filter: {}
+      allow_aggregations: true
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - label
+        - position
+        - disabled
+        - is_default
+      filter: {}
+      check: {}
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter: {}
+    comment: ""

@@ -5,6 +5,20 @@ object_relationships:
   - name: attribute
     using:
       foreign_key_constraint_on: attribute_id
+  - name: attribute_enum_option
+    using:
+      manual_configuration:
+        remote_table:
+          name: attribute_enum_options
+          schema: public
+        column_mapping:
+          attribute_id: attribute_id
+          attribute_enum_option_id: id
+    comment: >-
+      Wired manually because Hasura can only auto-derive relationships from
+      single-column foreign keys. This relationship is backed by the composite
+      FK (attribute_id, attribute_enum_option_id) -> attribute_enum_options
+      (attribute_id, id), so the column mapping must be declared by hand.
   - name: attribution
     using:
       foreign_key_constraint_on: attribution_id
@@ -20,6 +34,7 @@ insert_permissions:
         - float_value
         - integer_value
         - attribute_id
+        - attribute_enum_option_id
         - attribution_id
         - text_note
         - photo_note
@@ -37,6 +52,7 @@ select_permissions:
         - id
         - integer_value
         - attribute_id
+        - attribute_enum_option_id
         - attribution_id
         - text_note
         - photo_note
@@ -57,6 +73,7 @@ update_permissions:
         - float_value
         - integer_value
         - attribute_id
+        - attribute_enum_option_id
         - attribution_id
         - text_note
         - photo_note

@@ -22,8 +22,9 @@
       hide-selected
       :clearable="clearable"
       :loading="loading"
-      :hint="hint ? hint : required ? t('base.required') : ''"
+      :hint="resolvedHint"
       :label="inlineLabel"
+      :hide-bottom-space="hideBottomSpace"
       bottom-slots
       :readonly="readonly"
       :disable="disable"
@@ -103,6 +104,7 @@ export interface EntitySelectPropsWithoutModel<T> {
   readonly?: QSelectProps['readonly'] | undefined;
   disable?: QSelectProps['disable'] | undefined;
   hint?: string | undefined;
+  hideBottomSpace?: boolean | undefined;
   filterWithWildcardsAroundDots?: boolean | undefined;
 }
 
@@ -194,6 +196,12 @@ const rules = computed(() => {
 
 const optionValueKey = props.optionValue as string;
 const optionLabelKey = props.optionLabel as string;
+
+const resolvedHint = computed<string | undefined>(() => {
+  if (props.hint) return props.hint;
+  if (props.required) return t('base.required');
+  return props.hideBottomSpace ? undefined : '';
+});
 
 const inlineLabel = ref<string | undefined>(undefined);
 </script>

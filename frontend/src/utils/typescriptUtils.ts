@@ -37,3 +37,13 @@ export type UndefinedToNull<T> = {
 export type PartialWithUndefined<T> = {
   [P in keyof T]?: T[P] | undefined;
 };
+
+/**
+ * Empty array type
+ */
+export type EmptyArray = never[];
+
+/**
+ * Non-empty array type
+ */
+export type NonEmptyArray<T> = [T, ...T[]];

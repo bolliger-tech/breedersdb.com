@@ -15,6 +15,9 @@ const query = graphql(`
       name
       validation_rule
       data_type
+      enum_options(order_by: { position: asc }) {
+        label
+      }
     }
   }
 `);
@@ -120,7 +123,13 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
         allowEmpty: true,
       };
     case ColumnTypes.Enum:
-      throw Error('Enum is not supported yet');
+      return {
+        type,
+        allowEmpty: false,
+        validation: {
+          options: attribute.enum_options.map((o) => o.label),
+        },
+      };
     default:
       return {
         type,

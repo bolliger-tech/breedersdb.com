@@ -26,10 +26,10 @@
       <slot />
     </div>
     <div
-      v-if="$slots.controls"
+      v-if="$slots.after"
       :style="`transform: translateX(${noSpaceBefore ? '0' : '2em'})`"
     >
-      <slot name="controls" />
+      <slot name="after" />
     </div>
     <q-separator
       v-if="!last"

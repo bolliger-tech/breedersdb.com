@@ -52,7 +52,7 @@
         </q-tooltip>
       </q-btn>
 
-      <template #controls>
+      <template #after>
         <div class="row items-center q-gutter-x-md">
           <q-checkbox
             :model-value="option.is_default"

@@ -6,10 +6,7 @@
     :with-insert-data="transformInsertData"
     :with-edit-data="transformEditData"
     :edit-mutation-context="{
-      additionalTypenames: ['cached_attributions', 'attribute_enum_options'],
-    }"
-    :insert-mutation-context="{
-      additionalTypenames: ['attribute_enum_options'],
+      additionalTypenames: ['cached_attributions'],
     }"
     index-path="/attributes"
     sprite-icon="form"

@@ -27,7 +27,7 @@
       @click="$emit('delete')"
     />
 
-    <template #controls>
+    <template #after>
       <q-checkbox
         v-model="required"
         :label="t('attributionForms.required')"

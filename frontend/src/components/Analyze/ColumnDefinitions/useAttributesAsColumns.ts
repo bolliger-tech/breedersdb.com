@@ -15,9 +15,8 @@ const query = graphql(`
       name
       validation_rule
       data_type
-      enum_options {
+      enum_options(order_by: { position: asc }) {
         label
-        position
       }
     }
   }
@@ -128,10 +127,7 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
         type,
         allowEmpty: false,
         validation: {
-          options: attribute.enum_options
-            .slice()
-            .sort((a, b) => a.position - b.position)
-            .map((o) => o.label),
+          options: attribute.enum_options.map((o) => o.label),
         },
       };
     default:

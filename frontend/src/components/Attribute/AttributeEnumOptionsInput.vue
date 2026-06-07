@@ -18,7 +18,6 @@
         :model-value="option.label"
         :placeholder="t('attributes.enumOptions.optionPlaceholder')"
         type="text"
-        autocomplete="off"
         hide-bottom-space
         :rules="[
           (v: string) =>
@@ -86,7 +85,7 @@
       no-caps
       icon="add"
       color="primary"
-      class="full-width"
+      class="full-width q-my-md"
       :label="t('attributes.enumOptions.addOption')"
       @click="addOption"
     />
@@ -170,7 +169,6 @@ function appendEmptyOption() {
       _uid: nextUid(),
     },
   ]);
-  emptyError.value = false;
 }
 
 async function addOption() {

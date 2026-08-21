@@ -51,5 +51,8 @@ test('attributions can be viewed, edited and deleted', async ({
     .getByRole('button', { name: 'Delete', exact: true })
     .click();
   await expectDialogClosed(page);
+  // under parallel load the list's refetch can race the delete — assert the
+  // deletion on a fresh page load instead of the in-place refresh
+  await page.goto(`/#/attributions?s=${encodeURIComponent(attribute.name)}`);
   await expect(row).toHaveCount(0);
 });

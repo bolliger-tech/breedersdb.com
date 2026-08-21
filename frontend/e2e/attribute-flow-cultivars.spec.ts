@@ -11,6 +11,7 @@ async function walkToForm(
   page: Page,
   formName: string,
   cultivarName: string,
+  opts: { repeat?: number } = {},
 ): Promise<void> {
   await page.addInitScript(() =>
     localStorage.setItem(
@@ -30,6 +31,12 @@ async function walkToForm(
   await formField(page, 'Who collects the data?')
     .locator('input')
     .fill('E2E Robot');
+  if (opts.repeat) {
+    await formField(page, 'Repeat').locator('.q-toggle').click();
+    await formField(page, 'Number of attributions per object')
+      .locator('input')
+      .fill(String(opts.repeat));
+  }
   await continueButton().click();
 
   await selectOption(page, formField(page, 'Cultivar name'), cultivarName, {
@@ -135,4 +142,38 @@ test('force-save dialog guards empty required fields', async ({
   await expect(page.locator('.q-notification')).toContainText(
     'Attribution saved.',
   );
+});
+
+// Repeat mode (?repeat= in the URL) keeps the form open after each save and
+// counts the attributions on the save button.
+test('repeat mode keeps the form open and counts saves', async ({
+  page,
+  seed,
+}) => {
+  const attribute = await seed.attribute({ dataType: 'TEXT' });
+  const form = await seed.attributionForm([{ id: attribute.id }]);
+  const cultivar = await seed.cultivar();
+
+  await walkToForm(page, form.name, cultivar.display_name, { repeat: 2 });
+  expect(page.url()).toContain('repeat=2');
+
+  const textInput = formField(page, attribute.name).locator('textarea');
+  const saveButton = page.locator('.attribute-form-save-btn .q-btn');
+  const counter = page.locator('.attribute-form-save-btn');
+
+  await textInput.fill('first');
+  await saveButton.click();
+  await expect(page.locator('.q-notification').last()).toContainText(
+    'Attribution saved.',
+  );
+  // the form stays open on the same cultivar, the counter advances
+  await expect(page.getByRole('heading', { level: 2 })).toContainText(
+    cultivar.display_name,
+  );
+  await expect(counter).toContainText('1 / 2');
+
+  // reaching the repeat target returns to the entity picker for the next one
+  await textInput.fill('second');
+  await saveButton.click();
+  await expect(formField(page, 'Cultivar name')).toBeVisible();
 });

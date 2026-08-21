@@ -34,7 +34,7 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Attribution forms      | done   | `attribution-forms.spec.ts`      | field picker + required flags; drag-reorder not exercised (native HTML5 DnD)                 |
 | Users                  | done   | `users.spec.ts`                  | change-password lives in the edit modal (nested dialog); NEVER touch `tester@breedersdb.com` |
 | Personal access tokens | done   | `personal-access-tokens.spec.ts` | create/revoke through UI; token shown once                                                   |
-| Attributions (edit)    | todo   |                                  | no AddModal — created via attribute flow; test view + edit modal on `/attributions`          |
+| Attributions (edit)    | done   | `attributions.spec.ts`           | no AddModal — created via attribute flow; test view + edit modal on `/attributions`          |
 
 ## Attribution flow (`/{cultivars,plants,groups,lots}/attribute`)
 

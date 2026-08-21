@@ -41,7 +41,7 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Feature                                                 | Status | Spec                               | Notes                                                                                           |
 | ------------------------------------------------------- | ------ | ---------------------------------- | ----------------------------------------------------------------------------------------------- |
 | Full stepper on cultivars: all input types, save, toast | done   | `attribute-flow-cultivars.spec.ts` | preseed picker mode via localStorage (`__q_strn\|cultivar-select`) — QR default breaks headless |
-| Force-save dialog when required fields empty            | todo   |                                    |                                                                                                 |
+| Force-save dialog when required fields empty            | done   | `attribute-flow-cultivars.spec.ts` | dialog only fires when some value is set — all-empty shows a no-data notification               |
 | Repeat mode (`?repeat=`) keeps form open                | todo   |                                    |                                                                                                 |
 | Ad-hoc extra attribute (AttributionAddFormAddInput)     | todo   |                                    |                                                                                                 |
 | Slim happy-path on plants, groups, lots                 | todo   |                                    |                                                                                                 |

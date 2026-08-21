@@ -46,6 +46,7 @@ let processCounter = 0;
 export class Seeder {
   private created: { table: Table; id: number }[] = [];
   private userEmails: string[] = [];
+  private userTokenIds: number[] = [];
 
   // 7 chars, unique enough across parallel workers and consecutive runs
   uid(): string {
@@ -79,6 +80,18 @@ export class Seeder {
   // Same for a user created through the UI (users are deleted by email).
   trackUserEmail(email: string): void {
     this.userEmails.push(email);
+  }
+
+  // Same for a personal access token created through the UI, by its unique
+  // name.
+  async trackUserTokenByName(name: string): Promise<void> {
+    const data = await adminGql<{ rows: IdRow[] }>(
+      `query ($name: citext!) {
+        rows: user_tokens(where: { name: { _eq: $name } }) { id }
+      }`,
+      { name },
+    );
+    for (const row of data.rows) this.userTokenIds.push(row.id);
   }
 
   // Same, by (unique) name right after creating a row in the UI: cleanup then
@@ -484,6 +497,15 @@ export class Seeder {
       );
     }
 
+    if (this.userTokenIds.length > 0) {
+      await adminGql(
+        `mutation ($ids: [Int!]!) {
+          delete_user_tokens(where: { id: { _in: $ids } }) { affected_rows }
+        }`,
+        { ids: this.userTokenIds },
+      );
+    }
+
     if (this.userEmails.length > 0) {
       await adminGql(
         `mutation ($emails: [citext!]!) {
@@ -496,5 +518,6 @@ export class Seeder {
 
     this.created = [];
     this.userEmails = [];
+    this.userTokenIds = [];
   }
 }

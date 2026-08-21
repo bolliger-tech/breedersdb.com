@@ -17,24 +17,24 @@ Statuses: `todo` | `partial` | `done` | `blocked (<reason>)`
 Per entity: create via AddModal, view, edit, delete, search via `?s=`.
 Template-create (`new/:templateId`) where the UI offers it.
 
-| Entity                 | Status | Spec                        | Notes                                                                                        |
-| ---------------------- | ------ | --------------------------- | -------------------------------------------------------------------------------------------- |
-| Orchards               | done   | `orchards.spec.ts`          | pilot: simplest form                                                                         |
-| Rootstocks             | done   | `rootstocks.spec.ts`        |                                                                                              |
-| Graftings              | done   | `graftings.spec.ts`         |                                                                                              |
-| Plant rows (`/rows`)   | done   | `plant-rows.spec.ts`        | needs an orchard to select                                                                   |
-| Crossings              | done   | `crossings.spec.ts`         | mother/father cultivar selects                                                               |
-| Lots                   | done   | `lots.spec.ts`              | name segment `\d\d[A-Z]`; crossing + orchard selects                                         |
-| Cultivars              | done   | `cultivars.spec.ts`         | pilot: breeders-cultivar/variety toggle; segment input is a masked q-input ("Breeding name") |
-| Plant groups           | done   | `plant-groups.spec.ts`      |                                                                                              |
-| Plants                 | done   | `plants.spec.ts`            | no UI delete — Eliminate button `#`-prefixes label id, moves plant to disabled tab           |
-| Pollen                 | done   | `pollen.spec.ts`            |                                                                                              |
-| Mother plants          | done   | `mother-plants.spec.ts`     | crossing must have matching mother cultivar (see `Seeder.motherPlant`)                       |
-| Attributes             | done   | `attributes.spec.ts`        | one test per data type; ENUM auto-adds an empty option row; RATING has no step input         |
-| Attribution forms      | done   | `attribution-forms.spec.ts` | field picker + required flags; drag-reorder not exercised (native HTML5 DnD)                 |
-| Users                  | done   | `users.spec.ts`             | change-password lives in the edit modal (nested dialog); NEVER touch `tester@breedersdb.com` |
-| Personal access tokens | todo   |                             | create/revoke through UI; token shown once                                                   |
-| Attributions (edit)    | todo   |                             | no AddModal — created via attribute flow; test view + edit modal on `/attributions`          |
+| Entity                 | Status | Spec                             | Notes                                                                                        |
+| ---------------------- | ------ | -------------------------------- | -------------------------------------------------------------------------------------------- |
+| Orchards               | done   | `orchards.spec.ts`               | pilot: simplest form                                                                         |
+| Rootstocks             | done   | `rootstocks.spec.ts`             |                                                                                              |
+| Graftings              | done   | `graftings.spec.ts`              |                                                                                              |
+| Plant rows (`/rows`)   | done   | `plant-rows.spec.ts`             | needs an orchard to select                                                                   |
+| Crossings              | done   | `crossings.spec.ts`              | mother/father cultivar selects                                                               |
+| Lots                   | done   | `lots.spec.ts`                   | name segment `\d\d[A-Z]`; crossing + orchard selects                                         |
+| Cultivars              | done   | `cultivars.spec.ts`              | pilot: breeders-cultivar/variety toggle; segment input is a masked q-input ("Breeding name") |
+| Plant groups           | done   | `plant-groups.spec.ts`           |                                                                                              |
+| Plants                 | done   | `plants.spec.ts`                 | no UI delete — Eliminate button `#`-prefixes label id, moves plant to disabled tab           |
+| Pollen                 | done   | `pollen.spec.ts`                 |                                                                                              |
+| Mother plants          | done   | `mother-plants.spec.ts`          | crossing must have matching mother cultivar (see `Seeder.motherPlant`)                       |
+| Attributes             | done   | `attributes.spec.ts`             | one test per data type; ENUM auto-adds an empty option row; RATING has no step input         |
+| Attribution forms      | done   | `attribution-forms.spec.ts`      | field picker + required flags; drag-reorder not exercised (native HTML5 DnD)                 |
+| Users                  | done   | `users.spec.ts`                  | change-password lives in the edit modal (nested dialog); NEVER touch `tester@breedersdb.com` |
+| Personal access tokens | done   | `personal-access-tokens.spec.ts` | create/revoke through UI; token shown once                                                   |
+| Attributions (edit)    | todo   |                                  | no AddModal — created via attribute flow; test view + edit modal on `/attributions`          |
 
 ## Attribution flow (`/{cultivars,plants,groups,lots}/attribute`)
 

@@ -34,15 +34,29 @@ export async function selectOption(
   field: Locator,
   option: string | RegExp,
 ): Promise<void> {
+  const input = field.locator('input:not([readonly])').first();
+  const menu = page.locator('.q-menu');
+  const options = menu.locator('[role="option"]');
   await field.locator('.q-field__control').first().click();
   if (typeof option === 'string') {
-    await field.locator('input:not([readonly])').first().fill(option);
+    await input.fill(option);
+    // Wait until the input-debounced (500ms) async @filter has been applied,
+    // i.e. every listed option matches the typed text. Clicking earlier
+    // leaves the filter's done-callback pending, and when it resolves it
+    // re-opens the menu over the form, swallowing the next click (e.g. save).
+    await expect(async () => {
+      const texts = await options.allTextContents();
+      expect(texts.length).toBeGreaterThan(0);
+      for (const text of texts) expect(text).toContain(option);
+    }).toPass();
   }
-  await page
-    .locator('.q-menu [role="option"]')
-    .filter({ hasText: option })
-    .first()
-    .click();
+  await options.filter({ hasText: option }).first().click();
+  // Postcondition: menu gone, pick stuck (EntitySelect is fill-input, so the
+  // input shows the selected label after the popup closed).
+  await expect(menu).toHaveCount(0);
+  await expect(input).toHaveValue(
+    typeof option === 'string' ? new RegExp(escapeRegExp(option)) : option,
+  );
 }
 
 // The save control in entity modals: a plain button, or the main section of a

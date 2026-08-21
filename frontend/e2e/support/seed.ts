@@ -76,6 +76,11 @@ export class Seeder {
     this.created.push({ table, id });
   }
 
+  // Same for a user created through the UI (users are deleted by email).
+  trackUserEmail(email: string): void {
+    this.userEmails.push(email);
+  }
+
   // Same, by (unique) name right after creating a row in the UI: cleanup then
   // works even if the test fails before its own delete step. Pass the column
   // for tables without a plain name (cultivars/plant_groups: display_name).

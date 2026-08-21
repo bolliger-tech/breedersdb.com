@@ -32,7 +32,7 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Mother plants          | done   | `mother-plants.spec.ts`     | crossing must have matching mother cultivar (see `Seeder.motherPlant`)                       |
 | Attributes             | done   | `attributes.spec.ts`        | one test per data type; ENUM auto-adds an empty option row; RATING has no step input         |
 | Attribution forms      | done   | `attribution-forms.spec.ts` | field picker + required flags; drag-reorder not exercised (native HTML5 DnD)                 |
-| Users                  | todo   |                             | create own user; NEVER touch `tester@breedersdb.com`; change-password only on created user   |
+| Users                  | done   | `users.spec.ts`             | change-password lives in the edit modal (nested dialog); NEVER touch `tester@breedersdb.com` |
 | Personal access tokens | todo   |                             | create/revoke through UI; token shown once                                                   |
 | Attributions (edit)    | todo   |                             | no AddModal — created via attribute flow; test view + edit modal on `/attributions`          |
 

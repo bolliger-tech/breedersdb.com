@@ -744,8 +744,7 @@ describe('personal access tokens', () => {
   });
 
   test('fail to get me with expired personal access token', async () => {
-    // wait for token to expire
-    const wait = new Date(pat2.expires!).getTime() - Date.now() + 10;
+    const wait = new Date(pat2.expires!).getTime() - Date.now() + 2000;
     await new Promise((r) => setTimeout(r, wait));
 
     const json = await post(

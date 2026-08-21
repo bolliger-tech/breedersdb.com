@@ -24,7 +24,7 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Graftings              | done   | `graftings.spec.ts`  |                                                                                              |
 | Plant rows (`/rows`)   | done   | `plant-rows.spec.ts` | needs an orchard to select                                                                   |
 | Crossings              | done   | `crossings.spec.ts`  | mother/father cultivar selects                                                               |
-| Lots                   | todo   |                      | name segment `\d\d[A-Z]`; crossing + orchard selects                                         |
+| Lots                   | done   | `lots.spec.ts`       | name segment `\d\d[A-Z]`; crossing + orchard selects                                         |
 | Cultivars              | done   | `cultivars.spec.ts`  | pilot: breeders-cultivar/variety toggle; segment input is a masked q-input ("Breeding name") |
 | Plant groups           | todo   |                      |                                                                                              |
 | Plants                 | todo   |                      | label id `\d{8}`; rootstock/grafting/row selects; eliminate flag                             |

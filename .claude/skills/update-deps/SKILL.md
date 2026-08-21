@@ -1,7 +1,6 @@
 ---
 name: update-deps
-description: Upgrade a service's dependencies with per-package changelog review, impact assessment, and real-harness verification. Args:(backend|cloud-function|frontend) [minor|major]. Backend also bumps the Ansible deploy pin. Never commits unless the user explicitly asks.
-disable-model-invocation: true
+description: Upgrade a service's dependencies. Args:(backend|cloud-function|frontend) [minor|major].
 ---
 
 # update-deps

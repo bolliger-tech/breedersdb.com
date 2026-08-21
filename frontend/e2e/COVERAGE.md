@@ -30,7 +30,7 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Plants                 | done   | `plants.spec.ts`        | no UI delete — Eliminate button `#`-prefixes label id, moves plant to disabled tab           |
 | Pollen                 | done   | `pollen.spec.ts`        |                                                                                              |
 | Mother plants          | done   | `mother-plants.spec.ts` | crossing must have matching mother cultivar (see `Seeder.motherPlant`)                       |
-| Attributes             | todo   |                         | one spec per data type incl. ENUM options editor                                             |
+| Attributes             | done   | `attributes.spec.ts`    | one test per data type; ENUM auto-adds an empty option row; RATING has no step input         |
 | Attribution forms      | todo   |                         | field picker + required flags + ordering                                                     |
 | Users                  | todo   |                         | create own user; NEVER touch `tester@breedersdb.com`; change-password only on created user   |
 | Personal access tokens | todo   |                         | create/revoke through UI; token shown once                                                   |

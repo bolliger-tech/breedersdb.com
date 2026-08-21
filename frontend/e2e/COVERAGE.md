@@ -28,7 +28,7 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Cultivars              | done   | `cultivars.spec.ts`    | pilot: breeders-cultivar/variety toggle; segment input is a masked q-input ("Breeding name") |
 | Plant groups           | done   | `plant-groups.spec.ts` |                                                                                              |
 | Plants                 | done   | `plants.spec.ts`       | no UI delete — Eliminate button `#`-prefixes label id, moves plant to disabled tab           |
-| Pollen                 | todo   |                        |                                                                                              |
+| Pollen                 | done   | `pollen.spec.ts`       |                                                                                              |
 | Mother plants          | todo   |                        | crossing must have matching mother cultivar (see `Seeder.motherPlant`)                       |
 | Attributes             | todo   |                        | one spec per data type incl. ENUM options editor                                             |
 | Attribution forms      | todo   |                        | field picker + required flags + ordering                                                     |

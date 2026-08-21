@@ -33,6 +33,9 @@ export async function selectOption(
   page: Page,
   field: Locator,
   option: string | RegExp,
+  // pickers that clear themselves after a pick (e.g. the attribution form's
+  // "Add Field") never show the selected label — pass { resets: true } there
+  opts: { resets?: boolean } = {},
 ): Promise<void> {
   const input = field.locator('input:not([readonly])').first();
   const menu = page.locator('.q-menu');
@@ -54,9 +57,11 @@ export async function selectOption(
   // Postcondition: menu gone, pick stuck (EntitySelect is fill-input, so the
   // input shows the selected label after the popup closed).
   await expect(menu).toHaveCount(0);
-  await expect(input).toHaveValue(
-    typeof option === 'string' ? new RegExp(escapeRegExp(option)) : option,
-  );
+  if (!opts.resets) {
+    await expect(input).toHaveValue(
+      typeof option === 'string' ? new RegExp(escapeRegExp(option)) : option,
+    );
+  }
 }
 
 // The save control in entity modals: a plain button, or the main section of a

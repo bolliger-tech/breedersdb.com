@@ -44,7 +44,7 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Force-save dialog when required fields empty            | done   | `attribute-flow-cultivars.spec.ts` | dialog only fires when some value is set — all-empty shows a no-data notification               |
 | Repeat mode (`?repeat=`) keeps form open                | done   | `attribute-flow-cultivars.spec.ts` | on reaching the target the flow returns to the entity picker                                    |
 | Ad-hoc extra attribute (AttributionAddFormAddInput)     | done   | `attribute-flow-cultivars.spec.ts` |                                                                                                 |
-| Slim happy-path on plants, groups, lots                 | todo   |                                    |                                                                                                 |
+| Slim happy-path on plants, groups, lots                 | done   | `attribute-flow-slim.spec.ts`      | group step-4 heading shows the generated `G…` label id, not the display name                    |
 
 ## Analyze (`/{cultivars,plants,groups,lots}/analyze`)
 

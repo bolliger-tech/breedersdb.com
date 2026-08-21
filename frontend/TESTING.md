@@ -8,6 +8,8 @@ end-to-end system tests.
 
 ## Automated
 
+### Unit tests
+
 Based on [vitest](https://vitest.dev/).
 
 ```bash
@@ -18,6 +20,34 @@ Bun is currently not supported. Use node instead.
 
 The tests are co-located with the components and have the same name as the
 component with the `.vitest.test.ts` extension.
+
+### End-to-end tests
+
+Based on [Playwright](https://playwright.dev/). They drive a real browser
+against the running stack, which is what unit tests cannot cover: routing,
+urql, the generated GraphQL types, Quasar components and vue-i18n together.
+This is the safety net for dependency upgrades.
+
+```bash
+yarn test:e2e        # headless
+yarn test:e2e:ui     # interactive runner
+```
+
+Pre-conditions:
+
+- The whole dev stack is up (cloud-function, backend, `quasar dev`) and
+  reachable at `http://localhost` - see the root `CLAUDE.md`. Override the URL
+  with `E2E_BASE_URL`.
+- **The database contains data.** The list specs assert that rows render, so an
+  empty database fails them. Use `../import-live-db.sh` or create fixtures.
+- The dev account `tester@breedersdb.com` / `Asdfasdf.1` exists (see
+  `../cloud-function/README.md` for the `InsertUser` mutation). Override with
+  `E2E_EMAIL` / `E2E_PASSWORD`.
+
+The specs live in `e2e/`. `auth.setup.ts` signs in once through the UI and
+stores the session in `e2e/.auth/user.json`, which every spec reuses; it also
+pins the locale to `en-US` so assertions on text do not depend on the test
+account's saved language.
 
 ## Manual
 

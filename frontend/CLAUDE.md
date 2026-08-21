@@ -47,7 +47,7 @@ Label printing goes through [src/composables/print/](src/composables/print/): `u
 
 ## Testing
 
-Unit tests are co-located with components as `*.vitest.test.ts` (vitest). The bulk of verification is manual end-to-end — see [TESTING.md](TESTING.md), which is the source of truth for Analyze/attribution behavior.
+Unit tests are co-located with components as `*.vitest.test.ts` (vitest). Playwright e2e tests live in [e2e/](e2e/) (`bun run test:e2e`, requires the running dev stack); they are self-seeding via the Hasura admin API — see [TESTING.md](TESTING.md) and [e2e/COVERAGE.md](e2e/COVERAGE.md). Grow the suite with the `generate-e2e` skill. The manual plan in TESTING.md remains the source of truth for Analyze/attribution behavior.
 
 ## Conventions
 

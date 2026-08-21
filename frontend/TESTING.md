@@ -33,21 +33,29 @@ yarn test:e2e        # headless
 yarn test:e2e:ui     # interactive runner
 ```
 
-Pre-conditions:
+The only pre-condition is a running dev stack (cloud-function, backend,
+`quasar dev`) reachable at `http://localhost` - see the root `CLAUDE.md`.
+Override the URL with `E2E_BASE_URL`. `e2e/global.setup.ts` verifies all three
+services before the run and creates the sign-in account
+`tester@breedersdb.com` / `Asdfasdf.1` if it is missing (override with
+`E2E_EMAIL` / `E2E_PASSWORD`).
 
-- The whole dev stack is up (cloud-function, backend, `quasar dev`) and
-  reachable at `http://localhost` - see the root `CLAUDE.md`. Override the URL
-  with `E2E_BASE_URL`.
-- **The database contains data.** The list specs assert that rows render, so an
-  empty database fails them. Use `../import-live-db.sh` or create fixtures.
-- The dev account `tester@breedersdb.com` / `Asdfasdf.1` exists (see
-  `../cloud-function/README.md` for the `InsertUser` mutation). Override with
-  `E2E_EMAIL` / `E2E_PASSWORD`.
+The specs live in `e2e/` and are **self-seeding**: each test creates its own
+uniquely named entities through the Hasura admin API and deletes them again
+afterwards (`e2e/support/seed.ts`; the admin secret is taken from
+`HASURA_GRAPHQL_ADMIN_SECRET` or `../backend/.env`). The suite therefore runs
+fully parallel and passes against an empty database. Specs import
+`test`/`expect` from `e2e/support/fixtures.ts` (seeding + fail-on-console-error)
+and selector helpers from `e2e/support/locators.ts`.
 
-The specs live in `e2e/`. `auth.setup.ts` signs in once through the UI and
-stores the session in `e2e/.auth/user.json`, which every spec reuses; it also
-pins the locale to `en-US` so assertions on text do not depend on the test
-account's saved language.
+`auth.setup.ts` signs in once through the UI and stores the session in
+`e2e/.auth/user.json`, which every spec reuses; it also pins the locale to
+`en-US` so assertions on text do not depend on the test account's saved
+language.
+
+What is covered and what is still open is tracked in
+[e2e/COVERAGE.md](e2e/COVERAGE.md); the `generate-e2e` skill
+(`.claude/skills/generate-e2e/SKILL.md`) grows the suite item by item.
 
 ## Manual
 

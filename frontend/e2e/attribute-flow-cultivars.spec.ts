@@ -177,3 +177,41 @@ test('repeat mode keeps the form open and counts saves', async ({
   await saveButton.click();
   await expect(formField(page, 'Cultivar name')).toBeVisible();
 });
+
+// An extra attribute that is not on the form can be added ad hoc via the
+// "Add attribute" dialog; its value saves along with the form fields.
+test('an ad-hoc attribute can be added to the form', async ({ page, seed }) => {
+  const onForm = await seed.attribute({ dataType: 'TEXT' });
+  const adHoc = await seed.attribute({ dataType: 'INTEGER' });
+  const form = await seed.attributionForm([{ id: onForm.id }]);
+  const cultivar = await seed.cultivar();
+
+  await walkToForm(page, form.name, cultivar.display_name);
+
+  // the ad-hoc attribute is not part of the form
+  await expect(formField(page, adHoc.name)).toHaveCount(0);
+
+  // add it through the dialog
+  await page
+    .getByRole('button', { name: 'Add attribute', exact: true })
+    .click();
+  const dialog = page.locator('.q-dialog');
+  await selectOption(page, formField(dialog, 'Attribute'), adHoc.name, {
+    resets: true,
+  });
+  await expect(dialog).toHaveCount(0);
+
+  // fill both fields and save
+  await formField(page, onForm.name).locator('textarea').fill('base value');
+  await formField(page, adHoc.name).locator('input').fill('12');
+  await page.locator('.attribute-form-save-btn .q-btn').click();
+  await expect(page.locator('.q-notification')).toContainText(
+    'Attribution saved.',
+  );
+
+  // both values landed on the cultivar
+  await page.goto(`/#/attributions?s=${encodeURIComponent(adHoc.name)}`);
+  const row = listRow(page, adHoc.name);
+  await expect(row).toHaveCount(1);
+  await expect(row).toContainText('12');
+});

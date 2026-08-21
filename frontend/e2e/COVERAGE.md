@@ -50,15 +50,15 @@ Template-create (`new/:templateId`) where the UI offers it.
 
 Filter _logic_ is unit-tested (filterToQuery etc.) — e2e covers integration.
 
-| Feature                                                         | Status | Spec | Notes                                                       |
-| --------------------------------------------------------------- | ------ | ---- | ----------------------------------------------------------- |
-| Saved-analyses index: list/create/open/delete                   | todo   |      | plain entity list                                           |
-| Build filter in UI → assert `[data-test="query"]`/`"variables"` | todo   |      | DB-independent; hidden debug block in `AnalyzeResult.vue`   |
-| TESTING.md case 1–3: name / attribution filter excl./non-excl.  | todo   |      | seed data via `Seeder`, values via `seed.attribution()`     |
-| TESTING.md case 4–6: attribution values render, column filter   | todo   |      |                                                             |
-| TESTING.md case 7: aggregation columns (count/min/max/mean/…)   | todo   |      | recompute expected values — the doc's rating row has a typo |
-| TESTING.md case 8: group + plant attributions roll up           | todo   |      |                                                             |
-| Rename / duplicate / note / add-columns-from-form               | todo   |      |                                                             |
+| Feature                                                         | Status | Spec                    | Notes                                                       |
+| --------------------------------------------------------------- | ------ | ----------------------- | ----------------------------------------------------------- |
+| Saved-analyses index: list/create/open/delete                   | done   | `analyze-index.spec.ts` | header actions live in a q-fab titled "More"                |
+| Build filter in UI → assert `[data-test="query"]`/`"variables"` | todo   |                         | DB-independent; hidden debug block in `AnalyzeResult.vue`   |
+| TESTING.md case 1–3: name / attribution filter excl./non-excl.  | todo   |                         | seed data via `Seeder`, values via `seed.attribution()`     |
+| TESTING.md case 4–6: attribution values render, column filter   | todo   |                         |                                                             |
+| TESTING.md case 7: aggregation columns (count/min/max/mean/…)   | todo   |                         | recompute expected values — the doc's rating row has a typo |
+| TESTING.md case 8: group + plant attributions roll up           | todo   |                         |                                                             |
+| Rename / duplicate / note / add-columns-from-form               | todo   |                         |                                                             |
 
 ## Auth & account
 

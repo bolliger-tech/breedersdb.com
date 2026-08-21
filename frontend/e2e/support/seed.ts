@@ -3,6 +3,7 @@ import { adminGql } from './graphql';
 // Tables in a delete order that satisfies the foreign keys (no cascades in the
 // schema except attribute_enum_options).
 const DELETE_ORDER = [
+  'analyze_filters',
   'attribution_values',
   'attributions',
   'attribution_form_fields',

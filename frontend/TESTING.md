@@ -8,6 +8,8 @@ end-to-end system tests.
 
 ## Automated
 
+### Unit tests
+
 Based on [vitest](https://vitest.dev/).
 
 ```bash
@@ -18,6 +20,42 @@ Bun is currently not supported. Use node instead.
 
 The tests are co-located with the components and have the same name as the
 component with the `.vitest.test.ts` extension.
+
+### End-to-end tests
+
+Based on [Playwright](https://playwright.dev/). They drive a real browser
+against the running stack, which is what unit tests cannot cover: routing,
+urql, the generated GraphQL types, Quasar components and vue-i18n together.
+This is the safety net for dependency upgrades.
+
+```bash
+yarn test:e2e        # headless
+yarn test:e2e:ui     # interactive runner
+```
+
+The only pre-condition is a running dev stack (cloud-function, backend,
+`quasar dev`) reachable at `http://localhost` - see the root `CLAUDE.md`.
+Override the URL with `E2E_BASE_URL`. `e2e/global.setup.ts` verifies all three
+services before the run and creates the sign-in account
+`tester@breedersdb.com` / `Asdfasdf.1` if it is missing (override with
+`E2E_EMAIL` / `E2E_PASSWORD`).
+
+The specs live in `e2e/` and are **self-seeding**: each test creates its own
+uniquely named entities through the Hasura admin API and deletes them again
+afterwards (`e2e/support/seed.ts`; the admin secret is taken from
+`HASURA_GRAPHQL_ADMIN_SECRET` or `../backend/.env`). The suite therefore runs
+fully parallel and passes against an empty database. Specs import
+`test`/`expect` from `e2e/support/fixtures.ts` (seeding + fail-on-console-error)
+and selector helpers from `e2e/support/locators.ts`.
+
+`auth.setup.ts` signs in once through the UI and stores the session in
+`e2e/.auth/user.json`, which every spec reuses; it also pins the locale to
+`en-US` so assertions on text do not depend on the test account's saved
+language.
+
+What is covered and what is still open is tracked in
+[e2e/COVERAGE.md](e2e/COVERAGE.md); the `generate-e2e` skill
+(`.claude/skills/generate-e2e/SKILL.md`) grows the suite item by item.
 
 ## Manual
 

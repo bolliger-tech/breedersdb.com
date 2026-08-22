@@ -75,12 +75,12 @@ would kill every parallel spec.
 
 ## Misc pages
 
-| Feature                              | Status | Spec | Notes                             |
-| ------------------------------------ | ------ | ---- | --------------------------------- |
-| `/plants/eliminate` stepper          | todo   |      |                                   |
-| `/settings` renders                  | todo   |      | printer settings mostly read-only |
-| `/info` renders version + user email | todo   |      |                                   |
-| 404 catch-all                        | todo   |      |                                   |
+| Feature                              | Status | Spec                 | Notes                                                        |
+| ------------------------------------ | ------ | -------------------- | ------------------------------------------------------------ |
+| `/plants/eliminate` stepper          | done   | `misc-pages.spec.ts` | preseed picker to label-id mode (QR default breaks headless) |
+| `/settings` renders                  | done   | `misc-pages.spec.ts` | printer settings mostly read-only                            |
+| `/info` renders version + user email | done   | `misc-pages.spec.ts` |                                                              |
+| 404 catch-all                        | done   | `misc-pages.spec.ts` |                                                              |
 
 ## Explicitly out of scope
 

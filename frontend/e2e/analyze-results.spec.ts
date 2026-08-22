@@ -189,3 +189,40 @@ test('aggregation columns compute count, min, max, mean, median and SD', async (
   await expect(row.getByText('0.5', { exact: true })).toHaveCount(2); // mean + median
   await expect(row.getByText('0.4', { exact: true }).first()).toBeVisible(); // SD
 });
+
+// TESTING.md case 8: attributions recorded on a cultivar's plant groups and
+// plants roll up into the cultivar analysis.
+test('group and plant attributions roll up to the cultivar', async ({
+  page,
+  seed,
+}) => {
+  const text = await seed.attribute({ dataType: 'TEXT' });
+  const form = await seed.attributionForm([{ id: text.id }]);
+  const { cultivar, groups, plants } = await seed.hierarchy();
+  const groupText = `group note ${seed.uid()}`;
+  const plantText = `plant note ${seed.uid()}`;
+  await seed.attribution({
+    formId: form.id,
+    plantGroupId: groups[0]!.id,
+    values: [{ attributeId: text.id, dataType: 'TEXT', value: groupText }],
+  });
+  await seed.attribution({
+    formId: form.id,
+    plantId: plants[0]!.id,
+    values: [{ attributeId: text.id, dataType: 'TEXT', value: plantText }],
+  });
+
+  await openAnalyzePage(page, '/#/cultivars/analyze/new');
+  await addBaseFilterRule(
+    page,
+    'Cultivar > Name',
+    'equals',
+    cultivar.display_name,
+  );
+  await addResultColumn(page, text.name, `Attribute > ${text.name}`);
+
+  const row = listRow(page, cultivar.display_name);
+  await expect(row).toHaveCount(1);
+  await expect(row.getByText(groupText, { exact: true }).first()).toBeVisible();
+  await expect(row.getByText(plantText, { exact: true }).first()).toBeVisible();
+});

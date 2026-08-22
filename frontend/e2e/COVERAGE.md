@@ -57,7 +57,7 @@ Filter _logic_ is unit-tested (filterToQuery etc.) — e2e covers integration.
 | TESTING.md case 1–3: name / attribution filter excl./non-excl.  | done   | `analyze-results.spec.ts` | pin the result set with a shared-lot name-prefix rule — inclusive mode matches every cultivar in the DB   |
 | TESTING.md case 4–6: attribution values render, column filter   | done   | `analyze-results.spec.ts` | add columns via exact option label — every attribute also has Count/Max/… variants                        |
 | TESTING.md case 7: aggregation columns (count/min/max/mean/…)   | done   | `analyze-results.spec.ts` | FLOAT 0.1+0.9: count 2, max .9, min .1, mean/median .5, population SD .4                                  |
-| TESTING.md case 8: group + plant attributions roll up           | todo   |                           |                                                                                                           |
+| TESTING.md case 8: group + plant attributions roll up           | done   | `analyze-results.spec.ts` |                                                                                                           |
 | Rename / duplicate / note / add-columns-from-form               | todo   |                           |                                                                                                           |
 
 ## Auth & account

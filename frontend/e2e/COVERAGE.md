@@ -58,7 +58,7 @@ Filter _logic_ is unit-tested (filterToQuery etc.) — e2e covers integration.
 | TESTING.md case 4–6: attribution values render, column filter   | done   | `analyze-results.spec.ts` | add columns via exact option label — every attribute also has Count/Max/… variants                        |
 | TESTING.md case 7: aggregation columns (count/min/max/mean/…)   | done   | `analyze-results.spec.ts` | FLOAT 0.1+0.9: count 2, max .9, min .1, mean/median .5, population SD .4                                  |
 | TESTING.md case 8: group + plant attributions roll up           | done   | `analyze-results.spec.ts` |                                                                                                           |
-| Rename / duplicate / note / add-columns-from-form               | todo   |                           |                                                                                                           |
+| Rename / duplicate / note / add-columns-from-form               | done   | `analyze-manage.spec.ts`  | the Add Column menu stays open under the columns-from-form dialog — scope picks to the newest `.q-menu`   |
 
 ## Auth & account
 

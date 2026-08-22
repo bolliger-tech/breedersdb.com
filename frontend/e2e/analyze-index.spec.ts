@@ -19,6 +19,11 @@ test('saved analyses can be created, listed, opened and deleted', async ({
   const dialog = page.locator('.q-dialog');
   await expect(dialog).toContainText('Save as …');
   await formField(dialog, 'Name').locator('input').fill(name);
+  // the name field has a debounced async uniqueness validator — clicking
+  // save while it is in flight hangs the dialog (same app bug as save() in
+  // support/locators.ts works around; see COVERAGE.md)
+  await page.waitForTimeout(350);
+  await expect(dialog.locator('.q-spinner')).toHaveCount(0);
   await dialog.getByRole('button', { name: 'Save', exact: true }).click();
   await expectDialogClosed(page);
   await expect(page.getByRole('heading', { level: 1 })).toContainText(name);

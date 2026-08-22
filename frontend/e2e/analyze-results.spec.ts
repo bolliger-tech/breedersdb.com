@@ -1,5 +1,10 @@
 import { expect, test } from './support/fixtures';
-import { addBaseFilterRule, openAnalyzePage } from './support/analyze';
+import {
+  addBaseFilterRule,
+  addFilterRule,
+  addResultColumn,
+  openAnalyzePage,
+} from './support/analyze';
 import { listRow } from './support/locators';
 
 // TESTING.md cases 1-3 on cultivars: filter by name, and by attribution text
@@ -68,4 +73,73 @@ test('attribution filter is exclusive by default and inclusive on demand', async
   await expect(listRow(page, attributed.display_name)).toHaveCount(1);
   await expect(listRow(page, unattributed.display_name)).toHaveCount(1);
   await expect(page.locator('.entity-list-table tbody tr')).toHaveCount(2);
+});
+
+// TESTING.md cases 4-6 on cultivars: attribution values render as columns,
+// and the attribution filter (cell values) keeps/hides them by date.
+test('attribution values render and the column filter applies', async ({
+  page,
+  seed,
+}) => {
+  const text = await seed.attribute({ dataType: 'TEXT' });
+  const integer = await seed.attribute({ dataType: 'INTEGER' });
+  const float = await seed.attribute({ dataType: 'FLOAT' });
+  const boolean = await seed.attribute({ dataType: 'BOOLEAN' });
+  const date = await seed.attribute({ dataType: 'DATE' });
+  const rating = await seed.attribute({ dataType: 'RATING' });
+  const attributes = [text, integer, float, boolean, date, rating];
+  const form = await seed.attributionForm(
+    attributes.map((attribute) => ({ id: attribute.id })),
+  );
+  const cultivar = await seed.cultivar();
+  const uniqueText = `case4 ${seed.uid()}`;
+  await seed.attribution({
+    formId: form.id,
+    cultivarId: cultivar.id,
+    dateAttributed: '2025-01-01',
+    values: [
+      { attributeId: text.id, dataType: 'TEXT', value: uniqueText },
+      { attributeId: integer.id, dataType: 'INTEGER', value: 77 },
+      { attributeId: float.id, dataType: 'FLOAT', value: 0.4 },
+      { attributeId: boolean.id, dataType: 'BOOLEAN', value: false },
+      { attributeId: date.id, dataType: 'DATE', value: '2025-03-05' },
+      { attributeId: rating.id, dataType: 'RATING', value: 8 },
+    ],
+  });
+
+  await openAnalyzePage(page, '/#/cultivars/analyze/new');
+  await addBaseFilterRule(
+    page,
+    'Cultivar > Name',
+    'equals',
+    cultivar.display_name,
+  );
+  for (const attribute of attributes) {
+    await addResultColumn(page, `Attribute > ${attribute.name}`);
+  }
+
+  // case 4: every typed value renders in its cell
+  const row = listRow(page, cultivar.display_name);
+  await expect(row).toHaveCount(1);
+  await expect(
+    row.getByText(uniqueText, { exact: true }).first(),
+  ).toBeVisible();
+  await expect(row.getByText('77', { exact: true }).first()).toBeVisible();
+  await expect(row.getByText('0.4', { exact: true }).first()).toBeVisible();
+  await expect(row.getByText('✕', { exact: true }).first()).toBeVisible(); // boolean false
+  await expect(
+    row.getByText('03/05/2025', { exact: true }).first(),
+  ).toBeVisible();
+  await expect(row.getByText('8', { exact: true }).first()).toBeVisible();
+
+  // case 5: attribution filter matching the attribution date keeps the values
+  await addFilterRule(page, 1, 'Attribution > Date', 'equals', '2025-01-01');
+  await expect(
+    row.getByText(uniqueText, { exact: true }).first(),
+  ).toBeVisible();
+
+  // case 6: a non-matching date hides all attribution values
+  await page.getByLabel('Value', { exact: true }).last().fill('2024-12-31');
+  await expect(row.getByText(uniqueText, { exact: true })).toHaveCount(0);
+  await expect(row.getByText('77', { exact: true })).toHaveCount(0);
 });

@@ -11,24 +11,28 @@ export async function openAnalyzePage(page: Page, path: string): Promise<void> {
   await page.waitForLoadState('networkidle');
 }
 
-// Add a rule to the base filter (the first add-fab on the page) and fill its
-// column / operator / term. `column` must narrow the option list to exactly
-// one match (e.g. "Cultivar > Name" or an attribute's unique name).
-export async function addBaseFilterRule(
+// Add a rule to a filter tree and fill its column / operator / term.
+// `column` must narrow the option list to exactly one match (e.g.
+// "Cultivar > Name" or an attribute's unique name). `section` 0 is the base
+// filter (table rows), 1 the attribution filter (cell values).
+export async function addFilterRule(
   page: Page,
+  section: 0 | 1,
   column: string,
   operator: string | RegExp,
   term?: string,
 ): Promise<void> {
-  // the data-test attribute sits on the q-fab wrapper, the toggle is inside
+  // the data-test attribute sits on the q-fab wrapper, the toggle is inside;
+  // only the two root fabs carry the --root class
   const addFab = page
-    .locator('[data-test="analyze-filter-node__action-btn"]')
-    .first();
+    .locator(
+      '[data-test="analyze-filter-node__action-btn"].analyze-filter-node__action-btn--root',
+    )
+    .nth(section);
   await addFab.getByRole('button').first().click();
   await expect(addFab).toHaveClass(/q-fab--opened/);
-  await page
+  await addFab
     .locator('[data-test="analyze-filter-node__action-btn-and"]')
-    .first()
     .click();
 
   // exact accessible names — a bare hasText 'Column' would also match the
@@ -59,4 +63,31 @@ export async function addBaseFilterRule(
   if (term !== undefined) {
     await page.getByLabel('Value', { exact: true }).last().fill(term);
   }
+}
+
+// Backwards-compatible shorthand for the base filter.
+export async function addBaseFilterRule(
+  page: Page,
+  column: string,
+  operator: string | RegExp,
+  term?: string,
+): Promise<void> {
+  await addFilterRule(page, 0, column, operator, term);
+}
+
+// Make a column visible in the result table via the "Add Column" selector.
+// `label` is the exact option text (attribute columns come with aggregation
+// variants like "Attribute > x Count", so an exact match is required —
+// e.g. pass "Attribute > <attribute name>").
+export async function addResultColumn(
+  page: Page,
+  label: string,
+): Promise<void> {
+  const input = page
+    .getByRole('combobox', { name: 'Add Column', exact: true })
+    .first();
+  await input.click();
+  await input.fill(label);
+  await page.getByRole('option', { name: label, exact: true }).click();
+  await expect(page.locator('.q-menu')).toHaveCount(0);
 }

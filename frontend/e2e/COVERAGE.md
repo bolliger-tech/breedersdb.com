@@ -66,12 +66,12 @@ Run without the shared storage state (`test.use({ storageState: { cookies: [], o
 and with a user from `seed.user()` — signing out with the shared session cookie
 would kill every parallel spec.
 
-| Feature                                  | Status | Spec | Notes             |
-| ---------------------------------------- | ------ | ---- | ----------------- |
-| Sign-in: wrong + correct credentials     | todo   |      |                   |
-| Sign-out                                 | todo   |      |                   |
-| Forgot-password form (submit path only)  | todo   |      | no SMTP assertion |
-| Auth guard: unauthenticated → `/sign-in` | todo   |      |                   |
+| Feature                                  | Status | Spec           | Notes             |
+| ---------------------------------------- | ------ | -------------- | ----------------- |
+| Sign-in: wrong + correct credentials     | done   | `auth.spec.ts` |                   |
+| Sign-out                                 | done   | `auth.spec.ts` |                   |
+| Forgot-password form (submit path only)  | done   | `auth.spec.ts` | no SMTP assertion |
+| Auth guard: unauthenticated → `/sign-in` | done   | `auth.spec.ts` |                   |
 
 ## Misc pages
 

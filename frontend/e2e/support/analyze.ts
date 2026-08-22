@@ -76,18 +76,20 @@ export async function addBaseFilterRule(
 }
 
 // Make a column visible in the result table via the "Add Column" selector.
-// `label` is the exact option text (attribute columns come with aggregation
-// variants like "Attribute > x Count", so an exact match is required —
-// e.g. pass "Attribute > <attribute name>").
+// `search` narrows the option list (it must be a substring of the option's
+// internal label — the attribute name works); `name` is the exact visible
+// option text to pick, since attribute columns come with aggregation
+// variants like "Attribute > x Count". `name` defaults to `search`.
 export async function addResultColumn(
   page: Page,
-  label: string,
+  search: string,
+  name?: string,
 ): Promise<void> {
   const input = page
     .getByRole('combobox', { name: 'Add Column', exact: true })
     .first();
   await input.click();
-  await input.fill(label);
-  await page.getByRole('option', { name: label, exact: true }).click();
+  await input.fill(search);
+  await page.getByRole('option', { name: name ?? search, exact: true }).click();
   await expect(page.locator('.q-menu')).toHaveCount(0);
 }

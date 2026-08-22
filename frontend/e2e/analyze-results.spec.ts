@@ -115,7 +115,11 @@ test('attribution values render and the column filter applies', async ({
     cultivar.display_name,
   );
   for (const attribute of attributes) {
-    await addResultColumn(page, `Attribute > ${attribute.name}`);
+    await addResultColumn(
+      page,
+      attribute.name,
+      `Attribute > ${attribute.name}`,
+    );
   }
 
   // case 4: every typed value renders in its cell
@@ -142,4 +146,46 @@ test('attribution values render and the column filter applies', async ({
   await page.getByLabel('Value', { exact: true }).last().fill('2024-12-31');
   await expect(row.getByText(uniqueText, { exact: true })).toHaveCount(0);
   await expect(row.getByText('77', { exact: true })).toHaveCount(0);
+});
+
+// TESTING.md case 7: aggregation columns. Two decimal attributions (0.1 and
+// 0.9) on one cultivar: count 2, max 0.9, min 0.1, mean/median 0.5 and
+// (population) SD 0.4.
+test('aggregation columns compute count, min, max, mean, median and SD', async ({
+  page,
+  seed,
+}) => {
+  const float = await seed.attribute({ dataType: 'FLOAT' });
+  const form = await seed.attributionForm([{ id: float.id }]);
+  const cultivar = await seed.cultivar();
+  for (const value of [0.1, 0.9]) {
+    await seed.attribution({
+      formId: form.id,
+      cultivarId: cultivar.id,
+      values: [{ attributeId: float.id, dataType: 'FLOAT', value }],
+    });
+  }
+
+  await openAnalyzePage(page, '/#/cultivars/analyze/new');
+  await addBaseFilterRule(
+    page,
+    'Cultivar > Name',
+    'equals',
+    cultivar.display_name,
+  );
+  for (const aggregation of ['Count', 'Max', 'Min', 'Mean', 'Median', 'SD']) {
+    await addResultColumn(
+      page,
+      float.name,
+      `Attribute > ${float.name} ${aggregation}`,
+    );
+  }
+
+  const row = listRow(page, cultivar.display_name);
+  await expect(row).toHaveCount(1);
+  await expect(row.getByText('2', { exact: true }).first()).toBeVisible(); // count
+  await expect(row.getByText('0.9', { exact: true }).first()).toBeVisible(); // max
+  await expect(row.getByText('0.1', { exact: true }).first()).toBeVisible(); // min
+  await expect(row.getByText('0.5', { exact: true })).toHaveCount(2); // mean + median
+  await expect(row.getByText('0.4', { exact: true }).first()).toBeVisible(); // SD
 });

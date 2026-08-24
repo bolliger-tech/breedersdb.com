@@ -1,8 +1,9 @@
 # E2E coverage plan
 
-Durable state of the e2e test-generation loop (see
-`.claude/skills/generate-e2e/SKILL.md`). One row per feature; the loop picks
-the next `todo`, writes the spec, runs it until green, then updates the row.
+Durable registry of e2e coverage, maintained by the `e2e` skill
+(`.claude/skills/e2e/SKILL.md`). One row per feature; the skill's modes keep
+it current: `fix` keeps rows truthful, `extend` works `todo` rows into green
+specs, `audit` adds rows for uncovered features.
 
 Statuses: `todo` | `partial` | `done` | `blocked (<reason>)`
 

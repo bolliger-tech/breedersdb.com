@@ -56,8 +56,8 @@ and selector helpers from `e2e/support/locators.ts`.
 language.
 
 What is covered and what is still open is tracked in
-[e2e/COVERAGE.md](e2e/COVERAGE.md); the `generate-e2e` skill
-(`.claude/skills/generate-e2e/SKILL.md`) grows the suite item by item.
+[e2e/COVERAGE.md](e2e/COVERAGE.md); the `e2e` skill
+(`.claude/skills/e2e/SKILL.md`) maintains and extends the suite.
 
 ## Manual
 

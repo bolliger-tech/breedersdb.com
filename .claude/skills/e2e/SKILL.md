@@ -1,23 +1,28 @@
 ---
-name: generate-e2e
-description: Generate/extend frontend Playwright e2e specs via the coverage loop. Args:[next|<feature>] [count].
+name: e2e
+description: Maintain/extend the frontend Playwright e2e suite. Args:(fix|extend <feature>|audit) [count].
 ---
 
-# generate-e2e
+# e2e
 
-Grow the frontend e2e suite one feature at a time until
-[frontend/e2e/COVERAGE.md](../../../frontend/e2e/COVERAGE.md) is all `done`.
+Maintain the frontend e2e suite: keep it green as the app evolves (`fix`),
+grow coverage for new or changed features (`extend`), and find coverage gaps
+(`audit`). The durable registry of what is covered is
+[frontend/e2e/COVERAGE.md](../../../frontend/e2e/COVERAGE.md).
 **Read [frontend/CLAUDE.md](../../../frontend/CLAUDE.md) and the e2e section of
 [frontend/TESTING.md](../../../frontend/TESTING.md) first** — they own the
-stack and commands. This skill adds only the loop, the harness contract, and
-the non-obvious gotchas.
+stack and commands. This skill adds only the workflows, the harness contract,
+and the non-obvious gotchas.
 
-**Arguments:** `[target] [count]`
+**Arguments:** `<mode> [args]` — mode is required; if missing or ambiguous,
+ask, don't guess.
 
-- `target` — `next` (default): pick the first `todo`/`partial` row in
-  COVERAGE.md, top to bottom. Or a feature name matching a row (e.g.
-  `cultivars`, `analyze`); if ambiguous, ask.
-- `count` — how many coverage rows to process this invocation (default 1).
+- `fix` — run the suite, triage every failure, repair or report.
+- `extend <feature> [count]` — add coverage for a feature (a COVERAGE.md row,
+  an app feature name, or a described new case). `count` = how many coverage
+  rows to process this invocation (default 1).
+- `audit` — compare the app against COVERAGE.md and update the backlog; writes
+  no specs.
 
 ## Pre-flight (every invocation)
 
@@ -29,11 +34,42 @@ the non-obvious gotchas.
    A red vite-plugin-checker overlay (type/lint error in ANY file, including
    `e2e/**`) blocks all pointer events, so `bun --bun run tsc` must be clean
    or every click times out.
-3. Establish the baseline: `cd frontend && bun run test:e2e` must be green
-   before you change anything. If it is not, fix or report that first — never
-   build on a red baseline.
+3. Establish the baseline: `cd frontend && bun run test:e2e`. For `extend` and
+   `audit` it must be green before you change anything — if it is not, switch
+   to `fix` (or report) first; never build on a red baseline. For `fix`, the
+   red baseline is the work item.
 
-## The loop (non-negotiable rules)
+## Mode: fix
+
+1. Run the full suite (or the named spec) to collect the failure set.
+2. Diagnose each failure from the error and the trace (`--trace on`, the html
+   report, the `trace.zip` `*.network` JSONL for hung requests) — not
+   guesswork. Then classify:
+   - **Test bug / flake** — fix the spec or a shared helper. Prefer extending
+     the deflake patterns in `e2e/support/locators.ts` / `analyze.ts` over
+     per-spec waits. Reproduce flakes with `--repeat-each=6` (or repeated full
+     runs) before the fix and prove the fix the same way.
+   - **Intentional app change** — confirm it via `git log` / `git diff` on the
+     touched frontend source, then update the spec to assert the new behavior
+     and refresh the COVERAGE.md row's notes.
+   - **App regression** — do NOT code around it: record it under "App bugs
+     found by the loop" in COVERAGE.md (one-line repro), mark the row
+     `blocked (<reason>)` if the spec cannot run, and report. The human
+     decides.
+3. Re-run fixed specs in isolation, then the full suite; `bun --bun run lint`
+   and `bun --bun run tsc` clean.
+
+**Done when:** full suite green (or every remaining failure classified as app
+regression and reported), COVERAGE.md truthful.
+
+## Mode: extend
+
+1. Locate or create the COVERAGE.md row(s): pick the matching section, add new
+   rows as `todo` (or set an existing row to `partial` when adding cases to
+   it). Respect the "Explicitly out of scope" list unless the user overrides.
+2. Then run the loop below, one row at a time, `count` rows max.
+
+### The loop (non-negotiable rules)
 
 1. **One coverage row at a time.** Pick it, announce it, finish it (or mark it
    blocked) before touching the next.
@@ -62,6 +98,28 @@ the non-obvious gotchas.
    separate, minimal change — and flag it in your report.
 9. **Never commit or push.** Leave changes in the working tree and report.
 10. Track progress with a task list when processing more than one row.
+
+**Done when (per row):** spec green in isolation AND full suite green,
+`bun --bun run lint` and `bun --bun run tsc` clean, COVERAGE.md updated.
+Report per row: what the spec covers, anything blocked, any app bugs found.
+
+## Mode: audit
+
+Writes no specs — backlog upkeep and a gap report only.
+
+1. Enumerate the app surface: routes in `frontend/src/router/routes.ts` (and
+   the pages/components they mount) vs the features covered in COVERAGE.md.
+2. Check recent history: `git log` on `frontend/src/` since the newest spec
+   commit — features added or changed without a matching spec/COVERAGE.md
+   update are candidates.
+3. Update COVERAGE.md: add `todo` rows for uncovered features, flag rows whose
+   feature changed or disappeared (fix the row or note the mismatch). Respect
+   the "Explicitly out of scope" list.
+4. Report the gaps, most valuable first, recommending `/e2e extend <feature>`
+   for each.
+
+**Done when:** COVERAGE.md reflects the current app and the report is
+delivered.
 
 ## Harness contract
 
@@ -111,9 +169,3 @@ the non-obvious gotchas.
 - **Backend schema changed?** Regenerate frontend types
   (`bun --bun run graphql:output`) — but schema changes are out of scope here;
   report instead.
-
-## Done criteria per row
-
-Spec green in isolation AND full suite green, `bun --bun run lint` and
-`bun --bun run tsc` clean, COVERAGE.md updated. Report per row: what the spec
-covers, anything blocked, any app bugs found.

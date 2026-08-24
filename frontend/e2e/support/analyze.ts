@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { escapeRegExp, expectDialogClosed, formField, save } from './locators';
 
 // Helpers for the analyze filter UI. The rule selects are raw q-selects with
 // inline labels (no BaseInputLabel wrapper), so the formField helper does not
@@ -9,6 +10,15 @@ import { expect, type Page } from '@playwright/test';
 export async function openAnalyzePage(page: Page, path: string): Promise<void> {
   await page.goto(path);
   await page.waitForLoadState('networkidle');
+}
+
+// Fill and submit the "Save as …" / rename / duplicate name dialog. The name
+// field has a debounced async uniqueness validator, which save() waits out.
+export async function saveNameDialog(page: Page, name: string): Promise<void> {
+  const dialog = page.locator('.q-dialog');
+  await formField(dialog, 'Name').locator('input').fill(name);
+  await save(dialog);
+  await expectDialogClosed(page);
 }
 
 // Add a rule to a filter tree and fill its column / operator / term.
@@ -55,7 +65,9 @@ export async function addFilterRule(
     .locator('.q-menu [role="option"]')
     .filter({
       hasText:
-        typeof operator === 'string' ? new RegExp(`^${operator}$`) : operator,
+        typeof operator === 'string'
+          ? new RegExp(`^${escapeRegExp(operator)}$`)
+          : operator,
     })
     .click();
   await expect(page.locator('.q-menu')).toHaveCount(0);

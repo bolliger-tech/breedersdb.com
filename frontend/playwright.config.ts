@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { STORAGE_STATE } from './e2e/config';
+import { BASE_URL, STORAGE_STATE } from './e2e/config';
 
 export default defineConfig({
   testDir: './e2e',
@@ -12,8 +12,7 @@ export default defineConfig({
     : [['list']],
 
   use: {
-    // nginx fronts the whole stack in dev; see the root CLAUDE.md
-    baseURL: process.env.E2E_BASE_URL ?? 'http://localhost',
+    baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

@@ -1,6 +1,7 @@
 import { expect, test } from './support/fixtures';
 import {
   expectDialogClosed,
+  expectRowGone,
   formField,
   listRow,
   save,
@@ -53,7 +54,11 @@ test('text attributes can be created, viewed, edited and deleted', async ({
     .getByRole('button', { name: 'Delete', exact: true })
     .click();
   await expectDialogClosed(page);
-  await expect(listRow(page, renamed)).toHaveCount(0);
+  await expectRowGone(
+    page,
+    `/#/attributes?s=${encodeURIComponent(renamed)}`,
+    renamed,
+  );
 });
 
 // The numeric data types require a validation rule (min/max, plus step for

@@ -1,22 +1,9 @@
-import type { Page } from '@playwright/test';
 import { expect, test } from './support/fixtures';
-import { openAnalyzePage } from './support/analyze';
-import { expectDialogClosed, formField } from './support/locators';
+import { openAnalyzePage, saveNameDialog } from './support/analyze';
+import { formField } from './support/locators';
 
 // Management of a saved analysis: note, rename, duplicate, and the
 // "Add columns from form" shortcut in the column selector.
-
-// The "Save as …" / rename dialog has a debounced async uniqueness validator
-// on the name — clicking save while it is in flight hangs the dialog (same
-// app bug that save() in support/locators.ts works around).
-async function saveNameDialog(page: Page, name: string) {
-  const dialog = page.locator('.q-dialog');
-  await formField(dialog, 'Name').locator('input').fill(name);
-  await page.waitForTimeout(350);
-  await expect(dialog.locator('.q-spinner')).toHaveCount(0);
-  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
-  await expectDialogClosed(page);
-}
 
 test('analyses support note, rename, duplicate and columns-from-form', async ({
   page,
@@ -39,8 +26,16 @@ test('analyses support note, rename, duplicate and columns-from-form', async ({
   const noteText = `analysis note ${seed.uid()}`;
   await page.getByRole('button', { name: 'Add note', exact: true }).click();
   await formField(page, 'Notes').locator('textarea').fill(noteText);
+  // wait for the save mutation's response before reloading — load states
+  // are sticky per document, so waitForLoadState('networkidle') would
+  // resolve immediately here
+  const noteSaved = page.waitForResponse(
+    (resp) =>
+      resp.url().includes('/graphql') &&
+      (resp.request().postData() ?? '').includes('EditQuery'),
+  );
   await page.getByRole('button', { name: 'Save', exact: true }).click();
-  await page.waitForLoadState('networkidle'); // let the save land
+  await noteSaved;
   await page.reload();
   // once a note exists, an Edit button joins the label row — formField's
   // anchored label match no longer applies

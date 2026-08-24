@@ -1,5 +1,6 @@
 import { expect, test } from './support/fixtures';
-import { expectDialogClosed, formField, listRow } from './support/locators';
+import { saveNameDialog } from './support/analyze';
+import { expectRowGone, listRow } from './support/locators';
 
 // The saved-analyses index on cultivars: create via the "Save as …" dialog on
 // a new analysis, find it in the list, open it again and delete it through
@@ -16,16 +17,8 @@ test('saved analyses can be created, listed, opened and deleted', async ({
     'New Analysis',
   );
   await page.getByRole('button', { name: 'Save', exact: true }).click();
-  const dialog = page.locator('.q-dialog');
-  await expect(dialog).toContainText('Save as …');
-  await formField(dialog, 'Name').locator('input').fill(name);
-  // the name field has a debounced async uniqueness validator — clicking
-  // save while it is in flight hangs the dialog (same app bug as save() in
-  // support/locators.ts works around; see COVERAGE.md)
-  await page.waitForTimeout(350);
-  await expect(dialog.locator('.q-spinner')).toHaveCount(0);
-  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
-  await expectDialogClosed(page);
+  await expect(page.locator('.q-dialog')).toContainText('Save as …');
+  await saveNameDialog(page, name);
   await expect(page.getByRole('heading', { level: 1 })).toContainText(name);
   await seed.trackByName('analyze_filters', name); // cleanup even if the test fails below
 
@@ -48,6 +41,9 @@ test('saved analyses can be created, listed, opened and deleted', async ({
     .last()
     .getByRole('button', { name: 'Delete', exact: true })
     .click();
-  await page.goto(`/#/cultivars/analyze?s=${encodeURIComponent(name)}`);
-  await expect(listRow(page, name)).toHaveCount(0);
+  await expectRowGone(
+    page,
+    `/#/cultivars/analyze?s=${encodeURIComponent(name)}`,
+    name,
+  );
 });

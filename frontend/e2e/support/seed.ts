@@ -60,13 +60,17 @@ export class Seeder {
     return `${time}${seq}`;
   }
 
-  // 8 digits, prefixed 9 to stay clear of real label ids
+  // 8 digits: 9 (clear of real label ids) + worker index + timestamp +
+  // counter — parallel workers each get their own digit, so they cannot
+  // collide on the unique plants.label_id
   labelId(): string {
     processCounter += 1;
+    const worker = Number(process.env.TEST_WORKER_INDEX ?? '0');
     return (
       '9' +
-      String((Date.now() % 100_000) * 100 + (processCounter % 100)).padStart(
-        7,
+      String(worker % 10) +
+      String((Date.now() % 10_000) * 100 + (processCounter % 100)).padStart(
+        6,
         '0',
       )
     );
@@ -473,6 +477,18 @@ export class Seeder {
     for (const table of DELETE_ORDER) {
       const clauses: unknown[] = [];
       if (ids(table).length > 0) clauses.push({ id: { _in: ids(table) } });
+      // fields of UI-created forms are not tracked individually and the FKs
+      // have no cascade — cover them by form/attribute id as well
+      if (table === 'attribution_form_fields') {
+        if (ids('attribution_forms').length) {
+          clauses.push({
+            attribution_form_id: { _in: ids('attribution_forms') },
+          });
+        }
+        if (ids('attributes').length) {
+          clauses.push({ attribute_id: { _in: ids('attributes') } });
+        }
+      }
       if (
         table === 'attribution_values' &&
         attributionsOnSeededEntities.length

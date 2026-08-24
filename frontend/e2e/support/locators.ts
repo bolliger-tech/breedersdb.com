@@ -4,7 +4,8 @@ import { expect, type Locator, type Page } from '@playwright/test';
 // facts (see BaseInputLabel.vue, EntityModalContentSave.vue, EntityListTable):
 // keep all selector knowledge here instead of repeating it in specs.
 
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+export const escapeRegExp = (s: string) =>
+  s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // A form field wrapper (.entity-label from BaseInputLabel) by its label text.
 // Returns the wrapper; chain .locator('input') / .locator('textarea') or use
@@ -72,16 +73,19 @@ export function saveButton(scope: Page | Locator): Locator {
   return scope.getByRole('button', { name: 'Save', exact: true });
 }
 
-// Save an entity modal. KNOWN APP BUG (found 2026-08-21, reproducible with
-// --repeat-each under load): clicking save while a debounced async uniqueness
-// validator (useIsUnique, 300ms) is still in flight makes validate() hang
-// forever - the save button spins and the mutation is never sent. Until that
-// is fixed, wait out the debounce window and any running validation query
-// before clicking. Do NOT copy this waitForTimeout pattern anywhere else.
-export async function save(page: Page): Promise<void> {
-  await page.waitForTimeout(350);
-  await expect(page.locator('.q-dialog .q-spinner')).toHaveCount(0);
-  await saveButton(page).click();
+// Save an entity modal; pass a dialog Locator instead of the Page to target
+// a specific dialog (e.g. the analyze name dialog). KNOWN APP BUG (found
+// 2026-08-21, reproducible with --repeat-each under load): clicking save
+// while a debounced async uniqueness validator (useIsUnique, 300ms) is still
+// in flight makes validate() hang forever - the save button spins and the
+// mutation is never sent. Until that is fixed, wait out the debounce window
+// and any running validation query before clicking. Do NOT copy this
+// waitForTimeout pattern anywhere else.
+export async function save(scope: Page | Locator): Promise<void> {
+  const dialog = 'page' in scope ? scope : scope.locator('.q-dialog');
+  await pageOf(scope).waitForTimeout(350);
+  await expect(dialog.locator('.q-spinner')).toHaveCount(0);
+  await saveButton(scope).click();
 }
 
 // Entity saves show no toast - the dialog closing is the success signal (this
@@ -95,4 +99,16 @@ export async function expectDialogClosed(page: Page): Promise<void> {
 // A row of the entity list table containing the given text.
 export function listRow(page: Page, text: string | RegExp): Locator {
   return page.locator('.entity-list-table tbody tr').filter({ hasText: text });
+}
+
+// Assert a list row is gone after a delete. Under parallel load the list's
+// in-place refetch can race the delete, so assert the deletion on a fresh
+// page load of the list URL instead.
+export async function expectRowGone(
+  page: Page,
+  listUrl: string,
+  text: string | RegExp,
+): Promise<void> {
+  await page.goto(listUrl);
+  await expect(listRow(page, text)).toHaveCount(0);
 }

@@ -1,5 +1,10 @@
 import { expect, test } from './support/fixtures';
-import { expectDialogClosed, listRow, save } from './support/locators';
+import {
+  expectDialogClosed,
+  expectRowGone,
+  listRow,
+  save,
+} from './support/locators';
 
 // Attributions have no AddModal (they are created via the attribute flow) —
 // this covers list search, the view modal, the single-value edit modal and
@@ -51,8 +56,9 @@ test('attributions can be viewed, edited and deleted', async ({
     .getByRole('button', { name: 'Delete', exact: true })
     .click();
   await expectDialogClosed(page);
-  // under parallel load the list's refetch can race the delete — assert the
-  // deletion on a fresh page load instead of the in-place refresh
-  await page.goto(`/#/attributions?s=${encodeURIComponent(attribute.name)}`);
-  await expect(row).toHaveCount(0);
+  await expectRowGone(
+    page,
+    `/#/attributions?s=${encodeURIComponent(attribute.name)}`,
+    attribute.name,
+  );
 });

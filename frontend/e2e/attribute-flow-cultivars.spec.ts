@@ -142,6 +142,11 @@ test('force-save dialog guards empty required fields', async ({
   await expect(page.locator('.q-notification')).toContainText(
     'Attribution saved.',
   );
+
+  // exactly one attribution exists — Close must not have saved one as well
+  // (the toast check above alone cannot catch a late toast after Close)
+  await page.goto(`/#/attributions?s=${encodeURIComponent(optional.name)}`);
+  await expect(listRow(page, cultivar.display_name)).toHaveCount(1);
 });
 
 // Repeat mode (?repeat= in the URL) keeps the form open after each save and

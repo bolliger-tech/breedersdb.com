@@ -29,12 +29,14 @@ urql, the generated GraphQL types, Quasar components and vue-i18n together.
 This is the safety net for dependency upgrades.
 
 ```bash
-yarn test:e2e        # headless
-yarn test:e2e:ui     # interactive runner
+bun run test:e2e     # headless
+bun run test:e2e:ui  # interactive runner
 ```
 
-The only pre-condition is a running dev stack (cloud-function, backend,
-`quasar dev`) reachable at `http://localhost` - see the root `CLAUDE.md`.
+The pre-conditions are a running dev stack (cloud-function, backend,
+`quasar dev`) reachable at `http://localhost` - see the root `CLAUDE.md` -
+and the Playwright browser (once per machine: `bunx playwright install
+chromium`).
 Override the URL with `E2E_BASE_URL`. `e2e/global.setup.ts` verifies all three
 services before the run and creates the sign-in account
 `tester@breedersdb.com` / `Asdfasdf.1` if it is missing (override with

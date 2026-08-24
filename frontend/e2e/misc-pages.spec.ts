@@ -49,7 +49,7 @@ test('the info page shows version and user email', async ({ page }) => {
   const version = page
     .getByRole('heading', { name: 'Version', exact: true })
     .locator('xpath=following-sibling::p[1]');
-  await expect(version).not.toHaveText('');
+  await expect(version).toHaveText(/./);
   await expect(page.getByText(E2E_USER.email)).toBeVisible();
 });
 

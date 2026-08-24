@@ -1,6 +1,7 @@
 import { expect, test } from './support/fixtures';
 import {
   expectDialogClosed,
+  expectRowGone,
   formField,
   listRow,
   save,
@@ -47,5 +48,9 @@ test('personal access tokens can be created and revoked', async ({
     .getByRole('button', { name: 'Delete', exact: true })
     .click();
   await expectDialogClosed(page);
-  await expect(listRow(page, name)).toHaveCount(0);
+  await expectRowGone(
+    page,
+    `/#/personal-access-tokens?s=${encodeURIComponent(name)}`,
+    name,
+  );
 });

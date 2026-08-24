@@ -2,8 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const GRAPHQL_URL =
-  (process.env.E2E_BASE_URL ?? 'http://localhost') + '/api/hasura/v1/graphql';
+import { BASE_URL } from '../config';
+
+const GRAPHQL_URL = BASE_URL + '/api/hasura/v1/graphql';
 
 let cachedSecret: string | undefined;
 

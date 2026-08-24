@@ -1,20 +1,18 @@
 import { adminGql } from './support/graphql';
-import { E2E_USER } from './config';
-
-const BASE = process.env.E2E_BASE_URL ?? 'http://localhost';
+import { BASE_URL, E2E_USER } from './config';
 
 // Fail fast with actionable messages instead of letting every spec time out.
 const PROBES: { url: string; hint: string }[] = [
   {
-    url: `${BASE}/api/internal/health`,
+    url: `${BASE_URL}/api/internal/health`,
     hint: 'cloud-function is down: cd cloud-function && docker compose up --watch --build',
   },
   {
-    url: `${BASE}/api/hasura/healthz`,
+    url: `${BASE_URL}/api/hasura/healthz`,
     hint: 'backend is down: cd backend && docker compose up -d (then hasura metadata/migrate apply; if the cloud-function started after the backend, re-run docker compose up -d)',
   },
   {
-    url: `${BASE}/`,
+    url: `${BASE_URL}/`,
     hint: 'frontend dev server is down: cd frontend && bun --bun run dev (it occasionally dies on mass file changes - just restart it)',
   },
 ];

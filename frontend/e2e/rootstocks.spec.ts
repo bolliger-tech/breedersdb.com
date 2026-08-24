@@ -1,6 +1,7 @@
 import { expect, test } from './support/fixtures';
 import {
   expectDialogClosed,
+  expectRowGone,
   formField,
   listRow,
   save,
@@ -50,5 +51,9 @@ test('rootstocks can be created, viewed, edited and deleted', async ({
     .getByRole('button', { name: 'Delete', exact: true })
     .click();
   await expectDialogClosed(page);
-  await expect(listRow(page, renamed)).toHaveCount(0);
+  await expectRowGone(
+    page,
+    `/#/rootstocks?s=${encodeURIComponent(renamed)}`,
+    renamed,
+  );
 });

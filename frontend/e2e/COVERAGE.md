@@ -13,6 +13,19 @@ Statuses: `todo` | `partial` | `done` | `blocked (<reason>)`
 | ------------------------------------ | ------ | --------------- |
 | All 16 entity list pages render rows | done   | `smoke.spec.ts` |
 
+## List table features
+
+Shared `EntityListTable` behavior — test on one representative entity list.
+Under `fullyParallel`, pin the row set with a seeded unique name prefix via
+`?s=` before asserting on ordering or counts.
+
+| Feature                                | Status | Spec                 | Notes                                                                                                      |
+| -------------------------------------- | ------ | -------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Column selector: show/hide columns     | done   | `list-table.spec.ts` | persistence (localStorage) only applies on a fresh document — a client-side goto does not remount the page |
+| Sorting via header cells               | done   | `list-table.spec.ts` | seed rows with a shared prefix, filter via `?s=`                                                           |
+| Pagination                             | done   | `list-table.spec.ts` | pin `?rowsPerPage=10` in the URL; bottom controls are icon-only (`chevron_right`)                          |
+| XLSX export button triggers a download | done   | `list-table.spec.ts` | asserts the download event only — file contents are out of scope                                           |
+
 ## Entity CRUD
 
 Per entity: create via AddModal, view, edit, delete, search via `?s=`.
@@ -36,6 +49,16 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Users                  | done   | `users.spec.ts`                  | change-password lives in the edit modal (nested dialog); NEVER touch `tester@breedersdb.com` |
 | Personal access tokens | done   | `personal-access-tokens.spec.ts` | create/revoke through UI; token shown once                                                   |
 | Attributions (edit)    | done   | `attributions.spec.ts`           | no AddModal — created via attribute flow; test view + edit modal on `/attributions`          |
+
+## Entity view details
+
+View-modal content beyond the plain field table — currently only asserted
+implicitly (modal opens) by the CRUD specs.
+
+| Feature                                                   | Status | Spec                  | Notes                                                                                                                               |
+| --------------------------------------------------------- | ------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Attributions render on an entity view modal (incl. photo) | done   | `entity-view.spec.ts` | photo via UI upload — use `uploadPhoto()` (waits for the preview; saving earlier drops the value); gallery class is `.q-scrollarea` |
+| Related-entity tables on view modals                      | done   | `entity-view.spec.ts` | plant rows repeat the group name — pin the group row via its drill-down `a[href]`                                                   |
 
 ## Attribution flow (`/{cultivars,plants,groups,lots}/attribute`)
 
@@ -67,12 +90,13 @@ Run without the shared storage state (`test.use({ storageState: { cookies: [], o
 and with a user from `seed.user()` — signing out with the shared session cookie
 would kill every parallel spec.
 
-| Feature                                  | Status | Spec           | Notes             |
-| ---------------------------------------- | ------ | -------------- | ----------------- |
-| Sign-in: wrong + correct credentials     | done   | `auth.spec.ts` |                   |
-| Sign-out                                 | done   | `auth.spec.ts` |                   |
-| Forgot-password form (submit path only)  | done   | `auth.spec.ts` | no SMTP assertion |
-| Auth guard: unauthenticated → `/sign-in` | done   | `auth.spec.ts` |                   |
+| Feature                                        | Status | Spec           | Notes                                                                                       |
+| ---------------------------------------------- | ------ | -------------- | ------------------------------------------------------------------------------------------- |
+| Sign-in: wrong + correct credentials           | done   | `auth.spec.ts` |                                                                                             |
+| Sign-out                                       | done   | `auth.spec.ts` |                                                                                             |
+| Forgot-password form (submit path only)        | done   | `auth.spec.ts` | no SMTP assertion                                                                           |
+| Auth guard: unauthenticated → `/sign-in`       | done   | `auth.spec.ts` |                                                                                             |
+| Reset-password page: invalid token shows error | done   | `auth.spec.ts` | `?token=bogus` → 401 message; q-btn with `to` renders as a link (role `link`, not `button`) |
 
 ## Misc pages
 

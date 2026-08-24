@@ -66,6 +66,24 @@ test('forgot-password accepts a submission', async ({ page, seed }) => {
   ).toBeVisible();
 });
 
+// The e-mail round trip is out of scope — this covers the reset-password
+// page itself: no token at all, and a token the backend rejects (401).
+test('reset-password rejects a bogus token', async ({ page }) => {
+  await page.goto('/#/reset-password');
+  await expect(
+    page.getByText('The password reset token is missing'),
+  ).toBeVisible();
+
+  await page.goto('/#/reset-password?token=bogus');
+  await page.fill('input[autocomplete="new-password"]', 'E2e.test.password.1');
+  await page.getByRole('button', { name: 'Set password', exact: true }).click();
+  await expect(
+    page.getByText('Invalid or expired password reset link'),
+  ).toBeVisible();
+  await page.getByRole('link', { name: 'Get new password reset link' }).click();
+  await expect(page).toHaveURL(/#\/forgot-password/);
+});
+
 test('unauthenticated visitors are redirected to sign-in', async ({ page }) => {
   await page.goto('/#/cultivars');
   await expect(page).toHaveURL(/#\/sign-in/);

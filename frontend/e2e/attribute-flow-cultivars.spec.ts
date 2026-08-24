@@ -1,51 +1,6 @@
-import type { Page } from '@playwright/test';
 import { expect, test } from './support/fixtures';
 import { formField, listRow, selectOption } from './support/locators';
-
-// Walk the stepper up to the attribution form: select the form, set the
-// author and pick the cultivar (which auto-advances to the form step). The
-// picker mode is preseeded to name-select: the default QR scanner mode needs
-// a camera and floods the console with NotSupportedError in headless (Quasar
-// LocalStorage prefixes string values with __q_strn|).
-async function walkToForm(
-  page: Page,
-  formName: string,
-  cultivarName: string,
-  opts: { repeat?: number } = {},
-): Promise<void> {
-  await page.addInitScript(() =>
-    localStorage.setItem(
-      'breedersdb-cultivar-selector-input-method',
-      '__q_strn|cultivar-select',
-    ),
-  );
-  await page.goto('/#/cultivars/attribute');
-
-  // completed step panels stay rendered — the active step's button is last
-  const continueButton = () =>
-    page.getByRole('button', { name: 'Continue' }).last();
-
-  await selectOption(page, formField(page, 'Select form'), formName);
-  await continueButton().click();
-
-  await formField(page, 'Who collects the data?')
-    .locator('input')
-    .fill('E2E Robot');
-  if (opts.repeat) {
-    await formField(page, 'Repeat').locator('.q-toggle').click();
-    await formField(page, 'Number of attributions per object')
-      .locator('input')
-      .fill(String(opts.repeat));
-  }
-  await continueButton().click();
-
-  await selectOption(page, formField(page, 'Cultivar name'), cultivarName, {
-    resets: true,
-  });
-  await expect(page.getByRole('heading', { level: 2 })).toContainText(
-    cultivarName,
-  );
-}
+import { uploadPhoto, walkToForm } from './support/attribute-flow';
 
 // The full attribute stepper on cultivars: pick form, metadata, entity, then
 // fill every input type (text, integer, decimal, boolean, date, rating, enum
@@ -86,9 +41,7 @@ test('attribute stepper on cultivars saves all input types', async ({
     .getByRole('button', { name: '7', exact: true })
     .click();
   await selectOption(page, formField(page, enumAttr.name), 'two');
-  await formField(page, photo.name)
-    .locator('input[type="file"]')
-    .setInputFiles('e2e/assets/test.jpg');
+  await uploadPhoto(page, photo.name, 'e2e/assets/test.jpg');
 
   // save (floating icon-only button) and expect the toast
   await page.locator('.attribute-form-save-btn .q-btn').click();

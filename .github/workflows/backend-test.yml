@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Create .env files
         uses: ./.github/actions/create-env-files
@@ -30,7 +30,7 @@ jobs:
         uses: ./.github/actions/install-hasura-cli
 
       - name: Install bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies for backend/tests
         run: bun install --cwd=backend/tests

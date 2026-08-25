@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Get branch name
         uses: ./.github/actions/branch-name
@@ -68,7 +68,7 @@ jobs:
         working-directory: ./frontend/src/i18n
 
       - name: Install bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -77,7 +77,7 @@ jobs:
         run: bunx prettier --write frontend/src/i18n/**/*.ts
 
       - name: Commit changes and create pull request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: l10n/${{ env.BRANCH_NAME }}

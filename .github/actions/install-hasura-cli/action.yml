@@ -1,0 +1,9 @@
+name: Install Hasura-CLI
+description: Install the Hasura CLI.
+
+runs:
+  using: composite
+  steps:
+    - name: Install Hasura-CLI
+      shell: bash
+      run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash

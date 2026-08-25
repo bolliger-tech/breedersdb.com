@@ -5,12 +5,14 @@ on:
     paths:
       - 'frontend/**'
       - '.github/workflows/frontend-check.yml'
+      - '.github/actions/**'
   pull_request:
     branches:
       - main
     paths:
       - 'frontend/**'
       - '.github/workflows/frontend-check.yml'
+      - '.github/actions/**'
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,13 +22,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create .env file
-        run: cp .env.example .env
-        working-directory: ./frontend
-
-      - name: Install dependencies
-        run: yarn install
-        working-directory: ./frontend
+      - name: Setup frontend
+        uses: ./.github/actions/setup-frontend
 
       - name: Run tsc
         run: yarn tsc --skipLibCheck

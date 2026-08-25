@@ -1,0 +1,29 @@
+name: Start backend
+description: >
+  Start postgres and hasura from backend/docker-compose.yaml, wait until they
+  are ready and apply migrations and metadata. Expects backend/.env
+  (create-env-files) and the Hasura CLI (install-hasura-cli). Does not start
+  nginx — it needs the cloud-function running first.
+
+runs:
+  using: composite
+  steps:
+    - name: Start PostgreSQL
+      shell: bash
+      run: |
+        docker compose --file=backend/docker-compose.yaml up -d postgres
+        timeout 60 bash -c 'until docker compose --file=backend/docker-compose.yaml exec -T postgres pg_isready -q -U postgres; do sleep 1; done'
+
+    - name: Start Hasura
+      shell: bash
+      run: |
+        docker compose --file=backend/docker-compose.yaml up -d hasura
+        timeout 60 bash -c 'until curl -sf http://localhost:8080/healthz > /dev/null; do sleep 1; done'
+
+    - name: Apply migrations
+      shell: bash
+      working-directory: backend
+      run: |
+        hasura --skip-update-check metadata apply # connect hasura to the database
+        hasura --skip-update-check migrate apply --all-databases
+        hasura --skip-update-check metadata apply # effectively apply the metadata

@@ -7,6 +7,7 @@ on:
     paths:
       - frontend/src/i18n/en-US/**
       - .github/workflows/l10n.yml
+      - .github/actions/**
       - frontend/crowdin.yml
 
   push:
@@ -16,6 +17,7 @@ on:
     paths:
       - frontend/src/i18n/en-US/**
       - .github/workflows/l10n.yml
+      - .github/actions/**
       - frontend/crowdin.yml
 
   workflow_dispatch:
@@ -29,17 +31,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get branch name on pull request
-        run: echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
-        if: github.event_name == 'pull_request'
-
-      - name: Get branch name on push
-        run: echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
-        if: github.event_name == 'push'
-
-      - name: Get branch name on workflow dispatch
-        run: echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
-        if: github.event_name == 'workflow_dispatch'
+      - name: Get branch name
+        uses: ./.github/actions/branch-name
 
       - name: crowdin action
         uses: crowdin/github-action@v2
@@ -64,7 +57,7 @@ jobs:
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
       - name: Chown files
-        run: sudo chown -R $USER:$USER frontend/src/i18n
+        run: sudo chown -R "$USER:$USER" frontend/src/i18n
 
       - name: Sync translation index.ts
         run: echo */ | xargs -n1 | grep -v 'en-US/' | xargs -n1 cp -v en-US/index.ts

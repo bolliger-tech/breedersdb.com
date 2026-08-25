@@ -1,0 +1,82 @@
+name: Frontend E2E
+
+on:
+  push:
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'cloud-function/**'
+      - '.github/workflows/frontend-e2e.yml'
+      - '.github/actions/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'cloud-function/**'
+      - '.github/workflows/frontend-e2e.yml'
+      - '.github/actions/**'
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env files
+        uses: ./.github/actions/create-env-files
+        with:
+          # the e2e browser talks plain http to nginx
+          cloud-function-node-env: development
+
+      - name: Install Hasura-CLI
+        uses: ./.github/actions/install-hasura-cli
+
+      # cloud-function must be up before nginx starts (nginx resolves its
+      # upstream hostnames at startup)
+      - name: Start cloud-function
+        run: docker compose --file=cloud-function/docker-compose.yaml up --build -d
+
+      - name: Start backend
+        uses: ./.github/actions/start-backend
+
+      - name: Start nginx
+        run: docker compose --file=backend/docker-compose.yaml up -d nginx
+
+      - name: Setup frontend
+        uses: ./.github/actions/setup-frontend
+
+      - name: Install Playwright browsers
+        run: yarn playwright install --with-deps chromium
+        working-directory: ./frontend
+
+      - name: Build frontend
+        run: yarn build
+        env:
+          NODE_OPTIONS: '--max_old_space_size=4096'
+        working-directory: ./frontend
+
+      # nginx reaches the frontend via host.docker.internal, so bind 0.0.0.0.
+      # Call the @quasar/cli bin directly: `yarn serve` resolves the quasar bin
+      # to @quasar/app-vite, which has no `serve` command.
+      - name: Serve frontend
+        run: |
+          nohup node node_modules/@quasar/cli/bin/quasar.js serve dist/pwa --port 9200 --hostname 0.0.0.0 > /tmp/quasar-serve.log 2>&1 &
+          timeout 30 bash -c 'until curl -sf http://localhost/ > /dev/null; do sleep 1; done'
+        working-directory: ./frontend
+
+      - name: Run e2e tests
+        run: yarn test:e2e
+        working-directory: ./frontend
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+          retention-days: 7

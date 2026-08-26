@@ -18,6 +18,11 @@ function getGCS() {
     credentials: JSON.parse(
       Buffer.from(GOOGLE_APPLICATION_CREDENTIALS_BASE64, 'base64').toString(),
     ),
+    // unset in production; the e2e CI stack points this at a local GCS
+    // emulator, which also turns off the SDK's request signing
+    ...(process.env.GOOGLE_STORAGE_API_ENDPOINT && {
+      apiEndpoint: process.env.GOOGLE_STORAGE_API_ENDPOINT,
+    }),
   });
 
   return {

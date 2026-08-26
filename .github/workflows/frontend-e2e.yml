@@ -32,6 +32,11 @@ jobs:
         with:
           # the e2e browser talks plain http to nginx
           cloud-function-node-env: development
+          # stand-ins for the SMTP server and the GCS bucket (see below)
+          smtp-host: mailpit
+          smtp-port: '1025'
+          smtp-secure: 'false'
+          storage-api-endpoint: http://fake-gcs:4443
 
       - name: Install Hasura-CLI
         uses: ./.github/actions/install-hasura-cli
@@ -40,6 +45,21 @@ jobs:
       # upstream hostnames at startup)
       - name: Start cloud-function
         run: docker compose --file=cloud-function/docker-compose.yaml up --build -d
+
+      # The forgot-password and photo-upload flows talk to a mail server and a
+      # GCS bucket. Neither exists in CI, so stand-ins join the cloud-function's
+      # network under the hostnames its .env points at.
+      - name: Start SMTP and object storage stand-ins
+        run: |
+          docker run -d --name mailpit --network breedersdb_net \
+            -e MP_SMTP_AUTH_ACCEPT_ANY=true -e MP_SMTP_AUTH_ALLOW_INSECURE=true \
+            axllent/mailpit:latest
+          docker run -d --name fake-gcs --network breedersdb_net -p 4443:4443 \
+            fsouza/fake-gcs-server:latest -scheme http -port 4443 -backend memory
+          timeout 60 bash -c 'until curl -sf http://localhost:4443/storage/v1/b > /dev/null; do sleep 1; done'
+          # fake-gcs-server does not create buckets on demand
+          curl -sf -X POST 'http://localhost:4443/storage/v1/b?project=e2e' \
+            -H 'Content-Type: application/json' -d '{"name":"e2e-bucket"}' > /dev/null
 
       - name: Start backend
         uses: ./.github/actions/start-backend

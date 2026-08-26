@@ -57,8 +57,8 @@ async function getResized({
   try {
     return await buffer(resizedFile);
   } catch (e: any) {
-    if (e.message.includes('No such object')) {
-      // if the file doesn't exist, we'll continue
+    if (e.code === 404 || e.message.includes('No such object')) {
+      // cache miss - carry on and render the resized image below
     } else {
       throw e;
     }

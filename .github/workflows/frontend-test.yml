@@ -5,12 +5,14 @@ on:
     paths:
       - 'frontend/**'
       - '.github/workflows/frontend-test.yml'
+      - '.github/actions/**'
   pull_request:
     branches:
       - main
     paths:
       - 'frontend/**'
       - '.github/workflows/frontend-test.yml'
+      - '.github/actions/**'
 
 jobs:
   test:
@@ -19,13 +21,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Create .env file
-        run: cp frontend/.env.example frontend/.env
-
-      - name: Install dependencies
-        run: yarn --cwd=frontend install
+      - name: Setup frontend
+        uses: ./.github/actions/setup-frontend
 
       - name: Run frontend tests
         run: yarn --cwd=frontend run test:unit:ci

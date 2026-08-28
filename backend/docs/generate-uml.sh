@@ -30,7 +30,9 @@ sed -i -E 's/&#34;&#34;/""/g' "$base_dir/database.puml" # unescape text formatti
 sleep 1
 
 echo "Generating SVG images..."
-docker run --rm -v "$base_dir":/app plantuml/plantuml:latest \
+# The plantuml image runs as its own non-root user, which cannot write into the
+# bind-mounted host directory on Linux - run it as the invoking user instead.
+docker run --rm --user "$(id -u):$(id -g)" -v "$base_dir":/app plantuml/plantuml:latest \
   -tsvg /app/database.puml \
   -o /app \
   && mv "$base_dir/database.svg" "$base_dir/database-light.svg"
@@ -38,7 +40,7 @@ docker run --rm -v "$base_dir":/app plantuml/plantuml:latest \
 # Wait for the file to be written to disk
 sleep 1
 
-docker run --rm -v "$base_dir":/app plantuml/plantuml:latest \
+docker run --rm --user "$(id -u):$(id -g)" -v "$base_dir":/app plantuml/plantuml:latest \
   -tsvg /app/database.puml \
   -darkmode \
   -o /app \

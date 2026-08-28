@@ -1,0 +1,15 @@
+name: Setup frontend
+description: Create the frontend .env file and install its dependencies.
+
+runs:
+  using: composite
+  steps:
+    - name: Create .env file
+      shell: bash
+      working-directory: frontend
+      run: cp .env.example .env
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: frontend
+      run: yarn install

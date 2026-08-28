@@ -1,0 +1,13 @@
+name: Branch name
+description: >
+  Export BRANCH_NAME — the branch that triggered the workflow (on pull
+  requests, the head branch).
+
+runs:
+  using: composite
+  steps:
+    - name: Get branch name
+      shell: bash
+      env:
+        BRANCH: ${{ github.head_ref || github.ref_name }}
+      run: echo "BRANCH_NAME=$BRANCH" >> "$GITHUB_ENV"

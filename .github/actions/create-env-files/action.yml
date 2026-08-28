@@ -1,0 +1,77 @@
+name: Create .env files
+description: >
+  Create backend and cloud-function .env files with matching random secrets.
+
+inputs:
+  cloud-function-node-env:
+    description: >
+      NODE_ENV for the cloud-function. Use "development" when a browser talks
+      to the stack over plain http — "production" flags the session cookie
+      Secure.
+    required: false
+    default: production
+  smtp-host:
+    description: >
+      SMTP host the cloud-function sends mail through. The default is
+      unreachable — point it at a mail sink (with smtp-port/smtp-secure) when
+      a job exercises a flow that actually sends mail.
+    required: false
+    default: mail.example.com
+  smtp-port:
+    description: SMTP port matching smtp-host.
+    required: false
+    default: '465'
+  smtp-secure:
+    description: Whether the SMTP connection is implicit TLS.
+    required: false
+    default: 'true'
+  storage-api-endpoint:
+    description: >
+      Base URL of a GCS emulator. Set it to give the cloud-function a working
+      image store; without it the GCS env stays unset and image requests fail.
+    required: false
+    default: ''
+  storage-bucket:
+    description: Bucket name inside the GCS emulator.
+    required: false
+    default: e2e-bucket
+
+runs:
+  using: composite
+  steps:
+    - name: Create .env files
+      shell: bash
+      run: |
+        HASURA_GRAPHQL_ADMIN_SECRET=$(openssl rand -hex 16)
+        CLOUD_FUNCTION_SECRET=$(openssl rand -hex 16)
+        CLOUD_FUNCTION_URL=http://cloud-function:8090
+        # backend
+        echo "HASURA_GRAPHQL_ADMIN_SECRET=$HASURA_GRAPHQL_ADMIN_SECRET" >> backend/.env
+        echo "CLOUD_FUNCTION_SECRET=$CLOUD_FUNCTION_SECRET" >> backend/.env
+        echo "HASURA_GRAPHQL_AUTH_HOOK=http://cloud-function:8090/authenticate-hasura-request" >> backend/.env
+        echo "CLOUD_FUNCTION_URL=$CLOUD_FUNCTION_URL" >> backend/.env
+        echo "HASURA_GRAPHQL_AUTH_HOOK_MODE=POST" >> backend/.env
+        # cloud-function
+        echo "HASURA_GRAPHQL_ADMIN_SECRET=$HASURA_GRAPHQL_ADMIN_SECRET" >> cloud-function/.env
+        echo "CLOUD_FUNCTION_SECRET=$CLOUD_FUNCTION_SECRET" >> cloud-function/.env
+        echo "CLOUD_FUNCTION_URL=$CLOUD_FUNCTION_URL" >> cloud-function/.env
+        echo "HASURA_GRAPHQL_URL=http://hasura:8080/v1/graphql" >> cloud-function/.env
+        echo "NODE_ENV=${{ inputs.cloud-function-node-env }}" >> cloud-function/.env
+        echo "PASSWORD_RESET_URL='http://localhost/#/reset-password?token={jwt}'" >> cloud-function/.env
+        echo "PASSWORD_RESET_SECRET=someSecretInProduction" >> cloud-function/.env
+        echo "EMAIL_HOST=${{ inputs.smtp-host }}" >> cloud-function/.env
+        echo "EMAIL_PORT=${{ inputs.smtp-port }}" >> cloud-function/.env
+        echo "EMAIL_SECURE=${{ inputs.smtp-secure }}" >> cloud-function/.env
+        echo "EMAIL_USER=noreply@example.com" >> cloud-function/.env
+        echo "EMAIL_PASS=someSecretInProduction" >> cloud-function/.env
+        echo "EMAIL_FROM=noreply@example.com" >> cloud-function/.env
+        echo "EMAIL_REPLY_TO=admin@example.com" >> cloud-function/.env
+        # image store — only wired up when an emulator endpoint is given. The
+        # credentials are a placeholder: a custom apiEndpoint turns off the
+        # GCS SDK's request signing, but the SDK still wants parsable JSON.
+        if [ -n "${{ inputs.storage-api-endpoint }}" ]; then
+          echo "GOOGLE_STORAGE_API_ENDPOINT=${{ inputs.storage-api-endpoint }}" >> cloud-function/.env
+          echo "GOOGLE_STORAGE_PROJECT_ID=e2e" >> cloud-function/.env
+          echo "GOOGLE_STORAGE_BUCKET_NAME=${{ inputs.storage-bucket }}" >> cloud-function/.env
+          echo "GOOGLE_APPLICATION_CREDENTIALS_BASE64=$(printf '%s' '{"client_email":"e2e@example.com","private_key":"none"}' | base64 -w0)" >> cloud-function/.env
+        fi

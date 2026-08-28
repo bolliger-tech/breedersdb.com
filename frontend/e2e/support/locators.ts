@@ -7,6 +7,14 @@ import { expect, type Locator, type Page } from '@playwright/test';
 export const escapeRegExp = (s: string) =>
   s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+// QSelect's default input-debounce: typing into a use-input q-select schedules
+// its @filter this far in the future. Picking an option before that timer fires
+// leaves the filter pending, and QSelect re-opens the menu when a filter
+// resolves while the menu is already closed - the reopened menu then swallows
+// the next click. There is no DOM signal for "a filter is pending", so callers
+// that type into a q-select must wait the window out.
+export const INPUT_DEBOUNCE_MS = 500;
+
 // A form field wrapper (.entity-label from BaseInputLabel) by its label text.
 // Returns the wrapper; chain .locator('input') / .locator('textarea') or use
 // the q-select helpers below. Labels are stable because the locale is pinned
@@ -44,10 +52,12 @@ export async function selectOption(
   await field.locator('.q-field__control').first().click();
   if (typeof option === 'string') {
     await input.fill(option);
-    // Wait until the input-debounced (500ms) async @filter has been applied,
-    // i.e. every listed option matches the typed text. Clicking earlier
-    // leaves the filter's done-callback pending, and when it resolves it
-    // re-opens the menu over the form, swallowing the next click (e.g. save).
+    // Wait out the debounce, then assert the @filter has been applied, i.e.
+    // every listed option matches the typed text. The assertion alone is not
+    // enough: when the unfiltered list already satisfies it - a near-empty
+    // database, as in CI, where the seeded entity is the only one - it passes
+    // inside the debounce window and the pick races the pending filter.
+    await page.waitForTimeout(INPUT_DEBOUNCE_MS + 100);
     await expect(async () => {
       const texts = await options.allTextContents();
       expect(texts.length).toBeGreaterThan(0);

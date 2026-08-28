@@ -1,5 +1,11 @@
 import { expect, type Page } from '@playwright/test';
-import { escapeRegExp, expectDialogClosed, formField, save } from './locators';
+import {
+  INPUT_DEBOUNCE_MS,
+  escapeRegExp,
+  expectDialogClosed,
+  formField,
+  save,
+} from './locators';
 
 // Helpers for the analyze filter UI. The rule selects are raw q-selects with
 // inline labels (no BaseInputLabel wrapper), so the formField helper does not
@@ -102,6 +108,9 @@ export async function addResultColumn(
     .first();
   await input.click();
   await input.fill(search);
+  // the sought option is already in the unfiltered list, so picking it would
+  // otherwise race the pending @filter - see INPUT_DEBOUNCE_MS
+  await page.waitForTimeout(INPUT_DEBOUNCE_MS + 100);
   await page.getByRole('option', { name: name ?? search, exact: true }).click();
   await expect(page.locator('.q-menu')).toHaveCount(0);
 }

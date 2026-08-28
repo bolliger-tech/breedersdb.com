@@ -50,6 +50,21 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Personal access tokens | done   | `personal-access-tokens.spec.ts` | create/revoke through UI; token shown once                                                   |
 | Attributions (edit)    | done   | `attributions.spec.ts`           | no AddModal — created via attribute flow; test view + edit modal on `/attributions`          |
 
+## Enum ("Selection") attributes
+
+The options editor (`AttributeEnumOptionsInput`) plus everything downstream of
+an enum option: recorded values, renames, disabling, Analyze.
+
+| Feature                                                       | Status | Spec                             | Notes                                                                                             |
+| ------------------------------------------------------------- | ------ | -------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Create with a pre-selected and a disabled option              | done   | `attributes.spec.ts`             | enum has no "Default value" field; the view modal's preview starts on the pre-selected option     |
+| Options editor validation: empty / duplicate / zero options   | done   | `attributes.spec.ts`             | the messages render inline, the modal stays open and nothing is persisted                         |
+| In-use option: delete blocked + tooltip; add / delete unused  | done   | `attribute-enum-options.spec.ts` | usage comes from `attribution_values.attribute_enum_option_id`                                    |
+| Rename an in-use option relabels existing attributions        | done   | `attribute-enum-options.spec.ts` | the denormalized `cached_attributions.text_value` follows the rename                              |
+| Disable an in-use option: value kept, hidden from new pickers | done   | `attribute-enum-options.spec.ts` | `AttributionInputEnum` keeps a disabled option visible when it is the current value               |
+| Edit a recorded selection value                               | done   | `attributions.spec.ts`           | the edit modal's control is a picker, not a text input                                            |
+| Analyze: enum as a result column and as a filter rule         | done   | `analyze-results.spec.ts`        | the term control is a picker (`selectFilterTerm`); its GraphQL variable is `citext`, not `String` |
+
 ## Entity view details
 
 View-modal content beyond the plain field table — currently only asserted
@@ -69,6 +84,7 @@ implicitly (modal opens) by the CRUD specs.
 | Repeat mode (`?repeat=`) keeps form open                | done   | `attribute-flow-cultivars.spec.ts` | on reaching the target the flow returns to the entity picker                                    |
 | Ad-hoc extra attribute (AttributionAddFormAddInput)     | done   | `attribute-flow-cultivars.spec.ts` |                                                                                                 |
 | Slim happy-path on plants, groups, lots                 | done   | `attribute-flow-slim.spec.ts`      | group step-4 heading shows the generated `G…` label id, not the display name                    |
+| `walkToForm` reloads after its goto                     | done   | `support/attribute-flow.ts`        | the preseeded picker mode only applies to a fresh document — a hash-only goto does not reload   |
 
 ## Analyze (`/{cultivars,plants,groups,lots}/analyze`)
 

@@ -4,6 +4,7 @@ import {
   addFilterRule,
   addResultColumn,
   openAnalyzePage,
+  selectFilterTerm,
 } from './support/analyze';
 import { listRow } from './support/locators';
 
@@ -225,4 +226,64 @@ test('group and plant attributions roll up to the cultivar', async ({
   await expect(row).toHaveCount(1);
   await expect(row.getByText(groupText, { exact: true }).first()).toBeVisible();
   await expect(row.getByText(plantText, { exact: true }).first()).toBeVisible();
+});
+
+// A selection attribute in Analyze: the column renders the option label and
+// the filter's term control is a picker over the attribute's options (its
+// GraphQL variable is citext, not String).
+test('a selection attribute works as a column and as a filter', async ({
+  page,
+  seed,
+}) => {
+  const attribute = await seed.attribute({
+    dataType: 'ENUM',
+    enumOptions: ['round', 'oblong', 'conical'],
+  });
+  const form = await seed.attributionForm([{ id: attribute.id }]);
+  // a shared lot pins the result set to these two cultivars
+  const lot = await seed.lot();
+  const target = await seed.cultivar({ lotId: lot.id });
+  const other = await seed.cultivar({ lotId: lot.id });
+  await seed.attribution({
+    formId: form.id,
+    cultivarId: target.id,
+    values: [
+      {
+        attributeId: attribute.id,
+        dataType: 'ENUM',
+        enumOptionId: attribute.enum_options[1]!.id,
+      },
+    ],
+  });
+  await seed.attribution({
+    formId: form.id,
+    cultivarId: other.id,
+    values: [
+      {
+        attributeId: attribute.id,
+        dataType: 'ENUM',
+        enumOptionId: attribute.enum_options[0]!.id,
+      },
+    ],
+  });
+
+  await openAnalyzePage(page, '/#/cultivars/analyze/new');
+  await addBaseFilterRule(
+    page,
+    'Cultivar > Name',
+    'starts with',
+    lot.full_name,
+  );
+  await addResultColumn(page, attribute.name, `Attribute > ${attribute.name}`);
+
+  // the column renders the picked option's label
+  await expect(listRow(page, target.display_name)).toContainText('oblong');
+  await expect(listRow(page, other.display_name)).toContainText('round');
+
+  // the filter offers the option labels and narrows the rows to one
+  await addFilterRule(page, 0, `Attribute > ${attribute.name}`, 'equals');
+  const offered = await selectFilterTerm(page, 'oblong');
+  expect(new Set(offered)).toEqual(new Set(['round', 'oblong', 'conical']));
+  await expect(listRow(page, target.display_name)).toHaveCount(1);
+  await expect(page.locator('.entity-list-table tbody tr')).toHaveCount(1);
 });

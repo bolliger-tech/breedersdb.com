@@ -133,11 +133,13 @@ export class Seeder {
     return data.row;
   }
 
-  async orchard(): Promise<IdRow & { name: string }> {
+  async orchard(
+    opts: { name?: string } = {},
+  ): Promise<IdRow & { name: string }> {
     return this.insertOne(
       'orchards',
       'orchards_insert_input',
-      { name: `E2E Orchard ${this.uid()}` },
+      { name: opts.name ?? `E2E Orchard ${this.uid()}` },
       'id name',
     );
   }

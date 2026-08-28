@@ -27,6 +27,17 @@ This folder contains code intended to run as Google Cloud Function.
 
 Check out [localhost:8090/health](http://localhost:8090/health) to see if it's running.
 
+### Mail and image storage in dev
+
+`docker compose` also starts two stand-ins so the password reset and image
+flows work out of the box — no real credentials needed, nothing leaves your
+machine:
+
+- **[mailpit](http://localhost:8025)** — every mail the function sends lands
+  here instead of a real SMTP server.
+- **fake-gcs-server** (`localhost:4443`) — the assets bucket. Uploads persist
+  in the `gcs_data` volume; `docker compose down -v` wipes them.
+
 ## Deploy
 
 Check the documentation in [deployment](../deployment/README.md).

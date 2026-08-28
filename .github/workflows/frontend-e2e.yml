@@ -2,6 +2,8 @@ name: Frontend E2E
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'frontend/**'
       - 'backend/**'
@@ -17,6 +19,12 @@ on:
       - 'cloud-function/**'
       - '.github/workflows/frontend-e2e.yml'
       - '.github/actions/**'
+
+# A push to a PR branch fires the pull_request event only; superseding pushes
+# cancel the run they replaced. Runs on main always complete.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   e2e:

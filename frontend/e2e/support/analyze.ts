@@ -18,8 +18,7 @@ export async function openAnalyzePage(page: Page, path: string): Promise<void> {
   await page.waitForLoadState('networkidle');
 }
 
-// Fill and submit the "Save as …" / rename / duplicate name dialog. The name
-// field has a debounced async uniqueness validator, which save() waits out.
+// Fill and submit the "Save as …" / rename / duplicate name dialog.
 export async function saveNameDialog(page: Page, name: string): Promise<void> {
   const dialog = page.locator('.q-dialog');
   await formField(dialog, 'Name').locator('input').fill(name);

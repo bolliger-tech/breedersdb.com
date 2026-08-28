@@ -7,6 +7,11 @@ specs, `audit` adds rows for uncovered features.
 
 Statuses: `todo` | `partial` | `done` | `blocked (<reason>)`
 
+Navigation invariant: the app is a hash-route SPA, so a `page.goto` between
+two `#/…` routes is a same-document navigation that returns before Vue Router
+swapped the view. The `page` fixture (`support/fixtures.ts`) turns those into
+real document loads, so a spec may treat every `goto` as a fresh app boot.
+
 ## Lists (smoke)
 
 | Feature                              | Status | Spec            |
@@ -19,12 +24,12 @@ Shared `EntityListTable` behavior — test on one representative entity list.
 Under `fullyParallel`, pin the row set with a seeded unique name prefix via
 `?s=` before asserting on ordering or counts.
 
-| Feature                                | Status | Spec                 | Notes                                                                                                      |
-| -------------------------------------- | ------ | -------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Column selector: show/hide columns     | done   | `list-table.spec.ts` | persistence (localStorage) only applies on a fresh document — a client-side goto does not remount the page |
-| Sorting via header cells               | done   | `list-table.spec.ts` | seed rows with a shared prefix, filter via `?s=`                                                           |
-| Pagination                             | done   | `list-table.spec.ts` | pin `?rowsPerPage=10` in the URL; bottom controls are icon-only (`chevron_right`)                          |
-| XLSX export button triggers a download | done   | `list-table.spec.ts` | asserts the download event only — file contents are out of scope                                           |
+| Feature                                | Status | Spec                 | Notes                                                                                                |
+| -------------------------------------- | ------ | -------------------- | ---------------------------------------------------------------------------------------------------- |
+| Column selector: show/hide columns     | done   | `list-table.spec.ts` | persistence (localStorage) is asserted on a second page, so the first keeps its state for the re-add |
+| Sorting via header cells               | done   | `list-table.spec.ts` | seed rows with a shared prefix, filter via `?s=`                                                     |
+| Pagination                             | done   | `list-table.spec.ts` | pin `?rowsPerPage=10` in the URL; bottom controls are icon-only (`chevron_right`)                    |
+| XLSX export button triggers a download | done   | `list-table.spec.ts` | asserts the download event only — file contents are out of scope                                     |
 
 ## Entity CRUD
 
@@ -41,7 +46,7 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Lots                   | done   | `lots.spec.ts`                   | name segment `\d\d[A-Z]`; crossing + orchard selects                                         |
 | Cultivars              | done   | `cultivars.spec.ts`              | pilot: breeders-cultivar/variety toggle; segment input is a masked q-input ("Breeding name") |
 | Plant groups           | done   | `plant-groups.spec.ts`           |                                                                                              |
-| Plants                 | done   | `plants.spec.ts`                 | no UI delete — Eliminate button `#`-prefixes label id, moves plant to disabled tab           |
+| Plants                 | done   | `plants.spec.ts`                 | no UI delete — Eliminate `#`-prefixes label id; a `#` search auto-switches the list to "All" |
 | Pollen                 | done   | `pollen.spec.ts`                 |                                                                                              |
 | Mother plants          | done   | `mother-plants.spec.ts`          | crossing must have matching mother cultivar (see `Seeder.motherPlant`)                       |
 | Attributes             | done   | `attributes.spec.ts`             | one test per data type; ENUM auto-adds an empty option row; RATING has no step input         |
@@ -84,7 +89,7 @@ implicitly (modal opens) by the CRUD specs.
 | Repeat mode (`?repeat=`) keeps form open                | done   | `attribute-flow-cultivars.spec.ts` | on reaching the target the flow returns to the entity picker                                    |
 | Ad-hoc extra attribute (AttributionAddFormAddInput)     | done   | `attribute-flow-cultivars.spec.ts` |                                                                                                 |
 | Slim happy-path on plants, groups, lots                 | done   | `attribute-flow-slim.spec.ts`      | group step-4 heading shows the generated `G…` label id, not the display name                    |
-| `walkToForm` reloads after its goto                     | done   | `support/attribute-flow.ts`        | the preseeded picker mode only applies to a fresh document — a hash-only goto does not reload   |
+| `walkToForm` preseeds the picker mode                   | done   | `support/attribute-flow.ts`        | `addInitScript` only applies to a fresh document — the `page` fixture makes every goto one      |
 
 ## Analyze (`/{cultivars,plants,groups,lots}/analyze`)
 
@@ -130,12 +135,4 @@ camera scanning, reset-password e-mail round trip, XLSX export file contents.
 
 ## App bugs found by the loop
 
-- **Save hangs while async uniqueness validation is in flight** (2026-08-21,
-  open): in any entity modal with a `useIsUnique` validator (orchards,
-  cultivars, ...), clicking save within the 300ms debounce window — or while
-  the uniqueness query is running — makes `validate()` never resolve: the save
-  button spins forever and no mutation is sent. Reproduce with
-  `bun run test:e2e -- orchards.spec.ts --repeat-each=6` after removing the
-  wait in `save()` (`e2e/support/locators.ts`). A fast user on a slow
-  connection hits the same. Suspect: overlapping `executeQuery()` calls on the
-  paused urql query in `src/composables/useIsUnique.ts`.
+None open.

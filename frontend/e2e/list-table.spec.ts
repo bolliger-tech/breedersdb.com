@@ -32,8 +32,8 @@ test('columns can be hidden (persisted) and re-added', async ({
   await expect(nameHeader(page)).toHaveCount(0);
   await expect(listRow(page, orchard.name)).toHaveCount(0); // rows lost the name cell
 
-  // the choice is persisted (localStorage) into a fresh document — a
-  // client-side goto would not remount the page, so use a second page
+  // the choice is persisted (localStorage) into a fresh document — assert it
+  // on a second page so this one keeps its state for the re-add below
   const freshPage = await page.context().newPage();
   await freshPage.goto(listUrl);
   await expect(

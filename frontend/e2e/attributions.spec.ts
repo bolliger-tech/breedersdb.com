@@ -4,6 +4,7 @@ import {
   expectRowGone,
   listRow,
   save,
+  selectOption,
 } from './support/locators';
 
 // Attributions have no AddModal (they are created via the attribute flow) —
@@ -61,4 +62,46 @@ test('attributions can be viewed, edited and deleted', async ({
     `/#/attributions?s=${encodeURIComponent(attribute.name)}`,
     attribute.name,
   );
+});
+
+// The edit modal renders one control per data type; for a selection value it
+// is a dropdown over the attribute's options.
+test('a recorded selection value can be changed', async ({ page, seed }) => {
+  const attribute = await seed.attribute({
+    dataType: 'ENUM',
+    enumOptions: ['round', 'oblong', 'conical'],
+  });
+  const form = await seed.attributionForm([{ id: attribute.id }]);
+  const cultivar = await seed.cultivar();
+  await seed.attribution({
+    formId: form.id,
+    cultivarId: cultivar.id,
+    values: [
+      {
+        attributeId: attribute.id,
+        dataType: 'ENUM',
+        enumOptionId: attribute.enum_options[1]!.id,
+      },
+    ],
+  });
+
+  const list = `/#/attributions?s=${encodeURIComponent(attribute.name)}`;
+  await page.goto(list);
+  const row = listRow(page, attribute.name);
+  await expect(row).toHaveCount(1);
+  await expect(row).toContainText('oblong');
+
+  await row.click();
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
+  await selectOption(
+    page,
+    page.locator('.q-dialog .q-select').first(),
+    'conical',
+  );
+  await save(page);
+  await expectDialogClosed(page);
+
+  // the list renders the denormalized label of the newly picked option
+  await page.goto(list);
+  await expect(row).toContainText('conical');
 });

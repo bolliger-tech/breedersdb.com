@@ -313,7 +313,11 @@ export class Seeder {
     opts: {
       dataType?: AttributeDataType;
       validationRule?: { min: number; max: number; step: number };
-      enumOptions?: string[];
+      // plain labels, or objects to set the disabled / pre-selected flags
+      enumOptions?: (
+        | string
+        | { label: string; disabled?: boolean; isDefault?: boolean }
+      )[];
     } = {},
   ): Promise<
     IdRow & { name: string; enum_options: (IdRow & { label: string })[] }
@@ -338,12 +342,22 @@ export class Seeder {
           dataType === 'ENUM'
             ? {
                 data: (opts.enumOptions ?? ['one', 'two', 'three']).map(
-                  (label, position) => ({ label, position }),
+                  (option, position) => {
+                    const o =
+                      typeof option === 'string' ? { label: option } : option;
+                    return {
+                      label: o.label,
+                      position,
+                      disabled: o.disabled ?? false,
+                      is_default: o.isDefault ?? false,
+                    };
+                  },
                 ),
               }
             : undefined,
       },
-      'id name enum_options { id label }',
+      // the specs index into enum_options, so pin the order to the positions
+      'id name enum_options(order_by: { position: asc }) { id label }',
     );
   }
 
@@ -387,12 +401,14 @@ export class Seeder {
     lotId?: number;
     author?: string;
     dateAttributed?: string;
-    values?: {
-      attributeId: number;
-      dataType: Exclude<AttributeDataType, 'PHOTO'>;
-      value: number | string | boolean;
-      enumOptionId?: number;
-    }[];
+    values?: (
+      | {
+          attributeId: number;
+          dataType: Exclude<AttributeDataType, 'PHOTO' | 'ENUM'>;
+          value: number | string | boolean;
+        }
+      | { attributeId: number; dataType: 'ENUM'; enumOptionId: number }
+    )[];
   }): Promise<IdRow> {
     const attribution = await this.insertOne<IdRow>(
       'attributions',

@@ -114,3 +114,22 @@ export async function addResultColumn(
   await page.getByRole('option', { name: name ?? search, exact: true }).click();
   await expect(page.locator('.q-menu')).toHaveCount(0);
 }
+
+// ENUM columns render the rule's term control as a q-select over the
+// attribute's option labels instead of a free-text input. Picks `label` and
+// returns every label the control offered.
+export async function selectFilterTerm(
+  page: Page,
+  label: string,
+): Promise<string[]> {
+  await page
+    .getByRole('combobox', { name: 'Value', exact: true })
+    .last()
+    .click();
+  const options = page.locator('.q-menu [role="option"]');
+  await expect(options.filter({ hasText: label })).toHaveCount(1);
+  const offered = await options.allTextContents();
+  await options.filter({ hasText: label }).click();
+  await expect(page.locator('.q-menu')).toHaveCount(0);
+  return offered.map((text) => text.trim());
+}

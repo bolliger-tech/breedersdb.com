@@ -122,3 +122,17 @@ export async function expectRowGone(
   await page.goto(listUrl);
   await expect(listRow(page, text)).toHaveCount(0);
 }
+
+// One row of the enum options editor (AttributeEnumOptionsInput renders every
+// option as a BaseSortableListItem: the label input, a delete button and the
+// "Pre-selected" / "Disabled" checkboxes in the after-slot). Rows are ordered
+// by the option's position.
+export function optionRow(page: Page, index: number): Locator {
+  return page.locator('.q-dialog .base-sortable-list-item').nth(index);
+}
+
+// The icon-only delete button of an enum option row; disabled while the
+// option is used by an attribution.
+export function optionDeleteButton(row: Locator): Locator {
+  return row.getByRole('button').filter({ hasText: 'delete_outline' });
+}

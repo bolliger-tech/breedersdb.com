@@ -21,6 +21,29 @@ services:
             - node_modules/
             - README.md
 
+  mailpit:
+    image: axllent/mailpit:latest
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 'true'
+      MP_SMTP_AUTH_ALLOW_INSECURE: 'true'
+    ports:
+      - '8025:8025'
+    networks:
+      - breedersdb_net
+
+  fake-gcs:
+    image: fsouza/fake-gcs-server:latest
+    command: -scheme http -port 4443 -backend filesystem -filesystem-root /storage
+    ports:
+      - '4443:4443'
+    volumes:
+      - gcs_data:/storage/dev-bucket
+    networks:
+      - breedersdb_net
+
+volumes:
+  gcs_data:
+
 networks:
   breedersdb_net:
     name: breedersdb_net

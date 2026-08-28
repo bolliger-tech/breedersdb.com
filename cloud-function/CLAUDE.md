@@ -46,4 +46,6 @@ npm run build                        # tsc → dist/
 
 This package uses **npm** (it has its own `package-lock.json`), unlike the frontend. Health: http://localhost:8090/health. Set `LOG_REQUESTS=true` in `.env` then restart (the `.env` is not watched) to log requests/responses.
 
+`docker compose` also starts **mailpit** (mail sink, read it at http://localhost:8025) and **fake-gcs-server** (assets bucket, `localhost:4443`, persisted in the `gcs_data` volume).
+
 Hasura only accepts 2xx/4xx responses from the function — error handling throws `ErrorWithStatus` with an appropriate code rather than 5xx.

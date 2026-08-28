@@ -5,24 +5,33 @@ function getGCS() {
     process.env.GOOGLE_APPLICATION_CREDENTIALS_BASE64;
   const GOOGLE_STORAGE_PROJECT_ID = process.env.GOOGLE_STORAGE_PROJECT_ID;
   const GOOGLE_STORAGE_BUCKET_NAME = process.env.GOOGLE_STORAGE_BUCKET_NAME;
-  if (
-    !GOOGLE_APPLICATION_CREDENTIALS_BASE64 ||
-    !GOOGLE_STORAGE_PROJECT_ID ||
-    !GOOGLE_STORAGE_BUCKET_NAME
-  ) {
-    throw new Error('GCS env not set');
+  const GOOGLE_STORAGE_API_ENDPOINT = process.env.GOOGLE_STORAGE_API_ENDPOINT;
+
+  const credentials = GOOGLE_APPLICATION_CREDENTIALS_BASE64
+    ? JSON.parse(
+        Buffer.from(GOOGLE_APPLICATION_CREDENTIALS_BASE64, 'base64').toString(),
+      )
+    : undefined;
+
+  if (!GOOGLE_STORAGE_PROJECT_ID || !GOOGLE_STORAGE_BUCKET_NAME) {
+    throw new Error(
+      'GOOGLE_STORAGE_PROJECT_ID and GOOGLE_STORAGE_BUCKET_NAME must be set',
+    );
+  }
+
+  if (!credentials && !GOOGLE_STORAGE_API_ENDPOINT) {
+    throw new Error(
+      'Set GOOGLE_APPLICATION_CREDENTIALS_BASE64 to use real GCS, or GOOGLE_STORAGE_API_ENDPOINT to use an emulator (fake-gcs-server)',
+    );
   }
 
   const storage = new Storage({
     projectId: GOOGLE_STORAGE_PROJECT_ID,
-    credentials: JSON.parse(
-      Buffer.from(GOOGLE_APPLICATION_CREDENTIALS_BASE64, 'base64').toString(),
-    ),
-    // unset in production; the e2e CI stack points this at a local GCS
-    // emulator, which also turns off the SDK's request signing
-    ...(process.env.GOOGLE_STORAGE_API_ENDPOINT && {
-      apiEndpoint: process.env.GOOGLE_STORAGE_API_ENDPOINT,
-    }),
+    // the fake-gcs-server needs a custom apiEndpoint
+    // real GCS needs credentials
+    ...(GOOGLE_STORAGE_API_ENDPOINT
+      ? { apiEndpoint: GOOGLE_STORAGE_API_ENDPOINT }
+      : { credentials }),
   });
 
   return {

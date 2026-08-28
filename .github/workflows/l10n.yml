@@ -1,15 +1,6 @@
 name: Crowdin Localization
 
 on:
-  pull_request:
-    branches-ignore:
-      - l10n/**
-    paths:
-      - frontend/src/i18n/en-US/**
-      - .github/workflows/l10n.yml
-      - .github/actions/**
-      - frontend/crowdin.yml
-
   push:
     branches-ignore:
       - main

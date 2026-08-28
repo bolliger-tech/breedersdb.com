@@ -6,13 +6,6 @@ on:
       - 'backend/migrations/**'
       - '.github/workflows/database-uml.yml'
       - '.github/actions/**'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'backend/migrations/**'
-      - '.github/workflows/database-uml.yml'
-      - '.github/actions/**'
 
 jobs:
   generate-uml:

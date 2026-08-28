@@ -2,6 +2,8 @@ name: Backend Test
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'backend/**'
       - '.github/workflows/backend-test.yml'
@@ -13,6 +15,12 @@ on:
       - 'backend/**'
       - '.github/workflows/backend-test.yml'
       - '.github/actions/**'
+
+# A push to a PR branch fires the pull_request event only; superseding pushes
+# cancel the run they replaced. Runs on main always complete.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:

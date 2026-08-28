@@ -150,10 +150,6 @@ delivered.
 - **Split save button** (`.entity-modal-content-save`): its primary action is
   remembered in sessionStorage; a fresh context defaults to plain Save, but
   within one test a prior "save & print" changes the default.
-- **Async uniqueness validators** on name fields (300ms debounce): clicking
-  save while one is in flight hangs the form forever (known app bug, see
-  COVERAGE.md). Always save entity modals through `save()` from
-  `support/locators.ts`, which waits the validators out first.
 - **q-select portals**: options render in a body-level `.q-menu`, not inside
   the field (see `selectOption`).
 - **Auth specs**: use `test.use({ storageState: { cookies: [], origins: [] } })`

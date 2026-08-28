@@ -84,16 +84,15 @@ export function saveButton(scope: Page | Locator): Locator {
 }
 
 // Save an entity modal; pass a dialog Locator instead of the Page to target
-// a specific dialog (e.g. the analyze name dialog). KNOWN APP BUG (found
-// 2026-08-21, reproducible with --repeat-each under load): clicking save
-// while a debounced async uniqueness validator (useIsUnique, 300ms) is still
-// in flight makes validate() hang forever - the save button spins and the
-// mutation is never sent. Until that is fixed, wait out the debounce window
-// and any running validation query before clicking. Do NOT copy this
-// waitForTimeout pattern anywhere else.
+// a specific dialog (e.g. the analyze name dialog). The spinner wait covers
+// the queries a validator depends on, not the validator itself: until
+// PlantGroupNameSegmentInput's cultivar query lands, its uniqueness check is
+// scoped to `cultivar_id: -1` and passes vacuously. The name input's 300ms
+// QInput debounce is deliberately not waited out - no query is running yet,
+// so nothing spins - and clicking into that window is what exercises the
+// save-during-validation race.
 export async function save(scope: Page | Locator): Promise<void> {
   const dialog = 'page' in scope ? scope : scope.locator('.q-dialog');
-  await pageOf(scope).waitForTimeout(350);
   await expect(dialog.locator('.q-spinner')).toHaveCount(0);
   await saveButton(scope).click();
 }

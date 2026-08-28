@@ -1,6 +1,15 @@
 import { mount as VTUmount, type VueWrapper } from '@vue/test-utils';
 import { vi } from 'vitest';
-import { never, fromValue, type Source } from 'wonka';
+import {
+  never,
+  fromValue,
+  filter,
+  take,
+  toPromise,
+  pipe,
+  subscribe,
+  type Source,
+} from 'wonka';
 import { defineComponent, type Component } from 'vue';
 import { i18n } from 'src/boot/i18n';
 import urql, { Client, CombinedError } from '@urql/vue';
@@ -78,7 +87,7 @@ export function mockQuery(
   mockFn: MockQuery,
 ) {
   const client = wrapper.vm.$.appContext.provides.$urql.value;
-  client.executeQuery = vi.fn(mockFn);
+  client.executeQuery = vi.fn(withPromise(mockFn));
 }
 
 export function mockMutation(
@@ -86,7 +95,7 @@ export function mockMutation(
   mockFn: MockMutation,
 ) {
   const client = wrapper.vm.$.appContext.provides.$urql.value;
-  client.executeMutation = vi.fn(mockFn);
+  client.executeMutation = vi.fn(withPromise(mockFn));
 }
 
 export function mockSubscription(
@@ -94,7 +103,48 @@ export function mockSubscription(
   mockFn: MockSubscription,
 ) {
   const client = wrapper.vm.$.appContext.provides.$urql.value;
-  client.executeSubscription = vi.fn(mockFn);
+  client.executeSubscription = vi.fn(withPromise(mockFn));
+}
+
+/**
+ * urql decorates the sources returned by `executeQuery` / `executeMutation` /
+ * `executeSubscription` with `toPromise()`, `then()` and `subscribe()` (see
+ * `withPromise` in @urql/core), which mocks must do too — otherwise code
+ * calling `client.query(...).toPromise()` breaks under test.
+ *
+ * The `stale` / `hasNext` filter mirrors urql's: a cached-but-revalidating or
+ * an incremental (`@defer`) result must not settle the promise.
+ */
+function withPromise<T>(mockFn: MockQuery<T>): MockQuery<T> {
+  return (query, opts) => {
+    const source = mockFn(query, opts);
+    const settled = () =>
+      pipe(
+        source,
+        filter((result) => {
+          const { stale, hasNext } = result as {
+            stale?: boolean;
+            hasNext?: boolean;
+          };
+          return !stale && !hasNext;
+        }),
+        take(1),
+      );
+    // Wrap rather than decorate: `urqlResp()` (no data) hands back wonka's
+    // module-level `never` singleton, so assigning onto the source itself
+    // would leak `then` onto a shared export for the whole worker - anything
+    // later awaiting `never` would hang instead of getting the source.
+    const wrapped: typeof source = (sink) => source(sink);
+    return Object.assign(wrapped, {
+      toPromise: () => pipe(settled(), toPromise),
+      then: (
+        onResolve: Parameters<Promise<unknown>['then']>[0],
+        onReject: Parameters<Promise<unknown>['then']>[1],
+      ) => pipe(settled(), toPromise).then(onResolve, onReject),
+      subscribe: (onResult: (value: unknown) => void) =>
+        pipe(source, subscribe(onResult)),
+    });
+  };
 }
 
 export function addQuasarPlugins() {
@@ -145,7 +195,7 @@ function createUrqlMockClient<Q = unknown, M = unknown, S = unknown>({
   // @ts-expect-error executeQuery would expect an OperationResult, however the
   // docs suggest to return a Source: https://commerce.nearform.com/open-source/urql/docs/advanced/testing/
   client.executeQuery = executeQuery
-    ? vi.fn(executeQuery)
+    ? vi.fn(withPromise(executeQuery))
     : vi.fn(() => {
         throw new Error(
           'Query executed but no query mock provided. Mock with `() => never` to ignore this error.',
@@ -154,7 +204,7 @@ function createUrqlMockClient<Q = unknown, M = unknown, S = unknown>({
   // @ts-expect-error executeMutation would expect an OperationResult, however the
   // docs suggest to return a Source: https://commerce.nearform.com/open-source/urql/docs/advanced/testing/
   client.executeMutation = executeMutation
-    ? vi.fn(executeMutation)
+    ? vi.fn(withPromise(executeMutation))
     : vi.fn(() => {
         throw new Error(
           'Mutation executed but no query mock provided. Mock with `() => never` to ignore this error.',
@@ -163,7 +213,7 @@ function createUrqlMockClient<Q = unknown, M = unknown, S = unknown>({
   // @ts-expect-error executeSubscription would expect an OperationResult, however the
   // docs suggest to return a Source: https://commerce.nearform.com/open-source/urql/docs/advanced/testing/
   client.executeSubscription = executeSubscription
-    ? vi.fn(executeSubscription)
+    ? vi.fn(withPromise(executeSubscription))
     : vi.fn(() => {
         throw new Error(
           'Subscription executed but no query mock provided. Mock with `() => never` to ignore this error.',

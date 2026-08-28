@@ -130,12 +130,4 @@ camera scanning, reset-password e-mail round trip, XLSX export file contents.
 
 ## App bugs found by the loop
 
-- **Save hangs while async uniqueness validation is in flight** (2026-08-21,
-  open): in any entity modal with a `useIsUnique` validator (orchards,
-  cultivars, ...), clicking save within the 300ms debounce window — or while
-  the uniqueness query is running — makes `validate()` never resolve: the save
-  button spins forever and no mutation is sent. Reproduce with
-  `bun run test:e2e -- orchards.spec.ts --repeat-each=6` after removing the
-  wait in `save()` (`e2e/support/locators.ts`). A fast user on a slow
-  connection hits the same. Suspect: overlapping `executeQuery()` calls on the
-  paused urql query in `src/composables/useIsUnique.ts`.
+None open.

@@ -1,6 +1,7 @@
 import { expect, test } from './support/fixtures';
 import {
   expectDialogClosed,
+  expectRowGone,
   formField,
   listRow,
   save,
@@ -67,8 +68,11 @@ test('plants can be created, viewed, edited and eliminated', async ({
   // eliminating prefixes the label id with # and moves the plant from the
   // active tab to the disabled one
   const eliminatedLabel = `#${labelId}`;
-  await page.goto(`/#/plants?s=${encodeURIComponent(eliminatedLabel)}`);
-  await expect(listRow(page, eliminatedLabel)).toHaveCount(0);
+  await expectRowGone(
+    page,
+    `/#/plants?s=${encodeURIComponent(eliminatedLabel)}`,
+    eliminatedLabel,
+  );
   await page.goto(
     `/#/plants?tab=disabled&s=${encodeURIComponent(eliminatedLabel)}`,
   );

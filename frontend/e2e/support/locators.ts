@@ -110,15 +110,17 @@ export function listRow(page: Page, text: string | RegExp): Locator {
   return page.locator('.entity-list-table tbody tr').filter({ hasText: text });
 }
 
-// Assert a list row is gone after a delete. Under parallel load the list's
-// in-place refetch can race the delete, so assert the deletion on a fresh
-// page load of the list URL instead.
+// Assert a list row is gone after a delete. The goto loads a fresh document
+// (see fixtures.ts), so the in-memory list cannot mask the deletion — but an
+// empty row count is also true while that document is still booting, so wait
+// for its list query to land before asserting.
 export async function expectRowGone(
   page: Page,
   listUrl: string,
   text: string | RegExp,
 ): Promise<void> {
   await page.goto(listUrl);
+  await page.waitForLoadState('networkidle');
   await expect(listRow(page, text)).toHaveCount(0);
 }
 

@@ -19,11 +19,10 @@ export async function walkToForm(
       '__q_strn|cultivar-select',
     ),
   );
+  // addInitScript only runs on a fresh document; goto guarantees one (see
+  // fixtures.ts), so the preseeded picker mode is in place no matter where
+  // the caller navigated before.
   await page.goto('/#/cultivars/attribute');
-  // addInitScript only runs on a fresh document, and a goto between two hash
-  // routes of the loaded SPA is not one - reload so the preseeded picker mode
-  // is in place no matter where the caller navigated before.
-  await page.reload();
 
   // completed step panels stay rendered — the active step's button is last
   const continueButton = () =>

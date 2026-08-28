@@ -189,6 +189,9 @@ test('the enum options editor rejects empty, duplicate and missing options', asy
   await expect(page.locator('.q-dialog')).toHaveCount(1);
 
   // none of the rejected attempts got through
-  await page.goto(`/#/attributes?s=${encodeURIComponent(name)}`);
-  await expect(listRow(page, name)).toHaveCount(0);
+  await expectRowGone(
+    page,
+    `/#/attributes?s=${encodeURIComponent(name)}`,
+    name,
+  );
 });

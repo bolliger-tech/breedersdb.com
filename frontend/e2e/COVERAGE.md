@@ -7,6 +7,11 @@ specs, `audit` adds rows for uncovered features.
 
 Statuses: `todo` | `partial` | `done` | `blocked (<reason>)`
 
+Navigation invariant: the app is a hash-route SPA, so a `page.goto` between
+two `#/…` routes is a same-document navigation that returns before Vue Router
+swapped the view. The `page` fixture (`support/fixtures.ts`) turns those into
+real document loads, so a spec may treat every `goto` as a fresh app boot.
+
 ## Lists (smoke)
 
 | Feature                              | Status | Spec            |
@@ -19,12 +24,12 @@ Shared `EntityListTable` behavior — test on one representative entity list.
 Under `fullyParallel`, pin the row set with a seeded unique name prefix via
 `?s=` before asserting on ordering or counts.
 
-| Feature                                | Status | Spec                 | Notes                                                                                                      |
-| -------------------------------------- | ------ | -------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Column selector: show/hide columns     | done   | `list-table.spec.ts` | persistence (localStorage) only applies on a fresh document — a client-side goto does not remount the page |
-| Sorting via header cells               | done   | `list-table.spec.ts` | seed rows with a shared prefix, filter via `?s=`                                                           |
-| Pagination                             | done   | `list-table.spec.ts` | pin `?rowsPerPage=10` in the URL; bottom controls are icon-only (`chevron_right`)                          |
-| XLSX export button triggers a download | done   | `list-table.spec.ts` | asserts the download event only — file contents are out of scope                                           |
+| Feature                                | Status | Spec                 | Notes                                                                                                |
+| -------------------------------------- | ------ | -------------------- | ---------------------------------------------------------------------------------------------------- |
+| Column selector: show/hide columns     | done   | `list-table.spec.ts` | persistence (localStorage) is asserted on a second page, so the first keeps its state for the re-add |
+| Sorting via header cells               | done   | `list-table.spec.ts` | seed rows with a shared prefix, filter via `?s=`                                                     |
+| Pagination                             | done   | `list-table.spec.ts` | pin `?rowsPerPage=10` in the URL; bottom controls are icon-only (`chevron_right`)                    |
+| XLSX export button triggers a download | done   | `list-table.spec.ts` | asserts the download event only — file contents are out of scope                                     |
 
 ## Entity CRUD
 
@@ -84,7 +89,7 @@ implicitly (modal opens) by the CRUD specs.
 | Repeat mode (`?repeat=`) keeps form open                | done   | `attribute-flow-cultivars.spec.ts` | on reaching the target the flow returns to the entity picker                                    |
 | Ad-hoc extra attribute (AttributionAddFormAddInput)     | done   | `attribute-flow-cultivars.spec.ts` |                                                                                                 |
 | Slim happy-path on plants, groups, lots                 | done   | `attribute-flow-slim.spec.ts`      | group step-4 heading shows the generated `G…` label id, not the display name                    |
-| `walkToForm` reloads after its goto                     | done   | `support/attribute-flow.ts`        | the preseeded picker mode only applies to a fresh document — a hash-only goto does not reload   |
+| `walkToForm` preseeds the picker mode                   | done   | `support/attribute-flow.ts`        | `addInitScript` only applies to a fresh document — the `page` fixture makes every goto one      |
 
 ## Analyze (`/{cultivars,plants,groups,lots}/analyze`)
 

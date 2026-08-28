@@ -11,6 +11,12 @@ export default defineConfig({
     ? [['github'], ['html', { open: 'never' }]]
     : [['list']],
 
+  // Under `fullyParallel` the dev server serves several app boots at once and
+  // a heavy route (analyze) can take well over the 5s default to render its
+  // first paint. Waiting longer costs nothing on a passing assertion - only a
+  // genuinely failing one takes longer to report.
+  expect: { timeout: 15_000 },
+
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',

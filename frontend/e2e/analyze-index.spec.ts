@@ -1,5 +1,5 @@
 import { expect, test } from './support/fixtures';
-import { saveNameDialog } from './support/analyze';
+import { openAnalyzePage, saveNameDialog } from './support/analyze';
 import { expectRowGone, listRow } from './support/locators';
 
 // The saved-analyses index on cultivars: create via the "Save as …" dialog on
@@ -12,7 +12,7 @@ test('saved analyses can be created, listed, opened and deleted', async ({
   const name = `E2E Analysis ${seed.uid()}`;
 
   // create: a fresh analysis is only stored once it is named and saved
-  await page.goto('/#/cultivars/analyze/new');
+  await openAnalyzePage(page, '/#/cultivars/analyze/new');
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
     'New Analysis',
   );

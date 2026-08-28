@@ -46,7 +46,7 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Lots                   | done   | `lots.spec.ts`                   | name segment `\d\d[A-Z]`; crossing + orchard selects                                         |
 | Cultivars              | done   | `cultivars.spec.ts`              | pilot: breeders-cultivar/variety toggle; segment input is a masked q-input ("Breeding name") |
 | Plant groups           | done   | `plant-groups.spec.ts`           |                                                                                              |
-| Plants                 | done   | `plants.spec.ts`                 | no UI delete — Eliminate button `#`-prefixes label id, moves plant to disabled tab           |
+| Plants                 | done   | `plants.spec.ts`                 | no UI delete — Eliminate `#`-prefixes label id; a `#` search auto-switches the list to "All" |
 | Pollen                 | done   | `pollen.spec.ts`                 |                                                                                              |
 | Mother plants          | done   | `mother-plants.spec.ts`          | crossing must have matching mother cultivar (see `Seeder.motherPlant`)                       |
 | Attributes             | done   | `attributes.spec.ts`             | one test per data type; ENUM auto-adds an empty option row; RATING has no step input         |

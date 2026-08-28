@@ -66,12 +66,15 @@ test('plants can be created, viewed, edited and eliminated', async ({
   await expect(page.locator('.q-dialog')).toHaveCount(1);
 
   // eliminating prefixes the label id with # and moves the plant from the
-  // active tab to the disabled one
+  // active tab to the disabled one. Assert the active tab with the *old*
+  // label id: searching a #-prefixed one makes IndexPage switch the list to
+  // the "All" tab (it watches `search` for exactly that), which puts the
+  // eliminated plant back on screen 20ms later.
   const eliminatedLabel = `#${labelId}`;
   await expectRowGone(
     page,
-    `/#/plants?s=${encodeURIComponent(eliminatedLabel)}`,
-    eliminatedLabel,
+    `/#/plants?tab=active&s=${encodeURIComponent(labelId)}`,
+    labelId,
   );
   await page.goto(
     `/#/plants?tab=disabled&s=${encodeURIComponent(eliminatedLabel)}`,

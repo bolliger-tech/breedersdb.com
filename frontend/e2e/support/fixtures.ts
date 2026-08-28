@@ -17,17 +17,18 @@ export const test = base.extend<Fixtures>({
     await seeder.cleanup();
   },
 
-  // A console error anywhere during a test fails it. Opt out per test with
+  // A console error anywhere during a test fails it. Listens on the context so
+  // pages the test opens itself are covered too. Opt out per test with
   // test.fail()-style: test.use({ failOnConsoleErrors: undefined }) is not
   // possible for auto fixtures — instead attach your own filter via
-  // page.removeAllListeners('console') at the start of the test.
+  // context.removeAllListeners('console') at the start of the test.
   failOnConsoleErrors: [
-    async ({ page }, use) => {
+    async ({ context }, use) => {
       const errors: string[] = [];
-      page.on('console', (msg) => {
+      context.on('console', (msg) => {
         if (msg.type() === 'error') errors.push(msg.text());
       });
-      page.on('pageerror', (err) => errors.push(err.message));
+      context.on('weberror', (err) => errors.push(err.error().message));
       await use();
       expect(errors, 'browser console errors during the test').toEqual([]);
     },

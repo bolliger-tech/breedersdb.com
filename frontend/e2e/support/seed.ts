@@ -39,6 +39,8 @@ interface IdRow {
 }
 
 let processCounter = 0;
+// Stamped once per worker process so label ids differ between runs.
+const runBase = Date.now() % 1_000_000;
 
 // Creates uniquely named entities via admin GraphQL and deletes them again on
 // cleanup(). Names must fit the strictest DB checks (crossing: <= 8 chars of
@@ -49,30 +51,29 @@ export class Seeder {
   private userEmails: string[] = [];
   private userTokenIds: number[] = [];
 
-  // 7 chars, unique enough across parallel workers and consecutive runs
+  // 7 chars: base36 timestamp + a worker digit + a counter digit. The worker
+  // gets a digit of its own so parallel workers cannot alias onto the same
+  // sequence value, and the counter only has to separate calls that land in
+  // the same millisecond within one worker.
   uid(): string {
     processCounter += 1;
     const worker = Number(process.env.TEST_WORKER_INDEX ?? '0');
     const time = (Date.now() % 36 ** 5).toString(36).padStart(5, '0');
-    const seq = ((worker * 36 + processCounter) % 36 ** 2)
-      .toString(36)
-      .padStart(2, '0');
+    const seq = (worker % 36).toString(36) + (processCounter % 36).toString(36);
     return `${time}${seq}`;
   }
 
-  // 8 digits: 9 (clear of real label ids) + worker index + timestamp +
-  // counter — parallel workers each get their own digit, so they cannot
-  // collide on the unique plants.label_id
+  // 8 digits: 9 (clear of real label ids) + worker index + a run-scoped
+  // sequence. Parallel workers each get their own digit, and within a worker
+  // the sequence is the process start time plus a strictly growing counter,
+  // so it cannot repeat before 1M seeds — unlike a timestamp, which wraps.
   labelId(): string {
     processCounter += 1;
     const worker = Number(process.env.TEST_WORKER_INDEX ?? '0');
     return (
       '9' +
       String(worker % 10) +
-      String((Date.now() % 10_000) * 100 + (processCounter % 100)).padStart(
-        6,
-        '0',
-      )
+      String((runBase + processCounter) % 1_000_000).padStart(6, '0')
     );
   }
 

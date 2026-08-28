@@ -23,12 +23,13 @@ function adminSecret(): string {
   const match = fs
     .readFileSync(envFile, 'utf8')
     .match(/^HASURA_GRAPHQL_ADMIN_SECRET=(.*)$/m);
-  if (!match) {
+  const secret = match?.[1]?.trim();
+  if (!secret) {
     throw new Error(
       `HASURA_GRAPHQL_ADMIN_SECRET is neither set as env var nor found in ${envFile}`,
     );
   }
-  cachedSecret = (match[1] ?? '').trim();
+  cachedSecret = secret;
   return cachedSecret;
 }
 

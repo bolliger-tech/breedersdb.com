@@ -11,6 +11,13 @@
     required
     :include-id="props.plant.plant_group?.id"
     autocreate
+    :loading="fetchingMotherPlantsCount"
+    :rules="[
+      (val: PlantGroupSelectPlantGroup | null | undefined) =>
+        val?.cultivar_id === props.plant.plant_group?.cultivar.id ||
+        !motherPlantsCount ||
+        t('plants.validation.immutableCultivar'),
+    ]"
   />
   <PlantRowSelect
     :ref="(el: InputRef) => (refs.plantRowId = el)"
@@ -101,7 +108,8 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import type { PlantGroupSelectPlantGroup } from 'src/components/PlantGroup/PlantGroupSelect.vue';
 import PlantGroupSelect from 'src/components/PlantGroup/PlantGroupSelect.vue';
 import PlantRowSelect from 'src/components/PlantRow/PlantRowSelect.vue';
 import PlantLabelIdEdit from './PlantLabelIdEdit.vue';
@@ -116,6 +124,8 @@ import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import { useValidationRule } from 'src/composables/useValidationRule';
+import { useQuery } from '@urql/vue';
+import { graphql } from 'src/graphql';
 
 export interface PlantEntityFormProps {
   plant: PlantModalEditProps['plant'];
@@ -184,4 +194,25 @@ watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
 const { defaultDateValidationRule } = useValidationRule();
+
+const { data: motherPlantsCountData, fetching: fetchingMotherPlantsCount } =
+  useQuery({
+    query: graphql(`
+      query MotherPlantsWithPlantCount($plant_id: Int!) {
+        mother_plants_aggregate(where: { plant_id: { _eq: $plant_id } }) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `),
+    variables: { plant_id: 'id' in props.plant ? props.plant.id : -1 },
+    pause: !('id' in props.plant),
+    requestPolicy: 'cache-and-network',
+    context: { additionalTypenames: ['mother_plants'] },
+  });
+
+const motherPlantsCount = computed(() => {
+  return motherPlantsCountData.value?.mother_plants_aggregate?.aggregate?.count;
+});
 </script>

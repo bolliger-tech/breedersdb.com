@@ -16,6 +16,13 @@
     :ref="(el: InputRef) => (refs.cultivar = el)"
     v-model="data.cultivar_id"
     :required="true"
+    :loading="fetchingMotherPlantsCount"
+    :rules="[
+      (val: CultivarSelectCultivar | null | undefined) =>
+        val?.id === props.plantGroup.cultivar_id ||
+        !motherPlantsCount ||
+        t('plantGroups.validation.immutableCultivar'),
+    ]"
     @update:model-value="() => data.name_segment && refs.nameInputs?.validate()"
   />
   <PlantGroupNameInputs
@@ -46,7 +53,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import EntityInput from '../Entity/Edit/EntityInput.vue';
 import EntityToggle from '../Entity/Edit/EntityToggle.vue';
 import { watch } from 'vue';
@@ -54,9 +61,12 @@ import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
+import type { CultivarSelectCultivar } from '../Cultivar/CultivarSelect.vue';
 import CultivarSelect from '../Cultivar/CultivarSelect.vue';
 import PlantGroupNameInputs from './PlantGroupNameInputs.vue';
 import type { PlantGroupModalEditProps } from './PlantGroupModalEdit.vue';
+import { useQuery } from '@urql/vue';
+import { graphql } from 'src/graphql';
 
 export interface PlantGroupEntityFormProps {
   plantGroup: PlantGroupModalEditProps['plantGroup'];
@@ -99,4 +109,29 @@ watch(isDirty, () => makeModalPersistent(isDirty.value));
 watch(data, (newData) => emits('change', newData), { deep: true });
 
 const { t } = useI18n();
+
+const { data: motherPlantsCountData, fetching: fetchingMotherPlantsCount } =
+  useQuery({
+    query: graphql(`
+      query MotherPlantsWithPlantGroupCount($plant_group_id: Int!) {
+        mother_plants_aggregate(
+          where: { plant: { plant_group_id: { _eq: $plant_group_id } } }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `),
+    variables: {
+      plant_group_id: 'id' in props.plantGroup ? props.plantGroup.id : -1,
+    },
+    pause: !('id' in props.plantGroup),
+    requestPolicy: 'cache-and-network',
+    context: { additionalTypenames: ['mother_plants'] },
+  });
+
+const motherPlantsCount = computed(() => {
+  return motherPlantsCountData.value?.mother_plants_aggregate?.aggregate?.count;
+});
 </script>

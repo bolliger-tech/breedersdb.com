@@ -36,6 +36,10 @@ export const plants = {
       'Eliminierte Pflanzen können hier nicht verwendet werden',
     labelIdNotFound: 'Die Pflanze {labelId} wurde nicht gefunden',
   },
+  validation: {
+    immutableCultivar:
+      'Die Pflanze wird als Mutterpflanze verwendet. Sie kann nur in eine Gruppe desselben Cultivars verschoben werden.',
+  },
   hints: {
     labelId:
       'Erforderlich. Nummer (max. 8 Ziffern). Mit # vorangestellt, wenn die Pflanze eliminiert wurde',

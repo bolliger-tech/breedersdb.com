@@ -638,6 +638,100 @@ test('father cultivar can not be changed to a cultivar different from multiple l
   );
 });
 
+test('mother cultivar can not be changed to a cultivar that matches only one of multiple linked mother plants cultivars', async () => {
+  const { crossingId, fatherCultivarId } =
+    await insertCrossingWithTwoMotherPlants();
+
+  // nothing prevents changing the cultivar of the plant group of a mother plant
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdatePlantGroup($cultivar_id: Int!) {
+        update_plant_groups(
+          where: { name_segment: { _eq: "G2" } }
+          _set: { cultivar_id: $cultivar_id }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+    variables: { cultivar_id: fatherCultivarId },
+  });
+
+  const updated = await post({
+    query: /* GraphQL */ `
+      mutation UpdateCrossing($id: Int!, $cultivar_id: Int) {
+        update_crossings_by_pk(
+          pk_columns: { id: $id }
+          _set: { mother_cultivar_id: $cultivar_id }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: { id: crossingId, cultivar_id: fatherCultivarId },
+  });
+
+  expect(updated.errors[0].extensions.internal.error.message).toEqual(
+    'Failed to change mother cultivar: Mother plants for this crossing exist, but their plant has a different cultivar.',
+  );
+});
+
+test('father cultivar can not be changed to a cultivar that matches only one of multiple linked pollen cultivars', async () => {
+  const { crossingId, motherCultivarId, fatherCultivarId } =
+    await insertCrossingWithTwoMotherPlants();
+
+  const updateFatherCultivarMutation = /* GraphQL */ `
+    mutation UpdateCrossing($id: Int!, $cultivar_id: Int) {
+      update_crossings_by_pk(
+        pk_columns: { id: $id }
+        _set: { father_cultivar_id: $cultivar_id }
+      ) {
+        id
+      }
+    }
+  `;
+
+  // as long as the crossing has no father cultivar, its mother plants accept pollen of any cultivar
+  await postOrFail({
+    query: updateFatherCultivarMutation,
+    variables: { id: crossingId, cultivar_id: null },
+  });
+  const pollen = await postOrFail({
+    query: /* GraphQL */ `
+      mutation InsertPollen($cultivar_id: Int!) {
+        insert_pollen_one(
+          object: { name: "pollen3", cultivar_id: $cultivar_id }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: { cultivar_id: motherCultivarId },
+  });
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdateMotherPlant($pollen_id: Int!) {
+        update_mother_plants(
+          where: { name: { _eq: "Mother2" } }
+          _set: { pollen_id: $pollen_id }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+    variables: { pollen_id: pollen.data.insert_pollen_one.id },
+  });
+
+  const updated = await post({
+    query: updateFatherCultivarMutation,
+    variables: { id: crossingId, cultivar_id: fatherCultivarId },
+  });
+
+  expect(updated.errors[0].extensions.internal.error.message).toEqual(
+    'Failed to change father cultivar: Mother plants for this crossing exist, but their pollen has a different cultivar.',
+  );
+});
+
 test('crossing name cannot conflict with existing lot name_override', async () => {
   // First create a lot with name_override
   await postOrFail({

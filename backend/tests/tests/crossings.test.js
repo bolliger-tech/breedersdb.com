@@ -778,6 +778,72 @@ test('crossing with mother plants of a different cultivar can be updated if its 
   expect(updated.data.update_crossings_by_pk.name).toBe('cross2');
 });
 
+const updateMotherCultivarMutation = /* GraphQL */ `
+  mutation UpdateCrossing($id: Int!, $cultivar_id: Int) {
+    update_crossings_by_pk(
+      pk_columns: { id: $id }
+      _set: { mother_cultivar_id: $cultivar_id }
+    ) {
+      id
+      mother_cultivar_id
+    }
+  }
+`;
+
+test('mother cultivar can not be removed if a mother plant is linked', async () => {
+  const { crossingId } = await insertCrossingWithTwoMotherPlants();
+
+  const updated = await post({
+    query: updateMotherCultivarMutation,
+    variables: { id: crossingId, cultivar_id: null },
+  });
+
+  expect(updated.errors[0].extensions.internal.error.message).toEqual(
+    'Failed to change mother cultivar: Mother plants for this crossing exist, but their plant has a different cultivar.',
+  );
+});
+
+test('mother cultivar can be removed if no mother plant is linked', async () => {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: { name_segment: '001' },
+  });
+  const crossing = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'cross1',
+      mother_cultivar_id: motherCultivar.data.insert_cultivars_one.id,
+    },
+  });
+
+  const updated = await postOrFail({
+    query: updateMotherCultivarMutation,
+    variables: { id: crossing.data.insert_crossings_one.id, cultivar_id: null },
+  });
+
+  expect(updated.data.update_crossings_by_pk.mother_cultivar_id).toBeNull();
+});
+
+test('deleting the mother cultivar of a crossing with mother plants fails because of its plant groups', async () => {
+  const { motherCultivarId } = await insertCrossingWithTwoMotherPlants();
+
+  const deleted = await post({
+    query: /* GraphQL */ `
+      mutation DeleteCultivar($id: Int!) {
+        delete_cultivars_by_pk(id: $id) {
+          id
+        }
+      }
+    `,
+    variables: { id: motherCultivarId },
+  });
+
+  // the frontend turns this error into the advice to delete the plant groups first
+  expect(deleted.errors[0].message).toMatch(
+    /violates foreign key constraint "plant_groups_cultivar_id_fkey"/,
+  );
+});
+
 test('crossing name cannot conflict with existing lot name_override', async () => {
   // First create a lot with name_override
   await postOrFail({

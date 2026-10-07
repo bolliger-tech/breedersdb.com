@@ -56,6 +56,12 @@ afterEach(async () => {
   await post({
     query: /* GraphQL */ `
       mutation DeleteAllPlantGroups {
+        delete_mother_plants(where: {}) {
+          affected_rows
+        }
+        delete_plants(where: {}) {
+          affected_rows
+        }
         delete_plant_groups(where: {}) {
           affected_rows
         }
@@ -204,6 +210,125 @@ test('changing the cultivar_id changes the cultivar_name, full_name and display_
     full_name: 'xyz.24A.999.A',
     display_name: 'xyz.24A.999.A',
   });
+});
+
+const insertMotherPlantMutation = /* GraphQL */ `
+  mutation InsertMotherPlant($plant_group_id: Int!, $cultivar_id: Int!) {
+    insert_mother_plants_one(
+      object: {
+        name: "Mother1"
+        plant: {
+          data: { label_id: "00000001", plant_group_id: $plant_group_id }
+        }
+        crossing: { data: { name: "cross1", mother_cultivar_id: $cultivar_id } }
+      }
+    ) {
+      id
+    }
+  }
+`;
+
+test('cultivar_id is NOT mutable if a plant of the plant group is used in mother_plant', async () => {
+  const { data: data1 } = await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      name_segment: 'A',
+    },
+  });
+
+  await postOrFail({
+    query: insertMotherPlantMutation,
+    variables: {
+      plant_group_id: data1.insert_plant_groups_one.id,
+      cultivar_id: data1.insert_plant_groups_one.cultivar.id,
+    },
+  });
+
+  const { data: newCultivar } = await postOrFail({
+    query: /* GraphQL */ `
+      mutation InsertCultivar {
+        insert_cultivars_one(
+          object: {
+            name_segment: "999"
+            lot: {
+              data: {
+                name_segment: "24A"
+                orchard: { data: { name: "Orchard 2" } }
+                crossing: { data: { name: "xyz" } }
+              }
+            }
+          }
+        ) {
+          id
+        }
+      }
+    `,
+  });
+
+  const updated = await post({
+    query: /* GraphQL */ `
+      mutation UpdateCultivarId($id: Int!, $cultivar_id: Int!) {
+        update_plant_groups_by_pk(
+          pk_columns: { id: $id }
+          _set: { cultivar_id: $cultivar_id }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: {
+      id: data1.insert_plant_groups_one.id,
+      cultivar_id: newCultivar.insert_cultivars_one.id,
+    },
+  });
+
+  expect(updated.errors[0].extensions.internal.error.message).toBe(
+    'The cultivar of a plant group cannot be changed once one of its plants has been linked to a mother plant.',
+  );
+});
+
+test('plant group with a plant used in mother_plant can be updated if the cultivar_id is unchanged', async () => {
+  const { data: data1 } = await postOrFail({
+    query: insertMutation,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      name_segment: 'A',
+    },
+  });
+
+  await postOrFail({
+    query: insertMotherPlantMutation,
+    variables: {
+      plant_group_id: data1.insert_plant_groups_one.id,
+      cultivar_id: data1.insert_plant_groups_one.cultivar.id,
+    },
+  });
+
+  // the frontend always sends all fields, including the unchanged cultivar id
+  const { data: data2 } = await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdatePlantGroup($id: Int!, $entity: plant_groups_set_input!) {
+        update_plant_groups_by_pk(pk_columns: { id: $id }, _set: $entity) {
+          id
+          display_name
+        }
+      }
+    `,
+    variables: {
+      id: data1.insert_plant_groups_one.id,
+      entity: {
+        cultivar_id: data1.insert_plant_groups_one.cultivar.id,
+        name_segment: 'B',
+      },
+    },
+  });
+
+  expect(data2.update_plant_groups_by_pk.display_name).toBe('Abcd.24A.001.B');
 });
 
 test('display_name contains name_override', async () => {

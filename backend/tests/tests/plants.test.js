@@ -195,6 +195,9 @@ afterEach(async () => {
   await postOrFail({
     query: /* GraphQL */ `
       mutation DeleteAllPlants {
+        delete_mother_plants(where: {}) {
+          affected_rows
+        }
         delete_plants(where: {}) {
           affected_rows
         }
@@ -686,6 +689,123 @@ test('updated plant_group_name and cultivar_name on plant_group_id change', asyn
     'Abcd.24A.999.Z',
   );
   expect(updated.data.update_plants_by_pk.cultivar_name).toBe('Abcd.24A.999');
+});
+
+const insertPlantGroupMutation = /* GraphQL */ `
+  mutation InsertPlantGroup($cultivar_id: Int!, $name_segment: citext!) {
+    insert_plant_groups_one(
+      object: { cultivar_id: $cultivar_id, name_segment: $name_segment }
+    ) {
+      id
+    }
+  }
+`;
+
+const updatePlantGroupIdMutation = /* GraphQL */ `
+  mutation UpdatePlant($id: Int!, $plant_group_id: Int!) {
+    update_plants_by_pk(
+      pk_columns: { id: $id }
+      _set: { plant_group_id: $plant_group_id }
+    ) {
+      id
+      plant_group_name
+    }
+  }
+`;
+
+async function insertPlantUsedInMotherPlant() {
+  const initial = await postOrFail({
+    query: insertMutationMinimal,
+    variables: {
+      crossing_name: 'Abcd',
+      lot_name_segment: '24A',
+      cultivar_name_segment: '001',
+      plant_group_name_segment: 'A',
+      label_id: '12345678',
+    },
+  });
+  const lot = initial.data.insert_crossings_one.lots[0];
+  const cultivar = lot.cultivars[0];
+  const plantId = cultivar.plant_groups[0].plants[0].id;
+
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation InsertMotherPlant($plant_id: Int!, $cultivar_id: Int!) {
+        insert_mother_plants_one(
+          object: {
+            name: "Mother1"
+            plant_id: $plant_id
+            crossing: {
+              data: { name: "cross1", mother_cultivar_id: $cultivar_id }
+            }
+          }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: { plant_id: plantId, cultivar_id: cultivar.id },
+  });
+
+  return { plantId, cultivarId: cultivar.id, lotId: lot.id };
+}
+
+test('plant_group_id is NOT mutable to a plant group of another cultivar if plant used in mother_plant', async () => {
+  const { plantId, lotId } = await insertPlantUsedInMotherPlant();
+
+  const newCultivar = await postOrFail({
+    query: /* GraphQL */ `
+      mutation InsertCultivar($lot_id: Int!, $name_segment: citext!) {
+        insert_cultivars_one(
+          object: { lot_id: $lot_id, name_segment: $name_segment }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: { lot_id: lotId, name_segment: '999' },
+  });
+
+  const newPlantGroup = await postOrFail({
+    query: insertPlantGroupMutation,
+    variables: {
+      cultivar_id: newCultivar.data.insert_cultivars_one.id,
+      name_segment: 'Z',
+    },
+  });
+
+  const updated = await post({
+    query: updatePlantGroupIdMutation,
+    variables: {
+      id: plantId,
+      plant_group_id: newPlantGroup.data.insert_plant_groups_one.id,
+    },
+  });
+
+  expect(updated.errors[0].extensions.internal.error.message).toBe(
+    'The plant cannot be moved to a plant group of another cultivar once it has been linked to a mother plant.',
+  );
+});
+
+test('plant_group_id is mutable to a plant group of the same cultivar if plant used in mother_plant', async () => {
+  const { plantId, cultivarId } = await insertPlantUsedInMotherPlant();
+
+  const newPlantGroup = await postOrFail({
+    query: insertPlantGroupMutation,
+    variables: { cultivar_id: cultivarId, name_segment: 'Z' },
+  });
+
+  const updated = await postOrFail({
+    query: updatePlantGroupIdMutation,
+    variables: {
+      id: plantId,
+      plant_group_id: newPlantGroup.data.insert_plant_groups_one.id,
+    },
+  });
+
+  expect(updated.data.update_plants_by_pk.plant_group_name).toBe(
+    'Abcd.24A.001.Z',
+  );
 });
 
 test('modified', async () => {

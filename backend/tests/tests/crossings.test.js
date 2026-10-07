@@ -54,6 +54,91 @@ const insertCultivarMutation = /* GraphQL */ `
   }
 `;
 
+const insertMotherPlantMutation = /* GraphQL */ `
+  mutation InsertMotherPlant(
+    $name: citext!
+    $crossing_id: Int!
+    $label_id: citext!
+    $plant_group_name_segment: citext!
+    $mother_cultivar_id: Int!
+    $pollen_name: citext!
+    $father_cultivar_id: Int!
+  ) {
+    insert_mother_plants_one(
+      object: {
+        name: $name
+        crossing_id: $crossing_id
+        plant: {
+          data: {
+            label_id: $label_id
+            plant_group: {
+              data: {
+                name_segment: $plant_group_name_segment
+                cultivar_id: $mother_cultivar_id
+              }
+            }
+          }
+        }
+        pollen: {
+          data: { name: $pollen_name, cultivar_id: $father_cultivar_id }
+        }
+      }
+    ) {
+      id
+    }
+  }
+`;
+
+async function insertCrossingWithTwoMotherPlants() {
+  const motherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '001',
+      lot_name_segment: '24A',
+      crossing_name: 'C1',
+      orchard_name: 'Orchard 1',
+    },
+  });
+  const fatherCultivar = await postOrFail({
+    query: insertCultivarMutation,
+    variables: {
+      name_segment: '002',
+      lot_name_segment: '24A',
+      crossing_name: 'C2',
+      orchard_name: 'Orchard 2',
+    },
+  });
+  const motherCultivarId = motherCultivar.data.insert_cultivars_one.id;
+  const fatherCultivarId = fatherCultivar.data.insert_cultivars_one.id;
+
+  const crossing = await postOrFail({
+    query: insertMutation,
+    variables: {
+      name: 'cross1',
+      mother_cultivar_id: motherCultivarId,
+      father_cultivar_id: fatherCultivarId,
+    },
+  });
+  const crossingId = crossing.data.insert_crossings_one.id;
+
+  for (const i of [1, 2]) {
+    await postOrFail({
+      query: insertMotherPlantMutation,
+      variables: {
+        name: `Mother${i}`,
+        crossing_id: crossingId,
+        label_id: `0000000${i}`,
+        plant_group_name_segment: `G${i}`,
+        mother_cultivar_id: motherCultivarId,
+        pollen_name: `pollen${i}`,
+        father_cultivar_id: fatherCultivarId,
+      },
+    });
+  }
+
+  return { crossingId, motherCultivarId, fatherCultivarId };
+}
+
 afterEach(async () => {
   await postOrFail({
     query: /* GraphQL */ `
@@ -478,6 +563,173 @@ test('father & mother cultivar can be changed if no mother plant is linked', asy
   });
 
   expect(updated.data.update_crossings_by_pk.id).toBeNumber();
+});
+
+test('crossing with multiple mother plants can be updated', async () => {
+  const { crossingId, motherCultivarId, fatherCultivarId } =
+    await insertCrossingWithTwoMotherPlants();
+
+  // the frontend always sends all fields, including the unchanged cultivar ids
+  const updated = await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdateCrossing($id: Int!, $entity: crossings_set_input!) {
+        update_crossings_by_pk(pk_columns: { id: $id }, _set: $entity) {
+          id
+          name
+        }
+      }
+    `,
+    variables: {
+      id: crossingId,
+      entity: {
+        name: 'cross2',
+        mother_cultivar_id: motherCultivarId,
+        father_cultivar_id: fatherCultivarId,
+      },
+    },
+  });
+
+  expect(updated.data.update_crossings_by_pk.name).toBe('cross2');
+});
+
+test('mother cultivar can not be changed to a cultivar different from multiple linked mother plants cultivar', async () => {
+  const { crossingId, fatherCultivarId } =
+    await insertCrossingWithTwoMotherPlants();
+
+  const updated = await post({
+    query: /* GraphQL */ `
+      mutation UpdateCrossing($id: Int!, $cultivar_id: Int) {
+        update_crossings_by_pk(
+          pk_columns: { id: $id }
+          _set: { mother_cultivar_id: $cultivar_id }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: { id: crossingId, cultivar_id: fatherCultivarId },
+  });
+
+  expect(updated.errors[0].extensions.internal.error.message).toEqual(
+    'Failed to change mother cultivar: Mother plants for this crossing exist, but their plant has a different cultivar.',
+  );
+});
+
+test('father cultivar can not be changed to a cultivar different from multiple linked pollen cultivar', async () => {
+  const { crossingId, motherCultivarId } =
+    await insertCrossingWithTwoMotherPlants();
+
+  const updated = await post({
+    query: /* GraphQL */ `
+      mutation UpdateCrossing($id: Int!, $cultivar_id: Int) {
+        update_crossings_by_pk(
+          pk_columns: { id: $id }
+          _set: { father_cultivar_id: $cultivar_id }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: { id: crossingId, cultivar_id: motherCultivarId },
+  });
+
+  expect(updated.errors[0].extensions.internal.error.message).toEqual(
+    'Failed to change father cultivar: Mother plants for this crossing exist, but their pollen has a different cultivar.',
+  );
+});
+
+test('mother cultivar can not be changed to a cultivar that matches only one of multiple linked mother plants cultivars', async () => {
+  const { crossingId, fatherCultivarId } =
+    await insertCrossingWithTwoMotherPlants();
+
+  // nothing prevents changing the cultivar of the plant group of a mother plant
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdatePlantGroup($cultivar_id: Int!) {
+        update_plant_groups(
+          where: { name_segment: { _eq: "G2" } }
+          _set: { cultivar_id: $cultivar_id }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+    variables: { cultivar_id: fatherCultivarId },
+  });
+
+  const updated = await post({
+    query: /* GraphQL */ `
+      mutation UpdateCrossing($id: Int!, $cultivar_id: Int) {
+        update_crossings_by_pk(
+          pk_columns: { id: $id }
+          _set: { mother_cultivar_id: $cultivar_id }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: { id: crossingId, cultivar_id: fatherCultivarId },
+  });
+
+  expect(updated.errors[0].extensions.internal.error.message).toEqual(
+    'Failed to change mother cultivar: Mother plants for this crossing exist, but their plant has a different cultivar.',
+  );
+});
+
+test('father cultivar can not be changed to a cultivar that matches only one of multiple linked pollen cultivars', async () => {
+  const { crossingId, motherCultivarId, fatherCultivarId } =
+    await insertCrossingWithTwoMotherPlants();
+
+  const updateFatherCultivarMutation = /* GraphQL */ `
+    mutation UpdateCrossing($id: Int!, $cultivar_id: Int) {
+      update_crossings_by_pk(
+        pk_columns: { id: $id }
+        _set: { father_cultivar_id: $cultivar_id }
+      ) {
+        id
+      }
+    }
+  `;
+
+  // as long as the crossing has no father cultivar, its mother plants accept pollen of any cultivar
+  await postOrFail({
+    query: updateFatherCultivarMutation,
+    variables: { id: crossingId, cultivar_id: null },
+  });
+  const pollen = await postOrFail({
+    query: /* GraphQL */ `
+      mutation InsertPollen($cultivar_id: Int!) {
+        insert_pollen_one(
+          object: { name: "pollen3", cultivar_id: $cultivar_id }
+        ) {
+          id
+        }
+      }
+    `,
+    variables: { cultivar_id: motherCultivarId },
+  });
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation UpdateMotherPlant($pollen_id: Int!) {
+        update_mother_plants(
+          where: { name: { _eq: "Mother2" } }
+          _set: { pollen_id: $pollen_id }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+    variables: { pollen_id: pollen.data.insert_pollen_one.id },
+  });
+
+  const updated = await post({
+    query: updateFatherCultivarMutation,
+    variables: { id: crossingId, cultivar_id: fatherCultivarId },
+  });
+
+  expect(updated.errors[0].extensions.internal.error.message).toEqual(
+    'Failed to change father cultivar: Mother plants for this crossing exist, but their pollen has a different cultivar.',
+  );
 });
 
 test('crossing name cannot conflict with existing lot name_override', async () => {

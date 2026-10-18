@@ -23,6 +23,9 @@ export const plantGroups = {
   validation: {
     nameNotUniqueWithCultivar:
       'This name is already in use for the selected cultivar.',
+  },
+
+  hints: {
     immutableCultivar:
       'Cultivar cannot be changed, once a plant of the group is used as a mother plant.',
   },

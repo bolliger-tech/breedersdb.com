@@ -17,12 +17,11 @@
     v-model="data.cultivar_id"
     :required="true"
     :loading="fetchingMotherPlantsCount"
-    :rules="[
-      (val: CultivarSelectCultivar | null | undefined) =>
-        val?.id === props.plantGroup.cultivar_id ||
-        !motherPlantsCount ||
-        t('plantGroups.validation.immutableCultivar'),
-    ]"
+    :disable="hasMotherPlants"
+    :readonly="hasMotherPlants"
+    :hint="
+      hasMotherPlants ? t('plantGroups.hints.immutableCultivar') : undefined
+    "
     @update:model-value="() => data.name_segment && refs.nameInputs?.validate()"
   />
   <PlantGroupNameInputs
@@ -61,7 +60,6 @@ import { makeModalPersistentSymbol } from '../Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
-import type { CultivarSelectCultivar } from '../Cultivar/CultivarSelect.vue';
 import CultivarSelect from '../Cultivar/CultivarSelect.vue';
 import PlantGroupNameInputs from './PlantGroupNameInputs.vue';
 import type { PlantGroupModalEditProps } from './PlantGroupModalEdit.vue';
@@ -131,7 +129,8 @@ const { data: motherPlantsCountData, fetching: fetchingMotherPlantsCount } =
     context: { additionalTypenames: ['mother_plants'] },
   });
 
-const motherPlantsCount = computed(() => {
-  return motherPlantsCountData.value?.mother_plants_aggregate?.aggregate?.count;
-});
+const hasMotherPlants = computed(
+  () =>
+    !!motherPlantsCountData.value?.mother_plants_aggregate?.aggregate?.count,
+);
 </script>

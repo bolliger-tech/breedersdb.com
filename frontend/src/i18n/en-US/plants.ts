@@ -38,6 +38,11 @@ export const plants = {
     labelIdNotFound: 'Plant {labelId} not found',
   },
 
+  validation: {
+    immutableCultivar:
+      'The plant is used as a mother plant. It can only be moved to a group of the same cultivar.',
+  },
+
   hints: {
     labelId:
       'Required. Number (max 8 digits). Prefixed with a # if plant was eliminated',

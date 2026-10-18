@@ -7,9 +7,10 @@
     :options="plantGroupOptions"
     option-value="id"
     option-label="display_name"
-    :loading="fetching || savingAutocreate"
+    :loading="fetching || savingAutocreate || loading"
     :error="error || saveAutocreateError"
     :required="required"
+    :rules="rules"
     filter-with-wildcards-around-dots
     @input-value="($event) => (searchValue = $event)"
     @keydown.down="() => autocreateRef?.focusNext()"
@@ -33,15 +34,20 @@ import { computed, nextTick, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import type { CombinedError } from '@urql/vue';
 import { useQuery } from '@urql/vue';
+import type { EntitySelectProps } from '../Entity/Edit/EntitySelect.vue';
 import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 import PlantGroupSelectAutocreate from './PlantGroupSelectAutocreate.vue';
 import type { ComponentExposed } from 'vue-component-type-helpers';
 
+export type PlantGroupSelectPlantGroup = typeof plantGroup.value;
+
 export interface PlantGroupSelectProps {
   required?: boolean;
   includeId?: number;
   autocreate?: boolean;
+  rules?: EntitySelectProps<unknown>['rules'];
+  loading?: boolean;
 }
 const props = defineProps<PlantGroupSelectProps>();
 
@@ -68,6 +74,7 @@ const query = graphql(`
     plant_groups(where: $where, order_by: { display_name: asc }) {
       id
       display_name
+      cultivar_id
     }
   }
 `);
@@ -81,7 +88,7 @@ const { data, error, fetching } = useQuery({
 
 const plantGroupOptions = computed(() => data.value?.plant_groups ?? []);
 
-const plantGroup = computed<{ id: number; display_name: string } | undefined>({
+const plantGroup = computed({
   get: () => plantGroupOptions.value.find((o) => o.id === modelValue.value),
   set: (plantGroup) => (modelValue.value = plantGroup?.id ?? null),
 });

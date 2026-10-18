@@ -638,44 +638,6 @@ test('father cultivar can not be changed to a cultivar different from multiple l
   );
 });
 
-test('mother cultivar can not be changed to a cultivar that matches only one of multiple linked mother plants cultivars', async () => {
-  const { crossingId, fatherCultivarId } =
-    await insertCrossingWithTwoMotherPlants();
-
-  // nothing prevents changing the cultivar of the plant group of a mother plant
-  await postOrFail({
-    query: /* GraphQL */ `
-      mutation UpdatePlantGroup($cultivar_id: Int!) {
-        update_plant_groups(
-          where: { name_segment: { _eq: "G2" } }
-          _set: { cultivar_id: $cultivar_id }
-        ) {
-          affected_rows
-        }
-      }
-    `,
-    variables: { cultivar_id: fatherCultivarId },
-  });
-
-  const updated = await post({
-    query: /* GraphQL */ `
-      mutation UpdateCrossing($id: Int!, $cultivar_id: Int) {
-        update_crossings_by_pk(
-          pk_columns: { id: $id }
-          _set: { mother_cultivar_id: $cultivar_id }
-        ) {
-          id
-        }
-      }
-    `,
-    variables: { id: crossingId, cultivar_id: fatherCultivarId },
-  });
-
-  expect(updated.errors[0].extensions.internal.error.message).toEqual(
-    'Failed to change mother cultivar: Mother plants for this crossing exist, but their plant has a different cultivar.',
-  );
-});
-
 test('father cultivar can not be changed to a cultivar that matches only one of multiple linked pollen cultivars', async () => {
   const { crossingId, motherCultivarId, fatherCultivarId } =
     await insertCrossingWithTwoMotherPlants();

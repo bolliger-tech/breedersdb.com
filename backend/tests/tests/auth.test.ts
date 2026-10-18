@@ -16,6 +16,7 @@ const UserFields = `
   failed_signin_attempts
   first_failed_signin_attempt
   last_signin
+  last_seen
   created
   modified
 `;
@@ -36,6 +37,7 @@ const insertUserMutation = /* GraphQL */ `
     InsertUser(object: { email: $email, password: $password }) {
       email
       last_signin
+      last_seen
       failed_signin_attempts
     }
   }
@@ -170,6 +172,7 @@ test('insert users', async () => {
   );
   expect(result.data.InsertUser.email).toBe(user1.email);
   expect(result.data.InsertUser.last_signin).toBe(null);
+  expect(result.data.InsertUser.last_seen).toBe(null);
   expect(result.data.InsertUser.failed_signin_attempts).toBe(0);
 
   const result2 = await postOrFail(
@@ -216,6 +219,7 @@ test('get users', async () => {
   expect(result.data.users[0].email).toBe(user1.email);
   expect(result.data.users[0].failed_signin_attempts).toBe(0);
   expect(result.data.users[0].last_signin).toBe(null);
+  expect(result.data.users[0].last_seen).toBe(null);
   expect(result.data.users[0].locale).not.toBe(null);
   expect(result.data.users[0].password_hash).not.toContain(user1.password);
 
@@ -223,6 +227,7 @@ test('get users', async () => {
   expect(result.data.users[1].email).toBe(user2.email);
   expect(result.data.users[1].failed_signin_attempts).toBe(0);
   expect(result.data.users[1].last_signin).toBe(null);
+  expect(result.data.users[1].last_seen).toBe(null);
   expect(result.data.users[1].locale).not.toBe(null);
 });
 
@@ -282,6 +287,7 @@ test('me', async () => {
   expect(result.data.Me.user.email).toBe(user1.email);
   expect(result.data.Me.user.locale).not.toBe(null);
   expect(result.data.Me.user.last_signin).not.toBe(null);
+  expect(result.data.Me.user.last_seen).not.toBe(null);
   expect(result.data.Me.user.failed_signin_attempts).toBe(0);
   expect(result.data.Me.user.first_failed_signin_attempt).toBe(null);
 });
@@ -410,6 +416,7 @@ test('user token last verify', async () => {
   expect(
     result.data.users[0].user_tokens_aggregate.aggregate.max.last_verify,
   ).toBe(null); // after sign out there is no token left
+  expect(result.data.users[0].last_seen).not.toBe(null); // kept after sign out
 
   expect(result.data.users[1].email).toBe(user2.email);
   expect(result.data.users[1].failed_signin_attempts).toBe(0);
@@ -417,6 +424,32 @@ test('user token last verify', async () => {
   expect(
     result.data.users[1].user_tokens_aggregate.aggregate.max.last_verify,
   ).not.toBe(null); // still signed in
+});
+
+test('modified is bumped if last seen changes along with other columns', async () => {
+  const before = (await postOrFail({ query: usersQuery }, adminHeaders)).data
+    .users[1];
+  expect(before.locale).not.toBe('en-US');
+
+  const result = await postOrFail(
+    {
+      query: /* GraphQL */ `
+        mutation UpdateUser($id: Int!, $last_seen: timestamptz!) {
+          update_users_by_pk(
+            pk_columns: { id: $id }
+            _set: { last_seen: $last_seen, locale: "en-US" }
+          ) {
+            modified
+          }
+        }
+      `,
+      variables: { id: user2Id, last_seen: new Date().toISOString() },
+    },
+    adminHeaders,
+  );
+  expect(
+    new Date(result.data.update_users_by_pk.modified).valueOf(),
+  ).toBeGreaterThan(new Date(before.modified).valueOf());
 });
 
 test('sign-in with new password', async () => {
@@ -733,6 +766,23 @@ describe('personal access tokens', () => {
       token: result.data.CreatePersonalAccessToken.token,
       expires: result.data.CreatePersonalAccessToken.expires,
     };
+  });
+
+  test('personal access token use updates last seen but not modified', async () => {
+    const getUser2 = async () =>
+      (await postOrFail({ query: usersQuery }, adminHeaders)).data.users[1];
+    const before = await getUser2();
+
+    await postOrFail(
+      { query: meQuery },
+      { Authorization: 'Bearer ' + pat1.token },
+    );
+
+    const after = await getUser2();
+    expect(new Date(after.last_seen).valueOf()).toBeGreaterThan(
+      new Date(before.last_seen).valueOf(),
+    );
+    expect(after.modified).toBe(before.modified);
   });
 
   test('get me with personal access token', async () => {

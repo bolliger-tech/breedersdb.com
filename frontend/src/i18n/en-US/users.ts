@@ -8,6 +8,7 @@ export const users = {
     locale: 'Locale',
     failedSigninAttempts: 'Failed signin attempts',
     lastSignin: 'Last signin',
+    lastSeen: 'Last seen',
     password: 'Password',
     newPassword: 'New Password',
   },

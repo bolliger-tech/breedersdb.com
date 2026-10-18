@@ -6,6 +6,7 @@ export const users = {
     locale: 'Sprache',
     failedSigninAttempts: 'Fehlerhafte Anmeldeversuche',
     lastSignin: 'Letzte Anmeldung',
+    lastSeen: 'Zuletzt gesehen',
     password: 'Passwort',
     newPassword: 'Neues Passwort',
   },

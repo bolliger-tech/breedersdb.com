@@ -61,6 +61,7 @@ type FullUserOutput {
   email: citext!
   locale: String!
   last_signin: timestamptz
+  last_seen: timestamptz
   failed_signin_attempts: Int!
   first_failed_signin_attempt: timestamptz
   created: timestamptz!

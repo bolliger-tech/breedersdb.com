@@ -9,6 +9,7 @@ export const userFragment = graphql(`
     locale
     failed_signin_attempts
     last_signin
+    last_seen
     created
     modified
   }
@@ -21,6 +22,7 @@ export const userFragmentOnFullUserOutput = graphql(`
     locale
     failed_signin_attempts
     last_signin
+    last_seen
     created
     modified
   }

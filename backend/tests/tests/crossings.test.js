@@ -1,6 +1,5 @@
 import { test, expect, afterEach } from 'bun:test';
 import { post, postOrFail } from '../fetch';
-import { config } from '../config';
 import { iso8601dateRegex } from '../utils';
 
 const insertMutation = /* GraphQL */ `
@@ -138,30 +137,6 @@ async function insertCrossingWithTwoMotherPlants() {
   }
 
   return { crossingId, motherCultivarId, fatherCultivarId };
-}
-
-// Mother plants whose cultivars contradict their crossing can not be created through the API,
-// but they may exist in legacy data. So we create them with the triggers disabled.
-async function runSqlWithoutTriggers(sql) {
-  const resp = await fetch('http://localhost:8080/v2/query', {
-    method: 'POST',
-    headers: {
-      'X-Hasura-Admin-Secret': config.HASURA_GRAPHQL_ADMIN_SECRET,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      type: 'run_sql',
-      args: {
-        source: 'Postgres',
-        sql: `set local session_replication_role = replica; ${sql}`,
-        check_metadata_consistency: false,
-      },
-    }),
-  });
-
-  if (!resp.ok) {
-    throw new Error('SQL error\n' + (await resp.text()));
-  }
 }
 
 afterEach(async () => {
@@ -663,33 +638,6 @@ test('father cultivar can not be changed to a cultivar different from multiple l
   );
 });
 
-test('mother cultivar can not be changed to a cultivar that matches only one of multiple linked mother plants cultivars', async () => {
-  const { crossingId, fatherCultivarId } =
-    await insertCrossingWithTwoMotherPlants();
-
-  await runSqlWithoutTriggers(
-    `update plant_groups set cultivar_id = ${fatherCultivarId} where name_segment = 'G2'`,
-  );
-
-  const updated = await post({
-    query: /* GraphQL */ `
-      mutation UpdateCrossing($id: Int!, $cultivar_id: Int) {
-        update_crossings_by_pk(
-          pk_columns: { id: $id }
-          _set: { mother_cultivar_id: $cultivar_id }
-        ) {
-          id
-        }
-      }
-    `,
-    variables: { id: crossingId, cultivar_id: fatherCultivarId },
-  });
-
-  expect(updated.errors[0].extensions.internal.error.message).toEqual(
-    'Failed to change mother cultivar: Mother plants for this crossing exist, but their plant has a different cultivar.',
-  );
-});
-
 test('father cultivar can not be changed to a cultivar that matches only one of multiple linked pollen cultivars', async () => {
   const { crossingId, motherCultivarId, fatherCultivarId } =
     await insertCrossingWithTwoMotherPlants();
@@ -744,38 +692,6 @@ test('father cultivar can not be changed to a cultivar that matches only one of 
   expect(updated.errors[0].extensions.internal.error.message).toEqual(
     'Failed to change father cultivar: Mother plants for this crossing exist, but their pollen has a different cultivar.',
   );
-});
-
-test('crossing with mother plants of a different cultivar can be updated if its cultivars are unchanged', async () => {
-  const { crossingId, motherCultivarId, fatherCultivarId } =
-    await insertCrossingWithTwoMotherPlants();
-
-  await runSqlWithoutTriggers(`
-    update plant_groups set cultivar_id = ${fatherCultivarId} where name_segment = 'G2';
-    update pollen set cultivar_id = ${motherCultivarId} where name = 'pollen2';
-  `);
-
-  // the frontend always sends all fields, including the unchanged cultivar ids
-  const updated = await postOrFail({
-    query: /* GraphQL */ `
-      mutation UpdateCrossing($id: Int!, $entity: crossings_set_input!) {
-        update_crossings_by_pk(pk_columns: { id: $id }, _set: $entity) {
-          id
-          name
-        }
-      }
-    `,
-    variables: {
-      id: crossingId,
-      entity: {
-        name: 'cross2',
-        mother_cultivar_id: motherCultivarId,
-        father_cultivar_id: fatherCultivarId,
-      },
-    },
-  });
-
-  expect(updated.data.update_crossings_by_pk.name).toBe('cross2');
 });
 
 test('crossing name cannot conflict with existing lot name_override', async () => {

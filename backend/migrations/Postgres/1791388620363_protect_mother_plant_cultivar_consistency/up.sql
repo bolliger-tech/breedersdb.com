@@ -1,8 +1,9 @@
 -- The cultivar of a mother plant's plant must match the mother cultivar of its crossing, and the cultivar of its
--- pollen must match the father cultivar of its crossing. This migration closes three gaps:
+-- pollen must match the father cultivar of its crossing. This migration changes three things:
 --
 -- 1. The checks on crossings ran whenever mother_cultivar_id (father_cultivar_id) was in the SET list, also when the
---    value was unchanged. A crossing whose mother plants contradict it could therefore not be updated at all.
+--    value was unchanged. The frontend always sends both, so they ran on every update of a crossing, although only a
+--    changed value can introduce a contradiction.
 -- 2. Nothing prevented changing the cultivar of a mother plant's plant, either by moving the plant to a plant group
 --    of another cultivar, or by changing the cultivar of its plant group.
 -- 3. The checks read the other tables without a lock, so two concurrent transactions could both pass and commit a

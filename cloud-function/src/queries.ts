@@ -6,6 +6,7 @@ type User = {
   first_failed_signin_attempt: string | null;
   failed_signin_attempts: number;
   last_signin: string | null;
+  last_seen: string | null;
   created: string;
   modified: string;
 };
@@ -17,6 +18,7 @@ const UserFields = `
   first_failed_signin_attempt
   failed_signin_attempts
   last_signin
+  last_seen
   created
   modified
 `;

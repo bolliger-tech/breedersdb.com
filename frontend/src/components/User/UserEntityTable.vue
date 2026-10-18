@@ -17,6 +17,14 @@
         t('base.notAvailable')
       }}</span>
     </EntityViewTableRow>
+    <EntityViewTableRow :label="t('users.fields.lastSeen')">
+      <template v-if="user.last_seen">{{
+        d(user.last_seen, 'YmdHis')
+      }}</template>
+      <span v-else class="text-body2 text-italic">{{
+        t('base.notAvailable')
+      }}</span>
+    </EntityViewTableRow>
     <EntityViewTableMetaData
       :id="user.id"
       :created="user.created"

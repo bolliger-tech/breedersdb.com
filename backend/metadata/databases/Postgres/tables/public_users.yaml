@@ -17,6 +17,7 @@ select_permissions:
         - email
         - id
         - last_signin
+        - last_seen
         - locale
         - modified
         - failed_signin_attempts
@@ -35,6 +36,7 @@ select_permissions:
         - first_failed_signin_attempt
         - created
         - last_signin
+        - last_seen
         - modified
       filter: {}
       allow_aggregations: true

@@ -49,7 +49,11 @@ import { useI18n } from 'src/composables/useI18n';
 
 export type UserEditInput = Omit<
   UserFragment,
-  'failed_signin_attempts' | 'last_signin' | 'created' | 'modified'
+  | 'failed_signin_attempts'
+  | 'last_signin'
+  | 'last_seen'
+  | 'created'
+  | 'modified'
 >;
 export type UserInsertInput = Omit<UserEditInput, 'id'> & {
   password: string;

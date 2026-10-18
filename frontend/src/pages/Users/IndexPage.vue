@@ -107,6 +107,14 @@ const columns = [
     sortable: true,
     timestamp: true,
   },
+  {
+    name: 'last_seen',
+    label: t('users.fields.lastSeen'),
+    align: 'left' as const,
+    field: 'last_seen',
+    sortable: true,
+    timestamp: true,
+  },
   ...useTimestampColumns(),
 ];
 
@@ -143,6 +151,7 @@ function transformData({
       return {
         ...row,
         last_signin: row.last_signin ? new Date(row.last_signin) : null,
+        last_seen: row.last_seen ? new Date(row.last_seen) : null,
       };
     }),
   };

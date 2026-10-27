@@ -90,3 +90,9 @@ delete_permissions:
     permission:
       filter: {}
     comment: ""
+configuration:
+  column_config:
+    geo_location:
+      comment: SRID:4326
+    geo_location_accuracy:
+      comment: Meters

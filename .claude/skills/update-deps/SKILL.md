@@ -38,7 +38,9 @@ defers _how_ to those docs, so it survives stack changes.
 
 **Gotchas / judgment (raise the relevant ones):**
 
-- The smoke test covers **jose** and **functions-framework** but not **sharp**, **@google-cloud/storage**, or **nodemailer** — for those, "verified" means typecheck + the container booting healthy (imports resolve, native binaries load).
+- The smoke test prompts for credentials; pipe empty lines (`printf '\n\n' | ./dev/test.sh`) to use the seeded dev user. It exercises every runtime dep: **functions-framework**, **jose** (password-reset JWT), **nodemailer** (reset mail read back from mailpit), **sharp** and **@google-cloud/storage** (image upload + uncached resize against fake-gcs). It does not cover image pruning or real-GCS auth (dev uses the emulator without credentials) — flag storage/google-auth-library changes for a check on the next deploy.
+- If the container is _recreated_ (e.g. `docker compose up` after it was stopped) and gets a new IP, nginx keeps the stale upstream and `/api/assets` returns **502** while GraphQL still works (Hasura re-resolves). Restart the `nginx` container — it's not an upgrade regression.
+- To confirm the rebuild finished, read the version from `/app/node_modules/<pkg>/package.json` inside the container (`require('<pkg>/package.json')` fails for packages with an `exports` map, e.g. sharp).
 - **prettier** is enforced by the _root_ formatter, not this package's copy — a local bump is inert and the pre-commit hook may reformat with the root version; note the mismatch, don't fight it.
 - **@types/node**: hold at the container runtime's major even under `major`, unless the runtime is bumped too.
 - **typescript** major (native `tsgo`): drop-in here (we only run `tsc` via scripts); platform binaries ship in the lockfile, so no pipeline change.

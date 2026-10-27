@@ -41,7 +41,7 @@ Copy env with `cp .env.example .env` (`HASURA_GRAPHQL_ADMIN_SECRET` and `CLOUD_F
 docker compose up --watch --build   # dev with file watching
 npm run dev                          # nodemon + functions-framework on :8090
 npm run build                        # tsc → dist/
-./dev/test.sh                        # smoke test: signIn → query → signOut
+./dev/test.sh                        # smoke test: signIn → query → PAT → image upload/resize → signOut → password reset
 ```
 
 This package uses **npm** (it has its own `package-lock.json`), unlike the frontend. Health: http://localhost:8090/health. Set `LOG_REQUESTS=true` in `.env` then restart (the `.env` is not watched) to log requests/responses.

@@ -89,3 +89,5 @@ delete_permissions:
     permission:
       filter: {}
     comment: ""
+configuration:
+  comment: '""- validation_rule"":\n""    JSONB: {min: int, max: int, step: int}"" for ""INTEGER"",\n""           {min: int >= 0, max: int <= 9, step: 1}"" for ""RATING""\n""           {min: float|int, max: float|int, step: float|int}"" for ""FLOAT""\n""    NULL"" for other data types.\n""- data_type"": Can''t be changed once ""attribution_values"" for this ""attribute"" exist.\n""- legend"": Only supported for data_type RATING\n""- default_value"": Not supported for data_type PHOTO\n'

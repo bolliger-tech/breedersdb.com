@@ -97,3 +97,11 @@ delete_permissions:
     permission:
       filter: {}
     comment: ""
+configuration:
+  column_config:
+    display_name:
+      comment: Generated.
+    full_name:
+      comment: Set by triggers.
+    is_variety:
+      comment: Set by triggers.

@@ -63,3 +63,5 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: ""
+configuration:
+  comment: Incrementally updated view for attributions.\nMaintained by triggers. Do not update manually. Read only.

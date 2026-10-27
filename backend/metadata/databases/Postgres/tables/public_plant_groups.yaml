@@ -74,3 +74,13 @@ delete_permissions:
     permission:
       filter: {}
     comment: ""
+configuration:
+  column_config:
+    cultivar_name:
+      comment: Set by triggers.
+    display_name:
+      comment: Generated.
+    full_name:
+      comment: Generated.
+    label_id:
+      comment: Generated.

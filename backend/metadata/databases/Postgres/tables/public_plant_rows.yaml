@@ -57,3 +57,7 @@ delete_permissions:
     permission:
       filter: {}
     comment: ""
+configuration:
+  column_config:
+    disabled:
+      comment: Derived from date_eliminated.

@@ -57,3 +57,11 @@ delete_permissions:
         id:
           _neq: X-Hasura-User-Id
     comment: ""
+configuration:
+  column_config:
+    failed_signin_attempts:
+      comment: Failed attempts only. Reset on successful signin.
+    last_seen:
+      comment: Latest user_tokens.last_verify of any token. Kept when tokens are deleted.
+    last_signin:
+      comment: Successful signin.

@@ -109,3 +109,17 @@ delete_permissions:
     permission:
       filter: {}
     comment: ""
+configuration:
+  column_config:
+    cultivar_name:
+      comment: Set by triggers.
+    disabled:
+      comment: Derived from date_eliminated.
+    distance_plant_row_start:
+      comment: Meters
+    geo_location:
+      comment: SRID:4326
+    geo_location_accuracy:
+      comment: Meters
+    plant_group_name:
+      comment: Set by triggers.

@@ -32,6 +32,8 @@ Use `hasura migrate create <name> --database-name Postgres` to scaffold a migrat
 
 Schema changes usually need matching updates to the Hasura metadata YAML in [metadata/](metadata/) (table tracking in `databases/Postgres/tables/`, plus relationships, permissions, actions as needed), applied with `hasura metadata apply`.
 
+GraphQL descriptions come **only from metadata** (`configuration.comment` / `configuration.column_config.<column>.comment` in the table YAML). Since Hasura v2.51, Postgres `COMMENT ON` is no longer exposed in the schema — put the description in metadata (a SQL comment alone is invisible to API consumers).
+
 **After any schema change, regenerate the frontend's GraphQL types** (`bun --bun run graphql:output` in `frontend/`).
 
 ## Domain & key tables

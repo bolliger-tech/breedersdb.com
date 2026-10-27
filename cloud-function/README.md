@@ -55,7 +55,7 @@ Check the documentation in [deployment](../deployment/README.md).
   }
   ```
 - For testing you might want to set `LOG_REQUESTS=true` in the `.env` file and restart `npm run dev` (.env file is not watched). This will log the incoming requests and the outgoing responses.
-- Run `dev/test.sh` to test signIn, running a graphql query and signOut.
+- Run `dev/test.sh` to test signIn, running a graphql query, personal access tokens, image upload and resizing, signOut and the password reset (via mailpit). The password is reset to the one you entered.
   ```bash
   ./dev/test.sh
   ```

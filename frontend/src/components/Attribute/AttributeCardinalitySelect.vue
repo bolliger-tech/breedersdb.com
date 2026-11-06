@@ -24,7 +24,13 @@
       <q-item v-bind="itemProps">
         <q-item-section>
           <q-item-label>{{ opt.label }}</q-item-label>
-          <q-item-label caption>{{ opt.caption }}</q-item-label>
+          <q-item-label caption>
+            <i18n-t :keypath="opt.captionKey" scope="global">
+              <template #emphasis
+                ><strong>{{ opt.captionEmphasis }}</strong></template
+              >
+            </i18n-t>
+          </q-item-label>
         </q-item-section>
       </q-item>
     </template>
@@ -72,22 +78,25 @@ const { cardinalityChangeRule, fetching } = useCardinalityChangeRule({
 const attributeCardinalityOptions: {
   value: AttributeCardinalities;
   label: string;
-  caption: string;
+  captionKey: string;
+  captionEmphasis?: string;
 }[] = [
   {
     value: 'REPEATABLE',
     label: cardinalityToLabel('REPEATABLE', t),
-    caption: t('attributes.cardinalityCaptions.repeatable'),
+    captionKey: 'attributes.cardinalityCaptions.repeatable',
   },
   {
     value: 'UNIQUE_BLOCK',
     label: cardinalityToLabel('UNIQUE_BLOCK', t),
-    caption: t('attributes.cardinalityCaptions.uniqueBlock'),
+    captionKey: 'attributes.cardinalityCaptions.uniqueBlock.base',
+    captionEmphasis: t('attributes.cardinalityCaptions.uniqueBlock.emphasis'),
   },
   {
     value: 'UNIQUE_REPLACE',
     label: cardinalityToLabel('UNIQUE_REPLACE', t),
-    caption: t('attributes.cardinalityCaptions.uniqueReplace'),
+    captionKey: 'attributes.cardinalityCaptions.uniqueReplace.base',
+    captionEmphasis: t('attributes.cardinalityCaptions.uniqueReplace.emphasis'),
   },
 ];
 

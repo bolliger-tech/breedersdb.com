@@ -53,8 +53,9 @@ begin
     perform pg_advisory_xact_lock(hashtextextended(
             format('attribute_cardinality:%s:%s:%s:%s', _plant_id, _plant_group_id, _cultivar_id, _lot_id), 0));
 
-    -- an attribution references exactly one entity, so comparing all four ids matches the exact entity
-    select array_agg(attributions.id)
+    -- exactly one of the entity ids is set (an attribution references exactly one entity), and null never equals
+    -- anything, so these ORs only match attributions of the same entity
+    select array_agg(distinct attributions.id)
     into _colliding_attribution_ids
     from attribution_values
              inner join attributions on attributions.id = attribution_values.attribution_id
@@ -69,6 +70,7 @@ begin
         return;
     end if;
 
+    -- before the cardinality-specific handling, so UNIQUE_REPLACE can't delete a sibling value of the same statement
     if _attribution_id = any (_colliding_attribution_ids) then
         raise exception 'The attribute "%" is unique and may only be recorded once per attribution.', _attribute.name;
     end if;
@@ -102,7 +104,7 @@ begin
 end;
 $$ language plpgsql;
 
-create trigger enforce_attribute_cardinality
+create trigger enforce_attribute_cardinality_on_attribution_values
     before insert or update of attribute_id, attribution_id
     on attribution_values
     for each row
@@ -128,7 +130,7 @@ begin
 end;
 $$ language plpgsql;
 
-create trigger enforce_attribute_cardinality
+create trigger enforce_attribute_cardinality_on_attributions
     before update of plant_id, plant_group_id, cultivar_id, lot_id
     on attributions
     for each row
@@ -156,8 +158,9 @@ $$
 declare
     _entities_with_duplicates int;
 begin
-    -- between the unique cardinalities there can't be duplicates
-    if old.cardinality <> 'REPEATABLE' or new.cardinality = 'REPEATABLE' then
+    -- only REPEATABLE → unique can violate the cardinality; switching between the unique ones can't (there are no
+    -- duplicates) and switching to REPEATABLE only relaxes it
+    if not (old.cardinality = 'REPEATABLE' and new.cardinality <> 'REPEATABLE') then
         return new;
     end if;
 
@@ -178,8 +181,7 @@ create trigger check_attribute_cardinality_change
 execute function check_attribute_cardinality_change();
 
 
--- A value replaced by a later row of the same statement (UNIQUE_REPLACE, different attributions of the same entity)
--- must not be added to cached_attributions by its deferred after-insert trigger.
+-- Redefined to skip values deleted by UNIQUE_REPLACE; otherwise unchanged from 1779484170685_add_enum_attribute_type.
 create or replace function update_cached_attributions_from_attribution_values() returns trigger as $$
 declare
     attribution_rec record;

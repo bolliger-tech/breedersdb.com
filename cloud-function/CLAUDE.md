@@ -17,7 +17,7 @@ One HTTP entry point, [src/index.ts](src/index.ts), routes by the first URL segm
 | `events`                      | `events.ts` → `handleEvents`     | Hasura event triggers                            |
 | `upload`                      | `images/upload`                  | Image upload                                     |
 | `/images/*`                   | `images/download`                | Public image serving (resized/cached)            |
-| `upload-attachment`           | `attachments/upload`             | Attachment upload (any file type, max 10 MB)     |
+| `upload-attachment`           | `attachments/upload`             | Attachment upload (any file type, max 16 MB)     |
 | `/attachments/*`              | `attachments/download`           | Public attachment serving (see ADR 0002)         |
 | `health`                      | inline                           | Health check (`🫛🌱🌳🍎`)                        |
 

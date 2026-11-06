@@ -101,7 +101,7 @@ test('attachments are uploaded and linked on the entity view', async ({
   }
 });
 
-test('attachments larger than 10 MB are rejected before the upload', async ({
+test('attachments larger than 16 MB are rejected before the upload', async ({
   page,
   seed,
 }) => {
@@ -114,9 +114,9 @@ test('attachments larger than 10 MB are rejected before the upload', async ({
   await field.locator('input[type="file"]').setInputFiles({
     name: 'huge.bin',
     mimeType: 'application/octet-stream',
-    buffer: Buffer.alloc(10 * 1024 * 1024 + 1),
+    buffer: Buffer.alloc(16 * 1024 * 1024 + 1),
   });
-  await expect(field).toContainText('The file is larger than 10 MB.');
+  await expect(field).toContainText('The file is larger than 16 MB.');
   await expect(field).not.toContainText('huge.bin');
 });
 

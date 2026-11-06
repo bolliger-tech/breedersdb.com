@@ -1,6 +1,6 @@
 import type { CellObject } from 'xlsx';
 
-export const ATTACHMENT_MAX_SIZE = 10 * 1024 * 1024; // bytes
+export const ATTACHMENT_MAX_SIZE = 16 * 1024 * 1024; // bytes
 
 // stored file names are <sha256>[.<ext>], see the cloud-function's upload
 function getExtension(fileName: string) {

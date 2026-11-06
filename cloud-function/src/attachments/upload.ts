@@ -4,7 +4,7 @@ import { uploadFile } from '../lib/storage';
 import { validateFrontendAuth } from '../auth/validateFrontendAuth';
 import { ATTACHMENT_STORAGE_PREFIX, parseExtension } from './fileName';
 
-const ATTACHMENT_MAX_SIZE_MB = 10;
+const ATTACHMENT_MAX_SIZE_MB = 16;
 
 export async function handleAttachmentUpload(
   req: ff.Request,

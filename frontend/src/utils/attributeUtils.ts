@@ -1,4 +1,8 @@
-import type { AttributeDataTypes, AttributeTypes } from 'src/graphql';
+import type {
+  AttributeCardinalities,
+  AttributeDataTypes,
+  AttributeTypes,
+} from 'src/graphql';
 import { ColumnTypes } from './columnTypes';
 import type { DFunc, NFunc, TFunc } from 'src/composables/useI18n';
 
@@ -61,6 +65,23 @@ export function attributeTypeToLabel(attributeType: AttributeTypes, t: TFunc) {
   }
 
   return type;
+}
+
+export function cardinalityToLabel(
+  cardinality: AttributeCardinalities,
+  t: TFunc,
+) {
+  const label = {
+    REPEATABLE: t('attributes.cardinalities.repeatable'),
+    UNIQUE_BLOCK: t('attributes.cardinalities.uniqueBlock'),
+    UNIQUE_REPLACE: t('attributes.cardinalities.uniqueReplace'),
+  }[cardinality];
+
+  if (typeof label === 'undefined') {
+    throw Error(`Unknown attribute.cardinality: ${cardinality}`);
+  }
+
+  return label;
 }
 
 export function formatResultColumnValue({

@@ -25,6 +25,10 @@ export type AttributeTypes = ReturnType<
   typeof graphql.scalar<'attribute_types_enum'>
 >;
 
+export type AttributeCardinalities = ReturnType<
+  typeof graphql.scalar<'attribute_cardinalities_enum'>
+>;
+
 export type AnalyzeFilterBaseTables = ReturnType<
   typeof graphql.scalar<'analyze_filter_base_tables_enum'>
 >;

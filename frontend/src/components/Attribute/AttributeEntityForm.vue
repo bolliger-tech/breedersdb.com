@@ -76,6 +76,11 @@
     v-model="data.attribute_type"
     required
   />
+  <AttributeCardinalitySelect
+    :ref="(el: InputRef) => (refs.cardinality = el)"
+    v-model="data.cardinality"
+    required
+  />
   <EntityToggle
     :ref="(el: InputRef) => (refs.disabled = el)"
     v-model="data.disabled"
@@ -99,6 +104,7 @@ import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
 import AttributeDataTypeSelect from './AttributeDataTypeSelect.vue';
 import AttributeTypeSelect from './AttributeTypeSelect.vue';
+import AttributeCardinalitySelect from './AttributeCardinalitySelect.vue';
 import AttributeValidationRuleInput from './AttributeValidationRuleInput.vue';
 import AttributeLegendInput from './AttributeLegendInput.vue';
 import AttributeDefaultValueInput from './AttributeDefaultValueInput.vue';
@@ -132,6 +138,7 @@ const initialData = {
   data_type: props.attribute.data_type,
   description: props.attribute.description,
   attribute_type: props.attribute.attribute_type,
+  cardinality: props.attribute.cardinality,
   disabled: props.attribute.disabled,
   legend: props.attribute.legend,
   default_value: props.attribute.default_value,
@@ -151,6 +158,7 @@ const refs = ref<{ [key: string]: InputRef | null }>({
   enumOptions: null,
   description: null,
   attributeType: null,
+  cardinality: null,
   disabled: null,
 });
 

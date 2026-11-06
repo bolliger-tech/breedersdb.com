@@ -1,11 +1,11 @@
 import * as ff from '@google-cloud/functions-framework';
-import { buffer } from 'node:stream/consumers';
-import { downloadFile } from '../lib/storage';
+import { downloadFile, getFileSize } from '../lib/storage';
 import {
   ATTACHMENT_FILE_NAME_REGEX,
   ATTACHMENT_STORAGE_PREFIX,
 } from './fileName';
 import { getContentHeaders } from './contentHeaders';
+import { parseRange } from './range';
 
 const PATH_PREFIX = '/attachments/';
 
@@ -30,15 +30,25 @@ export async function handleAttachmentDownload(
     return res.status(400).send('Bad Request: invalid file name');
   }
 
-  let buf;
+  const storageFileName = ATTACHMENT_STORAGE_PREFIX + fileName;
+
+  let size;
   try {
-    buf = await buffer(downloadFile(ATTACHMENT_STORAGE_PREFIX + fileName));
+    size = await getFileSize(storageFileName);
   } catch (e: any) {
     if (e.code === 404 || e.message.includes('No such object')) {
       return res.status(404).send('Not Found');
     }
     console.error('Error downloading file:', e);
     return res.status(500).send('Internal Server Error');
+  }
+
+  // ranges are needed to play media inline in Safari
+  res.setHeader('Accept-Ranges', 'bytes');
+  const range = parseRange(req.headers.range, size);
+  if (range === 'unsatisfiable') {
+    res.setHeader('Content-Range', `bytes */${size}`);
+    return res.status(416).end();
   }
 
   // see images/download.ts for the caching rationale
@@ -53,5 +63,16 @@ export async function handleAttachmentDownload(
   }
   res.setHeader('X-Content-Type-Options', 'nosniff');
 
-  return res.send(buf);
+  if (range) {
+    res.status(206);
+    res.setHeader('Content-Range', `bytes ${range.start}-${range.end}/${size}`);
+  }
+  res.setHeader('Content-Length', range ? range.end - range.start + 1 : size);
+
+  downloadFile(storageFileName, range)
+    .on('error', (e) => {
+      console.error('Error downloading file:', e);
+      res.destroy(e);
+    })
+    .pipe(res);
 }

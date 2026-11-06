@@ -90,12 +90,12 @@ describe('getAttachmentIcon', () => {
 });
 
 describe('isAttachmentTooLarge', () => {
-  it('accepts files up to 10 MB', () => {
-    expect(ATTACHMENT_MAX_SIZE).toBe(10 * 1024 * 1024);
+  it('accepts files up to 16 MB', () => {
+    expect(ATTACHMENT_MAX_SIZE).toBe(16 * 1024 * 1024);
     expect(isAttachmentTooLarge({ size: ATTACHMENT_MAX_SIZE })).toBe(false);
   });
 
-  it('rejects files larger than 10 MB', () => {
+  it('rejects files larger than 16 MB', () => {
     expect(isAttachmentTooLarge({ size: ATTACHMENT_MAX_SIZE + 1 })).toBe(true);
   });
 });

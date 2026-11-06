@@ -21,6 +21,6 @@ describe('AttributionInputAttachment', () => {
     await wrapper.vm.$nextTick();
 
     expect(wrapper.emitted('update:modelValue')).toEqual([[null]]);
-    expect(wrapper.text()).toContain('The file is larger than 10 MB.');
+    expect(wrapper.text()).toContain('The file is larger than 16 MB.');
   });
 });

@@ -287,16 +287,16 @@ for name in "README" "smoke.p-f" "smoke.abcdefghijk" "smoke."; do
 done
 expect_attachment_download "$file" "$hash" "README" "application/octet-stream" "attachment"
 
-echo "Uploading a 10MB attachment..."
+echo "Uploading a 16MB attachment..."
 file="$attachment_dir/max.bin"
-{ date +%s%N; head -c $((10 * 1024 * 1024)) /dev/zero; } | head -c $((10 * 1024 * 1024)) > "$file"
+{ date +%s%N; head -c $((16 * 1024 * 1024)) /dev/zero; } | head -c $((16 * 1024 * 1024)) > "$file"
 status=$(upload_attachment "$file" "max.bin")
-[[ "$status" == "200" ]] || fail "10MB upload failed with status $status"
-echo "10MB attachment accepted."
+[[ "$status" == "200" ]] || fail "16MB upload failed with status $status"
+echo "16MB attachment accepted."
 
 echo "Uploading a too large attachment..."
 file="$attachment_dir/too-large.bin"
-head -c $((10 * 1024 * 1024 + 1)) /dev/zero > "$file"
+head -c $((16 * 1024 * 1024 + 1)) /dev/zero > "$file"
 status=$(upload_attachment "$file" "too-large.bin")
 [[ "$status" == "400" ]] || fail "Too large upload was not rejected: $status"
 echo "Too large attachment rejected."

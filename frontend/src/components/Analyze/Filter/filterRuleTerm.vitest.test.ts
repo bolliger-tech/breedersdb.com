@@ -725,6 +725,28 @@ describe('FilterTerm', () => {
     });
   });
 
+  describe('Attachment', () => {
+    it('should be a valid attachment', () => {
+      const filterTerm = new FilterRuleTerm({ value: 'some string' });
+      filterTerm.schema = {
+        type: ColumnTypes.Attachment as const,
+        allowEmpty: false,
+      };
+
+      expect(filterTerm.isValid).toBe(true);
+    });
+
+    it('should not be a valid attachment', () => {
+      const filterTerm = new FilterRuleTerm({ value: '' });
+      filterTerm.schema = {
+        type: ColumnTypes.Attachment as const,
+        allowEmpty: false,
+      };
+
+      expect(filterTerm.isValid).toBe(false);
+    });
+  });
+
   describe('toJSON', () => {
     it('should return the value only', () => {
       const value = 'value';

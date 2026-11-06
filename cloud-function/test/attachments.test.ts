@@ -85,3 +85,25 @@ test('getContentHeaders: display name', () => {
     `inline; filename="${hash}.pdf"; filename*=UTF-8''${hash}.pdf`,
   );
 });
+
+test('getContentHeaders: the display name gets the stored extension', () => {
+  const fileName = (key: string, displayName: string) =>
+    getContentHeaders(key, displayName)['Content-Disposition'].match(
+      /filename="([^"]*)"/,
+    )![1];
+
+  assert.equal(fileName(`${hash}.csv`, 'Invoice.exe'), 'Invoice.csv');
+  assert.equal(fileName(`${hash}.csv`, 'Invoice'), 'Invoice.csv');
+  assert.equal(fileName(`${hash}.pdf`, 'Report.final.PDF'), 'Report.final.pdf');
+  assert.equal(
+    fileName(`${hash}.pdf`, 'Lab-report_PLANT-00123_2026-11-06.pdf'),
+    'Lab-report_PLANT-00123_2026-11-06.pdf',
+  );
+  assert.equal(
+    fileName(`${hash}.pdf`, 'Lab-report_PLANT-00123_2026-11-06'),
+    'Lab-report_PLANT-00123_2026-11-06.pdf',
+  );
+  assert.equal(fileName(hash, 'README.txt'), 'README');
+  assert.equal(fileName(hash, 'README'), 'README');
+  assert.equal(fileName(`${hash}.pdf`, '.pdf'), `${hash}.pdf`);
+});

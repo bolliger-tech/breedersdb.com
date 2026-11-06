@@ -217,9 +217,63 @@ echo "Checking attachment download filename..."
 grep -qiF "content-disposition: attachment; filename=\"Smoke File.xml\"; filename*=UTF-8''Smoke%20File.xml" "$attachment_dir/headers" ||
   fail "Unexpected content disposition: $(cat "$attachment_dir/headers")"
 curl -sS -o /dev/null -D "$attachment_dir/headers" "http://localhost:8090/attachments/..%2F%C3%A4%22%0A.pdf?file=$file_name"
-grep -qiF "content-disposition: attachment; filename=\"..__.pdf\"; filename*=UTF-8''..%C3%A4%22.pdf" "$attachment_dir/headers" ||
+grep -qiF "content-disposition: attachment; filename=\"..__.xml\"; filename*=UTF-8''..%C3%A4%22.xml" "$attachment_dir/headers" ||
   fail "Display name not sanitized: $(cat "$attachment_dir/headers")"
+# usage: <display name in url>|<expected filename>
+filename_cases=(
+  "Invoice.exe|Invoice.xml"
+  "Invoice|Invoice.xml"
+  "Lab-report_PLANT-00123_2026-11-06.xml|Lab-report_PLANT-00123_2026-11-06.xml"
+)
+for filename_case in "${filename_cases[@]}"; do
+  IFS='|' read -r display_name expected_name <<< "$filename_case"
+  curl -sS -o /dev/null -D "$attachment_dir/headers" "http://localhost:8090/attachments/$display_name?file=$file_name"
+  grep -qiF "content-disposition: attachment; filename=\"$expected_name\";" "$attachment_dir/headers" ||
+    fail "Expected filename $expected_name for $display_name: $(cat "$attachment_dir/headers")"
+done
 echo "Filename OK."
+
+echo "Downloading attachment ranges..."
+file="$attachment_dir/range.txt"
+printf '0123456789abcdef%s' "$(date +%s%N)" > "$file"
+size=$(wc -c < "$file" | tr -d ' ')
+status=$(upload_attachment "$file" "range.txt")
+[[ "$status" == "200" ]] || fail "Upload of range.txt failed with status $status"
+range_file_name=$(jq -r .fileName "$attachment_dir/response")
+
+# usage: expect_range <range header> <expected status> <expected body> <expected content-range>
+function expect_range() {
+  local status
+  status=$(curl -sS \
+    -o "$attachment_dir/download" \
+    -D "$attachment_dir/headers" \
+    -w '%{http_code}' \
+    ${1:+-H "Range: $1"} \
+    "http://localhost:8090/attachments/range.txt?file=$range_file_name")
+  [[ "$status" == "$2" ]] || fail "Range '$1': expected status $2, got $status"
+  if [[ "$2" != "416" ]]; then
+    [[ $(cat "$attachment_dir/download") == "$3" ]] || fail "Range '$1': unexpected body $(cat "$attachment_dir/download")"
+    grep -qix "content-length: ${#3}"$'\r' "$attachment_dir/headers" || fail "Range '$1': unexpected content length: $(cat "$attachment_dir/headers")"
+    grep -qix "accept-ranges: bytes"$'\r' "$attachment_dir/headers" || fail "Range '$1': missing accept-ranges"
+    grep -qix "x-content-type-options: nosniff"$'\r' "$attachment_dir/headers" || fail "Range '$1': missing nosniff"
+    grep -qix "content-type: text/plain; charset=utf-8"$'\r' "$attachment_dir/headers" || fail "Range '$1': unexpected content type"
+  fi
+  if [[ -n "$4" ]]; then
+    grep -qix "content-range: $4"$'\r' "$attachment_dir/headers" || fail "Range '$1': expected content-range $4: $(cat "$attachment_dir/headers")"
+  else
+    ! grep -qi "^content-range:" "$attachment_dir/headers" || fail "Range '$1': unexpected content-range"
+  fi
+}
+content=$(cat "$file")
+expect_range "" 200 "$content" ""
+expect_range "bytes=2-5" 206 "2345" "bytes 2-5/$size"
+expect_range "bytes=10-" 206 "${content:10}" "bytes 10-$((size - 1))/$size"
+expect_range "bytes=-4" 206 "${content: -4}" "bytes $((size - 4))-$((size - 1))/$size"
+expect_range "bytes=2-100000" 206 "${content:2}" "bytes 2-$((size - 1))/$size"
+expect_range "bytes=0-1,4-5" 200 "$content" ""
+expect_range "bytes=$size-" 416 "" "bytes \*/$size"
+expect_range "bytes=-0" 416 "" "bytes \*/$size"
+echo "Ranges OK."
 
 echo "Uploading attachments without a valid extension..."
 file="$attachment_dir/upload"

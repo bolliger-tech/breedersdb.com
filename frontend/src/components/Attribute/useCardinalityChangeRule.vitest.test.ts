@@ -86,7 +86,7 @@ describe('useCardinalityChangeRule', () => {
     });
 
     expect(await cardinalityChangeRule('UNIQUE_BLOCK')).toBe(
-      "Can't make this attribute unique: 3 entities have more than one value of it. Remove the duplicates first.",
+      "Can't limit this attribute to once only: 3 entities have more than one value of it. Remove the duplicates first.",
     );
     expect(executeQuery.mock.calls[0]![0].variables).toEqual({ id: 1 });
   });

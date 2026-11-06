@@ -191,19 +191,22 @@ const existingUniqueValuesQuery = graphql(
   [cachedAttributionsFragment],
 );
 
-const entityIdColumn = {
-  [AttributableEntities.Plant]: 'plant_id',
-  [AttributableEntities.PlantGroup]: 'plant_group_id',
-  [AttributableEntities.Cultivar]: 'cultivar_id',
-  [AttributableEntities.Lot]: 'lot_id',
-}[props.entity.type];
+const entityIdColumn = computed(
+  () =>
+    ({
+      [AttributableEntities.Plant]: 'plant_id',
+      [AttributableEntities.PlantGroup]: 'plant_group_id',
+      [AttributableEntities.Cultivar]: 'cultivar_id',
+      [AttributableEntities.Lot]: 'lot_id',
+    })[props.entity.type],
+);
 
 const { data: existingUniqueValues } = useQuery({
   query: existingUniqueValuesQuery,
   variables: computed(() => ({
     where: {
       attribute_id: { _in: uniqueAttributeIds.value },
-      [entityIdColumn]: { _eq: props.entity.data.id },
+      [entityIdColumn.value]: { _eq: props.entity.data.id },
     },
   })),
   pause: computed(() => uniqueAttributeIds.value.length === 0),

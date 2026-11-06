@@ -420,7 +420,9 @@ async function insertAttributeValueWithAssociatedData({
       attribution_id: attribution.data.insert_attributions_one.id,
       integer_value: attribute_data_type === 'INTEGER' ? integer_value : null,
       float_value: attribute_data_type === 'FLOAT' ? float_value : null,
-      text_value: attribute_data_type === 'TEXT' ? text_value : null,
+      text_value: ['TEXT', 'ATTACHMENT'].includes(attribute_data_type)
+        ? text_value
+        : null,
       boolean_value: attribute_data_type === 'BOOLEAN' ? boolean_value : null,
       date_value: attribute_data_type === 'DATE' ? date_value : null,
       text_note,
@@ -712,6 +714,25 @@ describe('correctness', () => {
       expect(data.cached_attributions[0].cultivar.id).toBe(cultivar_id);
       expect(data.cached_attributions[0].plant_group.id).toBe(plant_group_id);
       expect(data.cached_attributions[0].plant.id).toBe(plant_id);
+    });
+
+    test('attachment', async () => {
+      const { value_id } = await insertAttributeValueWithAssociatedData({
+        is_lot: true,
+        attribute_data_type: 'ATTACHMENT',
+        text_value:
+          'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.pdf',
+      });
+
+      const { data } = await postOrFail({
+        query: queryById,
+        variables: { id: value_id },
+      });
+
+      expect(data.cached_attributions_by_pk.data_type).toBe('ATTACHMENT');
+      expect(data.cached_attributions_by_pk.text_value).toBe(
+        'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.pdf',
+      );
     });
   });
 

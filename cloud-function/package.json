@@ -4,6 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "test": "npm run build && node --test test/*.test.ts",
     "start": "functions-framework --target=func --port 8090",
     "prestart": "npm run build",
     "gcp-build": "npm run build",

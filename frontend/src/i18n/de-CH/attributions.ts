@@ -73,6 +73,8 @@ export const attributions = {
     uniqueReplaced:
       'Bereits erfasst am {date} von {author}: {value}. Beim Speichern wird er ersetzt.',
     editExisting: 'Bestehenden Wert bearbeiten',
+    uniqueRepeated:
+      'Dieses Attribut ist einmalig und darf nur einmal ausgefüllt werden.',
     notes: 'Bemerkungen',
     addTextNote: 'Bemerkung hinzufügen',
     addPhotoNote: 'Foto hinzufügen',

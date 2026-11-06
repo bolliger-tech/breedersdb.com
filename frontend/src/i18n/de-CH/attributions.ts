@@ -34,6 +34,8 @@ export const attributions = {
   samples: 'Muster',
   others: 'Andere Attributierungen',
   photos: 'Fotos',
+  attachments: 'Anhänge',
+  noAttachments: 'Keine Anhänge',
   add: {
     attributeEntity: '{entity} attributieren',
     form: 'Formular',
@@ -88,6 +90,8 @@ export const attributions = {
     invalidNumber:
       'Ungültige Nummer. Gültige Werte sind zwischen {min} und {max} mit einem Abstand von {step}.',
     invalidPhoto: 'Ungültiges oder nicht unterstütztes Bild.',
+    selectAttachment: 'Datei auswählen',
+    attachmentTooLarge: 'Die Datei ist grösser als {max} MB.',
     invalidInput:
       'Einige Eingaben sind ungültig. Bitte überprüfe das Formular.',
     notCurrentYearMonth:

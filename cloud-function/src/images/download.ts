@@ -2,6 +2,10 @@ import * as ff from '@google-cloud/functions-framework';
 import { getCachedImageAsBuffer } from '../lib/image';
 import { imageCacheConfig } from './cache';
 
+// must correspond to the PHOTO check in sanitize_and_validate_attribution_value()
+// the legacy photos have a 32 character filename, the new ones have 64
+const IMAGE_FILE_NAME_REGEX = /^(\w{32}|\w{64})\.(jpe?g|avif)$/;
+
 export async function handleDownload(req: ff.Request, res: ff.Response) {
   if (req.method !== 'GET') {
     return res.status(405).send('Method Not Allowed');
@@ -12,6 +16,10 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
   const fileName = searchParams?.get('file');
   if (!fileName) {
     return res.status(400).send('Bad Request: missing parameter "file"');
+  }
+  // the bucket also holds attachments, which must not be served as images
+  if (!IMAGE_FILE_NAME_REGEX.test(fileName)) {
+    return res.status(400).send('Bad Request: invalid parameter "file"');
   }
   const [hasWidth, hasHeight] = [
     searchParams.has('width'),

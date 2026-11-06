@@ -7,7 +7,7 @@ export const attributes = {
     attributeType: 'Attribute type',
     defaultValue: 'Default value',
     legend: 'Legend',
-    cardinality: 'Cardinality',
+    cardinality: 'Repetition',
   },
 
   dataTypes: {
@@ -30,8 +30,8 @@ export const attributes = {
 
   cardinalities: {
     repeatable: 'Repeatable',
-    uniqueBlock: 'Unique – block',
-    uniqueReplace: 'Unique – replace',
+    uniqueBlock: 'Once only – block',
+    uniqueReplace: 'Once only – replace',
   },
 
   cardinalityCaptions: {
@@ -81,7 +81,7 @@ export const attributes = {
     'Because this attribute was already used for some attributions, changing the data type is not allowed. Either delete the attributions first or create a new attribute with the desired data type.',
 
   cardinalityChangeNotAllowed:
-    "Can't make this attribute unique: {count} entity has more than one value of it. Remove the duplicates first. | Can't make this attribute unique: {count} entities have more than one value of it. Remove the duplicates first.",
+    "Can't limit this attribute to once only: {count} entity has more than one value of it. Remove the duplicates first. | Can't limit this attribute to once only: {count} entities have more than one value of it. Remove the duplicates first.",
 
   invalidRatingConfig:
     'Invalid rating configuration. Please check the attributes minimum and maximum value.',

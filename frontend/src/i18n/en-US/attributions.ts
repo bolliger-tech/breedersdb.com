@@ -87,7 +87,7 @@ export const attributions = {
     uniqueReplaced:
       'Already recorded on {date} by {author}: {value}. Saving will replace it.',
     editExisting: 'Edit existing value',
-    uniqueRepeated: 'This attribute is unique and may only be filled once.',
+    uniqueRepeated: 'This attribute may only be filled once.',
 
     notes: 'Notes',
     addTextNote: 'Add note',

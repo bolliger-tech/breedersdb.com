@@ -37,8 +37,8 @@ test('unique block: a recorded value disables the input until it is edited', asy
 
   await page.goto('/#/attributes/new');
   await formField(page, 'Name').locator('input').fill(name);
-  await selectOption(page, formField(page, 'Cardinality'), 'Unique – block');
-  await expect(formField(page, 'Cardinality')).toContainText(
+  await selectOption(page, formField(page, 'Repetition'), 'Once only – block');
+  await expect(formField(page, 'Repetition')).toContainText(
     'Further values are rejected.',
   );
   await save(page);
@@ -46,9 +46,9 @@ test('unique block: a recorded value disables the input until it is edited', asy
   await seed.trackByName('attributes', name);
 
   await page.goto(`/#/attributes?s=${encodeURIComponent(name)}`);
-  await expect(listRow(page, name)).toContainText('Unique – block');
+  await expect(listRow(page, name)).toContainText('Once only – block');
   await listRow(page, name).click();
-  await expect(page.locator('.q-dialog')).toContainText('Unique – block');
+  await expect(page.locator('.q-dialog')).toContainText('Once only – block');
 
   const attributeId = Number(page.url().match(/attributes\/(\d+)/)![1]);
   const form = await seed.attributionForm([{ id: attributeId }]);
@@ -134,14 +134,18 @@ test('an attribute with duplicate values cannot be made unique', async ({
   await page.goto(`/#/attributes?s=${encodeURIComponent(attribute.name)}`);
   await listRow(page, attribute.name).click();
   await page.getByRole('button', { name: 'Edit', exact: true }).click();
-  await selectOption(page, formField(page, 'Cardinality'), 'Unique – replace');
+  await selectOption(
+    page,
+    formField(page, 'Repetition'),
+    'Once only – replace',
+  );
   const message =
-    "Can't make this attribute unique: 1 entity has more than one value of it. Remove the duplicates first.";
-  await expect(formField(page, 'Cardinality')).toContainText(message);
+    "Can't limit this attribute to once only: 1 entity has more than one value of it. Remove the duplicates first.";
+  await expect(formField(page, 'Repetition')).toContainText(message);
 
   // saving is blocked: the modal stays open and the attribute stays repeatable
   await save(page);
-  await expect(formField(page, 'Cardinality')).toContainText(message);
+  await expect(formField(page, 'Repetition')).toContainText(message);
   await page.goto(`/#/attributes?s=${encodeURIComponent(attribute.name)}`);
   await expect(listRow(page, attribute.name)).toContainText('Repeatable');
 });
@@ -167,13 +171,13 @@ test('a unique attribute can only be filled once per attribution', async ({
   await fields.nth(1).locator('textarea').fill('two');
   for (const i of [0, 1]) {
     await expect(fields.nth(i)).toContainText(
-      'This attribute is unique and may only be filled once.',
+      'This attribute may only be filled once.',
     );
   }
 
   await page.locator('.attribute-form-save-btn .q-btn').click();
   await expect(
     page.locator('.entity-modal-content__error-tooltip'),
-  ).toContainText('This attribute is unique and may only be filled once.');
+  ).toContainText('This attribute may only be filled once.');
   await expect(page.locator('.q-notification')).toHaveCount(0);
 });

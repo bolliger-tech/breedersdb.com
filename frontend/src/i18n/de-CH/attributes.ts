@@ -6,7 +6,7 @@ export const attributes = {
     attributeType: 'Attributtyp',
     defaultValue: 'Standardwert',
     legend: 'Legende',
-    cardinality: 'Kardinalität',
+    cardinality: 'Wiederholung',
   },
   dataTypes: {
     text: 'Text',
@@ -26,8 +26,8 @@ export const attributes = {
   },
   cardinalities: {
     repeatable: 'Wiederholbar',
-    uniqueBlock: 'Einmalig – blockieren',
-    uniqueReplace: 'Einmalig – ersetzen',
+    uniqueBlock: 'Nur einmal – blockieren',
+    uniqueReplace: 'Nur einmal – ersetzen',
   },
   cardinalityCaptions: {
     repeatable: 'Ein Objekt kann beliebig viele Werte haben.',
@@ -70,7 +70,7 @@ export const attributes = {
   dataTypeChangeNotAllowed:
     'Da dieses Attribut bereits verwendet wurde, ist eine Änderung des Datentyps nicht mehr möglich. Lösche zuerst die Attributionen oder erstelle ein neues Attribut mit dem gewünschten Datentyp.',
   cardinalityChangeNotAllowed:
-    'Dieses Attribut kann nicht einmalig gemacht werden: {count} Objekt hat mehr als einen Wert davon. Entferne zuerst die Duplikate. | Dieses Attribut kann nicht einmalig gemacht werden: {count} Objekte haben mehr als einen Wert davon. Entferne zuerst die Duplikate.',
+    'Dieses Attribut kann nicht auf nur einmal beschränkt werden: {count} Objekt hat mehr als einen Wert davon. Entferne zuerst die Duplikate. | Dieses Attribut kann nicht auf nur einmal beschränkt werden: {count} Objekte haben mehr als einen Wert davon. Entferne zuerst die Duplikate.',
   invalidRatingConfig:
     'Ungültige Konfiguration. Bitte überprüfe die Minimal- und Maximalwerte.',
 };

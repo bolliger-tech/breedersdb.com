@@ -369,6 +369,75 @@ describe('attribute', () => {
   });
 });
 
+describe('duplicated_entities_count', () => {
+  const queryDuplicatedEntitiesCount = /* GraphQL */ `
+    query DuplicatedEntitiesCount($id: Int!) {
+      attributes_by_pk(id: $id) {
+        duplicated_entities_count
+      }
+    }
+  `;
+
+  async function getDuplicatedEntitiesCount(attributeId) {
+    const resp = await postOrFail({
+      query: queryDuplicatedEntitiesCount,
+      variables: { id: attributeId },
+    });
+    return resp.data.attributes_by_pk.duplicated_entities_count;
+  }
+
+  test('is 0 without values', async () => {
+    const attributeId = await createAttribute('REPEATABLE');
+
+    expect(await getDuplicatedEntitiesCount(attributeId)).toBe(0);
+  });
+
+  test('is 0 with one value per entity', async () => {
+    const { formId, plantIds, cultivarId } = await setup();
+    const attributeId = await createAttribute('REPEATABLE');
+    for (const entity of [
+      { plant_id: plantIds[0] },
+      { plant_id: plantIds[1] },
+      { cultivar_id: cultivarId },
+    ]) {
+      await addValueOrFail(
+        await createAttribution(formId, entity),
+        attributeId,
+        'a',
+      );
+    }
+
+    expect(await getDuplicatedEntitiesCount(attributeId)).toBe(0);
+  });
+
+  test('counts the entities with more than one value', async () => {
+    const { formId, plantIds, cultivarId } = await setup();
+    const attributeId = await createAttribute('REPEATABLE');
+    // plant 0: two values in one attribution
+    const attributionId = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    await addValueOrFail(attributionId, attributeId, 'a');
+    await addValueOrFail(attributionId, attributeId, 'b');
+    // plant 1: three values in separate attributions
+    for (const value of ['a', 'b', 'c']) {
+      await addValueOrFail(
+        await createAttribution(formId, { plant_id: plantIds[1] }),
+        attributeId,
+        value,
+      );
+    }
+    // cultivar: a single value
+    await addValueOrFail(
+      await createAttribution(formId, { cultivar_id: cultivarId }),
+      attributeId,
+      'a',
+    );
+
+    expect(await getDuplicatedEntitiesCount(attributeId)).toBe(2);
+  });
+});
+
 describe('insert', () => {
   test('REPEATABLE allows multiple values per entity', async () => {
     const { formId, plantIds } = await setup();

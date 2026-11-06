@@ -34,6 +34,9 @@ export const attributes = {
     uniqueReplace: 'Once only – replace',
   },
 
+  cardinalityHint:
+    'Whether an entity can have more than one value of this attribute',
+
   cardinalityCaptions: {
     repeatable: 'An entity can have any number of values.',
     uniqueBlock: 'At most one value per entity. Further values are rejected.',

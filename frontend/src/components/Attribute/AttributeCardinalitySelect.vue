@@ -8,7 +8,11 @@
     option-label="label"
     :required="required"
     :clearable="false"
-    :hint="attributeCardinality?.caption"
+    :hint="
+      required
+        ? `${t('attributes.cardinalityHint')}. ${t('base.required')}.`
+        : `${t('attributes.cardinalityHint')}.`
+    "
     :loading="fetching"
     :rules="[
       (val: (typeof attributeCardinalityOptions)[number] | null | undefined) =>

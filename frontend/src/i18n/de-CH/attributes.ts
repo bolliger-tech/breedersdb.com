@@ -29,6 +29,8 @@ export const attributes = {
     uniqueBlock: 'Nur einmal – blockieren',
     uniqueReplace: 'Nur einmal – ersetzen',
   },
+  cardinalityHint:
+    'Ob ein Objekt mehr als einen Wert dieses Attributs haben kann',
   cardinalityCaptions: {
     repeatable: 'Ein Objekt kann beliebig viele Werte haben.',
     uniqueBlock:

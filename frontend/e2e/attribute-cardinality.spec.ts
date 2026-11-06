@@ -38,9 +38,6 @@ test('unique block: a recorded value disables the input', async ({
   await page.goto('/#/attributes/new');
   await formField(page, 'Name').locator('input').fill(name);
   await selectOption(page, formField(page, 'Repetition'), 'Once only – block');
-  await expect(formField(page, 'Repetition')).toContainText(
-    'Further values are rejected.',
-  );
   await save(page);
   await expectDialogClosed(page);
   await seed.trackByName('attributes', name);

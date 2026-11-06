@@ -266,6 +266,13 @@ for file_param in "..%2F$hash" "attachments%2F$hash" "$hash.PDF" "$hash.p-f" "";
 done
 echo "Invalid attachment downloads rejected."
 
+echo "Downloading attachments through the image endpoint..."
+for file_param in "attachments%2F$hash" "attachments%2F$file_name" "..%2F$hash.jpg" "$hash" "$hash.pdf"; do
+  status=$(curl -sS -o /dev/null -w '%{http_code}' "http://localhost/api/assets/images/x.jpg?file=$file_param")
+  [[ "$status" == "400" ]] || fail "Invalid image file parameter '$file_param' did not return 400: $status"
+done
+echo "Attachments not served as images."
+
 rm -r "$attachment_dir"
 
 echo

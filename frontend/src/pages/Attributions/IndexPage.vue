@@ -48,6 +48,14 @@
                 button-size="xs"
               />
             </template>
+            <template v-else-if="cellProps.row.data_type === 'ATTACHMENT'">
+              <AttributionAttachmentLink
+                :file-name="cellProps.row.text_value"
+                :attribute-name="cellProps.row.attribute_name"
+                :entity-name="getAttributedEntityName(cellProps.row)"
+                :date-attributed="cellProps.row.date_attributed"
+              />
+            </template>
             <template v-else>{{ n2semicolon(cellProps.value) }}</template>
           </AttributionValueChip>
         </q-td>
@@ -78,7 +86,11 @@ import { cachedAttributionsFragment } from 'src/components/Attribution/cachedAtt
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
-import { formatAttributionValue } from 'src/utils/attributeUtils';
+import {
+  formatAttributionValue,
+  getAttributedEntityName,
+} from 'src/utils/attributeUtils';
+import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import type { AttributeDataTypes } from 'src/graphql';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
@@ -455,7 +467,7 @@ watch(
 );
 
 function getValue(row: QueryResultCachedAttributions) {
-  // photo is handled in the template
+  // photo and attachment are handled in the template
   return formatAttributionValue({ attribution: row, d, n });
 }
 

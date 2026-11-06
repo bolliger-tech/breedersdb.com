@@ -23,6 +23,15 @@
           />
         </template>
 
+        <template v-else-if="cellProps.row.data_type === 'ATTACHMENT'">
+          <AttributionAttachmentLink
+            :file-name="cellProps.row.text_value"
+            :attribute-name="cellProps.row.attribute_name"
+            :entity-name="getAttributedEntityName(cellProps.row)"
+            :date-attributed="cellProps.row.date_attributed"
+          />
+        </template>
+
         <template v-else>
           {{ cellProps.value }}
         </template>
@@ -45,7 +54,11 @@
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributeTypes } from 'src/graphql';
-import { formatAttributionValue } from 'src/utils/attributeUtils';
+import {
+  formatAttributionValue,
+  getAttributedEntityName,
+} from 'src/utils/attributeUtils';
+import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
@@ -205,7 +218,7 @@ const columns = [
 ];
 
 function getValue(row: CachedAttributionsFragment) {
-  // photo is handled in the template
+  // photo and attachment are handled in the template
   return formatAttributionValue({ attribution: row, d, n });
 }
 </script>

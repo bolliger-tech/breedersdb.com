@@ -200,9 +200,12 @@ const resultColumns = computed<QTableColumn[]>(() => {
       align: isNum ? 'right' : 'left',
       sortable: true,
       format: (value: ColumnValue) => {
-        if (column.type === ColumnTypes.Photo) {
+        if (
+          column.type === ColumnTypes.Photo ||
+          column.type === ColumnTypes.Attachment
+        ) {
           // this should never happen
-          throw new Error('Photo columns are not supported');
+          throw new Error('Photo and attachment columns are not supported');
         }
 
         const unnestedValue =

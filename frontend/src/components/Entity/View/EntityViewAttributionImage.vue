@@ -118,6 +118,7 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { captureException } from '@sentry/browser';
 import { getImageFileName, getImageUrlRelative } from 'src/utils/imageUtils';
+import { getAttachmentFileName } from 'src/utils/attachmentUtils';
 import type { AllowedImageSizes } from 'src/utils/imageSizes';
 import { imageSizes } from 'src/utils/imageSizes';
 
@@ -193,7 +194,15 @@ const description = computed(() => {
   }
 
   const value = getAttributionValue(props.attribution);
-  const formattedValue = formatResultColumnValue({ value, type, d, n });
+  const formattedValue =
+    type === ColumnTypes.Attachment
+      ? getAttachmentFileName({
+          fileName: props.attribution.text_value ?? '',
+          attributeName: props.attribution.attribute_name,
+          entityName: entityName.value,
+          dateAttributed: props.attribution.date_attributed,
+        })
+      : formatResultColumnValue({ value, type, d, n });
 
   return {
     primary: `${props.attribution.attribute_name}: ${formattedValue}`,

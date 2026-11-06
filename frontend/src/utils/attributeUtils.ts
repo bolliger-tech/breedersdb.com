@@ -141,7 +141,8 @@ export function getAttributionValue({
   );
 }
 
-// Photos are shown as images, so they have no text value.
+// Photos and attachments are shown as images and links, so they have no text
+// value.
 export function formatAttributionValue({
   attribution,
   d,
@@ -155,7 +156,7 @@ export function formatAttributionValue({
 }) {
   const type = dataTypeToColumnTypes(attribution.data_type);
 
-  if (type === ColumnTypes.Photo) {
+  if (type === ColumnTypes.Photo || type === ColumnTypes.Attachment) {
     return '';
   }
 

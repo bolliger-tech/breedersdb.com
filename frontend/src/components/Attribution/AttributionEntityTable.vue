@@ -10,7 +10,14 @@
   </div>
   <EntityViewTable :dense="dense">
     <EntityViewTableRow :label="t('attributions.columns.value')" multiline>
-      {{ getValue(attribution) }}
+      <AttributionAttachmentLink
+        v-if="attribution.data_type === 'ATTACHMENT' && attribution.text_value"
+        :file-name="attribution.text_value"
+        :attribute-name="attribution.attribute_name"
+        :entity-name="getAttributedEntityName(attribution)"
+        :date-attributed="attribution.date_attributed"
+      />
+      <template v-else>{{ getValue(attribution) }}</template>
     </EntityViewTableRow>
 
     <EntityViewTableRow :label="t('attributes.title', 1)">
@@ -88,7 +95,11 @@ import type { CachedAttributionsFragment } from 'src/components/Attribution/cach
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
-import { formatAttributionValue } from 'src/utils/attributeUtils';
+import {
+  formatAttributionValue,
+  getAttributedEntityName,
+} from 'src/utils/attributeUtils';
+import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import { computed } from 'vue';
@@ -106,7 +117,7 @@ const props = defineProps<AttributionEntityTableProps>();
 const { t, d, n } = useI18n();
 
 function getValue(row: NonNullable<typeof props.attribution>) {
-  // photo is handled in the template
+  // photo and attachment are handled in the template
   return formatAttributionValue({ attribution: row, d, n });
 }
 

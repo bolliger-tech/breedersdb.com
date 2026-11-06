@@ -2,6 +2,9 @@
   <h3 class="q-mb-md">{{ t('attributions.photos') }}</h3>
   <EntityViewAttributionImageGallery :images="images" />
 
+  <h3 class="q-mb-md">{{ t('attributions.attachments') }}</h3>
+  <EntityViewAttachmentList :attachments="attachments" />
+
   <h3 class="q-mb-md">{{ t('attributions.observations') }}</h3>
   <EntityViewAttributionsTable
     attribute-type="OBSERVATION"
@@ -34,6 +37,7 @@
 <script setup lang="ts">
 import { type CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import EntityViewAttributionImageGallery from 'src/components/Entity/View/EntityViewAttributionImageGallery.vue';
+import EntityViewAttachmentList from 'src/components/Entity/View/EntityViewAttachmentList.vue';
 import EntityViewAttributionsTable from 'src/components/Entity/View/EntityViewAttributionsTable.vue';
 import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
@@ -47,6 +51,9 @@ const props = defineProps<EntityViewAllAttributionsProps>();
 
 const images = computed(() =>
   props.attributions.filter((a) => a.data_type === 'PHOTO' || a.photo_note),
+);
+const attachments = computed(() =>
+  props.attributions.filter((a) => a.data_type === 'ATTACHMENT'),
 );
 const observations = computed(() =>
   props.attributions.filter((a) => a.attribute_type === 'OBSERVATION'),

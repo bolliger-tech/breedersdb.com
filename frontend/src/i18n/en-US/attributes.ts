@@ -38,10 +38,15 @@ export const attributes = {
     'Whether an entity can have more than one value of this attribute',
 
   cardinalityCaptions: {
-    repeatable: 'An entity can have any number of values.',
-    uniqueBlock: 'At most one value per entity. Further values are rejected.',
-    uniqueReplace:
-      'At most one value per entity. A new value replaces the existing one (including its notes).',
+    repeatable: 'You can add this attribute any number of times per entity.',
+    uniqueBlock: {
+      base: 'You can add this attribute only once per entity. {emphasis}.',
+      emphasis: 'Adding it again is rejected',
+    },
+    uniqueReplace: {
+      base: 'You can add this attribute only once per entity. Adding it again {emphasis} (including its notes).',
+      emphasis: 'replaces the existing value',
+    },
   },
 
   enumOptions: {

@@ -32,11 +32,15 @@ export const attributes = {
   cardinalityHint:
     'Ob ein Objekt mehr als einen Wert dieses Attributs haben kann',
   cardinalityCaptions: {
-    repeatable: 'Ein Objekt kann beliebig viele Werte haben.',
-    uniqueBlock:
-      'Höchstens ein Wert pro Objekt. Weitere Werte werden abgelehnt.',
-    uniqueReplace:
-      'Höchstens ein Wert pro Objekt. Ein neuer Wert ersetzt den bestehenden (inklusive seiner Bemerkungen).',
+    repeatable: 'Du kannst dieses Attribut pro Objekt beliebig oft erfassen.',
+    uniqueBlock: {
+      base: 'Du kannst dieses Attribut pro Objekt nur einmal erfassen. {emphasis}.',
+      emphasis: 'Ein erneutes Erfassen wird abgelehnt',
+    },
+    uniqueReplace: {
+      base: 'Du kannst dieses Attribut pro Objekt nur einmal erfassen. Ein erneutes Erfassen {emphasis} (inklusive seiner Bemerkungen).',
+      emphasis: 'ersetzt den bestehenden Wert',
+    },
   },
   enumOptions: {
     label: 'Optionen',

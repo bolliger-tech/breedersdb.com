@@ -9,5 +9,6 @@ export enum ColumnTypes {
   DateTime = 'datetime',
   Time = 'time',
   Photo = 'photo',
+  Attachment = 'attachment',
   Rating = 'rating',
 }

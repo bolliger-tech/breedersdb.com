@@ -5,6 +5,7 @@ export function attributionValueHasValue(attributionValue: {
   boolean_value?: boolean | null | undefined;
   date_value?: string | null | undefined;
   photo_value?: File | string | null | undefined;
+  attachment_value?: File | string | null | undefined;
   attribute_enum_option_id?: number | null | undefined;
 }) {
   return (
@@ -14,6 +15,7 @@ export function attributionValueHasValue(attributionValue: {
     (attributionValue.boolean_value ?? null) !== null ||
     (attributionValue.date_value ?? null) !== null ||
     (attributionValue.photo_value ?? null) !== null ||
+    (attributionValue.attachment_value ?? null) !== null ||
     (attributionValue.attribute_enum_option_id ?? null) !== null
   );
 }

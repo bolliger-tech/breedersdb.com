@@ -1,6 +1,7 @@
 import { XLSX_FORMATS } from 'src/composables/useExport';
 import type { CellObject } from 'xlsx';
 import { getImageCell } from 'src/utils/imageUtils';
+import { getAttachmentCell } from 'src/utils/attachmentUtils';
 
 import {
   type AnalyzeCachedAttributionsFields,
@@ -86,7 +87,14 @@ function attributionValueToXlsx(attribution: AnalyzeCachedAttributionsFields) {
                 dateAttributed: attribution.date_attributed,
                 attributionId: attribution.id,
               })
-            : attribution[valueKey];
+            : attribution.data_type === 'ATTACHMENT'
+              ? getAttachmentCell({
+                  fileName: attribution[valueKey] as string,
+                  entityName,
+                  attributeName: attribution.attribute_name,
+                  dateAttributed: attribution.date_attributed,
+                })
+              : attribution[valueKey];
   return value;
 }
 

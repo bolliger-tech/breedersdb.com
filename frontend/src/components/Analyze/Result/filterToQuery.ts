@@ -473,6 +473,7 @@ function cast({
       // TODO: handle time
       throw new Error('Not implemented');
     case ColumnTypes.Photo:
+    case ColumnTypes.Attachment:
       return true;
     default:
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -502,6 +503,7 @@ function columnTypeToGraphQLType(type: ColumnTypes) {
     case ColumnTypes.Time:
       throw new Error('Not implemented');
     case ColumnTypes.Photo:
+    case ColumnTypes.Attachment:
       return 'String';
     default:
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions

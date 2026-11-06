@@ -91,7 +91,7 @@ for (const dataType of ['Integer', 'Decimal', 'Rating'] as const) {
 }
 
 // Data types without extra inputs.
-for (const dataType of ['Boolean', 'Date', 'Photo'] as const) {
+for (const dataType of ['Boolean', 'Date', 'Photo', 'Attachment'] as const) {
   test(`${dataType.toLowerCase()} attributes can be created`, async ({
     page,
     seed,

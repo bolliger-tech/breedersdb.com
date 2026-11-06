@@ -31,6 +31,7 @@ export type AttributeDataType =
   | 'BOOLEAN'
   | 'DATE'
   | 'PHOTO'
+  | 'ATTACHMENT'
   | 'RATING'
   | 'ENUM';
 
@@ -399,7 +400,9 @@ export class Seeder {
   }
 
   // One attribution with typed values. PHOTO values can only be created
-  // through the UI (they need a real asset in the cloud-function).
+  // through the UI (they need a real asset in the cloud-function). ATTACHMENT
+  // values take a stored file name (<sha256>[.<ext>]) whose file need not
+  // exist, which is enough to render them.
   async attribution(opts: {
     formId: number;
     plantId?: number;
@@ -438,6 +441,7 @@ export class Seeder {
         TEXT: 'text_value',
         BOOLEAN: 'boolean_value',
         DATE: 'date_value',
+        ATTACHMENT: 'text_value',
       };
       const data = await adminGql<{ rows: { returning: IdRow[] } }>(
         `mutation ($objects: [attribution_values_insert_input!]!) {

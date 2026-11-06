@@ -10,7 +10,14 @@
   </div>
   <EntityViewTable :dense="dense">
     <EntityViewTableRow :label="t('attributions.columns.value')" multiline>
-      {{ getValue(attribution) }}
+      <AttributionAttachmentLink
+        v-if="attribution.data_type === 'ATTACHMENT' && attribution.text_value"
+        :file-name="attribution.text_value"
+        :attribute-name="attribution.attribute_name"
+        :entity-name="getAttributedEntityName(attribution)"
+        :date-attributed="attribution.date_attributed"
+      />
+      <template v-else>{{ getValue(attribution) }}</template>
     </EntityViewTableRow>
 
     <EntityViewTableRow :label="t('attributes.title', 1)">
@@ -92,7 +99,9 @@ import {
   formatResultColumnValue,
   dataTypeToColumnTypes,
   getAttributionValue,
+  getAttributedEntityName,
 } from 'src/utils/attributeUtils';
+import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
@@ -114,8 +123,8 @@ function getValue(row: NonNullable<typeof props.attribution>) {
   const type = dataTypeToColumnTypes(row.data_type);
   const value = getAttributionValue(row);
 
-  if (type === ColumnTypes.Photo) {
-    // photo is handled in the template
+  if (type === ColumnTypes.Photo || type === ColumnTypes.Attachment) {
+    // photo and attachment are handled in the template
     return '';
   }
 

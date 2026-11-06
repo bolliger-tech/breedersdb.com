@@ -142,8 +142,8 @@ const columns = computed(() => [
     field: (row: AttributeFragment) => {
       const type = dataTypeToColumnTypes(row.data_type);
 
-      if (type === ColumnTypes.Photo) {
-        // photos can't have a default value
+      if (type === ColumnTypes.Photo || type === ColumnTypes.Attachment) {
+        // photos and attachments can't have a default value
         return '';
       }
 

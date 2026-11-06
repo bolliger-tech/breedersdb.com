@@ -6,7 +6,14 @@
     :lot="!!attribution.lot_id"
   >
     <template #label>
-      {{ n2semicolon(label) }}
+      <AttributionAttachmentLink
+        v-if="attribution.data_type === 'ATTACHMENT' && attribution.text_value"
+        :file-name="attribution.text_value"
+        :attribute-name="attribution.attribute_name"
+        :entity-name="getAttributedEntityName(attribution)"
+        :date-attributed="attribution.date_attributed"
+      />
+      <template v-else>{{ n2semicolon(label) }}</template>
     </template>
     <template #[`overlay-title`]>
       <RouterLink :to="`/attributions/${attribution.id}`" class="entity-link">
@@ -32,7 +39,10 @@ import { useI18n } from 'src/composables/useI18n';
 import {
   formatResultColumnValue,
   getAttributionValue,
+  getAttributedEntityName,
 } from 'src/utils/attributeUtils';
+import { getAttachmentFileName } from 'src/utils/attachmentUtils';
+import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import AnalyzeResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
 import AnalyzeResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
@@ -51,6 +61,13 @@ const label = computed(() => {
   const type = dataTypeToColumnTypes(props.attribution.data_type);
 
   if (type === ColumnTypes.Photo) return t('analyze.result.photo');
+  if (type === ColumnTypes.Attachment)
+    return getAttachmentFileName({
+      fileName: props.attribution.text_value ?? '',
+      attributeName: props.attribution.attribute_name,
+      entityName: getAttributedEntityName(props.attribution),
+      dateAttributed: props.attribution.date_attributed,
+    });
 
   const value = getAttributionValue(props.attribution);
   return formatResultColumnValue({ value, type, d, n });

@@ -48,6 +48,14 @@
                 button-size="xs"
               />
             </template>
+            <template v-else-if="cellProps.row.data_type === 'ATTACHMENT'">
+              <AttributionAttachmentLink
+                :file-name="cellProps.row.text_value"
+                :attribute-name="cellProps.row.attribute_name"
+                :entity-name="getAttributedEntityName(cellProps.row)"
+                :date-attributed="cellProps.row.date_attributed"
+              />
+            </template>
             <template v-else>{{ n2semicolon(cellProps.value) }}</template>
           </AttributionValueChip>
         </q-td>
@@ -82,7 +90,9 @@ import {
   formatResultColumnValue,
   dataTypeToColumnTypes,
   getAttributionValue,
+  getAttributedEntityName,
 } from 'src/utils/attributeUtils';
+import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import type { AttributeDataTypes } from 'src/graphql';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
@@ -463,8 +473,8 @@ function getValue(row: QueryResultCachedAttributions) {
   const type = dataTypeToColumnTypes(row.data_type);
   const value = getAttributionValue(row);
 
-  if (type === ColumnTypes.Photo) {
-    // photo is handled in the template
+  if (type === ColumnTypes.Photo || type === ColumnTypes.Attachment) {
+    // photo and attachment are handled in the template
     return '';
   }
 

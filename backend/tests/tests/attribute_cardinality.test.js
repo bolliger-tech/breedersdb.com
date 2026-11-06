@@ -209,6 +209,7 @@ async function setup() {
             }
           }
         ) {
+          id
           plants(order_by: { label_id: asc }) {
             id
           }
@@ -220,7 +221,9 @@ async function setup() {
 
   return {
     formId: resp.data.insert_attribution_forms_one.id,
+    lotId,
     cultivarId,
+    plantGroupId: plants.data.insert_plant_groups_one.id,
     plantIds: plants.data.insert_plant_groups_one.plants.map((p) => p.id),
   };
 }
@@ -584,6 +587,56 @@ describe('insert', () => {
     expect(await getValues(attributeId)).toHaveLength(2);
   });
 
+  const entityTypes = {
+    plant: (ids) => ({ plant_id: ids.plantIds[0] }),
+    plant_group: (ids) => ({ plant_group_id: ids.plantGroupId }),
+    cultivar: (ids) => ({ cultivar_id: ids.cultivarId }),
+    lot: (ids) => ({ lot_id: ids.lotId }),
+  };
+
+  for (const [type, getEntity] of Object.entries(entityTypes)) {
+    test(`UNIQUE_BLOCK blocks a second value on the same ${type}`, async () => {
+      const ids = await setup();
+      const attributeId = await createAttribute('UNIQUE_BLOCK');
+      const entity = getEntity(ids);
+
+      await addValueOrFail(
+        await createAttribution(ids.formId, entity),
+        attributeId,
+        'a',
+      );
+      const resp = await addValue(
+        await createAttribution(ids.formId, entity),
+        attributeId,
+        'b',
+      );
+
+      expect(errorMessage(resp)).toMatch(/unique/);
+      expect(await getValues(attributeId)).toHaveLength(1);
+    });
+
+    test(`UNIQUE_REPLACE replaces the value on the same ${type}`, async () => {
+      const ids = await setup();
+      const attributeId = await createAttribute('UNIQUE_REPLACE');
+      const entity = getEntity(ids);
+
+      await addValueOrFail(
+        await createAttribution(ids.formId, entity),
+        attributeId,
+        'old',
+      );
+      const newId = await addValueOrFail(
+        await createAttribution(ids.formId, entity),
+        attributeId,
+        'new',
+      );
+
+      const values = await getValues(attributeId);
+      expect(values).toHaveLength(1);
+      expect(values[0].id).toBe(newId);
+    });
+  }
+
   test('UNIQUE_REPLACE keeps cached_attributions correct', async () => {
     const { formId, plantIds } = await setup();
     const attributeId = await createAttribute('UNIQUE_REPLACE');
@@ -695,6 +748,52 @@ describe('update attribution value', () => {
     });
 
     expect(errorMessage(resp)).toMatch(/unique/);
+  });
+
+  test('UNIQUE_REPLACE rejects moving a value into an attribution that has one', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const source = await createAttribution(formId, { plant_id: plantIds[0] });
+    const target = await createAttribution(formId, { plant_id: plantIds[1] });
+    const movedId = await addValueOrFail(source, attributeId, 'moved');
+    const existingId = await addValueOrFail(target, attributeId, 'existing');
+
+    const resp = await post({
+      query: updateAttributionId,
+      variables: { id: movedId, attribution_id: target },
+    });
+
+    expect(errorMessage(resp)).toMatch(/once per attribution/);
+    const values = await getValues(attributeId);
+    expect(values.map((v) => v.id)).toEqual([movedId, existingId]);
+  });
+
+  test('UNIQUE_REPLACE replaces when moving a value to an attribution of another entity', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const source = await createAttribution(formId, { plant_id: plantIds[1] });
+    const withValue = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    const target = await createAttribution(formId, { plant_id: plantIds[0] });
+    const movedId = await addValueOrFail(source, attributeId, 'moved');
+    await addValueOrFail(withValue, attributeId, 'existing');
+
+    await postOrFail({
+      query: updateAttributionId,
+      variables: { id: movedId, attribution_id: target },
+    });
+
+    const values = await getValues(attributeId);
+    expect(values).toHaveLength(1);
+    expect(values[0].id).toBe(movedId);
+    const cached = await postOrFail({
+      query: queryCached,
+      variables: { attribute_id: attributeId },
+    });
+    expect(cached.data.cached_attributions).toEqual([
+      { id: movedId, text_value: 'moved', plant_id: plantIds[0] },
+    ]);
   });
 
   test('updating a unique value in place is allowed', async () => {
@@ -812,6 +911,105 @@ describe('update attribution entity', () => {
     });
 
     expect(await getValues(attributeId)).toHaveLength(1);
+  });
+
+  const updateEntity = /* GraphQL */ `
+    mutation UpdateAttribution($id: Int!, $set: attributions_set_input!) {
+      update_attributions_by_pk(pk_columns: { id: $id }, _set: $set) {
+        id
+      }
+    }
+  `;
+
+  const queryCachedEntity = /* GraphQL */ `
+    query CachedEntity($attribute_id: Int!) {
+      cached_attributions(
+        where: { attribute_id: { _eq: $attribute_id } }
+        order_by: { id: asc }
+      ) {
+        id
+        plant_id
+        cultivar_id
+      }
+    }
+  `;
+
+  test('moving from a plant onto a cultivar with a UNIQUE_BLOCK value is blocked', async () => {
+    const { formId, plantIds, cultivarId } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const onCultivar = await createAttribution(formId, {
+      cultivar_id: cultivarId,
+    });
+    const onPlant = await createAttribution(formId, { plant_id: plantIds[0] });
+    await addValueOrFail(onCultivar, attributeId, 'a');
+    await addValueOrFail(onPlant, attributeId, 'b');
+
+    const resp = await post({
+      query: updateEntity,
+      variables: {
+        id: onPlant,
+        set: { plant_id: null, cultivar_id: cultivarId },
+      },
+    });
+
+    expect(errorMessage(resp)).toMatch(/unique/);
+  });
+
+  test('moving from a plant onto a cultivar with a UNIQUE_REPLACE value replaces', async () => {
+    const { formId, plantIds, cultivarId } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const onCultivar = await createAttribution(formId, {
+      cultivar_id: cultivarId,
+    });
+    const onPlant = await createAttribution(formId, { plant_id: plantIds[0] });
+    await addValueOrFail(onCultivar, attributeId, 'a');
+    const movedId = await addValueOrFail(onPlant, attributeId, 'b');
+
+    await postOrFail({
+      query: updateEntity,
+      variables: {
+        id: onPlant,
+        set: { plant_id: null, cultivar_id: cultivarId },
+      },
+    });
+
+    const values = await getValues(attributeId);
+    expect(values).toHaveLength(1);
+    expect(values[0].id).toBe(movedId);
+    const cached = await postOrFail({
+      query: queryCachedEntity,
+      variables: { attribute_id: attributeId },
+    });
+    expect(cached.data.cached_attributions).toEqual([
+      { id: movedId, plant_id: null, cultivar_id: cultivarId },
+    ]);
+  });
+
+  test('a blocked move rolls back the replacements of the same move', async () => {
+    const { formId, plantIds } = await setup();
+    const blockId = await createAttribute('UNIQUE_BLOCK');
+    const replaceId = await createAttribute('UNIQUE_REPLACE');
+    const target = await createAttribution(formId, { plant_id: plantIds[0] });
+    const moved = await createAttribution(formId, { plant_id: plantIds[1] });
+    await addValueOrFail(target, replaceId, 'existing');
+    await addValueOrFail(target, blockId, 'existing');
+    // the replace value is inserted first, so the trigger processes it (and deletes the target's value) before the
+    // block value raises
+    await addValueOrFail(moved, replaceId, 'moved');
+    await addValueOrFail(moved, blockId, 'moved');
+
+    const resp = await post({
+      query: updatePlantId,
+      variables: { id: moved, plant_id: plantIds[0] },
+    });
+
+    expect(errorMessage(resp)).toMatch(/unique/);
+    expect(await getValues(replaceId)).toHaveLength(2);
+    const cached = await postOrFail({
+      query: queryCached,
+      variables: { attribute_id: replaceId },
+    });
+    expect(cached.data.cached_attributions).toHaveLength(2);
   });
 });
 

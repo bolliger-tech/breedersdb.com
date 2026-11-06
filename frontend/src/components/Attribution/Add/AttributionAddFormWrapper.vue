@@ -305,6 +305,10 @@ const attributionValues = computed<{
           photo_note: value.photo_note,
           photo_value:
             value.attribute.data_type === 'PHOTO' ? value.text_value : null,
+          attachment_value:
+            value.attribute.data_type === 'ATTACHMENT'
+              ? value.text_value
+              : null,
         };
 
         return acc;
@@ -325,6 +329,7 @@ const attributionValues = computed<{
           text_value: null,
           photo_note: null,
           photo_value: null,
+          attachment_value: null,
         };
         return acc;
       },

@@ -2,7 +2,9 @@ import * as ff from '@google-cloud/functions-framework';
 import { ErrorWithStatus } from './lib/errors';
 import { config } from './lib/config';
 import { pruneImages } from './images/prune';
+import { pruneAttachments } from './attachments/prune';
 import { validateBackendAuth } from './auth/validateBackendAuth';
+import type { EventResult } from './types';
 
 export async function handleEvents(req: ff.Request, res: ff.Response) {
   try {
@@ -16,11 +18,26 @@ export async function handleEvents(req: ff.Request, res: ff.Response) {
       throw new ErrorWithStatus(400, 'Bad Request');
     }
 
-    let result;
+    let result: EventResult<unknown>;
     switch (body.name) {
-      case 'PruneImages':
-        result = await pruneImages();
+      // prunes all assets, the name is kept for the existing cron trigger
+      case 'PruneImages': {
+        // a failure in one must not skip the other
+        const [images, attachments] = await Promise.allSettled([
+          pruneImages(),
+          pruneAttachments(),
+        ]);
+        if (images.status === 'rejected') {
+          throw images.reason;
+        }
+        if (attachments.status === 'rejected') {
+          throw attachments.reason;
+        }
+        result = {
+          response: { images: images.value, attachments: attachments.value },
+        };
         break;
+      }
       default:
         console.error('unknown event:', body);
         throw new ErrorWithStatus(404, 'Not Found');

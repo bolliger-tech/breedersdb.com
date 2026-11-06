@@ -46,10 +46,23 @@ export async function uploadFile(file: Buffer, fileName: string) {
   return storage.bucket(bucketName).file(fileName).save(file);
 }
 
-export function downloadFile(fileName: string) {
+export function downloadFile(
+  fileName: string,
+  range?: { start: number; end: number },
+) {
   const { storage, bucketName } = getGCS();
 
-  return storage.bucket(bucketName).file(fileName).createReadStream();
+  return storage.bucket(bucketName).file(fileName).createReadStream(range);
+}
+
+export async function getFileSize(fileName: string) {
+  const { storage, bucketName } = getGCS();
+
+  const [metadata] = await storage
+    .bucket(bucketName)
+    .file(fileName)
+    .getMetadata();
+  return Number(metadata.size);
 }
 
 export function getFiles(options: GetFilesOptions) {

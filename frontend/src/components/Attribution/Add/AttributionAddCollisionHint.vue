@@ -56,6 +56,7 @@ const value = computed(() => {
   const type = dataTypeToColumnTypes(props.collision.existingValue.data_type);
 
   if (type === ColumnTypes.Photo) return t('analyze.result.photo');
+  if (type === ColumnTypes.Attachment) return t('analyze.result.attachment');
 
   return formatResultColumnValue({
     value: getAttributionValue(props.collision.existingValue),

@@ -53,7 +53,7 @@
 import { resizeImageFile } from 'src/utils/imageResizer';
 import { watch, ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { hashFile } from 'src/composables/useImageUploader';
+import { hashFile } from 'src/composables/useFileUploader';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import type { QFile } from 'quasar';
 import { getImageUrlRelative } from 'src/utils/imageUtils';

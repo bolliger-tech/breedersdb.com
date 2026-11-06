@@ -23,6 +23,15 @@
           />
         </template>
 
+        <template v-else-if="cellProps.row.data_type === 'ATTACHMENT'">
+          <AttributionAttachmentLink
+            :file-name="cellProps.row.text_value"
+            :attribute-name="cellProps.row.attribute_name"
+            :entity-name="getAttributedEntityName(cellProps.row)"
+            :date-attributed="cellProps.row.date_attributed"
+          />
+        </template>
+
         <template v-else>
           {{ cellProps.value }}
         </template>
@@ -49,7 +58,9 @@ import {
   formatResultColumnValue,
   dataTypeToColumnTypes,
   getAttributionValue,
+  getAttributedEntityName,
 } from 'src/utils/attributeUtils';
+import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
@@ -213,8 +224,8 @@ function getValue(row: CachedAttributionsFragment) {
   const type = dataTypeToColumnTypes(row.data_type);
   const value = getAttributionValue(row);
 
-  if (type === ColumnTypes.Photo) {
-    // photo is handled in the template
+  if (type === ColumnTypes.Photo || type === ColumnTypes.Attachment) {
+    // photo and attachment are handled in the template
     return '';
   }
 

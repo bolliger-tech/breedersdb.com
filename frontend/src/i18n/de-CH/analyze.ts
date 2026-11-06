@@ -97,6 +97,7 @@ export const analyze = {
     aggTitle: '{value} ist {theAggregation} von:',
     altPhoto: 'Foto vom {date} von {author}',
     photo: 'Foto',
+    attachment: 'Anhang',
     downloadPhoto: 'Foto herunterladen',
     attributedEntity: 'Attributierte/s {entity}',
     note: 'Bemerkung',

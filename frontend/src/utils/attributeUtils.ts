@@ -22,6 +22,7 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
     BOOLEAN: ColumnTypes.Boolean,
     DATE: ColumnTypes.Date,
     PHOTO: ColumnTypes.Photo,
+    ATTACHMENT: ColumnTypes.Attachment,
     RATING: ColumnTypes.Rating,
     ENUM: ColumnTypes.Enum,
   }[dataType];
@@ -41,6 +42,7 @@ export function dataTypeToLabel(dataType: AttributeDataTypes, t: TFunc) {
     BOOLEAN: t('attributes.dataTypes.boolean'),
     DATE: t('attributes.dataTypes.date'),
     PHOTO: t('attributes.dataTypes.photo'),
+    ATTACHMENT: t('attributes.dataTypes.attachment'),
     RATING: t('attributes.dataTypes.rating'),
     ENUM: t('attributes.dataTypes.enum'),
   }[dataType];
@@ -91,7 +93,7 @@ export function formatResultColumnValue({
   n,
 }: {
   value: string | number | Date | null | boolean | undefined;
-  type: Exclude<ColumnTypes, ColumnTypes.Photo>;
+  type: Exclude<ColumnTypes, ColumnTypes.Photo | ColumnTypes.Attachment>;
   d: DFunc;
   n: NFunc;
 }) {
@@ -136,5 +138,19 @@ export function getAttributionValue({
 }) {
   return (
     integer_value ?? float_value ?? text_value ?? boolean_value ?? date_value
+  );
+}
+
+export function getAttributedEntityName(attribution: {
+  plant?: { label_id: string } | null;
+  plant_group?: { display_name: string } | null;
+  cultivar?: { display_name: string } | null;
+  lot?: { display_name: string } | null;
+}) {
+  return (
+    attribution.plant?.label_id ??
+    attribution.plant_group?.display_name ??
+    attribution.cultivar?.display_name ??
+    attribution.lot?.display_name
   );
 }

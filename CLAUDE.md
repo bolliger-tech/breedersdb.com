@@ -37,6 +37,8 @@ The frontend's types are generated from the live Hasura schema with gql.tada. **
 
 ### Domain model
 
+Domain terms are defined in [GLOSSARY.md](GLOSSARY.md); architectural decisions are recorded in [docs/adr/](docs/adr/). Use the glossary's terms and check the ADRs before changing what they cover.
+
 Breeding entities form a hierarchy: `crossing` → `lot` → `cultivar` → `plant_group` → `plant` (plus `plant_row`, `orchard`, `rootstock`, `grafting`, `mother_plant`, `pollen`). Typed `attribute`s (boolean/date/decimal/integer/photo/rating/text/enum) are grouped into `attribution_form`s and recorded as `attribution`s against entities. The **Analyze** feature filters and aggregates attributions; it reads from the denormalized `cached_attributions` table. See [backend/docs/database.md](backend/docs/database.md) and the manual plan in [frontend/TESTING.md](frontend/TESTING.md).
 
 ## Repo-wide commands

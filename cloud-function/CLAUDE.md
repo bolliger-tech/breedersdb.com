@@ -17,6 +17,8 @@ One HTTP entry point, [src/index.ts](src/index.ts), routes by the first URL segm
 | `events`                      | `events.ts` → `handleEvents`     | Hasura event triggers                            |
 | `upload`                      | `images/upload`                  | Image upload                                     |
 | `/images/*`                   | `images/download`                | Public image serving (resized/cached)            |
+| `upload-attachment`           | `attachments/upload`             | Attachment upload (any file type, max 16 MB)     |
+| `/attachments/*`              | `attachments/download`           | Public attachment serving (see ADR 0002)         |
 | `health`                      | inline                           | Health check (`🫛🌱🌳🍎`)                        |
 
 ## Auth model
@@ -30,6 +32,7 @@ One HTTP entry point, [src/index.ts](src/index.ts), routes by the first URL segm
 
 - [src/auth/](src/auth/) — one file per action + the validators (`validateBackendAuth`, `validateFrontendAuth`, `validatePersonalAccessToken`).
 - [src/images/](src/images/) — `upload`, `download`, `cache`, `prune` (uses `sharp` for resizing, `@google-cloud/storage` for the bucket).
+- [src/attachments/](src/attachments/) — `upload`, `download`, `prune` for the `ATTACHMENT` data type. Stored under the `attachments/` bucket prefix; images stay at the bucket root. Only an allowlist of extensions is served inline ([ADR 0002](../docs/adr/0002-attachments-content-addressed-and-public.md)).
 - [src/lib/](src/lib/) — shared helpers: `config` (env validation), `crypto`/`personalAccessToken` (`libsodium`, `jose`), `cookies`, `email` (`nodemailer`), `storage`, `rateLimited`, `errors`, `fetch`.
 - `config.ts` **fails fast on startup** if any required env var is missing (`HASURA_GRAPHQL_URL/ADMIN_SECRET`, `CLOUD_FUNCTION_SECRET/URL`, `PASSWORD_RESET_*`, `EMAIL_*`). When adding config, add the validation there too.
 
@@ -41,7 +44,8 @@ Copy env with `cp .env.example .env` (`HASURA_GRAPHQL_ADMIN_SECRET` and `CLOUD_F
 docker compose up --watch --build   # dev with file watching
 npm run dev                          # nodemon + functions-framework on :8090
 npm run build                        # tsc → dist/
-./dev/test.sh                        # smoke test: signIn → query → PAT → image upload/resize → signOut → password reset
+npm test                             # build + unit tests (node:test, test/*.test.ts against dist/)
+./dev/test.sh                        # smoke test: signIn → query → PAT → image upload/resize → attachment upload/download → signOut → password reset
 ```
 
 This package uses **npm** (it has its own `package-lock.json`), unlike the frontend. Health: http://localhost:8090/health. Set `LOG_REQUESTS=true` in `.env` then restart (the `.env` is not watched) to log requests/responses.

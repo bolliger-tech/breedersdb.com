@@ -60,9 +60,9 @@ const label = computed(() => {
 
   const type = dataTypeToColumnTypes(props.attributions[0].data_type);
 
-  if (type === ColumnTypes.Photo) {
+  if (type === ColumnTypes.Photo || type === ColumnTypes.Attachment) {
     // this should never happen
-    throw new Error('Photo type not supported for aggregation');
+    throw new Error(`${type} type not supported for aggregation`);
   }
 
   switch (props.aggregation) {

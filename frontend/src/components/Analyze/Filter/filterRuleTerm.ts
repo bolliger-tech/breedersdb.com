@@ -37,6 +37,7 @@ export class FilterRuleTerm {
       case ColumnTypes.DateTime:
       case ColumnTypes.Time:
       case ColumnTypes.Photo:
+      case ColumnTypes.Attachment:
         return undefined;
       default:
         throw new Error(`Unknown column type: ${this.type}`);
@@ -69,6 +70,7 @@ export class FilterRuleTerm {
       case ColumnTypes.Time:
         return this.isValidTime();
       case ColumnTypes.Photo:
+      case ColumnTypes.Attachment:
         return this.isValidPhoto();
       default:
         throw new Error(`Unknown column type: ${this.type}`);

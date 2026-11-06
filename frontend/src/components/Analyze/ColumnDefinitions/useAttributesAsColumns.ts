@@ -118,6 +118,7 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
         },
       };
     case ColumnTypes.Photo:
+    case ColumnTypes.Attachment:
       return {
         type,
         allowEmpty: true,

@@ -17,6 +17,8 @@
         :attribute="attribution.attribute"
         :exceptional="attribution.exceptional_attribution"
         :required="true"
+        :entity-name="getAttributedEntityName(attribution)"
+        :date-attributed="attribution.date_attributed"
       />
     </template>
 
@@ -51,8 +53,9 @@ import AttributionInput, {
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useMutation } from '@urql/vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
-import type { UploadProgress } from 'src/composables/useImageUploader';
-import { useImageUploader } from 'src/composables/useImageUploader';
+import type { UploadProgress } from 'src/composables/useFileUploader';
+import { hashFile, useFileUploader } from 'src/composables/useFileUploader';
+import { getAttributedEntityName } from 'src/utils/attributeUtils';
 
 export type AttributionEditInput = Pick<
   CachedAttributionsFragment,
@@ -76,6 +79,7 @@ const model = ref<AttributionInputValue>({
   float_value: props.attribution.float_value,
   text_value:
     props.attribution.data_type === 'PHOTO' ||
+    props.attribution.data_type === 'ATTACHMENT' ||
     props.attribution.data_type === 'ENUM'
       ? null
       : props.attribution.text_value,
@@ -84,6 +88,10 @@ const model = ref<AttributionInputValue>({
   text_note: props.attribution.text_note,
   photo_value:
     props.attribution.data_type === 'PHOTO'
+      ? props.attribution.text_value
+      : null,
+  attachment_value:
+    props.attribution.data_type === 'ATTACHMENT'
       ? props.attribution.text_value
       : null,
   photo_note: props.attribution.photo_note,
@@ -160,7 +168,7 @@ async function save() {
 }
 
 const photoUploadPercentage = ref<number>(0);
-const { upload } = useImageUploader((progress: UploadProgress) => {
+const { upload } = useFileUploader((progress: UploadProgress) => {
   photoUploadPercentage.value = progress.percentComplete;
 });
 
@@ -176,6 +184,7 @@ async function saveEdit() {
 
   const {
     photo_value,
+    attachment_value,
     photo_note,
     integer_value,
     float_value,
@@ -194,7 +203,9 @@ async function saveEdit() {
       ? null
       : typeof photo_value === 'string'
         ? photo_value
-        : (text_value ?? null),
+        : typeof attachment_value === 'string'
+          ? attachment_value
+          : (text_value ?? null),
     boolean_value: boolean_value ?? null,
     date_value: date_value ?? null,
     attribute_enum_option_id: attribute_enum_option_id ?? null,
@@ -223,6 +234,22 @@ async function saveEdit() {
     }
     if (photo_note) {
       editedAttributionValue.photo_note = editedPhotoName;
+    }
+  }
+
+  if (attachment_value instanceof File) {
+    try {
+      const { fileName } = await upload(
+        attachment_value,
+        await hashFile(attachment_value),
+        '/api/assets/upload-attachment',
+      );
+      editedAttributionValue.text_value = fileName;
+    } catch (error) {
+      if (error instanceof Error) {
+        uploadError.value = error.message;
+      }
+      throw error; // do not continue with the mutation
     }
   }
 

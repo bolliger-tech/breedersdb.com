@@ -114,16 +114,12 @@ test('unique replace: saving replaces the recorded value', async ({
   await expect(listRow(page, attribute.name)).toContainText('new');
 });
 
-// The rejected save is logged to the console by design, hence the console
-// guard is detached. Hasura only puts the trigger's message into the error's
-// `internal` extension, which it returns in dev mode only (as in the dev stack
-// and CI); in production the user sees "database query error".
+// The form checks for duplicates before saving: in production Hasura hides
+// the database's own rejection message.
 test('an attribute with duplicate values cannot be made unique', async ({
   page,
-  context,
   seed,
 }) => {
-  context.removeAllListeners('console');
   const attribute = await seed.attribute({ dataType: 'TEXT' });
   const form = await seed.attributionForm([{ id: attribute.id }]);
   const cultivar = await seed.cultivar();
@@ -139,11 +135,15 @@ test('an attribute with duplicate values cannot be made unique', async ({
   await listRow(page, attribute.name).click();
   await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await selectOption(page, formField(page, 'Cardinality'), 'Unique – replace');
-  await save(page);
+  const message =
+    "Can't make this attribute unique: 1 entity has more than one value of it. Remove the duplicates first.";
+  await expect(formField(page, 'Cardinality')).toContainText(message);
 
-  await expect(
-    page.locator('.entity-modal-content__error-tooltip'),
-  ).toContainText("The attribute can't be made unique");
+  // saving is blocked: the modal stays open and the attribute stays repeatable
+  await save(page);
+  await expect(formField(page, 'Cardinality')).toContainText(message);
+  await page.goto(`/#/attributes?s=${encodeURIComponent(attribute.name)}`);
+  await expect(listRow(page, attribute.name)).toContainText('Repeatable');
 });
 
 test('a unique attribute can only be filled once per attribution', async ({

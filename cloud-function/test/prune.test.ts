@@ -8,7 +8,8 @@ const [a, b, c, d] = ['a', 'b', 'c', 'd'].map((char) => char.repeat(64));
 const old = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString();
 const young = new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString();
 
-// lists all given files on a single page, ignoring prefix and delimiter
+// lists all given files on a single page, ignoring prefix and delimiter.
+// with `fields` set, gcs returns plain objects instead of File instances.
 function createStorage(files: { name: string; timeCreated: string }[]) {
   const listOptions: unknown[] = [];
   const deleted: string[] = [];
@@ -17,13 +18,7 @@ function createStorage(files: { name: string; timeCreated: string }[]) {
     deleted,
     getFiles: async (options: unknown) => {
       listOptions.push(options);
-      return [
-        files.map(({ name, timeCreated }) => ({
-          name,
-          metadata: { timeCreated },
-        })),
-        null,
-      ];
+      return [files, null];
     },
     deleteFile: async (name: string) => {
       deleted.push(name);

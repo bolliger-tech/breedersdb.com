@@ -1,11 +1,13 @@
 import { deleteFile, getFiles } from './storage';
-import type { File, GetFilesOptions } from '@google-cloud/storage';
+import type { GetFilesOptions } from '@google-cloud/storage';
 import { ErrorWithStatus } from './errors';
 
 const BATCH_SIZE = 1000;
 const WARN_MANY_DELETED = 100;
 // uploads happen before the db insert, so recent files may not be referenced yet
 const GRACE_PERIOD_MS = 24 * 60 * 60 * 1000;
+
+type ListedFile = { name: string; timeCreated: string };
 
 export type PruneConfig = {
   name: string;
@@ -29,7 +31,7 @@ export async function pruneUnreferencedFiles({
 }: PruneConfig & {
   // injectable for tests
   storage?: {
-    getFiles: (options: GetFilesOptions) => Promise<[File[], ...unknown[]]>;
+    getFiles: (options: GetFilesOptions) => Promise<[unknown[], ...unknown[]]>;
     deleteFile: (fileName: string) => Promise<unknown>;
   };
 }) {
@@ -46,14 +48,15 @@ export async function pruneUnreferencedFiles({
 
   // process file references in batches (paginated)
   while (queryArgs) {
+    // with `fields` set, the items are plain objects instead of File instances
     const [files, argsForNextPage] = (await storage.getFiles(queryArgs)) as [
-      File[],
+      ListedFile[],
       GetFilesOptions,
     ];
     const createdBefore = Date.now() - GRACE_PERIOD_MS;
     const d = await deleteNonReferenced(
       files
-        .filter((f) => Date.parse(f.metadata.timeCreated!) < createdBefore)
+        .filter((f) => Date.parse(f.timeCreated) < createdBefore)
         .map((f) => f.name),
       getDbFileReference,
       getReferenced,

@@ -1,7 +1,7 @@
 import { ErrorWithStatus } from '../lib/errors';
 import { FILE_NAME_REGEX } from './cache';
 import { fetchGraphQL } from '../lib/fetch';
-import { pruneUnreferencedFiles } from '../lib/prune';
+import { pruneUnreferencedFiles, type PruneConfig } from '../lib/prune';
 import {
   ReferencedImagesQuery,
   type ReferencedImagesQueryResponse,
@@ -11,13 +11,7 @@ import {
  * Deletes images that are not referenced in the database (attribute_values).
  */
 export function pruneImages() {
-  return pruneUnreferencedFiles({
-    name: 'PruneImages',
-    // images are stored at the root of the bucket, skip the folders (e.g. attachments)
-    listOptions: { delimiter: '/' },
-    getDbFileReference,
-    getReferenced,
-  });
+  return pruneUnreferencedFiles(imagePruneConfig);
 }
 
 function getDbFileReference(fileName: string) {
@@ -50,3 +44,11 @@ async function getReferenced(references: string[]) {
     (i) => i.photo_note || i.text_value,
   ) as string[];
 }
+
+export const imagePruneConfig: PruneConfig = {
+  name: 'PruneImages',
+  // images are stored at the root of the bucket, skip the folders (e.g. attachments)
+  listOptions: { delimiter: '/' },
+  getDbFileReference,
+  getReferenced,
+};

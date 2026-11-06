@@ -162,7 +162,7 @@ test('validation rule is empty for TEXT', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO and ENUM.',
+    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO, ENUM and ATTACHMENT.',
   );
 });
 
@@ -178,7 +178,7 @@ test('validation rule is empty for BOOLEAN', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO and ENUM.',
+    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO, ENUM and ATTACHMENT.',
   );
 });
 
@@ -194,7 +194,7 @@ test('validation rule is empty for DATE', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO and ENUM.',
+    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO, ENUM and ATTACHMENT.',
   );
 });
 
@@ -210,7 +210,23 @@ test('validation rule is empty for PHOTO', async () => {
   });
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
-    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO and ENUM.',
+    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO, ENUM and ATTACHMENT.',
+  );
+});
+
+test('validation rule is empty for ATTACHMENT', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      validation_rule: { max: 9, min: 1, step: 1 },
+      data_type: 'ATTACHMENT',
+      attribute_type: 'OBSERVATION',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The validation rule must be NULL for TEXT, BOOLEAN, DATE, PHOTO, ENUM and ATTACHMENT.',
   );
 });
 
@@ -630,6 +646,23 @@ test('default value is not allowed for PHOTO', async () => {
 
   expect(resp.errors[0].extensions.internal.error.message).toBe(
     'The default value must be NULL for PHOTO.',
+  );
+});
+
+test('default value is not allowed for ATTACHMENT', async () => {
+  const resp = await post({
+    query: insertMutation,
+    variables: {
+      name: 'Attribution Attribute 1',
+      data_type: 'ATTACHMENT',
+      attribute_type: 'OBSERVATION',
+      default_value:
+        'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65.pdf',
+    },
+  });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The default value must be NULL for ATTACHMENT.',
   );
 });
 

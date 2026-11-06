@@ -78,8 +78,8 @@ import { graphql } from 'src/graphql';
 import { useMutation, useQuery, type CombinedError } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
-import type { UploadProgress } from 'src/composables/useImageUploader';
-import { useImageUploader } from 'src/composables/useImageUploader';
+import type { UploadProgress } from 'src/composables/useFileUploader';
+import { useFileUploader } from 'src/composables/useFileUploader';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
@@ -578,7 +578,7 @@ function handlePhotoUploadProgress(progress: UploadProgress) {
     uploadBytes.value.total;
 }
 
-const { upload } = useImageUploader(handlePhotoUploadProgress);
+const { upload } = useFileUploader(handlePhotoUploadProgress);
 
 async function uploadPhotos(files: File[]) {
   if (files.some((f) => f.size === 0)) {

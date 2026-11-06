@@ -4,6 +4,8 @@ import { handleActions } from './actions';
 import { config } from './lib/config';
 import { handleUpload } from './images/upload';
 import { handleDownload } from './images/download';
+import { handleAttachmentUpload } from './attachments/upload';
+import { handleAttachmentDownload } from './attachments/download';
 import { authenticateHasuraRequest } from './auth/authenticateHasuraRequest';
 import { handleEvents } from './events';
 
@@ -22,9 +24,14 @@ ff.http('func', (req: ff.Request, res: ff.Response) => {
       return res.send('🫛🌱🌳🍎');
     case 'upload':
       return handleUpload(req, res);
+    case 'upload-attachment':
+      return handleAttachmentUpload(req, res);
     default:
       if (req.url.startsWith('/images/')) {
         return handleDownload(req, res);
+      }
+      if (req.url.startsWith('/attachments/')) {
+        return handleAttachmentDownload(req, res);
       }
       return res.status(404).send('Not Found');
   }

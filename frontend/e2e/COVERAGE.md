@@ -75,10 +75,11 @@ an enum option: recorded values, renames, disabling, Analyze.
 View-modal content beyond the plain field table — currently only asserted
 implicitly (modal opens) by the CRUD specs.
 
-| Feature                                                   | Status | Spec                  | Notes                                                                                                                               |
-| --------------------------------------------------------- | ------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Attributions render on an entity view modal (incl. photo) | done   | `entity-view.spec.ts` | photo via UI upload — use `uploadPhoto()` (waits for the preview; saving earlier drops the value); gallery class is `.q-scrollarea` |
-| Related-entity tables on view modals                      | done   | `entity-view.spec.ts` | plant rows repeat the group name — pin the group row via its drill-down `a[href]`                                                   |
+| Feature                                                                                | Status | Spec                  | Notes                                                                                                                               |
+| -------------------------------------------------------------------------------------- | ------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Attributions render on an entity view modal (incl. photo)                              | done   | `entity-view.spec.ts` | photo via UI upload — use `uploadPhoto()` (waits for the preview; saving earlier drops the value); gallery class is `.q-scrollarea` |
+| Related-entity tables on view modals                                                   | done   | `entity-view.spec.ts` | plant rows repeat the group name — pin the group row via its drill-down `a[href]`                                                   |
+| Attachments: upload, entity view list, download headers, >10 MB rejected, analyze link | done   | `attachments.spec.ts` | ATTACHMENT values can be seeded with any `<sha256>.<ext>` (file need not exist) when only rendering is checked                      |
 
 ## Attribution flow (`/{cultivars,plants,groups,lots}/attribute`)
 

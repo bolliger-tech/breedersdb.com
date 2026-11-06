@@ -139,6 +139,136 @@ else
 fi
 
 echo
+echo "Uploading attachments..."
+
+attachment_dir=$(mktemp -d)
+
+# usage: upload_attachment <file> <x-file-name> [<x-file-hash>]
+# prints the http status, the response body is written to $attachment_dir/response
+function upload_attachment() {
+  local hash=${3:-$(shasum -a 256 "$1" | cut -d' ' -f1)}
+  curl -X POST \
+    -sS \
+    -o "$attachment_dir/response" \
+    -w '%{http_code}' \
+    -H "Content-Type: application/octet-stream" \
+    -H "Cookie: breedersdb.id.token=$token; breedersdb.user=$user" \
+    -H "x-file-hash: $hash" \
+    -H "x-file-name: $2" \
+    --data-binary @"$1" \
+    http://localhost/api/assets/upload-attachment
+}
+
+function fail() {
+  echo "$1"
+  rm -r "$attachment_dir"
+  exit 1
+}
+
+# usage: expect_attachment_download <file> <file-param> <display-name> <content-type> <disposition>
+function expect_attachment_download() {
+  local status
+  status=$(curl -sS \
+    -o "$attachment_dir/download" \
+    -D "$attachment_dir/headers" \
+    -w '%{http_code}' \
+    "http://localhost:8090/attachments/$3?file=$2")
+  [[ "$status" == "200" ]] || fail "Download of $2 failed with status $status"
+  cmp -s "$1" "$attachment_dir/download" || fail "Downloaded $2 differs from the upload"
+  grep -qix "content-type: $4"$'\r' "$attachment_dir/headers" ||
+    fail "Unexpected content type for $2 (expected $4): $(cat "$attachment_dir/headers")"
+  grep -qi "^content-disposition: $5;" "$attachment_dir/headers" ||
+    fail "Unexpected content disposition for $2 (expected $5): $(cat "$attachment_dir/headers")"
+  grep -qix "x-content-type-options: nosniff"$'\r' "$attachment_dir/headers" ||
+    fail "Missing nosniff for $2"
+  grep -qi "^cache-control: .*immutable" "$attachment_dir/headers" ||
+    fail "Missing immutable cache control for $2"
+  echo "Download OK: $2 ($4, $5)"
+}
+
+# usage: <extension>|<expected content type>|<expected disposition>
+attachment_cases=(
+  "pdf|application/pdf|inline"
+  "PNG|image/png|inline"
+  "txt|text/plain; charset=utf-8|inline"
+  "html|application/octet-stream|attachment"
+  "csv|application/octet-stream|attachment"
+  "svg|application/octet-stream|attachment"
+  "xml|application/octet-stream|attachment"
+)
+for attachment_case in "${attachment_cases[@]}"; do
+  IFS='|' read -r ext content_type disposition <<< "$attachment_case"
+  ext_lower=$(echo "$ext" | tr '[:upper:]' '[:lower:]')
+  file="$attachment_dir/upload.$ext"
+  echo "smoke attachment $ext $(date +%s%N)" > "$file"
+  hash=$(shasum -a 256 "$file" | cut -d' ' -f1)
+
+  status=$(upload_attachment "$file" "Smoke%20File.$ext")
+  [[ "$status" == "200" ]] || fail "Upload of .$ext failed with status $status: $(cat "$attachment_dir/response")"
+  file_name=$(jq -r .fileName "$attachment_dir/response")
+  [[ "$file_name" == "$hash.$ext_lower" ]] || fail "Unexpected fileName for .$ext: $file_name"
+  url=$(jq -r .url "$attachment_dir/response")
+  [[ "$url" == "/api/assets/attachments/$file_name?file=$file_name" ]] || fail "Unexpected url for .$ext: $url"
+
+  expect_attachment_download "$file" "$file_name" "Smoke%20File.$ext_lower" "$content_type" "$disposition"
+done
+
+echo "Checking attachment download filename..."
+grep -qiF "content-disposition: attachment; filename=\"Smoke File.xml\"; filename*=UTF-8''Smoke%20File.xml" "$attachment_dir/headers" ||
+  fail "Unexpected content disposition: $(cat "$attachment_dir/headers")"
+curl -sS -o /dev/null -D "$attachment_dir/headers" "http://localhost:8090/attachments/..%2F%C3%A4%22%0A.pdf?file=$file_name"
+grep -qiF "content-disposition: attachment; filename=\"..__.pdf\"; filename*=UTF-8''..%C3%A4%22.pdf" "$attachment_dir/headers" ||
+  fail "Display name not sanitized: $(cat "$attachment_dir/headers")"
+echo "Filename OK."
+
+echo "Uploading attachments without a valid extension..."
+file="$attachment_dir/upload"
+echo "smoke attachment no extension $(date +%s%N)" > "$file"
+hash=$(shasum -a 256 "$file" | cut -d' ' -f1)
+for name in "README" "smoke.p-f" "smoke.abcdefghijk" "smoke."; do
+  status=$(upload_attachment "$file" "$name")
+  [[ "$status" == "200" ]] || fail "Upload of $name failed with status $status"
+  [[ $(jq -r .fileName "$attachment_dir/response") == "$hash" ]] ||
+    fail "Unexpected fileName for $name: $(cat "$attachment_dir/response")"
+done
+expect_attachment_download "$file" "$hash" "README" "application/octet-stream" "attachment"
+
+echo "Uploading a 10MB attachment..."
+file="$attachment_dir/max.bin"
+{ date +%s%N; head -c $((10 * 1024 * 1024)) /dev/zero; } | head -c $((10 * 1024 * 1024)) > "$file"
+status=$(upload_attachment "$file" "max.bin")
+[[ "$status" == "200" ]] || fail "10MB upload failed with status $status"
+echo "10MB attachment accepted."
+
+echo "Uploading a too large attachment..."
+file="$attachment_dir/too-large.bin"
+head -c $((10 * 1024 * 1024 + 1)) /dev/zero > "$file"
+status=$(upload_attachment "$file" "too-large.bin")
+[[ "$status" == "400" ]] || fail "Too large upload was not rejected: $status"
+echo "Too large attachment rejected."
+
+echo "Uploading an attachment with a wrong hash..."
+status=$(upload_attachment "$attachment_dir/upload" "smoke.pdf" "$(printf '0%.0s' {1..64})")
+[[ "$status" == "400" ]] || fail "Hash mismatch was not rejected: $status"
+echo "Hash mismatch rejected."
+
+echo "Uploading an attachment without authentication..."
+status=$(curl -X POST -sS -o /dev/null -w '%{http_code}' --data-binary @"$attachment_dir/upload" http://localhost/api/assets/upload-attachment)
+[[ "$status" == "401" ]] || fail "Unauthenticated upload was not rejected: $status"
+echo "Unauthenticated upload rejected."
+
+echo "Downloading invalid attachments..."
+status=$(curl -sS -o /dev/null -w '%{http_code}' "http://localhost/api/assets/attachments/x.pdf?file=$(printf 'f%.0s' {1..64}).pdf")
+[[ "$status" == "404" ]] || fail "Missing attachment did not return 404: $status"
+for file_param in "..%2F$hash" "attachments%2F$hash" "$hash.PDF" "$hash.p-f" ""; do
+  status=$(curl -sS -o /dev/null -w '%{http_code}' "http://localhost/api/assets/attachments/x?file=$file_param")
+  [[ "$status" == "400" ]] || fail "Invalid file parameter '$file_param' did not return 400: $status"
+done
+echo "Invalid attachment downloads rejected."
+
+rm -r "$attachment_dir"
+
+echo
 echo "Trying to sign out..."
 
 # sign out

@@ -20,6 +20,7 @@
       v-model:input-refs="attributeFormInputRefs"
       :fields="attributeInputs"
       :collisions="collisions"
+      :repeated-unique-priorities="repeatedUniquePriorities"
       @edit-existing="edit"
     />
 
@@ -97,6 +98,7 @@ import {
   type CachedAttributionsFragment,
 } from 'src/components/Attribution/cachedAttributionsFragment';
 import { findCollisions } from './findCollisions';
+import { findRepeatedUniqueValues } from './findRepeatedUniqueValues';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -234,6 +236,16 @@ const blockedPriorities = computed(
         )
         .map((field) => field.priority),
     ),
+);
+
+// the database accepts only one value of a unique attribute per attribution
+const repeatedUniquePriorities = computed(() =>
+  findRepeatedUniqueValues({
+    fields: attributeInputs.value.filter(
+      (field) => !blockedPriorities.value.has(field.priority),
+    ),
+    values: attributionValues.value,
+  }),
 );
 
 const submittableValues = computed(() =>
@@ -385,6 +397,11 @@ function saveEdit(
 async function save(ignoreRequired = false) {
   if (!(await validate())) {
     validationError.value = t('attributions.add.invalidInput');
+    return;
+  }
+
+  if (repeatedUniquePriorities.value.size) {
+    validationError.value = t('attributions.add.uniqueRepeated');
     return;
   }
 

@@ -18,7 +18,9 @@
       >
         <template
           v-if="
-            count(field.attribute.id) > 1 || collisions?.has(field.attribute.id)
+            count(field.attribute.id) > 1 ||
+            collisions?.has(field.attribute.id) ||
+            repeatedUniquePriorities?.has(field.priority)
           "
           #before
         >
@@ -26,6 +28,11 @@
             v-if="count(field.attribute.id) > 1"
             type="warning"
             :message="t('attributions.add.sameAgainWarning')"
+          />
+          <BaseMessage
+            v-if="repeatedUniquePriorities?.has(field.priority)"
+            type="error"
+            :message="t('attributions.add.uniqueRepeated')"
           />
           <AttributionAddCollisionHint
             v-if="collisions?.get(field.attribute.id)"
@@ -59,6 +66,7 @@ export interface AttributionAddFormFieldListProps {
   }[];
   noBottomBorder?: boolean;
   collisions?: Map<number, Collision<CachedAttributionsFragment>>;
+  repeatedUniquePriorities?: Set<number>;
 }
 
 const props = defineProps<AttributionAddFormFieldListProps>();

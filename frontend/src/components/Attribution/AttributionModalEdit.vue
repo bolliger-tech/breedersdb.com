@@ -51,8 +51,8 @@ import AttributionInput, {
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useMutation } from '@urql/vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
-import type { UploadProgress } from 'src/composables/useImageUploader';
-import { useImageUploader } from 'src/composables/useImageUploader';
+import type { UploadProgress } from 'src/composables/useFileUploader';
+import { useFileUploader } from 'src/composables/useFileUploader';
 
 export type AttributionEditInput = Pick<
   CachedAttributionsFragment,
@@ -160,7 +160,7 @@ async function save() {
 }
 
 const photoUploadPercentage = ref<number>(0);
-const { upload } = useImageUploader((progress: UploadProgress) => {
+const { upload } = useFileUploader((progress: UploadProgress) => {
   photoUploadPercentage.value = progress.percentComplete;
 });
 

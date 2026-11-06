@@ -30,7 +30,7 @@ export async function hashFile(file: File): Promise<string> {
   });
 }
 
-export function useImageUploader(
+export function useFileUploader(
   onProgress: (progress: UploadProgress) => void,
 ) {
   const xhr = ref<XMLHttpRequest | null>(null);

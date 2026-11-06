@@ -22,6 +22,8 @@
       :collisions="collisions"
       :locked-priorities="lockedPriorities"
       :repeated-unique-priorities="repeatedUniquePriorities"
+      :entity-name="attributedEntityName"
+      :date-attributed="date"
       @unlock="unlock"
       @lock="lock"
     />
@@ -79,7 +81,7 @@ import { useMutation, useQuery, type CombinedError } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
 import type { UploadProgress } from 'src/composables/useFileUploader';
-import { useFileUploader } from 'src/composables/useFileUploader';
+import { hashFile, useFileUploader } from 'src/composables/useFileUploader';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
@@ -174,10 +176,17 @@ function addExtraAttribute(attribute: AttributeFragment) {
     integer_value: null,
     text_value: null,
     photo_value: null,
+    attachment_value: null,
     text_note: null,
     photo_note: null,
   };
 }
+
+const attributedEntityName = computed(() =>
+  props.entity.type === AttributableEntities.Plant
+    ? props.entity.data.label_id
+    : props.entity.data.display_name,
+);
 
 const uniqueAttributeIds = computed<number[]>((previous) => {
   const ids = attributeInputs.value
@@ -462,7 +471,7 @@ async function save(ignoreRequired = false) {
     return;
   }
 
-  const { photos, attributions } = submittableValues.value
+  const { photos, attachments, attributions } = submittableValues.value
     // filter out attribution_values without a value
     .filter((av) => av && attributionValueHasValue(av))
     // replace undefined values with null
@@ -482,39 +491,56 @@ async function save(ignoreRequired = false) {
     // extract files from photo_value and photo_note and replace them with their
     // file name
     .map((av) => {
-      const { photo_value, photo_note, ...rest } = av;
+      const { photo_value, photo_note, attachment_value, ...withoutFiles } = av;
+      // the attachment's file name is only known after the upload
+      const attachment =
+        attachment_value instanceof File ? attachment_value : null;
+      const rest =
+        typeof attachment_value === 'string'
+          ? { ...withoutFiles, text_value: attachment_value }
+          : withoutFiles;
       if (photo_value instanceof File) {
         return {
           photo: photo_value,
+          attachment,
           attribution: { ...rest, text_value: photo_value.name },
         };
       } else if (typeof photo_value === 'string') {
         return {
           photo: null,
+          attachment,
           attribution: { ...rest, text_value: photo_value },
         };
       } else if (photo_note instanceof File) {
         return {
           photo: photo_note,
+          attachment,
           attribution: { ...rest, photo_note: photo_note.name },
         };
       } else {
-        return { photo: null, attribution: rest };
+        return { photo: null, attachment, attribution: rest };
       }
     })
     .reduce(
-      (acc, { photo, attribution }) => {
+      (acc, { photo, attachment, attribution }) => {
         acc.attributions.push(attribution);
         if (photo) {
           acc.photos.push(photo);
         }
+        if (attachment) {
+          acc.attachments.push({ file: attachment, attribution });
+        }
         return acc;
       },
-      { photos: [] as File[], attributions: [] as AttributionValue[] },
+      {
+        photos: [] as File[],
+        attachments: [] as { file: File; attribution: AttributionValue }[],
+        attributions: [] as AttributionValue[],
+      },
     );
 
   try {
-    await uploadPhotos(photos);
+    await uploadFiles(photos, attachments);
   } catch (error) {
     if (error instanceof Error) {
       uploadError.value = error.message;
@@ -580,7 +606,11 @@ function handlePhotoUploadProgress(progress: UploadProgress) {
 
 const { upload } = useFileUploader(handlePhotoUploadProgress);
 
-async function uploadPhotos(files: File[]) {
+async function uploadFiles(
+  photos: File[],
+  attachments: { file: File; attribution: AttributionValue }[],
+) {
+  const files = [...photos, ...attachments.map(({ file }) => file)];
   if (files.some((f) => f.size === 0)) {
     // this should never happen as the file was already checked before resizing
     throw new Error('Cannot upload empty files');
@@ -596,10 +626,22 @@ async function uploadPhotos(files: File[]) {
     return;
   }
 
-  for (const file of files) {
+  for (const file of photos) {
     const hash = file.name.split('.').slice(0, -1).join('.');
     // may throw, must be caught by the caller
     await upload(file, hash, '/api/assets/upload');
+    uploadBytes.value.completed += file.size;
+  }
+
+  for (const { file, attribution } of attachments) {
+    const hash = await hashFile(file);
+    // may throw, must be caught by the caller
+    const { fileName } = await upload(
+      file,
+      hash,
+      '/api/assets/upload-attachment',
+    );
+    attribution.text_value = fileName;
     uploadBytes.value.completed += file.size;
   }
 }

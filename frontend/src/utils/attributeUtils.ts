@@ -166,3 +166,17 @@ export function formatAttributionValue({
     n,
   });
 }
+
+export function getAttributedEntityName(attribution: {
+  plant?: { label_id: string } | null;
+  plant_group?: { display_name: string } | null;
+  cultivar?: { display_name: string } | null;
+  lot?: { display_name: string } | null;
+}) {
+  return (
+    attribution.plant?.label_id ??
+    attribution.plant_group?.display_name ??
+    attribution.cultivar?.display_name ??
+    attribution.lot?.display_name
+  );
+}

@@ -14,6 +14,8 @@
         :attribute="field.attribute"
         :exceptional="field.exceptional"
         :required="field.required"
+        :entity-name="entityName"
+        :date-attributed="dateAttributed"
         :key="String(isLocked(field.priority))"
         :disable="isLocked(field.priority)"
         :display-value="lockedValues.get(field.priority)"
@@ -88,6 +90,8 @@ export interface AttributionAddFormFieldListProps {
   collisions?: Map<number, Collision<CachedAttributionsFragment>>;
   lockedPriorities?: Set<number>;
   repeatedUniquePriorities?: Set<number>;
+  entityName?: string | undefined;
+  dateAttributed?: string | undefined;
 }
 
 const props = defineProps<AttributionAddFormFieldListProps>();

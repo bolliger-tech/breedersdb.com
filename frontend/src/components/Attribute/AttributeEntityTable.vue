@@ -83,7 +83,7 @@ const defaultValue = computed(() => {
   const type =
     props.attribute && dataTypeToColumnTypes(props.attribute.data_type);
 
-  if (!type || type === ColumnTypes.Photo) {
+  if (!type || type === ColumnTypes.Photo || type === ColumnTypes.Attachment) {
     return '';
   }
   return formatResultColumnValue({

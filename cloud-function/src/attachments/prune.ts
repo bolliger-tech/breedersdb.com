@@ -1,6 +1,6 @@
 import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
-import { pruneUnreferencedFiles } from '../lib/prune';
+import { pruneUnreferencedFiles, type PruneConfig } from '../lib/prune';
 import {
   ReferencedAttachmentsQuery,
   type ReferencedAttachmentsQueryResponse,
@@ -14,12 +14,7 @@ import {
  * Deletes attachments that are not referenced in the database (attribute_values).
  */
 export function pruneAttachments() {
-  return pruneUnreferencedFiles({
-    name: 'PruneAttachments',
-    listOptions: { prefix: ATTACHMENT_STORAGE_PREFIX },
-    getDbFileReference,
-    getReferenced,
-  });
+  return pruneUnreferencedFiles(attachmentPruneConfig);
 }
 
 function getDbFileReference(fileName: string) {
@@ -49,3 +44,10 @@ async function getReferenced(references: string[]) {
     data.data as ReferencedAttachmentsQueryResponse
   ).attribution_values.map((i) => i.text_value);
 }
+
+export const attachmentPruneConfig: PruneConfig = {
+  name: 'PruneAttachments',
+  listOptions: { prefix: ATTACHMENT_STORAGE_PREFIX },
+  getDbFileReference,
+  getReferenced,
+};

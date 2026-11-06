@@ -68,6 +68,11 @@ export const attributions = {
       title: 'Anzahl',
     },
     sameAgainWarning: 'Dieses Formular enthält dieses Attribut mehrfach.',
+    uniqueBlocked:
+      'Bereits erfasst am {date} von {author}: {value}. Bearbeite den bestehenden Wert, um ihn zu ändern.',
+    uniqueReplaced:
+      'Bereits erfasst am {date} von {author}: {value}. Beim Speichern wird er ersetzt.',
+    editExisting: 'Bestehenden Wert bearbeiten',
     notes: 'Bemerkungen',
     addTextNote: 'Bemerkung hinzufügen',
     addPhotoNote: 'Foto hinzufügen',

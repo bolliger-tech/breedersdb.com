@@ -6,6 +6,7 @@ export const attributes = {
     attributeType: 'Attributtyp',
     defaultValue: 'Standardwert',
     legend: 'Legende',
+    cardinality: 'Kardinalität',
   },
   dataTypes: {
     text: 'Text',
@@ -22,6 +23,18 @@ export const attributes = {
     sample: 'Muster',
     treatment: 'Behandlung',
     other: 'Sonstiges',
+  },
+  cardinalities: {
+    repeatable: 'Wiederholbar',
+    uniqueBlock: 'Einmalig – blockieren',
+    uniqueReplace: 'Einmalig – ersetzen',
+  },
+  cardinalityCaptions: {
+    repeatable: 'Ein Objekt kann beliebig viele Werte haben.',
+    uniqueBlock:
+      'Höchstens ein Wert pro Objekt. Weitere Werte werden abgelehnt.',
+    uniqueReplace:
+      'Höchstens ein Wert pro Objekt. Ein neuer Wert ersetzt den bestehenden (inklusive seiner Bemerkungen).',
   },
   enumOptions: {
     label: 'Optionen',

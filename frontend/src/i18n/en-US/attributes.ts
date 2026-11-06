@@ -7,6 +7,7 @@ export const attributes = {
     attributeType: 'Attribute type',
     defaultValue: 'Default value',
     legend: 'Legend',
+    cardinality: 'Cardinality',
   },
 
   dataTypes: {
@@ -25,6 +26,19 @@ export const attributes = {
     sample: 'Sample',
     treatment: 'Treatment',
     other: 'Other',
+  },
+
+  cardinalities: {
+    repeatable: 'Repeatable',
+    uniqueBlock: 'Unique – block',
+    uniqueReplace: 'Unique – replace',
+  },
+
+  cardinalityCaptions: {
+    repeatable: 'An entity can have any number of values.',
+    uniqueBlock: 'At most one value per entity. Further values are rejected.',
+    uniqueReplace:
+      'At most one value per entity. A new value replaces the existing one (including its notes).',
   },
 
   enumOptions: {

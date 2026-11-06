@@ -1,8 +1,5 @@
 <template>
-  <BaseMessage
-    :type="collision.behavior === 'BLOCK' ? 'warning' : 'info'"
-    class="q-mb-sm attribution-add-collision-hint"
-  >
+  <BaseMessage type="warning" class="q-mb-sm attribution-add-collision-hint">
     {{
       t(
         collision.behavior === 'BLOCK'
@@ -15,15 +12,6 @@
         },
       )
     }}
-    <q-btn
-      v-if="collision.behavior === 'BLOCK'"
-      :label="t('attributions.add.editExisting')"
-      color="primary"
-      size="sm"
-      flat
-      dense
-      @click="$emit('edit', collision.existingValue.attribution_id)"
-    />
   </BaseMessage>
 </template>
 
@@ -45,10 +33,6 @@ export interface AttributionAddCollisionHintProps {
 }
 
 const props = defineProps<AttributionAddCollisionHintProps>();
-
-defineEmits<{
-  edit: [attributionId: number];
-}>();
 
 const { t, d, n } = useI18n();
 

@@ -21,7 +21,6 @@
       :fields="attributeInputs"
       :collisions="collisions"
       :repeated-unique-priorities="repeatedUniquePriorities"
-      @edit-existing="edit"
     />
 
     <AttributionAddFormAddInput @add="addExtraAttribute" />

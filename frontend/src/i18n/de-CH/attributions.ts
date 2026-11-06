@@ -69,10 +69,9 @@ export const attributions = {
     },
     sameAgainWarning: 'Dieses Formular enthält dieses Attribut mehrfach.',
     uniqueBlocked:
-      'Bereits erfasst am {date} von {author}: {value}. Bearbeite den bestehenden Wert, um ihn zu ändern.',
+      'Attribut erlaubt nur eine Bewertung. Diese wurde bereits erfasst am {date} von {author}: {value}.',
     uniqueReplaced:
-      'Bereits erfasst am {date} von {author}: {value}. Beim Speichern wird er ersetzt.',
-    editExisting: 'Bestehenden Wert bearbeiten',
+      'Bereits erfasst am {date} von {author}: {value}. Ein neuer Wert ersetzt ihn und löscht seine Bemerkungen und Fotos. Leer lassen, um den bestehenden Wert zu behalten.',
     uniqueRepeated: 'Dieses Attribut darf nur einmal ausgefüllt werden.',
     notes: 'Bemerkungen',
     addTextNote: 'Bemerkung hinzufügen',

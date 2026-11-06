@@ -37,7 +37,6 @@
           <AttributionAddCollisionHint
             v-if="collisions?.get(field.attribute.id)"
             :collision="collisions.get(field.attribute.id)!"
-            @edit="(attributionId) => $emit('editExisting', attributionId)"
           />
         </template>
       </AttributionInput>
@@ -70,10 +69,6 @@ export interface AttributionAddFormFieldListProps {
 }
 
 const props = defineProps<AttributionAddFormFieldListProps>();
-
-defineEmits<{
-  editExisting: [attributionId: number];
-}>();
 
 const inputRefs = defineModel<{ [key: number]: InputRef | null }>('inputRefs');
 const modelValue = defineModel<{ [key: number]: AttributionInputValue }>({

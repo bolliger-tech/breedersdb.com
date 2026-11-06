@@ -83,10 +83,9 @@ export const attributions = {
     sameAgainWarning: 'This form contains this attribute multiple times.',
 
     uniqueBlocked:
-      'Already recorded on {date} by {author}: {value}. Edit the existing value to change it.',
+      'Attribute allows only one value. It was already recorded on {date} by {author}: {value}.',
     uniqueReplaced:
-      'Already recorded on {date} by {author}: {value}. Saving will replace it.',
-    editExisting: 'Edit existing value',
+      'Already recorded on {date} by {author}: {value}. A new value replaces it and deletes its notes and photos. Leave empty to keep the existing value.',
     uniqueRepeated: 'This attribute may only be filled once.',
 
     notes: 'Notes',

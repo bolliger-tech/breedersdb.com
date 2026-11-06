@@ -29,7 +29,7 @@ async function pickCultivarAgain(page: Page, name: string): Promise<void> {
   await expect(page.getByRole('heading', { level: 2 })).toContainText(name);
 }
 
-test('unique block: a recorded value disables the input until it is edited', async ({
+test('unique block: a recorded value disables the input', async ({
   page,
   seed,
 }) => {
@@ -61,21 +61,8 @@ test('unique block: a recorded value disables the input until it is edited', asy
   await saveAttribution(page);
 
   await pickCultivarAgain(page, cultivar.display_name);
-  await expect(field).toContainText(
-    'by E2E Robot: first. Edit the existing value to change it.',
-  );
+  await expect(field).toContainText('by E2E Robot: first.');
   await expect(field.locator('textarea')).toBeDisabled();
-
-  // edit the existing value in place
-  await field.getByRole('button', { name: 'Edit existing value' }).click();
-  await expect(field.locator('textarea')).toHaveValue('first');
-  await expect(field.locator('.attribution-add-collision-hint')).toHaveCount(0);
-  await field.locator('textarea').fill('second');
-  await saveAttribution(page);
-
-  await page.goto(`/#/attributions?s=${encodeURIComponent(name)}`);
-  await expect(listRow(page, name)).toHaveCount(1);
-  await expect(listRow(page, name)).toContainText('second');
 });
 
 test('unique replace: saving replaces the recorded value', async ({
@@ -97,7 +84,7 @@ test('unique replace: saving replaces the recorded value', async ({
   await walkToForm(page, form.name, cultivar.display_name);
   const field = formField(page, attribute.name);
   await expect(field).toContainText(
-    'by E2E Robot: old. Saving will replace it.',
+    'by E2E Robot: old. A new value replaces it and deletes its notes and photos. Leave empty to keep the existing value.',
   );
   await field.locator('textarea').fill('new');
   await saveAttribution(page);
@@ -105,7 +92,7 @@ test('unique replace: saving replaces the recorded value', async ({
   // the hint reflects the new state
   await pickCultivarAgain(page, cultivar.display_name);
   await expect(field).toContainText(
-    'by E2E Robot: new. Saving will replace it.',
+    'by E2E Robot: new. A new value replaces it and deletes its notes and photos. Leave empty to keep the existing value.',
   );
 
   // the replaced value is gone

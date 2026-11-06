@@ -93,6 +93,7 @@ implicitly (modal opens) by the CRUD specs.
 | Cardinality unique-block: disabled input + hint, edit existing | done   | `attribute-cardinality.spec.ts`    | blocked inputs are `inert` + `aria-disabled` — `toBeDisabled()` works on them; "Edit existing value" opens the attribution in the form's edit mode |
 | Cardinality unique-replace: hint, old value replaced           | done   | `attribute-cardinality.spec.ts`    | the hint refetches after save (re-pick the entity)                                                                                                 |
 | Switch to unique rejected while duplicates exist               | done   | `attribute-cardinality.spec.ts`    | the DB message is only in Hasura's dev-mode `internal` extension; the rejected save logs to the console, so the test detaches the console guard    |
+| Unique attribute filled twice in one form blocks the save      | done   | `attribute-cardinality.spec.ts`    | inline error on each filled field + save tooltip, nothing is saved                                                                                 |
 
 ## Analyze (`/{cultivars,plants,groups,lots}/analyze`)
 

@@ -145,3 +145,35 @@ test('an attribute with duplicate values cannot be made unique', async ({
     page.locator('.entity-modal-content__error-tooltip'),
   ).toContainText("The attribute can't be made unique");
 });
+
+test('a unique attribute can only be filled once per attribution', async ({
+  page,
+  seed,
+}) => {
+  const attribute = await seed.attribute({
+    dataType: 'TEXT',
+    cardinality: 'UNIQUE_REPLACE',
+  });
+  const form = await seed.attributionForm([
+    { id: attribute.id },
+    { id: attribute.id },
+  ]);
+  const cultivar = await seed.cultivar();
+
+  await walkToForm(page, form.name, cultivar.display_name);
+  const fields = formField(page, attribute.name);
+  await fields.nth(0).locator('textarea').fill('one');
+  await expect(page.getByText('may only be filled once')).toHaveCount(0);
+  await fields.nth(1).locator('textarea').fill('two');
+  for (const i of [0, 1]) {
+    await expect(fields.nth(i)).toContainText(
+      'This attribute is unique and may only be filled once.',
+    );
+  }
+
+  await page.locator('.attribute-form-save-btn .q-btn').click();
+  await expect(
+    page.locator('.entity-modal-content__error-tooltip'),
+  ).toContainText('This attribute is unique and may only be filled once.');
+  await expect(page.locator('.q-notification')).toHaveCount(0);
+});

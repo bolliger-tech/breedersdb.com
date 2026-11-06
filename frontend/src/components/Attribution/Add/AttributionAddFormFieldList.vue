@@ -14,11 +14,23 @@
         :attribute="field.attribute"
         :exceptional="field.exceptional"
         :required="field.required"
+        :disable="collisions?.get(field.attribute.id)?.behavior === 'BLOCK'"
       >
-        <template v-if="count(field.attribute.id) > 1" #before>
+        <template
+          v-if="
+            count(field.attribute.id) > 1 || collisions?.has(field.attribute.id)
+          "
+          #before
+        >
           <BaseMessage
+            v-if="count(field.attribute.id) > 1"
             type="warning"
             :message="t('attributions.add.sameAgainWarning')"
+          />
+          <AttributionAddCollisionHint
+            v-if="collisions?.get(field.attribute.id)"
+            :collision="collisions.get(field.attribute.id)!"
+            @edit="(attributionId) => $emit('editExisting', attributionId)"
           />
         </template>
       </AttributionInput>
@@ -34,6 +46,9 @@ import type { AttributeFragment } from 'src/components/Attribute/attributeFragme
 import { type InputRef } from 'src/composables/useEntityForm';
 import { useI18n } from 'src/composables/useI18n';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
+import AttributionAddCollisionHint from './AttributionAddCollisionHint.vue';
+import type { Collision } from './findCollisions';
+import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 
 export interface AttributionAddFormFieldListProps {
   fields: {
@@ -43,9 +58,14 @@ export interface AttributionAddFormFieldListProps {
     exceptional: boolean;
   }[];
   noBottomBorder?: boolean;
+  collisions?: Map<number, Collision<CachedAttributionsFragment>>;
 }
 
 const props = defineProps<AttributionAddFormFieldListProps>();
+
+defineEmits<{
+  editExisting: [attributionId: number];
+}>();
 
 const inputRefs = defineModel<{ [key: number]: InputRef | null }>('inputRefs');
 const modelValue = defineModel<{ [key: number]: AttributionInputValue }>({

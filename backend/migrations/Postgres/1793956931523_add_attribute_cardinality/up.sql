@@ -121,7 +121,8 @@ begin
         return new;
     end if;
 
-    for _value in select id, attribute_id from attribution_values where attribution_id = new.id
+    -- ordered, so with several colliding values it's deterministic which is handled first and which error is raised
+    for _value in select id, attribute_id from attribution_values where attribution_id = new.id order by id
         loop
             perform enforce_attribute_cardinality(_value.id, _value.attribute_id, new.id, new.plant_id,
                                                   new.plant_group_id, new.cultivar_id, new.lot_id);

@@ -993,8 +993,8 @@ describe('update attribution entity', () => {
     const moved = await createAttribution(formId, { plant_id: plantIds[1] });
     await addValueOrFail(target, replaceId, 'existing');
     await addValueOrFail(target, blockId, 'existing');
-    // the replace value is inserted first, so the trigger processes it (and deletes the target's value) before the
-    // block value raises
+    // the trigger handles the values in id order, so the replace value (inserted first) deletes the target's value
+    // before the block value raises
     await addValueOrFail(moved, replaceId, 'moved');
     await addValueOrFail(moved, blockId, 'moved');
 

@@ -17,6 +17,7 @@ export const attributes = {
     boolean: 'Boolean',
     date: 'Date',
     photo: 'Photo',
+    attachment: 'Attachment',
     rating: 'Rating',
     enum: 'Selection',
   },

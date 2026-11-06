@@ -69,6 +69,8 @@ export const attributes = {
   noDefaultValue: '(kein Standardwert)',
   dataTypeChangeNotAllowed:
     'Da dieses Attribut bereits verwendet wurde, ist eine Änderung des Datentyps nicht mehr möglich. Lösche zuerst die Attributionen oder erstelle ein neues Attribut mit dem gewünschten Datentyp.',
+  cardinalityChangeNotAllowed:
+    'Dieses Attribut kann nicht einmalig gemacht werden: {count} Objekt hat mehr als einen Wert davon. Entferne zuerst die Duplikate. | Dieses Attribut kann nicht einmalig gemacht werden: {count} Objekte haben mehr als einen Wert davon. Entferne zuerst die Duplikate.',
   invalidRatingConfig:
     'Ungültige Konfiguration. Bitte überprüfe die Minimal- und Maximalwerte.',
 };

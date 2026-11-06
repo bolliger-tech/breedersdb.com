@@ -2,6 +2,9 @@ table:
   name: attributes
   schema: public
 object_relationships:
+  - name: attribute_cardinalities
+    using:
+      foreign_key_constraint_on: cardinality
   - name: attribute_data_types
     using:
       foreign_key_constraint_on: data_type
@@ -37,12 +40,20 @@ array_relationships:
         table:
           name: cached_attributions
           schema: public
+computed_fields:
+  - name: duplicated_entities_count
+    definition:
+      function:
+        name: attributes_duplicated_entities_count
+        schema: public
+    comment: Number of attributed entities (the exact plant, plant_group, cultivar or lot of the attribution) that have more than one value of this attribute. The cardinality can only be changed from REPEATABLE to unique if this is 0.
 insert_permissions:
   - role: user
     permission:
       check: {}
       columns:
         - attribute_type
+        - cardinality
         - data_type
         - default_value
         - description
@@ -56,6 +67,7 @@ select_permissions:
     permission:
       columns:
         - attribute_type
+        - cardinality
         - created
         - data_type
         - default_value
@@ -66,6 +78,8 @@ select_permissions:
         - modified
         - name
         - validation_rule
+      computed_fields:
+        - duplicated_entities_count
       filter: {}
       allow_aggregations: true
     comment: ""
@@ -74,6 +88,7 @@ update_permissions:
     permission:
       columns:
         - attribute_type
+        - cardinality
         - data_type
         - default_value
         - description
@@ -90,4 +105,7 @@ delete_permissions:
       filter: {}
     comment: ""
 configuration:
+  column_config:
+    cardinality:
+      comment: 'How many attribution_values of this attribute an attributed entity (the exact plant, plant_group, cultivar or lot of the attribution) may have. REPEATABLE: any number. UNIQUE_BLOCK: at most one, a further value is rejected. UNIQUE_REPLACE: at most one, a further value deletes the existing one (incl. its notes), regardless of date_attributed. Can only be changed from REPEATABLE to unique if no entity has more than one value.'
   comment: '""- validation_rule"":\n""    JSONB: {min: int, max: int, step: int}"" for ""INTEGER"",\n""           {min: int >= 0, max: int <= 9, step: 1}"" for ""RATING""\n""           {min: float|int, max: float|int, step: float|int}"" for ""FLOAT""\n""    NULL"" for other data types.\n""- data_type"": Can''t be changed once ""attribution_values"" for this ""attribute"" exist.\n""- legend"": Only supported for data_type RATING\n""- default_value"": Not supported for data_type PHOTO\n'

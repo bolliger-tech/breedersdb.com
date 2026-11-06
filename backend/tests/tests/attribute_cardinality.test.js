@@ -1,0 +1,1172 @@
+import { test, expect, afterEach, describe } from 'bun:test';
+import { post, postOrFail } from '../fetch';
+
+const insertAttribute = /* GraphQL */ `
+  mutation InsertAttribute(
+    $name: citext!
+    $cardinality: attribute_cardinalities_enum
+  ) {
+    insert_attributes_one(
+      object: {
+        name: $name
+        data_type: TEXT
+        attribute_type: OBSERVATION
+        cardinality: $cardinality
+      }
+    ) {
+      id
+      cardinality
+    }
+  }
+`;
+
+const insertAttributeWithoutCardinality = /* GraphQL */ `
+  mutation InsertAttribute($name: citext!) {
+    insert_attributes_one(
+      object: { name: $name, data_type: TEXT, attribute_type: OBSERVATION }
+    ) {
+      id
+      cardinality
+    }
+  }
+`;
+
+const updateCardinality = /* GraphQL */ `
+  mutation UpdateCardinality(
+    $id: Int!
+    $cardinality: attribute_cardinalities_enum!
+  ) {
+    update_attributes_by_pk(
+      pk_columns: { id: $id }
+      _set: { cardinality: $cardinality }
+    ) {
+      id
+      cardinality
+    }
+  }
+`;
+
+const insertAttribution = /* GraphQL */ `
+  mutation InsertAttribution(
+    $date_attributed: date! = "2024-01-01"
+    $attribution_form_id: Int!
+    $lot_id: Int
+    $cultivar_id: Int
+    $plant_group_id: Int
+    $plant_id: Int
+  ) {
+    insert_attributions_one(
+      object: {
+        author: "Author"
+        date_attributed: $date_attributed
+        attribution_form_id: $attribution_form_id
+        lot_id: $lot_id
+        cultivar_id: $cultivar_id
+        plant_group_id: $plant_group_id
+        plant_id: $plant_id
+      }
+    ) {
+      id
+    }
+  }
+`;
+
+const insertValue = /* GraphQL */ `
+  mutation InsertValue(
+    $attribution_id: Int!
+    $attribute_id: Int!
+    $text_value: citext!
+    $text_note: String
+    $photo_note: String
+    $exceptional_attribution: Boolean = false
+  ) {
+    insert_attribution_values_one(
+      object: {
+        attribution_id: $attribution_id
+        attribute_id: $attribute_id
+        text_value: $text_value
+        text_note: $text_note
+        photo_note: $photo_note
+        exceptional_attribution: $exceptional_attribution
+      }
+    ) {
+      id
+    }
+  }
+`;
+
+const queryValues = /* GraphQL */ `
+  query Values($attribute_id: Int!) {
+    attribution_values(
+      where: { attribute_id: { _eq: $attribute_id } }
+      order_by: { id: asc }
+    ) {
+      id
+      text_value
+      text_note
+      photo_note
+    }
+  }
+`;
+
+const queryCached = /* GraphQL */ `
+  query Cached($attribute_id: Int!) {
+    cached_attributions(
+      where: { attribute_id: { _eq: $attribute_id } }
+      order_by: { id: asc }
+    ) {
+      id
+      text_value
+      plant_id
+    }
+  }
+`;
+
+const photoNote =
+  'c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2.jpeg';
+
+afterEach(async () => {
+  await postOrFail({
+    query: /* GraphQL */ `
+      mutation DeleteAll {
+        delete_attribution_values(where: {}) {
+          affected_rows
+        }
+        delete_attributions(where: {}) {
+          affected_rows
+        }
+        delete_attribution_forms(where: {}) {
+          affected_rows
+        }
+        delete_plants(where: {}) {
+          affected_rows
+        }
+        delete_plant_groups(where: {}) {
+          affected_rows
+        }
+        delete_cultivars(where: {}) {
+          affected_rows
+        }
+        delete_lots(where: {}) {
+          affected_rows
+        }
+        delete_crossings(where: {}) {
+          affected_rows
+        }
+        delete_attributes(where: {}) {
+          affected_rows
+        }
+        delete_orchards(where: {}) {
+          affected_rows
+        }
+      }
+    `,
+  });
+});
+
+async function setup() {
+  const resp = await postOrFail({
+    query: /* GraphQL */ `
+      mutation Setup {
+        insert_lots_one(
+          object: {
+            name_segment: "24A"
+            crossing: { data: { name: "Cross1" } }
+            orchard: { data: { name: "Orchard1" } }
+          }
+        ) {
+          id
+        }
+        insert_attribution_forms_one(object: { name: "Form 1" }) {
+          id
+        }
+      }
+    `,
+  });
+  const lotId = resp.data.insert_lots_one.id;
+
+  const cultivar = await postOrFail({
+    query: /* GraphQL */ `
+      mutation InsertCultivar($lot_id: Int!) {
+        insert_cultivars_one(object: { name_segment: "001", lot_id: $lot_id }) {
+          id
+        }
+      }
+    `,
+    variables: { lot_id: lotId },
+  });
+  const cultivarId = cultivar.data.insert_cultivars_one.id;
+
+  const plants = await postOrFail({
+    query: /* GraphQL */ `
+      mutation InsertPlants($cultivar_id: Int!) {
+        insert_plant_groups_one(
+          object: {
+            name_segment: "A"
+            cultivar_id: $cultivar_id
+            plants: {
+              data: [{ label_id: "00000001" }, { label_id: "00000002" }]
+            }
+          }
+        ) {
+          id
+          plants(order_by: { label_id: asc }) {
+            id
+          }
+        }
+      }
+    `,
+    variables: { cultivar_id: cultivarId },
+  });
+
+  return {
+    formId: resp.data.insert_attribution_forms_one.id,
+    lotId,
+    cultivarId,
+    plantGroupId: plants.data.insert_plant_groups_one.id,
+    plantIds: plants.data.insert_plant_groups_one.plants.map((p) => p.id),
+  };
+}
+
+async function createAttribute(cardinality) {
+  const resp = await postOrFail({
+    query: insertAttribute,
+    variables: { name: `Attribute ${cardinality}`, cardinality },
+  });
+  return resp.data.insert_attributes_one.id;
+}
+
+async function createAttribution(formId, entity, date_attributed) {
+  const resp = await postOrFail({
+    query: insertAttribution,
+    variables: { attribution_form_id: formId, date_attributed, ...entity },
+  });
+  return resp.data.insert_attributions_one.id;
+}
+
+async function addValue(attributionId, attributeId, text_value, extra = {}) {
+  return post({
+    query: insertValue,
+    variables: {
+      attribution_id: attributionId,
+      attribute_id: attributeId,
+      text_value,
+      ...extra,
+    },
+  });
+}
+
+async function addValueOrFail(attributionId, attributeId, text_value) {
+  const resp = await addValue(attributionId, attributeId, text_value);
+  expect(resp.errors).toBeUndefined();
+  return resp.data.insert_attribution_values_one.id;
+}
+
+async function getValues(attributeId) {
+  const resp = await postOrFail({
+    query: queryValues,
+    variables: { attribute_id: attributeId },
+  });
+  return resp.data.attribution_values;
+}
+
+function errorMessage(resp) {
+  return resp.errors[0].extensions.internal.error.message;
+}
+
+describe('attribute', () => {
+  test('cardinality defaults to REPEATABLE', async () => {
+    const resp = await postOrFail({
+      query: insertAttributeWithoutCardinality,
+      variables: { name: 'Attribute 1' },
+    });
+
+    expect(resp.data.insert_attributes_one.cardinality).toBe('REPEATABLE');
+  });
+
+  test('switch to unique is rejected if an entity has duplicates', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('REPEATABLE');
+    for (const plantId of plantIds) {
+      const attributionId = await createAttribution(formId, {
+        plant_id: plantId,
+      });
+      await addValueOrFail(attributionId, attributeId, 'a');
+      await addValueOrFail(attributionId, attributeId, 'b');
+    }
+
+    const resp = await post({
+      query: updateCardinality,
+      variables: { id: attributeId, cardinality: 'UNIQUE_BLOCK' },
+    });
+
+    expect(errorMessage(resp)).toMatch(/2 attributed entities/);
+  });
+
+  test('switch to unique is allowed without duplicates', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('REPEATABLE');
+    for (const plantId of plantIds) {
+      const attributionId = await createAttribution(formId, {
+        plant_id: plantId,
+      });
+      await addValueOrFail(attributionId, attributeId, 'a');
+    }
+
+    const resp = await postOrFail({
+      query: updateCardinality,
+      variables: { id: attributeId, cardinality: 'UNIQUE_REPLACE' },
+    });
+
+    expect(resp.data.update_attributes_by_pk.cardinality).toBe(
+      'UNIQUE_REPLACE',
+    );
+  });
+
+  test('switch between unique and back to repeatable is allowed', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const attributionId = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    await addValueOrFail(attributionId, attributeId, 'a');
+
+    const replace = await postOrFail({
+      query: updateCardinality,
+      variables: { id: attributeId, cardinality: 'UNIQUE_REPLACE' },
+    });
+    const repeatable = await postOrFail({
+      query: updateCardinality,
+      variables: { id: attributeId, cardinality: 'REPEATABLE' },
+    });
+
+    expect(replace.data.update_attributes_by_pk.cardinality).toBe(
+      'UNIQUE_REPLACE',
+    );
+    expect(repeatable.data.update_attributes_by_pk.cardinality).toBe(
+      'REPEATABLE',
+    );
+  });
+
+  test('switch back to repeatable allows duplicates', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const entity = { plant_id: plantIds[0] };
+    await addValueOrFail(
+      await createAttribution(formId, entity),
+      attributeId,
+      'a',
+    );
+
+    await postOrFail({
+      query: updateCardinality,
+      variables: { id: attributeId, cardinality: 'REPEATABLE' },
+    });
+    await addValueOrFail(
+      await createAttribution(formId, entity),
+      attributeId,
+      'b',
+    );
+
+    expect(await getValues(attributeId)).toHaveLength(2);
+  });
+});
+
+describe('duplicated_entities_count', () => {
+  const queryDuplicatedEntitiesCount = /* GraphQL */ `
+    query DuplicatedEntitiesCount($id: Int!) {
+      attributes_by_pk(id: $id) {
+        duplicated_entities_count
+      }
+    }
+  `;
+
+  async function getDuplicatedEntitiesCount(attributeId) {
+    const resp = await postOrFail({
+      query: queryDuplicatedEntitiesCount,
+      variables: { id: attributeId },
+    });
+    return resp.data.attributes_by_pk.duplicated_entities_count;
+  }
+
+  test('is 0 without values', async () => {
+    const attributeId = await createAttribute('REPEATABLE');
+
+    expect(await getDuplicatedEntitiesCount(attributeId)).toBe(0);
+  });
+
+  test('is 0 with one value per entity', async () => {
+    const { formId, plantIds, cultivarId } = await setup();
+    const attributeId = await createAttribute('REPEATABLE');
+    for (const entity of [
+      { plant_id: plantIds[0] },
+      { plant_id: plantIds[1] },
+      { cultivar_id: cultivarId },
+    ]) {
+      await addValueOrFail(
+        await createAttribution(formId, entity),
+        attributeId,
+        'a',
+      );
+    }
+
+    expect(await getDuplicatedEntitiesCount(attributeId)).toBe(0);
+  });
+
+  test('counts the entities with more than one value', async () => {
+    const { formId, plantIds, cultivarId } = await setup();
+    const attributeId = await createAttribute('REPEATABLE');
+    // plant 0: two values in one attribution
+    const attributionId = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    await addValueOrFail(attributionId, attributeId, 'a');
+    await addValueOrFail(attributionId, attributeId, 'b');
+    // plant 1: three values in separate attributions
+    for (const value of ['a', 'b', 'c']) {
+      await addValueOrFail(
+        await createAttribution(formId, { plant_id: plantIds[1] }),
+        attributeId,
+        value,
+      );
+    }
+    // cultivar: a single value
+    await addValueOrFail(
+      await createAttribution(formId, { cultivar_id: cultivarId }),
+      attributeId,
+      'a',
+    );
+
+    expect(await getDuplicatedEntitiesCount(attributeId)).toBe(2);
+  });
+});
+
+describe('insert', () => {
+  test('REPEATABLE allows multiple values per entity', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('REPEATABLE');
+    const entity = { plant_id: plantIds[0] };
+
+    await addValueOrFail(
+      await createAttribution(formId, entity),
+      attributeId,
+      'a',
+    );
+    await addValueOrFail(
+      await createAttribution(formId, entity),
+      attributeId,
+      'b',
+    );
+
+    expect(await getValues(attributeId)).toHaveLength(2);
+  });
+
+  test('UNIQUE_BLOCK blocks a second value on the same entity', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const entity = { plant_id: plantIds[0] };
+
+    await addValueOrFail(
+      await createAttribution(formId, entity),
+      attributeId,
+      'a',
+    );
+    const resp = await addValue(
+      await createAttribution(formId, entity),
+      attributeId,
+      'b',
+    );
+
+    expect(errorMessage(resp)).toMatch(/unique/);
+    const values = await getValues(attributeId);
+    expect(values).toHaveLength(1);
+    expect(values[0].text_value).toBe('a');
+  });
+
+  test('UNIQUE_BLOCK counts exceptional values', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const entity = { plant_id: plantIds[0] };
+
+    await addValue(await createAttribution(formId, entity), attributeId, 'a', {
+      exceptional_attribution: true,
+    });
+    const resp = await addValue(
+      await createAttribution(formId, entity),
+      attributeId,
+      'b',
+    );
+
+    expect(errorMessage(resp)).toMatch(/unique/);
+  });
+
+  test('UNIQUE_BLOCK allows values on other entities', async () => {
+    const { formId, plantIds, cultivarId } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+
+    await addValueOrFail(
+      await createAttribution(formId, { plant_id: plantIds[0] }),
+      attributeId,
+      'a',
+    );
+    await addValueOrFail(
+      await createAttribution(formId, { plant_id: plantIds[1] }),
+      attributeId,
+      'b',
+    );
+    await addValueOrFail(
+      await createAttribution(formId, { cultivar_id: cultivarId }),
+      attributeId,
+      'c',
+    );
+
+    expect(await getValues(attributeId)).toHaveLength(3);
+  });
+
+  test('UNIQUE_REPLACE deletes the existing value incl. notes', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const entity = { plant_id: plantIds[0] };
+
+    await addValue(
+      await createAttribution(formId, entity),
+      attributeId,
+      'old',
+      {
+        text_note: 'old note',
+        photo_note: photoNote,
+      },
+    );
+    const newId = await addValueOrFail(
+      await createAttribution(formId, entity),
+      attributeId,
+      'new',
+    );
+
+    expect(await getValues(attributeId)).toEqual([
+      { id: newId, text_value: 'new', text_note: null, photo_note: null },
+    ]);
+  });
+
+  test('UNIQUE_REPLACE keeps the new value even if back-dated', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const entity = { plant_id: plantIds[0] };
+
+    await addValueOrFail(
+      await createAttribution(formId, entity, '2024-06-01'),
+      attributeId,
+      'newer date',
+    );
+    const newId = await addValueOrFail(
+      await createAttribution(formId, entity, '2020-01-01'),
+      attributeId,
+      'older date',
+    );
+
+    const values = await getValues(attributeId);
+    expect(values).toHaveLength(1);
+    expect(values[0].id).toBe(newId);
+  });
+
+  test('UNIQUE_REPLACE leaves values on other entities', async () => {
+    const { formId, plantIds, cultivarId } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+
+    await addValueOrFail(
+      await createAttribution(formId, { plant_id: plantIds[0] }),
+      attributeId,
+      'a',
+    );
+    await addValueOrFail(
+      await createAttribution(formId, { cultivar_id: cultivarId }),
+      attributeId,
+      'b',
+    );
+
+    expect(await getValues(attributeId)).toHaveLength(2);
+  });
+
+  const entityTypes = {
+    plant: (ids) => ({ plant_id: ids.plantIds[0] }),
+    plant_group: (ids) => ({ plant_group_id: ids.plantGroupId }),
+    cultivar: (ids) => ({ cultivar_id: ids.cultivarId }),
+    lot: (ids) => ({ lot_id: ids.lotId }),
+  };
+
+  for (const [type, getEntity] of Object.entries(entityTypes)) {
+    test(`UNIQUE_BLOCK blocks a second value on the same ${type}`, async () => {
+      const ids = await setup();
+      const attributeId = await createAttribute('UNIQUE_BLOCK');
+      const entity = getEntity(ids);
+
+      await addValueOrFail(
+        await createAttribution(ids.formId, entity),
+        attributeId,
+        'a',
+      );
+      const resp = await addValue(
+        await createAttribution(ids.formId, entity),
+        attributeId,
+        'b',
+      );
+
+      expect(errorMessage(resp)).toMatch(/unique/);
+      expect(await getValues(attributeId)).toHaveLength(1);
+    });
+
+    test(`UNIQUE_REPLACE replaces the value on the same ${type}`, async () => {
+      const ids = await setup();
+      const attributeId = await createAttribute('UNIQUE_REPLACE');
+      const entity = getEntity(ids);
+
+      await addValueOrFail(
+        await createAttribution(ids.formId, entity),
+        attributeId,
+        'old',
+      );
+      const newId = await addValueOrFail(
+        await createAttribution(ids.formId, entity),
+        attributeId,
+        'new',
+      );
+
+      const values = await getValues(attributeId);
+      expect(values).toHaveLength(1);
+      expect(values[0].id).toBe(newId);
+    });
+  }
+
+  test('UNIQUE_REPLACE keeps cached_attributions correct', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const entity = { plant_id: plantIds[0] };
+
+    await addValueOrFail(
+      await createAttribution(formId, entity),
+      attributeId,
+      'old',
+    );
+    const newId = await addValueOrFail(
+      await createAttribution(formId, entity),
+      attributeId,
+      'new',
+    );
+
+    const resp = await postOrFail({
+      query: queryCached,
+      variables: { attribute_id: attributeId },
+    });
+    expect(resp.data.cached_attributions).toEqual([
+      { id: newId, text_value: 'new', plant_id: plantIds[0] },
+    ]);
+  });
+});
+
+describe('update attribution value', () => {
+  const updateAttributeId = /* GraphQL */ `
+    mutation UpdateValue($id: Int!, $attribute_id: Int!) {
+      update_attribution_values_by_pk(
+        pk_columns: { id: $id }
+        _set: { attribute_id: $attribute_id }
+      ) {
+        id
+      }
+    }
+  `;
+
+  const updateAttributionId = /* GraphQL */ `
+    mutation UpdateValue($id: Int!, $attribution_id: Int!) {
+      update_attribution_values_by_pk(
+        pk_columns: { id: $id }
+        _set: { attribution_id: $attribution_id }
+      ) {
+        id
+      }
+    }
+  `;
+
+  test('changing attribute_id to UNIQUE_BLOCK is blocked', async () => {
+    const { formId, plantIds } = await setup();
+    const uniqueId = await createAttribute('UNIQUE_BLOCK');
+    const repeatableId = await createAttribute('REPEATABLE');
+    const attributionId = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    await addValueOrFail(attributionId, uniqueId, 'a');
+    const valueId = await addValueOrFail(attributionId, repeatableId, 'b');
+
+    const resp = await post({
+      query: updateAttributeId,
+      variables: { id: valueId, attribute_id: uniqueId },
+    });
+
+    expect(errorMessage(resp)).toMatch(/unique/);
+  });
+
+  test('changing attribute_id to UNIQUE_REPLACE replaces', async () => {
+    const { formId, plantIds } = await setup();
+    const uniqueId = await createAttribute('UNIQUE_REPLACE');
+    const repeatableId = await createAttribute('REPEATABLE');
+    const entity = { plant_id: plantIds[0] };
+    await addValueOrFail(
+      await createAttribution(formId, entity),
+      uniqueId,
+      'a',
+    );
+    const valueId = await addValueOrFail(
+      await createAttribution(formId, entity),
+      repeatableId,
+      'b',
+    );
+
+    await postOrFail({
+      query: updateAttributeId,
+      variables: { id: valueId, attribute_id: uniqueId },
+    });
+
+    const values = await getValues(uniqueId);
+    expect(values).toHaveLength(1);
+    expect(values[0].id).toBe(valueId);
+  });
+
+  test('changing attribution_id to another entity is blocked', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const attribution1 = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    const attribution2 = await createAttribution(formId, {
+      plant_id: plantIds[1],
+    });
+    await addValueOrFail(attribution1, attributeId, 'a');
+    const valueId = await addValueOrFail(attribution2, attributeId, 'b');
+
+    const resp = await post({
+      query: updateAttributionId,
+      variables: { id: valueId, attribution_id: attribution1 },
+    });
+
+    expect(errorMessage(resp)).toMatch(/unique/);
+  });
+
+  test('UNIQUE_REPLACE rejects moving a value into an attribution that has one', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const source = await createAttribution(formId, { plant_id: plantIds[0] });
+    const target = await createAttribution(formId, { plant_id: plantIds[1] });
+    const movedId = await addValueOrFail(source, attributeId, 'moved');
+    const existingId = await addValueOrFail(target, attributeId, 'existing');
+
+    const resp = await post({
+      query: updateAttributionId,
+      variables: { id: movedId, attribution_id: target },
+    });
+
+    expect(errorMessage(resp)).toMatch(/once per attribution/);
+    const values = await getValues(attributeId);
+    expect(values.map((v) => v.id)).toEqual([movedId, existingId]);
+  });
+
+  test('UNIQUE_REPLACE replaces when moving a value to an attribution of another entity', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const source = await createAttribution(formId, { plant_id: plantIds[1] });
+    const withValue = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    const target = await createAttribution(formId, { plant_id: plantIds[0] });
+    const movedId = await addValueOrFail(source, attributeId, 'moved');
+    await addValueOrFail(withValue, attributeId, 'existing');
+
+    await postOrFail({
+      query: updateAttributionId,
+      variables: { id: movedId, attribution_id: target },
+    });
+
+    const values = await getValues(attributeId);
+    expect(values).toHaveLength(1);
+    expect(values[0].id).toBe(movedId);
+    const cached = await postOrFail({
+      query: queryCached,
+      variables: { attribute_id: attributeId },
+    });
+    expect(cached.data.cached_attributions).toEqual([
+      { id: movedId, text_value: 'moved', plant_id: plantIds[0] },
+    ]);
+  });
+
+  test('updating a unique value in place is allowed', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const attributionId = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    const valueId = await addValueOrFail(attributionId, attributeId, 'a');
+
+    await postOrFail({
+      query: updateAttributeId,
+      variables: { id: valueId, attribute_id: attributeId },
+    });
+
+    expect(await getValues(attributeId)).toHaveLength(1);
+  });
+});
+
+describe('update attribution entity', () => {
+  const updatePlantId = /* GraphQL */ `
+    mutation UpdateAttribution($id: Int!, $plant_id: Int!) {
+      update_attributions_by_pk(
+        pk_columns: { id: $id }
+        _set: { plant_id: $plant_id }
+      ) {
+        id
+      }
+    }
+  `;
+
+  test('moving onto an entity with a UNIQUE_BLOCK value is blocked', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const attribution1 = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    const attribution2 = await createAttribution(formId, {
+      plant_id: plantIds[1],
+    });
+    await addValueOrFail(attribution1, attributeId, 'a');
+    await addValueOrFail(attribution2, attributeId, 'b');
+
+    const resp = await post({
+      query: updatePlantId,
+      variables: { id: attribution2, plant_id: plantIds[0] },
+    });
+
+    expect(errorMessage(resp)).toMatch(/unique/);
+  });
+
+  test('moving onto an entity with a UNIQUE_REPLACE value replaces', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const attribution1 = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    const attribution2 = await createAttribution(formId, {
+      plant_id: plantIds[1],
+    });
+    await addValueOrFail(attribution1, attributeId, 'a');
+    const movedId = await addValueOrFail(attribution2, attributeId, 'b');
+
+    await postOrFail({
+      query: updatePlantId,
+      variables: { id: attribution2, plant_id: plantIds[0] },
+    });
+
+    const values = await getValues(attributeId);
+    expect(values).toHaveLength(1);
+    expect(values[0].id).toBe(movedId);
+
+    const cached = await postOrFail({
+      query: queryCached,
+      variables: { attribute_id: attributeId },
+    });
+    expect(cached.data.cached_attributions).toEqual([
+      { id: movedId, text_value: 'b', plant_id: plantIds[0] },
+    ]);
+  });
+
+  test('moving a UNIQUE_REPLACE value onto an entity without a value is allowed', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const attributionId = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    const valueId = await addValueOrFail(attributionId, attributeId, 'a');
+
+    await postOrFail({
+      query: updatePlantId,
+      variables: { id: attributionId, plant_id: plantIds[1] },
+    });
+
+    const cached = await postOrFail({
+      query: queryCached,
+      variables: { attribute_id: attributeId },
+    });
+    expect(cached.data.cached_attributions).toEqual([
+      { id: valueId, text_value: 'a', plant_id: plantIds[1] },
+    ]);
+  });
+
+  test('moving onto an entity without a value is allowed', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const attributionId = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    await addValueOrFail(attributionId, attributeId, 'a');
+
+    await postOrFail({
+      query: updatePlantId,
+      variables: { id: attributionId, plant_id: plantIds[1] },
+    });
+
+    expect(await getValues(attributeId)).toHaveLength(1);
+  });
+
+  const updateEntity = /* GraphQL */ `
+    mutation UpdateAttribution($id: Int!, $set: attributions_set_input!) {
+      update_attributions_by_pk(pk_columns: { id: $id }, _set: $set) {
+        id
+      }
+    }
+  `;
+
+  const queryCachedEntity = /* GraphQL */ `
+    query CachedEntity($attribute_id: Int!) {
+      cached_attributions(
+        where: { attribute_id: { _eq: $attribute_id } }
+        order_by: { id: asc }
+      ) {
+        id
+        plant_id
+        cultivar_id
+      }
+    }
+  `;
+
+  test('moving from a plant onto a cultivar with a UNIQUE_BLOCK value is blocked', async () => {
+    const { formId, plantIds, cultivarId } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const onCultivar = await createAttribution(formId, {
+      cultivar_id: cultivarId,
+    });
+    const onPlant = await createAttribution(formId, { plant_id: plantIds[0] });
+    await addValueOrFail(onCultivar, attributeId, 'a');
+    await addValueOrFail(onPlant, attributeId, 'b');
+
+    const resp = await post({
+      query: updateEntity,
+      variables: {
+        id: onPlant,
+        set: { plant_id: null, cultivar_id: cultivarId },
+      },
+    });
+
+    expect(errorMessage(resp)).toMatch(/unique/);
+  });
+
+  test('moving from a plant onto a cultivar with a UNIQUE_REPLACE value replaces', async () => {
+    const { formId, plantIds, cultivarId } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const onCultivar = await createAttribution(formId, {
+      cultivar_id: cultivarId,
+    });
+    const onPlant = await createAttribution(formId, { plant_id: plantIds[0] });
+    await addValueOrFail(onCultivar, attributeId, 'a');
+    const movedId = await addValueOrFail(onPlant, attributeId, 'b');
+
+    await postOrFail({
+      query: updateEntity,
+      variables: {
+        id: onPlant,
+        set: { plant_id: null, cultivar_id: cultivarId },
+      },
+    });
+
+    const values = await getValues(attributeId);
+    expect(values).toHaveLength(1);
+    expect(values[0].id).toBe(movedId);
+    const cached = await postOrFail({
+      query: queryCachedEntity,
+      variables: { attribute_id: attributeId },
+    });
+    expect(cached.data.cached_attributions).toEqual([
+      { id: movedId, plant_id: null, cultivar_id: cultivarId },
+    ]);
+  });
+
+  test('a blocked move rolls back the replacements of the same move', async () => {
+    const { formId, plantIds } = await setup();
+    const blockId = await createAttribute('UNIQUE_BLOCK');
+    const replaceId = await createAttribute('UNIQUE_REPLACE');
+    const target = await createAttribution(formId, { plant_id: plantIds[0] });
+    const moved = await createAttribution(formId, { plant_id: plantIds[1] });
+    await addValueOrFail(target, replaceId, 'existing');
+    await addValueOrFail(target, blockId, 'existing');
+    // the trigger handles the values in id order, so the replace value (inserted first) deletes the target's value
+    // before the block value raises
+    await addValueOrFail(moved, replaceId, 'moved');
+    await addValueOrFail(moved, blockId, 'moved');
+
+    const resp = await post({
+      query: updatePlantId,
+      variables: { id: moved, plant_id: plantIds[0] },
+    });
+
+    expect(errorMessage(resp)).toMatch(/unique/);
+    expect(await getValues(replaceId)).toHaveLength(2);
+    const cached = await postOrFail({
+      query: queryCached,
+      variables: { attribute_id: replaceId },
+    });
+    expect(cached.data.cached_attributions).toHaveLength(2);
+  });
+});
+
+describe('one statement', () => {
+  const insertAttributionWithValues = /* GraphQL */ `
+    mutation InsertAttributionWithValues(
+      $attribution_form_id: Int!
+      $plant_id: Int!
+      $attribute_id: Int!
+    ) {
+      insert_attributions_one(
+        object: {
+          author: "Author"
+          date_attributed: "2024-01-01"
+          attribution_form_id: $attribution_form_id
+          plant_id: $plant_id
+          attribution_values: {
+            data: [
+              { attribute_id: $attribute_id, text_value: "a" }
+              { attribute_id: $attribute_id, text_value: "b" }
+            ]
+          }
+        }
+      ) {
+        id
+      }
+    }
+  `;
+
+  const insertValues = /* GraphQL */ `
+    mutation InsertValues($objects: [attribution_values_insert_input!]!) {
+      insert_attribution_values(objects: $objects) {
+        affected_rows
+      }
+    }
+  `;
+
+  async function getCached(attributeId) {
+    const resp = await postOrFail({
+      query: queryCached,
+      variables: { attribute_id: attributeId },
+    });
+    return resp.data.cached_attributions;
+  }
+
+  for (const cardinality of ['UNIQUE_BLOCK', 'UNIQUE_REPLACE']) {
+    test(`${cardinality} rejects two values in a nested attribution insert`, async () => {
+      const { formId, plantIds } = await setup();
+      const attributeId = await createAttribute(cardinality);
+
+      const resp = await post({
+        query: insertAttributionWithValues,
+        variables: {
+          attribution_form_id: formId,
+          plant_id: plantIds[0],
+          attribute_id: attributeId,
+        },
+      });
+
+      expect(errorMessage(resp)).toMatch(/once per attribution/);
+      expect(await getValues(attributeId)).toHaveLength(0);
+      expect(await getCached(attributeId)).toHaveLength(0);
+    });
+
+    test(`${cardinality} rejects two values for the same attribution in one insert`, async () => {
+      const { formId, plantIds } = await setup();
+      const attributeId = await createAttribute(cardinality);
+      const attributionId = await createAttribution(formId, {
+        plant_id: plantIds[0],
+      });
+
+      const resp = await post({
+        query: insertValues,
+        variables: {
+          objects: ['a', 'b'].map((text_value) => ({
+            attribution_id: attributionId,
+            attribute_id: attributeId,
+            text_value,
+          })),
+        },
+      });
+
+      expect(errorMessage(resp)).toMatch(/once per attribution/);
+      expect(await getValues(attributeId)).toHaveLength(0);
+      expect(await getCached(attributeId)).toHaveLength(0);
+    });
+  }
+
+  test('UNIQUE_REPLACE across attributions in one insert keeps the cache consistent', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_REPLACE');
+    const entity = { plant_id: plantIds[0] };
+    const attributionIds = [
+      await createAttribution(formId, entity),
+      await createAttribution(formId, entity),
+    ];
+
+    await postOrFail({
+      query: insertValues,
+      variables: {
+        objects: attributionIds.map((attribution_id, i) => ({
+          attribution_id,
+          attribute_id: attributeId,
+          text_value: `v${i}`,
+        })),
+      },
+    });
+
+    const values = await getValues(attributeId);
+    expect(values).toHaveLength(1);
+    expect(values[0].text_value).toBe('v1');
+    expect(await getCached(attributeId)).toEqual([
+      { id: values[0].id, text_value: 'v1', plant_id: plantIds[0] },
+    ]);
+  });
+
+  test('deleting and re-inserting a unique value of the same attribution in one request works', async () => {
+    const { formId, plantIds } = await setup();
+    const attributeId = await createAttribute('UNIQUE_BLOCK');
+    const attributionId = await createAttribution(formId, {
+      plant_id: plantIds[0],
+    });
+    const oldId = await addValueOrFail(attributionId, attributeId, 'old');
+
+    await postOrFail({
+      query: /* GraphQL */ `
+        mutation Edit(
+          $old_id: Int!
+          $attribution_id: Int!
+          $attribute_id: Int!
+        ) {
+          delete_attribution_values_by_pk(id: $old_id) {
+            id
+          }
+          insert_attribution_values_one(
+            object: {
+              attribution_id: $attribution_id
+              attribute_id: $attribute_id
+              text_value: "new"
+            }
+          ) {
+            id
+          }
+        }
+      `,
+      variables: {
+        old_id: oldId,
+        attribution_id: attributionId,
+        attribute_id: attributeId,
+      },
+    });
+
+    const values = await getValues(attributeId);
+    expect(values).toHaveLength(1);
+    expect(values[0].text_value).toBe('new');
+    expect(await getCached(attributeId)).toEqual([
+      { id: values[0].id, text_value: 'new', plant_id: plantIds[0] },
+    ]);
+  });
+});

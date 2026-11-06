@@ -19,6 +19,8 @@
       v-model="attributionValues"
       v-model:input-refs="attributeFormInputRefs"
       :fields="attributeInputs"
+      :collisions="collisions"
+      :repeated-unique-priorities="repeatedUniquePriorities"
     />
 
     <AttributionAddFormAddInput @add="addExtraAttribute" />
@@ -66,7 +68,7 @@
 <script setup lang="ts">
 import type { VariablesOf } from 'src/graphql';
 import { graphql } from 'src/graphql';
-import { useMutation } from '@urql/vue';
+import { useMutation, useQuery } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
 import type { UploadProgress } from 'src/composables/useImageUploader';
@@ -90,6 +92,12 @@ import AttributionAddAboutEntity from 'src/components/Attribution/Add/About/Attr
 import type { UndefinedToNull } from 'src/utils/typescriptUtils';
 import type { EntityPreviewEntity } from './About/attributionAddAboutEntityTypes';
 import AttributionAddForceSaveDialog from 'src/components/Attribution/Add/AttributionAddForceSaveDialog.vue';
+import {
+  cachedAttributionsFragment,
+  type CachedAttributionsFragment,
+} from 'src/components/Attribution/cachedAttributionsFragment';
+import { findCollisions } from './findCollisions';
+import { findRepeatedUniqueValues } from './findRepeatedUniqueValues';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -164,6 +172,87 @@ function addExtraAttribute(attribute: AttributeFragment) {
   };
 }
 
+const uniqueAttributeIds = computed(() =>
+  attributeInputs.value
+    .filter((field) => field.attribute.cardinality !== 'REPEATABLE')
+    .map((field) => field.attribute.id),
+);
+
+const existingUniqueValuesQuery = graphql(
+  `
+    query ExistingUniqueAttributionValues(
+      $where: cached_attributions_bool_exp!
+      $CachedAttributionsWithEntites: Boolean = false
+    ) {
+      cached_attributions(where: $where) {
+        ...cachedAttributionsFragment
+      }
+    }
+  `,
+  [cachedAttributionsFragment],
+);
+
+const entityIdColumn = computed(
+  () =>
+    ({
+      [AttributableEntities.Plant]: 'plant_id',
+      [AttributableEntities.PlantGroup]: 'plant_group_id',
+      [AttributableEntities.Cultivar]: 'cultivar_id',
+      [AttributableEntities.Lot]: 'lot_id',
+    })[props.entity.type],
+);
+
+const { data: existingUniqueValues } = useQuery({
+  query: existingUniqueValuesQuery,
+  variables: computed(() => ({
+    where: {
+      attribute_id: { _in: uniqueAttributeIds.value },
+      [entityIdColumn.value]: { _eq: props.entity.data.id },
+    },
+  })),
+  pause: computed(() => uniqueAttributeIds.value.length === 0),
+  context: { additionalTypenames: ['cached_attributions'] },
+  requestPolicy: 'cache-and-network',
+});
+
+const collisions = computed(() =>
+  findCollisions({
+    attributes: attributeInputs.value.map((field) => field.attribute),
+    existingValues: (existingUniqueValues.value?.cached_attributions ??
+      []) as CachedAttributionsFragment[],
+    editedAttributionId: props.editId,
+  }),
+);
+
+// values of blocked attributes would be rejected by the database
+const blockedPriorities = computed(
+  () =>
+    new Set(
+      attributeInputs.value
+        .filter(
+          (field) =>
+            collisions.value.get(field.attribute.id)?.behavior === 'BLOCK',
+        )
+        .map((field) => field.priority),
+    ),
+);
+
+// the database accepts only one value of a unique attribute per attribution
+const repeatedUniquePriorities = computed(() =>
+  findRepeatedUniqueValues({
+    fields: attributeInputs.value.filter(
+      (field) => !blockedPriorities.value.has(field.priority),
+    ),
+    values: attributionValues.value,
+  }),
+);
+
+const submittableValues = computed(() =>
+  Object.entries(attributionValues.value)
+    .filter(([priority]) => !blockedPriorities.value.has(Number(priority)))
+    .map(([, av]) => av),
+);
+
 const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
   formId: props.formId,
   entityId: props.entity.data.id,
@@ -171,14 +260,13 @@ const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
 });
 
 const hasValues = computed(() =>
-  Object.values(attributionValues.value).some(
-    (av) => av && attributionValueHasValue(av),
-  ),
+  submittableValues.value.some((av) => av && attributionValueHasValue(av)),
 );
 
 const requiredFieldsWithoutValue = computed(() =>
   attributeInputs.value
     .filter((field) => field.required)
+    .filter((field) => !blockedPriorities.value.has(field.priority))
     .filter((field) => {
       const value = attributionValues.value[field.priority];
       return !value || !attributionValueHasValue(value);
@@ -311,6 +399,11 @@ async function save(ignoreRequired = false) {
     return;
   }
 
+  if (repeatedUniquePriorities.value.size) {
+    validationError.value = t('attributions.add.uniqueRepeated');
+    return;
+  }
+
   if (!hasValues.value) {
     showNoDataNotification();
     return;
@@ -321,7 +414,7 @@ async function save(ignoreRequired = false) {
     return;
   }
 
-  const { photos, attributions } = Object.values(attributionValues.value)
+  const { photos, attributions } = submittableValues.value
     // filter out attribution_values without a value
     .filter((av) => av && attributionValueHasValue(av))
     // replace undefined values with null

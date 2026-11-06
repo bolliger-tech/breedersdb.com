@@ -45,6 +45,9 @@
     <EntityViewTableRow :label="t('attributes.columns.attributeType')">
       {{ attributeTypeToLabel(attribute.attribute_type, t) }}
     </EntityViewTableRow>
+    <EntityViewTableRow :label="t('attributes.columns.cardinality')">
+      {{ cardinalityToLabel(attribute.cardinality, t) }}
+    </EntityViewTableRow>
     <EntityViewTableMetaData
       :id="attribute.id"
       :created="attribute.created"
@@ -62,6 +65,7 @@ import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableM
 import {
   dataTypeToLabel,
   attributeTypeToLabel,
+  cardinalityToLabel,
   dataTypeToColumnTypes,
   formatResultColumnValue,
 } from 'src/utils/attributeUtils';

@@ -74,11 +74,8 @@ const tooLarge = ref(false);
 
 function updateModelValue(newFile: File | null) {
   tooLarge.value = !!newFile && isAttachmentTooLarge(newFile);
-  if (tooLarge.value) {
-    return;
-  }
 
   // the server rejects empty files
-  modelValue.value = newFile?.size ? newFile : null;
+  modelValue.value = newFile?.size && !tooLarge.value ? newFile : null;
 }
 </script>

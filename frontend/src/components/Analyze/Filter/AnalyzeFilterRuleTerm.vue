@@ -174,6 +174,7 @@ const inputType = computed(() => {
       return 'number';
     case ColumnTypes.Boolean:
     case ColumnTypes.Photo:
+    case ColumnTypes.Attachment:
       throw new Error('Boolean type is not supported');
     case ColumnTypes.Date:
       return 'date';

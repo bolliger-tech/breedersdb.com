@@ -22,6 +22,7 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
     BOOLEAN: ColumnTypes.Boolean,
     DATE: ColumnTypes.Date,
     PHOTO: ColumnTypes.Photo,
+    ATTACHMENT: ColumnTypes.Attachment,
     RATING: ColumnTypes.Rating,
     ENUM: ColumnTypes.Enum,
   }[dataType];
@@ -41,6 +42,7 @@ export function dataTypeToLabel(dataType: AttributeDataTypes, t: TFunc) {
     BOOLEAN: t('attributes.dataTypes.boolean'),
     DATE: t('attributes.dataTypes.date'),
     PHOTO: t('attributes.dataTypes.photo'),
+    ATTACHMENT: t('attributes.dataTypes.attachment'),
     RATING: t('attributes.dataTypes.rating'),
     ENUM: t('attributes.dataTypes.enum'),
   }[dataType];
@@ -91,7 +93,7 @@ export function formatResultColumnValue({
   n,
 }: {
   value: string | number | Date | null | boolean | undefined;
-  type: Exclude<ColumnTypes, ColumnTypes.Photo>;
+  type: Exclude<ColumnTypes, ColumnTypes.Photo | ColumnTypes.Attachment>;
   d: DFunc;
   n: NFunc;
 }) {

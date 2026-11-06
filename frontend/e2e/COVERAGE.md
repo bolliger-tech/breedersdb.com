@@ -82,14 +82,17 @@ implicitly (modal opens) by the CRUD specs.
 
 ## Attribution flow (`/{cultivars,plants,groups,lots}/attribute`)
 
-| Feature                                                 | Status | Spec                               | Notes                                                                                           |
-| ------------------------------------------------------- | ------ | ---------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Full stepper on cultivars: all input types, save, toast | done   | `attribute-flow-cultivars.spec.ts` | preseed picker mode via localStorage (`__q_strn\|cultivar-select`) — QR default breaks headless |
-| Force-save dialog when required fields empty            | done   | `attribute-flow-cultivars.spec.ts` | dialog only fires when some value is set — all-empty shows a no-data notification               |
-| Repeat mode (`?repeat=`) keeps form open                | done   | `attribute-flow-cultivars.spec.ts` | on reaching the target the flow returns to the entity picker                                    |
-| Ad-hoc extra attribute (AttributionAddFormAddInput)     | done   | `attribute-flow-cultivars.spec.ts` |                                                                                                 |
-| Slim happy-path on plants, groups, lots                 | done   | `attribute-flow-slim.spec.ts`      | group step-4 heading shows the generated `G…` label id, not the display name                    |
-| `walkToForm` preseeds the picker mode                   | done   | `support/attribute-flow.ts`        | `addInitScript` only applies to a fresh document — the `page` fixture makes every goto one      |
+| Feature                                                        | Status | Spec                               | Notes                                                                                                                                              |
+| -------------------------------------------------------------- | ------ | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full stepper on cultivars: all input types, save, toast        | done   | `attribute-flow-cultivars.spec.ts` | preseed picker mode via localStorage (`__q_strn\|cultivar-select`) — QR default breaks headless                                                    |
+| Force-save dialog when required fields empty                   | done   | `attribute-flow-cultivars.spec.ts` | dialog only fires when some value is set — all-empty shows a no-data notification                                                                  |
+| Repeat mode (`?repeat=`) keeps form open                       | done   | `attribute-flow-cultivars.spec.ts` | on reaching the target the flow returns to the entity picker                                                                                       |
+| Ad-hoc extra attribute (AttributionAddFormAddInput)            | done   | `attribute-flow-cultivars.spec.ts` |                                                                                                                                                    |
+| Slim happy-path on plants, groups, lots                        | done   | `attribute-flow-slim.spec.ts`      | group step-4 heading shows the generated `G…` label id, not the display name                                                                       |
+| `walkToForm` preseeds the picker mode                          | done   | `support/attribute-flow.ts`        | `addInitScript` only applies to a fresh document — the `page` fixture makes every goto one                                                         |
+| Cardinality unique-block: disabled input + hint, edit existing | done   | `attribute-cardinality.spec.ts`    | blocked inputs are `inert` + `aria-disabled` — `toBeDisabled()` works on them; "Edit existing value" opens the attribution in the form's edit mode |
+| Cardinality unique-replace: hint, old value replaced           | done   | `attribute-cardinality.spec.ts`    | the hint refetches after save (re-pick the entity)                                                                                                 |
+| Switch to unique rejected while duplicates exist               | done   | `attribute-cardinality.spec.ts`    | the DB message is only in Hasura's dev-mode `internal` extension; the rejected save logs to the console, so the test detaches the console guard    |
 
 ## Analyze (`/{cultivars,plants,groups,lots}/analyze`)
 

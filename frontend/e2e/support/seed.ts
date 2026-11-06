@@ -34,6 +34,11 @@ export type AttributeDataType =
   | 'RATING'
   | 'ENUM';
 
+export type AttributeCardinality =
+  | 'REPEATABLE'
+  | 'UNIQUE_BLOCK'
+  | 'UNIQUE_REPLACE';
+
 interface IdRow {
   id: number;
 }
@@ -312,6 +317,7 @@ export class Seeder {
   async attribute(
     opts: {
       dataType?: AttributeDataType;
+      cardinality?: AttributeCardinality;
       validationRule?: { min: number; max: number; step: number };
       // plain labels, or objects to set the disabled / pre-selected flags
       enumOptions?: (
@@ -337,6 +343,7 @@ export class Seeder {
         name: `E2E ${dataType} ${this.uid()}`,
         data_type: dataType,
         attribute_type: 'OBSERVATION',
+        cardinality: opts.cardinality ?? 'REPEATABLE',
         validation_rule: opts.validationRule ?? defaultRules[dataType] ?? null,
         enum_options:
           dataType === 'ENUM'

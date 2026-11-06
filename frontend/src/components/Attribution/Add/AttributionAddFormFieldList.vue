@@ -14,6 +14,8 @@
         :attribute="field.attribute"
         :exceptional="field.exceptional"
         :required="field.required"
+        :entity-name="entityName"
+        :date-attributed="dateAttributed"
         :disable="collisions?.get(field.attribute.id)?.behavior === 'BLOCK'"
       >
         <template
@@ -67,6 +69,8 @@ export interface AttributionAddFormFieldListProps {
   noBottomBorder?: boolean;
   collisions?: Map<number, Collision<CachedAttributionsFragment>>;
   repeatedUniquePriorities?: Set<number>;
+  entityName?: string | undefined;
+  dateAttributed?: string | undefined;
 }
 
 const props = defineProps<AttributionAddFormFieldListProps>();

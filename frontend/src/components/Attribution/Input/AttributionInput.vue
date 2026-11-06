@@ -76,6 +76,17 @@
           (val: File | string | null) => updateModelValue({ photo_value: val })
         "
       />
+      <AttributionInputAttachment
+        v-else-if="attribute.data_type === 'ATTACHMENT'"
+        :model-value="modelValue?.attachment_value ?? null"
+        :attribute-name="attribute.name"
+        :entity-name="entityName"
+        :date-attributed="dateAttributed"
+        @update:model-value="
+          (val: File | string | null) =>
+            updateModelValue({ attachment_value: val })
+        "
+      />
       <AttributionInputEnum
         v-else-if="attribute.data_type === 'ENUM'"
         ref="enumInputRef"
@@ -145,6 +156,7 @@ import AttributionInputText from 'src/components/Attribution/Input/AttributionIn
 import AttributionInputDate from 'src/components/Attribution/Input/AttributionInputDate.vue';
 import AttributionInputBoolean from 'src/components/Attribution/Input/AttributionInputBoolean.vue';
 import AttributionInputPhoto from 'src/components/Attribution/Input/AttributionInputPhoto.vue';
+import AttributionInputAttachment from 'src/components/Attribution/Input/AttributionInputAttachment.vue';
 import AttributionInputEnum from 'src/components/Attribution/Input/AttributionInputEnum.vue';
 import AttributionInputNote from 'src/components/Attribution/Input/AttributionInputNote.vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
@@ -158,6 +170,9 @@ export interface AttributionInputProps {
   required: boolean;
   hideNotes?: boolean;
   disable?: boolean;
+  // only used to name an already stored attachment
+  entityName?: string | undefined;
+  dateAttributed?: string | undefined;
 }
 
 export type AttributionInputValue =
@@ -171,6 +186,7 @@ export type AttributionInputValue =
       text_note?: string | null | undefined;
       text_value?: string | null | undefined;
       photo_value?: File | string | null | undefined;
+      attachment_value?: File | string | null | undefined;
       photo_note?: File | string | null | undefined;
       attribute_enum_option_id?: number | null | undefined;
     }
@@ -216,6 +232,7 @@ async function clearModelValue() {
   modelValue.value.boolean_value = null;
   modelValue.value.date_value = null;
   modelValue.value.photo_value = null;
+  modelValue.value.attachment_value = null;
   modelValue.value.attribute_enum_option_id = null;
   modelValue.value.text_note = null;
   modelValue.value.photo_note = null;
@@ -235,6 +252,7 @@ function updateModelValue({
   boolean_value,
   date_value,
   photo_value,
+  attachment_value,
   attribute_enum_option_id,
   text_note,
   photo_note,
@@ -245,6 +263,7 @@ function updateModelValue({
   boolean_value?: boolean | null;
   date_value?: string | null;
   photo_value?: File | string | null;
+  attachment_value?: File | string | null;
   attribute_enum_option_id?: number | null;
   text_note?: string | null;
   photo_note?: File | string | null;
@@ -257,6 +276,7 @@ function updateModelValue({
     boolean_value: null,
     date_value: null,
     photo_value: null,
+    attachment_value: null,
     attribute_enum_option_id: null,
     exceptional_attribution: props.exceptional,
     text_note: null,
@@ -270,6 +290,7 @@ function updateModelValue({
       boolean_value === null ||
       date_value === null ||
       photo_value === null ||
+      attachment_value === null ||
       attribute_enum_option_id === null) &&
     (model.text_note || model.photo_note)
   ) {
@@ -287,6 +308,8 @@ function updateModelValue({
   model.date_value = date_value === undefined ? model.date_value : date_value;
   model.photo_value =
     photo_value === undefined ? model.photo_value : photo_value;
+  model.attachment_value =
+    attachment_value === undefined ? model.attachment_value : attachment_value;
   model.attribute_enum_option_id =
     attribute_enum_option_id === undefined
       ? model.attribute_enum_option_id
@@ -315,6 +338,7 @@ function setDefaultValue() {
       data_type === 'INTEGER' || data_type === 'RATING' ? default_value : null,
     text_value: data_type === 'TEXT' ? default_value : null,
     photo_value: null, // default_value is not supported for photos
+    attachment_value: null, // nor for attachments
     attribute_enum_option_id: enumDefaultId,
   });
 }

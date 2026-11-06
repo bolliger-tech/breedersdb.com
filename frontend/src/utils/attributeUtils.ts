@@ -140,3 +140,17 @@ export function getAttributionValue({
     integer_value ?? float_value ?? text_value ?? boolean_value ?? date_value
   );
 }
+
+export function getAttributedEntityName(attribution: {
+  plant?: { label_id: string } | null;
+  plant_group?: { display_name: string } | null;
+  cultivar?: { display_name: string } | null;
+  lot?: { display_name: string } | null;
+}) {
+  return (
+    attribution.plant?.label_id ??
+    attribution.plant_group?.display_name ??
+    attribution.cultivar?.display_name ??
+    attribution.lot?.display_name
+  );
+}

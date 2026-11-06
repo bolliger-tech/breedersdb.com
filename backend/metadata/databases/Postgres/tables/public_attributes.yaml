@@ -40,6 +40,13 @@ array_relationships:
         table:
           name: cached_attributions
           schema: public
+computed_fields:
+  - name: duplicated_entities_count
+    definition:
+      function:
+        name: attributes_duplicated_entities_count
+        schema: public
+    comment: Number of attributed entities (the exact plant, plant_group, cultivar or lot of the attribution) that have more than one value of this attribute. The cardinality can only be changed from REPEATABLE to unique if this is 0.
 insert_permissions:
   - role: user
     permission:
@@ -71,6 +78,8 @@ select_permissions:
         - modified
         - name
         - validation_rule
+      computed_fields:
+        - duplicated_entities_count
       filter: {}
       allow_aggregations: true
     comment: ""

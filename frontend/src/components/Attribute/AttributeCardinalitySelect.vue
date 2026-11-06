@@ -9,6 +9,11 @@
     :required="required"
     :clearable="false"
     :hint="attributeCardinality?.caption"
+    :loading="fetching"
+    :rules="[
+      (val: (typeof attributeCardinalityOptions)[number] | null | undefined) =>
+        cardinalityChangeRule(val?.value),
+    ]"
     no-sort
   >
     <template #option="{ opt, itemProps }">
@@ -30,11 +35,14 @@ import { focusInView } from 'src/utils/focusInView';
 import type { AttributeCardinalities } from 'src/graphql';
 import type { ComponentExposed } from 'vue-component-type-helpers';
 import { cardinalityToLabel } from 'src/utils/attributeUtils';
+import { useCardinalityChangeRule } from './useCardinalityChangeRule';
 
 export interface AttributeCardinalitySelectProps {
   required?: boolean;
+  initialCardinality: AttributeCardinalities;
+  attributeId?: number | undefined;
 }
-defineProps<AttributeCardinalitySelectProps>();
+const props = defineProps<AttributeCardinalitySelectProps>();
 
 const attributeCardinalityRef = ref<ComponentExposed<
   typeof EntitySelect
@@ -51,6 +59,11 @@ const modelValue = defineModel<AttributeCardinalities | null>({
 });
 
 const { t } = useI18n();
+
+const { cardinalityChangeRule, fetching } = useCardinalityChangeRule({
+  attributeId: props.attributeId,
+  initialCardinality: props.initialCardinality,
+});
 
 const attributeCardinalityOptions: {
   value: AttributeCardinalities;

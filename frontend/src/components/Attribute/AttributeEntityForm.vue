@@ -80,6 +80,8 @@
     :ref="(el: InputRef) => (refs.cardinality = el)"
     v-model="data.cardinality"
     required
+    :initial-cardinality="initialData.cardinality"
+    :attribute-id="'id' in attribute ? attribute.id : undefined"
   />
   <EntityToggle
     :ref="(el: InputRef) => (refs.disabled = el)"

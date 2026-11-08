@@ -7,6 +7,7 @@ export const attributes = {
     attributeType: 'Attribute type',
     defaultValue: 'Default value',
     legend: 'Legend',
+    cardinality: 'Repetition',
   },
 
   dataTypes: {
@@ -25,6 +26,27 @@ export const attributes = {
     sample: 'Sample',
     treatment: 'Treatment',
     other: 'Other',
+  },
+
+  cardinalities: {
+    repeatable: 'Repeatable',
+    uniqueBlock: 'Once only – block',
+    uniqueReplace: 'Once only – replace',
+  },
+
+  cardinalityHint:
+    'Whether an entity can have more than one value of this attribute',
+
+  cardinalityCaptions: {
+    repeatable: 'You can add this attribute any number of times.',
+    uniqueBlock: {
+      base: 'You can add this attribute only once per entity. {emphasis}.',
+      emphasis: 'Adding it again is rejected',
+    },
+    uniqueReplace: {
+      base: 'You can add this attribute only once per entity. Adding it again {emphasis} (including its notes).',
+      emphasis: 'replaces the existing value',
+    },
   },
 
   enumOptions: {
@@ -65,6 +87,9 @@ export const attributes = {
 
   dataTypeChangeNotAllowed:
     'Because this attribute was already used for some attributions, changing the data type is not allowed. Either delete the attributions first or create a new attribute with the desired data type.',
+
+  cardinalityChangeNotAllowed:
+    "Can't limit this attribute to once only: {count} entity has more than one value of it. Remove the duplicates first. | Can't limit this attribute to once only: {count} entities have more than one value of it. Remove the duplicates first.",
 
   invalidRatingConfig:
     'Invalid rating configuration. Please check the attributes minimum and maximum value.',

@@ -19,12 +19,19 @@
       v-model="attributionValues"
       v-model:input-refs="attributeFormInputRefs"
       :fields="attributeInputs"
+      :collisions="collisions"
+      :locked-priorities="lockedPriorities"
+      :repeated-unique-priorities="repeatedUniquePriorities"
+      @unlock="unlock"
+      @lock="lock"
     />
 
     <AttributionAddFormAddInput @add="addExtraAttribute" />
 
     <AttributionAddFormSaveButton
-      :disable="isSaving || !!insertedAttribution"
+      :disable="
+        isSaving || !!insertedAttribution || fetchingExistingUniqueValues
+      "
       :loading="isSaving"
       :show-progress="isSaving || !!insertedAttribution"
       :progress="savingProgress"
@@ -35,7 +42,9 @@
       <template #error>
         <BaseErrorTooltip
           :message="uploadError || validationError"
-          :graphql-error="saveInsertError || saveEditError"
+          :graphql-error="
+            saveInsertError || saveEditError || uniqueValuesCheckError
+          "
         />
       </template>
       <template v-if="repeatTarget > 1" #counter>
@@ -66,7 +75,7 @@
 <script setup lang="ts">
 import type { VariablesOf } from 'src/graphql';
 import { graphql } from 'src/graphql';
-import { useMutation } from '@urql/vue';
+import { useMutation, useQuery, type CombinedError } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
 import type { UploadProgress } from 'src/composables/useImageUploader';
@@ -90,6 +99,12 @@ import AttributionAddAboutEntity from 'src/components/Attribution/Add/About/Attr
 import type { UndefinedToNull } from 'src/utils/typescriptUtils';
 import type { EntityPreviewEntity } from './About/attributionAddAboutEntityTypes';
 import AttributionAddForceSaveDialog from 'src/components/Attribution/Add/AttributionAddForceSaveDialog.vue';
+import {
+  cachedAttributionsFragment,
+  type CachedAttributionsFragment,
+} from 'src/components/Attribution/cachedAttributionsFragment';
+import { findCollisions, type Collision } from './findCollisions';
+import { findRepeatedUniqueValues } from './findRepeatedUniqueValues';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
 
@@ -164,6 +179,121 @@ function addExtraAttribute(attribute: AttributeFragment) {
   };
 }
 
+const uniqueAttributeIds = computed<number[]>((previous) => {
+  const ids = attributeInputs.value
+    .filter((field) => field.attribute.cardinality !== 'REPEATABLE')
+    .map((field) => field.attribute.id);
+  // keep the previous array if unchanged, so the query below doesn't refetch
+  return previous?.join() === ids.join() ? previous : ids;
+});
+
+const existingUniqueValuesQuery = graphql(
+  `
+    query ExistingUniqueAttributionValues(
+      $where: cached_attributions_bool_exp!
+      $CachedAttributionsWithEntites: Boolean = false
+    ) {
+      cached_attributions(where: $where) {
+        ...cachedAttributionsFragment
+      }
+    }
+  `,
+  [cachedAttributionsFragment],
+);
+
+const entityIdColumn = computed(
+  () =>
+    ({
+      [AttributableEntities.Plant]: 'plant_id',
+      [AttributableEntities.PlantGroup]: 'plant_group_id',
+      [AttributableEntities.Cultivar]: 'cultivar_id',
+      [AttributableEntities.Lot]: 'lot_id',
+    })[props.entity.type],
+);
+
+// network-only and saving waits for it: on stale or missing data, a replacing
+// value would silently delete the existing one without being unlocked
+const {
+  data: existingUniqueValues,
+  fetching: fetchingExistingUniqueValues,
+  error: existingUniqueValuesError,
+  ...urqlExistingUniqueValues
+} = useQuery({
+  query: existingUniqueValuesQuery,
+  variables: computed(() => ({
+    where: {
+      attribute_id: { _in: uniqueAttributeIds.value },
+      [entityIdColumn.value]: { _eq: props.entity.data.id },
+    },
+  })),
+  pause: computed(() => uniqueAttributeIds.value.length === 0),
+  context: { additionalTypenames: ['cached_attributions'] },
+  requestPolicy: 'network-only',
+});
+const uniqueValuesCheckError = ref<CombinedError | undefined>(undefined);
+
+// frozen once inserted: the refetch after saving finds the just saved values,
+// which would lock their inputs during the save transition
+const collisions = computed<Map<number, Collision<CachedAttributionsFragment>>>(
+  (previous) =>
+    insertedAttribution.value && previous
+      ? previous
+      : findCollisions({
+          attributes: attributeInputs.value.map((field) => field.attribute),
+          existingValues: (existingUniqueValues.value?.cached_attributions ??
+            []) as CachedAttributionsFragment[],
+          editedAttributionId: props.editId,
+        }),
+);
+
+// replacing values must be unlocked explicitly
+const unlockedPriorities = ref(new Set<number>());
+
+// values of locked attributes are not saved: the database would reject
+// blocked ones, and replacing ones need to be unlocked first
+const lockedPriorities = computed(
+  () =>
+    new Set(
+      attributeInputs.value
+        .filter((field) => {
+          const behavior = collisions.value.get(field.attribute.id)?.behavior;
+          return (
+            behavior === 'BLOCK' ||
+            (behavior === 'REPLACE' &&
+              !unlockedPriorities.value.has(field.priority))
+          );
+        })
+        .map((field) => field.priority),
+    ),
+);
+
+async function unlock(priority: number) {
+  unlockedPriorities.value.add(priority);
+  await nextTick();
+  attributeFormInputRefs.value[priority]?.focus();
+}
+
+function lock(priority: number) {
+  unlockedPriorities.value.delete(priority);
+  attributionValues.value[priority] = undefined;
+}
+
+// the database accepts only one value of a unique attribute per attribution
+const repeatedUniquePriorities = computed(() =>
+  findRepeatedUniqueValues({
+    fields: attributeInputs.value.filter(
+      (field) => !lockedPriorities.value.has(field.priority),
+    ),
+    values: attributionValues.value,
+  }),
+);
+
+const submittableValues = computed(() =>
+  Object.entries(attributionValues.value)
+    .filter(([priority]) => !lockedPriorities.value.has(Number(priority)))
+    .map(([, av]) => av),
+);
+
 const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
   formId: props.formId,
   entityId: props.entity.data.id,
@@ -171,14 +301,13 @@ const { count: repeatCount, lastChanged: lastRepeat } = useRepeatCounter({
 });
 
 const hasValues = computed(() =>
-  Object.values(attributionValues.value).some(
-    (av) => av && attributionValueHasValue(av),
-  ),
+  submittableValues.value.some((av) => av && attributionValueHasValue(av)),
 );
 
 const requiredFieldsWithoutValue = computed(() =>
   attributeInputs.value
     .filter((field) => field.required)
+    .filter((field) => !lockedPriorities.value.has(field.priority))
     .filter((field) => {
       const value = attributionValues.value[field.priority];
       return !value || !attributionValueHasValue(value);
@@ -306,8 +435,20 @@ function saveEdit(
 }
 
 async function save(ignoreRequired = false) {
+  if (existingUniqueValuesError.value) {
+    uniqueValuesCheckError.value = existingUniqueValuesError.value;
+    // retry, so a transient network error doesn't block saving for good
+    void urqlExistingUniqueValues.executeQuery();
+    return;
+  }
+
   if (!(await validate())) {
     validationError.value = t('attributions.add.invalidInput');
+    return;
+  }
+
+  if (repeatedUniquePriorities.value.size) {
+    validationError.value = t('attributions.add.uniqueRepeated');
     return;
   }
 
@@ -321,7 +462,7 @@ async function save(ignoreRequired = false) {
     return;
   }
 
-  const { photos, attributions } = Object.values(attributionValues.value)
+  const { photos, attributions } = submittableValues.value
     // filter out attribution_values without a value
     .filter((av) => av && attributionValueHasValue(av))
     // replace undefined values with null
@@ -490,6 +631,7 @@ function resetErrors() {
   uploadError.value = undefined;
   saveInsertError.value = undefined;
   validationError.value = undefined;
+  uniqueValuesCheckError.value = undefined;
 }
 
 const { entity: entityName } = useAttributableEntityName({

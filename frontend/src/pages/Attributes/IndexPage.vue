@@ -48,6 +48,7 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import {
   dataTypeToLabel,
   attributeTypeToLabel,
+  cardinalityToLabel,
   dataTypeToColumnTypes,
   formatResultColumnValue,
 } from 'src/utils/attributeUtils';
@@ -166,6 +167,13 @@ const columns = computed(() => [
     align: 'left' as const,
     field: (row: AttributeFragment) =>
       attributeTypeToLabel(row.attribute_type, t),
+    sortable: true,
+  },
+  {
+    name: 'cardinality',
+    label: t('attributes.columns.cardinality'),
+    align: 'left' as const,
+    field: (row: AttributeFragment) => cardinalityToLabel(row.cardinality, t),
     sortable: true,
   },
   ...(subset.value === 'all'

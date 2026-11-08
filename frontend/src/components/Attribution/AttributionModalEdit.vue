@@ -51,6 +51,7 @@ import AttributionInput, {
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { useMutation } from '@urql/vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
+import { cachedAttributionToInputValue } from 'src/components/Attribution/cachedAttributionToInputValue';
 import type { UploadProgress } from 'src/composables/useImageUploader';
 import { useImageUploader } from 'src/composables/useImageUploader';
 
@@ -72,29 +73,12 @@ export interface AttributionModalEditProps {
 const props = defineProps<AttributionModalEditProps>();
 
 const model = ref<AttributionInputValue>({
-  integer_value: props.attribution.integer_value,
-  float_value: props.attribution.float_value,
-  text_value:
-    props.attribution.data_type === 'PHOTO' ||
-    props.attribution.data_type === 'ENUM'
-      ? null
-      : props.attribution.text_value,
-  boolean_value: props.attribution.boolean_value,
-  date_value: props.attribution.date_value,
+  ...cachedAttributionToInputValue(
+    props.attribution,
+    props.attribution.attribute.enum_options,
+  ),
   text_note: props.attribution.text_note,
-  photo_value:
-    props.attribution.data_type === 'PHOTO'
-      ? props.attribution.text_value
-      : null,
   photo_note: props.attribution.photo_note,
-  // the cache stores the enum option's label in text_value; map it back to the
-  // option id (labels are unique per attribute, so the match is exact)
-  attribute_enum_option_id:
-    props.attribution.data_type === 'ENUM'
-      ? (props.attribution.attribute.enum_options.find(
-          (o) => o.label === props.attribution.text_value,
-        )?.id ?? null)
-      : null,
 });
 const editedData = ref<AttributionInputValue>(undefined);
 

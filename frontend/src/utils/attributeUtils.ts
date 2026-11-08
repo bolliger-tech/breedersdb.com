@@ -1,4 +1,8 @@
-import type { AttributeDataTypes, AttributeTypes } from 'src/graphql';
+import type {
+  AttributeCardinalities,
+  AttributeDataTypes,
+  AttributeTypes,
+} from 'src/graphql';
 import { ColumnTypes } from './columnTypes';
 import type { DFunc, NFunc, TFunc } from 'src/composables/useI18n';
 
@@ -63,6 +67,23 @@ export function attributeTypeToLabel(attributeType: AttributeTypes, t: TFunc) {
   return type;
 }
 
+export function cardinalityToLabel(
+  cardinality: AttributeCardinalities,
+  t: TFunc,
+) {
+  const label = {
+    REPEATABLE: t('attributes.cardinalities.repeatable'),
+    UNIQUE_BLOCK: t('attributes.cardinalities.uniqueBlock'),
+    UNIQUE_REPLACE: t('attributes.cardinalities.uniqueReplace'),
+  }[cardinality];
+
+  if (typeof label === 'undefined') {
+    throw Error(`Unknown attribute.cardinality: ${cardinality}`);
+  }
+
+  return label;
+}
+
 export function formatResultColumnValue({
   value,
   type,
@@ -116,4 +137,30 @@ export function getAttributionValue({
   return (
     integer_value ?? float_value ?? text_value ?? boolean_value ?? date_value
   );
+}
+
+// Photos are shown as images, so they have no text value.
+export function formatAttributionValue({
+  attribution,
+  d,
+  n,
+}: {
+  attribution: Parameters<typeof getAttributionValue>[0] & {
+    data_type: AttributeDataTypes;
+  };
+  d: DFunc;
+  n: NFunc;
+}) {
+  const type = dataTypeToColumnTypes(attribution.data_type);
+
+  if (type === ColumnTypes.Photo) {
+    return '';
+  }
+
+  return formatResultColumnValue({
+    value: getAttributionValue(attribution),
+    type,
+    d,
+    n,
+  });
 }

@@ -78,12 +78,7 @@ import { cachedAttributionsFragment } from 'src/components/Attribution/cachedAtt
 import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
-import {
-  formatResultColumnValue,
-  dataTypeToColumnTypes,
-  getAttributionValue,
-} from 'src/utils/attributeUtils';
-import { ColumnTypes } from 'src/utils/columnTypes';
+import { formatAttributionValue } from 'src/utils/attributeUtils';
 import type { AttributeDataTypes } from 'src/graphql';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
@@ -460,15 +455,8 @@ watch(
 );
 
 function getValue(row: QueryResultCachedAttributions) {
-  const type = dataTypeToColumnTypes(row.data_type);
-  const value = getAttributionValue(row);
-
-  if (type === ColumnTypes.Photo) {
-    // photo is handled in the template
-    return '';
-  }
-
-  return formatResultColumnValue({ value, type, d, n });
+  // photo is handled in the template
+  return formatAttributionValue({ attribution: row, d, n });
 }
 
 const searchPlaceholder = computed(() => {

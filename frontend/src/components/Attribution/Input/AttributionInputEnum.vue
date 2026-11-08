@@ -6,8 +6,13 @@
     :options="visibleOptions"
     option-value="id"
     option-label="label"
+    :hide-bottom-space="!!$slots.hint"
     @update:model-value="(opt) => emit('update:modelValue', opt?.id ?? null)"
-  />
+  >
+    <template v-if="$slots.hint" #hint>
+      <slot name="hint"></slot>
+    </template>
+  </EntitySelect>
 </template>
 
 <script setup lang="ts">

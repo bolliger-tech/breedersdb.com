@@ -58,6 +58,7 @@ export const attributeFragment = graphql(`
     description
     data_type
     attribute_type
+    cardinality
     disabled
     default_value
     legend

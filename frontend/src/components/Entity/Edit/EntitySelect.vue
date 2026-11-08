@@ -22,7 +22,7 @@
       hide-selected
       :clearable="clearable"
       :loading="loading"
-      :hint="resolvedHint"
+      :hint="$slots.hint ? undefined : resolvedHint"
       :label="inlineLabel"
       :hide-bottom-space="hideBottomSpace"
       bottom-slots
@@ -46,6 +46,10 @@
 
       <template v-if="$slots.option" #option="option">
         <slot name="option" v-bind="option"></slot>
+      </template>
+
+      <template v-if="$slots.hint" #hint>
+        <slot name="hint"></slot>
       </template>
 
       <template v-if="$slots['after-options']" #after-options>

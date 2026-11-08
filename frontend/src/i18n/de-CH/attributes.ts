@@ -6,6 +6,7 @@ export const attributes = {
     attributeType: 'Attributtyp',
     defaultValue: 'Standardwert',
     legend: 'Legende',
+    cardinality: 'Wiederholung',
   },
   dataTypes: {
     text: 'Text',
@@ -22,6 +23,24 @@ export const attributes = {
     sample: 'Muster',
     treatment: 'Behandlung',
     other: 'Sonstiges',
+  },
+  cardinalities: {
+    repeatable: 'Wiederholbar',
+    uniqueBlock: 'Nur einmal – blockieren',
+    uniqueReplace: 'Nur einmal – ersetzen',
+  },
+  cardinalityHint:
+    'Ob ein Objekt mehr als einen Wert dieses Attributs haben kann',
+  cardinalityCaptions: {
+    repeatable: 'Du kannst dieses Attribut beliebig oft erfassen.',
+    uniqueBlock: {
+      base: 'Du kannst dieses Attribut nur einmal pro Objekt erfassen. {emphasis}.',
+      emphasis: 'Ein erneutes Erfassen wird abgelehnt',
+    },
+    uniqueReplace: {
+      base: 'Du kannst dieses Attribut nur einmal pro Objekt erfassen. Ein erneutes Erfassen {emphasis} (inklusive seiner Bemerkungen).',
+      emphasis: 'ersetzt den bestehenden Wert',
+    },
   },
   enumOptions: {
     label: 'Optionen',
@@ -56,6 +75,8 @@ export const attributes = {
   noDefaultValue: '(kein Standardwert)',
   dataTypeChangeNotAllowed:
     'Da dieses Attribut bereits verwendet wurde, ist eine Änderung des Datentyps nicht mehr möglich. Lösche zuerst die Attributionen oder erstelle ein neues Attribut mit dem gewünschten Datentyp.',
+  cardinalityChangeNotAllowed:
+    'Dieses Attribut kann nicht auf nur einmal beschränkt werden: {count} Objekt hat mehr als einen Wert davon. Entferne zuerst die Duplikate. | Dieses Attribut kann nicht auf nur einmal beschränkt werden: {count} Objekte haben mehr als einen Wert davon. Entferne zuerst die Duplikate.',
   invalidRatingConfig:
     'Ungültige Konfiguration. Bitte überprüfe die Minimal- und Maximalwerte.',
 };

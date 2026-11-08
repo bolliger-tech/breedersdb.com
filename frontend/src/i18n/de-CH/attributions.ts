@@ -68,6 +68,20 @@ export const attributions = {
       title: 'Anzahl',
     },
     sameAgainWarning: 'Dieses Formular enthält dieses Attribut mehrfach.',
+    uniqueOnce: 'nur einmal',
+    uniqueBlocked: {
+      base: 'Bereits erfasst am {date} von {author}. Attribut kann {once} vergeben werden und ist nicht überschreibbar ({blocking}).',
+      blocking: 'blockierend',
+    },
+    uniqueReplace: {
+      locked:
+        'Bereits erfasst am {date} von {author}. Attribut kann {once} vergeben werden.',
+      unlocked:
+        'Ein neuer Wert {replaces} «{value}» vom {date} und löscht seine Bemerkungen und Fotos.',
+      replaces: 'ersetzt',
+      replaceValue: 'Wert ersetzen',
+    },
+    uniqueRepeated: 'Dieses Attribut darf nur einmal ausgefüllt werden.',
     notes: 'Bemerkungen',
     addTextNote: 'Bemerkung hinzufügen',
     addPhotoNote: 'Foto hinzufügen',

@@ -45,13 +45,8 @@
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributeTypes } from 'src/graphql';
-import {
-  formatResultColumnValue,
-  dataTypeToColumnTypes,
-  getAttributionValue,
-} from 'src/utils/attributeUtils';
+import { formatAttributionValue } from 'src/utils/attributeUtils';
 import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
-import { ColumnTypes } from 'src/utils/columnTypes';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
@@ -210,14 +205,7 @@ const columns = [
 ];
 
 function getValue(row: CachedAttributionsFragment) {
-  const type = dataTypeToColumnTypes(row.data_type);
-  const value = getAttributionValue(row);
-
-  if (type === ColumnTypes.Photo) {
-    // photo is handled in the template
-    return '';
-  }
-
-  return formatResultColumnValue({ value, type, d, n });
+  // photo is handled in the template
+  return formatAttributionValue({ attribution: row, d, n });
 }
 </script>

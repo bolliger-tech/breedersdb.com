@@ -6,126 +6,154 @@
         }}<span v-if="required" style="color: var(--q-primary)">&nbsp;*</span>
       </span>
     </template>
+    <template v-if="$slots['label-action']" #label-action>
+      <slot name="label-action"></slot>
+    </template>
     <slot name="before"></slot>
 
-    <AttributionInputRating
-      v-if="attribute.data_type === 'RATING'"
-      :model-value="modelValue?.integer_value ?? null"
-      :validation="attribute.validation_rule"
-      :legend="attribute.legend"
-      @update:model-value="
-        (val: number | null) => updateModelValue({ integer_value: val })
-      "
-    />
-    <AttributionInputNumber
-      v-else-if="attribute.data_type === 'INTEGER'"
-      ref="integerInputRef"
-      :model-value="modelValue?.integer_value ?? null"
-      :validation="attribute.validation_rule"
-      @update:model-value="
-        (val: number | null) => updateModelValue({ integer_value: val })
-      "
-    />
-    <AttributionInputNumber
-      v-else-if="attribute.data_type === 'FLOAT'"
-      ref="floatInputRef"
-      :model-value="modelValue?.float_value ?? null"
-      :validation="attribute.validation_rule"
-      @update:model-value="
-        (val: number | null) => updateModelValue({ float_value: val })
-      "
-    />
-    <AttributionInputText
-      v-else-if="attribute.data_type === 'TEXT'"
-      ref="textInputRef"
-      :model-value="modelValue?.text_value ?? null"
-      :validation="{ maxLen: 2047, pattern: null }"
-      :additional-rules="[
-        (value: string | null) =>
-          (!textNote && !photoNote) ||
-          (value !== '' && value !== null) ||
-          t('attributions.add.notesMustHaveValue'),
-      ]"
-      @update:model-value="
-        (val: string | null) => updateModelValue({ text_value: val })
-      "
-    />
-    <AttributionInputDate
-      v-else-if="attribute.data_type === 'DATE'"
-      :model-value="modelValue?.date_value ?? null"
-      @update:model-value="
-        (val: string | null) => updateModelValue({ date_value: val })
-      "
-    />
-    <AttributionInputBoolean
-      v-else-if="attribute.data_type === 'BOOLEAN'"
-      :model-value="modelValue?.boolean_value ?? null"
-      @update:model-value="
-        (val: boolean | null) => updateModelValue({ boolean_value: val })
-      "
-    />
-    <AttributionInputPhoto
-      v-else-if="attribute.data_type === 'PHOTO'"
-      :model-value="modelValue?.photo_value ?? null"
-      @update:model-value="
-        (val: File | string | null) => updateModelValue({ photo_value: val })
-      "
-    />
-    <AttributionInputEnum
-      v-else-if="attribute.data_type === 'ENUM'"
-      ref="enumInputRef"
-      :options="attribute.enum_options"
-      :model-value="modelValue?.attribute_enum_option_id ?? null"
-      @update:model-value="
-        (val: number | null) =>
-          updateModelValue({ attribute_enum_option_id: val })
-      "
-    />
-
-    <div v-if="attribute.description" class="q-mt-sm pre-line">
-      {{ attribute.description }}
-    </div>
-
-    <template v-if="!hideNotes">
-      <AttributionInputNote
-        ref="noteInputRef"
-        v-model:photo-note="photoNote"
-        v-model:text-note="textNote"
-        :allow-text-note="true"
-        :allow-photo-note="attribute.data_type !== 'PHOTO'"
-        :disabled="hasNoValue"
+    <div
+      :inert="!!disable"
+      :aria-disabled="!!disable"
+      :class="{ 'attribution-input--disabled-controls': disable }"
+    >
+      <AttributionInputRating
+        v-if="attribute.data_type === 'RATING'"
+        :model-value="shownValue?.integer_value ?? null"
+        :validation="attribute.validation_rule"
+        :legend="attribute.legend"
+        @update:model-value="
+          (val: number | null) => updateModelValue({ integer_value: val })
+        "
       />
+      <AttributionInputNumber
+        v-else-if="attribute.data_type === 'INTEGER'"
+        ref="integerInputRef"
+        :model-value="shownValue?.integer_value ?? null"
+        :validation="attribute.validation_rule"
+        @update:model-value="
+          (val: number | null) => updateModelValue({ integer_value: val })
+        "
+      >
+        <template v-if="$slots.hint" #hint>
+          <slot name="hint"></slot>
+        </template>
+      </AttributionInputNumber>
+      <AttributionInputNumber
+        v-else-if="attribute.data_type === 'FLOAT'"
+        ref="floatInputRef"
+        :model-value="shownValue?.float_value ?? null"
+        :validation="attribute.validation_rule"
+        @update:model-value="
+          (val: number | null) => updateModelValue({ float_value: val })
+        "
+      >
+        <template v-if="$slots.hint" #hint>
+          <slot name="hint"></slot>
+        </template>
+      </AttributionInputNumber>
+      <AttributionInputText
+        v-else-if="attribute.data_type === 'TEXT'"
+        ref="textInputRef"
+        :model-value="shownValue?.text_value ?? null"
+        :validation="{ maxLen: 2047, pattern: null }"
+        :additional-rules="[
+          (value: string | null) =>
+            (!textNote && !photoNote) ||
+            (value !== '' && value !== null) ||
+            t('attributions.add.notesMustHaveValue'),
+        ]"
+        @update:model-value="
+          (val: string | null) => updateModelValue({ text_value: val })
+        "
+      >
+        <template v-if="$slots.hint" #hint>
+          <slot name="hint"></slot>
+        </template>
+      </AttributionInputText>
+      <AttributionInputDate
+        v-else-if="attribute.data_type === 'DATE'"
+        :model-value="shownValue?.date_value ?? null"
+        @update:model-value="
+          (val: string | null) => updateModelValue({ date_value: val })
+        "
+      />
+      <AttributionInputBoolean
+        v-else-if="attribute.data_type === 'BOOLEAN'"
+        :model-value="shownValue?.boolean_value ?? null"
+        @update:model-value="
+          (val: boolean | null) => updateModelValue({ boolean_value: val })
+        "
+      />
+      <AttributionInputPhoto
+        v-else-if="attribute.data_type === 'PHOTO'"
+        :model-value="shownValue?.photo_value ?? null"
+        @update:model-value="
+          (val: File | string | null) => updateModelValue({ photo_value: val })
+        "
+      />
+      <AttributionInputEnum
+        v-else-if="attribute.data_type === 'ENUM'"
+        ref="enumInputRef"
+        :options="attribute.enum_options"
+        :model-value="shownValue?.attribute_enum_option_id ?? null"
+        @update:model-value="
+          (val: number | null) =>
+            updateModelValue({ attribute_enum_option_id: val })
+        "
+      >
+        <template v-if="$slots.hint" #hint>
+          <slot name="hint"></slot>
+        </template>
+      </AttributionInputEnum>
+      <div v-if="$slots.hint && !hasFieldHint" class="attribution-input__hint">
+        <slot name="hint"></slot>
+      </div>
 
-      <q-dialog v-model="confirm">
-        <q-card>
-          <q-card-section>
-            <BaseMessage
-              type="warning"
-              :message="t('attributions.add.clearAttribute')"
-              icon-size="xl"
-            />
-          </q-card-section>
+      <div v-if="attribute.description" class="q-mt-sm pre-line">
+        {{ attribute.description }}
+      </div>
 
-          <q-card-actions align="right">
-            <q-btn
-              v-close-popup
-              flat
-              :label="t('base.cancel')"
-              color="primary"
-            />
-            <q-btn
-              flat
-              :label="t('base.delete')"
-              color="negative"
-              @click="
-                clearModelValue();
-                confirm = false;
-              "
-            />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-    </template>
+      <template v-if="!hideNotes">
+        <AttributionInputNote
+          ref="noteInputRef"
+          v-model:photo-note="photoNote"
+          v-model:text-note="textNote"
+          :allow-text-note="true"
+          :allow-photo-note="attribute.data_type !== 'PHOTO'"
+          :disabled="hasNoValue"
+        />
+
+        <q-dialog v-model="confirm">
+          <q-card>
+            <q-card-section>
+              <BaseMessage
+                type="warning"
+                :message="t('attributions.add.clearAttribute')"
+                icon-size="xl"
+              />
+            </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn
+                v-close-popup
+                flat
+                :label="t('base.cancel')"
+                color="primary"
+              />
+              <q-btn
+                flat
+                :label="t('base.delete')"
+                color="negative"
+                @click="
+                  clearModelValue();
+                  confirm = false;
+                "
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+      </template>
+    </div>
   </BaseInputLabel>
 </template>
 
@@ -151,6 +179,9 @@ export interface AttributionInputProps {
   exceptional: boolean;
   required: boolean;
   hideNotes?: boolean;
+  disable?: boolean;
+  // shown instead of the model value, e.g. an existing value that blocks input
+  displayValue?: AttributionInputValue;
 }
 
 export type AttributionInputValue =
@@ -177,9 +208,18 @@ const modelValue = defineModel<AttributionInputValue>({
 
 defineSlots<{
   before: Slot;
+  hint: Slot;
+  'label-action': Slot;
 }>();
 
 defineExpose({ validate, focus: focusInvalid });
+
+// these inputs show the hint in the bottom row of their Quasar field
+const hasFieldHint = computed(() =>
+  ['INTEGER', 'FLOAT', 'TEXT', 'ENUM'].includes(props.attribute.data_type),
+);
+
+const shownValue = computed(() => props.displayValue ?? modelValue.value);
 
 const photoNote = computed({
   get: () => modelValue.value?.photo_note ?? null,
@@ -341,6 +381,10 @@ const enumInputRef = ref<InstanceType<typeof AttributionInputEnum> | null>(
 );
 
 async function validate() {
+  // a disabled input shows an existing value that isn't saved, and may no
+  // longer match a validation rule changed since
+  if (props.disable) return true;
+
   let valueIsValid: Promise<boolean> = Promise.resolve(true);
 
   switch (props.attribute.data_type) {
@@ -394,3 +438,30 @@ function focusInvalid() {
   }
 }
 </script>
+
+<style scoped lang="scss">
+// dims only the controls, unlike Quasar's .disabled, so the hint stays readable
+.attribution-input--disabled-controls {
+  cursor: not-allowed;
+
+  :deep(.q-field__control),
+  :deep(.q-toggle),
+  :deep(.q-date),
+  :deep(.attribute-form-input-photo),
+  :deep(.q-btn) {
+    opacity: 0.6;
+  }
+}
+
+// mimics the bottom row of a dense Quasar field
+.attribution-input__hint {
+  font-size: 11px;
+  line-height: 1;
+  padding-top: 8px;
+  color: rgba(0, 0, 0, 0.54);
+
+  .body--dark & {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+</style>

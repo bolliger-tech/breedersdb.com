@@ -53,7 +53,6 @@
 import { resizeImageFile } from 'src/utils/imageResizer';
 import { watch, ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { hashFile } from 'src/composables/useFileUploader';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import type { QFile } from 'quasar';
 import { getImageUrlRelative } from 'src/utils/imageUtils';
@@ -119,19 +118,7 @@ async function updateModelValue(file: File | null) {
     processing.value = false;
   }
 
-  if (!resizedFile) {
-    modelValue.value = null;
-    return;
-  }
-
-  // if this fails something went terribly wrong. so let it throw
-  const fileHash = await hashFile(resizedFile);
-
-  // create new file with the final name
-  modelValue.value = new File([resizedFile], `${fileHash}.jpg`, {
-    type: 'image/jpeg',
-  });
-
+  modelValue.value = resizedFile;
   processing.value = false;
 }
 

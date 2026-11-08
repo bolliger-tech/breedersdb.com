@@ -6,9 +6,7 @@
     tag="span"
     class="attribution-add-collision-hint"
   >
-    <template #date>{{
-      d(collision.existingValue.date_attributed, 'Ymd')
-    }}</template>
+    <template #date>{{ date }}</template>
     <template #author>{{ collision.existingValue.author }}</template>
     <template #once
       ><strong>{{ t('attributions.add.uniqueBlocked.once') }}</strong></template
@@ -19,25 +17,39 @@
       }}</strong></template
     >
   </i18n-t>
-  <BaseMessage
-    v-else
-    type="warning"
-    class="q-mb-sm attribution-add-collision-hint"
+  <i18n-t
+    v-else-if="locked"
+    keypath="attributions.add.uniqueReplace.locked"
+    scope="global"
+    tag="span"
+    class="attribution-add-collision-hint"
   >
-    {{
-      t('attributions.add.uniqueReplaced', {
-        date: d(collision.existingValue.date_attributed, 'Ymd'),
-        author: collision.existingValue.author,
-        value,
-      })
-    }}
-  </BaseMessage>
+    <template #date>{{ date }}</template>
+    <template #author>{{ collision.existingValue.author }}</template>
+    <template #once
+      ><strong>{{ t('attributions.add.uniqueReplace.once') }}</strong></template
+    >
+  </i18n-t>
+  <i18n-t
+    v-else
+    keypath="attributions.add.uniqueReplace.unlocked"
+    scope="global"
+    tag="span"
+    class="attribution-add-collision-hint"
+  >
+    <template #replaces
+      ><strong>{{
+        t('attributions.add.uniqueReplace.replaces')
+      }}</strong></template
+    >
+    <template #value>{{ value }}</template>
+    <template #date>{{ date }}</template>
+  </i18n-t>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import type { Collision } from './findCollisions';
 import {
@@ -49,11 +61,16 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 
 export interface AttributionAddCollisionHintProps {
   collision: Collision<CachedAttributionsFragment>;
+  locked: boolean;
 }
 
 const props = defineProps<AttributionAddCollisionHintProps>();
 
 const { t, d, n } = useI18n();
+
+const date = computed(() =>
+  d(props.collision.existingValue.date_attributed, 'Ymd'),
+);
 
 const value = computed(() => {
   const type = dataTypeToColumnTypes(props.collision.existingValue.data_type);

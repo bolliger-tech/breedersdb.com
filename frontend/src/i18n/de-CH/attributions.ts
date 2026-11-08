@@ -73,8 +73,15 @@ export const attributions = {
       once: 'nur einmal',
       blocking: 'blockierend',
     },
-    uniqueReplaced:
-      'Bereits erfasst am {date} von {author}: {value}. Ein neuer Wert ersetzt ihn und löscht seine Bemerkungen und Fotos. Leer lassen, um den bestehenden Wert zu behalten.',
+    uniqueReplace: {
+      locked:
+        'Bereits erfasst am {date} von {author}. Attribut kann {once} vergeben werden.',
+      once: 'nur einmal',
+      unlocked:
+        'Ein neuer Wert {replaces} «{value}» vom {date} und löscht seine Bemerkungen und Fotos.',
+      replaces: 'ersetzt',
+      replaceValue: 'Wert ersetzen',
+    },
     uniqueRepeated: 'Dieses Attribut darf nur einmal ausgefüllt werden.',
     notes: 'Bemerkungen',
     addTextNote: 'Bemerkung hinzufügen',

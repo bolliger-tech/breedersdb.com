@@ -1,18 +1,21 @@
 <template>
   <div class="entity-label q-my-sm">
-    <div
-      v-if="label || $slots.label"
-      class="text-weight-bold q-mb-xs row align-center"
-    >
-      <slot name="label">
-        {{ label }}
-      </slot>
-      <template v-if="explainer || $slots.explainer">
-        &nbsp;
-        <BaseExplainer>
-          <slot name="explainer">{{ explainer }}</slot>
-        </BaseExplainer>
-      </template>
+    <!-- the action moves below the label if both don't fit on one line -->
+    <div v-if="label || $slots.label" class="q-mb-xs row items-center">
+      <div class="text-weight-bold row align-center">
+        <slot name="label">
+          {{ label }}
+        </slot>
+        <template v-if="explainer || $slots.explainer">
+          &nbsp;
+          <BaseExplainer>
+            <slot name="explainer">{{ explainer }}</slot>
+          </BaseExplainer>
+        </template>
+      </div>
+      <div v-if="$slots['label-action']" class="q-ml-auto q-pl-sm">
+        <slot name="label-action"></slot>
+      </div>
     </div>
     <slot></slot>
   </div>
@@ -37,6 +40,7 @@ defineSlots<{
   default: Slot;
   label: Slot;
   explainer: Slot;
+  'label-action': Slot;
 }>();
 </script>
 

@@ -6,6 +6,9 @@
         }}<span v-if="required" style="color: var(--q-primary)">&nbsp;*</span>
       </span>
     </template>
+    <template v-if="$slots['label-action']" #label-action>
+      <slot name="label-action"></slot>
+    </template>
     <slot name="before"></slot>
 
     <div
@@ -211,6 +214,7 @@ const modelValue = defineModel<AttributionInputValue>({
 defineSlots<{
   before: Slot;
   hint: Slot;
+  'label-action': Slot;
 }>();
 
 defineExpose({ validate, focus: focusInvalid });

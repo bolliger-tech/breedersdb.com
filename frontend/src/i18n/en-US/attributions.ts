@@ -87,8 +87,15 @@ export const attributions = {
       once: 'only once',
       blocking: 'blocking',
     },
-    uniqueReplaced:
-      'Already recorded on {date} by {author}: {value}. A new value replaces it and deletes its notes and photos. Leave empty to keep the existing value.',
+    uniqueReplace: {
+      locked:
+        'Already recorded on {date} by {author}. The attribute can be assigned {once}.',
+      once: 'only once',
+      unlocked:
+        'A new value {replaces} “{value}” from {date} and deletes its notes and photos.',
+      replaces: 'replaces',
+      replaceValue: 'Replace value',
+    },
     uniqueRepeated: 'This attribute may only be filled once.',
 
     notes: 'Notes',

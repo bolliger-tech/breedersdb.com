@@ -14,15 +14,14 @@
         :attribute="field.attribute"
         :exceptional="field.exceptional"
         :required="field.required"
-        :disable="isBlocked(field.attribute.id)"
-        :unmute-hint="isBlocked(field.attribute.id)"
-        :display-value="blockingValue(field.attribute)"
+        :key="String(isLocked(field.priority))"
+        :disable="isLocked(field.priority)"
+        :unmute-hint="isLocked(field.priority)"
+        :display-value="lockedValue(field)"
       >
         <template
           v-if="
             count(field.attribute.id) > 1 ||
-            (collisions?.has(field.attribute.id) &&
-              !isBlocked(field.attribute.id)) ||
             repeatedUniquePriorities?.has(field.priority)
           "
           #before
@@ -37,17 +36,33 @@
             type="error"
             :message="t('attributions.add.uniqueRepeated')"
           />
-          <AttributionAddCollisionHint
-            v-if="
-              collisions?.has(field.attribute.id) &&
-              !isBlocked(field.attribute.id)
+        </template>
+        <template
+          v-if="collisions?.get(field.attribute.id)?.behavior === 'REPLACE'"
+          #label-action
+        >
+          <q-btn
+            color="primary"
+            flat
+            dense
+            size="sm"
+            class="attribution-add-replace-btn"
+            :label="
+              isLocked(field.priority)
+                ? t('attributions.add.uniqueReplace.replaceValue')
+                : t('base.cancel')
             "
-            :collision="collisions.get(field.attribute.id)!"
+            @click="
+              isLocked(field.priority)
+                ? emit('unlock', field.priority)
+                : emit('lock', field.priority)
+            "
           />
         </template>
-        <template v-if="isBlocked(field.attribute.id)" #hint>
+        <template v-if="collisions?.has(field.attribute.id)" #hint>
           <AttributionAddCollisionHint
-            :collision="collisions!.get(field.attribute.id)!"
+            :collision="collisions.get(field.attribute.id)!"
+            :locked="isLocked(field.priority)"
           />
         </template>
       </AttributionInput>
@@ -76,10 +91,16 @@ export interface AttributionAddFormFieldListProps {
   }[];
   noBottomBorder?: boolean;
   collisions?: Map<number, Collision<CachedAttributionsFragment>>;
+  lockedPriorities?: Set<number>;
   repeatedUniquePriorities?: Set<number>;
 }
 
 const props = defineProps<AttributionAddFormFieldListProps>();
+
+const emit = defineEmits<{
+  unlock: [priority: number];
+  lock: [priority: number];
+}>();
 
 const inputRefs = defineModel<{ [key: number]: InputRef | null }>('inputRefs');
 const modelValue = defineModel<{ [key: number]: AttributionInputValue }>({
@@ -90,13 +111,16 @@ function count(fieldId: number): number {
   return props.fields.filter((field) => field.attribute.id === fieldId).length;
 }
 
-function isBlocked(attributeId: number): boolean {
-  return props.collisions?.get(attributeId)?.behavior === 'BLOCK';
+function isLocked(priority: number): boolean {
+  return !!props.lockedPriorities?.has(priority);
 }
 
-// the existing value that blocks the input, in the shape of an input value
-function blockingValue(attribute: AttributeFragment): AttributionInputValue {
-  if (!isBlocked(attribute.id)) return undefined;
+// the existing value that locks the input, in the shape of an input value
+function lockedValue({
+  priority,
+  attribute,
+}: AttributionAddFormFieldListProps['fields'][number]): AttributionInputValue {
+  if (!isLocked(priority)) return undefined;
 
   const existing = props.collisions!.get(attribute.id)!.existingValue;
 

@@ -20,7 +20,10 @@
       v-model:input-refs="attributeFormInputRefs"
       :fields="attributeInputs"
       :collisions="collisions"
+      :locked-priorities="lockedPriorities"
       :repeated-unique-priorities="repeatedUniquePriorities"
+      @unlock="unlock"
+      @lock="lock"
     />
 
     <AttributionAddFormAddInput @add="addExtraAttribute" />
@@ -224,24 +227,43 @@ const collisions = computed(() =>
   }),
 );
 
-// values of blocked attributes would be rejected by the database
-const blockedPriorities = computed(
+// replacing values must be unlocked explicitly
+const unlockedPriorities = ref(new Set<number>());
+
+// values of locked attributes are not saved: the database would reject
+// blocked ones, and replacing ones need to be unlocked first
+const lockedPriorities = computed(
   () =>
     new Set(
       attributeInputs.value
-        .filter(
-          (field) =>
-            collisions.value.get(field.attribute.id)?.behavior === 'BLOCK',
-        )
+        .filter((field) => {
+          const behavior = collisions.value.get(field.attribute.id)?.behavior;
+          return (
+            behavior === 'BLOCK' ||
+            (behavior === 'REPLACE' &&
+              !unlockedPriorities.value.has(field.priority))
+          );
+        })
         .map((field) => field.priority),
     ),
 );
+
+async function unlock(priority: number) {
+  unlockedPriorities.value.add(priority);
+  await nextTick();
+  attributeFormInputRefs.value[priority]?.focus();
+}
+
+function lock(priority: number) {
+  unlockedPriorities.value.delete(priority);
+  attributionValues.value[priority] = undefined;
+}
 
 // the database accepts only one value of a unique attribute per attribution
 const repeatedUniquePriorities = computed(() =>
   findRepeatedUniqueValues({
     fields: attributeInputs.value.filter(
-      (field) => !blockedPriorities.value.has(field.priority),
+      (field) => !lockedPriorities.value.has(field.priority),
     ),
     values: attributionValues.value,
   }),
@@ -249,7 +271,7 @@ const repeatedUniquePriorities = computed(() =>
 
 const submittableValues = computed(() =>
   Object.entries(attributionValues.value)
-    .filter(([priority]) => !blockedPriorities.value.has(Number(priority)))
+    .filter(([priority]) => !lockedPriorities.value.has(Number(priority)))
     .map(([, av]) => av),
 );
 
@@ -266,7 +288,7 @@ const hasValues = computed(() =>
 const requiredFieldsWithoutValue = computed(() =>
   attributeInputs.value
     .filter((field) => field.required)
-    .filter((field) => !blockedPriorities.value.has(field.priority))
+    .filter((field) => !lockedPriorities.value.has(field.priority))
     .filter((field) => {
       const value = attributionValues.value[field.priority];
       return !value || !attributionValueHasValue(value);

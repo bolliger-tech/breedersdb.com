@@ -196,7 +196,7 @@ begin
     end if;
 
     -- A later row of the same statement may have replaced (deleted) this value before this
-    -- deferred after-insert trigger runs (UNIQUE_REPLACE). Don't cache a value that is gone.
+    -- after-insert trigger runs at the end of the statement (UNIQUE_REPLACE). Don't cache a value that is gone.
     if tg_op = 'INSERT' and not exists (select from attribution_values where id = new.id) then
         return new;
     end if;

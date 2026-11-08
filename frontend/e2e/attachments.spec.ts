@@ -21,6 +21,9 @@ import {
 const downloadName = (attribute: string, entity: string, date: string) =>
   `${attribute.replace(/\s+/g, '-')}_${entity.replace(/\s+/g, '-')}_${date}`;
 
+const attachmentLink = (scope: Page | Locator) =>
+  scope.locator('a[href*="/api/assets/attachments/"]');
+
 test('attachments are uploaded and linked on the entity view', async ({
   page,
   request,
@@ -149,9 +152,7 @@ test('analyze links attachments under their generated name', async ({
   await addResultColumn(page, attribute.name, `Attribute > ${attribute.name}`);
 
   const name = `${downloadName(attribute.name, cultivar.display_name, '2025-01-01')}.pdf`;
-  const link = listRow(page, cultivar.display_name).getByRole('link', {
-    name,
-  });
+  const link = attachmentLink(listRow(page, cultivar.display_name));
   await expect(link).toHaveAttribute(
     'href',
     `/api/assets/attachments/${encodeURIComponent(name)}?file=${fileName}`,
@@ -174,9 +175,6 @@ async function recordAttachment(
     'Attribution saved.',
   );
 }
-
-const attachmentLink = (scope: Page | Locator) =>
-  scope.locator('a[href*="/api/assets/attachments/"]');
 
 test('the edit modal keeps, replaces and clears an attachment', async ({
   page,

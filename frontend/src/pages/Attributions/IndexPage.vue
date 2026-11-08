@@ -54,6 +54,7 @@
                 :attribute-name="cellProps.row.attribute_name"
                 :entity-name="getAttributedEntityName(cellProps.row)"
                 :date-attributed="cellProps.row.date_attributed"
+                button-size="xs"
               />
             </template>
             <template v-else>{{ n2semicolon(cellProps.value) }}</template>

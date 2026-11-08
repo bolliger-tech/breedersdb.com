@@ -1,13 +1,24 @@
 <template>
-  <a :href="url" target="_blank" rel="noopener" @click.stop>
-    <q-icon :name="getAttachmentIcon(fileName)" class="q-mr-xs" />{{
-      displayName
-    }}
-  </a>
+  <q-btn
+    flat
+    dense
+    :icon="getAttachmentIcon(fileName)"
+    padding="none"
+    :round="false"
+    :size="buttonSize || 'sm'"
+    color="primary"
+    :label="t('base.show')"
+    :href="url"
+    target="_blank"
+    rel="noopener"
+    @click.stop
+  />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import type { QBtnProps } from 'quasar';
+import { useI18n } from 'src/composables/useI18n';
 import {
   getAttachmentFileName,
   getAttachmentIcon,
@@ -19,16 +30,17 @@ export interface AttributionAttachmentLinkProps {
   attributeName: string;
   entityName?: string | undefined;
   dateAttributed: string;
+  buttonSize?: QBtnProps['size'];
 }
 
 const props = defineProps<AttributionAttachmentLinkProps>();
 
-const displayName = computed(() => getAttachmentFileName(props));
+const { t } = useI18n();
 
 const url = computed(() =>
   getAttachmentUrlRelative({
     fileName: props.fileName,
-    desiredFileName: displayName.value,
+    desiredFileName: getAttachmentFileName(props),
   }),
 );
 </script>

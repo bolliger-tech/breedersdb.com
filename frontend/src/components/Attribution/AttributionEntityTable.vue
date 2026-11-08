@@ -1,6 +1,6 @@
 <template>
   <div class="row bg-black rounded-borders justify-center q-mb-md">
-    <EntityViewAttributionImage
+    <AttributionPhoto
       v-if="attribution.data_type === 'PHOTO' && attribution.text_value"
       :file-name="attribution.text_value"
       :attribution="attribution"
@@ -38,7 +38,7 @@
       :label="t('attributions.columns.photoNote')"
       render-empty
     >
-      <EntityViewAttributionImage
+      <AttributionPhoto
         :file-name="attribution.photo_note"
         :attribution="attribution"
       />
@@ -101,7 +101,7 @@ import {
   getAttributedEntityName,
 } from 'src/utils/attributeUtils';
 import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
-import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
+import AttributionPhoto from 'src/components/Attribution/AttributionPhoto.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import { computed } from 'vue';
 import { imageSizes } from 'src/utils/imageSizes';

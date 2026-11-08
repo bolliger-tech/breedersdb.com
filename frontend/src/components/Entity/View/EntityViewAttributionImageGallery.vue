@@ -10,7 +10,7 @@
         )"
         :key="image.id"
       >
-        <EntityViewAttributionImage
+        <AttributionPhoto
           :file-name="(image.photo_note || image.text_value)!"
           :attribution="image"
           preview
@@ -38,8 +38,8 @@
 <script setup lang="ts">
 import { useI18n } from 'src/composables/useI18n';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
-import type { EntityViewAttributionImageProps } from './EntityViewAttributionImage.vue';
-import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
+import type { AttributionPhotoProps } from 'src/components/Attribution/AttributionPhoto.vue';
+import AttributionPhoto from 'src/components/Attribution/AttributionPhoto.vue';
 import { ref } from 'vue';
 import { useTimeout } from 'quasar';
 import { onBeforeUnmount } from 'vue';
@@ -55,8 +55,7 @@ defineProps<EntityViewAttributionsImageGalleryProps>();
 const { t } = useI18n();
 
 const open = ref<number | null>(null);
-const transition =
-  ref<EntityViewAttributionImageProps['transition']>(undefined);
+const transition = ref<AttributionPhotoProps['transition']>(undefined);
 
 const transitionTimeout = useTimeout();
 

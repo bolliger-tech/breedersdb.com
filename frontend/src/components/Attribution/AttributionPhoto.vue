@@ -123,7 +123,7 @@ import { imageSizes } from 'src/utils/imageSizes';
 
 const DEFAULT_PREVIEW_HEIGHT = imageSizes.h200.height;
 
-export interface EntityViewAttributionImageProps {
+export interface AttributionPhotoProps {
   fileName: string;
   attribution: CachedAttributionsFragment;
   preview?: boolean;
@@ -133,7 +133,7 @@ export interface EntityViewAttributionImageProps {
   buttonSize?: QBtnProps['size'];
 }
 
-const props = defineProps<EntityViewAttributionImageProps>();
+const props = defineProps<AttributionPhotoProps>();
 defineEmits<{
   next: [];
   previous: [];

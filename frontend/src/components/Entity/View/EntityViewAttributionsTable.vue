@@ -16,32 +16,15 @@
 
     <template #body-cell-value="cellProps">
       <q-td key="value" :props="cellProps">
-        <template v-if="cellProps.row.data_type === 'PHOTO'">
-          <EntityViewAttributionImage
-            :file-name="cellProps.row.text_value"
-            :attribution="cellProps.row"
-          />
-        </template>
-
-        <template v-else-if="cellProps.row.data_type === 'ATTACHMENT'">
-          <AttributionAttachmentLink
-            :file-name="cellProps.row.text_value"
-            :attribute-name="cellProps.row.attribute_name"
-            :entity-name="getAttributedEntityName(cellProps.row)"
-            :date-attributed="cellProps.row.date_attributed"
-            :attribution-id="cellProps.row.id"
-          />
-        </template>
-
-        <template v-else>
+        <AttributionFileValue :attribution="cellProps.row">
           {{ cellProps.value }}
-        </template>
+        </AttributionFileValue>
       </q-td>
     </template>
 
     <template #body-cell-photo_note="cellProps">
       <q-td key="photo_note" :props="cellProps">
-        <EntityViewAttributionImage
+        <AttributionPhoto
           v-if="cellProps.row.photo_note"
           :file-name="cellProps.row.photo_note"
           :attribution="cellProps.row"
@@ -55,12 +38,9 @@
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { useI18n } from 'src/composables/useI18n';
 import type { AttributeTypes } from 'src/graphql';
-import {
-  formatAttributionValue,
-  getAttributedEntityName,
-} from 'src/utils/attributeUtils';
-import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
-import EntityViewAttributionImage from './EntityViewAttributionImage.vue';
+import { formatAttributionValue } from 'src/utils/attributeUtils';
+import AttributionFileValue from 'src/components/Attribution/AttributionFileValue.vue';
+import AttributionPhoto from 'src/components/Attribution/AttributionPhoto.vue';
 import EntityRelatedTable from 'src/components/Entity/EntityRelatedTable.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';

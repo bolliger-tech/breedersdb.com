@@ -1,7 +1,6 @@
 <template>
   <i18n-t
-    v-if="collision.behavior === 'BLOCK'"
-    keypath="attributions.add.uniqueBlocked.base"
+    :keypath="keypath"
     scope="global"
     tag="span"
     class="attribution-add-collision-hint"
@@ -9,41 +8,19 @@
     <template #date>{{ date }}</template>
     <template #author>{{ collision.existingValue.author }}</template>
     <template #once
-      ><strong>{{ t('attributions.add.uniqueBlocked.once') }}</strong></template
+      ><strong>{{ t('attributions.add.uniqueOnce') }}</strong></template
     >
     <template #blocking
       ><strong>{{
         t('attributions.add.uniqueBlocked.blocking')
       }}</strong></template
     >
-  </i18n-t>
-  <i18n-t
-    v-else-if="locked"
-    keypath="attributions.add.uniqueReplace.locked"
-    scope="global"
-    tag="span"
-    class="attribution-add-collision-hint"
-  >
-    <template #date>{{ date }}</template>
-    <template #author>{{ collision.existingValue.author }}</template>
-    <template #once
-      ><strong>{{ t('attributions.add.uniqueReplace.once') }}</strong></template
-    >
-  </i18n-t>
-  <i18n-t
-    v-else
-    keypath="attributions.add.uniqueReplace.unlocked"
-    scope="global"
-    tag="span"
-    class="attribution-add-collision-hint"
-  >
     <template #replaces
       ><strong>{{
         t('attributions.add.uniqueReplace.replaces')
       }}</strong></template
     >
     <template #value>{{ value }}</template>
-    <template #date>{{ date }}</template>
   </i18n-t>
 </template>
 
@@ -67,6 +44,15 @@ export interface AttributionAddCollisionHintProps {
 const props = defineProps<AttributionAddCollisionHintProps>();
 
 const { t, d, n } = useI18n();
+
+const keypath = computed(() => {
+  if (props.collision.behavior === 'BLOCK') {
+    return 'attributions.add.uniqueBlocked.base';
+  }
+  return props.locked
+    ? 'attributions.add.uniqueReplace.locked'
+    : 'attributions.add.uniqueReplace.unlocked';
+});
 
 const date = computed(() =>
   d(props.collision.existingValue.date_attributed, 'Ymd'),

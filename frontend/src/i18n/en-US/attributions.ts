@@ -82,15 +82,14 @@ export const attributions = {
 
     sameAgainWarning: 'This form contains this attribute multiple times.',
 
+    uniqueOnce: 'only once',
     uniqueBlocked: {
       base: 'Already recorded on {date} by {author}. The attribute can be assigned {once} and cannot be overwritten ({blocking}).',
-      once: 'only once',
       blocking: 'blocking',
     },
     uniqueReplace: {
       locked:
         'Already recorded on {date} by {author}. The attribute can be assigned {once}.',
-      once: 'only once',
       unlocked:
         'A new value {replaces} “{value}” from {date} and deletes its notes and photos.',
       replaces: 'replaces',

@@ -179,11 +179,13 @@ function addExtraAttribute(attribute: AttributeFragment) {
   };
 }
 
-const uniqueAttributeIds = computed(() =>
-  attributeInputs.value
+const uniqueAttributeIds = computed<number[]>((previous) => {
+  const ids = attributeInputs.value
     .filter((field) => field.attribute.cardinality !== 'REPEATABLE')
-    .map((field) => field.attribute.id),
-);
+    .map((field) => field.attribute.id);
+  // keep the previous array if unchanged, so the query below doesn't refetch
+  return previous?.join() === ids.join() ? previous : ids;
+});
 
 const existingUniqueValuesQuery = graphql(
   `

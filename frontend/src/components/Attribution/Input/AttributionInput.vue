@@ -14,10 +14,7 @@
     <div
       :inert="!!disable"
       :aria-disabled="!!disable"
-      :class="{
-        disabled: disable && !unmuteHint,
-        'attribution-input--disabled-controls': disable && unmuteHint,
-      }"
+      :class="{ 'attribution-input--disabled-controls': disable }"
     >
       <AttributionInputRating
         v-if="attribute.data_type === 'RATING'"
@@ -183,8 +180,6 @@ export interface AttributionInputProps {
   required: boolean;
   hideNotes?: boolean;
   disable?: boolean;
-  // when disabled, dim only the controls so the hint stays readable
-  unmuteHint?: boolean;
   // shown instead of the model value, e.g. an existing value that blocks input
   displayValue?: AttributionInputValue;
 }
@@ -445,7 +440,7 @@ function focusInvalid() {
 </script>
 
 <style scoped lang="scss">
-// Quasar's .disabled dims everything inside, the hint included
+// dims only the controls, unlike Quasar's .disabled, so the hint stays readable
 .attribution-input--disabled-controls {
   cursor: not-allowed;
 

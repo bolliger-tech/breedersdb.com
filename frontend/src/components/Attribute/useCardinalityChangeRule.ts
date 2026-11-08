@@ -1,7 +1,6 @@
-import { useClientHandle } from '@urql/vue';
-import { ref } from 'vue';
 import { graphql, type AttributeCardinalities } from 'src/graphql';
 import { useI18n } from 'src/composables/useI18n';
+import { useOneShotQuery } from 'src/composables/useOneShotQuery';
 
 // An attribute can only be made unique if no entity has more than one value
 // of it. The database enforces this too, but its message doesn't reach the
@@ -21,9 +20,8 @@ export function useCardinalityChangeRule({
     }
   `);
 
-  const { client } = useClientHandle();
+  const { query: queryOnce, fetching } = useOneShotQuery();
   const { t } = useI18n();
-  const fetching = ref(false);
 
   async function cardinalityChangeRule(
     cardinality: AttributeCardinalities | undefined,
@@ -36,11 +34,14 @@ export function useCardinalityChangeRule({
       return true;
     }
 
-    fetching.value = true;
-    const result = await client
-      .query(query, { id: attributeId }, { requestPolicy: 'network-only' })
-      .toPromise();
-    fetching.value = false;
+    const result = await queryOnce(
+      query,
+      { id: attributeId },
+      { requestPolicy: 'network-only' },
+    );
+
+    // torn down mid-check: there is no form left to keep from saving
+    if (!result) return true;
 
     if (result.error) {
       throw new Error(result.error.message);

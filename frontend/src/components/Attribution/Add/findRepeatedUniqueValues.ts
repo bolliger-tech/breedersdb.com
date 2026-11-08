@@ -27,14 +27,15 @@ export function findRepeatedUniqueValues({
     );
   });
 
+  const fillCounts = new Map<number, number>();
+  for (const field of filledUniqueFields) {
+    const id = field.attribute.id;
+    fillCounts.set(id, (fillCounts.get(id) ?? 0) + 1);
+  }
+
   return new Set(
     filledUniqueFields
-      .filter(
-        (field) =>
-          filledUniqueFields.filter(
-            (other) => other.attribute.id === field.attribute.id,
-          ).length > 1,
-      )
+      .filter((field) => fillCounts.get(field.attribute.id)! > 1)
       .map((field) => field.priority),
   );
 }

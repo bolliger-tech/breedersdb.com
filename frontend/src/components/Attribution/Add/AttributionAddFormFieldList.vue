@@ -16,16 +16,9 @@
         :required="field.required"
         :key="String(isLocked(field.priority))"
         :disable="isLocked(field.priority)"
-        :unmute-hint="isLocked(field.priority)"
         :display-value="lockedValues.get(field.priority)"
       >
-        <template
-          v-if="
-            count(field.attribute.id) > 1 ||
-            repeatedUniquePriorities?.has(field.priority)
-          "
-          #before
-        >
+        <template #before>
           <BaseMessage
             v-if="count(field.attribute.id) > 1"
             type="warning"
@@ -82,6 +75,7 @@ import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import AttributionAddCollisionHint from './AttributionAddCollisionHint.vue';
 import type { Collision } from './findCollisions';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
+import { cachedAttributionToInputValue } from 'src/components/Attribution/cachedAttributionToInputValue';
 
 export interface AttributionAddFormFieldListProps {
   fields: {
@@ -122,35 +116,15 @@ const lockedValues = computed(
     new Map(
       props.fields
         .filter((field) => isLocked(field.priority))
-        .map((field) => [field.priority, toLockedValue(field.attribute)]),
+        .map((field) => [
+          field.priority,
+          cachedAttributionToInputValue(
+            props.collisions!.get(field.attribute.id)!.existingValue,
+            field.attribute.enum_options,
+          ),
+        ]),
     ),
 );
-
-// the existing value that locks the input, in the shape of an input value
-function toLockedValue(attribute: AttributeFragment): AttributionInputValue {
-  const existing = props.collisions!.get(attribute.id)!.existingValue;
-
-  // cached attributions hold the photo file name and the enum option label
-  // in text_value
-  if (attribute.data_type === 'PHOTO') {
-    return { photo_value: existing.text_value };
-  }
-  if (attribute.data_type === 'ENUM') {
-    return {
-      attribute_enum_option_id:
-        attribute.enum_options.find((o) => o.label === existing.text_value)
-          ?.id ?? null,
-    };
-  }
-
-  return {
-    integer_value: existing.integer_value,
-    float_value: existing.float_value,
-    text_value: existing.text_value,
-    boolean_value: existing.boolean_value,
-    date_value: existing.date_value,
-  };
-}
 
 const { t } = useI18n();
 </script>

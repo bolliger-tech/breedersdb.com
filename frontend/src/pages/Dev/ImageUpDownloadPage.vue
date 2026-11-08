@@ -105,7 +105,11 @@ async function onSubmit() {
 
   try {
     const fileHash = await hashFile(resizedFile);
-    const response = await upload(resizedFile, fileHash, '/api/assets/upload');
+    const response = await upload(
+      resizedFile,
+      fileHash,
+      '/api/assets/upload/images',
+    );
     message.value = 'Upload successful 🎉';
     uploadedFile.value = response;
   } catch (error) {

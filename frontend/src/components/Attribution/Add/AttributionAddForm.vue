@@ -629,7 +629,7 @@ async function uploadFiles(
   for (const file of photos) {
     const hash = file.name.split('.').slice(0, -1).join('.');
     // may throw, must be caught by the caller
-    await upload(file, hash, '/api/assets/upload');
+    await upload(file, hash, '/api/assets/upload/images');
     uploadBytes.value.completed += file.size;
   }
 
@@ -639,7 +639,7 @@ async function uploadFiles(
     const { fileName } = await upload(
       file,
       hash,
-      '/api/assets/upload-attachment',
+      '/api/assets/upload/attachments',
     );
     attribution.text_value = fileName;
     uploadBytes.value.completed += file.size;

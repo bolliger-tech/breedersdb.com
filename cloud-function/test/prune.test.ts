@@ -26,22 +26,27 @@ function createStorage(files: { name: string; timeCreated: string }[]) {
   };
 }
 
-test('images prune lists the bucket root and ignores attachments', async () => {
+test('images prune lists images and keeps referenced ones', async () => {
   const storage = createStorage([
-    { name: `${a}.jpg`, timeCreated: old },
-    { name: `${b}.jpg`, timeCreated: old },
-    { name: `attachments/${c}.jpg`, timeCreated: old },
+    { name: `images/${a}.jpg`, timeCreated: old },
+    { name: `images/${b}.jpg`, timeCreated: old },
+    { name: `images/${c}.pdf`, timeCreated: old },
   ]);
+  let queried: string[] = [];
 
   const result = await pruneUnreferencedFiles({
     ...imagePruneConfig,
-    getReferenced: async () => [`${a}.jpg`],
+    getReferenced: async (fileNames: string[]) => {
+      queried = fileNames;
+      return [`${a}.jpg`];
+    },
     storage,
   });
 
-  assert.equal((storage.listOptions[0] as any).delimiter, '/');
-  assert.deepEqual(storage.deleted, [`${b}.jpg`]);
-  assert.deepEqual(result.deleted, [`${b}.jpg`]);
+  assert.equal((storage.listOptions[0] as any).prefix, 'images/');
+  assert.deepEqual(queried, [`${a}.jpg`, `${b}.jpg`]);
+  assert.deepEqual(storage.deleted, [`images/${b}.jpg`]);
+  assert.deepEqual(result.deleted, [`images/${b}.jpg`]);
 });
 
 test('attachments prune lists attachments and keeps referenced ones', async () => {
@@ -55,8 +60,8 @@ test('attachments prune lists attachments and keeps referenced ones', async () =
 
   await pruneUnreferencedFiles({
     ...attachmentPruneConfig,
-    getReferenced: async (references: string[]) => {
-      queried = references;
+    getReferenced: async (fileNames: string[]) => {
+      queried = fileNames;
       return [`${a}.pdf`, b];
     },
     storage,
@@ -69,8 +74,8 @@ test('attachments prune lists attachments and keeps referenced ones', async () =
 
 test('prune keeps files younger than 24 hours', async () => {
   const storage = createStorage([
-    { name: `${a}.jpg`, timeCreated: young },
-    { name: `${d}.jpg`, timeCreated: old },
+    { name: `images/${a}.jpg`, timeCreated: young },
+    { name: `images/${d}.jpg`, timeCreated: old },
     { name: `attachments/${c}.pdf`, timeCreated: young },
   ]);
 
@@ -85,7 +90,7 @@ test('prune keeps files younger than 24 hours', async () => {
     storage,
   });
 
-  assert.deepEqual(storage.deleted, [`${d}.jpg`]);
+  assert.deepEqual(storage.deleted, [`images/${d}.jpg`]);
   assert.ok(
     (storage.listOptions[0] as any).fields.includes('timeCreated'),
     'timeCreated must be requested',

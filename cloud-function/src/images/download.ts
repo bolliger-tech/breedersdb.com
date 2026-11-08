@@ -1,12 +1,10 @@
 import * as ff from '@google-cloud/functions-framework';
 import { getCachedImageAsBuffer } from '../lib/image';
+import { setImmutableCacheControl } from '../lib/cacheControl';
 import { imageCacheConfig } from './cache';
+import { IMAGE_FILE_NAME_REGEX } from './fileName';
 
-// must correspond to the PHOTO check in sanitize_and_validate_attribution_value()
-// the legacy photos have a 32 character filename, the new ones have 64
-const IMAGE_FILE_NAME_REGEX = /^(\w{32}|\w{64})\.(jpe?g|avif)$/;
-
-export async function handleDownload(req: ff.Request, res: ff.Response) {
+export async function handleImageDownload(req: ff.Request, res: ff.Response) {
   if (req.method !== 'GET') {
     return res.status(405).send('Method Not Allowed');
   }
@@ -17,7 +15,6 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
   if (!fileName) {
     return res.status(400).send('Bad Request: missing parameter "file"');
   }
-  // the bucket also holds attachments, which must not be served as images
   if (!IMAGE_FILE_NAME_REGEX.test(fileName)) {
     return res.status(400).send('Bad Request: invalid parameter "file"');
   }
@@ -54,16 +51,7 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
     return res.status(500).send('Internal Server Error');
   }
 
-  // headers
-  // https://cloud.google.com/cdn/docs/caching#expiration
-  // > By default, when the expiration time value exceeds 30 days (2,592,000 seconds),
-  //   Cloud CDN treats the expiration valueas if it were 2,592,000 seconds.
-  // > As an upper bound, cache entries that aren't accessed for 30 days are automatically evicted.
-  // => We still set max-age to 1 year to allow for longer caching in the browser
-  res.setHeader(
-    'Cache-Control',
-    `max-age=${60 * 60 * 24 * 365},public,immutable`,
-  ); // 1 year
+  setImmutableCacheControl(res);
   res.setHeader('Content-Type', 'image/jpeg');
 
   return res.send(buf);

@@ -17,19 +17,10 @@ export function pruneAttachments() {
   return pruneUnreferencedFiles(attachmentPruneConfig);
 }
 
-function getDbFileReference(fileName: string) {
-  const reference = fileName.slice(ATTACHMENT_STORAGE_PREFIX.length);
-  if (!ATTACHMENT_FILE_NAME_REGEX.test(reference)) {
-    console.warn('Ignoring file. File name does not match regex:', fileName);
-    return null;
-  }
-  return reference;
-}
-
-async function getReferenced(references: string[]) {
+async function getReferenced(fileNames: string[]) {
   const data = await fetchGraphQL({
     query: ReferencedAttachmentsQuery,
-    variables: { attachments: references },
+    variables: { attachments: fileNames },
   });
 
   if (data.errors) {
@@ -47,7 +38,7 @@ async function getReferenced(references: string[]) {
 
 export const attachmentPruneConfig: PruneConfig = {
   name: 'PruneAttachments',
-  listOptions: { prefix: ATTACHMENT_STORAGE_PREFIX },
-  getDbFileReference,
+  storagePrefix: ATTACHMENT_STORAGE_PREFIX,
+  fileNameRegex: ATTACHMENT_FILE_NAME_REGEX,
   getReferenced,
 };

@@ -6,6 +6,7 @@ import {
 } from './fileName';
 import { getContentHeaders } from './contentHeaders';
 import { parseRange } from './range';
+import { setImmutableCacheControl } from '../lib/cacheControl';
 
 const PATH_PREFIX = '/attachments/';
 
@@ -51,11 +52,7 @@ export async function handleAttachmentDownload(
     return res.status(416).end();
   }
 
-  // see images/download.ts for the caching rationale
-  res.setHeader(
-    'Cache-Control',
-    `max-age=${60 * 60 * 24 * 365},public,immutable`,
-  ); // 1 year
+  setImmutableCacheControl(res);
   for (const [name, value] of Object.entries(
     getContentHeaders(fileName, displayName),
   )) {

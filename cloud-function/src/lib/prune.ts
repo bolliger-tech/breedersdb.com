@@ -11,12 +11,11 @@ type ListedFile = { name: string; timeCreated: string };
 
 export type PruneConfig = {
   name: string;
-  // narrows down the listed files
-  listOptions: GetFilesOptions;
-  // maps a file name in the bucket to the value stored in the db, or null to ignore the file
-  getDbFileReference: (fileName: string) => string | null;
-  // returns the given references that are used in the db
-  getReferenced: (references: string[]) => Promise<string[]>;
+  storagePrefix: string;
+  // files not matching are ignored. must match the file names stored in the db.
+  fileNameRegex: RegExp;
+  // returns the given file names that are used in the db
+  getReferenced: (fileNames: string[]) => Promise<string[]>;
 };
 
 /**
@@ -24,8 +23,8 @@ export type PruneConfig = {
  */
 export async function pruneUnreferencedFiles({
   name,
-  listOptions,
-  getDbFileReference,
+  storagePrefix,
+  fileNameRegex,
   getReferenced,
   storage = { getFiles, deleteFile },
 }: PruneConfig & {
@@ -36,7 +35,7 @@ export async function pruneUnreferencedFiles({
   };
 }) {
   let queryArgs: GetFilesOptions = {
-    ...listOptions,
+    prefix: storagePrefix,
     fields: 'items(name,timeCreated),nextPageToken',
     autoPaginate: false,
     maxResults: BATCH_SIZE,
@@ -58,7 +57,7 @@ export async function pruneUnreferencedFiles({
       files
         .filter((f) => Date.parse(f.timeCreated) < createdBefore)
         .map((f) => f.name),
-      getDbFileReference,
+      (fileName) => getDbFileReference(fileName, storagePrefix, fileNameRegex),
       getReferenced,
       storage.deleteFile,
     );
@@ -75,6 +74,20 @@ export async function pruneUnreferencedFiles({
   }
 
   return { processed, deleted };
+}
+
+// maps a file name in the bucket to the value stored in the db, or null to ignore the file
+function getDbFileReference(
+  fileName: string,
+  storagePrefix: string,
+  fileNameRegex: RegExp,
+) {
+  const reference = fileName.slice(storagePrefix.length);
+  if (!fileNameRegex.test(reference)) {
+    console.warn('Ignoring file. File name does not match regex:', fileName);
+    return null;
+  }
+  return reference;
 }
 
 async function deleteNonReferenced(

@@ -1,11 +1,11 @@
 import { ErrorWithStatus } from '../lib/errors';
-import { FILE_NAME_REGEX } from './cache';
 import { fetchGraphQL } from '../lib/fetch';
 import { pruneUnreferencedFiles, type PruneConfig } from '../lib/prune';
 import {
   ReferencedImagesQuery,
   type ReferencedImagesQueryResponse,
 } from '../queries';
+import { IMAGE_FILE_NAME_REGEX, IMAGE_STORAGE_PREFIX } from './fileName';
 
 /**
  * Deletes images that are not referenced in the database (attribute_values).
@@ -14,21 +14,12 @@ export function pruneImages() {
   return pruneUnreferencedFiles(imagePruneConfig);
 }
 
-function getDbFileReference(fileName: string) {
-  const match = fileName.match(FILE_NAME_REGEX);
-  if (!match) {
-    console.warn('Ignoring file. File name does not match regex:', fileName);
-    return null;
-  }
-  return `${match[1]}.${match[2]}`;
-}
-
-async function getReferenced(references: string[]) {
+async function getReferenced(fileNames: string[]) {
   const data = await fetchGraphQL({
     query: ReferencedImagesQuery,
     variables: {
-      imagesCi: references,
-      imagesStr: references,
+      imagesCi: fileNames,
+      imagesStr: fileNames,
     },
   });
 
@@ -47,8 +38,7 @@ async function getReferenced(references: string[]) {
 
 export const imagePruneConfig: PruneConfig = {
   name: 'PruneImages',
-  // images are stored at the root of the bucket, skip the folders (e.g. attachments)
-  listOptions: { delimiter: '/' },
-  getDbFileReference,
+  storagePrefix: IMAGE_STORAGE_PREFIX,
+  fileNameRegex: IMAGE_FILE_NAME_REGEX,
   getReferenced,
 };

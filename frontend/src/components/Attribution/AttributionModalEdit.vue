@@ -200,7 +200,7 @@ async function saveEdit() {
     if (editedPhotoName !== initialPhotoName) {
       const hash = editedPhotoName.split('.').slice(0, -1).join('.');
       try {
-        await upload(photo, hash, '/api/assets/upload');
+        await upload(photo, hash, '/api/assets/upload/images');
       } catch (error) {
         if (error instanceof Error) {
           uploadError.value = error.message;
@@ -221,7 +221,7 @@ async function saveEdit() {
       const { fileName } = await upload(
         attachment_value,
         await hashFile(attachment_value),
-        '/api/assets/upload-attachment',
+        '/api/assets/upload/attachments',
       );
       editedAttributionValue.text_value = fileName;
     } catch (error) {

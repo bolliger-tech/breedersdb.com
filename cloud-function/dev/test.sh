@@ -118,7 +118,7 @@ response=$(curl -X POST \
   -H "x-file-hash: $image_hash" \
   -H "x-file-name: smoke.jpg" \
   --data-binary @"$image" \
-  http://localhost/api/assets/upload
+  http://localhost/api/assets/upload/images
 )
 echo "$response"
 image_url=$(echo "$response" | jq -r .url)
@@ -156,7 +156,7 @@ function upload_attachment() {
     -H "x-file-hash: $hash" \
     -H "x-file-name: $2" \
     --data-binary @"$1" \
-    http://localhost/api/assets/upload-attachment
+    http://localhost/api/assets/upload/attachments
 }
 
 function fail() {
@@ -306,8 +306,17 @@ status=$(upload_attachment "$attachment_dir/upload" "smoke.pdf" "$(printf '0%.0s
 [[ "$status" == "400" ]] || fail "Hash mismatch was not rejected: $status"
 echo "Hash mismatch rejected."
 
+echo "Uploading a non-JPEG file as image..."
+status=$(curl -X POST -sS -o /dev/null -w '%{http_code}' \
+  -H "Cookie: breedersdb.id.token=$token; breedersdb.user=$user" \
+  -H "x-file-hash: $(shasum -a 256 "$attachment_dir/upload" | cut -d' ' -f1)" \
+  --data-binary @"$attachment_dir/upload" \
+  http://localhost/api/assets/upload/images)
+[[ "$status" == "400" ]] || fail "Non-JPEG image was not rejected: $status"
+echo "Non-JPEG image rejected."
+
 echo "Uploading an attachment without authentication..."
-status=$(curl -X POST -sS -o /dev/null -w '%{http_code}' --data-binary @"$attachment_dir/upload" http://localhost/api/assets/upload-attachment)
+status=$(curl -X POST -sS -o /dev/null -w '%{http_code}' --data-binary @"$attachment_dir/upload" http://localhost/api/assets/upload/attachments)
 [[ "$status" == "401" ]] || fail "Unauthenticated upload was not rejected: $status"
 echo "Unauthenticated upload rejected."
 

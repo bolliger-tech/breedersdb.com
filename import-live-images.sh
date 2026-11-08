@@ -58,11 +58,13 @@ while ! curl -s -f -o /dev/null "${FAKE_GCS_URL}/storage/v1/b"; do
 done
 echo "Fake-gcs-server is ready."
 
-# the cached-* derivates are regenerated on demand, no need to download them
+# the resized images are regenerated on demand, no need to download them.
+# cached-* is the layout before the move to cache/images/.
 echo "Downloading images from gs://${REMOTE_BUCKET}..."
 mkdir -p "$DOWNLOAD_DIR"
 gcloud storage rsync "gs://${REMOTE_BUCKET}" "$DOWNLOAD_DIR" \
-  --exclude='cached-.*' \
+  --recursive \
+  --exclude='^(cache/|cached-).*' \
   --delete-unmatched-destination-objects
 echo "Download completed. Images saved to $DOWNLOAD_DIR"
 
@@ -79,12 +81,13 @@ done
 echo "Dev bucket emptied."
 
 echo "Uploading images to the dev bucket..."
-export FAKE_GCS_URL LOCAL_BUCKET
+export FAKE_GCS_URL LOCAL_BUCKET DOWNLOAD_DIR
 find "$DOWNLOAD_DIR" -type f -print0 \
   | xargs -0 -P $PARALLEL_UPLOADS -n 1 sh -c '
-      name=$(basename "$0")
+      # keep the folder (images/, attachments/)
+      name=${0#"$DOWNLOAD_DIR"/}
       curl -s -f -o /dev/null -X POST --data-binary "@$0" \
-        -H "Content-Type: image/jpeg" \
+        -H "Content-Type: application/octet-stream" \
         "${FAKE_GCS_URL}/upload/storage/v1/b/${LOCAL_BUCKET}/o?uploadType=media&name=${name}" \
         || { echo "Failed to upload ${name}"; exit 1; }
     '

@@ -1,5 +1,3 @@
-// attachments live in their own folder, so they don't interfere with the
-// image cache and prune logic, which expects flat image file names.
 export const ATTACHMENT_STORAGE_PREFIX = 'attachments/';
 
 // must correspond to the check in sanitize_and_validate_attribution_value()

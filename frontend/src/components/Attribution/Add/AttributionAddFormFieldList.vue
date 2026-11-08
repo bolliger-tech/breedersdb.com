@@ -17,7 +17,7 @@
         :key="String(isLocked(field.priority))"
         :disable="isLocked(field.priority)"
         :unmute-hint="isLocked(field.priority)"
-        :display-value="lockedValue(field)"
+        :display-value="lockedValues.get(field.priority)"
       >
         <template
           v-if="
@@ -71,6 +71,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import AttributionInput, {
   type AttributionInputValue,
 } from 'src/components/Attribution/Input/AttributionInput.vue';
@@ -115,13 +116,18 @@ function isLocked(priority: number): boolean {
   return !!props.lockedPriorities?.has(priority);
 }
 
-// the existing value that locks the input, in the shape of an input value
-function lockedValue({
-  priority,
-  attribute,
-}: AttributionAddFormFieldListProps['fields'][number]): AttributionInputValue {
-  if (!isLocked(priority)) return undefined;
+// computed, so locked inputs get a stable object instead of a new one per render
+const lockedValues = computed(
+  () =>
+    new Map(
+      props.fields
+        .filter((field) => isLocked(field.priority))
+        .map((field) => [field.priority, toLockedValue(field.attribute)]),
+    ),
+);
 
+// the existing value that locks the input, in the shape of an input value
+function toLockedValue(attribute: AttributeFragment): AttributionInputValue {
   const existing = props.collisions!.get(attribute.id)!.existingValue;
 
   // cached attributions hold the photo file name and the enum option label

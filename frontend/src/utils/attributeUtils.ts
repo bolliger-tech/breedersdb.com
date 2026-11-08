@@ -138,3 +138,29 @@ export function getAttributionValue({
     integer_value ?? float_value ?? text_value ?? boolean_value ?? date_value
   );
 }
+
+// Photos are shown as images, so they have no text value.
+export function formatAttributionValue({
+  attribution,
+  d,
+  n,
+}: {
+  attribution: Parameters<typeof getAttributionValue>[0] & {
+    data_type: AttributeDataTypes;
+  };
+  d: DFunc;
+  n: NFunc;
+}) {
+  const type = dataTypeToColumnTypes(attribution.data_type);
+
+  if (type === ColumnTypes.Photo) {
+    return '';
+  }
+
+  return formatResultColumnValue({
+    value: getAttributionValue(attribution),
+    type,
+    d,
+    n,
+  });
+}

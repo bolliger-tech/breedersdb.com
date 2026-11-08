@@ -88,14 +88,9 @@ import type { CachedAttributionsFragment } from 'src/components/Attribution/cach
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
-import {
-  formatResultColumnValue,
-  dataTypeToColumnTypes,
-  getAttributionValue,
-} from 'src/utils/attributeUtils';
+import { formatAttributionValue } from 'src/utils/attributeUtils';
 import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
-import { ColumnTypes } from 'src/utils/columnTypes';
 import { computed } from 'vue';
 import { imageSizes } from 'src/utils/imageSizes';
 
@@ -111,15 +106,8 @@ const props = defineProps<AttributionEntityTableProps>();
 const { t, d, n } = useI18n();
 
 function getValue(row: NonNullable<typeof props.attribution>) {
-  const type = dataTypeToColumnTypes(row.data_type);
-  const value = getAttributionValue(row);
-
-  if (type === ColumnTypes.Photo) {
-    // photo is handled in the template
-    return '';
-  }
-
-  return formatResultColumnValue({ value, type, d, n });
+  // photo is handled in the template
+  return formatAttributionValue({ attribution: row, d, n });
 }
 
 const entityName = computed(() => {

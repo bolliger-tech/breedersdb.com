@@ -35,6 +35,7 @@
       "
       outlined
       clearable
+      hide-bottom-space
       @update:model-value="updateModelValue"
     >
       <template #prepend>

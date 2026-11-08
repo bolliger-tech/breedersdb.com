@@ -29,7 +29,9 @@
     <AttributionAddFormAddInput @add="addExtraAttribute" />
 
     <AttributionAddFormSaveButton
-      :disable="isSaving || !!insertedAttribution"
+      :disable="
+        isSaving || !!insertedAttribution || fetchingExistingUniqueValues
+      "
       :loading="isSaving"
       :show-progress="isSaving || !!insertedAttribution"
       :progress="savingProgress"
@@ -40,7 +42,9 @@
       <template #error>
         <BaseErrorTooltip
           :message="uploadError || validationError"
-          :graphql-error="saveInsertError || saveEditError"
+          :graphql-error="
+            saveInsertError || saveEditError || uniqueValuesCheckError
+          "
         />
       </template>
       <template v-if="repeatTarget > 1" #counter>
@@ -71,7 +75,7 @@
 <script setup lang="ts">
 import type { VariablesOf } from 'src/graphql';
 import { graphql } from 'src/graphql';
-import { useMutation, useQuery } from '@urql/vue';
+import { useMutation, useQuery, type CombinedError } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
 import type { UploadProgress } from 'src/composables/useImageUploader';
@@ -205,7 +209,13 @@ const entityIdColumn = computed(
     })[props.entity.type],
 );
 
-const { data: existingUniqueValues } = useQuery({
+// network-only and saving waits for it: on stale or missing data, a replacing
+// value would silently delete the existing one without being unlocked
+const {
+  data: existingUniqueValues,
+  fetching: fetchingExistingUniqueValues,
+  error: existingUniqueValuesError,
+} = useQuery({
   query: existingUniqueValuesQuery,
   variables: computed(() => ({
     where: {
@@ -215,8 +225,9 @@ const { data: existingUniqueValues } = useQuery({
   })),
   pause: computed(() => uniqueAttributeIds.value.length === 0),
   context: { additionalTypenames: ['cached_attributions'] },
-  requestPolicy: 'cache-and-network',
+  requestPolicy: 'network-only',
 });
+const uniqueValuesCheckError = ref<CombinedError | undefined>(undefined);
 
 const collisions = computed(() =>
   findCollisions({
@@ -416,6 +427,11 @@ function saveEdit(
 }
 
 async function save(ignoreRequired = false) {
+  if (existingUniqueValuesError.value) {
+    uniqueValuesCheckError.value = existingUniqueValuesError.value;
+    return;
+  }
+
   if (!(await validate())) {
     validationError.value = t('attributions.add.invalidInput');
     return;
@@ -605,6 +621,7 @@ function resetErrors() {
   uploadError.value = undefined;
   saveInsertError.value = undefined;
   validationError.value = undefined;
+  uniqueValuesCheckError.value = undefined;
 }
 
 const { entity: entityName } = useAttributableEntityName({

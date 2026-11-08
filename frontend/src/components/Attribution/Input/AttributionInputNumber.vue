@@ -17,7 +17,11 @@
     :rules="rules"
     :model-value="modelValue"
     @update:model-value="updateModelValue"
-  />
+  >
+    <template v-if="$slots.hint" #hint>
+      <slot name="hint"></slot>
+    </template>
+  </q-input>
 </template>
 <script setup lang="ts">
 import { useInputBackground } from 'src/composables/useInputBackground';

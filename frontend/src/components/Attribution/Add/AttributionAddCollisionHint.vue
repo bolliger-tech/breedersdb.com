@@ -1,16 +1,35 @@
 <template>
-  <BaseMessage type="warning" class="q-mb-sm attribution-add-collision-hint">
+  <i18n-t
+    v-if="collision.behavior === 'BLOCK'"
+    keypath="attributions.add.uniqueBlocked.base"
+    scope="global"
+    tag="span"
+    class="attribution-add-collision-hint"
+  >
+    <template #date>{{
+      d(collision.existingValue.date_attributed, 'Ymd')
+    }}</template>
+    <template #author>{{ collision.existingValue.author }}</template>
+    <template #once
+      ><strong>{{ t('attributions.add.uniqueBlocked.once') }}</strong></template
+    >
+    <template #blocking
+      ><strong>{{
+        t('attributions.add.uniqueBlocked.blocking')
+      }}</strong></template
+    >
+  </i18n-t>
+  <BaseMessage
+    v-else
+    type="warning"
+    class="q-mb-sm attribution-add-collision-hint"
+  >
     {{
-      t(
-        collision.behavior === 'BLOCK'
-          ? 'attributions.add.uniqueBlocked'
-          : 'attributions.add.uniqueReplaced',
-        {
-          date: d(collision.existingValue.date_attributed, 'Ymd'),
-          author: collision.existingValue.author,
-          value,
-        },
-      )
+      t('attributions.add.uniqueReplaced', {
+        date: d(collision.existingValue.date_attributed, 'Ymd'),
+        author: collision.existingValue.author,
+        value,
+      })
     }}
   </BaseMessage>
 </template>

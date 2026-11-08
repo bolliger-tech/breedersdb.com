@@ -14,12 +14,15 @@
         :attribute="field.attribute"
         :exceptional="field.exceptional"
         :required="field.required"
-        :disable="collisions?.get(field.attribute.id)?.behavior === 'BLOCK'"
+        :disable="isBlocked(field.attribute.id)"
+        :unmute-hint="isBlocked(field.attribute.id)"
+        :display-value="blockingValue(field.attribute)"
       >
         <template
           v-if="
             count(field.attribute.id) > 1 ||
-            collisions?.has(field.attribute.id) ||
+            (collisions?.has(field.attribute.id) &&
+              !isBlocked(field.attribute.id)) ||
             repeatedUniquePriorities?.has(field.priority)
           "
           #before
@@ -35,8 +38,16 @@
             :message="t('attributions.add.uniqueRepeated')"
           />
           <AttributionAddCollisionHint
-            v-if="collisions?.get(field.attribute.id)"
+            v-if="
+              collisions?.has(field.attribute.id) &&
+              !isBlocked(field.attribute.id)
+            "
             :collision="collisions.get(field.attribute.id)!"
+          />
+        </template>
+        <template v-if="isBlocked(field.attribute.id)" #hint>
+          <AttributionAddCollisionHint
+            :collision="collisions!.get(field.attribute.id)!"
           />
         </template>
       </AttributionInput>
@@ -77,6 +88,38 @@ const modelValue = defineModel<{ [key: number]: AttributionInputValue }>({
 
 function count(fieldId: number): number {
   return props.fields.filter((field) => field.attribute.id === fieldId).length;
+}
+
+function isBlocked(attributeId: number): boolean {
+  return props.collisions?.get(attributeId)?.behavior === 'BLOCK';
+}
+
+// the existing value that blocks the input, in the shape of an input value
+function blockingValue(attribute: AttributeFragment): AttributionInputValue {
+  if (!isBlocked(attribute.id)) return undefined;
+
+  const existing = props.collisions!.get(attribute.id)!.existingValue;
+
+  // cached attributions hold the photo file name and the enum option label
+  // in text_value
+  if (attribute.data_type === 'PHOTO') {
+    return { photo_value: existing.text_value };
+  }
+  if (attribute.data_type === 'ENUM') {
+    return {
+      attribute_enum_option_id:
+        attribute.enum_options.find((o) => o.label === existing.text_value)
+          ?.id ?? null,
+    };
+  }
+
+  return {
+    integer_value: existing.integer_value,
+    float_value: existing.float_value,
+    text_value: existing.text_value,
+    boolean_value: existing.boolean_value,
+    date_value: existing.date_value,
+  };
 }
 
 const { t } = useI18n();

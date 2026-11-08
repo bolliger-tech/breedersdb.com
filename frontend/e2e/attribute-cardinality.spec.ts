@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from './support/fixtures';
-import { walkToForm } from './support/attribute-flow';
+import { uploadPhoto, walkToForm } from './support/attribute-flow';
 import {
   expectDialogClosed,
   formField,
@@ -58,8 +58,11 @@ test('unique block: a recorded value disables the input', async ({
   await saveAttribution(page);
 
   await pickCultivarAgain(page, cultivar.display_name);
-  await expect(field).toContainText('by E2E Robot: first.');
+  await expect(field).toContainText(
+    'by E2E Robot. The attribute can be assigned only once and cannot be overwritten (blocking).',
+  );
   await expect(field.locator('textarea')).toBeDisabled();
+  await expect(field.locator('textarea')).toHaveValue('first');
 });
 
 test('unique replace: saving replaces the recorded value', async ({
@@ -164,4 +167,126 @@ test('a unique attribute can only be filled once per attribution', async ({
     page.locator('.entity-modal-content__error-tooltip'),
   ).toContainText('This attribute may only be filled once.');
   await expect(page.locator('.q-notification')).toHaveCount(0);
+});
+
+test('unique block: every data type shows its recorded value and the hint below', async ({
+  page,
+  seed,
+}) => {
+  const attrs = {
+    text: await seed.attribute({
+      dataType: 'TEXT',
+      cardinality: 'UNIQUE_BLOCK',
+    }),
+    integer: await seed.attribute({
+      dataType: 'INTEGER',
+      cardinality: 'UNIQUE_BLOCK',
+    }),
+    float: await seed.attribute({
+      dataType: 'FLOAT',
+      cardinality: 'UNIQUE_BLOCK',
+    }),
+    boolean: await seed.attribute({
+      dataType: 'BOOLEAN',
+      cardinality: 'UNIQUE_BLOCK',
+    }),
+    date: await seed.attribute({
+      dataType: 'DATE',
+      cardinality: 'UNIQUE_BLOCK',
+    }),
+    rating: await seed.attribute({
+      dataType: 'RATING',
+      cardinality: 'UNIQUE_BLOCK',
+    }),
+    enum: await seed.attribute({
+      dataType: 'ENUM',
+      cardinality: 'UNIQUE_BLOCK',
+    }),
+    photo: await seed.attribute({
+      dataType: 'PHOTO',
+      cardinality: 'UNIQUE_BLOCK',
+    }),
+  };
+  const form = await seed.attributionForm(
+    Object.values(attrs).map((attribute) => ({ id: attribute.id })),
+  );
+  const cultivar = await seed.cultivar();
+
+  // record a value of every type through the UI (photos need a real upload)
+  await walkToForm(page, form.name, cultivar.display_name);
+  const field = (name: string) => formField(page, name);
+  await field(attrs.text.name).locator('textarea').fill('first');
+  await field(attrs.integer.name).locator('input').fill('42');
+  await field(attrs.float.name).locator('input').fill('4.2');
+  await field(attrs.boolean.name).locator('.q-toggle').click();
+  await field(attrs.date.name)
+    .getByRole('button', { name: '15', exact: true })
+    .click();
+  await field(attrs.rating.name)
+    .getByRole('button', { name: '7', exact: true })
+    .click();
+  await selectOption(page, field(attrs.enum.name), 'two');
+  await uploadPhoto(page, attrs.photo.name, 'e2e/assets/test.jpg');
+  await saveAttribution(page);
+
+  await pickCultivarAgain(page, cultivar.display_name);
+
+  // the recorded values are shown in the disabled inputs
+  await expect(field(attrs.text.name).locator('textarea')).toHaveValue('first');
+  await expect(field(attrs.integer.name).locator('input')).toHaveValue('42');
+  await expect(field(attrs.float.name).locator('input')).toHaveValue('4.2');
+  await expect(field(attrs.boolean.name).locator('.q-toggle')).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await expect(
+    field(attrs.date.name).getByRole('button', { name: '15', exact: true }),
+  ).toHaveClass(/q-btn--unelevated/);
+  await expect(
+    field(attrs.rating.name).getByRole('button', { name: '7', exact: true }),
+  ).not.toHaveClass(/q-btn--outline/);
+  await expect(field(attrs.enum.name).locator('input')).toHaveValue('two');
+  await expect(
+    field(attrs.photo.name).locator('.attribute-form-input-photo__preview'),
+  ).toBeVisible();
+
+  // every input is disabled and has the hint directly below it
+  const controls: [string, string][] = [
+    [attrs.text.name, '.q-field__control'],
+    [attrs.integer.name, '.q-field__control'],
+    [attrs.float.name, '.q-field__control'],
+    [attrs.boolean.name, '.q-toggle'],
+    [attrs.date.name, '.q-date'],
+    [attrs.rating.name, '.q-btn'],
+    [attrs.enum.name, '.q-field__control'],
+    [attrs.photo.name, '.attribute-form-input-photo'],
+  ];
+  for (const [name, controlSelector] of controls) {
+    const hint = field(name).locator('.attribution-add-collision-hint');
+    await expect(hint).toHaveText(
+      /^Already recorded on \S+ by E2E Robot\. The attribute can be assigned only once and cannot be overwritten \(blocking\)\.$/,
+    );
+    await expect(field(name).locator('[aria-disabled="true"]')).toHaveCount(1);
+    const controlBox = (await field(name)
+      .locator(controlSelector)
+      .first()
+      .boundingBox())!;
+    const hintBox = (await hint.boundingBox())!;
+    expect(hintBox.y, name).toBeGreaterThanOrEqual(
+      controlBox.y + controlBox.height,
+    );
+    expect(hintBox.y - (controlBox.y + controlBox.height), name).toBeLessThan(
+      20,
+    );
+    // aligned with the label, like the hints of the other inputs
+    const labelBox = (await field(name)
+      .locator('div.text-weight-bold')
+      .boundingBox())!;
+    expect(Math.abs(hintBox.x - labelBox.x), name).toBeLessThan(1);
+  }
+
+  await page.screenshot({
+    path: 'test-results/unique-block-all-types.png',
+    fullPage: true,
+  });
 });

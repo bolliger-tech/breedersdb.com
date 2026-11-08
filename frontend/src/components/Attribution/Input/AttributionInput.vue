@@ -11,11 +11,14 @@
     <div
       :inert="!!disable"
       :aria-disabled="!!disable"
-      :class="{ disabled: disable }"
+      :class="{
+        disabled: disable && !unmuteHint,
+        'attribution-input--disabled-controls': disable && unmuteHint,
+      }"
     >
       <AttributionInputRating
         v-if="attribute.data_type === 'RATING'"
-        :model-value="modelValue?.integer_value ?? null"
+        :model-value="shownValue?.integer_value ?? null"
         :validation="attribute.validation_rule"
         :legend="attribute.legend"
         @update:model-value="
@@ -25,25 +28,33 @@
       <AttributionInputNumber
         v-else-if="attribute.data_type === 'INTEGER'"
         ref="integerInputRef"
-        :model-value="modelValue?.integer_value ?? null"
+        :model-value="shownValue?.integer_value ?? null"
         :validation="attribute.validation_rule"
         @update:model-value="
           (val: number | null) => updateModelValue({ integer_value: val })
         "
-      />
+      >
+        <template v-if="$slots.hint" #hint>
+          <slot name="hint"></slot>
+        </template>
+      </AttributionInputNumber>
       <AttributionInputNumber
         v-else-if="attribute.data_type === 'FLOAT'"
         ref="floatInputRef"
-        :model-value="modelValue?.float_value ?? null"
+        :model-value="shownValue?.float_value ?? null"
         :validation="attribute.validation_rule"
         @update:model-value="
           (val: number | null) => updateModelValue({ float_value: val })
         "
-      />
+      >
+        <template v-if="$slots.hint" #hint>
+          <slot name="hint"></slot>
+        </template>
+      </AttributionInputNumber>
       <AttributionInputText
         v-else-if="attribute.data_type === 'TEXT'"
         ref="textInputRef"
-        :model-value="modelValue?.text_value ?? null"
+        :model-value="shownValue?.text_value ?? null"
         :validation="{ maxLen: 2047, pattern: null }"
         :additional-rules="[
           (value: string | null) =>
@@ -54,24 +65,28 @@
         @update:model-value="
           (val: string | null) => updateModelValue({ text_value: val })
         "
-      />
+      >
+        <template v-if="$slots.hint" #hint>
+          <slot name="hint"></slot>
+        </template>
+      </AttributionInputText>
       <AttributionInputDate
         v-else-if="attribute.data_type === 'DATE'"
-        :model-value="modelValue?.date_value ?? null"
+        :model-value="shownValue?.date_value ?? null"
         @update:model-value="
           (val: string | null) => updateModelValue({ date_value: val })
         "
       />
       <AttributionInputBoolean
         v-else-if="attribute.data_type === 'BOOLEAN'"
-        :model-value="modelValue?.boolean_value ?? null"
+        :model-value="shownValue?.boolean_value ?? null"
         @update:model-value="
           (val: boolean | null) => updateModelValue({ boolean_value: val })
         "
       />
       <AttributionInputPhoto
         v-else-if="attribute.data_type === 'PHOTO'"
-        :model-value="modelValue?.photo_value ?? null"
+        :model-value="shownValue?.photo_value ?? null"
         @update:model-value="
           (val: File | string | null) => updateModelValue({ photo_value: val })
         "
@@ -80,12 +95,19 @@
         v-else-if="attribute.data_type === 'ENUM'"
         ref="enumInputRef"
         :options="attribute.enum_options"
-        :model-value="modelValue?.attribute_enum_option_id ?? null"
+        :model-value="shownValue?.attribute_enum_option_id ?? null"
         @update:model-value="
           (val: number | null) =>
             updateModelValue({ attribute_enum_option_id: val })
         "
-      />
+      >
+        <template v-if="$slots.hint" #hint>
+          <slot name="hint"></slot>
+        </template>
+      </AttributionInputEnum>
+      <div v-if="$slots.hint && !hasFieldHint" class="attribution-input__hint">
+        <slot name="hint"></slot>
+      </div>
 
       <div v-if="attribute.description" class="q-mt-sm pre-line">
         {{ attribute.description }}
@@ -158,6 +180,10 @@ export interface AttributionInputProps {
   required: boolean;
   hideNotes?: boolean;
   disable?: boolean;
+  // when disabled, dim only the controls so the hint stays readable
+  unmuteHint?: boolean;
+  // shown instead of the model value, e.g. an existing value that blocks input
+  displayValue?: AttributionInputValue;
 }
 
 export type AttributionInputValue =
@@ -184,9 +210,17 @@ const modelValue = defineModel<AttributionInputValue>({
 
 defineSlots<{
   before: Slot;
+  hint: Slot;
 }>();
 
 defineExpose({ validate, focus: focusInvalid });
+
+// these inputs show the hint in the bottom row of their Quasar field
+const hasFieldHint = computed(() =>
+  ['INTEGER', 'FLOAT', 'TEXT', 'ENUM'].includes(props.attribute.data_type),
+);
+
+const shownValue = computed(() => props.displayValue ?? modelValue.value);
 
 const photoNote = computed({
   get: () => modelValue.value?.photo_note ?? null,
@@ -401,3 +435,30 @@ function focusInvalid() {
   }
 }
 </script>
+
+<style scoped lang="scss">
+// Quasar's .disabled dims everything inside, the hint included
+.attribution-input--disabled-controls {
+  cursor: not-allowed;
+
+  :deep(.q-field__control),
+  :deep(.q-toggle),
+  :deep(.q-date),
+  :deep(.attribute-form-input-photo),
+  :deep(.q-btn) {
+    opacity: 0.6;
+  }
+}
+
+// mimics the bottom row of a dense Quasar field
+.attribution-input__hint {
+  font-size: 11px;
+  line-height: 1;
+  padding-top: 8px;
+  color: rgba(0, 0, 0, 0.54);
+
+  .body--dark & {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+</style>

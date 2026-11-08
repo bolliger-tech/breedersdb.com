@@ -103,7 +103,7 @@ import {
   cachedAttributionsFragment,
   type CachedAttributionsFragment,
 } from 'src/components/Attribution/cachedAttributionsFragment';
-import { findCollisions } from './findCollisions';
+import { findCollisions, type Collision } from './findCollisions';
 import { findRepeatedUniqueValues } from './findRepeatedUniqueValues';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
@@ -234,15 +234,16 @@ const uniqueValuesCheckError = ref<CombinedError | undefined>(undefined);
 
 // frozen once inserted: the refetch after saving finds the just saved values,
 // which would lock their inputs during the save transition
-const collisions = computed((previous) =>
-  insertedAttribution.value && previous
-    ? previous
-    : findCollisions({
-        attributes: attributeInputs.value.map((field) => field.attribute),
-        existingValues: (existingUniqueValues.value?.cached_attributions ??
-          []) as CachedAttributionsFragment[],
-        editedAttributionId: props.editId,
-      }),
+const collisions = computed<Map<number, Collision<CachedAttributionsFragment>>>(
+  (previous) =>
+    insertedAttribution.value && previous
+      ? previous
+      : findCollisions({
+          attributes: attributeInputs.value.map((field) => field.attribute),
+          existingValues: (existingUniqueValues.value?.cached_attributions ??
+            []) as CachedAttributionsFragment[],
+          editedAttributionId: props.editId,
+        }),
 );
 
 // replacing values must be unlocked explicitly

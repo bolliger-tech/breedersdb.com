@@ -386,6 +386,10 @@ const enumInputRef = ref<InstanceType<typeof AttributionInputEnum> | null>(
 );
 
 async function validate() {
+  // a disabled input shows an existing value that isn't saved, and may no
+  // longer match a validation rule changed since
+  if (props.disable) return true;
+
   let valueIsValid: Promise<boolean> = Promise.resolve(true);
 
   switch (props.attribute.data_type) {

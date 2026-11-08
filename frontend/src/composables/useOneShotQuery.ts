@@ -27,6 +27,7 @@ export function useOneShotQuery() {
   });
 
   // Resolves to null if the scope was disposed before the query answered.
+  // Rejects if the query failed.
   async function query<Data, Variables extends AnyVariables>(
     document: DocumentInput<Data, Variables>,
     variables: Variables,
@@ -40,7 +41,7 @@ export function useOneShotQuery() {
       // earlier one and hand it the wrong result. Subscribing by hand rather
       // than via toPromise() keeps the teardown handle; the stale / hasNext
       // filter is what toPromise() applies internally.
-      return await new Promise<OperationResult<Data, Variables> | null>(
+      const result = await new Promise<OperationResult<Data, Variables> | null>(
         (resolve) => {
           const subscription = client
             .query(document, variables, context)
@@ -58,6 +59,13 @@ export function useOneShotQuery() {
           inFlight.add(cancel);
         },
       );
+
+      if (result?.error) {
+        console.error(result.error);
+        throw new Error(result.error.message);
+      }
+
+      return result;
     } finally {
       running.value--;
       if (cancel) {

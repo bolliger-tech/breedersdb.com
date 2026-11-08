@@ -43,10 +43,6 @@ export function useCardinalityChangeRule({
     // torn down mid-check: there is no form left to keep from saving
     if (!result) return true;
 
-    if (result.error) {
-      throw new Error(result.error.message);
-    }
-
     const count = result.data!.attributes_by_pk!.duplicated_entities_count!;
     return count === 0 || t('attributes.cardinalityChangeNotAllowed', count);
   }

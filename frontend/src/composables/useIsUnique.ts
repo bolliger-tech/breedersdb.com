@@ -40,11 +40,6 @@ export function useIsUnique({
     // Torn down mid-check: there is no form left to keep from saving.
     if (!result) return true;
 
-    if (result.error) {
-      console.error(result.error);
-      throw new Error(result.error.message);
-    }
-
     const data = result.data as Record<TableName, { id: number }[]> | undefined;
     if (!data?.[tableName]) {
       throw new Error(

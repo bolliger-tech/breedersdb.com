@@ -217,6 +217,7 @@ const {
   data: existingUniqueValues,
   fetching: fetchingExistingUniqueValues,
   error: existingUniqueValuesError,
+  ...urqlExistingUniqueValues
 } = useQuery({
   query: existingUniqueValuesQuery,
   variables: computed(() => ({
@@ -231,13 +232,17 @@ const {
 });
 const uniqueValuesCheckError = ref<CombinedError | undefined>(undefined);
 
-const collisions = computed(() =>
-  findCollisions({
-    attributes: attributeInputs.value.map((field) => field.attribute),
-    existingValues: (existingUniqueValues.value?.cached_attributions ??
-      []) as CachedAttributionsFragment[],
-    editedAttributionId: props.editId,
-  }),
+// frozen once inserted: the refetch after saving finds the just saved values,
+// which would lock their inputs during the save transition
+const collisions = computed((previous) =>
+  insertedAttribution.value && previous
+    ? previous
+    : findCollisions({
+        attributes: attributeInputs.value.map((field) => field.attribute),
+        existingValues: (existingUniqueValues.value?.cached_attributions ??
+          []) as CachedAttributionsFragment[],
+        editedAttributionId: props.editId,
+      }),
 );
 
 // replacing values must be unlocked explicitly
@@ -431,6 +436,8 @@ function saveEdit(
 async function save(ignoreRequired = false) {
   if (existingUniqueValuesError.value) {
     uniqueValuesCheckError.value = existingUniqueValuesError.value;
+    // retry, so a transient network error doesn't block saving for good
+    void urqlExistingUniqueValues.executeQuery();
     return;
   }
 

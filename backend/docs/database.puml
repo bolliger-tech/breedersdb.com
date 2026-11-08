@@ -21,6 +21,11 @@ entity "**analyze_filters**" {
   *""modified"": //timestamp with time zone //
 }
 
+entity "**attribute_cardinalities**" {
+  + ""enum"": //text [PK]//
+  --
+}
+
 entity "**attribute_data_types**" #00ff0012 ##008800 {
   + ""enum"": //text [PK]//
   --
@@ -60,6 +65,7 @@ entity "**attributes**" #00ff0012 ##008800 {
   *""disabled"": //boolean //
   *""created"": //timestamp with time zone //
   *""modified"": //timestamp with time zone //
+  *""cardinality"": //text [FK]//
 }
 
 entity "**attribution_form_fields**" #00ff0012 ##008800 {
@@ -350,6 +356,8 @@ entity "**users**" {
 "**attribute_enum_options**"   }--  "**attributes**"
 
 "**attributes**"   }--  "**attribute_types**"
+
+"**attributes**"   }--  "**attribute_cardinalities**"
 
 "**attributes**"   }--  "**attribute_data_types**"
 

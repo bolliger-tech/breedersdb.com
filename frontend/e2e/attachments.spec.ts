@@ -14,8 +14,8 @@ import {
   openAnalyzePage,
 } from './support/analyze';
 
-// ATTACHMENT values: uploaded on save, listed under "Attachments" on the
-// entity view and linked under a generated name
+// ATTACHMENT values: uploaded on save, linked on the entity view under a
+// generated name
 // (<attribute>_<entity>_<date>.<ext>, see ADR 0002).
 
 const downloadName = (attribute: string, entity: string, date: string) =>
@@ -73,11 +73,14 @@ test('attachments are uploaded and linked on the entity view', async ({
     [pdfAttribute, 'pdf', /^inline;/],
     [csvAttribute, 'csv', /^attachment;/],
   ] as const) {
-    // the row in the "Attachments" list
-    const item = dialog.locator('a.q-item').filter({ hasText: attribute.name });
-    await expect(item).toHaveCount(1);
-    await expect(item).toHaveAttribute('target', '_blank');
-    await expect(item).toHaveAttribute('rel', 'noopener');
+    // the value cell of the attribute's table row
+    const valueLink = dialog
+      .locator('.entity-related-table tr')
+      .filter({ hasText: attribute.name })
+      .locator('a[href*="/api/assets/attachments/"]');
+    await expect(valueLink).toHaveCount(1);
+    await expect(valueLink).toHaveAttribute('target', '_blank');
+    await expect(valueLink).toHaveAttribute('rel', 'noopener');
     const name = escapeRegExp(
       encodeURIComponent(
         downloadName(attribute.name, cultivar.display_name, 'DATE'),
@@ -86,16 +89,9 @@ test('attachments are uploaded and linked on the entity view', async ({
     const href = new RegExp(
       `^/api/assets/attachments/${name}\\.${ext}\\?file=[0-9a-f]{64}\\.${ext}$`,
     );
-    await expect(item).toHaveAttribute('href', href);
-
-    // the value cell of the attribute's table row links the same file
-    const valueLink = dialog
-      .locator('.entity-related-table tr')
-      .filter({ hasText: attribute.name })
-      .locator('a[href*="/api/assets/attachments/"]');
     await expect(valueLink).toHaveAttribute('href', href);
 
-    const response = await request.get((await item.getAttribute('href'))!);
+    const response = await request.get((await valueLink.getAttribute('href'))!);
     expect(response.status()).toBe(200);
     expect(response.headers()['content-disposition']).toMatch(disposition);
   }

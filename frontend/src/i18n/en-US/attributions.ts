@@ -38,8 +38,6 @@ export const attributions = {
   others: 'Other attributions',
 
   photos: 'Photos',
-  attachments: 'Attachments',
-  noAttachments: 'No attachments',
 
   add: {
     attributeEntity: 'Attribute {entity}',

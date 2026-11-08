@@ -34,8 +34,6 @@ export const attributions = {
   samples: 'Muster',
   others: 'Andere Attributierungen',
   photos: 'Fotos',
-  attachments: 'Anhänge',
-  noAttachments: 'Keine Anhänge',
   add: {
     attributeEntity: '{entity} attributieren',
     form: 'Formular',

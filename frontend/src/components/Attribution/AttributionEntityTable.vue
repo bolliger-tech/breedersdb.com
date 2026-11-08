@@ -16,6 +16,7 @@
         :attribute-name="attribution.attribute_name"
         :entity-name="getAttributedEntityName(attribution)"
         :date-attributed="attribution.date_attributed"
+        :attribution-id="attribution.id"
       />
       <template v-else>{{ getValue(attribution) }}</template>
     </EntityViewTableRow>

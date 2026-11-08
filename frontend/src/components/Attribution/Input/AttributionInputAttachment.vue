@@ -9,6 +9,7 @@
         :attribute-name="attributeName"
         :entity-name="entityName"
         :date-attributed="dateAttributed ?? ''"
+        :attribution-id="attributionId"
       />
       <q-btn
         flat
@@ -30,7 +31,7 @@
       :error="tooLarge"
       :error-message="
         t('attributions.add.attachmentTooLarge', {
-          max: ATTACHMENT_MAX_SIZE / 1024 / 1024,
+          max: UPLOAD_MAX_SIZE / 1024 / 1024,
         })
       "
       outlined
@@ -50,15 +51,13 @@ import { computed, ref } from 'vue';
 import { format } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
-import {
-  ATTACHMENT_MAX_SIZE,
-  isAttachmentTooLarge,
-} from 'src/utils/attachmentUtils';
+import { UPLOAD_MAX_SIZE, isFileTooLarge } from 'src/utils/assetUtils';
 
 export interface AttributionInputAttachmentProps {
   attributeName: string;
   entityName?: string | undefined;
   dateAttributed?: string | undefined;
+  attributionId?: number | undefined;
 }
 
 defineProps<AttributionInputAttachmentProps>();
@@ -74,7 +73,7 @@ const file = computed(() =>
 const tooLarge = ref(false);
 
 function updateModelValue(newFile: File | null) {
-  tooLarge.value = !!newFile && isAttachmentTooLarge(newFile);
+  tooLarge.value = !!newFile && isFileTooLarge(newFile);
 
   // the server rejects empty files
   modelValue.value = newFile?.size && !tooLarge.value ? newFile : null;

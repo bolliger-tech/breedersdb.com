@@ -97,6 +97,7 @@
         :attribute-name="attribute.name"
         :entity-name="entityName"
         :date-attributed="dateAttributed"
+        :attribution-id="attributionId"
         @update:model-value="
           (val: File | string | null) => updateModelValue({ file_value: val })
         "
@@ -196,6 +197,7 @@ export interface AttributionInputProps {
   // only used to name an already stored attachment
   entityName?: string | undefined;
   dateAttributed?: string | undefined;
+  attributionId?: number | undefined;
 }
 
 export type AttributionInputValue =

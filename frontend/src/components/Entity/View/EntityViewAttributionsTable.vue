@@ -29,6 +29,7 @@
             :attribute-name="cellProps.row.attribute_name"
             :entity-name="getAttributedEntityName(cellProps.row)"
             :date-attributed="cellProps.row.date_attributed"
+            :attribution-id="cellProps.row.id"
           />
         </template>
 

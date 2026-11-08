@@ -1,7 +1,11 @@
 import { XLSX_FORMATS } from 'src/composables/useExport';
 import type { CellObject } from 'xlsx';
-import { getImageCell } from 'src/utils/imageUtils';
-import { getAttachmentCell } from 'src/utils/attachmentUtils';
+import {
+  getAttachmentUrlRelative,
+  getDownloadFileName,
+  getImageUrlRelative,
+  getLinkCell,
+} from 'src/utils/assetUtils';
 
 import {
   type AnalyzeCachedAttributionsFields,
@@ -63,8 +67,24 @@ export function getAttributionObjectId(
   );
 }
 
+function getAssetCell(
+  attribution: AnalyzeCachedAttributionsFields,
+  fileName: string,
+  kind: 'image' | 'attachment',
+) {
+  const downloadFileName = getDownloadFileName({
+    fileName,
+    attributeName: attribution.attribute_name,
+    entityName: getAttributionObjectName(attribution),
+    dateAttributed: attribution.date_attributed,
+    attributionId: attribution.id,
+  });
+  const getUrl =
+    kind === 'image' ? getImageUrlRelative : getAttachmentUrlRelative;
+  return getLinkCell(getUrl({ fileName, downloadFileName }));
+}
+
 function attributionValueToXlsx(attribution: AnalyzeCachedAttributionsFields) {
-  const entityName = getAttributionObjectName(attribution);
   const valueKey = attributionValueKeys.find(
     (key) => attribution[key] !== null,
   );
@@ -80,20 +100,17 @@ function attributionValueToXlsx(attribution: AnalyzeCachedAttributionsFields) {
         : valueKey === 'boolean_value'
           ? !!attribution[valueKey]
           : attribution.data_type === 'PHOTO'
-            ? getImageCell({
-                serverFileName: attribution[valueKey] as string,
-                entityName,
-                attributeName: attribution.attribute_name,
-                dateAttributed: attribution.date_attributed,
-                attributionId: attribution.id,
-              })
+            ? getAssetCell(
+                attribution,
+                attribution[valueKey] as string,
+                'image',
+              )
             : attribution.data_type === 'ATTACHMENT'
-              ? getAttachmentCell({
-                  fileName: attribution[valueKey] as string,
-                  entityName,
-                  attributeName: attribution.attribute_name,
-                  dateAttributed: attribution.date_attributed,
-                })
+              ? getAssetCell(
+                  attribution,
+                  attribution[valueKey] as string,
+                  'attachment',
+                )
               : attribution[valueKey];
   return value;
 }
@@ -113,13 +130,7 @@ export function attributionToXlsx(
           !v
             ? v
             : k === 'photo_note'
-              ? getImageCell({
-                  serverFileName: v as string,
-                  entityName,
-                  attributeName: attribution.attribute_name,
-                  dateAttributed: attribution.date_attributed,
-                  attributionId: attribution.id,
-                })
+              ? getAssetCell(attribution, v as string, 'image')
               : k === 'created'
                 ? new Date(v as string)
                 : v,

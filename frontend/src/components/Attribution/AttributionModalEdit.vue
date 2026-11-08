@@ -19,6 +19,7 @@
         :required="true"
         :entity-name="getAttributedEntityName(attribution)"
         :date-attributed="attribution.date_attributed"
+        :attribution-id="attribution.id"
       />
     </template>
 

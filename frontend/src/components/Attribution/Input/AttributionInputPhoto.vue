@@ -55,7 +55,7 @@ import { watch, ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import type { QFile } from 'quasar';
-import { getImageUrlRelative } from 'src/utils/imageUtils';
+import { getImageUrlRelative } from 'src/utils/assetUtils';
 
 const MAX_IMAGE_SIZE = 3840; // longest side, 4k
 const IMAGE_QUALITY = 0.9; // 0.0 - 1.0 (jpeg)
@@ -140,8 +140,8 @@ function loadPreview() {
   }
 
   preview.value.src = getImageUrlRelative({
-    serverFileName: modelValue.value,
-    desiredFileName: modelValue.value,
+    fileName: modelValue.value,
+    downloadFileName: modelValue.value,
   });
 }
 

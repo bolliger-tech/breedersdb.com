@@ -12,6 +12,7 @@
         :attribute-name="attribution.attribute_name"
         :entity-name="getAttributedEntityName(attribution)"
         :date-attributed="attribution.date_attributed"
+        :attribution-id="attribution.id"
       />
       <template v-else>{{ n2semicolon(label) }}</template>
     </template>
@@ -41,7 +42,7 @@ import {
   getAttributionValue,
   getAttributedEntityName,
 } from 'src/utils/attributeUtils';
-import { getAttachmentFileName } from 'src/utils/attachmentUtils';
+import { getDownloadFileName } from 'src/utils/assetUtils';
 import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import AnalyzeResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
@@ -62,11 +63,12 @@ const label = computed(() => {
 
   if (type === ColumnTypes.Photo) return t('analyze.result.photo');
   if (type === ColumnTypes.Attachment)
-    return getAttachmentFileName({
+    return getDownloadFileName({
       fileName: props.attribution.text_value ?? '',
       attributeName: props.attribution.attribute_name,
       entityName: getAttributedEntityName(props.attribution),
       dateAttributed: props.attribution.date_attributed,
+      attributionId: props.attribution.id,
     });
 
   const value = getAttributionValue(props.attribution);

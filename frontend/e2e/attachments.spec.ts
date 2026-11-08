@@ -16,10 +16,15 @@ import {
 
 // ATTACHMENT values: uploaded on save, linked on the entity view under a
 // generated name
-// (<attribute>_<entity>_<date>.<ext>, see ADR 0002).
+// (bdb-<org>_<attribute>_<entity>_<date>_<attribution id>.<ext>, see ADR 0002).
 
-const downloadName = (attribute: string, entity: string, date: string) =>
-  `${attribute.replace(/\s+/g, '-')}_${entity.replace(/\s+/g, '-')}_${date}`;
+// a url encoded regex source. the org differs between the dev and the ci build.
+const downloadNamePattern = (attribute: string, entity: string, date: string) =>
+  `bdb(-[A-Za-z0-9]+)?_${escapeRegExp(
+    encodeURIComponent(
+      `${attribute.replace(/\s+/g, '-')}_${entity.replace(/\s+/g, '-')}_`,
+    ),
+  )}${date}_\\d+`;
 
 const attachmentLink = (scope: Page | Locator) =>
   scope.locator('a[href*="/api/assets/attachments/"]');
@@ -84,11 +89,11 @@ test('attachments are uploaded and linked on the entity view', async ({
     await expect(valueLink).toHaveCount(1);
     await expect(valueLink).toHaveAttribute('target', '_blank');
     await expect(valueLink).toHaveAttribute('rel', 'noopener');
-    const name = escapeRegExp(
-      encodeURIComponent(
-        downloadName(attribute.name, cultivar.display_name, 'DATE'),
-      ),
-    ).replace('DATE', '\\d{4}-\\d{2}-\\d{2}');
+    const name = downloadNamePattern(
+      attribute.name,
+      cultivar.display_name,
+      '\\d{4}-\\d{2}-\\d{2}',
+    );
     const href = new RegExp(
       `^/api/assets/attachments/${name}\\.${ext}\\?file=[0-9a-f]{64}\\.${ext}$`,
     );
@@ -151,11 +156,15 @@ test('analyze links attachments under their generated name', async ({
   );
   await addResultColumn(page, attribute.name, `Attribute > ${attribute.name}`);
 
-  const name = `${downloadName(attribute.name, cultivar.display_name, '2025-01-01')}.pdf`;
+  const name = downloadNamePattern(
+    attribute.name,
+    cultivar.display_name,
+    '2025-01-01',
+  );
   const link = attachmentLink(listRow(page, cultivar.display_name));
   await expect(link).toHaveAttribute(
     'href',
-    `/api/assets/attachments/${encodeURIComponent(name)}?file=${fileName}`,
+    new RegExp(`^/api/assets/attachments/${name}\\.pdf\\?file=${fileName}$`),
   );
   await expect(link).toHaveAttribute('target', '_blank');
 });
@@ -275,7 +284,8 @@ test('editing an attribution in the form keeps its attachment', async ({
     .click();
   const field = formField(page, attribute.name);
   const existingHref = await attachmentLink(field).getAttribute('href');
-  expect(existingHref).toMatch(/\?file=[0-9a-f]{64}\.pdf$/);
+  const storedFile = existingHref!.match(/\?file=[0-9a-f]{64}\.pdf$/)?.[0];
+  expect(storedFile).toBeTruthy();
   await page.locator('.attribute-form-save-btn .q-btn').click();
   await expect(page.locator('.q-notification').last()).toContainText(
     'Attribution saved.',
@@ -284,5 +294,10 @@ test('editing an attribution in the form keeps its attachment', async ({
   await page.goto(`/#/attributions?s=${encodeURIComponent(attribute.name)}`);
   const row = listRow(page, attribute.name);
   await expect(row).toHaveCount(1);
-  await expect(attachmentLink(row)).toHaveAttribute('href', existingHref!);
+  // the download name holds the id of the re-inserted value, so only the
+  // stored file stays the same
+  await expect(attachmentLink(row)).toHaveAttribute(
+    'href',
+    new RegExp(`${escapeRegExp(storedFile!)}$`),
+  );
 });

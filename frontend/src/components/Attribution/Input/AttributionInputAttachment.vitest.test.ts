@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { QFile } from 'quasar';
 import AttributionInputAttachment from './AttributionInputAttachment.vue';
 import { addQuasarPlugins, mount } from 'src/utils/testHelpers';
-import { ATTACHMENT_MAX_SIZE } from 'src/utils/attachmentUtils';
+import { UPLOAD_MAX_SIZE } from 'src/utils/assetUtils';
 
 addQuasarPlugins();
 
@@ -10,7 +10,7 @@ describe('AttributionInputAttachment', () => {
   it('clears a previously selected file when a too large one is picked', async () => {
     const valid = new File(['x'], 'report.pdf');
     const tooLarge = new File(
-      [new Uint8Array(ATTACHMENT_MAX_SIZE + 1)],
+      [new Uint8Array(UPLOAD_MAX_SIZE + 1)],
       'huge.bin',
     );
     const wrapper = mount(AttributionInputAttachment, {

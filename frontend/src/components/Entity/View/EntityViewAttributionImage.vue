@@ -117,8 +117,7 @@ import {
 import { ColumnTypes } from 'src/utils/columnTypes';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { captureException } from '@sentry/browser';
-import { getImageFileName, getImageUrlRelative } from 'src/utils/imageUtils';
-import { getAttachmentFileName } from 'src/utils/attachmentUtils';
+import { getDownloadFileName, getImageUrlRelative } from 'src/utils/assetUtils';
 import type { AllowedImageSizes } from 'src/utils/imageSizes';
 import { imageSizes } from 'src/utils/imageSizes';
 
@@ -196,11 +195,12 @@ const description = computed(() => {
   const value = getAttributionValue(props.attribution);
   const formattedValue =
     type === ColumnTypes.Attachment
-      ? getAttachmentFileName({
+      ? getDownloadFileName({
           fileName: props.attribution.text_value ?? '',
           attributeName: props.attribution.attribute_name,
           entityName: entityName.value,
           dateAttributed: props.attribution.date_attributed,
+          attributionId: props.attribution.id,
         })
       : formatResultColumnValue({ value, type, d, n });
 
@@ -210,8 +210,9 @@ const description = computed(() => {
   };
 });
 
-const desiredFileName = computed(() =>
-  getImageFileName({
+const downloadFileName = computed(() =>
+  getDownloadFileName({
+    fileName: props.fileName,
     entityName: entityName.value,
     attributeName: props.attribution.attribute_name,
     dateAttributed: props.attribution.date_attributed,
@@ -240,45 +241,45 @@ const imgUrls = computed(() => {
 
   return {
     '1x': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: dims1x,
     }),
     ...(dims2x && {
       '2x': getImageUrlRelative({
-        serverFileName: props.fileName,
-        desiredFileName: desiredFileName.value,
+        fileName: props.fileName,
+        downloadFileName: downloadFileName.value,
         dimensions: dims2x,
       }),
     }),
     '320w': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: imageSizes.w320,
     }),
     '768w': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: imageSizes.w768,
     }),
     '1024w': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: imageSizes.w1024,
     }),
     '2560w': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: imageSizes.w2560,
     }),
     '3840w': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: imageSizes.w3840,
     }),
     full: getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
     }),
   };
 });

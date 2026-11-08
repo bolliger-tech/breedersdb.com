@@ -20,16 +20,17 @@ import { computed } from 'vue';
 import type { QBtnProps } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import {
-  getAttachmentFileName,
   getAttachmentIcon,
   getAttachmentUrlRelative,
-} from 'src/utils/attachmentUtils';
+  getDownloadFileName,
+} from 'src/utils/assetUtils';
 
 export interface AttributionAttachmentLinkProps {
   fileName: string;
   attributeName: string;
   entityName?: string | undefined;
   dateAttributed: string;
+  attributionId?: number | undefined;
   buttonSize?: QBtnProps['size'];
 }
 
@@ -40,7 +41,7 @@ const { t } = useI18n();
 const url = computed(() =>
   getAttachmentUrlRelative({
     fileName: props.fileName,
-    desiredFileName: getAttachmentFileName(props),
+    downloadFileName: getDownloadFileName(props),
   }),
 );
 </script>

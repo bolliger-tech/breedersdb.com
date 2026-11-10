@@ -1,4 +1,5 @@
 import * as ff from '@google-cloud/functions-framework';
+import { pipeline } from 'node:stream';
 import { downloadFile, getFileSize, isNotFoundError } from '../lib/storage';
 import {
   ATTACHMENT_FILE_NAME_REGEX,
@@ -62,10 +63,11 @@ export async function handleAttachmentDownload(
   }
   res.setHeader('Content-Length', range ? range.end - range.start + 1 : size);
 
-  downloadFile(storageFileName, range)
-    .on('error', (e) => {
+  // unlike pipe(), this also closes the storage stream if the client aborts,
+  // which browsers do all the time when seeking in media
+  pipeline(downloadFile(storageFileName, range), res, (e) => {
+    if (e && e.code !== 'ERR_STREAM_PREMATURE_CLOSE') {
       console.error('Error downloading file:', e);
-      res.destroy(e);
-    })
-    .pipe(res);
+    }
+  });
 }

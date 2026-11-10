@@ -31,9 +31,9 @@ async function getReferenced(fileNames: string[]) {
     );
   }
 
-  return (data.data as ReferencedImagesQueryResponse).attribution_values.map(
-    (i) => i.photo_note || i.text_value,
-  ) as string[];
+  return (data.data as ReferencedImagesQueryResponse).attribution_values
+    .flatMap((i) => [i.photo_note, i.text_value])
+    .filter(Boolean) as string[];
 }
 
 export const imagePruneConfig: PruneConfig = {

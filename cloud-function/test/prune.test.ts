@@ -97,6 +97,27 @@ test('prune keeps files younger than 24 hours', async () => {
   );
 });
 
+test('images prune keeps the photo and the photo note of the same row', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () =>
+    Response.json({
+      data: {
+        attribution_values: [
+          { text_value: `${a}.jpg`, photo_note: `${b}.jpg` },
+          { text_value: null, photo_note: `${c}.jpg` },
+        ],
+      },
+    }),
+  );
+
+  const referenced = await imagePruneConfig.getReferenced([
+    `${a}.jpg`,
+    `${b}.jpg`,
+    `${c}.jpg`,
+  ]);
+
+  assert.deepEqual(referenced.sort(), [`${a}.jpg`, `${b}.jpg`, `${c}.jpg`]);
+});
+
 test('prune skips the reference lookup for a page without candidates', async () => {
   const storage = createStorage([
     { name: `images/${a}.jpg`, timeCreated: young },

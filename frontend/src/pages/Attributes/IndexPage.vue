@@ -51,8 +51,8 @@ import {
   cardinalityToLabel,
   dataTypeToColumnTypes,
   formatResultColumnValue,
+  isFileColumnType,
 } from 'src/utils/attributeUtils';
-import { ColumnTypes } from 'src/utils/columnTypes';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
@@ -142,7 +142,7 @@ const columns = computed(() => [
     field: (row: AttributeFragment) => {
       const type = dataTypeToColumnTypes(row.data_type);
 
-      if (type === ColumnTypes.Photo || type === ColumnTypes.Attachment) {
+      if (isFileColumnType(type)) {
         // photos and attachments can't have a default value
         return '';
       }

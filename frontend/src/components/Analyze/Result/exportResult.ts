@@ -89,16 +89,19 @@ function attributionValueToXlsx(attribution: AnalyzeCachedAttributionsFields) {
           } as CellObject)
         : valueKey === 'boolean_value'
           ? !!attribution[valueKey]
-          : attribution.data_type === 'PHOTO' ||
-              attribution.data_type === 'ATTACHMENT'
+          : attribution.data_type === 'PHOTO'
             ? getAssetCell(
                 attribution,
                 attribution[valueKey] as string,
-                attribution.data_type === 'PHOTO'
-                  ? getImageUrlRelative
-                  : getAttachmentUrlRelative,
+                getImageUrlRelative,
               )
-            : attribution[valueKey];
+            : attribution.data_type === 'ATTACHMENT'
+              ? getAssetCell(
+                  attribution,
+                  attribution[valueKey] as string,
+                  getAttachmentUrlRelative,
+                )
+              : attribution[valueKey];
   return value;
 }
 

@@ -147,13 +147,14 @@ const open = defineModel<boolean>({ required: false, default: false });
 
 const { t, d, n } = useI18n();
 
-const entityName = computed(
-  () => getAttributedEntityName(props.attribution) || 'unknown',
+const foundEntityName = computed(() =>
+  getAttributedEntityName(props.attribution),
 );
+const entityName = computed(() => foundEntityName.value || 'unknown');
 
 // report here, as entityName is only read when the dialog is open
 watch(
-  () => getAttributedEntityName(props.attribution),
+  foundEntityName,
   (name) => {
     if (name) return;
     // report but don't fail

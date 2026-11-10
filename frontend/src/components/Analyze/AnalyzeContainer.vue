@@ -203,7 +203,7 @@ const resultColumns = computed<QTableColumn[]>(() => {
       align: isNum ? 'right' : 'left',
       sortable: true,
       format: (value: ColumnValue) => {
-        if (isFileColumnType(column.type)) {
+        if (column.type && isFileColumnType(column.type)) {
           // this should never happen
           throw new Error('Photo and attachment columns are not supported');
         }

@@ -167,29 +167,30 @@ async function saveEdit() {
   } = editedData.value;
   const isEnum = props.attribution.data_type === 'ENUM';
 
-  const editedAttributionValue = await uploadFiles([
-    {
-      value: {
-        file_value,
-        photo_note,
-        integer_value: integer_value ?? null,
-        float_value: float_value ?? null,
-        text_value: isEnum ? null : (text_value ?? null),
-        boolean_value: boolean_value ?? null,
-        date_value: date_value ?? null,
-        attribute_enum_option_id: attribute_enum_option_id ?? null,
-        text_note: text_note ?? null,
+  let editedAttributionValue;
+  try {
+    [editedAttributionValue] = await uploadFiles([
+      {
+        value: {
+          file_value,
+          photo_note,
+          integer_value: integer_value ?? null,
+          float_value: float_value ?? null,
+          text_value: isEnum ? null : (text_value ?? null),
+          boolean_value: boolean_value ?? null,
+          date_value: date_value ?? null,
+          attribute_enum_option_id: attribute_enum_option_id ?? null,
+          text_note: text_note ?? null,
+        },
+        dataType: props.attribution.data_type,
       },
-      dataType: props.attribution.data_type,
-    },
-  ])
-    .then(([value]) => value!)
-    .catch((error: unknown) => {
-      if (error instanceof Error) {
-        uploadError.value = error.message;
-      }
-      throw error; // do not continue with the mutation
-    });
+    ]);
+  } catch (error) {
+    if (error instanceof Error) {
+      uploadError.value = error.message;
+    }
+    throw error; // do not continue with the mutation
+  }
 
   return urqlEdit.executeMutation(
     {

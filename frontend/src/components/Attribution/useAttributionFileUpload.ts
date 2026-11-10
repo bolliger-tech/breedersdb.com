@@ -36,19 +36,16 @@ export function useAttributionFileUpload() {
   async function uploadFiles<T extends FileFields>(
     values: { value: T; dataType: AttributeFragment['data_type'] }[],
   ): Promise<WithFileNames<T>[]> {
-    const uploads = values.flatMap(({ value, dataType }) => [
-      ...(value.file_value instanceof File
-        ? [
-            {
-              file: value.file_value,
-              kind: dataType === 'PHOTO' ? 'images' : 'attachments',
-            },
-          ]
-        : []),
-      ...(value.photo_note instanceof File
-        ? [{ file: value.photo_note, kind: 'images' }]
-        : []),
-    ]);
+    const uploads: { file: File; kind: 'images' | 'attachments' }[] = [];
+    for (const { value, dataType } of values) {
+      if (value.file_value instanceof File) {
+        const kind = dataType === 'PHOTO' ? 'images' : 'attachments';
+        uploads.push({ file: value.file_value, kind });
+      }
+      if (value.photo_note instanceof File) {
+        uploads.push({ file: value.photo_note, kind: 'images' });
+      }
+    }
 
     percentComplete.value = 0;
     bytes.total = uploads.reduce((acc, { file }) => acc + file.size, 0);

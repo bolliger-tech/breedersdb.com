@@ -42,7 +42,7 @@ export async function pruneUnreferencedFiles({
     softDeleted: false,
   };
 
-  let deleted: string[] = [];
+  const deleted: string[] = [];
   let processed = 0;
 
   // process file references in batches (paginated)
@@ -53,15 +53,36 @@ export async function pruneUnreferencedFiles({
       GetFilesOptions,
     ];
     const createdBefore = Date.now() - GRACE_PERIOD_MS;
-    const d = await deleteNonReferenced(
-      files
-        .filter((f) => Date.parse(f.timeCreated) < createdBefore)
-        .map((f) => f.name),
-      (fileName) => getDbFileReference(fileName, storagePrefix, fileNameRegex),
-      getReferenced,
-      storage.deleteFile,
+    // the listing is limited to the prefix, so the rest is the db reference
+    const references = files
+      .filter((f) => Date.parse(f.timeCreated) < createdBefore)
+      .map((f) => f.name.slice(storagePrefix.length))
+      .filter((reference) => {
+        if (fileNameRegex.test(reference)) return true;
+        console.warn(
+          'Ignoring file. File name does not match regex:',
+          storagePrefix + reference,
+        );
+        return false;
+      });
+
+    const referenced = new Set(
+      references.length ? await getReferenced(references) : [],
     );
-    deleted = deleted.concat(d);
+
+    for (const reference of references) {
+      if (referenced.has(reference)) continue;
+      const fileName = storagePrefix + reference;
+      try {
+        await storage.deleteFile(fileName);
+        deleted.push(fileName);
+      } catch (e) {
+        throw new ErrorWithStatus(
+          500,
+          `Error deleting file: ${fileName}\nOriginal error: ${e}`,
+        );
+      }
+    }
     processed += files.length;
 
     queryArgs = argsForNextPage;
@@ -74,57 +95,4 @@ export async function pruneUnreferencedFiles({
   }
 
   return { processed, deleted };
-}
-
-// maps a file name in the bucket to the value stored in the db, or null to ignore the file
-function getDbFileReference(
-  fileName: string,
-  storagePrefix: string,
-  fileNameRegex: RegExp,
-) {
-  const reference = fileName.slice(storagePrefix.length);
-  if (!fileNameRegex.test(reference)) {
-    console.warn('Ignoring file. File name does not match regex:', fileName);
-    return null;
-  }
-  return reference;
-}
-
-async function deleteNonReferenced(
-  fileNames: string[],
-  getDbFileReference: (fileName: string) => string | null,
-  getReferenced: (references: string[]) => Promise<string[]>,
-  deleteFile: (fileName: string) => Promise<unknown>,
-) {
-  const files = fileNames
-    .map((f) => ({
-      name: f,
-      reference: getDbFileReference(f),
-    }))
-    .filter((f) => f.reference);
-
-  // unique references
-  const references = Array.from(
-    new Set(files.map((f) => f.reference as string)),
-  );
-
-  const referenced = await getReferenced(references);
-
-  const notReferenced = files.filter((f) => !referenced.includes(f.reference!));
-
-  // delete files
-  let deleted: string[] = [];
-  for (const f of notReferenced) {
-    try {
-      await deleteFile(f.name);
-      deleted.push(f.name);
-    } catch (e) {
-      throw new ErrorWithStatus(
-        500,
-        `Error deleting file: ${f.name}\nOriginal error: ${e}`,
-      );
-    }
-  }
-
-  return deleted;
 }

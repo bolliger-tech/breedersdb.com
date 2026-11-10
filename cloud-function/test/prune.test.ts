@@ -96,3 +96,21 @@ test('prune keeps files younger than 24 hours', async () => {
     'timeCreated must be requested',
   );
 });
+
+test('prune skips the reference lookup for a page without candidates', async () => {
+  const storage = createStorage([
+    { name: `images/${a}.jpg`, timeCreated: young },
+  ]);
+  let calls = 0;
+
+  await pruneUnreferencedFiles({
+    ...imagePruneConfig,
+    getReferenced: async () => {
+      calls++;
+      return [];
+    },
+    storage,
+  });
+
+  assert.equal(calls, 0);
+});

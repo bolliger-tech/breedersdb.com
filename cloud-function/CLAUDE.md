@@ -10,16 +10,16 @@ A single Google Cloud Function (functions-framework) that is the **only imperati
 
 One HTTP entry point, [src/index.ts](src/index.ts), routes by the first URL segment:
 
-| Segment                       | Handler                             | Purpose                                          |
-| ----------------------------- | ----------------------------------- | ------------------------------------------------ |
-| `authenticate-hasura-request` | `auth/authenticateHasuraRequest`    | Hasura auth webhook — resolves session variables |
-| `actions`                     | `actions.ts` → `handleActions`      | Hasura action handler (auth/user mutations)      |
-| `events`                      | `events.ts` → `handleEvents`        | Hasura event triggers                            |
-| `upload/images`               | `lib/upload` + `images/upload`      | Image upload (JPEG only, max 16 MB)              |
-| `upload/attachments`          | `lib/upload` + `attachments/upload` | Attachment upload (any file type, max 16 MB)     |
-| `images/*`                    | `images/download`                   | Public image serving (resized/cached)            |
-| `attachments/*`               | `attachments/download`              | Public attachment serving (see ADR 0002)         |
-| `health`                      | inline                              | Health check (`🫛🌱🌳🍎`)                        |
+| Segment                       | Handler                          | Purpose                                          |
+| ----------------------------- | -------------------------------- | ------------------------------------------------ |
+| `authenticate-hasura-request` | `auth/authenticateHasuraRequest` | Hasura auth webhook — resolves session variables |
+| `actions`                     | `actions.ts` → `handleActions`   | Hasura action handler (auth/user mutations)      |
+| `events`                      | `events.ts` → `handleEvents`     | Hasura event triggers                            |
+| `upload/images`               | `images/upload`                  | Image upload                                     |
+| `upload/attachments`          | `attachments/upload`             | Attachment upload                                |
+| `images/*`                    | `images/download`                | Public image serving (resized/cached)            |
+| `attachments/*`               | `attachments/download`           | Public attachment serving                        |
+| `health`                      | inline                           | Health check (`🫛🌱🌳🍎`)                        |
 
 ## Auth model
 
@@ -31,11 +31,10 @@ One HTTP entry point, [src/index.ts](src/index.ts), routes by the first URL segm
 ## Layout
 
 - [src/auth/](src/auth/) — one file per action + the validators (`validateBackendAuth`, `validateFrontendAuth`, `validatePersonalAccessToken`).
-- [src/images/](src/images/) — the `PHOTO` data type and photo notes: `fileName`, `upload`, `download`, `cache`, `prune` (uses `sharp` for validation and resizing). Stored under `images/`, resized copies under `cache/images/` (deleted by a bucket lifecycle rule).
-- [src/attachments/](src/attachments/) — the `ATTACHMENT` data type: `fileName`, `upload`, `download`, `prune`. Stored under `attachments/`. Only an allowlist of extensions is served inline ([ADR 0002](../docs/adr/0002-attachments-content-addressed-and-public.md)).
-- Images and attachments share the upload handler ([src/lib/upload.ts](src/lib/upload.ts)) and the prune ([src/lib/prune.ts](src/lib/prune.ts)); each kind only provides an `UploadConfig` / `PruneConfig`. The stored file names (without the folder) are what the db holds in `text_value` / `photo_note`.
-- [src/lib/](src/lib/) — shared helpers: `config` (env validation), `crypto`/`personalAccessToken` (`libsodium`, `jose`), `cookies`, `email` (`nodemailer`), `storage`, `upload`, `prune`, `image`, `cacheControl`, `rateLimited`, `errors`, `fetch`.
-- [scripts/](scripts/) — one-off maintenance scripts, run against `dist/` (e.g. `move-images-to-folder.ts`, the migration of the images from the bucket root into `images/`).
+- [src/images/](src/images/) — `upload`, `download`, `cache`, `prune` (uses `sharp` for resizing, `@google-cloud/storage` for the bucket).
+- [src/attachments/](src/attachments/) — `upload`, `download`, `prune`. Only an allowlist of extensions is served inline ([ADR 0002](../docs/adr/0002-attachments-content-addressed-and-public.md)).
+- The db stores the file name without the folder: images in `attribution_values.text_value` (`PHOTO` attributes) or `attribution_values.photo_note`, attachments in `attribution_values.text_value` (`ATTACHMENT` attributes).
+- [src/lib/](src/lib/) — shared helpers: `config` (env validation), `crypto`/`personalAccessToken` (`libsodium`, `jose`), `cookies`, `email` (`nodemailer`), `storage`, `rateLimited`, `errors`, `fetch`.
 - `config.ts` **fails fast on startup** if any required env var is missing (`HASURA_GRAPHQL_URL/ADMIN_SECRET`, `CLOUD_FUNCTION_SECRET/URL`, `PASSWORD_RESET_*`, `EMAIL_*`). When adding config, add the validation there too.
 
 ## Commands

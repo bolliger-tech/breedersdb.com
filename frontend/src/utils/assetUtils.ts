@@ -1,5 +1,6 @@
 import type { CellObject } from 'xlsx';
 import type { AllowedImageSizes } from './imageSizes';
+import { getAttributedEntityName } from './attributeUtils';
 
 // must correspond to the cloud-function's upload limit
 export const UPLOAD_MAX_SIZE = 16 * 1024 * 1024; // bytes
@@ -44,6 +45,23 @@ export function getDownloadFileName({
     .map((part) => String(part).replace(/\s+/g, '-'))
     .join('_');
   return ext ? `${name}.${ext}` : name;
+}
+
+export function getAttributionDownloadFileName(
+  attribution: Parameters<typeof getAttributedEntityName>[0] & {
+    attribute_name: string;
+    date_attributed: string;
+    id: number;
+  },
+  fileName: string,
+) {
+  return getDownloadFileName({
+    fileName,
+    attributeName: attribution.attribute_name,
+    entityName: getAttributedEntityName(attribution) ?? 'unknown',
+    dateAttributed: attribution.date_attributed,
+    attributionId: attribution.id,
+  });
 }
 
 export function getImageUrlRelative({

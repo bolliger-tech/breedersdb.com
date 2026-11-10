@@ -8,10 +8,9 @@
   <AttributionAttachmentLink
     v-else-if="attribution.data_type === 'ATTACHMENT' && attribution.text_value"
     :file-name="attribution.text_value"
-    :attribute-name="attribution.attribute_name"
-    :entity-name="getAttributedEntityName(attribution)"
-    :date-attributed="attribution.date_attributed"
-    :attribution-id="attribution.id"
+    :download-file-name="
+      getAttributionDownloadFileName(attribution, attribution.text_value)
+    "
     :button-size="buttonSize"
   />
   <!-- all other values -->
@@ -23,7 +22,7 @@ import type { QBtnProps } from 'quasar';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import AttributionPhoto from 'src/components/Attribution/AttributionPhoto.vue';
-import { getAttributedEntityName } from 'src/utils/attributeUtils';
+import { getAttributionDownloadFileName } from 'src/utils/assetUtils';
 
 export interface AttributionFileValueProps {
   attribution: CachedAttributionsFragment;

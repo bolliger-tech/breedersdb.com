@@ -9,10 +9,7 @@
       <AttributionAttachmentLink
         v-if="attribution.data_type === 'ATTACHMENT' && attribution.text_value"
         :file-name="attribution.text_value"
-        :attribute-name="attribution.attribute_name"
-        :entity-name="getAttributedEntityName(attribution)"
-        :date-attributed="attribution.date_attributed"
-        :attribution-id="attribution.id"
+        :download-file-name="label"
       />
       <template v-else>{{ n2semicolon(label) }}</template>
     </template>
@@ -40,9 +37,8 @@ import { useI18n } from 'src/composables/useI18n';
 import {
   formatResultColumnValue,
   getAttributionValue,
-  getAttributedEntityName,
 } from 'src/utils/attributeUtils';
-import { getDownloadFileName } from 'src/utils/assetUtils';
+import { getAttributionDownloadFileName } from 'src/utils/assetUtils';
 import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import AnalyzeResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
@@ -63,13 +59,10 @@ const label = computed(() => {
 
   if (type === ColumnTypes.Photo) return t('analyze.result.photo');
   if (type === ColumnTypes.Attachment)
-    return getDownloadFileName({
-      fileName: props.attribution.text_value ?? '',
-      attributeName: props.attribution.attribute_name,
-      entityName: getAttributedEntityName(props.attribution),
-      dateAttributed: props.attribution.date_attributed,
-      attributionId: props.attribution.id,
-    });
+    return getAttributionDownloadFileName(
+      props.attribution,
+      props.attribution.text_value ?? '',
+    );
 
   const value = getAttributionValue(props.attribution);
   return formatResultColumnValue({ value, type, d, n });

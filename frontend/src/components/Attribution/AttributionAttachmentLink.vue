@@ -22,15 +22,11 @@ import { useI18n } from 'src/composables/useI18n';
 import {
   getAttachmentIcon,
   getAttachmentUrlRelative,
-  getDownloadFileName,
 } from 'src/utils/assetUtils';
 
 export interface AttributionAttachmentLinkProps {
   fileName: string;
-  attributeName: string;
-  entityName?: string | undefined;
-  dateAttributed: string;
-  attributionId?: number | undefined;
+  downloadFileName: string;
   buttonSize?: QBtnProps['size'];
 }
 
@@ -38,10 +34,5 @@ const props = defineProps<AttributionAttachmentLinkProps>();
 
 const { t } = useI18n();
 
-const url = computed(() =>
-  getAttachmentUrlRelative({
-    fileName: props.fileName,
-    downloadFileName: getDownloadFileName(props),
-  }),
-);
+const url = computed(() => getAttachmentUrlRelative(props));
 </script>

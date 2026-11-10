@@ -105,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import type { QBtnProps, QDialogProps } from 'quasar';
@@ -113,11 +113,15 @@ import {
   dataTypeToColumnTypes,
   formatResultColumnValue,
   getAttributionValue,
+  getAttributedEntityName,
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { captureException } from '@sentry/browser';
-import { getDownloadFileName, getImageUrlRelative } from 'src/utils/assetUtils';
+import {
+  getAttributionDownloadFileName,
+  getImageUrlRelative,
+} from 'src/utils/assetUtils';
 import type { AllowedImageSizes } from 'src/utils/imageSizes';
 import { imageSizes } from 'src/utils/imageSizes';
 
@@ -143,24 +147,24 @@ const open = defineModel<boolean>({ required: false, default: false });
 
 const { t, d, n } = useI18n();
 
-const entityName = computed(() => {
-  const name =
-    props.attribution.plant?.label_id ??
-    props.attribution.plant_group?.display_name ??
-    props.attribution.cultivar?.display_name ??
-    props.attribution.lot?.display_name;
+const entityName = computed(
+  () => getAttributedEntityName(props.attribution) || 'unknown',
+);
 
-  if (!name) {
+// report here, as entityName is only read when the dialog is open
+watch(
+  () => getAttributedEntityName(props.attribution),
+  (name) => {
+    if (name) return;
     // report but don't fail
     const error = new Error(
       'No entity name found for attribution. Consider using the `cachedAttributionsFragment` with `$CachedAttributionsWithEntites = true`.',
     );
     console.error(error.message, error.stack);
     captureException(error);
-  }
-
-  return name || 'unknown';
-});
+  },
+  { immediate: true },
+);
 
 const entityTypeName = computed(() => {
   return props.attribution.plant
@@ -195,13 +199,10 @@ const description = computed(() => {
   const value = getAttributionValue(props.attribution);
   const formattedValue =
     type === ColumnTypes.Attachment
-      ? getDownloadFileName({
-          fileName: props.attribution.text_value ?? '',
-          attributeName: props.attribution.attribute_name,
-          entityName: entityName.value,
-          dateAttributed: props.attribution.date_attributed,
-          attributionId: props.attribution.id,
-        })
+      ? getAttributionDownloadFileName(
+          props.attribution,
+          props.attribution.text_value ?? '',
+        )
       : formatResultColumnValue({ value, type, d, n });
 
   return {
@@ -211,13 +212,7 @@ const description = computed(() => {
 });
 
 const downloadFileName = computed(() =>
-  getDownloadFileName({
-    fileName: props.fileName,
-    entityName: entityName.value,
-    attributeName: props.attribution.attribute_name,
-    dateAttributed: props.attribution.date_attributed,
-    attributionId: props.attribution.id,
-  }),
+  getAttributionDownloadFileName(props.attribution, props.fileName),
 );
 
 function get2xDim({

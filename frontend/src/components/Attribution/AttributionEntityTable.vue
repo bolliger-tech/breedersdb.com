@@ -13,10 +13,9 @@
       <AttributionAttachmentLink
         v-if="attribution.data_type === 'ATTACHMENT' && attribution.text_value"
         :file-name="attribution.text_value"
-        :attribute-name="attribution.attribute_name"
-        :entity-name="getAttributedEntityName(attribution)"
-        :date-attributed="attribution.date_attributed"
-        :attribution-id="attribution.id"
+        :download-file-name="
+          getAttributionDownloadFileName(attribution, attribution.text_value)
+        "
       />
       <template v-else>{{ getValue(attribution) }}</template>
     </EntityViewTableRow>
@@ -96,10 +95,8 @@ import type { CachedAttributionsFragment } from 'src/components/Attribution/cach
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
-import {
-  formatAttributionValue,
-  getAttributedEntityName,
-} from 'src/utils/attributeUtils';
+import { formatAttributionValue } from 'src/utils/attributeUtils';
+import { getAttributionDownloadFileName } from 'src/utils/assetUtils';
 import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import AttributionPhoto from 'src/components/Attribution/AttributionPhoto.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';

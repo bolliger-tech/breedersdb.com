@@ -6,10 +6,15 @@
     >
       <AttributionAttachmentLink
         :file-name="modelValue"
-        :attribute-name="attributeName"
-        :entity-name="entityName"
-        :date-attributed="dateAttributed ?? ''"
-        :attribution-id="attributionId"
+        :download-file-name="
+          getDownloadFileName({
+            fileName: modelValue,
+            attributeName,
+            entityName,
+            dateAttributed: dateAttributed ?? '',
+            attributionId,
+          })
+        "
       />
       <q-btn
         flat
@@ -51,7 +56,11 @@ import { computed, ref } from 'vue';
 import { format } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
-import { UPLOAD_MAX_SIZE, isFileTooLarge } from 'src/utils/assetUtils';
+import {
+  UPLOAD_MAX_SIZE,
+  getDownloadFileName,
+  isFileTooLarge,
+} from 'src/utils/assetUtils';
 
 export interface AttributionInputAttachmentProps {
   attributeName: string;

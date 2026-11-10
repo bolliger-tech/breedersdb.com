@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import type { AttributeFragment } from 'src/components/Attribute/attributeFragment';
 import { hashFile, useFileUploader } from 'src/composables/useFileUploader';
 
@@ -18,9 +18,9 @@ type WithFileNames<T extends FileFields> = Omit<
 
 export function useAttributionFileUpload() {
   const percentComplete = ref(0);
-  const isUploading = computed(
-    () => percentComplete.value > 0 && percentComplete.value < 100,
-  );
+  // not derived from percentComplete: it stays below 100 if an upload fails
+  // and reaches 100 before the server has answered
+  const isUploading = ref(false);
 
   const bytes = { total: 0, completed: 0 };
   const { upload } = useFileUploader((progress) => {
@@ -52,14 +52,19 @@ export function useAttributionFileUpload() {
     bytes.completed = 0;
 
     const fileNames = new Map<File, string>();
-    for (const { file, kind } of uploads) {
-      const { fileName } = await upload(
-        file,
-        await hashFile(file),
-        `/api/assets/upload/${kind}`,
-      );
-      fileNames.set(file, fileName);
-      bytes.completed += file.size;
+    isUploading.value = uploads.length > 0;
+    try {
+      for (const { file, kind } of uploads) {
+        const { fileName } = await upload(
+          file,
+          await hashFile(file),
+          `/api/assets/upload/${kind}`,
+        );
+        fileNames.set(file, fileName);
+        bytes.completed += file.size;
+      }
+    } finally {
+      isUploading.value = false;
     }
 
     const toFileName = (file: File | string | null | undefined) =>

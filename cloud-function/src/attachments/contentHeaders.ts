@@ -1,4 +1,6 @@
-import { ATTACHMENT_FILE_NAME_REGEX } from './fileName';
+import { ATTACHMENT_FILE_NAME_REGEX, EXTENSION_PATTERN } from './fileName';
+
+const TRAILING_EXTENSION_REGEX = new RegExp(`\\.${EXTENSION_PATTERN}$`, 'i');
 
 // Only types that can't run scripts may be rendered by the browser.
 // See docs/adr/0002-attachments-content-addressed-and-public.md
@@ -47,7 +49,7 @@ function getDownloadName(displayName: string, ext: string | undefined) {
   const baseName = displayName
     .replace(/[/\\\x00-\x1f\x7f]/g, '')
     .trim()
-    .replace(/\.[a-z0-9]{1,10}$/i, '');
+    .replace(TRAILING_EXTENSION_REGEX, '');
   if (!baseName) {
     return '';
   }

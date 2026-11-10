@@ -1,6 +1,13 @@
 import { Storage, type GetFilesOptions } from '@google-cloud/storage';
 
+let gcs: ReturnType<typeof createGCS> | undefined;
+
+// reuse the client, so its access token is cached across requests
 function getGCS() {
+  return (gcs ??= createGCS());
+}
+
+function createGCS() {
   const GOOGLE_APPLICATION_CREDENTIALS_BASE64 =
     process.env.GOOGLE_APPLICATION_CREDENTIALS_BASE64;
   const GOOGLE_STORAGE_PROJECT_ID = process.env.GOOGLE_STORAGE_PROJECT_ID;
@@ -75,4 +82,10 @@ export function deleteFile(fileName: string) {
   const { storage, bucketName } = getGCS();
 
   return storage.bucket(bucketName).file(fileName).delete();
+}
+
+// GCS also answers 404 for a missing bucket. That is a misconfiguration, not a
+// missing file, so it must surface as a server error.
+export function isNotFoundError(e: any) {
+  return e.code === 404 && !e.message.includes('bucket does not exist');
 }

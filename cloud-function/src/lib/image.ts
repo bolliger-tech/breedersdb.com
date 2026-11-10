@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { downloadFile, uploadFile } from './storage';
+import { downloadFile, isNotFoundError, uploadFile } from './storage';
 import { buffer } from 'node:stream/consumers';
 
 export type CacheConfig = {
@@ -60,7 +60,7 @@ async function getResized({
   try {
     return await buffer(resizedFile);
   } catch (e: any) {
-    if (e.code === 404 || e.message.includes('No such object')) {
+    if (isNotFoundError(e)) {
       // cache miss - carry on and render the resized image below
     } else {
       throw e;

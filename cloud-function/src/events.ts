@@ -1,8 +1,9 @@
 import * as ff from '@google-cloud/functions-framework';
 import { ErrorWithStatus } from './lib/errors';
 import { config } from './lib/config';
-import { pruneImages } from './images/prune';
-import { pruneAttachments } from './attachments/prune';
+import { pruneUnreferencedFiles } from './lib/prune';
+import { imagePruneConfig } from './images/prune';
+import { attachmentPruneConfig } from './attachments/prune';
 import { validateBackendAuth } from './auth/validateBackendAuth';
 import type { EventResult } from './types';
 
@@ -23,8 +24,8 @@ export async function handleEvents(req: ff.Request, res: ff.Response) {
       case 'PruneAssets': {
         // a failure in one must not skip the other
         const [images, attachments] = await Promise.allSettled([
-          pruneImages(),
-          pruneAttachments(),
+          pruneUnreferencedFiles(imagePruneConfig),
+          pruneUnreferencedFiles(attachmentPruneConfig),
         ]);
         if (images.status === 'rejected') {
           throw images.reason;

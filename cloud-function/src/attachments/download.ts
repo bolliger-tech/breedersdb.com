@@ -1,5 +1,5 @@
 import * as ff from '@google-cloud/functions-framework';
-import { downloadFile, getFileSize } from '../lib/storage';
+import { downloadFile, getFileSize, isNotFoundError } from '../lib/storage';
 import {
   ATTACHMENT_FILE_NAME_REGEX,
   ATTACHMENT_STORAGE_PREFIX,
@@ -37,7 +37,7 @@ export async function handleAttachmentDownload(
   try {
     size = await getFileSize(storageFileName);
   } catch (e: any) {
-    if (e.code === 404 || e.message.includes('No such object')) {
+    if (isNotFoundError(e)) {
       return res.status(404).send('Not Found');
     }
     console.error('Error downloading file:', e);
@@ -53,11 +53,7 @@ export async function handleAttachmentDownload(
   }
 
   setImmutableCacheControl(res);
-  for (const [name, value] of Object.entries(
-    getContentHeaders(fileName, displayName),
-  )) {
-    res.setHeader(name, value);
-  }
+  res.set(getContentHeaders(fileName, displayName));
   res.setHeader('X-Content-Type-Options', 'nosniff');
 
   if (range) {

@@ -1,6 +1,6 @@
 import { ErrorWithStatus } from '../lib/errors';
 import { fetchGraphQL } from '../lib/fetch';
-import { pruneUnreferencedFiles, type PruneConfig } from '../lib/prune';
+import type { PruneConfig } from '../lib/prune';
 import {
   ReferencedAttachmentsQuery,
   type ReferencedAttachmentsQueryResponse,
@@ -9,13 +9,6 @@ import {
   ATTACHMENT_FILE_NAME_REGEX,
   ATTACHMENT_STORAGE_PREFIX,
 } from './fileName';
-
-/**
- * Deletes attachments that are not referenced in the database (attribute_values).
- */
-export function pruneAttachments() {
-  return pruneUnreferencedFiles(attachmentPruneConfig);
-}
 
 async function getReferenced(fileNames: string[]) {
   const data = await fetchGraphQL({

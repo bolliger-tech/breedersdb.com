@@ -259,9 +259,14 @@ const collisions = computed<Map<number, Collision<CachedAttributionsFragment>>>(
         }),
 );
 
-// not shown during the refetch after saving, like the frozen collisions
+// the hints are frozen once saved: the refetch after saving finds the just
+// saved values, which would change the hints during the save transition
+const isSaved = computed(
+  () => !!insertedAttribution.value || !!editedAttribution.value,
+);
+
 const uniqueValuesCheck = computed<UniqueValuesCheck | undefined>(() => {
-  if (insertedAttribution.value) return undefined;
+  if (isSaved.value) return undefined;
   if (fetchingExistingUniqueValues.value) return 'pending';
   if (existingUniqueValuesError.value) return 'failed';
   return undefined;
@@ -269,9 +274,8 @@ const uniqueValuesCheck = computed<UniqueValuesCheck | undefined>(() => {
 
 // none until the existing values are loaded. includes the values of the
 // edited attribution, which aren't collisions but are filled.
-// frozen once inserted, like the collisions.
 const unfilledUniqueAttributeIds = computed<Set<number>>((previous) => {
-  if (insertedAttribution.value && previous) return previous;
+  if (isSaved.value && previous) return previous;
   if (
     fetchingExistingUniqueValues.value ||
     existingUniqueValuesError.value ||
@@ -453,6 +457,7 @@ const editMutation = graphql(`
 `);
 
 const {
+  data: editedAttribution,
   fetching: savingEdit,
   error: saveEditError,
   ...urqlEdit

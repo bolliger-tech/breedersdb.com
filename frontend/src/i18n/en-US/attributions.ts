@@ -83,6 +83,16 @@ export const attributions = {
     sameAgainWarning: 'This form contains this attribute multiple times.',
 
     uniqueOnce: 'only once',
+    uniqueHint: {
+      block: {
+        base: 'Can be assigned {once}, {emphasis} be overwritten.',
+        emphasis: 'cannot',
+      },
+      replace: {
+        base: 'Can be assigned {once}, {emphasis}.',
+        emphasis: 'overwritable',
+      },
+    },
     uniqueBlocked: {
       base: 'Already recorded on {date} by {author}. The attribute can be assigned {once} and cannot be overwritten ({blocking}).',
       blocking: 'blocking',

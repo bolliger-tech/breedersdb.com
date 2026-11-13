@@ -60,6 +60,25 @@
             :locked="isLocked(field.priority)"
           />
         </template>
+        <template
+          v-else-if="field.attribute.cardinality !== 'REPEATABLE'"
+          #hint
+        >
+          <i18n-t
+            :keypath="`${uniqueHintKey(field.attribute.cardinality)}.base`"
+            scope="global"
+            tag="span"
+          >
+            <template #once
+              ><strong>{{ t('attributions.add.uniqueOnce') }}</strong></template
+            >
+            <template #emphasis
+              ><strong>{{
+                t(`${uniqueHintKey(field.attribute.cardinality)}.emphasis`)
+              }}</strong></template
+            >
+          </i18n-t>
+        </template>
       </AttributionInput>
     </li>
   </ul>
@@ -108,6 +127,12 @@ const modelValue = defineModel<{ [key: number]: AttributionInputValue }>({
 
 function count(fieldId: number): number {
   return props.fields.filter((field) => field.attribute.id === fieldId).length;
+}
+
+function uniqueHintKey(cardinality: AttributeFragment['cardinality']) {
+  return cardinality === 'UNIQUE_BLOCK'
+    ? 'attributions.add.uniqueHint.block'
+    : 'attributions.add.uniqueHint.replace';
 }
 
 function isLocked(priority: number): boolean {

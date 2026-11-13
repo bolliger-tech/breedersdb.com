@@ -96,6 +96,7 @@ implicitly (modal opens) by the CRUD specs.
 | Cardinality unique-replace: hint, old value replaced      | done   | `attribute-cardinality.spec.ts`    | the hint refetches after save (re-pick the entity)                                                                                                        |
 | Switch to unique rejected while duplicates exist          | done   | `attribute-cardinality.spec.ts`    | the form checks `attributes.duplicated_entities_count` before saving and shows a translated inline error (Hasura hides the trigger message in production) |
 | Unique attribute filled twice in one form blocks the save | done   | `attribute-cardinality.spec.ts`    | inline error on each filled field + save tooltip, nothing is saved                                                                                        |
+| Cardinality hint on unique attributes not yet filled      | done   | `attribute-cardinality.spec.ts`    | block + replace text, none on repeatable. Not covered: hidden while loading, on query error and in edit mode                                              |
 
 ## Analyze (`/{cultivars,plants,groups,lots}/analyze`)
 

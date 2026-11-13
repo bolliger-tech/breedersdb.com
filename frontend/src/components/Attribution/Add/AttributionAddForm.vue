@@ -22,6 +22,7 @@
       :collisions="collisions"
       :locked-priorities="lockedPriorities"
       :repeated-unique-priorities="repeatedUniquePriorities"
+      :hide-unfilled-unique-hints="hideUnfilledUniqueHints"
       :entity-name="attributedEntityName"
       :date-attributed="date"
       @unlock="unlock"
@@ -251,6 +252,18 @@ const collisions = computed<Map<number, Collision<CachedAttributionsFragment>>>(
             []) as CachedAttributionsFragment[],
           editedAttributionId: props.editId,
         }),
+);
+
+// whether a value is unfilled is unknown until the existing values are loaded.
+// when editing, the edited values aren't collisions, but are filled.
+// frozen once inserted, like the collisions.
+const hideUnfilledUniqueHints = computed<boolean>((previous) =>
+  insertedAttribution.value && previous !== undefined
+    ? previous
+    : !!props.editId ||
+      fetchingExistingUniqueValues.value ||
+      !!existingUniqueValuesError.value ||
+      !existingUniqueValues.value,
 );
 
 // replacing values must be unlocked explicitly

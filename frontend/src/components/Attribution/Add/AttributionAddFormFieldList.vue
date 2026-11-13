@@ -54,30 +54,12 @@
             "
           />
         </template>
-        <template v-if="collisions?.has(field.attribute.id)" #hint>
-          <AttributionAddCollisionHint
-            :collision="collisions.get(field.attribute.id)!"
+        <template v-if="showUniqueHint(field.attribute)" #hint>
+          <AttributionAddUniqueHint
+            :cardinality="field.attribute.cardinality"
+            :collision="collisions?.get(field.attribute.id)"
             :locked="isLocked(field.priority)"
           />
-        </template>
-        <template
-          v-else-if="field.attribute.cardinality !== 'REPEATABLE'"
-          #hint
-        >
-          <i18n-t
-            :keypath="`${uniqueHintKey(field.attribute.cardinality)}.base`"
-            scope="global"
-            tag="span"
-          >
-            <template #once
-              ><strong>{{ t('attributions.add.uniqueOnce') }}</strong></template
-            >
-            <template #emphasis
-              ><strong>{{
-                t(`${uniqueHintKey(field.attribute.cardinality)}.emphasis`)
-              }}</strong></template
-            >
-          </i18n-t>
         </template>
       </AttributionInput>
     </li>
@@ -93,7 +75,7 @@ import type { AttributeFragment } from 'src/components/Attribute/attributeFragme
 import { type InputRef } from 'src/composables/useEntityForm';
 import { useI18n } from 'src/composables/useI18n';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
-import AttributionAddCollisionHint from './AttributionAddCollisionHint.vue';
+import AttributionAddUniqueHint from './AttributionAddUniqueHint.vue';
 import type { Collision } from './findCollisions';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { cachedAttributionToInputValue } from 'src/components/Attribution/cachedAttributionToInputValue';
@@ -109,6 +91,7 @@ export interface AttributionAddFormFieldListProps {
   collisions?: Map<number, Collision<CachedAttributionsFragment>>;
   lockedPriorities?: Set<number>;
   repeatedUniquePriorities?: Set<number>;
+  hideUnfilledUniqueHints?: boolean;
   entityName?: string | undefined;
   dateAttributed?: string | undefined;
 }
@@ -129,10 +112,11 @@ function count(fieldId: number): number {
   return props.fields.filter((field) => field.attribute.id === fieldId).length;
 }
 
-function uniqueHintKey(cardinality: AttributeFragment['cardinality']) {
-  return cardinality === 'UNIQUE_BLOCK'
-    ? 'attributions.add.uniqueHint.block'
-    : 'attributions.add.uniqueHint.replace';
+function showUniqueHint(attribute: AttributeFragment): boolean {
+  if (props.collisions?.has(attribute.id)) return true;
+  return (
+    attribute.cardinality !== 'REPEATABLE' && !props.hideUnfilledUniqueHints
+  );
 }
 
 function isLocked(priority: number): boolean {

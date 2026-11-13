@@ -53,7 +53,9 @@ test('unique block: a recorded value disables the input', async ({
 
   await walkToForm(page, form.name, cultivar.display_name);
   const field = formField(page, name);
-  await expect(field.locator('.attribution-add-collision-hint')).toHaveCount(0);
+  await expect(field.locator('.attribution-add-unique-hint')).toHaveText(
+    'Can be assigned only once, cannot be overwritten.',
+  );
   await field.locator('textarea').fill('first');
   await saveAttribution(page);
 
@@ -175,14 +177,24 @@ test('a unique attribute can only be filled once per attribution', async ({
     dataType: 'TEXT',
     cardinality: 'UNIQUE_REPLACE',
   });
+  const repeatable = await seed.attribute({ dataType: 'TEXT' });
   const form = await seed.attributionForm([
     { id: attribute.id },
     { id: attribute.id },
+    { id: repeatable.id },
   ]);
   const cultivar = await seed.cultivar();
 
   await walkToForm(page, form.name, cultivar.display_name);
   const fields = formField(page, attribute.name);
+  for (const i of [0, 1]) {
+    await expect(
+      fields.nth(i).locator('.attribution-add-unique-hint'),
+    ).toHaveText('Can be assigned only once, overwritable.');
+  }
+  await expect(
+    formField(page, repeatable.name).locator('.attribution-add-unique-hint'),
+  ).toHaveCount(0);
   await fields.nth(0).locator('textarea').fill('one');
   await expect(page.getByText('may only be filled once')).toHaveCount(0);
   await fields.nth(1).locator('textarea').fill('two');
@@ -307,7 +319,7 @@ for (const { cardinality, hintText } of [
       [attrs.photo.name, '.attribute-form-input-photo'],
     ];
     for (const [name, controlSelector] of controls) {
-      const hint = field(name).locator('.attribution-add-collision-hint');
+      const hint = field(name).locator('.attribution-add-unique-hint');
       await expect(hint).toHaveText(hintText);
       if (cardinality === 'UNIQUE_REPLACE') {
         await expect(

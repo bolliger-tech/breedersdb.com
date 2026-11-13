@@ -3,10 +3,12 @@
     :keypath="keypath"
     scope="global"
     tag="span"
-    class="attribution-add-collision-hint"
+    class="attribution-add-unique-hint"
   >
-    <template #date>{{ date }}</template>
-    <template #author>{{ collision.existingValue.author }}</template>
+    <template v-if="collision" #date>{{ date }}</template>
+    <template v-if="collision" #author>{{
+      collision.existingValue.author
+    }}</template>
     <template #once
       ><strong>{{ t('attributions.add.uniqueOnce') }}</strong></template
     >
@@ -20,7 +22,10 @@
         t('attributions.add.uniqueReplace.replaces')
       }}</strong></template
     >
-    <template #value>{{ value }}</template>
+    <template #emphasis
+      ><strong>{{ t(`${unfilledKey}.emphasis`) }}</strong></template
+    >
+    <template v-if="collision" #value>{{ value }}</template>
   </i18n-t>
 </template>
 
@@ -28,19 +33,39 @@
 import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
+import type { AttributeCardinalities } from 'src/graphql';
 import type { Collision } from './findCollisions';
 import { formatAttributionValue } from 'src/utils/attributeUtils';
 
-export interface AttributionAddCollisionHintProps {
-  collision: Collision<CachedAttributionsFragment>;
+export interface AttributionAddUniqueHintProps {
+  cardinality: AttributeCardinalities;
+  collision?: Collision<CachedAttributionsFragment> | undefined;
   locked: boolean;
 }
 
-const props = defineProps<AttributionAddCollisionHintProps>();
+const props = defineProps<AttributionAddUniqueHintProps>();
 
 const { t, d, n } = useI18n();
 
+const unfilledKey = computed(() => {
+  const key = {
+    UNIQUE_BLOCK: 'attributions.add.uniqueHint.block',
+    UNIQUE_REPLACE: 'attributions.add.uniqueHint.replace',
+  }[props.cardinality as string];
+
+  if (typeof key === 'undefined') {
+    throw Error(
+      `No unique hint for attribute.cardinality: ${props.cardinality}`,
+    );
+  }
+
+  return key;
+});
+
 const keypath = computed(() => {
+  if (!props.collision) {
+    return `${unfilledKey.value}.base`;
+  }
   if (props.collision.behavior === 'BLOCK') {
     return 'attributions.add.uniqueBlocked.base';
   }
@@ -50,17 +75,17 @@ const keypath = computed(() => {
 });
 
 const date = computed(() =>
-  d(props.collision.existingValue.date_attributed, 'Ymd'),
+  d(props.collision!.existingValue.date_attributed, 'Ymd'),
 );
 
 const value = computed(() => {
-  const dataType = props.collision.existingValue.data_type;
+  const dataType = props.collision!.existingValue.data_type;
 
   if (dataType === 'PHOTO') return t('analyze.result.photo');
   if (dataType === 'ATTACHMENT') return t('analyze.result.attachment');
 
   return formatAttributionValue({
-    attribution: props.collision.existingValue,
+    attribution: props.collision!.existingValue,
     d,
     n,
   });

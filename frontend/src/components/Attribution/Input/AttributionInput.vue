@@ -86,9 +86,20 @@
       />
       <AttributionInputPhoto
         v-else-if="attribute.data_type === 'PHOTO'"
-        :model-value="shownValue?.photo_value ?? null"
+        :model-value="shownValue?.file_value ?? null"
         @update:model-value="
-          (val: File | string | null) => updateModelValue({ photo_value: val })
+          (val: File | string | null) => updateModelValue({ file_value: val })
+        "
+      />
+      <AttributionInputAttachment
+        v-else-if="attribute.data_type === 'ATTACHMENT'"
+        :model-value="shownValue?.file_value ?? null"
+        :attribute-name="attribute.name"
+        :entity-name="entityName"
+        :date-attributed="dateAttributed"
+        :attribution-id="attributionId"
+        @update:model-value="
+          (val: File | string | null) => updateModelValue({ file_value: val })
         "
       />
       <AttributionInputEnum
@@ -167,6 +178,7 @@ import AttributionInputText from 'src/components/Attribution/Input/AttributionIn
 import AttributionInputDate from 'src/components/Attribution/Input/AttributionInputDate.vue';
 import AttributionInputBoolean from 'src/components/Attribution/Input/AttributionInputBoolean.vue';
 import AttributionInputPhoto from 'src/components/Attribution/Input/AttributionInputPhoto.vue';
+import AttributionInputAttachment from 'src/components/Attribution/Input/AttributionInputAttachment.vue';
 import AttributionInputEnum from 'src/components/Attribution/Input/AttributionInputEnum.vue';
 import AttributionInputNote from 'src/components/Attribution/Input/AttributionInputNote.vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
@@ -182,6 +194,10 @@ export interface AttributionInputProps {
   disable?: boolean;
   // shown instead of the model value, e.g. an existing value that blocks input
   displayValue?: AttributionInputValue;
+  // only used to name an already stored attachment
+  entityName?: string | undefined;
+  dateAttributed?: string | undefined;
+  attributionId?: number | undefined;
 }
 
 export type AttributionInputValue =
@@ -194,7 +210,8 @@ export type AttributionInputValue =
       integer_value?: number | null | undefined;
       text_note?: string | null | undefined;
       text_value?: string | null | undefined;
-      photo_value?: File | string | null | undefined;
+      // photos and attachments: a new file or the stored file name
+      file_value?: File | string | null | undefined;
       photo_note?: File | string | null | undefined;
       attribute_enum_option_id?: number | null | undefined;
     }
@@ -248,7 +265,7 @@ async function clearModelValue() {
   modelValue.value.text_value = null;
   modelValue.value.boolean_value = null;
   modelValue.value.date_value = null;
-  modelValue.value.photo_value = null;
+  modelValue.value.file_value = null;
   modelValue.value.attribute_enum_option_id = null;
   modelValue.value.text_note = null;
   modelValue.value.photo_note = null;
@@ -267,7 +284,7 @@ function updateModelValue({
   text_value,
   boolean_value,
   date_value,
-  photo_value,
+  file_value,
   attribute_enum_option_id,
   text_note,
   photo_note,
@@ -277,7 +294,7 @@ function updateModelValue({
   text_value?: string | null;
   boolean_value?: boolean | null;
   date_value?: string | null;
-  photo_value?: File | string | null;
+  file_value?: File | string | null;
   attribute_enum_option_id?: number | null;
   text_note?: string | null;
   photo_note?: File | string | null;
@@ -289,7 +306,7 @@ function updateModelValue({
     text_value: null,
     boolean_value: null,
     date_value: null,
-    photo_value: null,
+    file_value: null,
     attribute_enum_option_id: null,
     exceptional_attribution: props.exceptional,
     text_note: null,
@@ -302,7 +319,7 @@ function updateModelValue({
       text_value === null ||
       boolean_value === null ||
       date_value === null ||
-      photo_value === null ||
+      file_value === null ||
       attribute_enum_option_id === null) &&
     (model.text_note || model.photo_note)
   ) {
@@ -318,8 +335,7 @@ function updateModelValue({
   model.boolean_value =
     boolean_value === undefined ? model.boolean_value : boolean_value;
   model.date_value = date_value === undefined ? model.date_value : date_value;
-  model.photo_value =
-    photo_value === undefined ? model.photo_value : photo_value;
+  model.file_value = file_value === undefined ? model.file_value : file_value;
   model.attribute_enum_option_id =
     attribute_enum_option_id === undefined
       ? model.attribute_enum_option_id
@@ -347,7 +363,7 @@ function setDefaultValue() {
     integer_value:
       data_type === 'INTEGER' || data_type === 'RATING' ? default_value : null,
     text_value: data_type === 'TEXT' ? default_value : null,
-    photo_value: null, // default_value is not supported for photos
+    file_value: null, // default_value is not supported for photos and attachments
     attribute_enum_option_id: enumDefaultId,
   });
 }

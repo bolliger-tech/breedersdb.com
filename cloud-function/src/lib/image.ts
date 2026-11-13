@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { downloadFile, uploadFile } from './storage';
+import { downloadFile, isNotFoundError, uploadFile } from './storage';
 import { buffer } from 'node:stream/consumers';
 
 export type CacheConfig = {
@@ -7,7 +7,10 @@ export type CacheConfig = {
     width: number | undefined | null;
     height: number | undefined | null;
   }[];
-  prefix: string;
+  // where the full size images are stored
+  storagePrefix: string;
+  // where the resized images are stored
+  cachePrefix: string;
 };
 
 export async function getCachedImageAsBuffer({
@@ -23,11 +26,11 @@ export async function getCachedImageAsBuffer({
 }) {
   return width || height
     ? await getResized({ fullSizeFileName: fileName, width, height, config })
-    : await getFullSize(fileName);
+    : await getFullSize(fileName, config);
 }
 
-async function getFullSize(fileName: string) {
-  const file = downloadFile(fileName);
+async function getFullSize(fileName: string, config: CacheConfig) {
+  const file = downloadFile(config.storagePrefix + fileName);
   return await buffer(file);
 }
 
@@ -49,15 +52,15 @@ async function getResized({
   if (!width && !height) throw new Error('Either width or height must be set.');
 
   const [hash, ext] = fullSizeFileName.split('.');
-  const resizedFileName = `${config.prefix}${hash}-${width ?? 0}x${height ?? 0}.${ext}`;
+  const resizedFileName = `${config.cachePrefix}${hash}-${width ?? 0}x${height ?? 0}.${ext}`;
 
   const resizedFile = downloadFile(resizedFileName);
-  const fullSizeFile = downloadFile(fullSizeFileName);
+  const fullSizeFile = downloadFile(config.storagePrefix + fullSizeFileName);
 
   try {
     return await buffer(resizedFile);
   } catch (e: any) {
-    if (e.code === 404 || e.message.includes('No such object')) {
+    if (isNotFoundError(e)) {
       // cache miss - carry on and render the resized image below
     } else {
       throw e;

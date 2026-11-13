@@ -104,6 +104,8 @@ export const attributions = {
     invalidNumber:
       'Invalid number. Valid values are between {min} and {max} with a step of {step}.',
     invalidPhoto: 'Invalid or unsupported image.',
+    selectAttachment: 'Select file',
+    attachmentTooLarge: 'The file is larger than {max} MB.',
     invalidInput: 'Some inputs are invalid. Please check the form.',
     notCurrentYearMonth:
       'The selected date is outside the current year or month.',

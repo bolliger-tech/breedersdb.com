@@ -1234,6 +1234,89 @@ test('insert PHOTO wrong column', async () => {
   );
 });
 
+const attachmentHash =
+  'b51fd56a7e0528c5c35f2669750e2c65b51fd56a7e0528c5c35f2669750e2c65';
+
+async function insertAttachmentValue(variables) {
+  const attribution = await postOrFail({
+    query: insertAttributionMutation,
+    variables: {
+      author: 'Attribution Author',
+      date_attributed: '2021-01-01',
+      attribution_form_name: 'Attribution Form 1',
+      lot_name_segment: '24A',
+      crossing_name: 'Cross1',
+    },
+  });
+
+  return post({
+    query: insertMutation,
+    variables: {
+      exceptional_attribution: false,
+      attribution_id: attribution.data.insert_attributions_one.id,
+      attribute_name: 'Attribution Attribute 1',
+      attribute_type: 'OBSERVATION',
+      attribute_data_type: 'ATTACHMENT',
+      ...variables,
+    },
+  });
+}
+
+test.each([
+  `${attachmentHash}.pdf`,
+  `${attachmentHash}.jpg`,
+  `${attachmentHash}.7z`,
+  `${attachmentHash}.abcdefghij`,
+  attachmentHash,
+])('insert ATTACHMENT %s', async (text_value) => {
+  const resp = await insertAttachmentValue({ text_value });
+
+  expect(resp.errors).toBeUndefined();
+  expect(resp.data.insert_attribution_values_one.text_value).toBe(text_value);
+});
+
+test.each([
+  `${attachmentHash}.PDF`,
+  `${attachmentHash.toUpperCase()}.pdf`,
+  `${attachmentHash}.abcdefghijk`,
+  `${attachmentHash}.`,
+  `${attachmentHash}.tar.gz`,
+  `${attachmentHash}.p-f`,
+  'b51fd56a7e0528c5c35f2669750e2c65.pdf',
+  `${attachmentHash}a.pdf`,
+  `../${attachmentHash}.pdf`,
+  `attachments/${attachmentHash}.pdf`,
+  'a file.pdf',
+])('insert ATTACHMENT %s invalid', async (text_value) => {
+  const resp = await insertAttachmentValue({ text_value });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    "The attachment's filename must match /^[0-9a-f]{64}(\\.[a-z0-9]{1,10})?$/.",
+  );
+});
+
+test('insert ATTACHMENT wrong column', async () => {
+  const resp = await insertAttachmentValue({ integer_value: 1 });
+
+  expect(resp.errors[0].extensions.internal.error.message).toBe(
+    'The value type does not match the attribute type.',
+  );
+});
+
+test('insert ATTACHMENT with text_note and photo_note', async () => {
+  const resp = await insertAttachmentValue({
+    text_value: `${attachmentHash}.pdf`,
+    text_note: 'Note 1',
+    photo_note: `${attachmentHash}.jpg`,
+  });
+
+  expect(resp.errors).toBeUndefined();
+  expect(resp.data.insert_attribution_values_one.text_note).toBe('Note 1');
+  expect(resp.data.insert_attribution_values_one.photo_note).toBe(
+    `${attachmentHash}.jpg`,
+  );
+});
+
 test('modified', async () => {
   const attribution = await postOrFail({
     query: insertAttributionMutation,

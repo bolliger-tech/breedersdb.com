@@ -167,6 +167,26 @@ export const ReferencedImagesQuery = /* GraphQL */ `
   }
 `;
 
+export type ReferencedAttachmentsQueryResponse = {
+  attribution_values: Array<{
+    text_value: string;
+  }>;
+};
+export const ReferencedAttachmentsQuery = /* GraphQL */ `
+  query QueryReferencedAttachments($attachments: [citext!]!) {
+    attribution_values(
+      where: {
+        _and: [
+          { text_value: { _in: $attachments } }
+          { attribute: { data_type: { _eq: ATTACHMENT } } }
+        ]
+      }
+    ) {
+      text_value
+    }
+  }
+`;
+
 export type LoggedActionsQueryResponse = {
   logged_actions: Array<{
     id: number;

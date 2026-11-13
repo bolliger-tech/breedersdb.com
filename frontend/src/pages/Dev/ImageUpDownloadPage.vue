@@ -43,8 +43,8 @@ import { ref, computed } from 'vue';
 import type {
   UploadProgress,
   UploadResponse,
-} from 'src/composables/useImageUploader';
-import { useImageUploader, hashFile } from 'src/composables/useImageUploader';
+} from 'src/composables/useFileUploader';
+import { useFileUploader, hashFile } from 'src/composables/useFileUploader';
 import { resizeImageFile } from 'src/utils/imageResizer';
 
 const MAX_IMAGE_SIZE = 3840; // longest side, 4k
@@ -67,7 +67,7 @@ function handleProgress(progress: UploadProgress) {
   message.value = progress.errorMessage || '';
 }
 
-const { upload, abort } = useImageUploader(handleProgress);
+const { upload, abort } = useFileUploader(handleProgress);
 
 async function onSubmit() {
   if (!fileInput.value?.files?.[0]) {
@@ -105,7 +105,11 @@ async function onSubmit() {
 
   try {
     const fileHash = await hashFile(resizedFile);
-    const response = await upload(resizedFile, fileHash, '/api/assets/upload');
+    const response = await upload(
+      resizedFile,
+      fileHash,
+      '/api/assets/upload/images',
+    );
     message.value = 'Upload successful 🎉';
     uploadedFile.value = response;
   } catch (error) {

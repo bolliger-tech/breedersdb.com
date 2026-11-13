@@ -132,6 +132,7 @@ export class FilterRuleOperator {
           ColumnTypes.DateTime,
           ColumnTypes.Time,
           ColumnTypes.Photo,
+          ColumnTypes.Attachment,
         ];
       case FilterOperatorValue.True:
       case FilterOperatorValue.False:

@@ -14,23 +14,27 @@ export interface UploadResponse {
 }
 
 export async function hashFile(file: File): Promise<string> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
       const buffer = reader.result as ArrayBuffer;
-      void crypto.subtle.digest('SHA-256', buffer).then((hash) => {
+      crypto.subtle.digest('SHA-256', buffer).then((hash) => {
         const hashArray = Array.from(new Uint8Array(hash));
         const hashHex = hashArray
           .map((byte) => byte.toString(16).padStart(2, '0'))
           .join('');
         resolve(hashHex);
-      });
+      }, reject);
     };
+    reader.onerror = () =>
+      reject(
+        new Error(`Failed to read file: ${file.name}`, { cause: reader.error }),
+      );
     reader.readAsArrayBuffer(file);
   });
 }
 
-export function useImageUploader(
+export function useFileUploader(
   onProgress: (progress: UploadProgress) => void,
 ) {
   const xhr = ref<XMLHttpRequest | null>(null);

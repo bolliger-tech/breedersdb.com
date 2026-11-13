@@ -1,13 +1,5 @@
 import type { CacheConfig } from '../lib/image';
-
-// prefix corresponds to a bucket lifecycle rule
-// that deletes files after some time.
-// see deployment for details.
-const CACHE_PREFIX = 'cached-';
-
-export const FILE_NAME_REGEX = new RegExp(
-  `^(?:${CACHE_PREFIX})?(\\w+)(?:-\\d+x\\d+)?\\.(\\w+)$`,
-);
+import { IMAGE_STORAGE_PREFIX } from './fileName';
 
 export const imageCacheConfig: CacheConfig = {
   allowedDimensions: [
@@ -26,5 +18,8 @@ export const imageCacheConfig: CacheConfig = {
     { width: null, height: 400 },
     { width: null, height: 800 },
   ],
-  prefix: CACHE_PREFIX,
+  storagePrefix: IMAGE_STORAGE_PREFIX,
+  // corresponds to a bucket lifecycle rule that deletes files after some time.
+  // see deployment for details.
+  cachePrefix: 'cache/images/',
 };

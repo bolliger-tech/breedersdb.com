@@ -60,25 +60,27 @@ Template-create (`new/:templateId`) where the UI offers it.
 The options editor (`AttributeEnumOptionsInput`) plus everything downstream of
 an enum option: recorded values, renames, disabling, Analyze.
 
-| Feature                                                       | Status | Spec                             | Notes                                                                                             |
-| ------------------------------------------------------------- | ------ | -------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Create with a pre-selected and a disabled option              | done   | `attributes.spec.ts`             | enum has no "Default value" field; the view modal's preview starts on the pre-selected option     |
-| Options editor validation: empty / duplicate / zero options   | done   | `attributes.spec.ts`             | the messages render inline, the modal stays open and nothing is persisted                         |
-| In-use option: delete blocked + tooltip; add / delete unused  | done   | `attribute-enum-options.spec.ts` | usage comes from `attribution_values.attribute_enum_option_id`                                    |
-| Rename an in-use option relabels existing attributions        | done   | `attribute-enum-options.spec.ts` | the denormalized `cached_attributions.text_value` follows the rename                              |
-| Disable an in-use option: value kept, hidden from new pickers | done   | `attribute-enum-options.spec.ts` | `AttributionInputEnum` keeps a disabled option visible when it is the current value               |
-| Edit a recorded selection value                               | done   | `attributions.spec.ts`           | the edit modal's control is a picker, not a text input                                            |
-| Analyze: enum as a result column and as a filter rule         | done   | `analyze-results.spec.ts`        | the term control is a picker (`selectFilterTerm`); its GraphQL variable is `citext`, not `String` |
+| Feature                                                       | Status | Spec                             | Notes                                                                                                             |
+| ------------------------------------------------------------- | ------ | -------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Create with a pre-selected and a disabled option              | done   | `attributes.spec.ts`             | enum has no "Default value" field; the view modal's preview starts on the pre-selected option                     |
+| Options editor validation: empty / duplicate / zero options   | done   | `attributes.spec.ts`             | the messages render inline, the modal stays open and nothing is persisted                                         |
+| In-use option: delete blocked + tooltip; add / delete unused  | done   | `attribute-enum-options.spec.ts` | usage comes from `attribution_values.attribute_enum_option_id`                                                    |
+| Rename an in-use option relabels existing attributions        | done   | `attribute-enum-options.spec.ts` | the denormalized `cached_attributions.text_value` follows the rename                                              |
+| Disable an in-use option: value kept, hidden from new pickers | done   | `attribute-enum-options.spec.ts` | `AttributionInputEnum` keeps a disabled option visible when it is the current value                               |
+| Edit a recorded selection value                               | done   | `attributions.spec.ts`           | the edit modal's control is a picker, not a text input                                                            |
+| Editing in the add form keeps the photo note                  | done   | `attributions.spec.ts`           | "Add photo" opens a file chooser (`page.waitForEvent('filechooser')`); the list shows the note as a "Show" button |
+| Analyze: enum as a result column and as a filter rule         | done   | `analyze-results.spec.ts`        | the term control is a picker (`selectFilterTerm`); its GraphQL variable is `citext`, not `String`                 |
 
 ## Entity view details
 
 View-modal content beyond the plain field table — currently only asserted
 implicitly (modal opens) by the CRUD specs.
 
-| Feature                                                   | Status | Spec                  | Notes                                                                                                                               |
-| --------------------------------------------------------- | ------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Attributions render on an entity view modal (incl. photo) | done   | `entity-view.spec.ts` | photo via UI upload — use `uploadPhoto()` (waits for the preview; saving earlier drops the value); gallery class is `.q-scrollarea` |
-| Related-entity tables on view modals                      | done   | `entity-view.spec.ts` | plant rows repeat the group name — pin the group row via its drill-down `a[href]`                                                   |
+| Feature                                                                                | Status | Spec                  | Notes                                                                                                                               |
+| -------------------------------------------------------------------------------------- | ------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Attributions render on an entity view modal (incl. photo)                              | done   | `entity-view.spec.ts` | photo via UI upload — use `uploadPhoto()` (waits for the preview; saving earlier drops the value); gallery class is `.q-scrollarea` |
+| Related-entity tables on view modals                                                   | done   | `entity-view.spec.ts` | plant rows repeat the group name — pin the group row via its drill-down `a[href]`                                                   |
+| Attachments: upload, entity view link, download headers, >16 MB rejected, analyze link | done   | `attachments.spec.ts` | ATTACHMENT values can be seeded with any `<sha256>.<ext>` (file need not exist) when only rendering is checked                      |
 
 ## Attribution flow (`/{cultivars,plants,groups,lots}/attribute`)
 

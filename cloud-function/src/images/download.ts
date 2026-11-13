@@ -1,8 +1,11 @@
 import * as ff from '@google-cloud/functions-framework';
 import { getCachedImageAsBuffer } from '../lib/image';
+import { setImmutableCacheControl } from '../lib/cacheControl';
+import { isNotFoundError } from '../lib/storage';
 import { imageCacheConfig } from './cache';
+import { IMAGE_FILE_NAME_REGEX } from './fileName';
 
-export async function handleDownload(req: ff.Request, res: ff.Response) {
+export async function handleImageDownload(req: ff.Request, res: ff.Response) {
   if (req.method !== 'GET') {
     return res.status(405).send('Method Not Allowed');
   }
@@ -12,6 +15,9 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
   const fileName = searchParams?.get('file');
   if (!fileName) {
     return res.status(400).send('Bad Request: missing parameter "file"');
+  }
+  if (!IMAGE_FILE_NAME_REGEX.test(fileName)) {
+    return res.status(400).send('Bad Request: invalid parameter "file"');
   }
   const [hasWidth, hasHeight] = [
     searchParams.has('width'),
@@ -39,23 +45,14 @@ export async function handleDownload(req: ff.Request, res: ff.Response) {
       config: imageCacheConfig,
     });
   } catch (e: any) {
-    if (e.message.includes('No such object')) {
+    if (isNotFoundError(e)) {
       return res.status(404).send('Not Found');
     }
     console.error('Error downloading file:', e);
     return res.status(500).send('Internal Server Error');
   }
 
-  // headers
-  // https://cloud.google.com/cdn/docs/caching#expiration
-  // > By default, when the expiration time value exceeds 30 days (2,592,000 seconds),
-  //   Cloud CDN treats the expiration valueas if it were 2,592,000 seconds.
-  // > As an upper bound, cache entries that aren't accessed for 30 days are automatically evicted.
-  // => We still set max-age to 1 year to allow for longer caching in the browser
-  res.setHeader(
-    'Cache-Control',
-    `max-age=${60 * 60 * 24 * 365},public,immutable`,
-  ); // 1 year
+  setImmutableCacheControl(res);
   res.setHeader('Content-Type', 'image/jpeg');
 
   return res.send(buf);

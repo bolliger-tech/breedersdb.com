@@ -1,6 +1,6 @@
 <template>
   <EntityModalContent
-    :loading="savingEdit || isUploadingPhotos"
+    :loading="savingEdit || isUploading"
     :save-error="saveError"
     :validation-error="validationError || uploadError"
     sprite-icon="star"
@@ -17,6 +17,9 @@
         :attribute="attribution.attribute"
         :exceptional="attribution.exceptional_attribution"
         :required="true"
+        :entity-name="getAttributedEntityName(attribution)"
+        :date-attributed="attribution.date_attributed"
+        :attribution-id="attribution.id"
       />
     </template>
 
@@ -44,7 +47,7 @@ import {
 } from 'src/components/Entity/modalProvideSymbols';
 import { useInjectOrThrow } from 'src/composables/useInjectOrThrow';
 import { useCancel } from 'src/composables/useCancel';
-import { computed, nextTick, ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import AttributionInput, {
   type AttributionInputValue,
 } from 'src/components/Attribution/Input/AttributionInput.vue';
@@ -52,8 +55,8 @@ import type { AttributeFragment } from 'src/components/Attribute/attributeFragme
 import { useMutation } from '@urql/vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
 import { cachedAttributionToInputValue } from 'src/components/Attribution/cachedAttributionToInputValue';
-import type { UploadProgress } from 'src/composables/useImageUploader';
-import { useImageUploader } from 'src/composables/useImageUploader';
+import { useAttributionFileUpload } from 'src/components/Attribution/useAttributionFileUpload';
+import { getAttributedEntityName } from 'src/utils/attributeUtils';
 
 export type AttributionEditInput = Pick<
   CachedAttributionsFragment,
@@ -143,14 +146,7 @@ async function save() {
   }
 }
 
-const photoUploadPercentage = ref<number>(0);
-const { upload } = useImageUploader((progress: UploadProgress) => {
-  photoUploadPercentage.value = progress.percentComplete;
-});
-
-const isUploadingPhotos = computed(
-  () => photoUploadPercentage.value > 0 && photoUploadPercentage.value < 100,
-);
+const { uploadFiles, isUploading } = useAttributionFileUpload();
 
 async function saveEdit() {
   if (!editedData.value) {
@@ -159,7 +155,7 @@ async function saveEdit() {
   }
 
   const {
-    photo_value,
+    file_value,
     photo_note,
     integer_value,
     float_value,
@@ -170,44 +166,32 @@ async function saveEdit() {
     attribute_enum_option_id,
   } = editedData.value;
   const isEnum = props.attribution.data_type === 'ENUM';
-  const editedAttributionValue = {
-    photo_note: typeof photo_note === 'string' ? photo_note : null,
-    integer_value: integer_value ?? null,
-    float_value: float_value ?? null,
-    text_value: isEnum
-      ? null
-      : typeof photo_value === 'string'
-        ? photo_value
-        : (text_value ?? null),
-    boolean_value: boolean_value ?? null,
-    date_value: date_value ?? null,
-    attribute_enum_option_id: attribute_enum_option_id ?? null,
-    text_note: text_note ?? null,
-  };
-  const photo = photo_value || photo_note;
 
-  // upload photo if it was changed
-  if (photo instanceof File) {
-    const editedPhotoName = photo.name;
-    const initialPhotoName =
-      props.attribution.photo_note || props.attribution.text_value;
-    if (editedPhotoName !== initialPhotoName) {
-      const hash = editedPhotoName.split('.').slice(0, -1).join('.');
-      try {
-        await upload(photo, hash, '/api/assets/upload');
-      } catch (error) {
-        if (error instanceof Error) {
-          uploadError.value = error.message;
-        }
-        throw error; // do not continue with the mutation
-      }
+  let editedAttributionValue;
+  try {
+    editedAttributionValue = (
+      await uploadFiles([
+        {
+          value: {
+            file_value,
+            photo_note,
+            integer_value: integer_value ?? null,
+            float_value: float_value ?? null,
+            text_value: isEnum ? null : (text_value ?? null),
+            boolean_value: boolean_value ?? null,
+            date_value: date_value ?? null,
+            attribute_enum_option_id: attribute_enum_option_id ?? null,
+            text_note: text_note ?? null,
+          },
+          dataType: props.attribution.data_type,
+        },
+      ])
+    )[0]!;
+  } catch (error) {
+    if (error instanceof Error) {
+      uploadError.value = error.message;
     }
-    if (photo_value) {
-      editedAttributionValue.text_value = editedPhotoName;
-    }
-    if (photo_note) {
-      editedAttributionValue.photo_note = editedPhotoName;
-    }
+    throw error; // do not continue with the mutation
   }
 
   return urqlEdit.executeMutation(

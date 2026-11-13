@@ -53,13 +53,16 @@ const date = computed(() =>
   d(props.collision.existingValue.date_attributed, 'Ymd'),
 );
 
-const value = computed(() =>
-  props.collision.existingValue.data_type === 'PHOTO'
-    ? t('analyze.result.photo')
-    : formatAttributionValue({
-        attribution: props.collision.existingValue,
-        d,
-        n,
-      }),
-);
+const value = computed(() => {
+  const dataType = props.collision.existingValue.data_type;
+
+  if (dataType === 'PHOTO') return t('analyze.result.photo');
+  if (dataType === 'ATTACHMENT') return t('analyze.result.attachment');
+
+  return formatAttributionValue({
+    attribution: props.collision.existingValue,
+    d,
+    n,
+  });
+});
 </script>

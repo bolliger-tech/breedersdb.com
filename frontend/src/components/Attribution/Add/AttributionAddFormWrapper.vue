@@ -78,6 +78,7 @@ import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import type { LotFragment } from 'src/components/Lot/lotFragment';
 import { lotFragment } from 'src/components/Lot/lotFragment';
 import { useQuery } from '@urql/vue';
+import { isFileDataType } from 'src/utils/attributeUtils';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import {
   attributeFragment,
@@ -303,8 +304,9 @@ const attributionValues = computed<{
           text_value:
             value.attribute.data_type === 'TEXT' ? value.text_value : null,
           photo_note: value.photo_note,
-          photo_value:
-            value.attribute.data_type === 'PHOTO' ? value.text_value : null,
+          file_value: isFileDataType(value.attribute.data_type)
+            ? value.text_value
+            : null,
         };
 
         return acc;
@@ -324,7 +326,7 @@ const attributionValues = computed<{
           text_note: null,
           text_value: null,
           photo_note: null,
-          photo_value: null,
+          file_value: null,
         };
         return acc;
       },

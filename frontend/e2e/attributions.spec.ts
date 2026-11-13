@@ -1,7 +1,9 @@
 import { expect, test } from './support/fixtures';
+import { walkToForm } from './support/attribute-flow';
 import {
   expectDialogClosed,
   expectRowGone,
+  formField,
   listRow,
   save,
   selectOption,
@@ -104,4 +106,47 @@ test('a recorded selection value can be changed', async ({ page, seed }) => {
   // the list renders the denormalized label of the newly picked option
   await page.goto(list);
   await expect(row).toContainText('conical');
+});
+
+// The toast's edit action reopens the attribution in the form, which saves by
+// deleting and re-inserting all values. The stored photo note must survive.
+test('editing an attribution in the form keeps its photo note', async ({
+  page,
+  seed,
+}) => {
+  const attribute = await seed.attribute({ dataType: 'TEXT' });
+  const form = await seed.attributionForm([{ id: attribute.id }]);
+  const cultivar = await seed.cultivar();
+
+  await walkToForm(page, form.name, cultivar.display_name);
+  const field = formField(page, attribute.name);
+  await field.locator('textarea').fill('with photo');
+  const fileChooser = page.waitForEvent('filechooser');
+  await field.getByRole('button', { name: 'Add photo' }).click();
+  await (await fileChooser).setFiles('e2e/assets/test.jpg');
+  const preview = field.locator('.attribute-form-input-photo__preview');
+  await expect(preview).toBeVisible();
+  await page.locator('.attribute-form-save-btn .q-btn').click();
+  await expect(page.locator('.q-notification')).toContainText(
+    'Attribution saved.',
+  );
+
+  await page
+    .locator('.q-notification')
+    .getByRole('button', { name: 'Edit' })
+    .click();
+  // the stored photo note is loaded into the form
+  await expect(preview).toBeVisible();
+  await expect(preview).toHaveAttribute('src', /\/api\/assets\/images\//);
+  await page.locator('.attribute-form-save-btn .q-btn').click();
+  await expect(page.locator('.q-notification').last()).toContainText(
+    'Attribution saved.',
+  );
+
+  await page.goto(`/#/attributions?s=${encodeURIComponent(attribute.name)}`);
+  const row = listRow(page, attribute.name);
+  await expect(row).toHaveCount(1);
+  await expect(row).toContainText('with photo');
+  // the photo note column shows the photo as a button
+  await expect(row.getByRole('button', { name: 'Show' })).toHaveCount(1);
 });

@@ -1,6 +1,6 @@
 <template>
   <div class="row bg-black rounded-borders justify-center q-mb-md">
-    <EntityViewAttributionImage
+    <AttributionPhoto
       v-if="attribution.data_type === 'PHOTO' && attribution.text_value"
       :file-name="attribution.text_value"
       :attribution="attribution"
@@ -10,7 +10,14 @@
   </div>
   <EntityViewTable :dense="dense">
     <EntityViewTableRow :label="t('attributions.columns.value')" multiline>
-      {{ getValue(attribution) }}
+      <AttributionAttachmentLink
+        v-if="attribution.data_type === 'ATTACHMENT' && attribution.text_value"
+        :file-name="attribution.text_value"
+        :download-file-name="
+          getAttributionDownloadFileName(attribution, attribution.text_value)
+        "
+      />
+      <template v-else>{{ getValue(attribution) }}</template>
     </EntityViewTableRow>
 
     <EntityViewTableRow :label="t('attributes.title', 1)">
@@ -30,7 +37,7 @@
       :label="t('attributions.columns.photoNote')"
       render-empty
     >
-      <EntityViewAttributionImage
+      <AttributionPhoto
         :file-name="attribution.photo_note"
         :attribution="attribution"
       />
@@ -89,7 +96,9 @@ import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
 import { formatAttributionValue } from 'src/utils/attributeUtils';
-import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
+import { getAttributionDownloadFileName } from 'src/utils/assetUtils';
+import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
+import AttributionPhoto from 'src/components/Attribution/AttributionPhoto.vue';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
 import { computed } from 'vue';
 import { imageSizes } from 'src/utils/imageSizes';
@@ -106,7 +115,7 @@ const props = defineProps<AttributionEntityTableProps>();
 const { t, d, n } = useI18n();
 
 function getValue(row: NonNullable<typeof props.attribution>) {
-  // photo is handled in the template
+  // photo and attachment are handled in the template
   return formatAttributionValue({ attribution: row, d, n });
 }
 

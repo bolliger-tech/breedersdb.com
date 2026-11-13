@@ -340,6 +340,7 @@ describe('FilterRuleOperator', () => {
         ColumnTypes.DateTime,
         ColumnTypes.Time,
         ColumnTypes.Photo,
+        ColumnTypes.Attachment,
       ]);
     });
 

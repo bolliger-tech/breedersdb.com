@@ -6,7 +6,12 @@
     :lot="!!attribution.lot_id"
   >
     <template #label>
-      {{ n2semicolon(label) }}
+      <AttributionAttachmentLink
+        v-if="attribution.data_type === 'ATTACHMENT' && attribution.text_value"
+        :file-name="attribution.text_value"
+        :download-file-name="label"
+      />
+      <template v-else>{{ n2semicolon(label) }}</template>
     </template>
     <template #[`overlay-title`]>
       <RouterLink :to="`/attributions/${attribution.id}`" class="entity-link">
@@ -33,6 +38,8 @@ import {
   formatResultColumnValue,
   getAttributionValue,
 } from 'src/utils/attributeUtils';
+import { getAttributionDownloadFileName } from 'src/utils/assetUtils';
+import AttributionAttachmentLink from 'src/components/Attribution/AttributionAttachmentLink.vue';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import AnalyzeResultTableCellAttributionOverlay from './AnalyzeResultTableCellAttributionOverlay.vue';
 import AnalyzeResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
@@ -51,6 +58,11 @@ const label = computed(() => {
   const type = dataTypeToColumnTypes(props.attribution.data_type);
 
   if (type === ColumnTypes.Photo) return t('analyze.result.photo');
+  if (type === ColumnTypes.Attachment)
+    return getAttributionDownloadFileName(
+      props.attribution,
+      props.attribution.text_value ?? '',
+    );
 
   const value = getAttributionValue(props.attribution);
   return formatResultColumnValue({ value, type, d, n });

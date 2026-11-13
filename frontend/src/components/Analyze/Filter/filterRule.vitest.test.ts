@@ -782,6 +782,23 @@ describe('FilterRule', () => {
     expect(filterRule.requiresTerm).toBe(false);
   });
 
+  it('should return false for requiresTerm: Attachment', () => {
+    const column = new FilterRuleColumn({
+      tableName: 'tableName',
+      tableColumnName: 'tableColumnName',
+      tableLabel: 'tableLabel',
+      tableColumnLabel: 'tableColumnLabel',
+      schema: {
+        allowEmpty: true,
+        type: ColumnTypes.Attachment,
+      },
+    });
+
+    const filterRule = new FilterRule({ column });
+
+    expect(filterRule.requiresTerm).toBe(false);
+  });
+
   it('should return false for requiresTerm: Missing column', () => {
     const column = undefined;
 

@@ -22,6 +22,8 @@
       :collisions="collisions"
       :locked-priorities="lockedPriorities"
       :repeated-unique-priorities="repeatedUniquePriorities"
+      :entity-name="attributedEntityName"
+      :date-attributed="date"
       @unlock="unlock"
       @lock="lock"
     />
@@ -78,8 +80,6 @@ import { graphql } from 'src/graphql';
 import { useMutation, useQuery, type CombinedError } from '@urql/vue';
 import { AttributableEntities } from 'src/components/Attribution/attributableEntities';
 import { ref, computed, nextTick } from 'vue';
-import type { UploadProgress } from 'src/composables/useImageUploader';
-import { useImageUploader } from 'src/composables/useImageUploader';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
 import { useEntityForm, type InputRef } from 'src/composables/useEntityForm';
@@ -93,6 +93,7 @@ import AttributionAddAlreadyAttributed from 'src/components/Attribution/Add/Attr
 import { useAttributableEntityName } from 'src/components/Attribution/useAttributableEntityName';
 import AttributionAddFormFieldList from 'src/components/Attribution/Add/AttributionAddFormFieldList.vue';
 import { attributionValueHasValue } from 'src/components/Attribution/attributionValueHasValue';
+import { useAttributionFileUpload } from 'src/components/Attribution/useAttributionFileUpload';
 import { type AttributionInputValue } from 'src/components/Attribution/Input/AttributionInput.vue';
 import AttributionAddEditNote from 'src/components/Attribution/Add/AttributionAddEditNote.vue';
 import AttributionAddAboutEntity from 'src/components/Attribution/Add/About/AttributionAddAboutEntity.vue';
@@ -173,11 +174,17 @@ function addExtraAttribute(attribute: AttributeFragment) {
     float_value: null,
     integer_value: null,
     text_value: null,
-    photo_value: null,
+    file_value: null,
     text_note: null,
     photo_note: null,
   };
 }
+
+const attributedEntityName = computed(() =>
+  props.entity.type === AttributableEntities.Plant
+    ? props.entity.data.label_id
+    : props.entity.data.display_name,
+);
 
 const uniqueAttributeIds = computed<number[]>((previous) => {
   const ids = attributeInputs.value
@@ -462,7 +469,7 @@ async function save(ignoreRequired = false) {
     return;
   }
 
-  const { photos, attributions } = submittableValues.value
+  const values = submittableValues.value
     // filter out attribution_values without a value
     .filter((av) => av && attributionValueHasValue(av))
     // replace undefined values with null
@@ -479,42 +486,16 @@ async function save(ignoreRequired = false) {
         {} as UndefinedToNull<NonNullable<AttributionInputValue>>,
       );
     })
-    // extract files from photo_value and photo_note and replace them with their
-    // file name
-    .map((av) => {
-      const { photo_value, photo_note, ...rest } = av;
-      if (photo_value instanceof File) {
-        return {
-          photo: photo_value,
-          attribution: { ...rest, text_value: photo_value.name },
-        };
-      } else if (typeof photo_value === 'string') {
-        return {
-          photo: null,
-          attribution: { ...rest, text_value: photo_value },
-        };
-      } else if (photo_note instanceof File) {
-        return {
-          photo: photo_note,
-          attribution: { ...rest, photo_note: photo_note.name },
-        };
-      } else {
-        return { photo: null, attribution: rest };
-      }
-    })
-    .reduce(
-      (acc, { photo, attribution }) => {
-        acc.attributions.push(attribution);
-        if (photo) {
-          acc.photos.push(photo);
-        }
-        return acc;
-      },
-      { photos: [] as File[], attributions: [] as AttributionValue[] },
-    );
+    .map((value) => ({
+      value,
+      dataType: attributeInputs.value.find(
+        (field) => field.attribute.id === value.attribute_id,
+      )!.attribute.data_type,
+    }));
 
+  let attributions: AttributionValue[];
   try {
-    await uploadPhotos(photos);
+    attributions = await uploadFiles(values);
   } catch (error) {
     if (error instanceof Error) {
       uploadError.value = error.message;
@@ -566,54 +547,18 @@ async function save(ignoreRequired = false) {
   }, SAVE_BTN_TRANSITION_DURATION_MS);
 }
 
-const photoUploadPercentage = ref(0);
-const uploadBytes = ref({
-  total: 0,
-  completed: 0,
-});
-
-function handlePhotoUploadProgress(progress: UploadProgress) {
-  photoUploadPercentage.value =
-    (100 * (uploadBytes.value.completed + progress.bytesUploaded)) /
-    uploadBytes.value.total;
-}
-
-const { upload } = useImageUploader(handlePhotoUploadProgress);
-
-async function uploadPhotos(files: File[]) {
-  if (files.some((f) => f.size === 0)) {
-    // this should never happen as the file was already checked before resizing
-    throw new Error('Cannot upload empty files');
-  }
-
-  photoUploadPercentage.value = 0;
-  uploadBytes.value = {
-    total: files.reduce((acc, file) => acc + file.size, 0),
-    completed: 0,
-  };
-
-  if (files.length === 0) {
-    return;
-  }
-
-  for (const file of files) {
-    const hash = file.name.split('.').slice(0, -1).join('.');
-    // may throw, must be caught by the caller
-    await upload(file, hash, '/api/assets/upload');
-    uploadBytes.value.completed += file.size;
-  }
-}
-
-const isUploadingPhotos = computed(
-  () => photoUploadPercentage.value > 0 && photoUploadPercentage.value < 100,
-);
+const {
+  uploadFiles,
+  percentComplete: uploadPercentage,
+  isUploading,
+} = useAttributionFileUpload();
 
 const isSaving = computed(
-  () => savingEdit.value || savingInsert.value || isUploadingPhotos.value,
+  () => savingEdit.value || savingInsert.value || isUploading.value,
 );
 
 const savingProgress = computed(() => {
-  const photoProgress = photoUploadPercentage.value * 0.95;
+  const uploadProgress = uploadPercentage.value * 0.95;
   const attributionProgress = insertedAttribution.value ? 5 : 0;
 
   if (!isSaving.value && !insertedAttribution.value) {
@@ -624,7 +569,7 @@ const savingProgress = computed(() => {
     return 100;
   }
 
-  return photoProgress + attributionProgress;
+  return uploadProgress + attributionProgress;
 });
 
 function resetErrors() {

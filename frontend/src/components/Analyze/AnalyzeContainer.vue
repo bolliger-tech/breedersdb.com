@@ -55,7 +55,10 @@ import type { QTableColumn } from 'quasar';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import { useI18n } from 'src/composables/useI18n';
 import type { PrimitiveColumnValue } from 'src/utils/attributeUtils';
-import { formatResultColumnValue } from 'src/utils/attributeUtils';
+import {
+  formatResultColumnValue,
+  isFileColumnType,
+} from 'src/utils/attributeUtils';
 import { useLocalizedSort } from 'src/composables/useLocalizedSort';
 import { AttributionAggregation } from './Result/attributionAggregationTypes';
 import { useExplainFilters } from './useExplainFilters';
@@ -200,9 +203,9 @@ const resultColumns = computed<QTableColumn[]>(() => {
       align: isNum ? 'right' : 'left',
       sortable: true,
       format: (value: ColumnValue) => {
-        if (column.type === ColumnTypes.Photo) {
+        if (column.type && isFileColumnType(column.type)) {
           // this should never happen
-          throw new Error('Photo columns are not supported');
+          throw new Error('Photo and attachment columns are not supported');
         }
 
         const unnestedValue =

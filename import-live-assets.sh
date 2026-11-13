@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# Downloads the assets of the selected instance and imports them into the local
-# fake-gcs-server (see cloud-function/docker-compose.yaml).
-# Usage: ./import-live-images.sh <instance>
-# Example: ./import-live-images.sh poc
+# Downloads the assets (images and attachments) of the selected instance and
+# imports them into the local fake-gcs-server (see
+# cloud-function/docker-compose.yaml).
+# Usage: ./import-live-assets.sh <instance>
+# Example: ./import-live-assets.sh poc
 #
 # <instance> is the same name as the <db_name> of import-live-db.sh. Run both
-# with the same instance to keep the images and the database in sync.
+# with the same instance to keep the assets and the database in sync.
 
 set -euo pipefail
 
@@ -21,7 +22,7 @@ LOCAL_BUCKET="dev-bucket"
 
 REMOTE_BUCKET="${INSTANCE}-breedersdb-assets"
 # stable path, so re-runs only download what changed
-DOWNLOAD_DIR="/tmp/breedersdb-images-${INSTANCE}"
+DOWNLOAD_DIR="/tmp/breedersdb-assets-${INSTANCE}"
 PARALLEL_UPLOADS=8
 
 if [[ -z "$INSTANCE" ]]; then
@@ -42,8 +43,8 @@ if ! gcloud storage buckets describe "gs://${REMOTE_BUCKET}" &> /dev/null; then
   exit 1
 fi
 
-echo "Importing images from $REMOTE_BUCKET to dev"
-echo "This will overwrite the dev images. Are you sure? (y/n)"
+echo "Importing assets from $REMOTE_BUCKET to dev"
+echo "This will overwrite the dev assets. Are you sure? (y/n)"
 read -r confirmation
 if [[ "$confirmation" != "y" ]]; then
   echo "Aborting."
@@ -58,16 +59,18 @@ while ! curl -s -f -o /dev/null "${FAKE_GCS_URL}/storage/v1/b"; do
 done
 echo "Fake-gcs-server is ready."
 
-# the cached-* derivates are regenerated on demand, no need to download them
-echo "Downloading images from gs://${REMOTE_BUCKET}..."
+# the resized images are regenerated on demand, no need to download them.
+# cached-* is the layout before the move to cache/images/.
+echo "Downloading assets from gs://${REMOTE_BUCKET}..."
 mkdir -p "$DOWNLOAD_DIR"
 gcloud storage rsync "gs://${REMOTE_BUCKET}" "$DOWNLOAD_DIR" \
-  --exclude='cached-.*' \
+  --recursive \
+  --exclude='^(cache/|cached-).*' \
   --delete-unmatched-destination-objects
-echo "Download completed. Images saved to $DOWNLOAD_DIR"
+echo "Download completed. Assets saved to $DOWNLOAD_DIR"
 
 # fake-gcs-server indexes the bucket at startup and ignores files that appear
-# later, so the images have to be uploaded through its API. Emptying the bucket
+# later, so the assets have to be uploaded through its API. Emptying the bucket
 # on disk is fine, as long as it is restarted before uploading.
 echo "Emptying the dev bucket..."
 docker compose --file="$COMPOSE_FILE" exec -T fake-gcs \
@@ -78,19 +81,20 @@ while ! curl -s -f -o /dev/null "${FAKE_GCS_URL}/storage/v1/b"; do
 done
 echo "Dev bucket emptied."
 
-echo "Uploading images to the dev bucket..."
-export FAKE_GCS_URL LOCAL_BUCKET
+echo "Uploading assets to the dev bucket..."
+export FAKE_GCS_URL LOCAL_BUCKET DOWNLOAD_DIR
 find "$DOWNLOAD_DIR" -type f -print0 \
   | xargs -0 -P $PARALLEL_UPLOADS -n 1 sh -c '
-      name=$(basename "$0")
+      # keep the folder (images/, attachments/)
+      name=${0#"$DOWNLOAD_DIR"/}
       curl -s -f -o /dev/null -X POST --data-binary "@$0" \
-        -H "Content-Type: image/jpeg" \
+        -H "Content-Type: application/octet-stream" \
         "${FAKE_GCS_URL}/upload/storage/v1/b/${LOCAL_BUCKET}/o?uploadType=media&name=${name}" \
         || { echo "Failed to upload ${name}"; exit 1; }
     '
 
 imported=$(curl -s "${FAKE_GCS_URL}/storage/v1/b/${LOCAL_BUCKET}/o?fields=items(name)" \
   | grep -o '"name"' | wc -l | tr -d ' ')
-echo "Import completed. $imported images in the dev bucket."
+echo "Import completed. $imported assets in the dev bucket."
 
 echo "Done."

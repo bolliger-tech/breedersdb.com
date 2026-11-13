@@ -1,7 +1,13 @@
 import { XLSX_FORMATS } from 'src/composables/useExport';
 import type { CellObject } from 'xlsx';
-import { getImageCell } from 'src/utils/imageUtils';
+import {
+  getAttachmentUrlRelative,
+  getAttributionDownloadFileName,
+  getImageUrlRelative,
+  getLinkCell,
+} from 'src/utils/assetUtils';
 
+import { getAttributedEntityName } from 'src/utils/attributeUtils';
 import {
   type AnalyzeCachedAttributionsFields,
   attributionValueKeys,
@@ -27,13 +33,7 @@ export const attributionObjectKeys: (keyof AnalyzeCachedAttributionsObjectFields
 export function getAttributionObjectName(
   attribution: AnalyzeCachedAttributionsFields,
 ) {
-  return (
-    attribution.plant?.label_id ??
-    attribution.plant_group?.display_name ??
-    attribution.cultivar?.display_name ??
-    attribution.lot?.display_name ??
-    'unknown'
-  );
+  return getAttributedEntityName(attribution) ?? 'unknown';
 }
 
 export function getAttributionObjectType(
@@ -62,8 +62,19 @@ export function getAttributionObjectId(
   );
 }
 
+function getAssetCell(
+  attribution: AnalyzeCachedAttributionsFields,
+  fileName: string,
+  getUrl: typeof getImageUrlRelative | typeof getAttachmentUrlRelative,
+) {
+  const downloadFileName = getAttributionDownloadFileName(
+    attribution,
+    fileName,
+  );
+  return getLinkCell(getUrl({ fileName, downloadFileName }));
+}
+
 function attributionValueToXlsx(attribution: AnalyzeCachedAttributionsFields) {
-  const entityName = getAttributionObjectName(attribution);
   const valueKey = attributionValueKeys.find(
     (key) => attribution[key] !== null,
   );
@@ -79,14 +90,18 @@ function attributionValueToXlsx(attribution: AnalyzeCachedAttributionsFields) {
         : valueKey === 'boolean_value'
           ? !!attribution[valueKey]
           : attribution.data_type === 'PHOTO'
-            ? getImageCell({
-                serverFileName: attribution[valueKey] as string,
-                entityName,
-                attributeName: attribution.attribute_name,
-                dateAttributed: attribution.date_attributed,
-                attributionId: attribution.id,
-              })
-            : attribution[valueKey];
+            ? getAssetCell(
+                attribution,
+                attribution[valueKey] as string,
+                getImageUrlRelative,
+              )
+            : attribution.data_type === 'ATTACHMENT'
+              ? getAssetCell(
+                  attribution,
+                  attribution[valueKey] as string,
+                  getAttachmentUrlRelative,
+                )
+              : attribution[valueKey];
   return value;
 }
 
@@ -105,13 +120,7 @@ export function attributionToXlsx(
           !v
             ? v
             : k === 'photo_note'
-              ? getImageCell({
-                  serverFileName: v as string,
-                  entityName,
-                  attributeName: attribution.attribute_name,
-                  dateAttributed: attribution.date_attributed,
-                  attributionId: attribution.id,
-                })
+              ? getAssetCell(attribution, v as string, getImageUrlRelative)
               : k === 'created'
                 ? new Date(v as string)
                 : v,

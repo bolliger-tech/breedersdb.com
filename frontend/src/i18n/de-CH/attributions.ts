@@ -88,6 +88,8 @@ export const attributions = {
     invalidNumber:
       'Ungültige Nummer. Gültige Werte sind zwischen {min} und {max} mit einem Abstand von {step}.',
     invalidPhoto: 'Ungültiges oder nicht unterstütztes Bild.',
+    selectAttachment: 'Datei auswählen',
+    attachmentTooLarge: 'Die Datei ist grösser als {max} MB.',
     invalidInput:
       'Einige Eingaben sind ungültig. Bitte überprüfe das Formular.',
     notCurrentYearMonth:

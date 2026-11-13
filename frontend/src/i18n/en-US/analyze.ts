@@ -112,6 +112,7 @@ export const analyze = {
 
     altPhoto: 'Photo taken {date} by {author}',
     photo: 'Photo',
+    attachment: 'Attachment',
     downloadPhoto: 'Download photo',
 
     attributedEntity: 'Attributed {entity}',

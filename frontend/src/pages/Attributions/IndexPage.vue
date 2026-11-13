@@ -41,21 +41,16 @@
             max-width="clamp(300px, 30svw, 600px)"
             class="vertical-middle"
           >
-            <template v-if="cellProps.row.data_type === 'PHOTO'">
-              <EntityViewAttributionImage
-                :file-name="cellProps.row.text_value"
-                :attribution="cellProps.row"
-                button-size="xs"
-              />
-            </template>
-            <template v-else>{{ n2semicolon(cellProps.value) }}</template>
+            <AttributionFileValue :attribution="cellProps.row" button-size="xs">
+              {{ n2semicolon(cellProps.value) }}
+            </AttributionFileValue>
           </AttributionValueChip>
         </q-td>
       </template>
 
       <template #body-cell-photo_note="cellProps">
         <q-td key="photo_note" :props="cellProps">
-          <EntityViewAttributionImage
+          <AttributionPhoto
             v-if="cellProps.row.photo_note"
             :file-name="cellProps.row.photo_note"
             :attribution="cellProps.row"
@@ -79,9 +74,10 @@ import { useEntityIndexHooks } from 'src/composables/useEntityIndexHooks';
 import { useTimestampColumns } from 'src/composables/useTimestampColumns';
 import { useEntityTableColumns } from 'src/components/Entity/List/useEntityTableColumns';
 import { formatAttributionValue } from 'src/utils/attributeUtils';
+import AttributionFileValue from 'src/components/Attribution/AttributionFileValue.vue';
 import type { AttributeDataTypes } from 'src/graphql';
 import EntityLink from 'src/components/Entity/EntityLink.vue';
-import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
+import AttributionPhoto from 'src/components/Attribution/AttributionPhoto.vue';
 import { useQueryArg } from 'src/composables/useQueryArg';
 import EntityLabelId from 'src/components/Entity/EntityLabelId.vue';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
@@ -455,7 +451,7 @@ watch(
 );
 
 function getValue(row: QueryResultCachedAttributions) {
-  // photo is handled in the template
+  // photo and attachment are handled in the template
   return formatAttributionValue({ attribution: row, d, n });
 }
 

@@ -53,10 +53,9 @@
 import { resizeImageFile } from 'src/utils/imageResizer';
 import { watch, ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
-import { hashFile } from 'src/composables/useImageUploader';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import type { QFile } from 'quasar';
-import { getImageUrlRelative } from 'src/utils/imageUtils';
+import { getImageUrlRelative } from 'src/utils/assetUtils';
 
 const MAX_IMAGE_SIZE = 3840; // longest side, 4k
 const IMAGE_QUALITY = 0.9; // 0.0 - 1.0 (jpeg)
@@ -119,19 +118,7 @@ async function updateModelValue(file: File | null) {
     processing.value = false;
   }
 
-  if (!resizedFile) {
-    modelValue.value = null;
-    return;
-  }
-
-  // if this fails something went terribly wrong. so let it throw
-  const fileHash = await hashFile(resizedFile);
-
-  // create new file with the final name
-  modelValue.value = new File([resizedFile], `${fileHash}.jpg`, {
-    type: 'image/jpeg',
-  });
-
+  modelValue.value = resizedFile;
   processing.value = false;
 }
 
@@ -153,8 +140,8 @@ function loadPreview() {
   }
 
   preview.value.src = getImageUrlRelative({
-    serverFileName: modelValue.value,
-    desiredFileName: modelValue.value,
+    fileName: modelValue.value,
+    downloadFileName: modelValue.value,
   });
 }
 

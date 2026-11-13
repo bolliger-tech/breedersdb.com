@@ -105,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import type { QBtnProps, QDialogProps } from 'quasar';
@@ -113,17 +113,21 @@ import {
   dataTypeToColumnTypes,
   formatResultColumnValue,
   getAttributionValue,
+  getAttributedEntityName,
 } from 'src/utils/attributeUtils';
 import { ColumnTypes } from 'src/utils/columnTypes';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import { captureException } from '@sentry/browser';
-import { getImageFileName, getImageUrlRelative } from 'src/utils/imageUtils';
+import {
+  getAttributionDownloadFileName,
+  getImageUrlRelative,
+} from 'src/utils/assetUtils';
 import type { AllowedImageSizes } from 'src/utils/imageSizes';
 import { imageSizes } from 'src/utils/imageSizes';
 
 const DEFAULT_PREVIEW_HEIGHT = imageSizes.h200.height;
 
-export interface EntityViewAttributionImageProps {
+export interface AttributionPhotoProps {
   fileName: string;
   attribution: CachedAttributionsFragment;
   preview?: boolean;
@@ -133,7 +137,7 @@ export interface EntityViewAttributionImageProps {
   buttonSize?: QBtnProps['size'];
 }
 
-const props = defineProps<EntityViewAttributionImageProps>();
+const props = defineProps<AttributionPhotoProps>();
 defineEmits<{
   next: [];
   previous: [];
@@ -143,24 +147,25 @@ const open = defineModel<boolean>({ required: false, default: false });
 
 const { t, d, n } = useI18n();
 
-const entityName = computed(() => {
-  const name =
-    props.attribution.plant?.label_id ??
-    props.attribution.plant_group?.display_name ??
-    props.attribution.cultivar?.display_name ??
-    props.attribution.lot?.display_name;
+const foundEntityName = computed(() =>
+  getAttributedEntityName(props.attribution),
+);
+const entityName = computed(() => foundEntityName.value || 'unknown');
 
-  if (!name) {
+// report here, as entityName is only read when the dialog is open
+watch(
+  foundEntityName,
+  (name) => {
+    if (name) return;
     // report but don't fail
     const error = new Error(
       'No entity name found for attribution. Consider using the `cachedAttributionsFragment` with `$CachedAttributionsWithEntites = true`.',
     );
     console.error(error.message, error.stack);
     captureException(error);
-  }
-
-  return name || 'unknown';
-});
+  },
+  { immediate: true },
+);
 
 const entityTypeName = computed(() => {
   return props.attribution.plant
@@ -193,7 +198,13 @@ const description = computed(() => {
   }
 
   const value = getAttributionValue(props.attribution);
-  const formattedValue = formatResultColumnValue({ value, type, d, n });
+  const formattedValue =
+    type === ColumnTypes.Attachment
+      ? getAttributionDownloadFileName(
+          props.attribution,
+          props.attribution.text_value ?? '',
+        )
+      : formatResultColumnValue({ value, type, d, n });
 
   return {
     primary: `${props.attribution.attribute_name}: ${formattedValue}`,
@@ -201,13 +212,8 @@ const description = computed(() => {
   };
 });
 
-const desiredFileName = computed(() =>
-  getImageFileName({
-    entityName: entityName.value,
-    attributeName: props.attribution.attribute_name,
-    dateAttributed: props.attribution.date_attributed,
-    attributionId: props.attribution.id,
-  }),
+const downloadFileName = computed(() =>
+  getAttributionDownloadFileName(props.attribution, props.fileName),
 );
 
 function get2xDim({
@@ -231,45 +237,45 @@ const imgUrls = computed(() => {
 
   return {
     '1x': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: dims1x,
     }),
     ...(dims2x && {
       '2x': getImageUrlRelative({
-        serverFileName: props.fileName,
-        desiredFileName: desiredFileName.value,
+        fileName: props.fileName,
+        downloadFileName: downloadFileName.value,
         dimensions: dims2x,
       }),
     }),
     '320w': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: imageSizes.w320,
     }),
     '768w': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: imageSizes.w768,
     }),
     '1024w': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: imageSizes.w1024,
     }),
     '2560w': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: imageSizes.w2560,
     }),
     '3840w': getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
       dimensions: imageSizes.w3840,
     }),
     full: getImageUrlRelative({
-      serverFileName: props.fileName,
-      desiredFileName: desiredFileName.value,
+      fileName: props.fileName,
+      downloadFileName: downloadFileName.value,
     }),
   };
 });

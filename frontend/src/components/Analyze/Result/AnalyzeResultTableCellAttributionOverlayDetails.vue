@@ -47,7 +47,7 @@
       class="row justify-center bg-black rounded-borders"
       style="min-height: 200px"
     >
-      <EntityViewAttributionImage
+      <AttributionPhoto
         :file-name="(data.photo_note || data.text_value)!"
         :attribution="data"
         preview
@@ -134,7 +134,7 @@ import { type BaseSpriteIconProps } from 'components/Base/BaseSpriteIcon/baseSpr
 import EntityViewTable from 'src/components/Entity/View/EntityViewTable.vue';
 import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityViewTableMetaData from 'src/components/Entity/View/EntityViewTableMetaData.vue';
-import EntityViewAttributionImage from 'src/components/Entity/View/EntityViewAttributionImage.vue';
+import AttributionPhoto from 'src/components/Attribution/AttributionPhoto.vue';
 import PlantEntityTable from 'src/components/Plant/PlantEntityTable.vue';
 import PlantGroupEntityTable from 'src/components/PlantGroup/PlantGroupEntityTable.vue';
 import CultivarEntityTable from 'src/components/Cultivar/CultivarEntityTable.vue';

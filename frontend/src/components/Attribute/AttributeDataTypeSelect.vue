@@ -64,6 +64,7 @@ const attributeDataTypeOptions: { value: AttributeDataTypes; label: string }[] =
     { value: 'BOOLEAN', label: t('attributes.dataTypes.boolean') },
     { value: 'DATE', label: t('attributes.dataTypes.date') },
     { value: 'PHOTO', label: t('attributes.dataTypes.photo') },
+    { value: 'ATTACHMENT', label: t('attributes.dataTypes.attachment') },
     { value: 'RATING', label: t('attributes.dataTypes.rating') },
     { value: 'ENUM', label: t('attributes.dataTypes.enum') },
   ];

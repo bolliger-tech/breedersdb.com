@@ -22,6 +22,7 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
     BOOLEAN: ColumnTypes.Boolean,
     DATE: ColumnTypes.Date,
     PHOTO: ColumnTypes.Photo,
+    ATTACHMENT: ColumnTypes.Attachment,
     RATING: ColumnTypes.Rating,
     ENUM: ColumnTypes.Enum,
   }[dataType];
@@ -33,6 +34,17 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
   return type;
 }
 
+// types whose value is a stored file (its name is in text_value)
+export type FileColumnTypes = ColumnTypes.Photo | ColumnTypes.Attachment;
+
+export function isFileColumnType(type: ColumnTypes): type is FileColumnTypes {
+  return type === ColumnTypes.Photo || type === ColumnTypes.Attachment;
+}
+
+export function isFileDataType(dataType: AttributeDataTypes) {
+  return isFileColumnType(dataTypeToColumnTypes(dataType));
+}
+
 export function dataTypeToLabel(dataType: AttributeDataTypes, t: TFunc) {
   const type = {
     TEXT: t('attributes.dataTypes.text'),
@@ -41,6 +53,7 @@ export function dataTypeToLabel(dataType: AttributeDataTypes, t: TFunc) {
     BOOLEAN: t('attributes.dataTypes.boolean'),
     DATE: t('attributes.dataTypes.date'),
     PHOTO: t('attributes.dataTypes.photo'),
+    ATTACHMENT: t('attributes.dataTypes.attachment'),
     RATING: t('attributes.dataTypes.rating'),
     ENUM: t('attributes.dataTypes.enum'),
   }[dataType];
@@ -91,7 +104,7 @@ export function formatResultColumnValue({
   n,
 }: {
   value: string | number | Date | null | boolean | undefined;
-  type: Exclude<ColumnTypes, ColumnTypes.Photo>;
+  type: Exclude<ColumnTypes, FileColumnTypes>;
   d: DFunc;
   n: NFunc;
 }) {
@@ -139,7 +152,8 @@ export function getAttributionValue({
   );
 }
 
-// Photos are shown as images, so they have no text value.
+// Photos and attachments are shown as images and links, so they have no text
+// value.
 export function formatAttributionValue({
   attribution,
   d,
@@ -153,7 +167,7 @@ export function formatAttributionValue({
 }) {
   const type = dataTypeToColumnTypes(attribution.data_type);
 
-  if (type === ColumnTypes.Photo) {
+  if (isFileColumnType(type)) {
     return '';
   }
 
@@ -163,4 +177,18 @@ export function formatAttributionValue({
     d,
     n,
   });
+}
+
+export function getAttributedEntityName(attribution: {
+  plant?: { label_id: string } | null;
+  plant_group?: { display_name: string } | null;
+  cultivar?: { display_name: string } | null;
+  lot?: { display_name: string } | null;
+}) {
+  return (
+    attribution.plant?.label_id ??
+    attribution.plant_group?.display_name ??
+    attribution.cultivar?.display_name ??
+    attribution.lot?.display_name
+  );
 }

@@ -36,7 +36,7 @@ export type AttributeFragment =
       enum_options: EmptyArray | null;
     })
   | (Fragment & {
-      data_type: 'PHOTO';
+      data_type: 'PHOTO' | 'ATTACHMENT';
       legend: null;
       validation_rule: null;
       default_value: null;

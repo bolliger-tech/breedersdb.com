@@ -60,12 +60,11 @@ done
 echo "Fake-gcs-server is ready."
 
 # the resized images are regenerated on demand, no need to download them.
-# cached-* is the layout before the move to cache/images/.
 echo "Downloading assets from gs://${REMOTE_BUCKET}..."
 mkdir -p "$DOWNLOAD_DIR"
 gcloud storage rsync "gs://${REMOTE_BUCKET}" "$DOWNLOAD_DIR" \
   --recursive \
-  --exclude='^(cache/|cached-).*' \
+  --exclude='^cache/.*' \
   --delete-unmatched-destination-objects
 echo "Download completed. Assets saved to $DOWNLOAD_DIR"
 

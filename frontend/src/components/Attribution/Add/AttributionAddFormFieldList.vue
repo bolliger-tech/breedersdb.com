@@ -59,6 +59,7 @@
             :cardinality="field.attribute.cardinality"
             :collision="collisions?.get(field.attribute.id)"
             :locked="isLocked(field.priority)"
+            :check="uniqueValuesCheck"
           />
         </template>
       </AttributionInput>
@@ -76,7 +77,7 @@ import { type InputRef } from 'src/composables/useEntityForm';
 import { useI18n } from 'src/composables/useI18n';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
 import AttributionAddUniqueHint from './AttributionAddUniqueHint.vue';
-import type { Collision } from './findCollisions';
+import type { Collision, UniqueValuesCheck } from './findCollisions';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { cachedAttributionToInputValue } from 'src/components/Attribution/cachedAttributionToInputValue';
 
@@ -91,7 +92,9 @@ export interface AttributionAddFormFieldListProps {
   collisions?: Map<number, Collision<CachedAttributionsFragment>>;
   lockedPriorities?: Set<number>;
   repeatedUniquePriorities?: Set<number>;
-  hideUnfilledUniqueHints?: boolean;
+  // all unique attributes count as unfilled if not given
+  unfilledUniqueAttributeIds?: Set<number>;
+  uniqueValuesCheck?: UniqueValuesCheck | undefined;
   entityName?: string | undefined;
   dateAttributed?: string | undefined;
 }
@@ -114,9 +117,9 @@ function count(fieldId: number): number {
 
 function showUniqueHint(attribute: AttributeFragment): boolean {
   if (props.collisions?.has(attribute.id)) return true;
-  return (
-    attribute.cardinality !== 'REPEATABLE' && !props.hideUnfilledUniqueHints
-  );
+  if (attribute.cardinality === 'REPEATABLE') return false;
+  if (props.uniqueValuesCheck) return true;
+  return props.unfilledUniqueAttributeIds?.has(attribute.id) ?? true;
 }
 
 function isLocked(priority: number): boolean {

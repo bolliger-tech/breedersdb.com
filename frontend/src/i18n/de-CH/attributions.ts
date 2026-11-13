@@ -70,14 +70,12 @@ export const attributions = {
     sameAgainWarning: 'Dieses Formular enthält dieses Attribut mehrfach.',
     uniqueOnce: 'nur einmal',
     uniqueHint: {
-      block: {
-        base: 'Kann {once} vergeben werden, {emphasis} überschreibbar.',
-        emphasis: 'nicht',
-      },
-      replace: {
-        base: 'Kann {once} vergeben werden, {emphasis}.',
-        emphasis: 'überschreibbar',
-      },
+      block: 'Kann {once} vergeben werden, {cannot} überschreibbar.',
+      replace: 'Kann {once} vergeben werden, {overwritable}.',
+      cannot: 'nicht',
+      overwritable: 'überschreibbar',
+      pending: 'Prüfe, ob bereits ein Wert erfasst ist…',
+      failed: 'Konnte nicht prüfen, ob bereits ein Wert erfasst ist.',
     },
     uniqueBlocked: {
       base: 'Bereits erfasst am {date} von {author}. Attribut kann {once} vergeben werden und ist nicht überschreibbar ({blocking}).',

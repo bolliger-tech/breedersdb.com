@@ -84,14 +84,12 @@ export const attributions = {
 
     uniqueOnce: 'only once',
     uniqueHint: {
-      block: {
-        base: 'Can be assigned {once}, {emphasis} be overwritten.',
-        emphasis: 'cannot',
-      },
-      replace: {
-        base: 'Can be assigned {once}, {emphasis}.',
-        emphasis: 'overwritable',
-      },
+      block: 'Can be assigned {once}, {cannot} be overwritten.',
+      replace: 'Can be assigned {once}, {overwritable}.',
+      cannot: 'cannot',
+      overwritable: 'overwritable',
+      pending: 'Checking for a recorded value…',
+      failed: 'Could not check for a recorded value.',
     },
     uniqueBlocked: {
       base: 'Already recorded on {date} by {author}. The attribute can be assigned {once} and cannot be overwritten ({blocking}).',

@@ -211,6 +211,105 @@ test('a unique attribute can only be filled once per attribution', async ({
   await expect(page.locator('.q-notification')).toHaveCount(0);
 });
 
+test('a loading hint shows while the recorded values are checked', async ({
+  page,
+  seed,
+}) => {
+  const attribute = await seed.attribute({
+    dataType: 'TEXT',
+    cardinality: 'UNIQUE_BLOCK',
+  });
+  const form = await seed.attributionForm([{ id: attribute.id }]);
+  const cultivar = await seed.cultivar();
+
+  // hold the check until the loading hint was seen
+  let releaseCheck = () => {};
+  const checkReleased = new Promise<void>(
+    (resolve) => (releaseCheck = resolve),
+  );
+  await page.route('**/api/hasura/v1/graphql', async (route) => {
+    if (
+      route.request().postData()?.includes('ExistingUniqueAttributionValues')
+    ) {
+      await checkReleased;
+    }
+    await route.fallback();
+  });
+
+  await walkToForm(page, form.name, cultivar.display_name);
+  const hint = formField(page, attribute.name).locator(
+    '.attribution-add-unique-hint',
+  );
+  await expect(hint).toHaveText('Checking for a recorded value…');
+  releaseCheck();
+  await expect(hint).toHaveText(
+    'Can be assigned only once, cannot be overwritten.',
+  );
+});
+
+test('a failed check shows on the unique inputs', async ({ page, seed }) => {
+  const attribute = await seed.attribute({
+    dataType: 'TEXT',
+    cardinality: 'UNIQUE_BLOCK',
+  });
+  const form = await seed.attributionForm([{ id: attribute.id }]);
+  const cultivar = await seed.cultivar();
+
+  // a GraphQL error, as network errors are retried
+  await page.route('**/api/hasura/v1/graphql', async (route) => {
+    if (
+      route.request().postData()?.includes('ExistingUniqueAttributionValues')
+    ) {
+      await route.fulfill({ json: { errors: [{ message: 'E2E failure' }] } });
+      return;
+    }
+    await route.fallback();
+  });
+
+  await walkToForm(page, form.name, cultivar.display_name);
+  await expect(
+    formField(page, attribute.name).locator('.attribution-add-unique-hint'),
+  ).toHaveText('Could not check for a recorded value.');
+});
+
+// when editing, the edited attribution's own values are filled, not collisions
+test('editing: the unfilled hint shows only on attributes without a value', async ({
+  page,
+  seed,
+}) => {
+  const filled = await seed.attribute({
+    dataType: 'TEXT',
+    cardinality: 'UNIQUE_BLOCK',
+  });
+  const unfilled = await seed.attribute({
+    dataType: 'TEXT',
+    cardinality: 'UNIQUE_BLOCK',
+  });
+  const form = await seed.attributionForm([
+    { id: filled.id },
+    { id: unfilled.id },
+  ]);
+  const cultivar = await seed.cultivar();
+
+  await walkToForm(page, form.name, cultivar.display_name);
+  await formField(page, filled.name).locator('textarea').fill('first');
+  await saveAttribution(page);
+
+  await page
+    .locator('.q-notification')
+    .getByRole('button', { name: 'Edit' })
+    .click();
+  await expect(formField(page, filled.name).locator('textarea')).toHaveValue(
+    'first',
+  );
+  await expect(
+    formField(page, unfilled.name).locator('.attribution-add-unique-hint'),
+  ).toHaveText('Can be assigned only once, cannot be overwritten.');
+  await expect(
+    formField(page, filled.name).locator('.attribution-add-unique-hint'),
+  ).toHaveCount(0);
+});
+
 // locked inputs of every data type: blocked ones, and replacing ones before
 // they are unlocked
 for (const { cardinality, hintText } of [

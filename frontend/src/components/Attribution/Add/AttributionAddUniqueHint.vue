@@ -4,6 +4,7 @@
     scope="global"
     tag="span"
     class="attribution-add-unique-hint"
+    :class="{ 'text-negative': !collision && check === 'failed' }"
   >
     <template v-if="collision" #date>{{ date }}</template>
     <template v-if="collision" #author>{{
@@ -22,8 +23,13 @@
         t('attributions.add.uniqueReplace.replaces')
       }}</strong></template
     >
-    <template #emphasis
-      ><strong>{{ t(`${unfilledKey}.emphasis`) }}</strong></template
+    <template #cannot
+      ><strong>{{ t('attributions.add.uniqueHint.cannot') }}</strong></template
+    >
+    <template #overwritable
+      ><strong>{{
+        t('attributions.add.uniqueHint.overwritable')
+      }}</strong></template
     >
     <template v-if="collision" #value>{{ value }}</template>
   </i18n-t>
@@ -34,20 +40,21 @@ import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import type { AttributeCardinalities } from 'src/graphql';
-import type { Collision } from './findCollisions';
+import type { Collision, UniqueValuesCheck } from './findCollisions';
 import { formatAttributionValue } from 'src/utils/attributeUtils';
 
 export interface AttributionAddUniqueHintProps {
   cardinality: AttributeCardinalities;
   collision?: Collision<CachedAttributionsFragment> | undefined;
   locked: boolean;
+  check?: UniqueValuesCheck | undefined;
 }
 
 const props = defineProps<AttributionAddUniqueHintProps>();
 
 const { t, d, n } = useI18n();
 
-const unfilledKey = computed(() => {
+const unfilledKeypath = computed(() => {
   const key = {
     UNIQUE_BLOCK: 'attributions.add.uniqueHint.block',
     UNIQUE_REPLACE: 'attributions.add.uniqueHint.replace',
@@ -64,7 +71,9 @@ const unfilledKey = computed(() => {
 
 const keypath = computed(() => {
   if (!props.collision) {
-    return `${unfilledKey.value}.base`;
+    return props.check
+      ? `attributions.add.uniqueHint.${props.check}`
+      : unfilledKeypath.value;
   }
   if (props.collision.behavior === 'BLOCK') {
     return 'attributions.add.uniqueBlocked.base';

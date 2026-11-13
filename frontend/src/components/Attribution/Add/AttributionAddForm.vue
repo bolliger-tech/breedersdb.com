@@ -22,7 +22,8 @@
       :collisions="collisions"
       :locked-priorities="lockedPriorities"
       :repeated-unique-priorities="repeatedUniquePriorities"
-      :hide-unfilled-unique-hints="hideUnfilledUniqueHints"
+      :unfilled-unique-attribute-ids="unfilledUniqueAttributeIds"
+      :unique-values-check="uniqueValuesCheck"
       :entity-name="attributedEntityName"
       :date-attributed="date"
       @unlock="unlock"
@@ -105,7 +106,11 @@ import {
   cachedAttributionsFragment,
   type CachedAttributionsFragment,
 } from 'src/components/Attribution/cachedAttributionsFragment';
-import { findCollisions, type Collision } from './findCollisions';
+import {
+  findCollisions,
+  type Collision,
+  type UniqueValuesCheck,
+} from './findCollisions';
 import { findRepeatedUniqueValues } from './findRepeatedUniqueValues';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
@@ -254,17 +259,34 @@ const collisions = computed<Map<number, Collision<CachedAttributionsFragment>>>(
         }),
 );
 
-// whether a value is unfilled is unknown until the existing values are loaded.
-// when editing, the edited values aren't collisions, but are filled.
+// not shown during the refetch after saving, like the frozen collisions
+const uniqueValuesCheck = computed<UniqueValuesCheck | undefined>(() => {
+  if (insertedAttribution.value) return undefined;
+  if (fetchingExistingUniqueValues.value) return 'pending';
+  if (existingUniqueValuesError.value) return 'failed';
+  return undefined;
+});
+
+// none until the existing values are loaded. includes the values of the
+// edited attribution, which aren't collisions but are filled.
 // frozen once inserted, like the collisions.
-const hideUnfilledUniqueHints = computed<boolean>((previous) =>
-  insertedAttribution.value && previous !== undefined
-    ? previous
-    : !!props.editId ||
-      fetchingExistingUniqueValues.value ||
-      !!existingUniqueValuesError.value ||
-      !existingUniqueValues.value,
-);
+const unfilledUniqueAttributeIds = computed<Set<number>>((previous) => {
+  if (insertedAttribution.value && previous) return previous;
+  if (
+    fetchingExistingUniqueValues.value ||
+    existingUniqueValuesError.value ||
+    !existingUniqueValues.value
+  ) {
+    return new Set();
+  }
+
+  const filledIds = new Set(
+    existingUniqueValues.value.cached_attributions.map(
+      (value) => value.attribute_id,
+    ),
+  );
+  return new Set(uniqueAttributeIds.value.filter((id) => !filledIds.has(id)));
+});
 
 // replacing values must be unlocked explicitly
 const unlockedPriorities = ref(new Set<number>());

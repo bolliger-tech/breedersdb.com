@@ -15,15 +15,7 @@ This root file covers only what spans services.
 
 ## How the services fit together
 
-In development, an nginx container ([backend/dev-nginx.conf](backend/dev-nginx.conf)) fronts everything on `localhost:80` and routes by path:
-
-| Path                     | Target                 | Notes                                 |
-| ------------------------ | ---------------------- | ------------------------------------- |
-| `/api/hasura/console`    | Hasura console         | Backend admin UI                      |
-| `/api/hasura/v1/graphql` | Hasura → Postgres      | The GraphQL API                       |
-| `/api/internal`          | cloud-function `:8090` | Not public; called by Hasura for auth |
-| `/api/assets`            | cloud-function `:8090` | Public; serves/handles images         |
-| `/*`                     | frontend `:9200`       | The PWA                               |
+In development, an nginx container ([backend/dev-nginx.conf](backend/dev-nginx.conf)) fronts everything on `localhost:80` and routes by path to Hasura, the cloud-function, and the frontend.
 
 The **print bridge** is the exception: it runs on the user's machine and the browser calls it directly (not via nginx).
 

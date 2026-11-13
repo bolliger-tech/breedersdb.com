@@ -38,8 +38,6 @@ GraphQL descriptions come **only from metadata** (`configuration.comment` / `con
 
 ## Domain & key tables
 
-Entities form a hierarchy: `crossings` → `lots` → `cultivars` → `plant_groups` → `plants` (plus `plant_rows`, `orchards`, `rootstocks`, `graftings`, `mother_plants`, `pollen`). Typed `attributes` are grouped into `attribution_forms` and recorded as `attributions` against entities.
-
 - **`cached_attributions`** denormalizes all attribution data into one table for fast Analyze queries. It was a materialized view, changed to a table for update performance (see [docs/database.md](docs/database.md) and PR #245). Full rebuild: run the `refresh_cached_attributions` mutation.
 - **`logged_actions`** provides audit logging.
 

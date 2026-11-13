@@ -35,9 +35,6 @@ If types look stale or wrong after a backend change, this is almost always the f
 
 ## Layout
 
-- [src/boot/](src/boot/) — Quasar boot files: `graphql-client.ts` (urql setup), `i18n.ts`, `sentry.ts`. App-wide init runs here.
-- [src/router/](src/router/) — `routes.ts` + `index.ts`.
-- [src/layouts/](src/layouts/) — `MainLayout` / `PageLayout` (authenticated) and `UnauthenticatedLayout`.
 - [src/pages/](src/pages/) and [src/components/](src/components/) — organized by domain entity (Cultivar, Plant, Crossing, Attribute, Attribution, Analyze, …). The **Analyze** module is the most complex; its correctness is covered by the manual plan in [TESTING.md](TESTING.md).
 - [src/composables/](src/composables/) and [src/utils/](src/utils/) — shared logic; prefer reusing these (e.g. `useEntityForm`, `useGetEntityById`, `attributeUtils`, `columnTypes`) over re-implementing.
 

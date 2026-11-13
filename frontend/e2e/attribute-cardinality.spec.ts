@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Page, Route } from '@playwright/test';
 import { expect, test } from './support/fixtures';
 import { uploadPhoto, walkToForm } from './support/attribute-flow';
 import {
@@ -18,6 +18,18 @@ async function saveAttribution(page: Page): Promise<void> {
   await page.locator('.attribute-form-save-btn .q-btn').click();
   await expect(page.locator('.q-notification')).toContainText(
     'Attribution saved.',
+  );
+}
+
+// handles the form's check for recorded values of unique attributes
+async function routeUniqueValuesCheck(
+  page: Page,
+  handle: (route: Route) => Promise<void>,
+): Promise<void> {
+  await page.route('**/api/hasura/v1/graphql', (route) =>
+    route.request().postData()?.includes('ExistingUniqueAttributionValues')
+      ? handle(route)
+      : route.fallback(),
   );
 }
 
@@ -53,7 +65,9 @@ test('unique block: a recorded value disables the input', async ({
 
   await walkToForm(page, form.name, cultivar.display_name);
   const field = formField(page, name);
-  await expect(field.locator('.attribution-add-collision-hint')).toHaveCount(0);
+  await expect(field.locator('.attribution-add-unique-hint')).toHaveText(
+    'Can be assigned only once, cannot be overwritten.',
+  );
   await field.locator('textarea').fill('first');
   await saveAttribution(page);
 
@@ -175,14 +189,24 @@ test('a unique attribute can only be filled once per attribution', async ({
     dataType: 'TEXT',
     cardinality: 'UNIQUE_REPLACE',
   });
+  const repeatable = await seed.attribute({ dataType: 'TEXT' });
   const form = await seed.attributionForm([
     { id: attribute.id },
     { id: attribute.id },
+    { id: repeatable.id },
   ]);
   const cultivar = await seed.cultivar();
 
   await walkToForm(page, form.name, cultivar.display_name);
   const fields = formField(page, attribute.name);
+  for (const i of [0, 1]) {
+    await expect(
+      fields.nth(i).locator('.attribution-add-unique-hint'),
+    ).toHaveText('Can be assigned only once, overwritable.');
+  }
+  await expect(
+    formField(page, repeatable.name).locator('.attribution-add-unique-hint'),
+  ).toHaveCount(0);
   await fields.nth(0).locator('textarea').fill('one');
   await expect(page.getByText('may only be filled once')).toHaveCount(0);
   await fields.nth(1).locator('textarea').fill('two');
@@ -197,6 +221,95 @@ test('a unique attribute can only be filled once per attribution', async ({
     page.locator('.entity-modal-content__error-tooltip'),
   ).toContainText('This attribute may only be filled once.');
   await expect(page.locator('.q-notification')).toHaveCount(0);
+});
+
+test('a loading hint shows while the recorded values are checked', async ({
+  page,
+  seed,
+}) => {
+  const attribute = await seed.attribute({
+    dataType: 'TEXT',
+    cardinality: 'UNIQUE_BLOCK',
+  });
+  const form = await seed.attributionForm([{ id: attribute.id }]);
+  const cultivar = await seed.cultivar();
+
+  // hold the check until the loading hint was seen
+  let releaseCheck = () => {};
+  const checkReleased = new Promise<void>(
+    (resolve) => (releaseCheck = resolve),
+  );
+  await routeUniqueValuesCheck(page, async (route) => {
+    await checkReleased;
+    await route.fallback();
+  });
+
+  await walkToForm(page, form.name, cultivar.display_name);
+  const hint = formField(page, attribute.name).locator(
+    '.attribution-add-unique-hint',
+  );
+  await expect(hint).toHaveText('Checking for a recorded value…');
+  releaseCheck();
+  await expect(hint).toHaveText(
+    'Can be assigned only once, cannot be overwritten.',
+  );
+});
+
+test('a failed check shows on the unique inputs', async ({ page, seed }) => {
+  const attribute = await seed.attribute({
+    dataType: 'TEXT',
+    cardinality: 'UNIQUE_BLOCK',
+  });
+  const form = await seed.attributionForm([{ id: attribute.id }]);
+  const cultivar = await seed.cultivar();
+
+  // a GraphQL error, as network errors are retried
+  await routeUniqueValuesCheck(page, (route) =>
+    route.fulfill({ json: { errors: [{ message: 'E2E failure' }] } }),
+  );
+
+  await walkToForm(page, form.name, cultivar.display_name);
+  await expect(
+    formField(page, attribute.name).locator('.attribution-add-unique-hint'),
+  ).toHaveText('Could not check for a recorded value.');
+});
+
+// when editing, the edited attribution's own values are filled, not collisions
+test('editing: the unfilled hint shows only on attributes without a value', async ({
+  page,
+  seed,
+}) => {
+  const filled = await seed.attribute({
+    dataType: 'TEXT',
+    cardinality: 'UNIQUE_BLOCK',
+  });
+  const unfilled = await seed.attribute({
+    dataType: 'TEXT',
+    cardinality: 'UNIQUE_BLOCK',
+  });
+  const form = await seed.attributionForm([
+    { id: filled.id },
+    { id: unfilled.id },
+  ]);
+  const cultivar = await seed.cultivar();
+
+  await walkToForm(page, form.name, cultivar.display_name);
+  await formField(page, filled.name).locator('textarea').fill('first');
+  await saveAttribution(page);
+
+  await page
+    .locator('.q-notification')
+    .getByRole('button', { name: 'Edit' })
+    .click();
+  await expect(formField(page, filled.name).locator('textarea')).toHaveValue(
+    'first',
+  );
+  await expect(
+    formField(page, unfilled.name).locator('.attribution-add-unique-hint'),
+  ).toHaveText('Can be assigned only once, cannot be overwritten.');
+  await expect(
+    formField(page, filled.name).locator('.attribution-add-unique-hint'),
+  ).toHaveCount(0);
 });
 
 // locked inputs of every data type: blocked ones, and replacing ones before
@@ -307,7 +420,7 @@ for (const { cardinality, hintText } of [
       [attrs.photo.name, '.attribute-form-input-photo'],
     ];
     for (const [name, controlSelector] of controls) {
-      const hint = field(name).locator('.attribution-add-collision-hint');
+      const hint = field(name).locator('.attribution-add-unique-hint');
       await expect(hint).toHaveText(hintText);
       if (cardinality === 'UNIQUE_REPLACE') {
         await expect(

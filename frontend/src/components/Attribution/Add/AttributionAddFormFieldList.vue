@@ -54,10 +54,12 @@
             "
           />
         </template>
-        <template v-if="collisions?.has(field.attribute.id)" #hint>
-          <AttributionAddCollisionHint
-            :collision="collisions.get(field.attribute.id)!"
+        <template v-if="showUniqueHint(field.attribute)" #hint>
+          <AttributionAddUniqueHint
+            :cardinality="field.attribute.cardinality"
+            :collision="collisions?.get(field.attribute.id)"
             :locked="isLocked(field.priority)"
+            :check="uniqueValuesCheck"
           />
         </template>
       </AttributionInput>
@@ -74,8 +76,8 @@ import type { AttributeFragment } from 'src/components/Attribute/attributeFragme
 import { type InputRef } from 'src/composables/useEntityForm';
 import { useI18n } from 'src/composables/useI18n';
 import BaseMessage from 'src/components/Base/BaseMessage.vue';
-import AttributionAddCollisionHint from './AttributionAddCollisionHint.vue';
-import type { Collision } from './findCollisions';
+import AttributionAddUniqueHint from './AttributionAddUniqueHint.vue';
+import type { Collision, UniqueValuesCheck } from './findCollisions';
 import type { CachedAttributionsFragment } from 'src/components/Attribution/cachedAttributionsFragment';
 import { cachedAttributionToInputValue } from 'src/components/Attribution/cachedAttributionToInputValue';
 
@@ -90,6 +92,8 @@ export interface AttributionAddFormFieldListProps {
   collisions?: Map<number, Collision<CachedAttributionsFragment>>;
   lockedPriorities?: Set<number>;
   repeatedUniquePriorities?: Set<number>;
+  filledUniqueAttributeIds?: Set<number>;
+  uniqueValuesCheck?: UniqueValuesCheck | undefined;
   entityName?: string | undefined;
   dateAttributed?: string | undefined;
 }
@@ -108,6 +112,13 @@ const modelValue = defineModel<{ [key: number]: AttributionInputValue }>({
 
 function count(fieldId: number): number {
   return props.fields.filter((field) => field.attribute.id === fieldId).length;
+}
+
+function showUniqueHint(attribute: AttributeFragment): boolean {
+  if (props.collisions?.has(attribute.id)) return true;
+  if (attribute.cardinality === 'REPEATABLE') return false;
+  if (props.uniqueValuesCheck) return true;
+  return !props.filledUniqueAttributeIds?.has(attribute.id);
 }
 
 function isLocked(priority: number): boolean {

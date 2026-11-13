@@ -92,8 +92,7 @@ export interface AttributionAddFormFieldListProps {
   collisions?: Map<number, Collision<CachedAttributionsFragment>>;
   lockedPriorities?: Set<number>;
   repeatedUniquePriorities?: Set<number>;
-  // all unique attributes count as unfilled if not given
-  unfilledUniqueAttributeIds?: Set<number>;
+  filledUniqueAttributeIds?: Set<number>;
   uniqueValuesCheck?: UniqueValuesCheck | undefined;
   entityName?: string | undefined;
   dateAttributed?: string | undefined;
@@ -119,7 +118,7 @@ function showUniqueHint(attribute: AttributeFragment): boolean {
   if (props.collisions?.has(attribute.id)) return true;
   if (attribute.cardinality === 'REPEATABLE') return false;
   if (props.uniqueValuesCheck) return true;
-  return props.unfilledUniqueAttributeIds?.has(attribute.id) ?? true;
+  return !props.filledUniqueAttributeIds?.has(attribute.id);
 }
 
 function isLocked(priority: number): boolean {

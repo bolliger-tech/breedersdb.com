@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Page, Route } from '@playwright/test';
 import { expect, test } from './support/fixtures';
 import { uploadPhoto, walkToForm } from './support/attribute-flow';
 import {
@@ -18,6 +18,18 @@ async function saveAttribution(page: Page): Promise<void> {
   await page.locator('.attribute-form-save-btn .q-btn').click();
   await expect(page.locator('.q-notification')).toContainText(
     'Attribution saved.',
+  );
+}
+
+// handles the form's check for recorded values of unique attributes
+async function routeUniqueValuesCheck(
+  page: Page,
+  handle: (route: Route) => Promise<void>,
+): Promise<void> {
+  await page.route('**/api/hasura/v1/graphql', (route) =>
+    route.request().postData()?.includes('ExistingUniqueAttributionValues')
+      ? handle(route)
+      : route.fallback(),
   );
 }
 
@@ -227,12 +239,8 @@ test('a loading hint shows while the recorded values are checked', async ({
   const checkReleased = new Promise<void>(
     (resolve) => (releaseCheck = resolve),
   );
-  await page.route('**/api/hasura/v1/graphql', async (route) => {
-    if (
-      route.request().postData()?.includes('ExistingUniqueAttributionValues')
-    ) {
-      await checkReleased;
-    }
+  await routeUniqueValuesCheck(page, async (route) => {
+    await checkReleased;
     await route.fallback();
   });
 
@@ -256,15 +264,9 @@ test('a failed check shows on the unique inputs', async ({ page, seed }) => {
   const cultivar = await seed.cultivar();
 
   // a GraphQL error, as network errors are retried
-  await page.route('**/api/hasura/v1/graphql', async (route) => {
-    if (
-      route.request().postData()?.includes('ExistingUniqueAttributionValues')
-    ) {
-      await route.fulfill({ json: { errors: [{ message: 'E2E failure' }] } });
-      return;
-    }
-    await route.fallback();
-  });
+  await routeUniqueValuesCheck(page, (route) =>
+    route.fulfill({ json: { errors: [{ message: 'E2E failure' }] } }),
+  );
 
   await walkToForm(page, form.name, cultivar.display_name);
   await expect(

@@ -22,8 +22,8 @@
       :collisions="collisions"
       :locked-priorities="lockedPriorities"
       :repeated-unique-priorities="repeatedUniquePriorities"
-      :unfilled-unique-attribute-ids="unfilledUniqueAttributeIds"
-      :unique-values-check="uniqueValuesCheck"
+      :filled-unique-attribute-ids="filledUniqueAttributeIds"
+      :unique-values-check="existingUniqueValuesResult.check"
       :entity-name="attributedEntityName"
       :date-attributed="date"
       @unlock="unlock"
@@ -106,11 +106,7 @@ import {
   cachedAttributionsFragment,
   type CachedAttributionsFragment,
 } from 'src/components/Attribution/cachedAttributionsFragment';
-import {
-  findCollisions,
-  type Collision,
-  type UniqueValuesCheck,
-} from './findCollisions';
+import { findCollisions, type UniqueValuesCheck } from './findCollisions';
 import { findRepeatedUniqueValues } from './findRepeatedUniqueValues';
 
 const SAVE_BTN_TRANSITION_DURATION_MS = 400;
@@ -245,52 +241,46 @@ const {
 });
 const uniqueValuesCheckError = ref<CombinedError | undefined>(undefined);
 
-// frozen once inserted: the refetch after saving finds the just saved values,
-// which would lock their inputs during the save transition
-const collisions = computed<Map<number, Collision<CachedAttributionsFragment>>>(
-  (previous) =>
-    insertedAttribution.value && previous
-      ? previous
-      : findCollisions({
-          attributes: attributeInputs.value.map((field) => field.attribute),
-          existingValues: (existingUniqueValues.value?.cached_attributions ??
-            []) as CachedAttributionsFragment[],
-          editedAttributionId: props.editId,
-        }),
-);
-
-// the hints are frozen once saved: the refetch after saving finds the just
-// saved values, which would change the hints during the save transition
 const isSaved = computed(
   () => !!insertedAttribution.value || !!editedAttribution.value,
 );
 
-const uniqueValuesCheck = computed<UniqueValuesCheck | undefined>(() => {
-  if (isSaved.value) return undefined;
-  if (fetchingExistingUniqueValues.value) return 'pending';
-  if (existingUniqueValuesError.value) return 'failed';
-  return undefined;
-});
+// frozen once saved: the refetch after saving finds the just saved values,
+// which would lock their inputs and change the hints during the save transition
+const existingUniqueValuesResult = computed<{
+  values: CachedAttributionsFragment[];
+  check: UniqueValuesCheck | undefined;
+}>((previous) =>
+  isSaved.value && previous
+    ? previous
+    : {
+        values: (existingUniqueValues.value?.cached_attributions ??
+          []) as CachedAttributionsFragment[],
+        check: fetchingExistingUniqueValues.value
+          ? 'pending'
+          : existingUniqueValuesError.value
+            ? 'failed'
+            : undefined,
+      },
+);
 
-// none until the existing values are loaded. includes the values of the
-// edited attribution, which aren't collisions but are filled.
-const unfilledUniqueAttributeIds = computed<Set<number>>((previous) => {
-  if (isSaved.value && previous) return previous;
-  if (
-    fetchingExistingUniqueValues.value ||
-    existingUniqueValuesError.value ||
-    !existingUniqueValues.value
-  ) {
-    return new Set();
-  }
+const collisions = computed(() =>
+  findCollisions({
+    attributes: attributeInputs.value.map((field) => field.attribute),
+    existingValues: existingUniqueValuesResult.value.values,
+    editedAttributionId: props.editId,
+  }),
+);
 
-  const filledIds = new Set(
-    existingUniqueValues.value.cached_attributions.map(
-      (value) => value.attribute_id,
+// includes the values of the edited attribution, which aren't collisions
+const filledUniqueAttributeIds = computed(
+  () =>
+    new Set(
+      existingUniqueValuesResult.value.values.map(
+        (value) => value.attribute_id,
+      ),
     ),
-  );
-  return new Set(uniqueAttributeIds.value.filter((id) => !filledIds.has(id)));
-});
+);
 
 // replacing values must be unlocked explicitly
 const unlockedPriorities = ref(new Set<number>());

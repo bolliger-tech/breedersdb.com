@@ -4,7 +4,9 @@
     scope="global"
     tag="span"
     class="attribution-add-unique-hint"
-    :class="{ 'text-negative': !collision && check === 'failed' }"
+    :class="{
+      'text-negative': keypath === 'attributions.add.uniqueHint.failed',
+    }"
   >
     <template v-if="collision" #date>{{ date }}</template>
     <template v-if="collision" #author>{{
@@ -43,6 +45,11 @@ import type { AttributeCardinalities } from 'src/graphql';
 import type { Collision, UniqueValuesCheck } from './findCollisions';
 import { formatAttributionValue } from 'src/utils/attributeUtils';
 
+const UNFILLED_KEYPATHS: Partial<Record<AttributeCardinalities, string>> = {
+  UNIQUE_BLOCK: 'attributions.add.uniqueHint.block',
+  UNIQUE_REPLACE: 'attributions.add.uniqueHint.replace',
+};
+
 export interface AttributionAddUniqueHintProps {
   cardinality: AttributeCardinalities;
   collision?: Collision<CachedAttributionsFragment> | undefined;
@@ -54,26 +61,17 @@ const props = defineProps<AttributionAddUniqueHintProps>();
 
 const { t, d, n } = useI18n();
 
-const unfilledKeypath = computed(() => {
-  const key = {
-    UNIQUE_BLOCK: 'attributions.add.uniqueHint.block',
-    UNIQUE_REPLACE: 'attributions.add.uniqueHint.replace',
-  }[props.cardinality as string];
-
-  if (typeof key === 'undefined') {
-    throw Error(
-      `No unique hint for attribute.cardinality: ${props.cardinality}`,
-    );
-  }
-
-  return key;
-});
-
 const keypath = computed(() => {
   if (!props.collision) {
-    return props.check
-      ? `attributions.add.uniqueHint.${props.check}`
-      : unfilledKeypath.value;
+    if (props.check) return `attributions.add.uniqueHint.${props.check}`;
+
+    const unfilledKeypath = UNFILLED_KEYPATHS[props.cardinality];
+    if (!unfilledKeypath) {
+      throw Error(
+        `No unique hint for attribute.cardinality: ${props.cardinality}`,
+      );
+    }
+    return unfilledKeypath;
   }
   if (props.collision.behavior === 'BLOCK') {
     return 'attributions.add.uniqueBlocked.base';

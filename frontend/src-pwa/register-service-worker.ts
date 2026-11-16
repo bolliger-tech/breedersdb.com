@@ -17,7 +17,12 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   registered(registration) {
     // update() rejects while offline, which is expected in the field
-    const checkForUpdate = () => registration.update().catch(() => undefined);
+    const checkForUpdate = () =>
+      registration.update().catch((error) => {
+        if (navigator.onLine) {
+          throw error;
+        }
+      });
 
     setInterval(() => void checkForUpdate(), 1000 * 60 * 60); // hourly update check
 

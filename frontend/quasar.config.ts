@@ -234,7 +234,9 @@ export default defineConfig((ctx) => {
         // route chunks, which silently breaks navigation.
         // See https://web.dev/articles/service-worker-lifecycle#updates
         cfg.skipWaiting = false;
-        cfg.clientsClaim = false;
+        // Only affects tabs no service worker controls yet (e.g. right after
+        // the first install). Activation already moves controlled tabs over.
+        cfg.clientsClaim = true;
       },
       // extendInjectManifestOptions (cfg) {}
     },

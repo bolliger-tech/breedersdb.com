@@ -4,6 +4,7 @@ import {
   createRouter,
   createWebHashHistory,
   createWebHistory,
+  START_LOCATION,
 } from 'vue-router';
 
 import routes from './routes';
@@ -74,7 +75,7 @@ export default defineRouter(function (/* { store, ssrContext } */) {
   // After a deploy, lazy route chunks of the old version may be gone from the
   // server (e.g. in tabs not controlled by the service worker). Reload once
   // to the target route to load the new version.
-  Router.onError((error, to) => {
+  Router.onError((error, to, from) => {
     LoadingBar.stop();
     if (
       !chunkLoadErrors.has(error) ||
@@ -86,12 +87,23 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     }
     sessionStorage.setItem(chunkReloadKey, to.fullPath);
     const url = new URL(Router.resolve(to).href, location.href).href;
-    // keep the history entry of the page we navigate away from
-    if (url !== location.href) {
-      history.pushState(null, '', url);
+
+    if (url === location.href && from !== START_LOCATION) {
+      // Back/Forward: vue-router has already called history.go() to restore
+      // the previous entry. Reloading now would race with that traversal.
+      window.addEventListener('popstate', () => reloadTo(url), { once: true });
+      return;
     }
-    location.reload();
+    reloadTo(url);
   });
 
   return Router;
 });
+
+function reloadTo(url: string) {
+  // keep the history entry of the page we navigate away from
+  if (url !== location.href) {
+    history.pushState(null, '', url);
+  }
+  location.reload();
+}

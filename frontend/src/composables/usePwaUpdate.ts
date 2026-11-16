@@ -31,6 +31,8 @@ export function usePwaUpdate() {
       type: 'negative',
       message: t('pwa.updateAvailable'),
       timeout: 0,
+      // repeated updates must not stack identical notifications
+      group: 'pwa-update',
       actions: [
         {
           label: t('pwa.update'),

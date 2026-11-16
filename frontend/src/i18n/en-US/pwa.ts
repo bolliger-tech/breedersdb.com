@@ -1,5 +1,5 @@
 export const pwa = {
   updateAvailable:
-    'Update available. Please save your work and reload the page.',
-  update: 'Reload',
+    'Update available. Please save your work, then press "Update".',
+  update: 'Update',
 };

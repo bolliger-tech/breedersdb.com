@@ -17,6 +17,14 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   registered(registration) {
     setInterval(() => void registration.update(), 1000 * 60 * 60); // hourly update check
+
+    // installed web apps are often resumed from the background instead of
+    // reloaded, and timers don't run while suspended
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        void registration.update();
+      }
+    });
   },
 
   cached(/* registration */) {

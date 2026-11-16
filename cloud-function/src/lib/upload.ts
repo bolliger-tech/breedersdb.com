@@ -1,7 +1,7 @@
 import * as ff from '@google-cloud/functions-framework';
 import { hashFileForStorage } from './crypto';
 import { uploadFile } from './storage';
-import { validateFrontendAuth } from '../auth/validateFrontendAuth';
+import { authenticateUser } from '../auth/authenticateUser';
 
 // Max uncompressed HTTP request size: 32MB
 // https://cloud.google.com/functions/quotas#resource_limits
@@ -25,8 +25,12 @@ export async function handleUpload(
     return res.status(405).send('Method Not Allowed');
   }
 
-  const auth = await validateFrontendAuth(req.headers.cookie);
-  if (!auth) {
+  const auth = await authenticateUser(
+    req.headers.cookie,
+    req.headers.authorization,
+    res,
+  );
+  if (auth.status !== 'authenticated') {
     return res.status(401).send('Unauthorized');
   }
 

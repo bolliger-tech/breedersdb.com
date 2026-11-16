@@ -86,6 +86,58 @@ curl -X POST \
   http://localhost/api/hasura/v1/graphql
 
 echo
+echo "Uploading with Personal Access Token..."
+
+image="$(dirname "$0")/smoke.jpg"
+image_hash=$(shasum -a 256 "$image" | cut -d' ' -f1)
+for type in images attachments; do
+  file_name=$(curl -X POST \
+    --fail-with-body \
+    -sS \
+    -H "Content-Type: application/octet-stream" \
+    -H "Authorization: Bearer $pat" \
+    -H "x-file-hash: $image_hash" \
+    -H "x-file-name: smoke.jpg" \
+    --data-binary @"$image" \
+    "http://localhost/api/assets/upload/$type" | jq -r .fileName)
+  [[ "$file_name" == "$image_hash.jpg" ]] || { echo "PAT upload to $type returned unexpected file name: $file_name"; exit 1; }
+  echo "Uploaded to $type: $file_name"
+done
+
+echo
+echo "Using an invalid Personal Access Token..."
+
+# hasura answers 200 and reports the webhook's 401 as access-denied error.
+# wrong credentials, so a regression can't leave a session behind.
+response=$(curl -X POST -sS \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer invalid" \
+  -d '{"operationName":"SignIn","query":"mutation SignIn {SignIn(email: \"'$email'\", password: \"wrong-password\") {id}}"}' \
+  http://localhost/api/hasura/v1/graphql)
+[[ $(echo "$response" | jq -r '.errors[0].extensions.code') == "access-denied" ]] || { echo "SignIn with invalid PAT was not rejected: $response"; exit 1; }
+status=$(curl -X POST -sS -o /dev/null -w '%{http_code}' \
+  -H "Authorization: Bearer invalid" \
+  -H "Cookie: breedersdb.id.token=$token; breedersdb.user=$user" \
+  -H "x-file-hash: $image_hash" \
+  --data-binary @"$image" \
+  http://localhost/api/assets/upload/attachments)
+[[ "$status" == "401" ]] || { echo "Upload with invalid PAT was not rejected: $status"; exit 1; }
+echo "Invalid Personal Access Token rejected."
+
+echo
+echo "Using a Personal Access Token as cookie..."
+
+# the cookie path must not accept PATs, else it would bypass their expiry
+pat_cookie="$((10#${pat:0:12})).${pat:12}"
+status=$(curl -X POST -sS -o /dev/null -w '%{http_code}' \
+  -H "Cookie: breedersdb.id.token=$pat_cookie; breedersdb.user=$user" \
+  -H "x-file-hash: $image_hash" \
+  --data-binary @"$image" \
+  http://localhost/api/assets/upload/attachments)
+[[ "$status" == "401" ]] || { echo "Upload with PAT as cookie was not rejected: $status"; exit 1; }
+echo "Personal Access Token as cookie rejected."
+
+echo
 echo "Deleting Personal Access Token..."
 
 response=$(curl -X POST \
@@ -108,8 +160,6 @@ fi
 echo
 echo "Uploading image..."
 
-image="$(dirname "$0")/smoke.jpg"
-image_hash=$(shasum -a 256 "$image" | cut -d' ' -f1)
 response=$(curl -X POST \
   --fail-with-body \
   -sS \

@@ -86,6 +86,20 @@ curl -X POST \
   http://localhost/api/hasura/v1/graphql
 
 echo
+echo "Uploading attachment with Personal Access Token..."
+
+pat_file="$(dirname "$0")/smoke.jpg"
+curl -X POST \
+  --fail-with-body \
+  -sS \
+  -H "Content-Type: application/octet-stream" \
+  -H "Authorization: Bearer $pat" \
+  -H "x-file-hash: $(shasum -a 256 "$pat_file" | cut -d' ' -f1)" \
+  -H "x-file-name: smoke.jpg" \
+  --data-binary @"$pat_file" \
+  http://localhost/api/assets/upload/attachments
+
+echo
 echo "Deleting Personal Access Token..."
 
 response=$(curl -X POST \

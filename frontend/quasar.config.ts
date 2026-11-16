@@ -228,8 +228,13 @@ export default defineConfig((ctx) => {
       extendGenerateSWOptions(cfg) {
         cfg.globIgnores?.push('/api/*');
         cfg.navigateFallbackDenylist = [/^\/api\//];
-        cfg.skipWaiting = true; // TODO: check if we could set this to false
-        cfg.clientsClaim = true; // TODO: check if we could set this to false. See https://web.dev/articles/service-worker-lifecycle#updates
+        // A new service worker must wait until the user accepts the update
+        // (see src/composables/usePwaUpdate.ts). Activating it immediately
+        // purges the old precache while open tabs still lazy-load the old
+        // route chunks, which silently breaks navigation.
+        // See https://web.dev/articles/service-worker-lifecycle#updates
+        cfg.skipWaiting = false;
+        cfg.clientsClaim = false;
       },
       // extendInjectManifestOptions (cfg) {}
     },

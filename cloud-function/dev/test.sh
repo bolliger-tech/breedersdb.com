@@ -100,6 +100,25 @@ curl -X POST \
   http://localhost/api/assets/upload/attachments
 
 echo
+echo "Using an invalid Personal Access Token..."
+
+# hasura answers 200 and reports the webhook's 401 as access-denied error
+response=$(curl -X POST -sS \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer invalid" \
+  -d '{"operationName":"SignIn","query":"mutation SignIn {SignIn(email: \"'$email'\", password: \"'$password'\") {id}}"}' \
+  http://localhost/api/hasura/v1/graphql)
+[[ $(echo "$response" | jq -r '.errors[0].extensions.code') == "access-denied" ]] || { echo "SignIn with invalid PAT was not rejected: $response"; exit 1; }
+status=$(curl -X POST -sS -o /dev/null -w '%{http_code}' \
+  -H "Authorization: Bearer invalid" \
+  -H "Cookie: breedersdb.id.token=$token; breedersdb.user=$user" \
+  -H "x-file-hash: $(shasum -a 256 "$pat_file" | cut -d' ' -f1)" \
+  --data-binary @"$pat_file" \
+  http://localhost/api/assets/upload/attachments)
+[[ "$status" == "401" ]] || { echo "Upload with invalid PAT was not rejected: $status"; exit 1; }
+echo "Invalid Personal Access Token rejected."
+
+echo
 echo "Deleting Personal Access Token..."
 
 response=$(curl -X POST \

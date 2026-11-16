@@ -15,7 +15,8 @@ import {
 export type UserAuthentication =
   | { status: 'authenticated'; userId: number }
   | { status: 'anonymous' }
-  | { status: 'invalid' };
+  | { status: 'invalid-pat' }
+  | { status: 'invalid-cookie' };
 
 // resolves the user of a request by its personal access token or, if there is
 // none, by its auth cookie. rolls the cookie expiration forward via `res`.
@@ -28,7 +29,7 @@ export async function authenticateUser(
   if (authorization) {
     const patAuth = await validatePersonalAccessToken(authorization);
     if (!patAuth) {
-      return { status: 'invalid' };
+      return { status: 'invalid-pat' };
     }
 
     // update last_verify if needed
@@ -46,7 +47,7 @@ export async function authenticateUser(
   if (!auth) {
     // a cookie with a token that is present but invalid
     return getTokenFromCookies(requestCookies)
-      ? { status: 'invalid' }
+      ? { status: 'invalid-cookie' }
       : { status: 'anonymous' };
   }
 

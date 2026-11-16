@@ -14,8 +14,11 @@ export async function authenticateHasuraRequest(
 
   const auth = await authenticateUser(requestCookies, authorization, res);
 
-  // allow SignIn in any case
-  if (auth.status === 'invalid' && operationName !== 'SignIn') {
+  // allow SignIn with an invalid cookie, so a stale cookie can't lock users out
+  if (
+    auth.status === 'invalid-pat' ||
+    (auth.status === 'invalid-cookie' && operationName !== 'SignIn')
+  ) {
     // unfortunately, the Set-Cookie header is only forwarded by hasura
     // in the success case (200), not in the error case (401), so we can't
     // clear the cookie here

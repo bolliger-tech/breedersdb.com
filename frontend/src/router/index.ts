@@ -12,16 +12,6 @@ import { LoadingBar } from 'quasar';
 
 const chunkReloadKey = 'bdb-chunkReload';
 
-function isChunkLoadError(error: unknown) {
-  // messages of Chrome, Firefox and Safari respectively
-  return (
-    error instanceof Error &&
-    /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed/.test(
-      error.message,
-    )
-  );
-}
-
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -68,6 +58,13 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     }
   });
 
+  // Vite reports failed lazy loads of JS and CSS chunks with this event and
+  // then rethrows the same error, which reaches Router.onError
+  const chunkLoadErrors = new WeakSet<Error>();
+  window.addEventListener('vite:preloadError', (event) =>
+    chunkLoadErrors.add(event.payload),
+  );
+
   Router.beforeEach(() => LoadingBar.start());
   Router.afterEach(() => {
     LoadingBar.stop();
@@ -79,10 +76,20 @@ export default defineRouter(function (/* { store, ssrContext } */) {
   // to the target route to load the new version.
   Router.onError((error, to) => {
     LoadingBar.stop();
-    if (!isChunkLoadError(error)) return;
-    if (sessionStorage.getItem(chunkReloadKey) === to.fullPath) return;
+    if (
+      !chunkLoadErrors.has(error) ||
+      sessionStorage.getItem(chunkReloadKey) === to.fullPath
+    ) {
+      // registering onError disables vue-router's default error logging
+      console.error(error);
+      return;
+    }
     sessionStorage.setItem(chunkReloadKey, to.fullPath);
-    history.replaceState(null, '', Router.resolve(to).href);
+    const url = new URL(Router.resolve(to).href, location.href).href;
+    // keep the history entry of the page we navigate away from
+    if (url !== location.href) {
+      history.pushState(null, '', url);
+    }
     location.reload();
   });
 

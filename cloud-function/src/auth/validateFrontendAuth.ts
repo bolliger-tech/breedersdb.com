@@ -36,6 +36,12 @@ export async function validateFrontendAuth(
     return null;
   }
 
+  // personal access tokens must not bypass their expiry check by being sent
+  // in cookie format
+  if (dbToken.type !== 'cookie') {
+    return null;
+  }
+
   const tokenHash = hashToken(tokenCookieData.token);
 
   if (!timingSafeEqual(dbToken.token_hash, tokenHash)) {

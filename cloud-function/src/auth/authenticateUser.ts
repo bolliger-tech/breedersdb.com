@@ -32,12 +32,19 @@ export async function authenticateUser(
       return { status: 'invalid-pat' };
     }
 
-    // update last_verify if needed
-    const secondsSinceLastVerify = getSecondsSince(patAuth.dbToken.last_verify);
-    if (secondsSinceLastVerify > LOG_ACCESS_EVERY_SECONDS) {
-      await updateLastVerify({
-        tokenId: patAuth.dbToken.id,
-      });
+    // update last_verify if needed. it's only logged, so it mustn't fail the
+    // request.
+    try {
+      const secondsSinceLastVerify = getSecondsSince(
+        patAuth.dbToken.last_verify,
+      );
+      if (secondsSinceLastVerify > LOG_ACCESS_EVERY_SECONDS) {
+        await updateLastVerify({
+          tokenId: patAuth.dbToken.id,
+        });
+      }
+    } catch (e) {
+      console.error('Error updating personal access token last_verify:', e);
     }
     return { status: 'authenticated', userId: patAuth.userId };
   }

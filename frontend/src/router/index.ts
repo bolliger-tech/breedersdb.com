@@ -10,6 +10,18 @@ import routes from './routes';
 import { getUserFromCookie } from 'src/utils/authUtils';
 import { LoadingBar } from 'quasar';
 
+const chunkReloadKey = 'bdb-chunkReload';
+
+function isChunkLoadError(error: unknown) {
+  // messages of Chrome, Firefox and Safari respectively
+  return (
+    error instanceof Error &&
+    /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed/.test(
+      error.message,
+    )
+  );
+}
+
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -57,7 +69,22 @@ export default defineRouter(function (/* { store, ssrContext } */) {
   });
 
   Router.beforeEach(() => LoadingBar.start());
-  Router.afterEach(() => LoadingBar.stop());
+  Router.afterEach(() => {
+    LoadingBar.stop();
+    sessionStorage.removeItem(chunkReloadKey);
+  });
+
+  // After a deploy, lazy route chunks of the old version may be gone from the
+  // server (e.g. in tabs not controlled by the service worker). Reload once
+  // to the target route to load the new version.
+  Router.onError((error, to) => {
+    LoadingBar.stop();
+    if (!isChunkLoadError(error)) return;
+    if (sessionStorage.getItem(chunkReloadKey) === to.fullPath) return;
+    sessionStorage.setItem(chunkReloadKey, to.fullPath);
+    history.replaceState(null, '', Router.resolve(to).href);
+    location.reload();
+  });
 
   return Router;
 });

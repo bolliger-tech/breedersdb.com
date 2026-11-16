@@ -6,25 +6,24 @@ export function usePwaUpdate() {
   const $q = useQuasar();
   const { t } = useI18n();
 
-  let refreshing = false;
-
-  function reload() {
-    // this can cause an infinite loop with specific settings in the devtools
-    // therefore, we need to check if we are already refreshing
-    if (refreshing) return;
-    refreshing = true;
-    location.reload();
-  }
-
   async function activateUpdate() {
     const registration = await navigator.serviceWorker.getRegistration();
-    if (!registration?.waiting) {
-      reload();
+    const worker = registration?.waiting;
+    if (!worker) {
+      // another tab already activated the update
+      location.reload();
       return;
     }
-    // the generated service worker calls skipWaiting() on this message,
-    // which triggers controllerchange -> reload
-    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    // Wait for activation instead of listening for controllerchange: the
+    // latter also fires in other tabs (which would reload them without asking)
+    // and never fires in pages the service worker doesn't control.
+    worker.addEventListener('statechange', () => {
+      if (worker.state === 'activated') {
+        location.reload();
+      }
+    });
+    // the generated service worker calls skipWaiting() on this message
+    worker.postMessage({ type: 'SKIP_WAITING' });
   }
 
   function notifyUser() {
@@ -48,21 +47,6 @@ export function usePwaUpdate() {
     }
   }
 
-  onMounted(() => {
-    window.addEventListener('message', handleMessage);
-
-    // see also quasar.config.ts -> configure() -> pwa -> workboxOptions
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-      // the new service worker only takes control after the user accepted
-      // the update (or all tabs were closed), so reload to load its assets
-      navigator.serviceWorker.addEventListener('controllerchange', reload);
-    }
-  });
-
-  onUnmounted(() => {
-    window.removeEventListener('message', handleMessage);
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.removeEventListener('controllerchange', reload);
-    }
-  });
+  onMounted(() => window.addEventListener('message', handleMessage));
+  onUnmounted(() => window.removeEventListener('message', handleMessage));
 }

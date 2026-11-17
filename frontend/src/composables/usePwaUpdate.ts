@@ -18,7 +18,9 @@ export function usePwaUpdate() {
     // latter also fires in other tabs (which would reload them without asking)
     // and never fires in pages the service worker doesn't control.
     worker.addEventListener('statechange', () => {
-      if (worker.state === 'activated') {
+      // redundant: activation failed or a newer worker replaced this one.
+      // After the reload, the page shows whatever state the update is in.
+      if (worker.state === 'activated' || worker.state === 'redundant') {
         location.reload();
       }
     });
@@ -26,13 +28,17 @@ export function usePwaUpdate() {
     worker.postMessage({ type: 'SKIP_WAITING' });
   }
 
+  let dismissNotification: (() => void) | undefined;
+
   function notifyUser() {
-    $q.notify({
+    // the waiting worker may be reported both on mount and by message
+    if (dismissNotification) return;
+
+    dismissNotification = $q.notify({
       type: 'negative',
       message: t('pwa.updateAvailable'),
       timeout: 0,
-      // repeated updates must not stack identical notifications
-      group: 'pwa-update',
+      onDismiss: () => (dismissNotification = undefined),
       actions: [
         {
           label: t('pwa.update'),
@@ -49,6 +55,16 @@ export function usePwaUpdate() {
     }
   }
 
-  onMounted(() => window.addEventListener('message', handleMessage));
+  onMounted(async () => {
+    window.addEventListener('message', handleMessage);
+
+    // register-service-worker reports a worker that was already waiting on
+    // page load only once, possibly before this listener existed
+    if (!('serviceWorker' in navigator)) return;
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (registration?.waiting && navigator.serviceWorker.controller) {
+      notifyUser();
+    }
+  });
   onUnmounted(() => window.removeEventListener('message', handleMessage));
 }

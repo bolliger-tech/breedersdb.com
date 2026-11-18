@@ -36,9 +36,7 @@ export type AttributeDataType =
   | 'ENUM';
 
 export type AttributeCardinality =
-  | 'REPEATABLE'
-  | 'UNIQUE_BLOCK'
-  | 'UNIQUE_REPLACE';
+  'REPEATABLE' | 'UNIQUE_BLOCK' | 'UNIQUE_REPLACE';
 
 interface IdRow {
   id: number;
@@ -322,8 +320,7 @@ export class Seeder {
       validationRule?: { min: number; max: number; step: number };
       // plain labels, or objects to set the disabled / pre-selected flags
       enumOptions?: (
-        | string
-        | { label: string; disabled?: boolean; isDefault?: boolean }
+        string | { label: string; disabled?: boolean; isDefault?: boolean }
       )[];
     } = {},
   ): Promise<

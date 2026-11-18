@@ -30,8 +30,10 @@ import { ref } from 'vue';
 import { focusInView } from 'src/utils/focusInView';
 import type { EntityInputProps, EntityInputSlots } from './EntityInput.vue';
 
-export interface EntityInputPasswordProps
-  extends Omit<EntityInputProps, 'type' | 'onUpdate:modelValue'> {
+export interface EntityInputPasswordProps extends Omit<
+  EntityInputProps,
+  'type' | 'onUpdate:modelValue'
+> {
   // quasar typescript fix
   'onUpdate:modelValue'?: (
     value: string | number | FileList | null | undefined,

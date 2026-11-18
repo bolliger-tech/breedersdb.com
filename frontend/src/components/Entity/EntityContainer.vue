@@ -80,8 +80,7 @@ import BaseSuspense from 'components/Base/BaseSuspense/BaseSuspense.vue';
 import BaseSpinner from 'components/Base/BaseSpinner.vue';
 import type { EntityExportButtonProps } from './EntityExportButton.vue';
 
-export interface EntityContainerProps
-  extends EntityContainerPropsWithoutModels {
+export interface EntityContainerProps extends EntityContainerPropsWithoutModels {
   tab?: EntityListProps['tab'];
   search?: EntityListProps['search'];
   pagination?: EntityListTableProps['pagination'];

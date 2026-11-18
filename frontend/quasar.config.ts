@@ -16,7 +16,7 @@ export default defineConfig((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['sentry', 'i18n', 'graphql-client'],
+    boot: ['sentry', 'i18n', 'graphql-client', 'preload-error'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ['app.scss'],
@@ -228,8 +228,23 @@ export default defineConfig((ctx) => {
       extendGenerateSWOptions(cfg) {
         cfg.globIgnores?.push('/api/*');
         cfg.navigateFallbackDenylist = [/^\/api\//];
-        cfg.skipWaiting = true; // TODO: check if we could set this to false
-        cfg.clientsClaim = true; // TODO: check if we could set this to false. See https://web.dev/articles/service-worker-lifecycle#updates
+        // A new service worker must wait until the user accepts the update
+        // (see src/composables/usePwaUpdate.ts). Activating it immediately
+        // purges the old precache while open tabs still lazy-load the old
+        // route chunks, which silently breaks navigation.
+        // See https://web.dev/articles/service-worker-lifecycle#updates
+        //
+        // TODO: set to false in the next release. Clients still running the
+        // previous app version only reload on update and never send
+        // SKIP_WAITING, so a waiting worker would never activate for them.
+        // This release delivers the new usePwaUpdate.ts to them first. Until
+        // then, a new worker activates right after installing, and the
+        // update button only reloads. e2e/pwa-update.spec.ts covers the
+        // SKIP_WAITING path once this is false.
+        cfg.skipWaiting = true;
+        // Only affects tabs no service worker controls yet (e.g. right after
+        // the first install). Activation already moves controlled tabs over.
+        cfg.clientsClaim = true;
       },
       // extendInjectManifestOptions (cfg) {}
     },

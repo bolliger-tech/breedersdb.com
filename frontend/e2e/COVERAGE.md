@@ -142,3 +142,14 @@ camera scanning, reset-password e-mail round trip, XLSX export file contents.
 ## App bugs found by the loop
 
 None open.
+
+## PWA
+
+Runs against a copy of the production build (`dist/pwa`) on its own origin;
+skipped without a build. The spec itself needs no backend, but like every
+spec it runs after the suite's global setup.
+
+| Feature                                  | Status | Spec                 | Notes                                         |
+| ---------------------------------------- | ------ | -------------------- | --------------------------------------------- |
+| No update notification on first install  | done   | `pwa-update.spec.ts` |                                               |
+| Deployed update is offered and activated | done   | `pwa-update.spec.ts` | a byte change in `sw.js` simulates the deploy |

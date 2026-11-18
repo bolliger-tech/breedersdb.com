@@ -1,5 +1,5 @@
 import { register } from 'register-service-worker';
-import { scheduleUpdateChecks } from './scheduleUpdateChecks';
+import { scheduleUpdateChecks } from 'src/utils/scheduleUpdateChecks';
 
 // The ready(), registered(), cached(), updatefound() and updated()
 // events passes a ServiceWorkerRegistration instance in their arguments.

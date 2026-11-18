@@ -34,7 +34,8 @@ test.skip(
   'requires a production build: yarn build',
 );
 
-// one origin for all tests: they share the browser context's service worker
+// each test gets a fresh browser context, but all share the served copy of
+// the build, which deployNewVersion() changes
 test.describe.configure({ mode: 'serial' });
 
 let root: string;
@@ -110,7 +111,9 @@ const updateNotification = (page: Page) =>
   page.locator('.q-notification').filter({ hasText: 'Update available' });
 
 test('does not offer an update on the first install', async ({ page }) => {
-  await installApp(page);
+  await page.goto(origin);
+  // resolves once the first worker is active, i.e. after it was installed
+  await page.evaluate(() => navigator.serviceWorker.ready);
   await expect(page.locator('.q-notification')).toHaveCount(0);
 });
 

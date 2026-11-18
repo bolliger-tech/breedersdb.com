@@ -9,7 +9,6 @@ import {
 import routes from './routes';
 import { getUserFromCookie } from 'src/utils/authUtils';
 import { LoadingBar } from 'quasar';
-import { reloadOnPreloadError } from 'src/utils/reloadOnPreloadError';
 
 /*
  * If not building with SSR mode, you can
@@ -56,8 +55,6 @@ export default defineRouter(function (/* { store, ssrContext } */) {
       next();
     }
   });
-
-  window.addEventListener('vite:preloadError', reloadOnPreloadError);
 
   Router.beforeEach(() => LoadingBar.start());
   Router.afterEach(() => LoadingBar.stop());

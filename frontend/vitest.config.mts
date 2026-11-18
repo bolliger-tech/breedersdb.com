@@ -11,7 +11,7 @@ export default defineConfig({
     include: [
       // Matches vitest tests in any subfolder of 'src' or 'pages'
       // Matches all files with extension 'js', 'jsx', 'ts' and 'tsx'
-      'src*/**/*.vitest.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+      'src/**/*.vitest.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
     ],
     // 250307 CB: This is a workaround for compatibility with quasars
     // new tsconfig.json file, which is now located in .quasar.

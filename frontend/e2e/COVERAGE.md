@@ -146,7 +146,8 @@ None open.
 ## PWA
 
 Runs against a copy of the production build (`dist/pwa`) on its own origin;
-skipped without a build. Needs no backend.
+skipped without a build. The spec itself needs no backend, but like every
+spec it runs after the suite's global setup.
 
 | Feature                                  | Status | Spec                 | Notes                                         |
 | ---------------------------------------- | ------ | -------------------- | --------------------------------------------- |

@@ -9,6 +9,7 @@ import {
 import routes from './routes';
 import { getUserFromCookie } from 'src/utils/authUtils';
 import { LoadingBar } from 'quasar';
+import { reloadOnPreloadError } from 'src/utils/reloadOnPreloadError';
 
 /*
  * If not building with SSR mode, you can
@@ -56,10 +57,7 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     }
   });
 
-  // After a deploy, lazy chunks of the old version may be gone from the server
-  // (e.g. in tabs not controlled by the service worker). Reload to load the
-  // new version. See https://vite.dev/guide/build#load-error-handling
-  window.addEventListener('vite:preloadError', () => location.reload());
+  window.addEventListener('vite:preloadError', reloadOnPreloadError);
 
   Router.beforeEach(() => LoadingBar.start());
   Router.afterEach(() => LoadingBar.stop());

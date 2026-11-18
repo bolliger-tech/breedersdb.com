@@ -233,15 +233,7 @@ export default defineConfig((ctx) => {
         // purges the old precache while open tabs still lazy-load the old
         // route chunks, which silently breaks navigation.
         // See https://web.dev/articles/service-worker-lifecycle#updates
-        //
-        // TODO: set to false in the next release. Clients still running the
-        // previous app version only reload on update and never send
-        // SKIP_WAITING, so a waiting worker would never activate for them.
-        // This release delivers the new usePwaUpdate.ts to them first. Until
-        // then, a new worker activates right after installing, and the
-        // update button only reloads. e2e/pwa-update.spec.ts covers the
-        // SKIP_WAITING path once this is false.
-        cfg.skipWaiting = true;
+        cfg.skipWaiting = false;
         // Only affects tabs no service worker controls yet (e.g. right after
         // the first install). Activation already moves controlled tabs over.
         cfg.clientsClaim = true;

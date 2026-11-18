@@ -128,6 +128,17 @@ test('offers a deployed update and activates it on request', async ({
   const notification = updateNotification(page);
   await expect(notification).toBeVisible();
 
+  // the new worker waits, so open tabs keep the old version's precache
+  expect(await activeScriptVersion(page)).toMatchObject({
+    controlled: true,
+    waiting: true,
+  });
+
+  // a plain reload doesn't apply the update while the tab is open
+  await page.reload();
+  await expect(notification).toBeVisible();
+  expect(await activeScriptVersion(page)).toMatchObject({ waiting: true });
+
   await Promise.all([
     page.waitForEvent('load'),
     notification.getByRole('button', { name: 'Update' }).click(),

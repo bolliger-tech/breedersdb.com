@@ -1,4 +1,5 @@
 import { register } from 'register-service-worker';
+import { scheduleUpdateChecks } from './scheduleUpdateChecks';
 
 // The ready(), registered(), cached(), updatefound() and updated()
 // events passes a ServiceWorkerRegistration instance in their arguments.
@@ -16,33 +17,7 @@ register(process.env.SERVICE_WORKER_FILE, {
   },
 
   registered(registration) {
-    // registering the service worker just checked for an update
-    let lastUpdateCheck = Date.now();
-
-    const checkForUpdate = () => {
-      lastUpdateCheck = Date.now();
-      // fails on bad connections, even when navigator.onLine is true (captive
-      // portals, weak mobile signal). This is expected in the field.
-      registration
-        .update()
-        .catch((error) =>
-          console.warn('Service worker update check failed:', error),
-        );
-    };
-
-    setInterval(checkForUpdate, 1000 * 60 * 60); // hourly update check
-
-    // installed web apps are often resumed from the background instead of
-    // reloaded, and timers don't run while suspended. Each check fetches
-    // sw.js, so don't repeat it on every switch between apps.
-    document.addEventListener('visibilitychange', () => {
-      if (
-        document.visibilityState === 'visible' &&
-        Date.now() - lastUpdateCheck > 1000 * 60 * 10
-      ) {
-        checkForUpdate();
-      }
-    });
+    scheduleUpdateChecks(registration);
   },
 
   cached(/* registration */) {

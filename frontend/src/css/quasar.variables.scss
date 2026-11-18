@@ -110,42 +110,42 @@ $h1: (
   size: $base-title-size,
   line-height: 1em,
   letter-spacing: -0.025em,
-  weight: 700
+  weight: 700,
 );
 $h2: (
   // 2rem
   size: calc($base-title-size * (2 / 3)),
   line-height: 1em,
   letter-spacing: -0.0125em,
-  weight: 700
+  weight: 700,
 );
 $h3: (
   // 1.5rem
   size: calc($base-title-size / 2),
   line-height: 1em,
   letter-spacing: 0,
-  weight: 700
+  weight: 700,
 );
 $h4: (
   // 1.25rem
   size: calc($base-title-size / 2.4),
   line-height: 1em,
   letter-spacing: 0.0125em,
-  weight: 750
+  weight: 750,
 );
 $h5: (
   // 1rem
   size: calc($base-title-size / 3),
   line-height: 1rem,
   letter-spacing: 0.025em,
-  weight: 800
+  weight: 800,
 );
 $h6: (
   // 0.75rem
   size: calc($base-title-size / 4),
   line-height: 0.75rem,
   letter-spacing: 0.05em,
-  weight: 900
+  weight: 900,
 );
 $subtitle1: (
   size: map-get(

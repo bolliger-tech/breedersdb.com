@@ -15,8 +15,7 @@ export async function getUserByEmail(emailAddress: string) {
   }).then(
     (data) =>
       data?.data?.users?.[0] as
-        | UserQueryByEmailResponse['users'][0]
-        | undefined,
+        UserQueryByEmailResponse['users'][0] | undefined,
   );
   if (!user) {
     throw new ErrorWithStatus(404, 'Not Found: User not found');

@@ -32,10 +32,7 @@ interface EntityLot {
 }
 
 export type EntityPreviewEntity =
-  | EntityPlant
-  | EntityPlantGroup
-  | EntityCultivar
-  | EntityLot;
+  EntityPlant | EntityPlantGroup | EntityCultivar | EntityLot;
 
 export type EntityPreviewEntityMaybeNoData =
   | EntityPreviewEntity

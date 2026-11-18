@@ -79,8 +79,7 @@ export type PersonalAccessTokenInsertInput = Omit<
 
 export interface PersonalAccessTokenModalEditProps {
   personalAccessToken:
-    | PersonalAccessTokenEditInput
-    | PersonalAccessTokenInsertInput;
+    PersonalAccessTokenEditInput | PersonalAccessTokenInsertInput;
 }
 
 defineProps<PersonalAccessTokenModalEditProps>();

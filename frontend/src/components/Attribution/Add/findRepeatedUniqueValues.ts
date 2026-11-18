@@ -14,8 +14,7 @@ export function findRepeatedUniqueValues({
   }[];
   values: {
     [priority: number]:
-      | Parameters<typeof attributionValueHasValue>[0]
-      | undefined;
+      Parameters<typeof attributionValueHasValue>[0] | undefined;
   };
 }): Set<number> {
   const filledUniqueFields = fields.filter((field) => {

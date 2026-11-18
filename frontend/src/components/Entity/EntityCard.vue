@@ -67,8 +67,9 @@ interface Lot {
   lot: LotNameProp;
 }
 
-interface CultivarNameProp
-  extends NonNullable<PlantGroupNameProps['cultivar']> {
+interface CultivarNameProp extends NonNullable<
+  PlantGroupNameProps['cultivar']
+> {
   lot?: LotNameProp | undefined;
 }
 
@@ -80,8 +81,9 @@ interface Cultivar {
   lot?: never;
 }
 
-interface PlantGroupNameProp
-  extends NonNullable<PlantGroupNameProps['plantGroup']> {
+interface PlantGroupNameProp extends NonNullable<
+  PlantGroupNameProps['plantGroup']
+> {
   cultivar?: CultivarNameProp | undefined;
 }
 

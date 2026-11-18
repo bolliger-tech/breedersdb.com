@@ -244,8 +244,7 @@ const formFields = computed(() => {
   }
 
   const form = editData.value?.attribution_form as
-    | AttributionFormFragment
-    | undefined;
+    AttributionFormFragment | undefined;
 
   // saved exceptional attributes
   const extraAttributes =

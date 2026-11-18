@@ -47,8 +47,7 @@ import type { ValidationRule } from 'quasar';
 import { plantLabelIdUtils } from 'src/utils/labelIdUtils';
 import { focusInView } from 'src/utils/focusInView';
 
-export interface PlantLabelIdEditProps
-  extends PlantLabelIdEditPropsWithoutModel {
+export interface PlantLabelIdEditProps extends PlantLabelIdEditPropsWithoutModel {
   modelValue: string;
 }
 

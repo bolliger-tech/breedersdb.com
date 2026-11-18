@@ -42,11 +42,10 @@ import { useI18n } from 'src/composables/useI18n';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import { focusInView } from 'src/utils/focusInView';
 
-export interface EntityInputProps
-  extends Omit<
-    QInputProps,
-    'bgColor' | 'dense' | 'outlined' | 'modelValue' | 'dark' // if the `dark` prop is not excluded, the colors are wrong in dark mode
-  > {
+export interface EntityInputProps extends Omit<
+  QInputProps,
+  'bgColor' | 'dense' | 'outlined' | 'modelValue' | 'dark' // if the `dark` prop is not excluded, the colors are wrong in dark mode
+> {
   required?: boolean | undefined;
   min?: number | string | undefined;
   max?: number | string | undefined;

@@ -842,7 +842,8 @@ test('modified', async () => {
     new Date(updated.data.update_plants_by_pk.modified).getTime(),
   ).toBeGreaterThan(
     new Date(
-      resp.data.insert_crossings_one.lots[0].cultivars[0].plant_groups[0].plants[0].modified,
+      resp.data.insert_crossings_one.lots[0].cultivars[0].plant_groups[0]
+        .plants[0].modified,
     ).getTime(),
   );
 });

@@ -40,8 +40,7 @@ import type { FilterSelectOptionsUpdateFn } from 'src/utils/selectOptionFilter';
 import { filterSelectOptions } from 'src/utils/selectOptionFilter';
 import { useInputBackground } from 'src/composables/useInputBackground';
 
-export interface EntityListTableColumnSelectorProps
-  extends EntityListTableColumnSelectorPropsWithoutModel {
+export interface EntityListTableColumnSelectorProps extends EntityListTableColumnSelectorPropsWithoutModel {
   visibleColumns: string[];
 }
 

@@ -205,8 +205,7 @@ watch(
 const form = computed(
   () =>
     (formData.value?.attribution_forms_by_pk as
-      | AttributionFormFragment
-      | undefined) ?? null,
+      AttributionFormFragment | undefined) ?? null,
 );
 
 const attributeFormSelectRef: Ref<InstanceType<

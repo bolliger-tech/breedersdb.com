@@ -13,8 +13,7 @@
         <template #value>
           <AttributionValueChip aggregated max-width="80px">{{
             label
-          }}</AttributionValueChip
-          >&nbsp;
+          }}</AttributionValueChip>&nbsp;
         </template>
         <template #theAggregation>
           {{ aggregationName }}

@@ -7,12 +7,7 @@ import { ColumnTypes } from './columnTypes';
 import type { DFunc, NFunc, TFunc } from 'src/composables/useI18n';
 
 export type PrimitiveColumnValue =
-  | string
-  | number
-  | Date
-  | null
-  | boolean
-  | undefined;
+  string | number | Date | null | boolean | undefined;
 
 export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
   const type = {

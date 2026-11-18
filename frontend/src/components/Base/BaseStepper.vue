@@ -47,8 +47,8 @@ function handleTransition(to: string | number) {
   background: color-mix(in srgb, currentColor 9%, white 5%);
 }
 :global(
-    .base-stepper :is(.q-stepper__tab--active, .q-stepper__tab--done) .q-icon
-  ) {
+  .base-stepper :is(.q-stepper__tab--active, .q-stepper__tab--done) .q-icon
+) {
   color: white;
 }
 
@@ -61,18 +61,16 @@ function handleTransition(to: string | number) {
 
 /* Center center the icons */
 :global(
-    .base-stepper
-      .q-stepper__header
-      .q-stepper__tab:is(:last-child, :first-child)
-  ) {
+  .base-stepper .q-stepper__header .q-stepper__tab:is(:last-child, :first-child)
+) {
   justify-content: center;
 }
 :global(
-    .base-stepper
-      .q-stepper__header
-      .q-stepper__tab:is(:last-child, :first-child)
-      .q-stepper__dot
-  ) {
+  .base-stepper
+    .q-stepper__header
+    .q-stepper__tab:is(:last-child, :first-child)
+    .q-stepper__dot
+) {
   transform: none;
 }
 </style>

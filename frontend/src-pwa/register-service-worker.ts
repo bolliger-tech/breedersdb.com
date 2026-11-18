@@ -54,8 +54,7 @@ register(process.env.SERVICE_WORKER_FILE, {
   },
 
   updated(/* registration */) {
-    // message is caught by src/composables/usePwaUpdate.ts
-    postMessage('bdb-swUpdated');
+    // handled by src/composables/usePwaUpdate.ts
   },
 
   offline() {

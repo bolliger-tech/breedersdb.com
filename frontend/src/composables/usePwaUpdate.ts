@@ -1,14 +1,13 @@
 import { useQuasar } from 'quasar';
 import { useI18n } from 'src/composables/useI18n';
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted } from 'vue';
 
 export function usePwaUpdate() {
   const $q = useQuasar();
   const { t } = useI18n();
 
-  async function activateUpdate() {
-    const registration = await navigator.serviceWorker.getRegistration();
-    const worker = registration?.waiting;
+  function activateUpdate(registration: ServiceWorkerRegistration) {
+    const worker = registration.waiting;
     if (!worker) {
       // another tab already activated the update
       location.reload();
@@ -28,43 +27,55 @@ export function usePwaUpdate() {
     worker.postMessage({ type: 'SKIP_WAITING' });
   }
 
-  let dismissNotification: (() => void) | undefined;
+  let notificationOpen = false;
 
-  function notifyUser() {
-    // the waiting worker may be reported both on mount and by message
-    if (dismissNotification) return;
+  function notifyUser(registration: ServiceWorkerRegistration) {
+    // a newer worker may install while the notification is still open
+    if (notificationOpen) return;
 
-    dismissNotification = $q.notify({
+    notificationOpen = true;
+    $q.notify({
       type: 'negative',
       message: t('pwa.updateAvailable'),
       timeout: 0,
-      onDismiss: () => (dismissNotification = undefined),
+      onDismiss: () => (notificationOpen = false),
       actions: [
         {
           label: t('pwa.update'),
           color: 'white',
-          handler: () => void activateUpdate(),
+          handler: () => activateUpdate(registration),
         },
       ],
     });
   }
 
-  function handleMessage(event: MessageEvent) {
-    if (event.data === 'bdb-swUpdated') {
-      notifyUser();
-    }
+  function notifyWhenInstalled(
+    registration: ServiceWorkerRegistration,
+    worker: ServiceWorker,
+  ) {
+    worker.addEventListener('statechange', () => {
+      // without a controller, this is the first install, not an update
+      if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+        notifyUser(registration);
+      }
+    });
   }
 
   onMounted(async () => {
-    window.addEventListener('message', handleMessage);
-
-    // register-service-worker reports a worker that was already waiting on
-    // page load only once, possibly before this listener existed
     if (!('serviceWorker' in navigator)) return;
-    const registration = await navigator.serviceWorker.getRegistration();
-    if (registration?.waiting && navigator.serviceWorker.controller) {
-      notifyUser();
+    // resolves once a worker is active, i.e. also after the first install
+    const registration = await navigator.serviceWorker.ready;
+
+    if (registration.waiting && navigator.serviceWorker.controller) {
+      notifyUser(registration);
     }
+    if (registration.installing) {
+      notifyWhenInstalled(registration, registration.installing);
+    }
+    registration.addEventListener('updatefound', () => {
+      if (registration.installing) {
+        notifyWhenInstalled(registration, registration.installing);
+      }
+    });
   });
-  onUnmounted(() => window.removeEventListener('message', handleMessage));
 }

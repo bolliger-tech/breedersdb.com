@@ -37,8 +37,7 @@ export async function rateLimited({
   }
 
   const actions = data.data?.logged_actions as
-    | LoggedActionsQueryResponse['logged_actions']
-    | undefined;
+    LoggedActionsQueryResponse['logged_actions'] | undefined;
 
   if (!actions) {
     // this should never happen

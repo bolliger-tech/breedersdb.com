@@ -25,8 +25,9 @@
 
       <div class="absolute-full flex flex-center">
         <q-badge color="white" text-color="black">
-          <span class="text-weight-bold">{{ count }}</span
-          >&nbsp;/&nbsp;{{ total }}
+          <span class="text-weight-bold">{{ count }}</span>&nbsp;/&nbsp;{{
+            total
+          }}
         </q-badge>
       </div>
     </q-linear-progress>

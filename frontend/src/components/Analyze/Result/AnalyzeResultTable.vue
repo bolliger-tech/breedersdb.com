@@ -54,8 +54,7 @@ import { useRouter } from 'vue-router';
 import type { EntityExportButtonProps } from 'src/components/Entity/EntityExportButton.vue';
 import AnalyzeResultTableAddColumnsFromForm from './AnalyzeResultTableAddColumnsFromForm.vue';
 
-export interface AnalyzeResultTableProps
-  extends AnalyzeResultTablePropsWithoutModel {
+export interface AnalyzeResultTableProps extends AnalyzeResultTablePropsWithoutModel {
   visibleColumns: string[];
   pagination: NonNullable<QTableProps['pagination']>;
 }

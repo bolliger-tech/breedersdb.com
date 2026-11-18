@@ -59,7 +59,7 @@
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-vue": "^9.33.0",
     "globals": "^15.15.0",
-    "prettier": "^3.5.3",
+    "prettier": "^3.10.1",
     "type-fest": "^4.41.0",
     "typescript": "~5.5.4",
     "vite-plugin-checker": "^0.8.0",

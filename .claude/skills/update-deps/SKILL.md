@@ -25,6 +25,7 @@ defers _how_ to those docs, so it survives stack changes.
 4. **Never commit or push** — in any repo, including the deploy repo. Leave changes in the working tree and report. Commit only if the user later says so. This overrides any "commit after each task" habit.
 5. On a test failure, **prove whether it is pre-existing** (fails on the pre-upgrade version too, or is byte-identical to `main`) before blaming the upgrade. Report the attribution.
 6. Track progress with a task list (one task per package/version).
+7. **prettier: every install in the monorepo must be the same version.** Find them all (`fd -t f package.json -E node_modules -x rg -H '"prettier"' {}`; currently root, `backend/tests`, `cloud-function`, `frontend`). When bumping prettier anywhere, bump every one of them to that version in the same change, each with its own package manager, regardless of which service you were asked to update. The root copy is what `bun format` and the pre-commit hook run, so then run `bun format` and keep any reformatting it produces.
 
 ---
 
@@ -41,7 +42,7 @@ defers _how_ to those docs, so it survives stack changes.
 - The smoke test prompts for credentials; pipe empty lines (`printf '\n\n' | ./dev/test.sh`) to use the seeded dev user. It exercises every runtime dep: **functions-framework**, **jose** (password-reset JWT), **nodemailer** (reset mail read back from mailpit), **sharp** and **@google-cloud/storage** (image upload + uncached resize against fake-gcs). It does not cover image pruning or real-GCS auth (dev uses the emulator without credentials) — flag storage/google-auth-library changes for a check on the next deploy.
 - If the container is _recreated_ (e.g. `docker compose up` after it was stopped) and gets a new IP, nginx keeps the stale upstream and `/api/assets` returns **502** while GraphQL still works (Hasura re-resolves). Restart the `nginx` container — it's not an upgrade regression.
 - To confirm the rebuild finished, read the version from `/app/node_modules/<pkg>/package.json` inside the container (`require('<pkg>/package.json')` fails for packages with an `exports` map, e.g. sharp).
-- **prettier** is enforced by the _root_ formatter, not this package's copy — a local bump is inert and the pre-commit hook may reformat with the root version; note the mismatch, don't fight it.
+- **prettier**: bump every install in the repo to the same version (rule 7).
 - **@types/node**: hold at the container runtime's major even under `major`, unless the runtime is bumped too.
 - **typescript** major (native `tsgo`): drop-in here (we only run `tsc` via scripts); platform binaries ship in the lockfile, so no pipeline change.
 

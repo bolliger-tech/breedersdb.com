@@ -17,8 +17,10 @@
 import BaseSpriteIcon from 'components/Base/BaseSpriteIcon/BaseSpriteIcon.vue';
 import type { BaseSpriteIconProps } from 'components/Base/BaseSpriteIcon/baseSpriteIconProps';
 
-export interface NavLevel1ItemIconProps
-  extends Omit<BaseSpriteIconProps, 'name'> {
+export interface NavLevel1ItemIconProps extends Omit<
+  BaseSpriteIconProps,
+  'name'
+> {
   label?: string;
   icon?: BaseSpriteIconProps['name'];
   isCurrentRoute: boolean;

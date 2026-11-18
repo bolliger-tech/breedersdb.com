@@ -115,8 +115,7 @@ const props = defineProps<{
   // make emit handler available in template
   onNewFromTemplate?: ((templateId: number) => void) | undefined;
   withInsertData?:
-    | ((data: InsertVariables['entity']) => InsertVariables)
-    | undefined;
+    ((data: InsertVariables['entity']) => InsertVariables) | undefined;
   withEditData?: ((data: EditVariables['entity']) => EditVariables) | undefined;
 }>();
 

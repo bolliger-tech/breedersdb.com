@@ -63,15 +63,15 @@ const { t, d, n } = useI18n();
 
 const keypath = computed(() => {
   if (!props.collision) {
-    if (props.check) return `attributions.add.uniqueHint.${props.check}`;
-
     const unfilledKeypath = UNFILLED_KEYPATHS[props.cardinality];
     if (!unfilledKeypath) {
       throw Error(
         `No unique hint for attribute.cardinality: ${props.cardinality}`,
       );
     }
-    return unfilledKeypath;
+    return props.check
+      ? `attributions.add.uniqueHint.${props.check}`
+      : unfilledKeypath;
   }
   if (props.collision.behavior === 'BLOCK') {
     return 'attributions.add.uniqueBlocked.base';

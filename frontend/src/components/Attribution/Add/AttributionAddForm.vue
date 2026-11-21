@@ -32,9 +32,7 @@
     <AttributionAddFormAddInput @add="addExtraAttribute" />
 
     <AttributionAddFormSaveButton
-      :disable="
-        isSaving || !!insertedAttribution || fetchingExistingUniqueValues
-      "
+      :disable="isSaving || isSaved || fetchingExistingUniqueValues"
       :loading="isSaving"
       :show-progress="isSaving || !!insertedAttribution"
       :progress="savingProgress"
@@ -255,11 +253,13 @@ const existingUniqueValuesResult = computed<{
     : {
         values: (existingUniqueValues.value?.cached_attributions ??
           []) as CachedAttributionsFragment[],
-        check: fetchingExistingUniqueValues.value
-          ? 'pending'
-          : existingUniqueValuesError.value
-            ? 'failed'
-            : undefined,
+        // pending only until the first result: refetches would flicker the hints
+        check:
+          fetchingExistingUniqueValues.value && !existingUniqueValues.value
+            ? 'pending'
+            : existingUniqueValuesError.value
+              ? 'failed'
+              : undefined,
       },
 );
 

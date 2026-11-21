@@ -54,7 +54,7 @@
             "
           />
         </template>
-        <template v-if="showUniqueHint(field.attribute)" #hint>
+        <template v-if="field.attribute.cardinality !== 'REPEATABLE'" #hint>
           <AttributionAddUniqueHint
             :cardinality="field.attribute.cardinality"
             :collision="collisions?.get(field.attribute.id)"
@@ -111,10 +111,6 @@ const modelValue = defineModel<{ [key: number]: AttributionInputValue }>({
 
 function count(fieldId: number): number {
   return props.fields.filter((field) => field.attribute.id === fieldId).length;
-}
-
-function showUniqueHint(attribute: AttributeFragment): boolean {
-  return attribute.cardinality !== 'REPEATABLE';
 }
 
 function isLocked(priority: number): boolean {

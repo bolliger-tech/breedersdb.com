@@ -29,6 +29,13 @@ export const cultivars = {
 
   type: 'Type',
 
+  pedigree: {
+    title: 'Pedigree',
+    unknown: 'unknown',
+    parentsUnknown: 'Parents unknown',
+    loadingFailed: 'Failed to load the pedigree.',
+  },
+
   nameOverrideHint: 'The common name',
 
   segmentNameHint: 'Format: three-digit number. Example: {example}',

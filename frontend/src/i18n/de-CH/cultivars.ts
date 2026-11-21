@@ -22,6 +22,12 @@ export const cultivars = {
   breedersCultivar: 'Zuchtnummer | Zuchtnummern',
   variety: 'Sorte | Sorten',
   type: 'Typ',
+  pedigree: {
+    title: 'Abstammung',
+    unknown: 'unbekannt',
+    parentsUnknown: 'Eltern unbekannt',
+    loadingFailed: 'Die Abstammung konnte nicht geladen werden.',
+  },
   nameOverrideHint: 'Der gebräuchliche Name',
   segmentNameHint: 'Format: dreistellige Nummer. Beispiel: {example}',
   explainer: {

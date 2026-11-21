@@ -274,6 +274,19 @@ test('a failed check shows on the unique inputs', async ({ page, seed }) => {
   ).toHaveText('Could not check for a recorded value.');
 });
 
+test('the attribute preview shows the unique hint', async ({ page, seed }) => {
+  const attribute = await seed.attribute({
+    dataType: 'TEXT',
+    cardinality: 'UNIQUE_REPLACE',
+  });
+
+  await page.goto(`/#/attributes?s=${encodeURIComponent(attribute.name)}`);
+  await listRow(page, attribute.name).click();
+  await expect(page.locator('.attribution-add-unique-hint')).toHaveText(
+    'Can be assigned only once, overwritable.',
+  );
+});
+
 // when editing, the edited attribution's own values aren't collisions
 test('editing: the unfilled hint shows on attributes with and without a value', async ({
   page,

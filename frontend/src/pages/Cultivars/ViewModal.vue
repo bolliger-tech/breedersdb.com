@@ -69,6 +69,11 @@
             'date_eliminated',
           ]"
         />
+
+        <CultivarPedigree
+          :cultivar-id="cultivar.id"
+          :display-name="cultivar.display_name"
+        />
       </template>
 
       <template #action-left>
@@ -92,6 +97,7 @@ import { computed } from 'vue';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
+import CultivarPedigree from 'src/components/Cultivar/CultivarPedigree.vue';
 import CultivarEntityTable from 'src/components/Cultivar/CultivarEntityTable.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import {

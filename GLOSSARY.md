@@ -52,3 +52,9 @@ _Avoid_: Conflict, duplicate
 
 **Collision behavior**:
 What happens on a collision: **block** (the new value is rejected) or **replace** (the existing value, including its notes, is removed and the new one kept, regardless of either's date).
+
+## Breeding
+
+**Pedigree**:
+The ancestors of a cultivar, traced through the mother and father cultivars of its crossing, then of their crossings, and so on. An ancestor whose crossing has no parent set ends its line as unknown.
+_Avoid_: Family tree, lineage, ancestry

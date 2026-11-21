@@ -180,12 +180,16 @@ export class Seeder {
   }
 
   async crossing(
-    opts: { motherCultivarId?: number } = {},
+    opts: { motherCultivarId?: number; fatherCultivarId?: number } = {},
   ): Promise<IdRow & { name: string }> {
     return this.insertOne(
       'crossings',
       'crossings_insert_input',
-      { name: `E${this.uid()}`, mother_cultivar_id: opts.motherCultivarId },
+      {
+        name: `E${this.uid()}`,
+        mother_cultivar_id: opts.motherCultivarId,
+        father_cultivar_id: opts.fatherCultivarId,
+      },
       'id name',
     );
   }

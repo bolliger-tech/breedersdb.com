@@ -76,12 +76,13 @@ an enum option: recorded values, renames, disabling, Analyze.
 View-modal content beyond the plain field table — currently only asserted
 implicitly (modal opens) by the CRUD specs.
 
-| Feature                                                                                | Status | Spec                  | Notes                                                                                                                               |
-| -------------------------------------------------------------------------------------- | ------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Attributions render on an entity view modal (incl. photo)                              | done   | `entity-view.spec.ts` | photo via UI upload — use `uploadPhoto()` (waits for the preview; saving earlier drops the value); gallery class is `.q-scrollarea` |
-| Related-entity tables on view modals                                                   | done   | `entity-view.spec.ts` | plant rows repeat the group name — pin the group row via its drill-down `a[href]`                                                   |
-| Related-entity table layout (short cells one line, free text wraps, h-scroll)          | done   | `entity-view.spec.ts` | 375px viewport; layout measured with `expect.poll` (Range client rects for line count)                                              |
-| Attachments: upload, entity view link, download headers, >16 MB rejected, analyze link | done   | `attachments.spec.ts` | ATTACHMENT values can be seeded with any `<sha256>.<ext>` (file need not exist) when only rendering is checked                      |
+| Feature                                                                                 | Status | Spec                        | Notes                                                                                                                               |
+| --------------------------------------------------------------------------------------- | ------ | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Attributions render on an entity view modal (incl. photo)                               | done   | `entity-view.spec.ts`       | photo via UI upload — use `uploadPhoto()` (waits for the preview; saving earlier drops the value); gallery class is `.q-scrollarea` |
+| Related-entity tables on view modals                                                    | done   | `entity-view.spec.ts`       | plant rows repeat the group name — pin the group row via its drill-down `a[href]`                                                   |
+| Related-entity table layout (short cells one line, free text wraps, h-scroll)           | done   | `entity-view.spec.ts`       | 375px viewport; layout measured with `expect.poll` (Range client rects for line count)                                              |
+| Attachments: upload, entity view link, download headers, >16 MB rejected, analyze link  | done   | `attachments.spec.ts`       | ATTACHMENT values can be seeded with any `<sha256>.<ext>` (file need not exist) when only rendering is checked                      |
+| Cultivar pedigree: two generations on open, lazy expand, ancestor link, parents unknown | done   | `cultivar-pedigree.spec.ts` | seed ancestors via `seed.crossing({ motherCultivarId, fatherCultivarId })`; expand via the node's `.q-tree__arrow`                  |
 
 ## Attribution flow (`/{cultivars,plants,groups,lots}/attribute`)
 

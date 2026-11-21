@@ -154,7 +154,10 @@ const columns = [
     field: (row: CachedAttributionsFragment) => getValue(row),
     align: 'left' as const,
     sortable: true,
-    style: 'max-width: clamp(100px, 30vw, 300px);',
+    // free text wraps, while the other cells stay on one line. The min-width
+    // keeps the browser from squeezing it to one word per line.
+    style:
+      'max-width: clamp(100px, 30vw, 300px); min-width: 100px; white-space: normal;',
   },
   {
     name: 'text_note',
@@ -162,7 +165,9 @@ const columns = [
     field: 'text_note',
     align: 'left' as const,
     sortable: true,
-    style: 'max-width: clamp(100px, 40vw, 300px);',
+    // free text, see value
+    style:
+      'max-width: clamp(100px, 40vw, 300px); min-width: 100px; white-space: normal;',
   },
   {
     name: 'photo_note',

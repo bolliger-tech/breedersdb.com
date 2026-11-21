@@ -15,7 +15,6 @@
       :row-key="rowKey"
       :rows-per-page-options="[0]"
       hide-pagination
-      wrap-cells
       binary-state-sort
       @row-click="(event, row, index) => $emit('row-click', event, row, index)"
     >
@@ -93,10 +92,6 @@ const { t } = useI18n();
 </script>
 
 <style scoped>
-:global(.entity-related-table th) {
-  text-wrap: nowrap;
-}
-
 .fade-out {
   mask-image: linear-gradient(to bottom, black 0%, black 25%, transparent 100%);
 }

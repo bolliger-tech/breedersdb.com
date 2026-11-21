@@ -18,6 +18,8 @@ export const cultivars = {
       'Dieser Name wird bereits verwendet (in Kombination mit dem ausgewählten Los)',
     nameSegmentFormat:
       'Ungültiges Format. Muss eine dreistellige Zahl sein. Beispiel: 012',
+    lotDescendsFromCultivar:
+      'Das gewählte Los stammt von diesem Cultivar ab. Das Cultivar kann darum nicht dazu gehören.',
   },
   breedersCultivar: 'Zuchtnummer | Zuchtnummern',
   variety: 'Sorte | Sorten',

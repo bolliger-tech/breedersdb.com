@@ -4,6 +4,8 @@
     v-model="data.crossing_id"
     :required="true"
     :include-id="data.crossing_id || undefined"
+    :rules="[ancestryCycleRule]"
+    :loading="fetchingAncestryCycle"
     @update:model-value="() => data.name_segment && refs.nameInputs?.validate()"
   />
   <LotNameInputs
@@ -134,6 +136,7 @@ import OrchardSelect from '../Orchard/OrchardSelect.vue';
 import LotNameInputs from './LotNameInputs.vue';
 import { useValidationRule } from 'src/composables/useValidationRule';
 import { MAX_INT_PG } from 'src/utils/constants';
+import { useAncestryCycleRule } from 'src/composables/useAncestryCycleRule';
 
 export interface LotEntityFormProps {
   lot: LotModalEditProps['lot'];
@@ -194,4 +197,10 @@ const { t } = useI18n();
 
 const { isPositiveIntegerRule, defaultDateValidationRule } =
   useValidationRule();
+
+const { ancestryCycleRule, fetching: fetchingAncestryCycle } =
+  useAncestryCycleRule({
+    link: 'lotCrossing',
+    entityId: ('id' in props.lot && props.lot.id) || undefined,
+  });
 </script>

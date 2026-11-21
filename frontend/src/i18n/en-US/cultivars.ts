@@ -22,6 +22,8 @@ export const cultivars = {
       'This name is already in use in combination with the selected lot',
     nameSegmentFormat:
       'Invalid format. Must be a three-digit number. Example: 012',
+    lotDescendsFromCultivar:
+      "The selected lot descends from this cultivar, so the cultivar can't belong to it.",
   },
 
   breedersCultivar: 'breeders cultivar | breeders cultivars',

@@ -3,7 +3,8 @@
     :ref="(el: InputRef) => (refs.motherCultivarId = el)"
     v-model="data.mother_cultivar_id"
     :label="t('crossings.fields.motherCultivar')"
-    :loading="fetchingMotherPlants"
+    :loading="fetchingMotherPlants || fetchingMotherAncestryCycle"
+    :rules="[motherAncestryCycleRule]"
     :disable="hasMotherPlants"
     :readonly="hasMotherPlants"
     :hint="hasMotherPlants ? t('crossings.hints.readonlyCultivar') : undefined"
@@ -12,7 +13,8 @@
     :ref="(el: InputRef) => (refs.fatherCultivarId = el)"
     v-model="data.father_cultivar_id"
     :label="t('crossings.fields.fatherCultivar')"
-    :loading="fetchingMotherPlants"
+    :loading="fetchingMotherPlants || fetchingFatherAncestryCycle"
+    :rules="[fatherAncestryCycleRule]"
     :disable="hasMotherPlantsWithPollen"
     :readonly="hasMotherPlantsWithPollen"
     :hint="
@@ -77,6 +79,7 @@ import type { CrossingModalEditProps } from './CrossingModalEdit.vue';
 import type { InputRef } from 'src/composables/useEntityForm';
 import { useEntityForm } from 'src/composables/useEntityForm';
 import { useIsUnique } from 'src/composables/useIsUnique';
+import { useAncestryCycleRule } from 'src/composables/useAncestryCycleRule';
 import CultivarSelect from '../Cultivar/CultivarSelect.vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
@@ -126,6 +129,17 @@ const { isUnique: isNameUnique, fetching: fetchingNameUnique } = useIsUnique({
   tableName: 'crossings',
   existingId: ('id' in props.crossing && props.crossing.id) || undefined,
 });
+
+// one per field, so each select only spins for its own check
+const crossingId = ('id' in props.crossing && props.crossing.id) || undefined;
+const {
+  ancestryCycleRule: motherAncestryCycleRule,
+  fetching: fetchingMotherAncestryCycle,
+} = useAncestryCycleRule({ link: 'crossingParent', entityId: crossingId });
+const {
+  ancestryCycleRule: fatherAncestryCycleRule,
+  fetching: fetchingFatherAncestryCycle,
+} = useAncestryCycleRule({ link: 'crossingParent', entityId: crossingId });
 
 const motherPlantsQuery = graphql(`
   query MotherPlants($crossingId: Int!) {

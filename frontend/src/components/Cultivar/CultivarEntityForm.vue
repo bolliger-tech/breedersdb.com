@@ -35,6 +35,8 @@
           : 'all'
     "
     :include-id="data.lot_id || undefined"
+    :rules="[ancestryCycleRule]"
+    :loading="fetchingAncestryCycle"
     @update:model-value="() => data.name_segment && refs.nameInputs?.validate()"
   />
   <CultivarNameInputs
@@ -115,6 +117,7 @@ import CultivarNameInputs from './CultivarNameInputs.vue';
 import BaseInputLabel from 'src/components/Base/BaseInputLabel.vue';
 import CultivarNameOverrideInput from './CultivarNameOverrideInput.vue';
 import { useIsUnique } from 'src/composables/useIsUnique';
+import { useAncestryCycleRule } from 'src/composables/useAncestryCycleRule';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
 
@@ -173,6 +176,12 @@ const { isUnique: isAcronymUnique, fetching: fetchingAcronymUnique } =
     tableName: 'cultivars',
     columnName: 'acronym',
     existingId: ('id' in props.cultivar && props.cultivar.id) || undefined,
+  });
+
+const { ancestryCycleRule, fetching: fetchingAncestryCycle } =
+  useAncestryCycleRule({
+    link: 'cultivarLot',
+    entityId: ('id' in props.cultivar && props.cultivar.id) || undefined,
   });
 
 /**

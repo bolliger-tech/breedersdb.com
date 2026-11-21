@@ -12,6 +12,11 @@ export const crossings = {
   autoFillName: 'Auto-fill',
   acronymsLoadError: 'Failed to load cultivar data. Auto-fill not available.',
 
+  validation: {
+    parentDescendsFromCrossing:
+      "This cultivar descends from this crossing, so it can't be its parent.",
+  },
+
   hints: {
     readonlyCultivar:
       "Mother plants rely on this crossing, therefore the value can't be changed.",

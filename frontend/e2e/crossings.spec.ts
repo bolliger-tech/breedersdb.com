@@ -72,3 +72,27 @@ test('crossings can be created, viewed, edited and deleted', async ({
     renamed,
   );
 });
+
+// A parent cultivar that descends from the crossing itself would close an
+// ancestry cycle: the field rejects it before saving.
+test('a cultivar of the crossing cannot become its parent', async ({
+  page,
+  seed,
+}) => {
+  const crossing = await seed.crossing();
+  const lot = await seed.lot({ crossingId: crossing.id });
+  const ownCultivar = await seed.cultivar({ lotId: lot.id });
+
+  await page.goto(`/#/crossings/${crossing.id}`);
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
+  const field = formField(page, 'Mother Cultivar');
+  await selectOption(page, field, ownCultivar.display_name);
+  const message =
+    "This cultivar descends from this crossing, so it can't be its parent.";
+  await expect(field).toContainText(message);
+
+  // saving is blocked: the modal stays open
+  await save(page);
+  await expect(field).toContainText(message);
+  await expect(page.locator('.q-dialog')).toHaveCount(1);
+});

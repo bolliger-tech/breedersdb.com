@@ -17,6 +17,8 @@ export const lots = {
       'Der Name muss aus zwei Ziffern bestehen, gefolgt von einem Grossbuchstaben. Beispiel: 24A. Tipp: Nimm die Jahrzahl für die ersten zwei Ziffern.',
     nameNotUniqueWithCrossing:
       'Dieser Name wird bereits verwendet (in Kombination mit der ausgewählten Kreuzung). Nächster freier Name: {name}',
+    crossingDescendsFromLot:
+      'Die gewählte Kreuzung stammt von diesem Los ab. Das Los kann darum nicht zu ihr gehören.',
   },
   segmentNameHint:
     'Format: zweistellige Nummer gefolgt von einem Grossbuchstaben. Beispiel: {example}',

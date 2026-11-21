@@ -6,7 +6,7 @@
     :options="crossingOptions"
     option-value="id"
     option-label="name"
-    :loading="fetching"
+    :loading="fetching || loading"
     :error="error"
     :required="required"
     :readonly="readonly"
@@ -29,6 +29,7 @@ export interface CrossingSelectProps {
   readonly?: boolean;
   includeId?: number;
   rules?: EntitySelectProps<unknown>['rules'];
+  loading?: boolean;
 }
 const props = defineProps<CrossingSelectProps>();
 

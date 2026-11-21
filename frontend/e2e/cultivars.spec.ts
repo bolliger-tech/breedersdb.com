@@ -60,3 +60,27 @@ test('cultivars can be created, viewed, edited and deleted', async ({
     renamed,
   );
 });
+
+// Moving a cultivar to a lot that descends from it would close an ancestry
+// cycle: the field rejects it before saving.
+test('a cultivar cannot move to a lot that descends from it', async ({
+  page,
+  seed,
+}) => {
+  const cultivar = await seed.cultivar();
+  const childCrossing = await seed.crossing({ motherCultivarId: cultivar.id });
+  const childLot = await seed.lot({ crossingId: childCrossing.id });
+
+  await page.goto(`/#/cultivars/${cultivar.id}`);
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
+  const field = formField(page, 'Lot');
+  await selectOption(page, field, childLot.full_name);
+  const message =
+    "The selected lot descends from this cultivar, so the cultivar can't belong to it.";
+  await expect(field).toContainText(message);
+
+  // saving is blocked: the modal stays open
+  await save(page);
+  await expect(field).toContainText(message);
+  await expect(page.locator('.q-dialog')).toHaveCount(1);
+});

@@ -520,7 +520,7 @@ test('father & mother cultivar can be changed if no mother plant is linked', asy
 
   const newCultivar = await postOrFail({
     query: /* GraphQL */ `
-      mutation InsertCultivar($crossing_id: Int!) {
+      mutation InsertCultivar {
         insert_cultivars_one(
           object: {
             name_segment: "999"
@@ -528,7 +528,7 @@ test('father & mother cultivar can be changed if no mother plant is linked', asy
               data: {
                 name_segment: "24B"
                 orchard: { data: { name: "Orchard10" } }
-                crossing_id: $crossing_id
+                crossing: { data: { name: "cross2" } }
               }
             }
           }
@@ -537,9 +537,6 @@ test('father & mother cultivar can be changed if no mother plant is linked', asy
         }
       }
     `,
-    variables: {
-      crossing_id: crossing.data.insert_crossings_one.id,
-    },
   });
 
   const updated = await post({

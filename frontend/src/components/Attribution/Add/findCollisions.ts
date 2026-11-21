@@ -2,6 +2,9 @@ import type { AttributeCardinalities } from 'src/graphql';
 
 export type CollisionBehavior = 'BLOCK' | 'REPLACE';
 
+// state of the check for existing values while it isn't done
+export type UniqueValuesCheck = 'pending' | 'failed';
+
 export type Collision<T> = {
   behavior: CollisionBehavior;
   existingValue: T;

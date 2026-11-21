@@ -14,6 +14,17 @@
       </p>
     </template>
 
+    <template v-else-if="ancestryCycleMessage">
+      <BaseMessage type="error" icon-size="xl">
+        <h3 class="q-my-none col text-white">
+          {{ t('base.ancestryCycle.title') }}
+        </h3>
+      </BaseMessage>
+      <p class="text-white q-mt-md q-mb-sm body-text1">
+        {{ ancestryCycleMessage }}
+      </p>
+    </template>
+
     <template v-else>
       <h3 class="q-mt-sm">GraphQL Error</h3>
       <p class="base-graphql-error__msg">
@@ -56,6 +67,25 @@ const isOfflineError = computed(
         props.error.networkError.message,
       )),
 );
+
+// The database rejects ancestry cycles with these messages (migration prevent_ancestry_cycles).
+const ancestryCycleTranslationKeys = {
+  'Ancestry cycle: The mother cultivar descends from this crossing.':
+    'base.ancestryCycle.motherCultivar',
+  'Ancestry cycle: The father cultivar descends from this crossing.':
+    'base.ancestryCycle.fatherCultivar',
+  'Ancestry cycle: The crossing descends from this lot.':
+    'base.ancestryCycle.crossing',
+  'Ancestry cycle: The lot descends from this cultivar.':
+    'base.ancestryCycle.lot',
+} as const;
+
+const ancestryCycleMessage = computed(() => {
+  const key = Object.entries(ancestryCycleTranslationKeys).find(([dbMessage]) =>
+    props.error.message.includes(dbMessage),
+  )?.[1];
+  return key ? t(key) : undefined;
+});
 
 onMounted(() => {
   if (props.error && props.throw) {

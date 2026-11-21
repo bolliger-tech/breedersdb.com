@@ -42,7 +42,7 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Rootstocks             | done   | `rootstocks.spec.ts`             |                                                                                              |
 | Graftings              | done   | `graftings.spec.ts`              |                                                                                              |
 | Plant rows (`/rows`)   | done   | `plant-rows.spec.ts`             | needs an orchard to select                                                                   |
-| Crossings              | done   | `crossings.spec.ts`              | mother/father cultivar selects                                                               |
+| Crossings              | done   | `crossings.spec.ts`              | mother/father cultivar selects; ancestry cycle rejected with a readable save error           |
 | Lots                   | done   | `lots.spec.ts`                   | name segment `\d\d[A-Z]`; crossing + orchard selects                                         |
 | Cultivars              | done   | `cultivars.spec.ts`              | pilot: breeders-cultivar/variety toggle; segment input is a masked q-input ("Breeding name") |
 | Plant groups           | done   | `plant-groups.spec.ts`           |                                                                                              |

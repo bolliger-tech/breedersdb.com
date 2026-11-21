@@ -72,3 +72,40 @@ test('crossings can be created, viewed, edited and deleted', async ({
     renamed,
   );
 });
+
+// The database rejects a parent cultivar that descends from the crossing
+// itself; the save error tooltip must show it readably, not as a raw error.
+test('a cultivar of the crossing cannot become its parent', async ({
+  page,
+  seed,
+}) => {
+  // EntityModalEdit and BaseGraphqlError log the rejected save; allow only that
+  const consoleErrors: string[] = [];
+  page.context().removeAllListeners('console');
+  page.context().on('console', (msg) => {
+    if (msg.type() === 'error') consoleErrors.push(msg.text());
+  });
+
+  const crossing = await seed.crossing();
+  const lot = await seed.lot({ crossingId: crossing.id });
+  const ownCultivar = await seed.cultivar({ lotId: lot.id });
+
+  await page.goto(`/#/crossings/${crossing.id}`);
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
+  await selectOption(
+    page,
+    formField(page, 'Mother Cultivar'),
+    ownCultivar.display_name,
+  );
+  await save(page);
+
+  const tooltip = page.locator('.entity-modal-content__error-tooltip');
+  await expect(tooltip).toContainText('A cultivar cannot be its own ancestor');
+  await expect(tooltip).toContainText(
+    'The mother cultivar descends from this crossing.',
+  );
+  await expect(tooltip).not.toContainText('GraphQL Error');
+  expect(consoleErrors.filter((e) => !e.includes('Ancestry cycle:'))).toEqual(
+    [],
+  );
+});

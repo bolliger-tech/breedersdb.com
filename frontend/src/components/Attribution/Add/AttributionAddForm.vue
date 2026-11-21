@@ -22,7 +22,6 @@
       :collisions="collisions"
       :locked-priorities="lockedPriorities"
       :repeated-unique-priorities="repeatedUniquePriorities"
-      :filled-unique-attribute-ids="filledUniqueAttributeIds"
       :unique-values-check="existingUniqueValuesResult.check"
       :entity-name="attributedEntityName"
       :date-attributed="date"
@@ -270,16 +269,6 @@ const collisions = computed(() =>
     existingValues: existingUniqueValuesResult.value.values,
     editedAttributionId: props.editId,
   }),
-);
-
-// includes the values of the edited attribution, which aren't collisions
-const filledUniqueAttributeIds = computed(
-  () =>
-    new Set(
-      existingUniqueValuesResult.value.values.map(
-        (value) => value.attribute_id,
-      ),
-    ),
 );
 
 // replacing values must be unlocked explicitly

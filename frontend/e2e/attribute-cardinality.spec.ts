@@ -274,8 +274,8 @@ test('a failed check shows on the unique inputs', async ({ page, seed }) => {
   ).toHaveText('Could not check for a recorded value.');
 });
 
-// when editing, the edited attribution's own values are filled, not collisions
-test('editing: the unfilled hint shows only on attributes without a value', async ({
+// when editing, the edited attribution's own values aren't collisions
+test('editing: the unfilled hint shows on attributes with and without a value', async ({
   page,
   seed,
 }) => {
@@ -309,7 +309,7 @@ test('editing: the unfilled hint shows only on attributes without a value', asyn
   ).toHaveText('Can be assigned only once, cannot be overwritten.');
   await expect(
     formField(page, filled.name).locator('.attribution-add-unique-hint'),
-  ).toHaveCount(0);
+  ).toHaveText('Can be assigned only once, cannot be overwritten.');
 });
 
 // locked inputs of every data type: blocked ones, and replacing ones before

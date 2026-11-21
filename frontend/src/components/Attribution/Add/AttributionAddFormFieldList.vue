@@ -92,7 +92,6 @@ export interface AttributionAddFormFieldListProps {
   collisions?: Map<number, Collision<CachedAttributionsFragment>>;
   lockedPriorities?: Set<number>;
   repeatedUniquePriorities?: Set<number>;
-  filledUniqueAttributeIds?: Set<number>;
   uniqueValuesCheck?: UniqueValuesCheck | undefined;
   entityName?: string | undefined;
   dateAttributed?: string | undefined;
@@ -115,10 +114,7 @@ function count(fieldId: number): number {
 }
 
 function showUniqueHint(attribute: AttributeFragment): boolean {
-  if (props.collisions?.has(attribute.id)) return true;
-  if (attribute.cardinality === 'REPEATABLE') return false;
-  if (props.uniqueValuesCheck) return true;
-  return !props.filledUniqueAttributeIds?.has(attribute.id);
+  return attribute.cardinality !== 'REPEATABLE';
 }
 
 function isLocked(priority: number): boolean {

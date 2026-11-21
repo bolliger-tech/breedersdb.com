@@ -19,6 +19,8 @@ export const lots = {
       'The name must be two digits followed by a capital letter. Example: 24A. Hint: Use the year as the first two digits.',
     nameNotUniqueWithCrossing:
       'This name is already in use for the selected crossing. Next available name: {name}',
+    crossingDescendsFromLot:
+      "The selected crossing descends from this lot, so the lot can't belong to it.",
   },
 
   segmentNameHint:

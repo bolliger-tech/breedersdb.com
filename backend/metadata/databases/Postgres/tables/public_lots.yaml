@@ -30,6 +30,14 @@ array_relationships:
         table:
           name: cultivars
           schema: public
+computed_fields:
+  - name: has_descendant_crossing
+    definition:
+      function:
+        name: lots_has_descendant_crossing
+        schema: public
+      table_argument: lots_row
+    comment: Whether the given crossing descends from this lot. If so, the lot can't be moved to this crossing (ancestry cycle).
 insert_permissions:
   - role: user
     permission:
@@ -70,6 +78,8 @@ select_permissions:
         - orchard_id
         - plot
         - seed_tray
+      computed_fields:
+        - has_descendant_crossing
       filter: {}
       allow_aggregations: true
     comment: ""

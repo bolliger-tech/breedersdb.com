@@ -48,6 +48,14 @@ array_relationships:
         table:
           name: pollen
           schema: public
+computed_fields:
+  - name: has_descendant_lot
+    definition:
+      function:
+        name: cultivars_has_descendant_lot
+        schema: public
+      table_argument: cultivars_row
+    comment: Whether the given lot descends from this cultivar. If so, the cultivar can't be moved to this lot (ancestry cycle).
 insert_permissions:
   - role: user
     permission:
@@ -76,6 +84,8 @@ select_permissions:
         - name_override
         - name_segment
         - note
+      computed_fields:
+        - has_descendant_lot
       filter: {}
       allow_aggregations: true
     comment: ""

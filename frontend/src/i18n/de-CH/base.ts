@@ -95,13 +95,6 @@ export const base = {
     title: 'Netzwerkfehler',
     message: 'Bist du mit dem Internet verbunden?',
   },
-  ancestryCycle: {
-    title: 'Ein Cultivar kann nicht sein eigener Vorfahre sein',
-    motherCultivar: 'Das Mutter-Cultivar stammt von dieser Kreuzung ab.',
-    fatherCultivar: 'Das Vater-Cultivar stammt von dieser Kreuzung ab.',
-    crossing: 'Die gewählte Kreuzung stammt von diesem Los ab.',
-    lot: 'Das gewählte Los stammt von diesem Cultivar ab.',
-  },
   wip: {
     title: 'Gerade gepflanzt, wächst noch…',
     message: 'Diese Funktion wird bald verfügbar sein.',

@@ -1,4 +1,4 @@
-import { test, expect, afterEach, beforeEach } from 'bun:test';
+import { describe, test, expect, afterEach, beforeEach } from 'bun:test';
 import { post, postOrFail } from '../fetch';
 
 let orchardId;
@@ -144,10 +144,22 @@ function updateCultivarLot(id, lotId) {
   });
 }
 
-// The message is what non-admin clients get (extensions.internal is only shown in dev mode).
 function expectError(resp, message) {
-  expect(resp.errors[0].message).toContain(message);
-  expect(resp.errors[0].extensions.code).toBe('constraint-violation');
+  expect(resp.errors[0].extensions.internal.error.message).toContain(message);
+}
+
+async function hasDescendant(table, field, argName, id, candidateId) {
+  const resp = await postOrFail({
+    query: /* GraphQL */ `
+      query HasDescendant($id: Int!, $candidate_id: Int!) {
+        ${table}_by_pk(id: $id) {
+          ${field}(args: { ${argName}: $candidate_id })
+        }
+      }
+    `,
+    variables: { id, candidate_id: candidateId },
+  });
+  return resp.data[`${table}_by_pk`][field];
 }
 
 test('direct cycle: mother cultivar from the crossing itself', async () => {
@@ -290,4 +302,73 @@ test('moving a lot or cultivar without closing a cycle is allowed', async () => 
   // ... and B's mother to C's lot
   const cultivarResp = await updateCultivarLot(a.cultivarId, c.lotId);
   expect(cultivarResp.errors).toBeUndefined();
+});
+
+describe('has_descendant computed fields', () => {
+  test('crossings.has_descendant_cultivar', async () => {
+    const a = await insertCrossingWithCultivar({ name: 'A' });
+    const b = await insertCrossingWithCultivar({
+      name: 'B',
+      motherCultivarId: a.cultivarId,
+    });
+    const c = await insertCrossingWithCultivar({ name: 'C' });
+
+    const check = (crossingId, cultivarId) =>
+      hasDescendant(
+        'crossings',
+        'has_descendant_cultivar',
+        'cultivar_id',
+        crossingId,
+        cultivarId,
+      );
+
+    expect(await check(a.crossingId, a.cultivarId)).toBe(true);
+    expect(await check(a.crossingId, b.cultivarId)).toBe(true);
+    expect(await check(b.crossingId, a.cultivarId)).toBe(false);
+    expect(await check(a.crossingId, c.cultivarId)).toBe(false);
+  });
+
+  test('lots.has_descendant_crossing', async () => {
+    const a = await insertCrossingWithCultivar({ name: 'A' });
+    const b = await insertCrossingWithCultivar({
+      name: 'B',
+      motherCultivarId: a.cultivarId,
+    });
+    const c = await insertCrossingWithCultivar({ name: 'C' });
+
+    const check = (lotId, crossingId) =>
+      hasDescendant(
+        'lots',
+        'has_descendant_crossing',
+        'crossing_id',
+        lotId,
+        crossingId,
+      );
+
+    expect(await check(a.lotId, b.crossingId)).toBe(true);
+    expect(await check(b.lotId, a.crossingId)).toBe(false);
+    expect(await check(a.lotId, c.crossingId)).toBe(false);
+  });
+
+  test('cultivars.has_descendant_lot', async () => {
+    const a = await insertCrossingWithCultivar({ name: 'A' });
+    const b = await insertCrossingWithCultivar({
+      name: 'B',
+      motherCultivarId: a.cultivarId,
+    });
+    const c = await insertCrossingWithCultivar({ name: 'C' });
+
+    const check = (cultivarId, lotId) =>
+      hasDescendant(
+        'cultivars',
+        'has_descendant_lot',
+        'lot_id',
+        cultivarId,
+        lotId,
+      );
+
+    expect(await check(a.cultivarId, b.lotId)).toBe(true);
+    expect(await check(b.cultivarId, a.lotId)).toBe(false);
+    expect(await check(a.cultivarId, c.lotId)).toBe(false);
+  });
 });

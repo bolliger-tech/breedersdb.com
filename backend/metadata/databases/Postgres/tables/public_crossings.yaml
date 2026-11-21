@@ -23,6 +23,14 @@ array_relationships:
         table:
           name: mother_plants
           schema: public
+computed_fields:
+  - name: has_descendant_cultivar
+    definition:
+      function:
+        name: crossings_has_descendant_cultivar
+        schema: public
+      table_argument: crossings_row
+    comment: Whether the given cultivar descends from this crossing. If so, it can't become its mother or father cultivar (ancestry cycle).
 insert_permissions:
   - role: user
     permission:
@@ -46,6 +54,8 @@ select_permissions:
         - mother_cultivar_id
         - name
         - note
+      computed_fields:
+        - has_descendant_cultivar
       filter: {}
       allow_aggregations: true
     comment: ""

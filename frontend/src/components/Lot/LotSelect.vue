@@ -6,9 +6,10 @@
     :options="lotOptions"
     option-value="id"
     option-label="display_name"
-    :loading="fetching"
+    :loading="fetching || loading"
     :error="error"
     :required="required"
+    :rules="rules"
     filter-with-wildcards-around-dots
   />
 </template>
@@ -18,6 +19,7 @@ import { useI18n } from 'src/composables/useI18n';
 import { computed, ref } from 'vue';
 import { graphql } from 'src/graphql';
 import { useQuery } from '@urql/vue';
+import type { EntitySelectProps } from '../Entity/Edit/EntitySelect.vue';
 import EntitySelect from '../Entity/Edit/EntitySelect.vue';
 import { focusInView } from 'src/utils/focusInView';
 import type { ComponentExposed } from 'vue-component-type-helpers';
@@ -27,6 +29,8 @@ export interface LotSelectProps {
   includeId?: number;
   options: 'no_varieties' | 'varieties' | 'all';
   requestPolicy?: Parameters<typeof useQuery>[0]['requestPolicy'];
+  rules?: EntitySelectProps<unknown>['rules'];
+  loading?: boolean;
 }
 
 const props = defineProps<LotSelectProps>();

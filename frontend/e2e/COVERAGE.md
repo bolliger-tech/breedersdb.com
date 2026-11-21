@@ -42,8 +42,8 @@ Template-create (`new/:templateId`) where the UI offers it.
 | Rootstocks             | done   | `rootstocks.spec.ts`             |                                                                                              |
 | Graftings              | done   | `graftings.spec.ts`              |                                                                                              |
 | Plant rows (`/rows`)   | done   | `plant-rows.spec.ts`             | needs an orchard to select                                                                   |
-| Crossings              | done   | `crossings.spec.ts`              | mother/father cultivar selects; ancestry cycle rejected with a readable save error           |
-| Lots                   | done   | `lots.spec.ts`                   | name segment `\d\d[A-Z]`; crossing + orchard selects                                         |
+| Crossings              | done   | `crossings.spec.ts`              | mother/father cultivar selects; ancestry cycle rejected by field validation                  |
+| Lots                   | done   | `lots.spec.ts`                   | name segment `\d\d[A-Z]`; crossing + orchard selects; ancestry cycle rejected                |
 | Cultivars              | done   | `cultivars.spec.ts`              | pilot: breeders-cultivar/variety toggle; segment input is a masked q-input ("Breeding name") |
 | Plant groups           | done   | `plant-groups.spec.ts`           |                                                                                              |
 | Plants                 | done   | `plants.spec.ts`                 | no UI delete — Eliminate `#`-prefixes label id; a `#` search auto-switches the list to "All" |

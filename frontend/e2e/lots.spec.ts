@@ -64,3 +64,27 @@ test('lots can be created, viewed, edited and deleted', async ({
     renamed,
   );
 });
+
+// Moving a lot to a crossing that descends from it would close an ancestry
+// cycle: the field rejects it before saving.
+test('a lot cannot move to a crossing that descends from it', async ({
+  page,
+  seed,
+}) => {
+  const lot = await seed.lot();
+  const cultivar = await seed.cultivar({ lotId: lot.id });
+  const childCrossing = await seed.crossing({ motherCultivarId: cultivar.id });
+
+  await page.goto(`/#/lots/${lot.id}`);
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
+  const field = formField(page, 'Crossing');
+  await selectOption(page, field, childCrossing.name);
+  const message =
+    "The selected crossing descends from this lot, so the lot can't belong to it.";
+  await expect(field).toContainText(message);
+
+  // saving is blocked: the modal stays open
+  await save(page);
+  await expect(field).toContainText(message);
+  await expect(page.locator('.q-dialog')).toHaveCount(1);
+});

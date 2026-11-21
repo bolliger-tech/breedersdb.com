@@ -11,9 +11,8 @@
 -- not checked.
 --
 -- Enforced in the database, so API clients can't bypass it (see docs/adr/0001-attribute-cardinality-enforced-in-database.md).
--- The errors use the SQLSTATE integrity_constraint_violation, because Hasura only passes the message of integrity
--- constraint violations and data exceptions to non-admin clients. The frontend matches the messages
--- (BaseGraphqlError.vue), so keep them in sync.
+-- The checks are exposed as computed fields (crossings.has_descendant_cultivar, lots.has_descendant_crossing,
+-- cultivars.has_descendant_lot), so clients can check before saving.
 ------------------------------------------------------------------------------------------------------------------------
 
 -- The given cultivars and all their ancestors. UNION (not UNION ALL) ends the recursion even on data that already
@@ -68,6 +67,45 @@ select pg_advisory_xact_lock(hashtextextended('cultivar_ancestry', 0));
 $$ language sql;
 
 
+
+
+-- Whether the given cultivar descends from this crossing. Making it a parent of the crossing would close a cycle.
+create function crossings_has_descendant_cultivar(crossings_row crossings, cultivar_id int) returns boolean as
+$$
+select exists (select 1
+               from cultivar_ancestor_ids(array [crossings_has_descendant_cultivar.cultivar_id]) as ancestor_id
+                        join cultivars on cultivars.id = ancestor_id
+                        join lots on lots.id = cultivars.lot_id
+               where lots.crossing_id = crossings_row.id);
+$$ language sql stable;
+
+
+-- Whether the given crossing descends from this lot. Moving the lot to the crossing would close a cycle.
+create function lots_has_descendant_crossing(lots_row lots, crossing_id int) returns boolean as
+$$
+select exists (select 1
+               from crossings
+                        cross join lateral cultivar_ancestor_ids(
+                       array [crossings.mother_cultivar_id, crossings.father_cultivar_id]) as ancestor_id
+                        join cultivars on cultivars.id = ancestor_id
+               where crossings.id = lots_has_descendant_crossing.crossing_id
+                 and cultivars.lot_id = lots_row.id);
+$$ language sql stable;
+
+
+-- Whether the given lot descends from this cultivar. Moving the cultivar to the lot would close a cycle.
+create function cultivars_has_descendant_lot(cultivars_row cultivars, lot_id int) returns boolean as
+$$
+select exists (select 1
+               from lots
+                        join crossings on crossings.id = lots.crossing_id
+                        cross join lateral cultivar_ancestor_ids(
+                       array [crossings.mother_cultivar_id, crossings.father_cultivar_id]) as ancestor_id
+               where lots.id = cultivars_has_descendant_lot.lot_id
+                 and ancestor_id = cultivars_row.id);
+$$ language sql stable;
+
+
 create function check_crossing_ancestry() returns trigger as
 $$
 begin
@@ -80,25 +118,13 @@ begin
     perform lock_cultivar_ancestry();
 
     if new.mother_cultivar_id is distinct from old.mother_cultivar_id
-        and exists (select 1
-                    from cultivar_ancestor_ids(array [new.mother_cultivar_id]) as ancestor_id
-                             join cultivars on cultivars.id = ancestor_id
-                             join lots on lots.id = cultivars.lot_id
-                    where lots.crossing_id = new.id) then
-        raise exception using
-            errcode = 'integrity_constraint_violation',
-            message = 'Ancestry cycle: The mother cultivar descends from this crossing.';
+        and crossings_has_descendant_cultivar(new, new.mother_cultivar_id) then
+        raise exception 'Ancestry cycle: The mother cultivar descends from this crossing. (id: %)', new.id;
     end if;
 
     if new.father_cultivar_id is distinct from old.father_cultivar_id
-        and exists (select 1
-                    from cultivar_ancestor_ids(array [new.father_cultivar_id]) as ancestor_id
-                             join cultivars on cultivars.id = ancestor_id
-                             join lots on lots.id = cultivars.lot_id
-                    where lots.crossing_id = new.id) then
-        raise exception using
-            errcode = 'integrity_constraint_violation',
-            message = 'Ancestry cycle: The father cultivar descends from this crossing.';
+        and crossings_has_descendant_cultivar(new, new.father_cultivar_id) then
+        raise exception 'Ancestry cycle: The father cultivar descends from this crossing. (id: %)', new.id;
     end if;
 
     return new;
@@ -121,16 +147,8 @@ begin
 
     perform lock_cultivar_ancestry();
 
-    if exists (select 1
-               from crossings
-                        cross join lateral cultivar_ancestor_ids(
-                       array [crossings.mother_cultivar_id, crossings.father_cultivar_id]) as ancestor_id
-                        join cultivars on cultivars.id = ancestor_id
-               where crossings.id = new.crossing_id
-                 and cultivars.lot_id = new.id) then
-        raise exception using
-            errcode = 'integrity_constraint_violation',
-            message = 'Ancestry cycle: The crossing descends from this lot.';
+    if lots_has_descendant_crossing(new, new.crossing_id) then
+        raise exception 'Ancestry cycle: The crossing descends from this lot. (id: %)', new.id;
     end if;
 
     return new;
@@ -153,16 +171,8 @@ begin
 
     perform lock_cultivar_ancestry();
 
-    if exists (select 1
-               from lots
-                        join crossings on crossings.id = lots.crossing_id
-                        cross join lateral cultivar_ancestor_ids(
-                       array [crossings.mother_cultivar_id, crossings.father_cultivar_id]) as ancestor_id
-               where lots.id = new.lot_id
-                 and ancestor_id = new.id) then
-        raise exception using
-            errcode = 'integrity_constraint_violation',
-            message = 'Ancestry cycle: The lot descends from this cultivar.';
+    if cultivars_has_descendant_lot(new, new.lot_id) then
+        raise exception 'Ancestry cycle: The lot descends from this cultivar. (id: %)', new.id;
     end if;
 
     return new;

@@ -105,14 +105,6 @@ export const base = {
     message: 'Are you connected to the internet?',
   },
 
-  ancestryCycle: {
-    title: 'A cultivar cannot be its own ancestor',
-    motherCultivar: 'The mother cultivar descends from this crossing.',
-    fatherCultivar: 'The father cultivar descends from this crossing.',
-    crossing: 'The selected crossing descends from this lot.',
-    lot: 'The selected lot descends from this cultivar.',
-  },
-
   wip: {
     title: 'Just planted, still growing…',
     message: 'This feature will soon be available.',

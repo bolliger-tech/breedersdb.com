@@ -188,18 +188,17 @@ const metadata = computed(() => {
 });
 
 const description = computed(() => {
-  const type = dataTypeToColumnTypes(props.attribution.data_type);
-
-  if (type === ColumnTypes.Photo) {
+  if (props.attribution.data_type === 'PHOTO') {
     return {
       primary: props.attribution.text_note,
       additional: '',
     };
   }
 
+  const type = dataTypeToColumnTypes(props.attribution.data_type);
   const value = getAttributionValue(props.attribution);
   const formattedValue =
-    type === ColumnTypes.Attachment
+    type === ColumnTypes.File
       ? getAttributionDownloadFileName(
           props.attribution,
           props.attribution.text_value ?? '',

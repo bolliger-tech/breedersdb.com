@@ -36,7 +36,7 @@ const columnData: FilterColumnConstructorData[] = [
     column: 'photo_note',
     labelKey: 'attributions.columns.photoNoteLong',
     schema: {
-      type: ColumnTypes.Photo,
+      type: ColumnTypes.File,
       allowEmpty: true,
     },
   },

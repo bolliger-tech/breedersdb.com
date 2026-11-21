@@ -41,12 +41,14 @@ export function mount(
   options: {
     urqlMock?: Parameters<typeof createUrqlMockClient>[0];
     props?: Record<string, unknown>;
+    stubs?: Record<string, Component>;
   } = {},
 ) {
   return VTUmount(Component, {
     props: options.props ?? null,
     global: {
       plugins: [i18n, [urql, createUrqlMockClient(options.urqlMock)]],
+      stubs: options.stubs ?? {},
     },
   });
 }

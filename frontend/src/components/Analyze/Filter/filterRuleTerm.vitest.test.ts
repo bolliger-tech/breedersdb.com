@@ -697,11 +697,11 @@ describe('FilterTerm', () => {
     });
   });
 
-  describe('Photo', () => {
-    it('should be a valid photo', () => {
+  describe('File', () => {
+    it('should be a valid file', () => {
       const value = 'some string';
       const schema = {
-        type: ColumnTypes.Photo as const,
+        type: ColumnTypes.File as const,
         allowEmpty: false,
       };
 
@@ -711,37 +711,15 @@ describe('FilterTerm', () => {
       expect(filterTerm.isValid).toBe(true);
     });
 
-    it('should not be a valid photo', () => {
+    it('should not be a valid file', () => {
       const value = '';
       const schema = {
-        type: ColumnTypes.Photo as const,
+        type: ColumnTypes.File as const,
         allowEmpty: false,
       };
 
       const filterTerm = new FilterRuleTerm({ value });
       filterTerm.schema = schema;
-
-      expect(filterTerm.isValid).toBe(false);
-    });
-  });
-
-  describe('Attachment', () => {
-    it('should be a valid attachment', () => {
-      const filterTerm = new FilterRuleTerm({ value: 'some string' });
-      filterTerm.schema = {
-        type: ColumnTypes.Attachment as const,
-        allowEmpty: false,
-      };
-
-      expect(filterTerm.isValid).toBe(true);
-    });
-
-    it('should not be a valid attachment', () => {
-      const filterTerm = new FilterRuleTerm({ value: '' });
-      filterTerm.schema = {
-        type: ColumnTypes.Attachment as const,
-        allowEmpty: false,
-      };
 
       expect(filterTerm.isValid).toBe(false);
     });

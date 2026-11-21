@@ -173,9 +173,8 @@ const inputType = computed(() => {
     case ColumnTypes.Float:
       return 'number';
     case ColumnTypes.Boolean:
-    case ColumnTypes.Photo:
-    case ColumnTypes.Attachment:
-      throw new Error('Boolean type is not supported');
+    case ColumnTypes.File:
+      throw new Error(`${type.value} type is not supported`);
     case ColumnTypes.Date:
       return 'date';
     case ColumnTypes.DateTime:

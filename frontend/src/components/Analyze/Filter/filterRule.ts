@@ -20,8 +20,7 @@ export type FilterRuleSchema =
   | DateSchema
   | DateTimeSchema
   | TimeSchema
-  | PhotoSchema
-  | AttachmentSchema;
+  | FileSchema;
 
 export type FilterRuleJson = {
   column: FilterRuleColumnJson | undefined;
@@ -155,8 +154,7 @@ export class FilterRule {
           this.operator?.value !== FilterOperatorValue.NotEmpty
         );
       case ColumnTypes.Boolean:
-      case ColumnTypes.Photo:
-      case ColumnTypes.Attachment:
+      case ColumnTypes.File:
         return false;
       default:
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -293,12 +291,7 @@ interface TimeSchema {
   type: ColumnTypes.Time;
 }
 
-interface PhotoSchema {
+interface FileSchema {
   allowEmpty: boolean;
-  type: ColumnTypes.Photo;
-}
-
-interface AttachmentSchema {
-  allowEmpty: boolean;
-  type: ColumnTypes.Attachment;
+  type: ColumnTypes.File;
 }

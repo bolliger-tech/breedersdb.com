@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { cardinalityToLabel, formatAttributionValue } from './attributeUtils';
+import {
+  cardinalityToLabel,
+  dataTypeToColumnTypes,
+  formatAttributionValue,
+  isFileDataType,
+} from './attributeUtils';
+import { ColumnTypes } from './columnTypes';
 import type { DFunc, NFunc } from 'src/composables/useI18n';
 
 describe('cardinalityToLabel', () => {
@@ -11,6 +17,20 @@ describe('cardinalityToLabel', () => {
     ['UNIQUE_REPLACE', 'attributes.cardinalities.uniqueReplace'],
   ] as const)('labels %s', (cardinality, key) => {
     expect(cardinalityToLabel(cardinality, t)).toBe(key);
+  });
+});
+
+describe('file data types', () => {
+  it.each(['PHOTO', 'ATTACHMENT'] as const)(
+    'maps %s to the file column type',
+    (dataType) => {
+      expect(dataTypeToColumnTypes(dataType)).toBe(ColumnTypes.File);
+      expect(isFileDataType(dataType)).toBe(true);
+    },
+  );
+
+  it('does not treat text as a file', () => {
+    expect(isFileDataType('TEXT')).toBe(false);
   });
 });
 

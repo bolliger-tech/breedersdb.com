@@ -68,8 +68,8 @@ import {
   cardinalityToLabel,
   dataTypeToColumnTypes,
   formatResultColumnValue,
-  isFileColumnType,
 } from 'src/utils/attributeUtils';
+import { ColumnTypes } from 'src/utils/columnTypes';
 import { computed } from 'vue';
 
 export interface AttributeEntityTableProps {
@@ -83,7 +83,7 @@ const defaultValue = computed(() => {
   const type =
     props.attribute && dataTypeToColumnTypes(props.attribute.data_type);
 
-  if (!type || isFileColumnType(type)) {
+  if (!type || type === ColumnTypes.File) {
     return '';
   }
   return formatResultColumnValue({

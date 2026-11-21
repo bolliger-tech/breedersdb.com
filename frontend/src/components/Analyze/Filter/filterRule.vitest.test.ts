@@ -413,7 +413,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: ColumnTypes.Photo,
+        type: ColumnTypes.File,
       },
     });
 
@@ -765,7 +765,7 @@ describe('FilterRule', () => {
     expect(filterRule.requiresTerm).toBe(false);
   });
 
-  it('should return false for requiresTerm: Photo', () => {
+  it('should return false for requiresTerm: File', () => {
     const column = new FilterRuleColumn({
       tableName: 'tableName',
       tableColumnName: 'tableColumnName',
@@ -773,24 +773,7 @@ describe('FilterRule', () => {
       tableColumnLabel: 'tableColumnLabel',
       schema: {
         allowEmpty: true,
-        type: ColumnTypes.Photo,
-      },
-    });
-
-    const filterRule = new FilterRule({ column });
-
-    expect(filterRule.requiresTerm).toBe(false);
-  });
-
-  it('should return false for requiresTerm: Attachment', () => {
-    const column = new FilterRuleColumn({
-      tableName: 'tableName',
-      tableColumnName: 'tableColumnName',
-      tableLabel: 'tableLabel',
-      tableColumnLabel: 'tableColumnLabel',
-      schema: {
-        allowEmpty: true,
-        type: ColumnTypes.Attachment,
+        type: ColumnTypes.File,
       },
     });
 

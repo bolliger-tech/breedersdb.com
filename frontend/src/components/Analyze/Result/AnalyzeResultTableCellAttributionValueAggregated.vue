@@ -39,10 +39,7 @@ import { ColumnTypes } from 'src/utils/columnTypes';
 import AnalyzeResultTableCellAttribution from './AnalyzeResultTableCellAttribution.vue';
 import AnalyzeResultTableCellAttributionValue from './AnalyzeResultTableCellAttributionValue.vue';
 import { AttributionAggregation } from './attributionAggregationTypes';
-import {
-  dataTypeToColumnTypes,
-  isFileColumnType,
-} from 'src/utils/attributeUtils';
+import { dataTypeToColumnTypes } from 'src/utils/attributeUtils';
 import AttributionValueChip from 'src/components/Attribution/AttributionValueChip.vue';
 
 export interface AnalyzeResultTableCellAttributionValueAggregatedProps {
@@ -62,7 +59,7 @@ const label = computed(() => {
 
   const type = dataTypeToColumnTypes(props.attributions[0].data_type);
 
-  if (isFileColumnType(type)) {
+  if (type === ColumnTypes.File) {
     // this should never happen
     throw new Error(`${type} type not supported for aggregation`);
   }

@@ -827,7 +827,7 @@ cultivars(where: { _or: [
             expect(Object.values(variables)[0]).toBe('2024-06-07');
           });
 
-          it('should value has photo', () => {
+          it('should value has file', () => {
             const filter = FilterNode.FilterRoot(filterRootArgs);
             FilterNode.FilterLeaf({
               parent: filter,
@@ -836,48 +836,10 @@ cultivars(where: { _or: [
                   tableName: 'attributes',
                   tableColumnName: '123',
                   tableLabel: 'Attributions',
-                  tableColumnLabel: 'Photo',
+                  tableColumnLabel: 'File',
                   schema: {
                     allowEmpty: true,
-                    type: ColumnTypes.Photo,
-                  },
-                }),
-                operator: new FilterRuleOperator({
-                  value: FilterOperatorValue.NotEmpty,
-                }),
-              }),
-            });
-
-            const { query, variables } = filterToQuery({
-              baseFilter: filter,
-              attributionFilter: emptyAttributionFilter,
-              columns: [],
-              pagination: basicPagination,
-            });
-
-            expect(query).toMatch(
-              new RegExp(
-                prepareForRegex(
-                  'cultivars(where: { _and: [ { cached_attributions: { _and: [ { attribute_id: { _eq: 123 } }, { text_value: { _is_null: $v000 } } ] } } ] }',
-                ).replaceAll('$v000', '$v\\d+'),
-              ),
-            );
-            expect(Object.values(variables)[0]).toBe(false);
-          });
-
-          it('should value has attachment', () => {
-            const filter = FilterNode.FilterRoot(filterRootArgs);
-            FilterNode.FilterLeaf({
-              parent: filter,
-              filterRule: new FilterRule({
-                column: new FilterRuleColumn({
-                  tableName: 'attributes',
-                  tableColumnName: '123',
-                  tableLabel: 'Attributions',
-                  tableColumnLabel: 'Attachment',
-                  schema: {
-                    allowEmpty: true,
-                    type: ColumnTypes.Attachment,
+                    type: ColumnTypes.File,
                   },
                 }),
                 operator: new FilterRuleOperator({

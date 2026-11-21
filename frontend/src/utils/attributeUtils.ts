@@ -16,8 +16,8 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
     FLOAT: ColumnTypes.Float,
     BOOLEAN: ColumnTypes.Boolean,
     DATE: ColumnTypes.Date,
-    PHOTO: ColumnTypes.Photo,
-    ATTACHMENT: ColumnTypes.Attachment,
+    PHOTO: ColumnTypes.File,
+    ATTACHMENT: ColumnTypes.File,
     RATING: ColumnTypes.Rating,
     ENUM: ColumnTypes.Enum,
   }[dataType];
@@ -29,15 +29,8 @@ export function dataTypeToColumnTypes(dataType: AttributeDataTypes) {
   return type;
 }
 
-// types whose value is a stored file (its name is in text_value)
-export type FileColumnTypes = ColumnTypes.Photo | ColumnTypes.Attachment;
-
-export function isFileColumnType(type: ColumnTypes): type is FileColumnTypes {
-  return type === ColumnTypes.Photo || type === ColumnTypes.Attachment;
-}
-
 export function isFileDataType(dataType: AttributeDataTypes) {
-  return isFileColumnType(dataTypeToColumnTypes(dataType));
+  return dataTypeToColumnTypes(dataType) === ColumnTypes.File;
 }
 
 export function dataTypeToLabel(dataType: AttributeDataTypes, t: TFunc) {
@@ -99,7 +92,7 @@ export function formatResultColumnValue({
   n,
 }: {
   value: string | number | Date | null | boolean | undefined;
-  type: Exclude<ColumnTypes, FileColumnTypes>;
+  type: Exclude<ColumnTypes, ColumnTypes.File>;
   d: DFunc;
   n: NFunc;
 }) {
@@ -162,7 +155,7 @@ export function formatAttributionValue({
 }) {
   const type = dataTypeToColumnTypes(attribution.data_type);
 
-  if (isFileColumnType(type)) {
+  if (type === ColumnTypes.File) {
     return '';
   }
 

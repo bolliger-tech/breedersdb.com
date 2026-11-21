@@ -117,8 +117,7 @@ function getSchemaFromAttribute(attribute: Attribute): FilterRuleSchema {
           step: 1 as const,
         },
       };
-    case ColumnTypes.Photo:
-    case ColumnTypes.Attachment:
+    case ColumnTypes.File:
       return {
         type,
         allowEmpty: true,

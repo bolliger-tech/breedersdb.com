@@ -36,8 +36,7 @@ export class FilterRuleTerm {
       case ColumnTypes.Date:
       case ColumnTypes.DateTime:
       case ColumnTypes.Time:
-      case ColumnTypes.Photo:
-      case ColumnTypes.Attachment:
+      case ColumnTypes.File:
         return undefined;
       default:
         throw new Error(`Unknown column type: ${this.type}`);
@@ -69,9 +68,8 @@ export class FilterRuleTerm {
         return this.isValidDateTime();
       case ColumnTypes.Time:
         return this.isValidTime();
-      case ColumnTypes.Photo:
-      case ColumnTypes.Attachment:
-        return this.isValidPhoto();
+      case ColumnTypes.File:
+        return this.isValidFile();
       default:
         throw new Error(`Unknown column type: ${this.type}`);
     }
@@ -150,7 +148,7 @@ export class FilterRuleTerm {
     return typeof this.value !== 'undefined' && this.value !== '';
   }
 
-  private isValidPhoto() {
+  private isValidFile() {
     return typeof this.value !== 'undefined' && this.value !== '';
   }
 }

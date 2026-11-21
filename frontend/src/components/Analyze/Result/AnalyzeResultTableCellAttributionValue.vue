@@ -56,13 +56,13 @@ const { t, d, n } = useI18n();
 
 const label = computed(() => {
   const type = dataTypeToColumnTypes(props.attribution.data_type);
-
-  if (type === ColumnTypes.Photo) return t('analyze.result.photo');
-  if (type === ColumnTypes.Attachment)
-    return getAttributionDownloadFileName(
-      props.attribution,
-      props.attribution.text_value ?? '',
-    );
+  if (type === ColumnTypes.File)
+    return props.attribution.data_type === 'PHOTO'
+      ? t('analyze.result.photo')
+      : getAttributionDownloadFileName(
+          props.attribution,
+          props.attribution.text_value ?? '',
+        );
 
   const value = getAttributionValue(props.attribution);
   return formatResultColumnValue({ value, type, d, n });

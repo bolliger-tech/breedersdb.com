@@ -8,7 +8,7 @@ export enum ColumnTypes {
   Date = 'date',
   DateTime = 'datetime',
   Time = 'time',
-  Photo = 'photo',
-  Attachment = 'attachment',
+  // photos and attachments: the column value is a stored file's name
+  File = 'file',
   Rating = 'rating',
 }

@@ -18,7 +18,32 @@
 
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <CultivarEntityTable :cultivar="cultivar" />
+        <CultivarEntityTable :cultivar="cultivar">
+          <EntityViewTableRow
+            :label="t('cultivars.pedigree.title')"
+            render-empty
+          >
+            <q-btn
+              v-if="parentKnown"
+              flat
+              dense
+              no-caps
+              padding="0"
+              class="cultivar-pedigree-button"
+              :label="t('base.show')"
+              @click="pedigreeOpen = true"
+            />
+            <span v-else class="text-muted">
+              {{ t('cultivars.pedigree.parentsUnknown') }}
+            </span>
+          </EntityViewTableRow>
+        </CultivarEntityTable>
+        <CultivarPedigreeDialog
+          v-if="parentKnown"
+          v-model="pedigreeOpen"
+          :cultivar-id="cultivar.id"
+          :display-name="cultivar.display_name"
+        />
 
         <EntityViewAllAttributions :attributions="attributions" show-entity />
 
@@ -69,11 +94,6 @@
             'date_eliminated',
           ]"
         />
-
-        <CultivarPedigree
-          :cultivar-id="cultivar.id"
-          :display-name="cultivar.display_name"
-        />
       </template>
 
       <template #action-left>
@@ -93,12 +113,14 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import CultivarButtonDelete from 'src/components/Cultivar/CultivarButtonDelete.vue';
 import type { ResultOf } from 'src/graphql';
 import { graphql } from 'src/graphql';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import CultivarPedigree from 'src/components/Cultivar/CultivarPedigree.vue';
+import CultivarPedigreeDialog from 'src/components/Cultivar/CultivarPedigreeDialog.vue';
+import { hasKnownParent } from 'src/components/Cultivar/pedigree';
 import CultivarEntityTable from 'src/components/Cultivar/CultivarEntityTable.vue';
+import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import {
   cachedAttributionsFragment,
@@ -160,6 +182,12 @@ const { data, fetching, error } = await useQuery({
 });
 
 const cultivar = computed(() => data.value?.cultivars_by_pk);
+
+const parentKnown = computed(() => {
+  const crossing = cultivar.value?.lot?.crossing;
+  return !!crossing && hasKnownParent(crossing);
+});
+const pedigreeOpen = ref(false);
 
 const attributions = computed(
   () =>
@@ -227,3 +255,15 @@ const plantGroupColumns = [
   },
 ];
 </script>
+
+<style lang="scss" scoped>
+// Looks like the other values (e.g. the lot link) and keeps the row height.
+.cultivar-pedigree-button {
+  color: var(--q-link-color);
+  min-height: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+</style>

@@ -35,6 +35,8 @@ export const cultivars = {
     title: 'Pedigree',
     unknown: 'unknown',
     parentsUnknown: 'Parents unknown',
+    parents: 'Parents',
+    showParents: 'Show parents of {name}',
     loadingFailed: 'Failed to load the pedigree.',
   },
 

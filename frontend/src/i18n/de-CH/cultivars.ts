@@ -28,6 +28,8 @@ export const cultivars = {
     title: 'Abstammung',
     unknown: 'unbekannt',
     parentsUnknown: 'Eltern unbekannt',
+    parents: 'Eltern',
+    showParents: 'Eltern von {name} anzeigen',
     loadingFailed: 'Die Abstammung konnte nicht geladen werden.',
   },
   nameOverrideHint: 'Der gebräuchliche Name',

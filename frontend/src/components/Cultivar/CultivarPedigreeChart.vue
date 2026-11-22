@@ -53,7 +53,8 @@ const parentsQuery = graphql(
   [pedigreeCultivarFragment],
 );
 
-// Resolves to null if the component was unmounted meanwhile.
+// Resolves to null if the component was unmounted meanwhile. Rejects if the
+// query failed or the cultivar's parents are missing.
 async function fetchParents(
   node: PedigreeTree,
 ): Promise<[PedigreeTree, PedigreeTree] | null> {
@@ -62,8 +63,10 @@ async function fetchParents(
     { id: node.cultivarId! },
     { requestPolicy: 'cache-and-network' },
   );
-  const crossing = result?.data?.cultivars_by_pk?.lot.crossing;
-  return crossing ? toPedigreeNodes(crossing, node.key) : null;
+  if (!result) return null;
+  const crossing = result.data?.cultivars_by_pk?.lot.crossing;
+  if (!crossing) throw new Error(`Cultivar ${node.cultivarId} not found`);
+  return toPedigreeNodes(crossing, node.key);
 }
 
 // The whole loaded tree lives here, as each card's position depends on all
@@ -87,7 +90,7 @@ async function loadParentsAndGrandparents() {
     expandable: true,
   };
   const parents = await fetchParents(root);
-  if (!parents) throw new Error('Cultivar not found');
+  if (!parents) return;
   await Promise.all(
     parents.map(async (parent) => {
       if (!parent.expandable) return;
@@ -108,8 +111,7 @@ async function loadParents(node: PedigreeTree) {
   node.loading = true;
   try {
     const parents = await fetchParents(node);
-    if (!parents) throw new Error('Cultivar not found');
-    node.parents = parents;
+    if (parents) node.parents = parents;
   } catch {
     loadingFailed.value = true;
   } finally {

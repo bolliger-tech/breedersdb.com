@@ -27,15 +27,20 @@ export type PedigreeNode = {
   parent?: 'mother' | 'father';
   // null for an unknown parent
   cultivarId: number | null;
-  label: string;
-  lazy?: boolean;
-  children?: PedigreeNode[];
+  name: string;
+  // at least one of its parents is known
+  expandable: boolean;
+};
+
+export type PedigreeTree = PedigreeNode & {
+  // undefined until loaded
+  parents?: [PedigreeTree, PedigreeTree];
 };
 
 export function toPedigreeNodes(
   crossing: PedigreeCrossing,
   parentKey: string,
-): PedigreeNode[] {
+): [PedigreeNode, PedigreeNode] {
   return [
     toPedigreeNode(crossing.mother_cultivar, 'mother', parentKey),
     toPedigreeNode(crossing.father_cultivar, 'father', parentKey),
@@ -51,7 +56,7 @@ function toPedigreeNode(
   const key = `${parentKey}/${parent}`;
 
   if (!cultivar) {
-    return { key, parent, cultivarId: null, label: '' };
+    return { key, parent, cultivarId: null, name: '', expandable: false };
   }
 
   const { mother_cultivar_id, father_cultivar_id } = cultivar.lot.crossing;
@@ -59,7 +64,34 @@ function toPedigreeNode(
     key,
     parent,
     cultivarId: cultivar.id,
-    label: cultivar.display_name,
-    lazy: mother_cultivar_id !== null || father_cultivar_id !== null,
+    name: cultivar.display_name,
+    expandable: mother_cultivar_id !== null || father_cultivar_id !== null,
+  };
+}
+
+// A card is 36px tall plus 4px margin above and below.
+export const PEDIGREE_SLOT = 44;
+
+export type PedigreeLayout = {
+  height: number;
+  // y of the card's center, relative to the top of the subtree
+  center: number;
+  parents?: [PedigreeLayout, PedigreeLayout];
+};
+
+// All cards have the same size, so the layout is computed, not measured.
+// A card with shown parents is centered between their cards' centers, so
+// every connector meets its card in the middle.
+export function layoutPedigree(tree: PedigreeTree): PedigreeLayout {
+  if (!tree.parents) {
+    return { height: PEDIGREE_SLOT, center: PEDIGREE_SLOT / 2 };
+  }
+
+  const mother = layoutPedigree(tree.parents[0]);
+  const father = layoutPedigree(tree.parents[1]);
+  return {
+    height: mother.height + father.height,
+    center: (mother.center + mother.height + father.center) / 2,
+    parents: [mother, father],
   };
 }

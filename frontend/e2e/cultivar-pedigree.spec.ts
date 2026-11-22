@@ -10,7 +10,7 @@ async function seedCultivar(
   return seed.cultivar({ lotId: lot.id });
 }
 
-test('the pedigree shows two generations and loads deeper ones on expand', async ({
+test('the pedigree dialog shows two generations and loads deeper ones on demand', async ({
   page,
   seed,
 }) => {
@@ -26,35 +26,54 @@ test('the pedigree shows two generations and loads deeper ones on expand', async
   });
 
   await page.goto(`/#/cultivars/${cultivar.id}`);
-  const tree = page.locator('.q-dialog .q-tree');
+  const viewModal = page.locator('.q-dialog').first();
+  await viewModal
+    .getByRole('button', { name: 'Pedigree', exact: true })
+    .click();
+
+  const chart = page.locator('.cultivar-pedigree-dialog');
+  await expect(
+    chart.getByRole('heading', { name: 'Pedigree', level: 3 }),
+  ).toBeVisible();
 
   // parents and grandparents are visible on open, the mother's father unknown
   await expect(
-    tree.getByRole('link', { name: mother.display_name }),
+    chart.getByRole('link', { name: mother.display_name }),
   ).toBeVisible();
   await expect(
-    tree.getByRole('link', { name: father.display_name }),
+    chart.getByRole('link', { name: father.display_name }),
   ).toBeVisible();
   await expect(
-    tree.getByRole('link', { name: grandmother.display_name }),
+    chart.getByRole('link', { name: grandmother.display_name }),
   ).toBeVisible();
-  await expect(tree.getByText('unknown', { exact: true })).toBeVisible();
+  await expect(chart.getByText('unknown', { exact: true })).toHaveCount(1);
   await expect(
-    tree.getByRole('link', { name: greatGrandmother.display_name }),
+    chart.getByRole('link', { name: greatGrandmother.display_name }),
   ).toHaveCount(0);
 
-  // the arrow loads the next generation
-  await tree
-    .getByRole('treeitem')
-    .filter({ hasText: grandmother.display_name })
-    .locator('.q-tree__arrow')
+  // the father's parents are both unknown: nothing to his right
+  await expect(
+    chart.getByRole('button', {
+      name: `Show parents of ${father.display_name}`,
+    }),
+  ).toHaveCount(0);
+  // only the grandmother has known parents that aren't loaded yet
+  await expect(
+    chart.getByRole('button', { name: /^Show parents of / }),
+  ).toHaveCount(1);
+
+  // the button loads the next generation
+  await chart
+    .getByRole('button', {
+      name: `Show parents of ${grandmother.display_name}`,
+    })
     .click();
-  const greatGrandmotherLink = tree.getByRole('link', {
+  const greatGrandmotherLink = chart.getByRole('link', {
     name: greatGrandmother.display_name,
   });
   await expect(greatGrandmotherLink).toBeVisible();
 
-  // the name navigates to the ancestor
+  // the name navigates to the ancestor and closes the pedigree dialog
   await greatGrandmotherLink.click();
   await expect(page).toHaveURL(
     new RegExp(`#/cultivars/${greatGrandmother.id}$`),
@@ -62,9 +81,10 @@ test('the pedigree shows two generations and loads deeper ones on expand', async
   await expect(
     page.locator('.q-dialog').getByRole('heading', { level: 2 }),
   ).toContainText(greatGrandmother.display_name);
+  await expect(chart).toHaveCount(0);
 });
 
-test('the pedigree of a cultivar without parents says so', async ({
+test('a cultivar without parents says so instead of offering a pedigree', async ({
   page,
   seed,
 }) => {
@@ -73,5 +93,7 @@ test('the pedigree of a cultivar without parents says so', async ({
   await page.goto(`/#/cultivars/${cultivar.id}`);
   const dialog = page.locator('.q-dialog');
   await expect(dialog.getByText('Parents unknown')).toBeVisible();
-  await expect(dialog.locator('.q-tree')).toHaveCount(0);
+  await expect(
+    dialog.getByRole('button', { name: 'Pedigree', exact: true }),
+  ).toHaveCount(0);
 });

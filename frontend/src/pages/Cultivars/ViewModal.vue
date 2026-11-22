@@ -19,6 +19,25 @@
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
         <CultivarEntityTable :cultivar="cultivar" />
+        <div class="q-mt-sm">
+          <template v-if="hasKnownParent">
+            <q-btn
+              flat
+              dense
+              color="primary"
+              :label="t('cultivars.pedigree.title')"
+              @click="pedigreeOpen = true"
+            />
+            <CultivarPedigreeDialog
+              v-model="pedigreeOpen"
+              :cultivar-id="cultivar.id"
+              :display-name="cultivar.display_name"
+            />
+          </template>
+          <span v-else class="text-muted">
+            {{ t('cultivars.pedigree.parentsUnknown') }}
+          </span>
+        </div>
 
         <EntityViewAllAttributions :attributions="attributions" show-entity />
 
@@ -69,11 +88,6 @@
             'date_eliminated',
           ]"
         />
-
-        <CultivarPedigree
-          :cultivar-id="cultivar.id"
-          :display-name="cultivar.display_name"
-        />
       </template>
 
       <template #action-left>
@@ -93,11 +107,11 @@ import EntityModalContent from 'src/components/Entity/EntityModalContent.vue';
 import CultivarButtonDelete from 'src/components/Cultivar/CultivarButtonDelete.vue';
 import type { ResultOf } from 'src/graphql';
 import { graphql } from 'src/graphql';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
-import CultivarPedigree from 'src/components/Cultivar/CultivarPedigree.vue';
+import CultivarPedigreeDialog from 'src/components/Cultivar/CultivarPedigreeDialog.vue';
 import CultivarEntityTable from 'src/components/Cultivar/CultivarEntityTable.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import {
@@ -160,6 +174,16 @@ const { data, fetching, error } = await useQuery({
 });
 
 const cultivar = computed(() => data.value?.cultivars_by_pk);
+
+const hasKnownParent = computed(() => {
+  const crossing = cultivar.value?.lot?.crossing;
+  return (
+    !!crossing &&
+    (crossing.mother_cultivar_id !== null ||
+      crossing.father_cultivar_id !== null)
+  );
+});
+const pedigreeOpen = ref(false);
 
 const attributions = computed(
   () =>

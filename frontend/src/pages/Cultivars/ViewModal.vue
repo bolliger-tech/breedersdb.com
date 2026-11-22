@@ -18,26 +18,32 @@
 
       <template #default>
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
-        <CultivarEntityTable :cultivar="cultivar" />
-        <div class="q-mt-sm">
-          <template v-if="parentKnown">
+        <CultivarEntityTable :cultivar="cultivar">
+          <EntityViewTableRow
+            :label="t('cultivars.pedigree.title')"
+            render-empty
+          >
             <q-btn
+              v-if="parentKnown"
               flat
               dense
-              color="primary"
-              :label="t('cultivars.pedigree.title')"
+              no-caps
+              padding="0"
+              class="cultivar-pedigree-button"
+              :label="t('base.show')"
               @click="pedigreeOpen = true"
             />
-            <CultivarPedigreeDialog
-              v-model="pedigreeOpen"
-              :cultivar-id="cultivar.id"
-              :display-name="cultivar.display_name"
-            />
-          </template>
-          <span v-else class="text-muted">
-            {{ t('cultivars.pedigree.parentsUnknown') }}
-          </span>
-        </div>
+            <span v-else class="text-muted">
+              {{ t('cultivars.pedigree.parentsUnknown') }}
+            </span>
+          </EntityViewTableRow>
+        </CultivarEntityTable>
+        <CultivarPedigreeDialog
+          v-if="parentKnown"
+          v-model="pedigreeOpen"
+          :cultivar-id="cultivar.id"
+          :display-name="cultivar.display_name"
+        />
 
         <EntityViewAllAttributions :attributions="attributions" show-entity />
 
@@ -114,6 +120,7 @@ import { useRoute, useRouter } from 'vue-router';
 import CultivarPedigreeDialog from 'src/components/Cultivar/CultivarPedigreeDialog.vue';
 import { hasKnownParent } from 'src/components/Cultivar/pedigree';
 import CultivarEntityTable from 'src/components/Cultivar/CultivarEntityTable.vue';
+import EntityViewTableRow from 'src/components/Entity/View/EntityViewTableRow.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import {
   cachedAttributionsFragment,
@@ -248,3 +255,15 @@ const plantGroupColumns = [
   },
 ];
 </script>
+
+<style lang="scss" scoped>
+// Looks like the other values (e.g. the lot link) and keeps the row height.
+.cultivar-pedigree-button {
+  color: var(--q-link-color);
+  min-height: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+</style>

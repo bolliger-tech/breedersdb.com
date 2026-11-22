@@ -29,6 +29,7 @@
     <EntityViewTableRow :label="t('entity.commonColumns.note')" multiline>
       {{ cultivar.note }}
     </EntityViewTableRow>
+    <slot></slot>
     <EntityViewTableMetaData
       v-if="cultivar.id && cultivar.created && cultivar.modified"
       :id="cultivar.id"

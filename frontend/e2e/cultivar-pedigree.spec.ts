@@ -26,10 +26,11 @@ test('the pedigree dialog shows two generations and loads deeper ones on demand'
   });
 
   await page.goto(`/#/cultivars/${cultivar.id}`);
-  const viewModal = page.locator('.q-dialog').first();
-  await viewModal
-    .getByRole('button', { name: 'Pedigree', exact: true })
-    .click();
+  const pedigreeRow = page
+    .locator('.q-dialog')
+    .getByRole('row')
+    .filter({ hasText: 'Pedigree' });
+  await pedigreeRow.getByRole('button', { name: 'Show', exact: true }).click();
 
   const chart = page.locator('.cultivar-pedigree-dialog');
   await expect(
@@ -91,9 +92,10 @@ test('a cultivar without parents says so instead of offering a pedigree', async 
   const cultivar = await seedCultivar(seed);
 
   await page.goto(`/#/cultivars/${cultivar.id}`);
-  const dialog = page.locator('.q-dialog');
-  await expect(dialog.getByText('Parents unknown')).toBeVisible();
-  await expect(
-    dialog.getByRole('button', { name: 'Pedigree', exact: true }),
-  ).toHaveCount(0);
+  const pedigreeRow = page
+    .locator('.q-dialog')
+    .getByRole('row')
+    .filter({ hasText: 'Pedigree' });
+  await expect(pedigreeRow).toContainText('Parents unknown');
+  await expect(pedigreeRow.getByRole('button')).toHaveCount(0);
 });

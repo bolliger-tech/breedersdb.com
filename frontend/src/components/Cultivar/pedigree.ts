@@ -35,7 +35,17 @@ export type PedigreeNode = {
 export type PedigreeTree = PedigreeNode & {
   // undefined until loaded
   parents?: [PedigreeTree, PedigreeTree];
+  loading?: boolean;
 };
+
+export function hasKnownParent(crossing: {
+  mother_cultivar_id: number | null;
+  father_cultivar_id: number | null;
+}) {
+  return (
+    crossing.mother_cultivar_id !== null || crossing.father_cultivar_id !== null
+  );
+}
 
 export function toPedigreeNodes(
   crossing: PedigreeCrossing,
@@ -59,18 +69,19 @@ function toPedigreeNode(
     return { key, parent, cultivarId: null, name: '', expandable: false };
   }
 
-  const { mother_cultivar_id, father_cultivar_id } = cultivar.lot.crossing;
   return {
     key,
     parent,
     cultivarId: cultivar.id,
     name: cultivar.display_name,
-    expandable: mother_cultivar_id !== null || father_cultivar_id !== null,
+    expandable: hasKnownParent(cultivar.lot.crossing),
   };
 }
 
-// A card is 36px tall plus 4px margin above and below.
-export const PEDIGREE_SLOT = 44;
+export const PEDIGREE_CARD_HEIGHT = 36;
+export const PEDIGREE_CARD_MARGIN = 4;
+// The vertical space one card takes.
+export const PEDIGREE_SLOT = PEDIGREE_CARD_HEIGHT + 2 * PEDIGREE_CARD_MARGIN;
 
 export type PedigreeLayout = {
   height: number;

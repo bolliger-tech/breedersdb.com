@@ -20,7 +20,7 @@
         <h3 class="q-my-md">{{ t('entity.basics') }}</h3>
         <CultivarEntityTable :cultivar="cultivar" />
         <div class="q-mt-sm">
-          <template v-if="hasKnownParent">
+          <template v-if="parentKnown">
             <q-btn
               flat
               dense
@@ -112,6 +112,7 @@ import { cultivarFragment } from 'src/components/Cultivar/cultivarFragment';
 import { useI18n } from 'src/composables/useI18n';
 import { useRoute, useRouter } from 'vue-router';
 import CultivarPedigreeDialog from 'src/components/Cultivar/CultivarPedigreeDialog.vue';
+import { hasKnownParent } from 'src/components/Cultivar/pedigree';
 import CultivarEntityTable from 'src/components/Cultivar/CultivarEntityTable.vue';
 import EntityName from 'src/components/Entity/EntityName.vue';
 import {
@@ -175,13 +176,9 @@ const { data, fetching, error } = await useQuery({
 
 const cultivar = computed(() => data.value?.cultivars_by_pk);
 
-const hasKnownParent = computed(() => {
+const parentKnown = computed(() => {
   const crossing = cultivar.value?.lot?.crossing;
-  return (
-    !!crossing &&
-    (crossing.mother_cultivar_id !== null ||
-      crossing.father_cultivar_id !== null)
-  );
+  return !!crossing && hasKnownParent(crossing);
 });
 const pedigreeOpen = ref(false);
 

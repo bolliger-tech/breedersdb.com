@@ -13,25 +13,31 @@
 
     <div :style="{ paddingTop: `${layout.center - PEDIGREE_SLOT / 2}px` }">
       <div
-        v-if="node.parent && node.cultivarId === null"
-        class="pedigree-node__card pedigree-node__card--unknown text-muted"
+        class="pedigree-node__card"
+        :class="{
+          'pedigree-node__card--unknown text-muted': node.cultivarId === null,
+        }"
       >
-        <span>{{ marker }}</span>
-        <span>{{ t('cultivars.pedigree.unknown') }}</span>
-      </div>
-      <div v-else class="pedigree-node__card">
-        <template v-if="node.parent">
-          <span class="text-muted">{{ marker }}</span>
-          <RouterLink
-            :to="{ path: `/cultivars/${node.cultivarId}`, query: $route.query }"
-            :title="node.name"
-            class="undecorated-link pedigree-node__name"
-            @click="emit('navigate')"
-          >
-            {{ node.name }}
-          </RouterLink>
-        </template>
-        <span v-else :title="node.name" class="pedigree-node__name">
+        <span v-if="node.parent" class="text-muted">
+          {{ node.parent === 'mother' ? '♀' : '♂' }}
+        </span>
+        <span v-if="node.cultivarId === null">
+          {{ t('cultivars.pedigree.unknown') }}
+        </span>
+        <RouterLink
+          v-else-if="node.parent"
+          :to="{ path: `/cultivars/${node.cultivarId}`, query: $route.query }"
+          :title="node.name"
+          class="undecorated-link nowrap-ellipsis pedigree-node__name"
+          @click="emit('navigate')"
+        >
+          {{ node.name }}
+        </RouterLink>
+        <span
+          v-else
+          :title="node.name"
+          class="nowrap-ellipsis pedigree-node__name"
+        >
           {{ node.name }}
         </span>
       </div>
@@ -45,7 +51,6 @@
           :key="parent.key"
           :node="parent"
           :layout="layout.parents[index]!"
-          :loading-keys="loadingKeys"
           @load="(ancestor) => emit('load', ancestor)"
           @navigate="emit('navigate')"
         />
@@ -56,7 +61,7 @@
       class="pedigree-node__more row items-center no-wrap"
     >
       <div class="pedigree-node__stub" />
-      <q-spinner v-if="loadingKeys.has(node.key)" color="primary" size="24px" />
+      <q-spinner v-if="node.loading" color="primary" size="24px" />
       <q-btn
         v-else
         flat
@@ -75,6 +80,8 @@
 import { computed } from 'vue';
 import { useI18n } from 'src/composables/useI18n';
 import {
+  PEDIGREE_CARD_HEIGHT,
+  PEDIGREE_CARD_MARGIN,
   PEDIGREE_SLOT,
   type PedigreeLayout,
   type PedigreeTree,
@@ -83,7 +90,6 @@ import {
 const props = defineProps<{
   node: PedigreeTree;
   layout: PedigreeLayout;
-  loadingKeys: ReadonlySet<string>;
 }>();
 
 const emit = defineEmits<{
@@ -93,9 +99,13 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-const marker = computed(() => (props.node.parent === 'mother' ? '♀' : '♂'));
 // Centers the 1px connector lines on the card.
 const stemTop = computed(() => props.layout.center - 0.5);
+
+// The layout math depends on these sizes.
+const cardHeight = `${PEDIGREE_CARD_HEIGHT}px`;
+const cardMargin = `${PEDIGREE_CARD_MARGIN}px`;
+const slotHeight = `${PEDIGREE_SLOT}px`;
 </script>
 
 <style lang="scss" scoped>
@@ -119,8 +129,8 @@ $line: 1px solid $separator-color;
 
 .pedigree-node__card {
   width: 144px;
-  height: 36px;
-  margin: 4px 0;
+  height: v-bind(cardHeight);
+  margin: v-bind(cardMargin) 0;
   box-sizing: border-box;
   padding: 4px 8px;
   display: flex;
@@ -142,10 +152,9 @@ $line: 1px solid $separator-color;
   }
 }
 
+// lets the flex item shrink, so the ellipsis applies
 .pedigree-node__name {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .pedigree-node__stem {
@@ -178,7 +187,7 @@ $line: 1px solid $separator-color;
 }
 
 .pedigree-node__more {
-  height: 44px; // PEDIGREE_SLOT
+  height: v-bind(slotHeight);
 }
 
 .pedigree-node__stub {

@@ -1,0 +1,80 @@
+name: Crowdin Branch Cleanup
+
+# Deletes the Crowdin branch that l10n.yml created for a git branch once that
+# branch's PR is closed (merged or not). The Crowdin main branch is never
+# deleted.
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  delete-crowdin-branch:
+    # Fork PRs get no secrets and never had a Crowdin branch.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+
+    steps:
+      # Only crowdin.yml is needed. The PR's merge ref may be gone for closed
+      # PRs, so check out the default branch instead.
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Resolve Crowdin branch
+        id: resolve
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "$HEAD_BRANCH" == l10n/* ]]; then
+            branch="${HEAD_BRANCH#l10n/}"
+
+            # A closed l10n PR into a still active branch is the normal sync
+            # flow. Only clean up if the translated branch is gone (merged or
+            # abandoned).
+            ls_remote_status=0
+            git ls-remote --exit-code --heads origin "refs/heads/$branch" > /dev/null || ls_remote_status=$?
+            if [ "$ls_remote_status" -eq 0 ]; then
+              echo "Git branch '$branch' still exists. Keeping its Crowdin branch."
+              exit 0
+            fi
+            if [ "$ls_remote_status" -ne 2 ]; then
+              exit "$ls_remote_status"
+            fi
+          else
+            branch="$HEAD_BRANCH"
+
+            # Translations not yet merged into git would be lost. The branch is
+            # deleted once the l10n PR closes (see above).
+            open_l10n_prs=$(gh pr list --head "l10n/$branch" --state open --json number --jq length)
+            if [ "$open_l10n_prs" -gt 0 ]; then
+              message="Kept Crowdin branch '$branch': PR from 'l10n/$branch' is still open. It is deleted when that PR is closed."
+              echo "::warning::$message"
+              echo "$message" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+          fi
+
+          if [ "$branch" = main ]; then
+            echo "Never deleting the Crowdin main branch."
+            exit 0
+          fi
+
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      # The CLI normalizes the name like on upload ('/' -> '.') and skips
+      # branches that don't exist in Crowdin.
+      - name: Delete Crowdin branch
+        if: steps.resolve.outputs.branch
+        uses: crowdin/github-action@v2
+        with:
+          command: branch delete
+          command_args: ${{ steps.resolve.outputs.branch }} --config=frontend/crowdin.yml
+        env:
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}

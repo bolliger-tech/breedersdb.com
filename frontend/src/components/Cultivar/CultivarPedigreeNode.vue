@@ -6,7 +6,7 @@
         :style="
           node.parent === 'mother'
             ? { top: `${stemTop}px` }
-            : { height: `${stemTop}px` }
+            : { height: `${stemTop + 1}px` }
         "
       />
     </div>
@@ -29,7 +29,6 @@
           :to="{ path: `/cultivars/${node.cultivarId}`, query: $route.query }"
           :title="node.name"
           class="undecorated-link nowrap-ellipsis pedigree-node__name"
-          @click="emit('navigate')"
         >
           {{ node.name }}
         </RouterLink>
@@ -52,7 +51,6 @@
           :node="parent"
           :layout="layout.parents[index]!"
           @load="(ancestor) => emit('load', ancestor)"
-          @navigate="emit('navigate')"
         />
       </div>
     </template>
@@ -94,12 +92,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   load: [node: PedigreeTree];
-  navigate: [];
 }>();
 
 const { t } = useI18n();
 
-// Centers the 1px connector lines on the card.
+// Centers the 1px connector lines on the card. Borders are drawn inside the
+// box (border-box), so the father elbow, whose line is its bottom border,
+// needs 1px more height.
 const stemTop = computed(() => props.layout.center - 0.5);
 
 // The layout math depends on these sizes.
@@ -117,7 +116,6 @@ $line: 1px solid $separator-color;
   width: max-content;
 }
 
-// All lines of the chart.
 .pedigree-node__card,
 .pedigree-node__stem,
 .pedigree-node__elbow > div,

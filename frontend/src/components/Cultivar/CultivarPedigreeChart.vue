@@ -8,12 +8,7 @@
       :message="t('cultivars.pedigree.loadingFailed')"
     />
     <div v-if="tree && layout" class="cultivar-pedigree-chart">
-      <CultivarPedigreeNode
-        :node="tree"
-        :layout="layout"
-        @load="loadParents"
-        @navigate="emit('navigate')"
-      />
+      <CultivarPedigreeNode :node="tree" :layout="layout" @load="loadParents" />
     </div>
   </template>
 </template>
@@ -34,7 +29,6 @@ import {
 } from './pedigree';
 
 const props = defineProps<{ cultivarId: number; displayName: string }>();
-const emit = defineEmits<{ navigate: [] }>();
 
 const { t } = useI18n();
 const { query } = useOneShotQuery();
@@ -93,7 +87,7 @@ async function loadParentsAndGrandparents() {
     expandable: true,
   };
   const parents = await fetchParents(root);
-  if (!parents) return;
+  if (!parents) throw new Error('Cultivar not found');
   await Promise.all(
     parents.map(async (parent) => {
       if (!parent.expandable) return;
@@ -114,7 +108,8 @@ async function loadParents(node: PedigreeTree) {
   node.loading = true;
   try {
     const parents = await fetchParents(node);
-    if (parents) node.parents = parents;
+    if (!parents) throw new Error('Cultivar not found');
+    node.parents = parents;
   } catch {
     loadingFailed.value = true;
   } finally {

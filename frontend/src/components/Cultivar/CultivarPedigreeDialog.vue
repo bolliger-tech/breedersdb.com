@@ -14,11 +14,12 @@
           />
         </div>
 
-        <!-- QDialog mounts its content on each opening, so each loads afresh -->
+        <!-- QDialog mounts its content on each opening, so each loads afresh.
+          Following an ancestor's link closes the dialog, as the route change
+          remounts the view modal. -->
         <CultivarPedigreeChart
           :cultivar-id="cultivarId"
           :display-name="displayName"
-          @navigate="open = false"
         />
       </q-card-section>
     </q-card>

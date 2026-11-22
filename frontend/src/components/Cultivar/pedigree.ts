@@ -80,7 +80,6 @@ function toPedigreeNode(
 
 export const PEDIGREE_CARD_HEIGHT = 36;
 export const PEDIGREE_CARD_MARGIN = 4;
-// The vertical space one card takes.
 export const PEDIGREE_SLOT = PEDIGREE_CARD_HEIGHT + 2 * PEDIGREE_CARD_MARGIN;
 
 export type PedigreeLayout = {
